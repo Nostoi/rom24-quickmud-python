@@ -1181,6 +1181,53 @@ def from_orm(db_char: DBCharacter) -> Character:
     if saved_armor and isinstance(saved_armor, list):
         char.armor = _normalize_int_list(saved_armor, 4)
 
+    # --- INV-008 Phase 2: deserialize inventory/equipment JSON blobs ---
+    # inventory_state and equipment_state are written by save_character_to_db.
+    # Load them back here so the DB-canonical path restores full item state,
+    # including per-instance overrides (level, timer, value[], enchanted, etc.).
+    # The legacy load_objects_for_character (ObjectInstance table) is NOT used
+    # in the DB-canonical path — it only restores prototype defaults.
+    inventory_state = getattr(db_char, "inventory_state", None)
+    if inventory_state and isinstance(inventory_state, list):
+        from mud.persistence import _deserialize_object, ObjectSave
+        from mud.models.json_io import dataclass_from_dict
+        restored_inventory = []
+        for obj_dict in inventory_state:
+            try:
+                snapshot = dataclass_from_dict(ObjectSave, obj_dict)
+                obj = _deserialize_object(snapshot)
+                if obj is not None:
+                    restored_inventory.append(obj)
+            except Exception:
+                pass
+        char.inventory = restored_inventory
+
+    equipment_state = getattr(db_char, "equipment_state", None)
+    if equipment_state and isinstance(equipment_state, dict):
+        from mud.persistence import _deserialize_object, ObjectSave
+        from mud.models.json_io import dataclass_from_dict
+        restored_equipment: dict[str, object] = {}
+        for slot, obj_dict in equipment_state.items():
+            try:
+                snapshot = dataclass_from_dict(ObjectSave, obj_dict)
+                obj = _deserialize_object(snapshot)
+                if obj is not None:
+                    restored_equipment[slot] = obj
+            except Exception:
+                pass
+        char.equipment = restored_equipment
+
+    # --- INV-008 Phase 2: deserialize pet JSON blob ---
+    pet_state = getattr(db_char, "pet_state", None)
+    if pet_state and isinstance(pet_state, dict):
+        from mud.persistence import _deserialize_pet
+        try:
+            pet = _deserialize_pet(pet_state, char)
+            if pet is not None:
+                char.pet = pet
+        except Exception:
+            pass
+
     # ROM: admin status is conveyed via trust/level on the Character row,
     # not via a separate account table.  is_admin is set by login flow if needed.
     return char

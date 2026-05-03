@@ -1,42 +1,31 @@
-"""Account manager — thin shim delegating to mud.persistence (INV-008 hybrid).
+"""Account manager — DB-canonical persistence (INV-008 Phase 2).
 
-The JSON pfile (mud.persistence) is the single source of truth for ALL player
-gameplay state.  The DB row (mud.db.models.Character) owns auth only:
-  - ``name``   — lookup key
-  - ``password_hash`` — bcrypt/argon2 credential
+The DB row (mud.db.models.Character) is the single source of truth for ALL
+player gameplay state.  The JSON pfile path (mud.persistence) has been removed.
 
-``load_character`` tries the JSON pfile first; if no JSON exists (legacy DB-only
-row or freshly-created character not yet saved), it falls back to ``from_orm``
-so the caller gets a valid runtime Character rather than None.  The next
-``save_character`` call promotes the row to JSON transparently.
-
-``save_character`` writes the JSON pfile via mud.persistence.  It does NOT
-update gameplay columns on the DB row — those are vestigial under the hybrid
-scheme.  The one exception: when ``pcdata.pwd`` has changed (e.g. do_password),
-the new hash is also written to ``db.password_hash`` so the auth path
-(account_service.login_character) which reads from the DB continues to work.
+``save_character`` writes all 71 fields to the DB row via ``save_character_to_db``.
+``load_character`` queries the DB row and returns a fully-initialized runtime
+Character via ``from_orm``.
 
 ROM Reference: src/save.c fread_char / fwrite_char — the C engine's pfile is
-also the single source of truth; the only external auth store is the pfile
-itself (``password <hash>`` line).
+the single source of truth; the only external auth store is the pfile itself.
+Python equivalent: the DB row owns both auth and all gameplay state.
 
-INV-008: DUAL-LOAD-CHARACTER-COHERENCE — consolidated by this module.
+INV-003: ``character_registry`` membership is maintained — ``load_character``
+appends to the registry after a successful DB load.
 
-Phase 1 addition: ``save_character_to_db`` is the new canonical DB-write path.
-It is called alongside the JSON path in this phase; Phase 2 will remove the
-JSON delegation and make this the sole write path.
+INV-008 (DB-CANONICAL): The invariant has been reversed — the DB row is now
+the canonical source, not the JSON pfile.  There is no JSON fallback path.
 """
 
 from __future__ import annotations
 
 import time
 
-import mud.persistence as _persistence
 from mud.db.models import Character as DBCharacter
 from mud.db.session import SessionLocal
 from mud.models.character import Character, character_registry, from_orm
 from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
-from mud.models.conversion import load_objects_for_character
 from mud.persistence import (
     _normalize_int_list,
     _serialize_colour_table,
@@ -47,29 +36,15 @@ from mud.persistence import (
 )
 
 
-
 def load_character(char_name: str, _ignored: str | None = None) -> Character | None:
-    """Load a character by name — JSON pfile first, DB fallback.
+    """Load a character by name from the DB row (DB-canonical path).
 
     The second argument is accepted but ignored for backward compatibility;
     previously it was a username (account name).  Characters are standalone
     identities — mirroring ROM src/save.c:fread_char.
 
-    Load order:
-    1. JSON pfile (mud.persistence.load_character) — full 51-field state.
-    2. DB row (from_orm) — legacy fallback for rows that have no pfile yet
-       (e.g. freshly created characters before their first save).
-
     The loaded character is appended to ``character_registry`` (INV-003).
-    mud.persistence.load_character already does this for path 1; path 2
-    mirrors it explicitly.
     """
-    # Path 1: JSON pfile — canonical full-state load
-    char = _persistence.load_character(char_name)
-    if char is not None:
-        return char
-
-    # Path 2: DB-only fallback (legacy row / freshly created character)
     session = None
     try:
         session = SessionLocal()
@@ -78,9 +53,10 @@ def load_character(char_name: str, _ignored: str | None = None) -> Character | N
             return None
         char = from_orm(db_char)
         if char is not None:
-            char.inventory, char.equipment = load_objects_for_character(db_char)
-            if char not in character_registry:
-                character_registry.append(char)
+            # Use identity check to avoid triggering dataclass __eq__ on deep
+            # object graphs (inventory/equipment items cause recursion with list `in`)
+            if not any(c is char for c in character_registry):
+                character_registry.append(char)  # INV-003
         return char
     except Exception as e:
         print(f"[ERROR] Failed to load character {char_name} from DB: {e}")
@@ -91,52 +67,40 @@ def load_character(char_name: str, _ignored: str | None = None) -> Character | N
 
 
 def save_character(character: Character) -> None:
-    """Persist ``character`` to the JSON pfile.
+    """Persist ``character`` to the DB row (DB-canonical path).
 
-    Also syncs ``password_hash`` to the DB row if ``pcdata.pwd`` is set, so
-    the auth path (account_service.login_character) which reads from the DB
-    stays consistent after a ``do_password`` call.
+    UPDATE-only: the character row must already exist (created via
+    account_service.create_character).  If the row is not found, returns silently.
+
+    ROM Reference: src/save.c fwrite_char — all fields persisted.
+    # mirroring mud/persistence.py:save_character (now removed for JSON path)
     """
-    # Primary write: JSON pfile owns all gameplay state
-    _persistence.save_character(character)
-
-    # Secondary write: keep DB password_hash in sync with pcdata.pwd
-    pcdata = getattr(character, "pcdata", None)
-    if not pcdata:
-        return
-    pwd = getattr(pcdata, "pwd", "") or ""
-    if not pwd:
-        return
-
     session = None
     try:
         session = SessionLocal()
-        db_char = session.query(DBCharacter).filter_by(name=character.name).first()
-        if db_char is not None and getattr(db_char, "password_hash", "") != pwd:
-            db_char.password_hash = pwd
-            session.commit()
+        save_character_to_db(session, character)
+        session.commit()
     except Exception as e:
-        print(f"[WARN] Failed to sync password_hash to DB for {character.name}: {e}")
+        print(f"[ERROR] save_character failed for {character.name}: {e}")
     finally:
         if session:
             session.close()
 
 
 def save_character_to_db(session: object, character: Character) -> None:
-    """Write all character state to the DB row — the Phase 1 canonical save path.
+    """Write all character state to the DB row — the canonical DB save path.
 
     UPDATE-only: the character row must already exist (created via
     account_service.create_character).  If the row is not found, returns silently.
 
-    Replicates the nontrivial logic from mud.persistence.save_character:
+    Replicates the nontrivial logic from the former mud.persistence.save_character:
       - room_vnum LIMBO → TEMPLE fallback (mirroring ROM src/save.c:fwrite_char)
       - played accumulation: base_played + (now - logon) (ROM src/save.c:fwrite_char)
       - act flags reconciled with ansi_enabled (PlayerFlag.COLOUR bit)
       - All 71 fields from INV008_REVERSAL_AUDIT §1
 
     Does NOT commit the session — caller is responsible for session.commit()
-    so multiple saves can be batched.  (The standalone helper below wraps this
-    with its own session and commit for convenience.)
+    so multiple saves can be batched.
 
     ROM Reference: src/save.c fwrite_char / fwrite_pet
     # mirroring mud/persistence.py:save_character
