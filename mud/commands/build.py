@@ -4162,10 +4162,10 @@ def _interpret_hedit(session: Session, char: Character, raw_input: str) -> str:
             # String result — return it directly
             return result if result else ""
 
-    # Unknown command → fall back to normal command table (mirrors ROM src/hedit.c:258)
-    from mud.commands.dispatcher import process_command
-
-    return process_command(char, arg)
+    # Unknown command → signal fallback to normal command table (mirrors ROM src/hedit.c:258
+    # which calls interpret(ch, arg); Python's dispatcher checks this sentinel prefix via
+    # _should_fallback_from_olc so process_command handles the command outside hedit context).
+    return f"Unknown help editor command: {command}\n\r"
 
 
 def _hedit_mark_changed(help_entry) -> None:

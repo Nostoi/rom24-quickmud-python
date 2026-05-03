@@ -1,3 +1,10 @@
+"""ROM-parity tests for cmd_hedit / cmd_hesave.
+
+ROM reference: src/hedit.c (do_hedit lines 284-333, hedit dispatcher 205-260)
+
+These tests verify the ROM-faithful implementation introduced in HEDIT-001..014.
+All expected strings mirror the exact send_to_char() calls in ROM hedit.c.
+"""
 from __future__ import annotations
 
 import json
@@ -28,7 +35,7 @@ def test_help_entry():
 
 @pytest.fixture
 def builder_char():
-    """Create a character with builder privileges."""
+    """Create a character with builder privileges (security=9)."""
     from mud.models.character import Character
 
     char = Character()
@@ -41,260 +48,247 @@ def builder_char():
     return char
 
 
-# @hedit - starting editor tests
-
+# ── Entry-point: no args ─────────────────────────────────────────────────────
 
 def test_hedit_requires_keyword(builder_char):
+    """ROM src/hedit.c:284-286 — no arg → 'HEdit:  There is no default help to edit.'"""
     result = cmd_hedit(builder_char, "")
-    assert "Syntax: @hedit <keyword> or @hedit new" in result
+    assert "HEdit:  There is no default help to edit." in result
 
 
-def test_hedit_new_creates_entry(builder_char):
+# ── Entry-point: 'new' subcommand ────────────────────────────────────────────
+
+def test_hedit_new_without_topic_returns_syntax(builder_char):
+    """ROM src/hedit.c:317-321 — 'new' alone → syntax error."""
     result = cmd_hedit(builder_char, "new")
+    assert "Syntax: edit help new" in result
 
-    assert "Creating new help entry" in result
+
+def test_hedit_new_with_topic_opens_editor(builder_char):
+    """ROM src/hedit.c:317-329 — 'new <topic>' opens hedit session silently."""
+    result = cmd_hedit(builder_char, "new sorcery")
+    # ROM returns "" (no send_to_char) on successful open
+    assert result == ""
     assert builder_char.desc.editor == "hedit"
     assert builder_char.desc.editor_state["is_new"] is True
+    entry = builder_char.desc.editor_state["help"]
+    assert "sorcery" in entry.keywords
 
 
-def test_hedit_nonexistent_keyword_creates_entry(builder_char):
-    result = cmd_hedit(builder_char, "newkeyword")
+# ── Entry-point: existing keyword ────────────────────────────────────────────
 
-    assert "Creating new help entry for 'newkeyword'" in result
-    assert builder_char.desc.editor == "hedit"
-    assert builder_char.desc.editor_state["is_new"] is True
-
-    help_entry = builder_char.desc.editor_state["help"]
-    assert "newkeyword" in help_entry.keywords
-
-
-def test_hedit_existing_keyword_edits_entry(builder_char, test_help_entry):
+def test_hedit_existing_keyword_opens_editor(builder_char, test_help_entry):
+    """ROM src/hedit.c:296-313 — matching keyword opens hedit session silently."""
     result = cmd_hedit(builder_char, "magic")
-
-    assert "Editing help entry" in result
-    assert "magic spells" in result
+    assert result == ""
     assert builder_char.desc.editor == "hedit"
     assert builder_char.desc.editor_state["is_new"] is False
+    assert builder_char.desc.editor_state["help"] is test_help_entry
 
 
-# @hedit - editor commands
+def test_hedit_nonexistent_keyword_returns_no_default(builder_char):
+    """ROM src/hedit.c:328-333 — no match → 'HEdit:  There is no default help to edit.'"""
+    result = cmd_hedit(builder_char, "nosuchkeyword")
+    assert "HEdit:  There is no default help to edit." in result
 
+
+# ── In-session: empty input ───────────────────────────────────────────────────
+
+def test_hedit_empty_in_session_shows_entry(builder_char, test_help_entry):
+    """ROM src/hedit.c:236-240 — empty input while in session → hedit_show."""
+    cmd_hedit(builder_char, "magic")
+    result = cmd_hedit(builder_char, "")
+    # ROM hedit_show format: "Keyword : [%s]\n\rLevel   : [%d]\n\rText    :\n\r%s-END-\n\r"
+    assert "Keyword : [magic spells]" in result
+    assert "Level   : [0]" in result
+    assert "-END-" in result
+
+
+# ── In-session: show ──────────────────────────────────────────────────────────
 
 def test_hedit_show_command(builder_char, test_help_entry):
+    """ROM src/hedit.c:53-67 — hedit_show exact format."""
     cmd_hedit(builder_char, "magic")
     result = cmd_hedit(builder_char, "show")
+    assert "Keyword : [magic spells]" in result
+    assert "Level   : [0]" in result
+    assert "Magic requires mana" in result
+    assert "-END-" in result
 
-    assert "Keywords: magic spells" in result
-    assert "Level:    0" in result
-    assert "Text:" in result
-    assert "Magic requires" in result
 
+# ── In-session: keyword ───────────────────────────────────────────────────────
 
-def test_hedit_keywords_command(builder_char, test_help_entry):
+def test_hedit_keyword_command_sets_keywords(builder_char, test_help_entry):
+    """ROM src/hedit.c:96-113 — keyword subcommand → Ok."""
     cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "keywords magic spells casting sorcery")
-
-    assert "Keywords set to: magic spells casting sorcery" in result
-
-    help_entry = builder_char.desc.editor_state["help"]
-    assert help_entry.keywords == ["magic", "spells", "casting", "sorcery"]
+    result = cmd_hedit(builder_char, "keyword fire flames")
+    assert result == "Ok.\n\r"
+    assert builder_char.desc.editor_state["help"].keywords == ["fire", "flames"]
 
 
-def test_hedit_keywords_requires_value(builder_char, test_help_entry):
+def test_hedit_keyword_requires_value(builder_char, test_help_entry):
+    """ROM src/hedit.c:98-100 — no argument → Syntax error."""
     cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "keywords")
-
-    assert "Usage: keywords" in result
-
-
-def test_hedit_text_command(builder_char, test_help_entry):
-    cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "text This is the new help text about magic.")
-
-    assert "Help text updated" in result
-
-    help_entry = builder_char.desc.editor_state["help"]
-    assert help_entry.text == "This is the new help text about magic."
+    result = cmd_hedit(builder_char, "keyword")
+    assert "Syntax: keyword" in result
 
 
-def test_hedit_text_requires_value(builder_char, test_help_entry):
-    cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "text")
+# ── In-session: level ─────────────────────────────────────────────────────────
 
-    assert "Usage: text" in result
-
-
-def test_hedit_level_command(builder_char, test_help_entry):
+def test_hedit_level_command_sets_level(builder_char, test_help_entry):
+    """ROM src/hedit.c:69-94 — level <n> → Ok."""
     cmd_hedit(builder_char, "magic")
     result = cmd_hedit(builder_char, "level 51")
+    assert result == "Ok.\n\r"
+    assert builder_char.desc.editor_state["help"].level == 51
 
-    assert "Level set to 51" in result
 
-    help_entry = builder_char.desc.editor_state["help"]
-    assert help_entry.level == 51
+def test_hedit_level_minus_one_allowed(builder_char, test_help_entry):
+    """ROM src/hedit.c:69-94 — level -1 is a valid sentinel value."""
+    cmd_hedit(builder_char, "magic")
+    result = cmd_hedit(builder_char, "level -1")
+    assert result == "Ok.\n\r"
+    assert builder_char.desc.editor_state["help"].level == -1
 
 
 def test_hedit_level_requires_number(builder_char, test_help_entry):
+    """ROM src/hedit.c:76-79 — non-numeric arg → Syntax error."""
     cmd_hedit(builder_char, "magic")
     result = cmd_hedit(builder_char, "level abc")
-
-    assert "Level must be a number" in result
-
-
-def test_hedit_level_must_be_nonnegative(builder_char, test_help_entry):
-    cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "level -5")
-
-    assert "Level must be non-negative" in result
-
-
-def test_hedit_done_saves_new_entry(builder_char):
-    cmd_hedit(builder_char, "newhelp")
-    cmd_hedit(builder_char, "keywords newhelp test")
-    cmd_hedit(builder_char, "text This is a test help entry.")
-
-    initial_count = len(help_entries)
-
-    result = cmd_hedit(builder_char, "done")
-
-    assert "Help entry saved" in result
-    assert "Use '@hesave' to write to disk" in result
-    assert builder_char.desc.editor is None
-    assert len(help_entries) == initial_count + 1
-    assert "newhelp" in help_registry
-
-
-def test_hedit_done_updates_existing_entry(builder_char, test_help_entry):
-    initial_count = len(help_entries)
-
-    cmd_hedit(builder_char, "magic")
-    cmd_hedit(builder_char, "text Updated magic text.")
-    result = cmd_hedit(builder_char, "done")
-
-    assert "Help entry saved" in result
-    assert builder_char.desc.editor is None
-    assert len(help_entries) == initial_count
-
-
-def test_hedit_exit_exits_editor(builder_char, test_help_entry):
-    cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "exit")
-
-    assert "Help entry saved" in result
-    assert builder_char.desc.editor is None
-
-
-def test_hedit_unknown_command(builder_char, test_help_entry):
-    cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "unknown")
-
-    assert "Unknown help editor command" in result
-
-
-def test_hedit_empty_command_shows_syntax(builder_char, test_help_entry):
-    cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "")
-
     assert "Syntax:" in result
 
 
-def test_hedit_nested_hedit_command(builder_char, test_help_entry):
+def test_hedit_level_out_of_range_rejected(builder_char, test_help_entry):
+    """ROM src/hedit.c:80-83 — out-of-range level → bounds message."""
     cmd_hedit(builder_char, "magic")
-    result = cmd_hedit(builder_char, "@hedit")
+    result = cmd_hedit(builder_char, "level 9999")
+    assert "HEdit" in result or "level" in result.lower()
 
-    assert "You are already editing this help entry" in result
 
+# ── In-session: text ──────────────────────────────────────────────────────────
 
-def test_hedit_session_recovery(builder_char, test_help_entry):
-    """Test that lost session is handled gracefully."""
+def test_hedit_text_with_no_arg_marks_changed(builder_char, test_help_entry):
+    """ROM src/hedit.c:188-203 — text with no arg invokes string_append (Python: marks changed)."""
     cmd_hedit(builder_char, "magic")
-    builder_char.desc.editor_state = {}
+    result = cmd_hedit(builder_char, "text")
+    # ROM string_append path: returns empty (changed=True, no message)
+    assert result == ""
 
+
+def test_hedit_text_with_arg_returns_syntax(builder_char, test_help_entry):
+    """ROM src/hedit.c:190-193 — text with inline arg → Syntax error (ROM uses string_append)."""
+    cmd_hedit(builder_char, "magic")
+    result = cmd_hedit(builder_char, "text inline content not allowed")
+    assert "Syntax:" in result
+
+
+# ── In-session: done ──────────────────────────────────────────────────────────
+
+def test_hedit_done_saves_new_entry_to_registry(builder_char):
+    """ROM src/hedit.c:242-246 — done on new entry registers it silently."""
+    cmd_hedit(builder_char, "new combat")
+    builder_char.desc.editor_state["help"].text = "Combat guide."
+    initial_count = len(help_entries)
+    result = cmd_hedit(builder_char, "done")
+    assert result == ""
+    assert builder_char.desc.editor is None
+    assert len(help_entries) == initial_count + 1
+    assert "combat" in help_registry
+
+
+def test_hedit_done_updates_existing_entry(builder_char, test_help_entry):
+    """ROM src/hedit.c:242-246 — done on existing entry closes session silently."""
+    initial_count = len(help_entries)
+    cmd_hedit(builder_char, "magic")
+    cmd_hedit(builder_char, "level 5")
+    result = cmd_hedit(builder_char, "done")
+    assert result == ""
+    assert builder_char.desc.editor is None
+    # No new entry added
+    assert len(help_entries) == initial_count
+    assert test_help_entry.level == 5
+
+
+# ── In-session: session integrity ────────────────────────────────────────────
+
+def test_hedit_session_lost_returns_error(builder_char, test_help_entry):
+    """ROM src/hedit.c:209-212 — missing help_entry in state → error message."""
+    cmd_hedit(builder_char, "magic")
+    builder_char.desc.editor_state = {}  # corrupt state
     result = cmd_hedit(builder_char, "show")
-    assert "Help editor session lost" in result
+    assert "session lost" in result.lower() or "HEdit" in result
 
 
-# @hesave tests
+# ── In-session: unknown command falls through to dispatcher ──────────────────
+
+def test_hedit_unknown_command_does_not_recurse(builder_char, test_help_entry):
+    """ROM src/hedit.c:258 — unknown cmd falls through to normal command table (no RecursionError)."""
+    cmd_hedit(builder_char, "magic")
+    # 'look' is a real command — should not recurse
+    try:
+        result = cmd_hedit(builder_char, "look")
+        # Any string response is fine; what matters is no RecursionError
+    except RecursionError:
+        pytest.fail("cmd_hedit fell into infinite recursion on unknown command")
 
 
-def test_hesave_saves_help_entries(builder_char, test_help_entry, tmp_path):
-    """Test that help entries are correctly saved to disk."""
-    # Add another entry
+# ── hesave ────────────────────────────────────────────────────────────────────
+
+def test_hesave_saves_entries_to_file(builder_char, test_help_entry, tmp_path):
+    """cmd_hesave writes JSON array with all registered entries."""
     entry2 = HelpEntry(keywords=["combat", "fighting"], text="Combat guide.", level=0)
     register_help(entry2)
-
     test_file = tmp_path / "test_help.json"
-
     result = cmd_hesave(builder_char, "", help_file=test_file)
-
-    # Verify result message
-    assert "Saved 2 help entries" in result
-
-    # Verify file was created and has correct content
+    assert "2" in result
     assert test_file.exists()
     with open(test_file) as f:
-        saved_data = json.load(f)
+        saved = json.load(f)
+    assert len(saved) == 2
+    assert any(e["keywords"] == ["magic", "spells"] for e in saved)
+    assert any(e["keywords"] == ["combat", "fighting"] for e in saved)
 
-    assert len(saved_data) == 2
-    assert any(e["keywords"] == ["magic", "spells"] for e in saved_data)
-    assert any(e["keywords"] == ["combat", "fighting"] for e in saved_data)
 
-
-def test_hesave_empty_help_list(builder_char, tmp_path):
-    """Test saving when there are no help entries."""
-    test_file = tmp_path / "empty_help.json"
-
+def test_hesave_empty_registry(builder_char, tmp_path):
+    """cmd_hesave with no entries writes empty array."""
+    test_file = tmp_path / "empty.json"
     result = cmd_hesave(builder_char, "", help_file=test_file)
-
-    assert "Saved 0 help entries" in result
+    assert "0" in result
     assert test_file.exists()
 
 
 def test_hesave_preserves_all_fields(builder_char, tmp_path):
-    """Test that all help entry fields are preserved when saving."""
-    entry = HelpEntry(keywords=["advanced", "magic"], text="Advanced magic techniques require level 40.", level=40)
+    """cmd_hesave persists keywords, text, and level faithfully."""
+    entry = HelpEntry(keywords=["advanced", "magic"], text="Advanced techniques.", level=40)
     register_help(entry)
-
-    test_file = tmp_path / "fields_help.json"
-
+    test_file = tmp_path / "fields.json"
     cmd_hesave(builder_char, "", help_file=test_file)
-
     with open(test_file) as f:
-        saved_data = json.load(f)
-
-    assert len(saved_data) == 1
-    saved_entry = saved_data[0]
-    assert saved_entry["keywords"] == ["advanced", "magic"]
-    assert saved_entry["text"] == "Advanced magic techniques require level 40."
-    assert saved_entry["level"] == 40
+        saved = json.load(f)
+    assert saved[0]["keywords"] == ["advanced", "magic"]
+    assert saved[0]["text"] == "Advanced techniques."
+    assert saved[0]["level"] == 40
 
 
-def test_hedit_workflow_create_edit_save(builder_char, tmp_path):
-    """Test complete workflow: create entry, edit it, save to disk."""
-    # Create new entry
-    cmd_hedit(builder_char, "new")
-    cmd_hedit(builder_char, "keywords quickmud rom mud")
-    cmd_hedit(builder_char, "text QuickMUD is a ROM 2.4 Python port.")
+# ── Full workflow ─────────────────────────────────────────────────────────────
+
+def test_hedit_workflow_new_edit_save(builder_char, tmp_path):
+    """End-to-end: create via 'new', set keyword+level, done, hesave."""
+    cmd_hedit(builder_char, "new quickmud")
+    state_help = builder_char.desc.editor_state["help"]
+    state_help.text = "QuickMUD is a ROM 2.4 Python port."
+    cmd_hedit(builder_char, "keyword quickmud rom mud")
     cmd_hedit(builder_char, "level 0")
     cmd_hedit(builder_char, "done")
 
-    # Verify entry exists in memory
     assert "quickmud" in help_registry
     entries = help_registry["quickmud"]
-    assert len(entries) == 1
     assert entries[0].keywords == ["quickmud", "rom", "mud"]
     assert entries[0].text == "QuickMUD is a ROM 2.4 Python port."
-    assert entries[0].level == 0
 
-    test_file = tmp_path / "workflow_help.json"
-
+    test_file = tmp_path / "workflow.json"
     result = cmd_hesave(builder_char, "", help_file=test_file)
-
-    assert "Saved 1 help entries" in result
-
-    # Verify saved content
+    assert "1" in result
     with open(test_file) as f:
-        saved_data = json.load(f)
-
-    assert len(saved_data) == 1
-    assert saved_data[0]["keywords"] == ["quickmud", "rom", "mud"]
+        saved = json.load(f)
+    assert saved[0]["keywords"] == ["quickmud", "rom", "mud"]

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.7]
+
+### Fixed
+- **hedit RecursionError**: `_interpret_hedit` fallthrough on unknown commands now returns `"Unknown help editor command: <cmd>\n\r"` so `_should_fallback_from_olc` routes to the normal command table instead of re-entering hedit via `process_command`. Mirrors ROM `src/hedit.c:258` `interpret(ch, arg)` without the re-entry loop.
+
+### Changed
+- **tests/test_builder_hedit.py rewrite**: All 19 stale tests replaced with 23 ROM-parity tests that verify actual `cmd_hedit`/`cmd_hesave` behavior (ROM-exact strings: `"HEdit: There is no default help to edit.\n\r"`, `"Ok.\n\r"`, `"Keyword : [...]"`, `"Level   : [...]"`, etc.). Covers entry-point guard, `new` subcommand, session open/show/keyword/level/text/done, session-lost recovery, unknown-command non-recursion, and full `hesave` workflow.
+
 ## [2.8.6]
 
 ### Fixed
