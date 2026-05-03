@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.6]
+
+### Fixed
+- **FIGHT-002 safe-room parity**: `mud/combat/engine.py:apply_damage` now mirrors ROM `src/fight.c:725-733` by re-checking `is_safe(ch, victim)` before any fighting-state or HP mutation. This stops melee damage, weapon procs, and other `apply_damage()`-backed attack paths from landing after combatants are moved into a safe room mid-fight. Regression coverage: `tests/integration/test_fight_c_safe_room_damage_gate.py`.
+
 ## [2.8.5]
 
 ### Fixed

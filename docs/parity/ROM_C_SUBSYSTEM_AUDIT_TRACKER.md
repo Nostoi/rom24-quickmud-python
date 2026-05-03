@@ -46,7 +46,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | File | Priority | Status | QuickMUD Module | Coverage | Notes |
 |------|----------|--------|-----------------|----------|-------|
 | **Combat & Violence** | | | | | |
-| `fight.c` | P0 | ✅ Audited (per-file) | `mud/combat/` | 95% | See `docs/parity/FIGHT_C_AUDIT.md`. Violence tick fixed Dec 2025. **Cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`):** INV-001 (single-delivery, ✅), INV-005 (same-room combat, ⚠️ no test), INV-006 (fighting-pointer coherence after death, ⚠️ no test). Open gaps: `FIGHT-001` `do_kill → multi_hit`, `FIGHT-002` `is_safe()` inside `damage()`. |
+| `fight.c` | P0 | ✅ Audited (per-file) | `mud/combat/` | 95% | See `docs/parity/FIGHT_C_AUDIT.md`. Violence tick fixed Dec 2025. `FIGHT-001` (`do_kill → multi_hit`) and `FIGHT-002` (`is_safe()` inside `damage()`) closed 2026-05-03. **Cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`):** INV-001 (single-delivery, ✅), INV-005 (same-room combat, ⚠️ no test), INV-006 (fighting-pointer coherence after death, ⚠️ no test). |
 | `skills.c` | P0 | ✅ Audited | `mud/skills/` | 100% | All 37 skills have ROM parity tests |
 | `magic.c` | P0 | ✅ Audited | `mud/spells/` | 98% | 97 spells tested |
 | `magic2.c` | P0 | ✅ Audited | `mud/spells/` | 98% | Continuation of magic.c |

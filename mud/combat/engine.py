@@ -88,7 +88,7 @@ def _weapon_values(weapon) -> list[int]:
     values = getattr(weapon, "value", None)
     if values is None and hasattr(weapon, "prototype"):
         values = getattr(weapon.prototype, "value", None)
-    if isinstance(values, (list, tuple)):
+    if isinstance(values, list | tuple):
         return [int(v) for v in values]
     return []
 
@@ -527,6 +527,13 @@ def apply_damage(
     """
     if victim.position == Position.DEAD:
         return "Already dead."
+
+    if attacker != victim:
+        from mud.combat.safety import is_safe
+
+        # mirroring ROM src/fight.c:725-733 — damage() re-checks is_safe at entry
+        if is_safe(attacker, victim):
+            return ""
 
     # Set up fighting state BEFORE defense checks (ROM parity: src/fight.c:damage sets fighting before parry/dodge)
     if victim != attacker:
