@@ -1,7 +1,20 @@
-# Session Status — 2026-05-03 — INV-005 / INV-006 / INV-007 enforcement tests shipped
+# Session Status — 2026-05-03 — INV-005 / INV-006 / INV-007 / INV-008 closed (cross-file invariants 8/8)
 
 ## Current State
 
+- **Cross-file invariant INV-008 — ENFORCED (this session, version
+  2.7.6).** `mud/account/account_manager.py` is now a thin shim
+  delegating `load_character` / `save_character` to `mud.persistence`.
+  The JSON pfile owns all 51+ ROM-faithful gameplay fields; the DB
+  row keeps `name` + `password_hash` for auth only. Vestigial DB
+  gameplay columns left in place for now (drop in a later schema
+  session). 30+ PC fields previously dropped on every WS logout
+  (mana, move, gold, silver, exp, hitroll, damroll, AC, conditions,
+  affects, skills, aliases, pets, item state, container contents…)
+  now round-trip. Field-level audit at
+  `docs/parity/INV008_DIVERGENCE_AUDIT.md`. Enforcement test:
+  `tests/integration/test_inv008_persistence_coherence.py` (4 cases,
+  all green). **All 8 cross-file invariants ✅ ENFORCED.**
 - **Cross-file invariant INV-007 — ENFORCED (this session, version
   2.7.5).** `tests/test_rng_determinism.py` now scans `mud/combat/`,
   `mud/skills/`, and `mud/spells/` for any `import random` / `from
@@ -39,8 +52,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.7.5 |
-| Cross-file invariants enforced | 7/8 (INV-001..007); INV-008 known divergence |
+| Version | 2.7.6 |
+| Cross-file invariants enforced | **8/8 ✅ ENFORCED** |
 | Audit-bound ROM C files | 40/40 audited (100%) |
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
 | `comm.c` message delivery | ✅ single-delivery; mailbox is fallback only |
@@ -65,16 +78,24 @@
 
 ## Open Follow-ups (not blocking the broad sweep)
 
-- **Tech-debt: two parallel `load_character`/`save_character`
-  implementations.** The codebase has both a JSON-pfile path
-  (`mud/persistence.py`) and a SQLAlchemy/SQLite path
-  (`mud/account/account_manager.py`). The DB path is the only one
-  production WebSocket logins go through. They diverged on at least
-  the `character_registry` membership invariant — fixed for the DB
-  path in `d2fafcd`, but probably not the only divergence. Right
-  end-state: pick one canonical implementation (the DB-backed one,
-  since auth depends on it) and either remove the JSON path or
-  downgrade it to an export/import tool.
+- **DB schema cleanup (post INV-008):** vestigial gameplay columns
+  on `mud/db/models.py:Character` (level, hp, race, ch_class, sex,
+  alignment, act, hometown_vnum, perm_stats, size, form, parts,
+  imm_flags, res_flags, vuln_flags, practice, train, perm_hit/mana/
+  move, default_weapon_vnum, creation_points, creation_groups,
+  creation_skills, newbie_help_seen, room_vnum, true_sex) are no
+  longer read or written by production code under the hybrid scheme
+  — only `name` and `password_hash` matter. Drop them in a future
+  schema-migration session once the JSON-canonical path has soaked
+  for a while.
+- **Pre-existing persistence test failures (3):**
+  `tests/test_persistence.py::test_character_json_persistence`,
+  `tests/test_persistence.py::test_inventory_round_trip_preserves_object_state`,
+  `tests/test_inventory_persistence.py::test_inventory_and_equipment_persistence`.
+  Verified pre-existing at commit `3aef2b6` (before INV-008 work).
+  All fail via `inventory_object_factory` returning None for vnum
+  3022 — likely a world-init / fixture issue, not the persistence
+  code. Triage separately.
 - **Two ROM parity gaps surfaced during combat triage (separate
   FIGHT-XXX entries):**
   - `do_kill` calls `attack_round` (one swing); ROM `src/fight.c:2817`

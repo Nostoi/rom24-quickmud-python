@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.6]
+
+### Changed
+- **INV-008 DUAL-LOAD-CHARACTER-COHERENCE consolidated (hybrid path).** `mud/account/account_manager.py` is now a thin shim delegating `load_character` and `save_character` to `mud.persistence` (the JSON pfile path). The DB row (`mud/db/models.py:Character`) keeps `name` + `password_hash` for auth only; gameplay columns are vestigial and will be dropped in a later schema-migration session. Field-level audit at `docs/parity/INV008_DIVERGENCE_AUDIT.md`. No data migration was required — pre-launch.
+- **`mud/persistence.py:PlayerSave` now persists `password_hash`** so the JSON pfile is the single ROM-faithful source of truth for all PC state, including auth credentials. `save_character` writes `pcdata.pwd`; `load_character` restores it. The shim's `save_character` also syncs the hash to the DB row so the auth path (`account_service.login_character`) stays consistent after `do_password`.
+
+### Fixed
+- **30+ PC fields previously dropped on every WS logout** (because the DB-backed `account_manager.save_character` only persisted ~18 columns). Now restored on next login: current mana / current move, gold, silver, exp, hitroll, damroll, saving throw, AC array, wimpy, position, mod_stat array, comm bitfield, affected_by, wiznet flags, conditions (drunk/full/thirst/hunger), full skill learned-percent map, aliases, colour table, prompt, title, bamfin/bamfout, played time, logon timestamp, pets, item timer/value/condition/enchanted/affects on inventory and equipment, container contents.
+
+### Added
+- **INV-008 enforcement test** (`tests/integration/test_inv008_persistence_coherence.py`): four cases asserting the `account_manager` shim round-trips full gameplay state, registers loaded characters in `character_registry` (INV-003), preserves `pcdata.pwd`, and restores room placement. INV-008 flipped from ⚠️ KNOWN DIVERGENCE → ✅ ENFORCED. **All 8 cross-file invariants are now ✅ ENFORCED.**
+- `docs/parity/INV008_DIVERGENCE_AUDIT.md`: field-level provenance audit (51 vs 29 fields, caller surface, recommendation).
+
 ## [2.7.5]
 
 ### Added

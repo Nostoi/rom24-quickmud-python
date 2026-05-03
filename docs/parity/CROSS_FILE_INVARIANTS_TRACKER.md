@@ -56,7 +56,7 @@ stable IDs (INV-NNN), and points each at an enforcement test.
 | INV-005 | SAME-ROOM-COMBAT-ONLY | `src/fight.c:violence_update` skips if `ch->in_room != victim->in_room` | `mud/game_loop.py:violence_tick` checks `attacker.room == victim.room` before `multi_hit` | `tests/integration/test_inv005_same_room_combat.py` | ✅ ENFORCED |
 | INV-006 | FIGHTING-POINTER-COHERENCE | `src/fight.c:stop_fighting(victim, TRUE)` sweeps `char_list`, clears every `fch->fighting == victim` | `mud/combat/engine.py:stop_fighting(ch, both=True)` iterates `character_registry` | `tests/integration/test_inv006_fighting_pointer_coherence.py` | ✅ ENFORCED |
 | INV-007 | RNG-DETERMINISM | `src/db.c init_mm` Mitchell-Moore RNG is the only source of combat/affect rolls | All `mud/combat/`, `mud/skills/`, `mud/spells/` use `mud.math.rng_mm.number_*`; never `random.*` | `tests/test_rng_determinism.py` | ✅ ENFORCED |
-| INV-008 | DUAL-LOAD-CHARACTER-COHERENCE | (Python-only) two `load_character` / `save_character` paths exist (`mud/persistence.py` + `mud/account/account_manager.py`); both must produce equivalent runtime state | Both paths must populate `character_registry`, `equipment`, `inventory`, `room`, etc. | _missing — see Open Follow-ups in `SESSION_STATUS.md`_ | ⚠️ KNOWN DIVERGENCE |
+| INV-008 | DUAL-LOAD-CHARACTER-COHERENCE | (Python-only) JSON pfile (`mud/persistence.py`) is the single source of truth for all gameplay state; DB row (`mud/db/models.py:Character`) owns auth only (`name`, `password_hash`) | `mud/account/account_manager.py` is a thin shim delegating to `mud.persistence`; production paths see one canonical implementation | `tests/integration/test_inv008_persistence_coherence.py` | ✅ ENFORCED |
 
 ## Action items
 
@@ -69,9 +69,14 @@ stable IDs (INV-NNN), and points each at an enforcement test.
    or accept it as convention and note in CONTRIBUTING.~~ **Done in 2.7.5**
    — `tests/test_rng_determinism.py` scans `mud/combat/`, `mud/skills/`,
    `mud/spells/`; vestigial `Random` removed from `SkillRegistry` as prerequisite.
-3. **Resolve INV-008** by consolidating the two `load_character` paths
-   (open follow-up in `SESSION_STATUS.md`). Until then, every change
-   to either file must be mirrored to the other.
+3. ~~**Resolve INV-008** by consolidating the two `load_character`
+   paths.~~ **Done in 2.7.6** — `mud/account/account_manager.py` is now
+   a thin shim delegating to `mud.persistence`; JSON pfile owns full
+   ROM-faithful state (51+ fields), DB row keeps `name` +
+   `password_hash` for auth only. Vestigial DB gameplay columns left
+   in place (drop in a later schema-migration session).
+   See `docs/parity/INV008_DIVERGENCE_AUDIT.md` for the field-level
+   audit that drove the decision.
 
 ## Stale-row footnotes (linked from `ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`)
 
