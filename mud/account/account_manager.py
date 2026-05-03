@@ -21,9 +21,13 @@ the canonical source, not the JSON pfile.  There is no JSON fallback path.
 from __future__ import annotations
 
 import time
+from typing import TYPE_CHECKING
 
 from mud.db.models import Character as DBCharacter
 from mud.db.session import SessionLocal
+
+if TYPE_CHECKING:
+    from sqlalchemy.orm import Session
 from mud.models.character import Character, character_registry, from_orm
 from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
 from mud.persistence import (
@@ -87,7 +91,7 @@ def save_character(character: Character) -> None:
             session.close()
 
 
-def save_character_to_db(session: object, character: Character) -> None:
+def save_character_to_db(session: Session, character: Character) -> None:
     """Write all character state to the DB row — the canonical DB save path.
 
     UPDATE-only: the character row must already exist (created via
@@ -108,7 +112,7 @@ def save_character_to_db(session: object, character: Character) -> None:
     from mud.models.constants import PlayerFlag
     from mud.notes import DEFAULT_BOARD_NAME
 
-    db_char = session.query(DBCharacter).filter_by(name=character.name).first()  # type: ignore[union-attr]
+    db_char = session.query(DBCharacter).filter_by(name=character.name).first()
     if db_char is None:
         return  # Character must exist — creation path handles inserts
 

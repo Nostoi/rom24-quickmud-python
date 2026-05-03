@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from mud.math.c_compat import c_div
 from mud.models.constants import (
@@ -1206,11 +1206,11 @@ def from_orm(db_char: DBCharacter) -> Character:
     if equipment_state and isinstance(equipment_state, dict):
         from mud.persistence import _deserialize_object, ObjectSave
         from mud.models.json_io import dataclass_from_dict
-        restored_equipment: dict[str, object] = {}
+        restored_equipment: dict[str, Object] = {}
         for slot, obj_dict in equipment_state.items():
             try:
                 snapshot = dataclass_from_dict(ObjectSave, obj_dict)
-                obj = _deserialize_object(snapshot)
+                obj = cast(Object | None, _deserialize_object(snapshot))
                 if obj is not None:
                     restored_equipment[slot] = obj
             except Exception:

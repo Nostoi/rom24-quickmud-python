@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.2]
+
+### Changed
+- **Type cleanup on the new DB-canonical persistence surface.** `save_character_to_db` now types its `session` parameter as `sqlalchemy.orm.Session` (TYPE_CHECKING import) instead of `object`, dropping the `# type: ignore[union-attr]` on the `session.query` call. `mud/models/character.py:from_orm` casts `_deserialize_object(...)` to `Object | None` at the equipment-restore site so the `restored_equipment: dict[str, Object]` annotation is honored. No behavior change; pyright cleanup only. 25/25 critical persistence tests still green.
+
 ## [2.8.1]
 
 ### Changed
