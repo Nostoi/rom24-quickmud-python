@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.3]
+
+### Fixed
+- **Combat parity (death path)**: Combat messages now reach connected PCs exactly once. `mud/combat/engine.py:_push_message` previously appended every message to `char.messages` AND scheduled an async send, and `mud/net/connection.py:1756` unconditionally drained `char.messages` after every command — so each combat line was delivered TWICE to WebSocket clients. Live repro: PC dies, types `look`, sees the entire combat sequence (including "You have been KILLED!!") replayed milliseconds later, making it appear they died twice. ROM `src/comm.c:write_to_buffer` is one-shot. Per `docs/divergences/MESSAGE_DELIVERY.md`, the mailbox is fallback-only for tests/disconnected characters; fix returns immediately after the async dispatch when a connection exists.
+- **Combat parity (prompt display)**: `bust_a_prompt` now clamps displayed hit to >= 0. The death path could leave `char.hit` negative between `update_pos` setting `Position.DEAD` (at hit <= -11) and `raw_kill` clamping to `max(1, hit)` — Python's async dispatch can interleave a prompt render in that window, exposing the negative transient. ROM never shows negative hp because `raw_kill` always finishes first in its single-threaded loop. Display-only clamp at the two render sites (default prompt + `%h` token).
+- **Combat parity (death-path comments)**: `_handle_death` documents the bidirectional fighting-pointer clear and its relationship with `raw_kill → _stop_fighting`'s `char_list` sweep. ROM ref: `src/fight.c:damage` death branch.
+
+### Added
+- `tests/test_prompt_clamps_hp.py` — 4 cases guarding prompt clamp (default + custom `%h`).
+- `tests/integration/test_message_delivery_no_duplicate.py` — connected PC gets one async send, no mailbox queue; disconnected falls back to mailbox.
+- `tests/integration/test_pc_death_no_message_replay.py` — end-to-end: pushes the actual death-message sequence, drives the read-loop drain manually, asserts "You have been KILLED!!" appears exactly once across both passes.
+- `tests/integration/test_pc_death_keeps_connection.py` — regression guard that `raw_kill` keeps the PC in `character_registry`, in the death room, with hit/mana/move >= 1, position `RESTING`, connection intact.
+- `mud/net/connection.py` — diagnostic logging upgrade: read-loop's outer `except` now prints `type(exc).__name__: exc!r` plus traceback so future disconnect causes are visible in server stdout.
+
 ## [2.7.2]
 
 ### Fixed

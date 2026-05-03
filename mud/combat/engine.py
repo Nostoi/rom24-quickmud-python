@@ -1093,6 +1093,14 @@ def _send_wiznet_death(attacker: Character, victim: Character) -> None:
 
 def _handle_death(attacker: Character, victim: Character) -> str:
     """Handle character death following ROM logic."""
+    # Defensive bidirectional clear of fighting pointers. ROM
+    # src/fight.c:damage death branch relies on raw_kill →
+    # stop_fighting(victim, TRUE) to sweep char_list and clear every
+    # fighter whose fighting == victim. We do the same via
+    # _stop_fighting(victim, True) in mud/combat/death.py:561. The
+    # explicit clears here cover the killing-blow attacker even before
+    # the sweep runs; redundant in the single-attacker case but cheap
+    # and load-bearing for read clarity.
     attacker.fighting = None
     victim.fighting = None
     attacker.position = Position.STANDING
