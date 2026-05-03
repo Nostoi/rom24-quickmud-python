@@ -1,5 +1,4 @@
 from pathlib import Path
-from random import Random
 
 import pytest
 
@@ -32,7 +31,7 @@ def assert_attack_message(message: str, target: str) -> None:
 
 
 def load_registry() -> SkillRegistry:
-    reg = SkillRegistry(rng=Random(0))
+    reg = SkillRegistry()
     reg.load(Path("data/skills.json"))
     return reg
 

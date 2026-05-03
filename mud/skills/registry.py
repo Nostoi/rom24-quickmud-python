@@ -6,7 +6,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from importlib import import_module
 from pathlib import Path
-from random import Random
 from typing import TYPE_CHECKING, Any
 
 from mud.advancement import gain_exp
@@ -38,10 +37,9 @@ class SkillUseResult:
 class SkillRegistry:
     """Load skill metadata from JSON and dispatch handlers."""
 
-    def __init__(self, rng: Random | None = None) -> None:
+    def __init__(self) -> None:
         self.skills: dict[str, Skill] = {}
         self.handlers: dict[str, Callable] = {}
-        self.rng = rng or Random()
 
     def load(self, path: Path) -> None:
         """Load skill definitions from a JSON file."""
