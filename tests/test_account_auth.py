@@ -79,6 +79,7 @@ from mud.commands.inventory import give_school_outfit
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import verify_password
 from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
+import mud.persistence as _persistence
 from mud.wiznet import WiznetFlag
 
 TELNET_IAC = 255
@@ -88,6 +89,16 @@ TELNET_DO = 253
 TELNET_DONT = 254
 TELNET_GA = 249
 TELNET_TELOPT_ECHO = 1
+
+
+@pytest.fixture(autouse=True)
+def _isolate_players_dir(tmp_path):
+    """INV-008: redirect persistence.PLAYERS_DIR so save_character writes to
+    a throwaway directory instead of the real data/players/ tree."""
+    original = _persistence.PLAYERS_DIR
+    _persistence.PLAYERS_DIR = tmp_path / "players"
+    yield
+    _persistence.PLAYERS_DIR = original
 
 
 def strip_telnet(data: bytes) -> bytes:
@@ -1054,16 +1065,13 @@ def test_new_character_persists_true_sex():
     char.was_in_room = Room(vnum=ROOM_VNUM_SCHOOL, name="The School", description="")
     save_player_character(char)
 
-    session = SessionLocal()
-    try:
-        stored = session.query(Character).filter_by(name="Pelvex").first()
-        assert stored is not None
-        assert stored.room_vnum == ROOM_VNUM_SCHOOL
-    finally:
-        session.close()
+    # INV-008: the hybrid shim writes to JSON pfile, not the DB gameplay columns.
+    # Verify room persistence via the reloaded runtime character instead of the DB row.
 
     reloaded = load_player_character("Pelvex")
     assert reloaded is not None
+    assert reloaded.room is not None
+    assert reloaded.room.vnum == ROOM_VNUM_SCHOOL
     reloaded_pcdata = getattr(reloaded, "pcdata", None)
     assert reloaded_pcdata is not None
     assert reloaded_pcdata.true_sex == int(Sex.MALE)

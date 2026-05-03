@@ -1,43 +1,73 @@
+"""Account manager — thin shim delegating to mud.persistence (INV-008 hybrid).
+
+The JSON pfile (mud.persistence) is the single source of truth for ALL player
+gameplay state.  The DB row (mud.db.models.Character) owns auth only:
+  - ``name``   — lookup key
+  - ``password_hash`` — bcrypt/argon2 credential
+
+``load_character`` tries the JSON pfile first; if no JSON exists (legacy DB-only
+row or freshly-created character not yet saved), it falls back to ``from_orm``
+so the caller gets a valid runtime Character rather than None.  The next
+``save_character`` call promotes the row to JSON transparently.
+
+``save_character`` writes the JSON pfile via mud.persistence.  It does NOT
+update gameplay columns on the DB row — those are vestigial under the hybrid
+scheme.  The one exception: when ``pcdata.pwd`` has changed (e.g. do_password),
+the new hash is also written to ``db.password_hash`` so the auth path
+(account_service.login_character) which reads from the DB continues to work.
+
+ROM Reference: src/save.c fread_char / fwrite_char — the C engine's pfile is
+also the single source of truth; the only external auth store is the pfile
+itself (``password <hash>`` line).
+
+INV-008: DUAL-LOAD-CHARACTER-COHERENCE — consolidated by this module.
+"""
+
 from __future__ import annotations
 
-import json
-
+import mud.persistence as _persistence
 from mud.db.models import Character as DBCharacter
 from mud.db.session import SessionLocal
 from mud.models.character import Character, character_registry, from_orm
-from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
-from mud.models.conversion import (
-    load_objects_for_character,
-    save_objects_for_character,
-)
+from mud.models.conversion import load_objects_for_character
 
 
 def load_character(char_name: str, _ignored: str | None = None) -> Character | None:
-    """Load a character by name from the database.
+    """Load a character by name — JSON pfile first, DB fallback.
 
     The second argument is accepted but ignored for backward compatibility;
-    previously it was a username (account name).  Characters are now
-    standalone identities — mirroring ROM src/save.c:fread_char.
+    previously it was a username (account name).  Characters are standalone
+    identities — mirroring ROM src/save.c:fread_char.
 
-    The loaded character is appended to ``character_registry`` so the game
-    loop's per-pulse handlers (violence_tick, char_update, idle pump) iterate
-    them — mirroring ROM ``char_list`` membership, set in ``src/save.c`` after
-    ``fread_char`` succeeds. Without this, combat is one-way (mobs hit the PC
-    but the PC never swings back), HP regen never fires, and idle timeout
-    never trips.
+    Load order:
+    1. JSON pfile (mud.persistence.load_character) — full 51-field state.
+    2. DB row (from_orm) — legacy fallback for rows that have no pfile yet
+       (e.g. freshly created characters before their first save).
+
+    The loaded character is appended to ``character_registry`` (INV-003).
+    mud.persistence.load_character already does this for path 1; path 2
+    mirrors it explicitly.
     """
+    # Path 1: JSON pfile — canonical full-state load
+    char = _persistence.load_character(char_name)
+    if char is not None:
+        return char
+
+    # Path 2: DB-only fallback (legacy row / freshly created character)
     session = None
     try:
         session = SessionLocal()
         db_char = session.query(DBCharacter).filter(DBCharacter.name == char_name).first()
-        char = from_orm(db_char) if db_char else None
-        if char and db_char:
+        if db_char is None:
+            return None
+        char = from_orm(db_char)
+        if char is not None:
             char.inventory, char.equipment = load_objects_for_character(db_char)
-        if char is not None and char not in character_registry:
-            character_registry.append(char)
+            if char not in character_registry:
+                character_registry.append(char)
         return char
     except Exception as e:
-        print(f"[ERROR] Failed to load character {char_name}: {e}")
+        print(f"[ERROR] Failed to load character {char_name} from DB: {e}")
         return None
     finally:
         if session:
@@ -45,73 +75,32 @@ def load_character(char_name: str, _ignored: str | None = None) -> Character | N
 
 
 def save_character(character: Character) -> None:
+    """Persist ``character`` to the JSON pfile.
+
+    Also syncs ``password_hash`` to the DB row if ``pcdata.pwd`` is set, so
+    the auth path (account_service.login_character) which reads from the DB
+    stays consistent after a ``do_password`` call.
+    """
+    # Primary write: JSON pfile owns all gameplay state
+    _persistence.save_character(character)
+
+    # Secondary write: keep DB password_hash in sync with pcdata.pwd
+    pcdata = getattr(character, "pcdata", None)
+    if not pcdata:
+        return
+    pwd = getattr(pcdata, "pwd", "") or ""
+    if not pwd:
+        return
+
     session = None
     try:
         session = SessionLocal()
         db_char = session.query(DBCharacter).filter_by(name=character.name).first()
-        if not db_char:
-            print(f"[WARN] Character '{character.name}' not found in database, creating new record")
-            db_char = DBCharacter(name=character.name)
-            session.add(db_char)
-
-        if db_char:
-            db_char.level = character.level
-            db_char.hp = character.hit
-            db_char.race = int(character.race or 0)
-            db_char.ch_class = int(character.ch_class or 0)
-            pcdata = getattr(character, "pcdata", None)
-            true_sex_value = int(getattr(pcdata, "true_sex", getattr(character, "sex", 0)) or 0)
-            db_char.true_sex = true_sex_value
-            db_char.sex = int(character.sex or true_sex_value or 0)
-            db_char.alignment = int(character.alignment or 0)
-            db_char.act = int(getattr(character, "act", 0) or 0)
-            db_char.hometown_vnum = int(character.hometown_vnum or 0)
-            db_char.perm_stats = json.dumps([int(val) for val in character.perm_stat])
-            db_char.size = int(character.size or 0)
-            db_char.form = int(character.form or 0)
-            db_char.parts = int(character.parts or 0)
-            db_char.imm_flags = int(character.imm_flags or 0)
-            db_char.res_flags = int(character.res_flags or 0)
-            db_char.vuln_flags = int(character.vuln_flags or 0)
-            db_char.practice = int(character.practice or 0)
-            db_char.train = int(character.train or 0)
-
-            # Save perm stats from pcdata (ROM src/handler.c stores perm_hit/perm_mana/perm_move)
-            if pcdata:
-                db_char.perm_hit = int(getattr(pcdata, "perm_hit", character.max_hit or 20))
-                db_char.perm_mana = int(getattr(pcdata, "perm_mana", character.max_mana or 100))
-                db_char.perm_move = int(getattr(pcdata, "perm_move", character.max_move or 100))
-            else:
-                db_char.perm_hit = int(character.max_hit or 20)
-                db_char.perm_mana = int(character.max_mana or 100)
-                db_char.perm_move = int(character.max_move or 100)
-
-            # Persist password hash if available on runtime character
-            if pcdata:
-                pwd = getattr(pcdata, "pwd", None) or ""
-                if pwd and not getattr(db_char, "password_hash", ""):
-                    db_char.password_hash = pwd
-
-            db_char.default_weapon_vnum = int(character.default_weapon_vnum or 0)
-            db_char.creation_points = int(getattr(character, "creation_points", 0) or 0)
-            db_char.creation_groups = json.dumps(list(getattr(character, "creation_groups", ())))
-            db_char.newbie_help_seen = bool(getattr(character, "newbie_help_seen", False))
-            room = getattr(character, "room", None)
-            was_in_room = getattr(character, "was_in_room", None)
-            room_vnum = 0
-            if room is not None:
-                room_vnum = int(getattr(room, "vnum", 0) or 0)
-                if room_vnum == int(ROOM_VNUM_LIMBO) and was_in_room is not None:
-                    room_vnum = int(getattr(was_in_room, "vnum", 0) or 0)
-            elif was_in_room is not None:
-                room_vnum = int(getattr(was_in_room, "vnum", 0) or 0)
-            if room_vnum <= 0:
-                room_vnum = int(ROOM_VNUM_TEMPLE)
-            db_char.room_vnum = room_vnum
-            save_objects_for_character(session, character, db_char)
+        if db_char is not None and getattr(db_char, "password_hash", "") != pwd:
+            db_char.password_hash = pwd
             session.commit()
     except Exception as e:
-        print(f"[ERROR] Failed to save character {character.name}: {e}")
+        print(f"[WARN] Failed to sync password_hash to DB for {character.name}: {e}")
     finally:
         if session:
             session.close()

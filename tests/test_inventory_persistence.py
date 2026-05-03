@@ -1,3 +1,4 @@
+import mud.persistence as persistence
 from mud.account.account_manager import load_character, save_character
 from mud.db.models import Base
 from mud.db.session import engine
@@ -5,6 +6,9 @@ from mud.world import create_test_character, initialize_world
 
 
 def test_inventory_and_equipment_persistence(tmp_path, inventory_object_factory):
+    # Redirect pfile writes to a throwaway directory (INV-008 hybrid: JSON is primary)
+    persistence.PLAYERS_DIR = tmp_path / "players"
+
     # use fresh in-memory sqlite database
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

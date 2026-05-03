@@ -9,6 +9,7 @@ ROM Reference: src/nanny.c:742-802 (CON_READ_MOTD - final character initializati
 
 from __future__ import annotations
 
+import mud.persistence as _persistence
 import pytest
 
 from mud.account.account_manager import load_character
@@ -43,14 +44,18 @@ def setup_world():
 
 
 @pytest.fixture(autouse=True)
-def cleanup_db():
+def cleanup_db(tmp_path):
     """Clean up database before each test."""
+    # INV-008: redirect pfile writes so save_character never touches data/players/
+    original_players_dir = _persistence.PLAYERS_DIR
+    _persistence.PLAYERS_DIR = tmp_path / "players"
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()
     clear_active_accounts()
     reset_lockdowns()
     yield
+    _persistence.PLAYERS_DIR = original_players_dir
 
 
 def create_and_load_character(username: str, password: str, char_name: str, **create_kwargs) -> Character | None:
