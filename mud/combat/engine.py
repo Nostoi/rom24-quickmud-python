@@ -215,11 +215,18 @@ def _push_message(character: Character | None, message: str) -> None:
     if character is None:
         return
     # Direct delivery — mirroring ROM C write_to_buffer(desc, buf, 0).
+    # Connected PCs receive messages exclusively via the async send; the
+    # mailbox is a fallback for tests and disconnected characters only.
+    # Appending to both caused duplicate delivery: the connection read
+    # loop in mud/net/connection.py also drains char.messages after every
+    # command, so any combat message would replay on the next prompt.
+    # See docs/divergences/MESSAGE_DELIVERY.md.
     writer = getattr(character, "connection", None)
     if writer is not None:
         from mud.net.protocol import send_to_char as _send
 
         asyncio.create_task(_send(character, message))
+        return
     # Queue fallback for tests and disconnected characters.
     mailbox = getattr(character, "messages", None)
     if isinstance(mailbox, list):

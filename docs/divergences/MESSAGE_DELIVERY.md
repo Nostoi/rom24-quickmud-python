@@ -46,14 +46,28 @@ This is implemented in `mud/combat/engine.py:_push_message()`:
 ```python
 def _push_message(character, message):
     # Direct delivery — mirroring ROM C write_to_buffer(desc, buf, 0).
+    # Connected PCs receive messages exclusively via the async send;
+    # the mailbox is a fallback only when no connection is attached.
     writer = getattr(character, "connection", None)
     if writer is not None:
         asyncio.create_task(send_to_char(character, message))
+        return
     # Queue fallback for tests and disconnected characters.
     mailbox = getattr(character, "messages", None)
     if isinstance(mailbox, list):
         mailbox.append(message)
 ```
+
+**Important:** an earlier revision appended to `char.messages`
+unconditionally (no `return` after the async dispatch), which combined
+with the unconditional drain in `mud/net/connection.py` to deliver
+every combat message TWICE to connected players — once via the async
+task during the tick, once via the read-loop drain on the next
+command. The duplicate "You have been KILLED!!" symptom on PC death
+in WebSocket sessions traces to that bug. The contract is now: one
+delivery channel per character, never both. Tests that need to
+inspect the mailbox must construct the character without a
+`connection` attribute (the standard test pattern).
 
 Room broadcasts use `mud/net/protocol.py:broadcast_room()` (same pattern).
 
