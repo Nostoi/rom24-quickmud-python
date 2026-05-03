@@ -87,6 +87,38 @@ be the primary delivery mechanism for combat output.  Use `_push_message()` from
 
 Full rationale: [`docs/divergences/MESSAGE_DELIVERY.md`](docs/divergences/MESSAGE_DELIVERY.md).
 
+### Cross-File Invariants
+
+The per-file audit (`/rom-parity-audit`) checks one ROM C file
+against its Python equivalent function-by-function. That methodology
+is necessary but **not sufficient** — it misses contracts that span
+modules: single-delivery of messages, `character_registry`
+membership, prompt-render-after-`raw_kill` ordering, and so on. Three
+production bugs shipped this year against files marked ≥95% audited
+because the broken contract lived in code outside the audited file.
+
+These contracts are tracked in
+[`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`](docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md)
+with stable IDs (INV-NNN) and one enforcement test each.
+
+**When you audit, close, or extend a file:**
+
+1. Skim the cross-file tracker. If any INV touches the surface you're
+   working on, run its enforcement test before claiming the work done.
+2. If the gap you fix touches code in a different module than the
+   audit's "primary" Python file, add a line to the relevant INV's
+   "Touched by" trail in the tracker so the call chain stays visible.
+3. If a NEW invariant surfaces (root cause of a bug crosses files),
+   add the next free INV-NNN with: name, ROM mechanism, Python
+   enforcement point, regression test, status. Keep the list small —
+   if it grows past ~20 entries, the per-file methodology itself
+   needs revisiting.
+
+The point is not to re-audit every file under the new lens; it's to
+enumerate the contracts once, lock each one with a test, and
+reference those tests from the per-file rows. The
+`/rom-parity-audit` skill's Phase 2 calls this out explicitly.
+
 ---
 
 ## Build / Lint / Test
@@ -172,6 +204,7 @@ but ROM `magic.c:3022-3030` explicitly anti-stacks.)
 | File | Purpose | When to update |
 |------|---------|----------------|
 | `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` | Per-file ROM C audit status (43 files) | Any audit work |
+| `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` | Cross-module contracts (INV-NNN: SINGLE-DELIVERY, REGISTRY-MEMBERSHIP, PROMPT-CLAMP, …) — what per-file audits miss | Whenever a bug's root cause crosses module boundaries, or when an audit touches a file referenced by an INV |
 | `docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md` | Coverage of 21 gameplay systems | Adding integration tests |
 | `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` | Feature-level parity backlog | Implementing parity features |
 | `docs/parity/ACT_OBJ_C_AUDIT.md`, `ACT_INFO_C_AUDIT.md`, etc. | Per-file gap tables (GET-001, PUT-002, …) | Closing specific gaps |

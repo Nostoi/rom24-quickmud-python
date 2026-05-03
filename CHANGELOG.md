@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Cross-File Invariants tracker** (`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`): new top-level parity doc enumerating contracts the per-file audit methodology can't enforce on its own (single-delivery, registry membership, prompt-render-after-raw_kill, etc.). Eight INV-NNN entries seeded from this year's bug history; each has a stable ID, ROM mechanism, Python enforcement point, and regression test (or an action-item placeholder when the test is still missing).
+- **AGENTS.md "Cross-File Invariants" section**: methodology note explaining what per-file audits miss and how to use the new tracker. Tracker added to the "Trackers" table.
+- **rom-parity-audit skill update**: Phase 2 now requires following the call chain across module boundaries and consulting the cross-file invariants tracker; Phase 5 requires citing relevant INV-NNN statuses in each tracker row's Notes column ("Audited (per-file)" replaces bare "Audited").
+
+### Changed
+- `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`: `comm.c`, `fight.c`, and `save.c` rows annotated with the cross-file invariants they touch and the bugs the per-file audit missed (single-delivery, prompt clamp, registry membership). Per-file ratings preserved; the new annotations make the audit's actual coverage explicit.
+
+
 ## [2.7.3]
 
 ### Fixed

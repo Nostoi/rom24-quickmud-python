@@ -41,6 +41,24 @@ For each P0/P1 function:
    - **Pre-checks skipped** — drunk/full/thirst pre-checks before the main op.
    - **Affect calculations** — duration, level, modifier, location must match ROM exactly.
 3. Citing line ranges (`src/<file>.c:NNN-MMM`) is mandatory.
+4. **Follow the call chain across module boundaries.** If the Python
+   counterpart delegates to another module (e.g. `_handle_death`
+   calls `raw_kill` which calls `stop_fighting` which sweeps
+   `character_registry`), audit those callees too — at least to the
+   depth that matches what the ROM C function relies on. Stopping at
+   the module boundary is how cross-file bugs ship.
+5. **Check the cross-file invariants tracker.** Open
+   `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` and skim it. If
+   any INV-NNN touches the surface you're auditing (file path,
+   function name, or contract category), run its enforcement test
+   and confirm green before marking gaps closed. If the contract
+   exists but no test does, write one — the audit isn't done until
+   the invariant is mechanically verifiable.
+6. **If you find a NEW cross-file invariant during the audit** (a
+   contract that ROM enforces structurally and Python could plausibly
+   break across modules), add it to
+   `CROSS_FILE_INVARIANTS_TRACKER.md` with the next free INV-NNN
+   before continuing. Stable IDs forever — never renumber.
 
 ### Phase 3 — Gap identification
 
@@ -68,11 +86,12 @@ Critical gaps with HIGH/CRITICAL `gitnexus_impact` results MUST be reported to t
 
 When all P0/P1 gaps are closed:
 
-1. Flip the tracker row in `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` to ✅ AUDITED with the new percentage.
-2. Update the file's status block at the top of the tracker (e.g. "act_obj.c Status: ✅ 100% COMPLETE").
-3. Update CHANGELOG.md under `[Unreleased]` with `Added` / `Fixed` lines per gap closed.
-4. Hand off to **rom-session-handoff** to write `docs/sessions/SESSION_SUMMARY_<date>_<file>.md` and refresh `SESSION_STATUS.md`.
-5. Bump `pyproject.toml` patch version (per AGENTS.md Repo Hygiene).
+1. Flip the tracker row in `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` to ✅ AUDITED (per-file) with the new percentage. **Use the "(per-file)" qualifier** — bare ✅ AUDITED is reserved for rows whose cross-file invariants are also enforced by tests.
+2. **Cite cross-file invariants in the row's Notes column.** For every INV-NNN that touches the audited file, add it to the row with its current status (e.g. "INV-001 ✅, INV-005 ⚠️ no test"). If the audit verified an invariant manually, that is a ⚠️, not a ✅ — only enforcement tests promote to ✅.
+3. Update the file's status block at the top of the tracker (e.g. "act_obj.c Status: ✅ 100% COMPLETE").
+4. Update CHANGELOG.md under `[Unreleased]` with `Added` / `Fixed` lines per gap closed.
+5. Hand off to **rom-session-handoff** to write `docs/sessions/SESSION_SUMMARY_<date>_<file>.md` and refresh `SESSION_STATUS.md`.
+6. Bump `pyproject.toml` patch version (per AGENTS.md Repo Hygiene).
 
 ## Audit doc skeleton
 
