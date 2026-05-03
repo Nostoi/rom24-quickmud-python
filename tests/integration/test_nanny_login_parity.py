@@ -339,6 +339,7 @@ def test_character_login_disconnects_on_wrong_password(monkeypatch):
     """
     import asyncio
 
+    from mud.account.account_service import LoginFailureReason, LoginResult
     from mud.net import connection as connection_mod
 
     sent: list[str] = []
@@ -371,7 +372,16 @@ def test_character_login_disconnects_on_wrong_password(monkeypatch):
     monkeypatch.setattr(connection_mod, "_prompt", fake_prompt)
     monkeypatch.setattr(connection_mod, "_send_line", fake_send_line)
     monkeypatch.setattr(connection_mod, "character_exists", lambda _name: True, raising=False)
-    monkeypatch.setattr(connection_mod, "login_character", lambda _name, _pw: None, raising=False)
+    monkeypatch.setattr(
+        connection_mod,
+        "login_with_host",
+        lambda _name, _pw, _host, allow_reconnect=False: LoginResult(
+            None,
+            LoginFailureReason.BAD_CREDENTIALS,
+            allow_reconnect,
+        ),
+        raising=False,
+    )
 
     result = asyncio.run(connection_mod._run_character_login(FakeStream(), None))
 

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.2]
+
+### Fixed
+- Restore `version` field in `pyproject.toml` (accidentally dropped in `cdcd0cc`).
+- Combat one-way bug: `mud/account/account_manager.load_character` now appends loaded PCs to `character_registry` so `violence_tick`/`char_update`/idle pump iterate them. Mirrors ROM `src/save.c:fread_char` `char_list` membership.
+- World mob spawning: regenerated `resets` for 46 of 54 JSON area files via `scripts/patch_json_resets.py` so the school arena and other populated areas spawn ROM mobs on boot.
+- BOARD-010: `note read again` is now a no-op (ROM `src/board.c:569-572`).
+
+### Changed
+- Reconciled `BOARD_C_AUDIT.md`, `OLC_C_AUDIT.md`, and `ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` against current implementation; folded several stale-test fixes (`test_save_load_parity`, `test_olc_alist`, `test_spell_affects_persistence`, `test_tables_001_affect_migration`, `test_nanny_login_parity`, `test_fighting_state`, `test_olc_save`) and added `tests/test_obj_loader.py`.
+- Session summaries added under `docs/sessions/` for the 2026-05-02 work (combat triage, board audit, OLC audit, asave cleanup, broad-suite triage / JSON itemtype fix).
+
+
 ### Fixed
 - **OLC-004/005**: Active OLC editors now support ROM-style `commands` listings with five fixed-width columns, mirroring `src/olc.c:153-209`.
 - **OLC-010/015**: `do_olc` / `editor_table[]` ported — `olc <area|room|object|mobile|mpcode|hedit>` now dispatches to the real per-editor entry points via prefix matching (`str_prefix` parity), NPC guard, and remainder-arg forwarding, mirroring ROM `src/olc.c:646-690`. Both `olc` and `edit` command aliases are live. Integration tests: `tests/integration/test_olc_010_015_do_olc_router.py` (14 cases).

@@ -646,7 +646,7 @@ def stop_fighting(ch: Character, both: bool = True) -> None:
             return Position.STANDING
 
     candidates = list(character_registry)
-    if ch not in candidates:
+    if not any(candidate is ch for candidate in candidates):
         candidates.append(ch)
 
     for fighter in candidates:

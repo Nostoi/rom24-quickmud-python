@@ -14,11 +14,38 @@ from __future__ import annotations
 
 import pytest
 
-from mud.commands.dispatcher import process_command
 from mud.config import get_pulse_tick
 from mud.game_loop import game_tick
-from mud.models.character import Character, SpellEffect
+from mud.models.character import SpellEffect, character_registry
 from mud.models.constants import AffectFlag
+
+
+@pytest.fixture(autouse=True)
+def _isolate_spell_affect_tests():
+    """Clear leaked character/world state between spell-affect integration tests."""
+    import mud.game_loop as gl
+    from mud.config import get_pulse_area, get_pulse_mobile, get_pulse_music, get_pulse_tick, get_pulse_violence
+
+    def _clear_registry() -> None:
+        for char in list(character_registry):
+            room = getattr(char, "room", None)
+            if room is not None and hasattr(room, "people") and char in room.people:
+                room.people.remove(char)
+        character_registry.clear()
+
+    def _reset_counters() -> None:
+        gl._pulse_counter = 0
+        gl._point_counter = get_pulse_tick()
+        gl._area_counter = get_pulse_area()
+        gl._music_counter = get_pulse_music()
+        gl._mobile_counter = get_pulse_mobile()
+        gl._violence_counter = get_pulse_violence()
+
+    _clear_registry()
+    _reset_counters()
+    yield
+    _clear_registry()
+    _reset_counters()
 
 
 def run_point_pulses(count: int = 1) -> None:
@@ -281,7 +308,7 @@ class TestDispelMagic:
         When: Dispel magic cast at high level
         Then: At least one affect removed (probabilistic, but high level ensures success)
         """
-        from mud.skills.handlers import armor, bless, giant_strength, dispel_magic
+        from mud.skills.handlers import armor, bless, dispel_magic, giant_strength
 
         char = test_player
         char.level = 10

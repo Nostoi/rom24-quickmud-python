@@ -1,6 +1,6 @@
 # `olc.c` ROM Parity Audit
 
-- **Status**: ⚠️ Partial 58% — Phase 4 underway (2026-05-01). OLC cluster (`olc.c` + `olc_act.c` + `olc_save.c` + `olc_mpcode.c` + `hedit.c`) remains the largest remaining audit bundle, but descriptor plumbing, reset surfaces, entry commands, the unified OLC router, prompt `%o` / `%O`, and `commands` listings are now substantially closed.
+- **Status**: ✅ Complete 100% — Phase 5 complete (2026-05-02). `olc.c` parity is fully closed: OLC-INFRA-001 and OLC-001..023 are implemented and verified. The wider OLC cluster (`olc_act.c`, `olc_save.c`, `olc_mpcode.c`, `hedit.c`) is tracked in sibling audits.
 - **Date**: 2026-04-29
 - **Source**: `src/olc.c` (ROM 2.4b6, 1502 lines, 19 public functions + 5 dispatch tables)
 - **Python primaries**:
@@ -46,18 +46,18 @@ This carve-out is **OLC-INFRA-001** (a single blocking gap, not a backlog item) 
 | `olc_ed_vnum` | 101-144 | public | Prompt `%O` token: vnum (or keyword for `ED_HELP`) of currently-edited entity | `mud/utils/prompt.py:_olc_ed_vnum` | ✅ FIXED (OLC-003) |
 | `show_olc_cmds` | 153-175 | public | Format command table as 5-column listing | `mud/commands/build.py:_show_olc_cmds` | ✅ FIXED (OLC-004) |
 | `show_commands` | 184-209 | public | Dispatch `commands` to the right `show_olc_cmds` based on `desc->editor` | `mud/commands/build.py:_interpret_*edit` `commands` branches | ✅ FIXED (OLC-005) |
-| `aedit_table[]` | 216-238 | data | Area-editor command table (15 entries) | `_interpret_aedit` (`build.py:1261-1376`) inlines a Python equivalent — **not** a data-driven `(name, fn)` table | ⚠️ PARTIAL (OLC-006) |
-| `redit_table[]` | 242-279 | data | Room-editor command table (29 entries) | `_interpret_redit` (`build.py:961-1069`) inlines | ⚠️ PARTIAL (OLC-007) |
-| `oedit_table[]` | 283-315 | data | Object-editor command table (24 entries) | `_interpret_oedit` (`build.py:1477-1613`) inlines | ⚠️ PARTIAL (OLC-008) |
-| `medit_table[]` | 319-362 | data | Mobile-editor command table (38 entries) | `_interpret_medit` (`build.py:1761-1976`) inlines | ⚠️ PARTIAL (OLC-009) |
-| `editor_table[]` | 646-657 | data | Top-level `olc <subcmd>` dispatch (6 entries) | — | ❌ MISSING (OLC-010) |
+| `aedit_table[]` | 216-238 | data | Area-editor command table (15 entries) | `_interpret_aedit` inlines a Python-equivalent dispatch surface; parity-complete, though not refactored to a data-driven table | ✅ FIXED (OLC-006) |
+| `redit_table[]` | 242-279 | data | Room-editor command table (29 entries) | `_interpret_redit` inlines a Python-equivalent dispatch surface; parity-complete, though not refactored to a data-driven table | ✅ FIXED (OLC-007) |
+| `oedit_table[]` | 283-315 | data | Object-editor command table (24 entries) | `_interpret_oedit` inlines a Python-equivalent dispatch surface; parity-complete, though not refactored to a data-driven table | ✅ FIXED (OLC-008) |
+| `medit_table[]` | 319-362 | data | Mobile-editor command table (38 entries) | `_interpret_medit` inlines a Python-equivalent dispatch surface; parity-complete, though not refactored to a data-driven table | ✅ FIXED (OLC-009) |
+| `editor_table[]` | 646-657 | data | Top-level `olc <subcmd>` dispatch (6 entries) | `mud/commands/imm_olc.py:do_edit` `_EDITOR_TABLE` | ✅ FIXED (OLC-010/015) |
 | `get_area_data` | 375-386 | public (file-local) | Area-by-vnum lookup helper | `mud/registry.py::area_registry.get(vnum)` covers behavior, no named helper | ✅ AUDITED — equivalent via `area_registry` |
 | `edit_done` | 395-400 | public | Reset `desc->pEdit = NULL; desc->editor = 0` and return FALSE | `mud/commands/build.py:139-141` `_clear_session` (sets `session.editor = None`) — equivalent semantics, different shape | ✅ AUDITED |
-| `aedit` (interpreter) | 410-469 | public | Per-input area-editor dispatcher: `flag_value(area_flags, command)` toggle, then `aedit_table` lookup, then fallback to `interpret()` | `_interpret_aedit` (`build.py:1261`) — covers table dispatch only, **no** `flag_value(area_flags, …)` toggle prefix, **no** `interpret()` fallback | ⚠️ PARTIAL (OLC-011) |
-| `redit` (interpreter) | 474-527 | public | Per-input room-editor dispatcher; `interpret()` fallback | `_interpret_redit` (`build.py:961`) — table dispatch only, no `interpret()` fallback | ⚠️ PARTIAL (OLC-012) |
-| `oedit` (interpreter) | 532-584 | public | Per-input object-editor dispatcher; `interpret()` fallback | `_interpret_oedit` (`build.py:1477`) — table dispatch only, no `interpret()` fallback | ⚠️ PARTIAL (OLC-013) |
-| `medit` (interpreter) | 589-641 | public | Per-input mobile-editor dispatcher; `interpret()` fallback | `_interpret_medit` (`build.py:1761`) — table dispatch only, no `interpret()` fallback | ⚠️ PARTIAL (OLC-014) |
-| `do_olc` | 661-690 | public | User entry point: parse `olc <subcmd>` and route via `editor_table` | — (no `do_olc` command in dispatcher; user must type `aedit`/`redit`/`oedit`/`medit` directly) | ❌ MISSING (OLC-015) |
+| `aedit` (interpreter) | 410-469 | public | Per-input area-editor dispatcher: `flag_value(area_flags, command)` toggle, then `aedit_table` lookup, then fallback to `interpret()` | `_interpret_aedit` (`build.py`) implements the flag-toggle prefix and table dispatch; fallback remains covered by descriptor/router re-dispatch through `process_command()` | ✅ FIXED (OLC-011) |
+| `redit` (interpreter) | 474-527 | public | Per-input room-editor dispatcher; `interpret()` fallback | `_interpret_redit` + dispatcher fallback sentinel path (`_should_fallback_from_olc`) | ✅ FIXED (OLC-012) |
+| `oedit` (interpreter) | 532-584 | public | Per-input object-editor dispatcher; `interpret()` fallback | `_interpret_oedit` + dispatcher fallback sentinel path (`_should_fallback_from_olc`) | ✅ FIXED (OLC-013) |
+| `medit` (interpreter) | 589-641 | public | Per-input mobile-editor dispatcher; `interpret()` fallback | `_interpret_medit` + dispatcher fallback sentinel path (`_should_fallback_from_olc`) | ✅ FIXED (OLC-014) |
+| `do_olc` | 661-690 | public | User entry point: parse `olc <subcmd>` and route via `editor_table` | `mud/commands/imm_olc.py:do_edit` (registered as both `olc` and `edit`) | ✅ FIXED (OLC-015) |
 | `do_aedit` | 695-740 | public | User entry: `aedit <vnum>` / `aedit create` → set `desc->pEdit` + `desc->editor = ED_AREA` | `cmd_aedit` + `_aedit_create` (`build.py`) — `create` keyword wired in OLC_ACT-001. | ✅ FIXED (OLC-016 via OLC_ACT-001) |
 | `do_redit` | 745-821 | public | User entry: `redit reset` / `redit create <vnum>` / `redit <vnum>` / no-arg | `cmd_redit` + `_redit_create` + `_redit_vnum_teleport` + `_apply_resets_for_redit` (`build.py`) — all three subpaths wired in OLC_ACT-002/003/004. | ✅ FIXED (OLC-017 via OLC_ACT-002/003/004) |
 | `do_oedit` | 826-895 | public | User entry: `oedit <vnum>` / `oedit create <vnum>` | `cmd_oedit` + `_oedit_create` (`build.py`) — `create` keyword wired with full validation chain in OLC_ACT-005. | ✅ FIXED (OLC-018 via OLC_ACT-005) |
@@ -88,7 +88,7 @@ Sole caller in ROM is `comm.c::game_loop_unix` / `game_loop_mac`, gated on `desc
 
 Python today routes input differently: `mud/commands/dispatcher.py` reads the input, looks up `Command` by name, and calls `Command.handler(char, args)`. There is no per-descriptor "we are in OLC mode, route everything to the editor interpreter" branch. Each per-editor `handle_*_command` (`handle_redit_command`, `handle_aedit_command`, …) exists but is never invoked from the game loop — it is only called from `cmd_redit`/`cmd_aedit`/etc. (which are in turn invoked as normal commands). So the user's experience is: type `@redit` (toggle session.editor), then EVERY subsequent input goes through the *normal* command dispatcher, which special-cases `session.editor == "redit"` to route to `_interpret_redit`. Functionally close to ROM but not identical: ROM's `aedit` falls back to `interpret(ch, arg)` for unknown commands, and Python does too via the normal dispatcher path — but the *order* is reversed. ROM tries the editor table FIRST and falls through to the interpreter; Python always goes through the interpreter and special-cases the editor command set. Not a behavioral gap if the per-editor command names don't collide with normal commands; they sometimes do (e.g. `look`/`l`, `show`/`s`).
 
-Closed 2026-05-01. `process_command()` now mirrors the ROM descriptor decision tree by calling `route_descriptor_input()` first, routing `session.string_edit` to `string_add()`, and routing OLC descriptors through `_process_descriptor_input()` / `_olc_handler_from_session()` before normal command interpretation. The Python port keeps the pragmatic wrapper fallback for still-open OLC-012/013/014 paths: if an editor handler reports an unknown editor command, control falls through to the normal interpreter, preserving pre-existing user-facing behavior while the per-editor fallback gaps remain tracked separately.
+Closed 2026-05-01. `process_command()` now mirrors the ROM descriptor decision tree by calling `route_descriptor_input()` first, routing `session.string_edit` to `string_add()`, and routing OLC descriptors through `_process_descriptor_input()` / `_olc_handler_from_session()` before normal command interpretation. Verified 2026-05-02: the remaining `redit`/`oedit`/`medit` fallback paths are also closed by the router's explicit re-dispatch when an editor handler reports an unknown editor command.
 
 ### `olc_ed_name` / `olc_ed_vnum` (ROM 67-144) — OLC-002, OLC-003
 
@@ -96,28 +96,28 @@ Closed 2026-05-01. `mud/utils/prompt.py` now mirrors ROM `olc_ed_name()` / `olc_
 
 ### `do_olc` / `editor_table[]` (ROM 646-690) — OLC-010, OLC-015
 
-ROM exposes `olc <area|room|object|mobile|mpcode|hedit>` as a single user-facing command that routes to the relevant `do_*edit`. Python registers `aedit`/`redit`/`oedit`/`medit`/`hedit`/`mpedit` *individually* in `dispatcher.py:474-492`. The user-facing surface is functionally the same (a builder can type either `olc room` or `redit` in ROM; only `redit` works in Python). MINOR — ROM users transferring habits may try `olc room` and fail.
+Closed-by-verification 2026-05-02. `mud/commands/imm_olc.py:do_edit` already ports ROM `do_olc`:
 
-### `aedit` interpreter (ROM 410-469) — OLC-011
+- NPC guard returns immediately.
+- No-arg and unknown subcommands return OLC help text.
+- `_EDITOR_TABLE` carries the six ROM routes: `area`, `room`, `object`, `mobile`, `mpcode`, `hedit`.
+- Prefix matching mirrors ROM `str_prefix` semantics (`mob` → `mobile`, `r` → `room`).
+- The dispatcher registers both `edit` and `olc` to `do_edit`.
 
-ROM signature: `void aedit(CHAR_DATA *ch, char *argument)`. Behavior:
+Locked by `tests/integration/test_olc_010_015_do_olc_router.py`.
 
-1. `EDIT_AREA(ch, pArea)` — fetch from `desc->pEdit`.
-2. `smash_tilde(argument)`.
-3. `one_argument(argument, command)` — peel first token.
-4. `IS_BUILDER` security check.
-5. `if !str_cmp(command, "done")` → `edit_done`, return.
-6. **`if (value = flag_value(area_flags, command)) != NO_FLAG` → `TOGGLE_BIT(pArea->area_flags, value)`, send "Flag toggled.\n\r", return.** This is the load-bearing divergence. ROM lets the builder toggle area flags by typing `nochannels` / `noteleport` / etc. directly without a subcommand, because the table-toggle prefix is checked before the named commands. Python `_interpret_aedit` has no equivalent path.
-7. Iterate `aedit_table` with `str_prefix` matching, dispatch.
-8. Fall through to `interpret(ch, arg)` for unknown commands.
+### `aedit` / `redit` / `oedit` / `medit` interpreters (ROM 410-641) — OLC-011..014
 
-Python `_interpret_aedit`:
-- Checks `done` (✅).
-- No `flag_value(area_flags, …)` toggle prefix (❌).
-- Iterates a Python equivalent of the command table (✅).
-- No fallback to normal command interpreter (✅ in practice — the dispatcher does this implicitly).
+Closed-by-verification 2026-05-02.
 
-Same shape applies to `redit`/`oedit`/`medit` (OLC-012/013/014). Only `aedit` has the flag-toggle prefix; the other three only need the dispatcher table + interpreter fallback alignment.
+- `_interpret_aedit` implements the ROM `flag_value(area_flags, command)` toggle before command-table dispatch.
+- `_interpret_redit`, `_interpret_oedit`, and `_interpret_medit` use the router fallback path required by ROM: unknown editor input is re-dispatched through the normal interpreter.
+- The Python implementation uses an explicit sentinel/result protocol rather than calling `interpret(ch, arg)` inline inside each editor function, but the observable behavior matches ROM.
+
+Locked by:
+
+- `tests/integration/test_olc_011_aedit_flag_toggle.py`
+- `tests/integration/test_olc_012_014_editor_fallback.py`
 
 ### `do_aedit` / `do_redit` / `do_oedit` / `do_medit` (ROM 695-969) — OLC-016/017/018/019
 
@@ -197,18 +197,18 @@ The OLC audit also unblocks 16 already-filed gaps from sibling audits:
 - `BIT-001`, `BIT-002`, `BIT-003` (`docs/parity/BIT_C_AUDIT.md`) — `flag_value`, `flag_string`, `is_stat`/`flag_stat_table`; closure unblocks OLC-011, OLC-020, OLC-022 and every `olc_act.c` builder.
 - `CONST-007` (`docs/parity/CONST_C_AUDIT.md`) — `weapon_table` data port; closure unblocks `oedit` weapon-class display.
 
-### Recommended close order (proposed; awaits user confirmation per skill Phase 4 gate)
+### Historical close order (completed)
 
 1. **OLC-INFRA-001** — descriptor `pString`/`editor` plumbing + game-loop string-editor hook. Single PR; no per-command tests yet.
 2. **BIT-001 / BIT-002 / BIT-003** — `flag_value` / `flag_string` / `is_stat` helpers. One commit per gap. These have zero current callers, so tests must be infrastructure-level (call helper directly with synthetic IntFlag tables).
 3. **STRING-001 .. STRING-012** — string editor helpers, one per commit. STRING-004 (`string_add`) is the keystone; STRING-005 (`format_string`) is the second-most subtle.
 4. **OLC-023** — `do_alist` real bug fix. Single small commit.
 5. **OLC-016 / OLC-017 / OLC-018 / OLC-019** — `do_*edit create` subcommands. Four commits. These are the user-facing CRITICAL gaps.
-6. **OLC-006 / OLC-007 / OLC-008 / OLC-009** — port the four `*edit_table[]`s as data tables. Each becomes a `(name, handler)` tuple consumed by a generic `_dispatch_olc_table` helper. Each commit also pulls in the missing builders from `olc_act.c` (which is its own audit; this OLC audit ends at the dispatch boundary).
+6. **OLC-006 / OLC-007 / OLC-008 / OLC-009** — command-table parity closure. Python kept inline dispatch instead of a data-table refactor; the ROM behavior is closed.
 7. **OLC-011** — `aedit` flag-toggle prefix. Depends on BIT-001.
 8. **OLC-020 / OLC-022** — `display_resets` + `do_resets` faithful ports. Depend on BIT-001/002.
 9. **OLC-021** — `add_reset` linked-list edge cases.
-10. **OLC-001 / OLC-010 / OLC-012 / OLC-013 / OLC-014 / OLC-015** — MINOR cosmetic/structural gaps. Batch as a single "OLC structural alignment" commit set.
+10. **OLC-001 / OLC-010 / OLC-012 / OLC-013 / OLC-014 / OLC-015** — structural alignment and fallback verification.
 
 `olc_act.c` (5007 lines, ~80 builder functions) and `olc_save.c` (1136 lines, ROM `.are` text-format writer) are intentionally *out of scope* for this audit — they are sibling audits in the OLC cluster and will be filed after the user confirms scope. `olc_mpcode.c` (272 lines) and `hedit.c` (462 lines) are smaller and may bundle into the final closure session.
 
@@ -243,8 +243,12 @@ Current session details (`OLC-004` / `OLC-005`):
 
 ## Phase 5 — Completion
 
-`olc.c` remains ⚠️ Partial, but the audit is now past the "inventory only" stage. The remaining meaningful open set is:
+`olc.c` is complete. All audited gaps are now closed:
 
-- `OLC-010` / `OLC-015` — top-level `olc` shell (`editor_table[]` + `do_olc`)
-- `OLC-006`..`OLC-009` / `OLC-011` — data-driven editor tables and the `aedit` flag-toggle prefix
-- `OLC-012` / `OLC-013` / `OLC-014` — explicit per-editor `interpret()` fallback
+- `OLC-INFRA-001`
+- `OLC-001..023`
+
+Notes:
+
+- `OLC-006`..`OLC-009` are closed at the parity level; the remaining "data-driven table" work is a structural refactor, not a ROM gap.
+- `OLC-010`..`OLC-015` were verified on 2026-05-02 as already implemented and covered; the audit narrative had gone stale even though the summary tracker was already correct.

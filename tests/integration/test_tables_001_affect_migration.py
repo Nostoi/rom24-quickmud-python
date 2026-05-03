@@ -16,9 +16,14 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 import mud.persistence as persistence
 from mud.models.character import character_registry
-from mud.models.constants import AffectFlag
+from mud.models.constants import AffectFlag, ItemType
+from mud.models.obj import ObjIndex
+from mud.models.object import Object
+from mud.registry import obj_registry
 from mud.world import create_test_character, initialize_world
 
 # Legacy (pre-TABLES-001) Python bit positions, hard-coded for parity.
@@ -28,6 +33,35 @@ _LEGACY_DETECT_GOOD = 1 << 10
 _LEGACY_HASTE = 1 << 23
 _LEGACY_SLOW = 1 << 24
 _LEGACY_PLAGUE = 1 << 25
+
+
+@pytest.fixture
+def registered_test_object_factory():
+    """Create temporary object prototypes for deterministic migration tests."""
+
+    created_vnums: list[int] = []
+
+    def _factory(vnum: int, *, name: str, short_descr: str, item_type: ItemType | int | str) -> Object:
+        proto = ObjIndex(
+            vnum=vnum,
+            name=name,
+            short_descr=short_descr,
+            description=f"{short_descr.capitalize()} is here.",
+            item_type=item_type,
+            value=[0, 0, 0, 0, 0],
+        )
+        obj_registry[vnum] = proto
+        created_vnums.append(vnum)
+        obj = Object(instance_id=None, prototype=proto)
+        obj.value = list(proto.value)
+        obj.contained_items = []
+        obj.affected = []
+        return obj
+
+    yield _factory
+
+    for vnum in created_vnums:
+        obj_registry.pop(vnum, None)
 
 
 def _save_then_mutate(tmp_path, name: str, mutator) -> None:
@@ -67,12 +101,17 @@ def test_legacy_pfile_affect_bits_translated(tmp_path):
     )
 
 
-def test_legacy_active_affect_bitvector_translated(tmp_path, inventory_object_factory):
+def test_legacy_active_affect_bitvector_translated(tmp_path, registered_test_object_factory):
     persistence.PLAYERS_DIR = tmp_path
     character_registry.clear()
     initialize_world("area/area.lst")
     char = create_test_character("LegacyObj", 3001)
-    sword = inventory_object_factory(3022)
+    sword = registered_test_object_factory(
+        3022,
+        name="sword",
+        short_descr="a wooden sword",
+        item_type=ItemType.WEAPON,
+    )
     char.add_object(sword)
     persistence.save_character(char)
 

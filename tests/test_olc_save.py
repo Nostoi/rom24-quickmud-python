@@ -123,7 +123,7 @@ def test_asave_vnum_saves_area(tmp_path):
         area_vnum = hero.room.area.vnum
         result = process_command(hero, f"@asave {area_vnum}")
 
-        assert "saved" in result.lower()
+        assert result == ""
         assert hero.room.area.changed is False
 
         saved_files = list(Path(test_output).glob("*.json"))

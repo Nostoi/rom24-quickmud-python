@@ -8,7 +8,7 @@
   - `mud/models/note.py` (`Note` dataclass)
   - `mud/commands/notes.py` (`do_board`, `do_note` and helpers)
   - `mud/models/character.py` `PCData.board_name` / `last_notes` / `in_progress`
-- **Status:** 🔄 IN PROGRESS — Phases 1–3 complete, gap closures in progress.
+- **Status:** ✅ AUDITED — Phases 1–5 complete. All concrete parity gaps are closed; `BOARD-014` remains deferred-by-design because QuickMUD has no ROM-style AFK note-writing plumbing.
 
 The Python implementation is structurally a port of the ROM/Erwin board system
 but executes against a JSON registry instead of ROM's per-board flat files,
@@ -150,21 +150,14 @@ mechanism (in-memory tells) that does not interact with the boards subsystem.
 | BOARD-004 | CRITICAL | `src/board.c:154-160` | `mud/models/board.py:102-114` | `Board.post` uses `time.time()` directly; lacks ROM `last_note_stamp` collision logic — same-second posts share a stamp and silently break the `> last_read` unread cursor. | ✅ FIXED |
 | BOARD-005 | CRITICAL | `src/board.c:444-460` | `mud/models/board.py:121-125` | `Board.unread_count` does not filter notes by recipient (`is_note_to`); leaks Personal/per-name notes into non-recipients' unread counts. | ✅ FIXED |
 | BOARD-006 | IMPORTANT | `src/board.c:758-769,793-798,828-832` | `mud/commands/notes.py:190-237` | `do_board` enumeration uses `can_read(trust)` instead of ROM's `unread_notes != BOARD_NOACCESS`; resolved transitively once BOARD-005 lands but the listing also needs to call the recipient-aware unread helper. | ✅ FIXED (subsumed by BOARD-005) |
-| BOARD-007 | MINOR | `src/board.c:790-812` | `mud/commands/notes.py:225-231` | `do_board <N>` numbers boards by accessible position, matching ROM once BOARD-006 is closed; no separate fix needed. | 🔄 OPEN (subsumed) |
+| BOARD-007 | MINOR | `src/board.c:790-812` | `mud/commands/notes.py:225-231` | `do_board <N>` numbers boards by accessible position, matching ROM once BOARD-006 is closed; no separate fix needed. | ✅ SUBSUMED |
 | BOARD-008 | CRITICAL | `src/board.c:365-383` | `mud/notes.py:23-32` | `load_boards` does not drop notes whose `expire < now` nor archive them to `<board>.old`. | ✅ FIXED |
 | BOARD-009 | MINOR | `src/board.c:436-437` | `mud/commands/notes.py:101-104` | ROM allows `to_list` to be a number meaning "trust ≥ that number"; Python checks the entire `to` field is digits. ROM is identical (`is_number(note->to_list) && get_trust(ch) >= atoi(note->to_list)`); no gap. | ✅ NO GAP |
 | BOARD-010 | MINOR | `src/board.c:569-572` | `mud/commands/notes.py:327-339` | `note read again` in ROM is a no-op (empty `if` body); Python returns "Read which note?". Cosmetic, deferred. | ✅ FIXED |
 | BOARD-011 | IMPORTANT | `src/board.c:482-488` | `mud/commands/notes.py:327-357` | ROM `do_nwrite` discards an `in_progress` draft whose `text` is NULL ("cancelled because you did not manage to write any text before losing link"); Python silently reuses any draft. | ✅ FIXED |
 | BOARD-012 | IMPORTANT | `src/board.c:707-737` | `mud/commands/notes.py:240-479` | `do_note` did not call `do_help "note"` for unknown subcommands; Python's fallthrough returned `"Huh?"`. Now mirrors ROM by dispatching to `do_help(ch, "note")`. (Vocabulary divergence on accepted verbs — `post`/`to`/`subject`/`text`/`send`/`expire` — remains intentional given no telnet state machine.) | ✅ FIXED |
 | BOARD-013 | CRITICAL | `src/board.c:843-886` | `mud/notes.py:make_note` / `personal_message` | `personal_message` / `make_note` programmatic posting API not exposed; subsystems cannot inject Personal-board notes. | ✅ FIXED |
-| BOARD-014 | MINOR | `src/board.c:49,1175-1182` | none | ROM AFK-flags the player while writing a note; no Python AFK plumbing in place. Architectural — deferred. | 🔄 DEFERRED |
-
-This session targets **BOARD-001 / BOARD-002 / BOARD-003 / BOARD-004 /
-BOARD-005 / BOARD-008** (the four CRITICALs plus the two TO_ROOM IMPORTANTs).
-BOARD-006 collapses into BOARD-005 once the unread helper is recipient-aware.
-BOARD-010 / BOARD-011 / BOARD-012 / BOARD-013 / BOARD-014 are documented and
-left for a follow-up session — none change visible counts/contents on a fresh
-install, only edge cases or out-of-scope architectural plumbing.
+| BOARD-014 | MINOR | `src/board.c:49,1175-1182` | none | ROM AFK-flags the player while writing a note; no Python AFK plumbing in place. Architectural — deferred-by-design. | ✅ DEFERRED |
 
 ---
 
@@ -187,4 +180,18 @@ install, only edge cases or out-of-scope architectural plumbing.
 
 ## Phase 5 — Closure
 
-Pending. Will be filled at session handoff.
+`board.c` is now audit-complete for QuickMUD's supported architecture.
+
+- **Closed gaps**: `BOARD-001..005`, `BOARD-008`, `BOARD-010..013`
+- **Subsumed / no-gap**: `BOARD-006`, `BOARD-007`, `BOARD-009`
+- **Deferred-by-design**: `BOARD-014` only
+
+Focused verification is green:
+
+- `pytest tests/test_boards.py tests/integration/test_boards_rom_parity.py -q` — `32 passed`
+
+The remaining deferred item is architectural rather than behavioral: ROM toggles
+AFK state while a player sits inside the interactive note editor, but QuickMUD
+uses request/response note subcommands instead of the telnet-state machine from
+`src/board.c`. That does not block parity for visible board behavior, unread
+counts, posting, archiving, default boards, or programmatic note injection.

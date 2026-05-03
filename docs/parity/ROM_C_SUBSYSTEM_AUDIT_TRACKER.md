@@ -38,18 +38,10 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### Current Audit Status
 
-**Overall**: ⚠️ **63% Audited** (27 audited, 6 partial, 7 not audited, 4 N/A) — bumped 2026-04-28 (lookup.c flipped to AUDITED after closing LOOKUP-001..008).  
-**handler.c Status**: 🎉 **100% COMPLETE** (74/74 handler.c functions implemented!) 🎉  
-**save.c Status**: 🎉 **100% COMPLETE** (8/8 functions, pet persistence implemented!) 🎉  
-**db.c Status**: 🎉 **100% COMPLETE** (44/44 functional functions implemented!) 🎉  
-**effects.c Status**: 🎉 **100% COMPLETE** (5/5 functions, all environmental damage!) 🎉  
-**act_info.c Status**: ✅ **100% COMPLETE!** 🎉 (38/38 functions - ALL P0/P1/P2/P3 done!) 🎉  
-**act_comm.c Status**: ✅ **100% P0-P1 COMPLETE!** 🎉 (34/36 functions - all critical gaps fixed!) 🎉  
-**act_move.c Status**: ✅ **85% COMPLETE - Phase 4 Done!** 🎉 (Door/portal/recall/train 100% parity, furniture deferred P2!) 🎉  
-**act_obj.c Status**: 🔄 **AUDIT IN PROGRESS!** (Phase 3 - 17%, do_get verified with 13 gaps) - See ACT_OBJ_C_AUDIT.md
-**healer.c Status**: ✅ **COMPLETE!** 🎉 (1/1 function, 4 gaps closed) — Apr 28, 2026
-**alias.c Status**: ✅ **COMPLETE!** 🎉 (4/4 functions, 5 gaps closed) — Apr 28, 2026
-**Last Updated**: April 30, 2026
+**Overall**: ✅ **100% audit-bound coverage** (40 audited, 0 partial, 0 not audited, 3 N/A).
+**Audit-bound files**: every ROM C file that applies to QuickMUD now has a completed audit document and a reconciled tracker row.
+**N/A files**: `recycle.c`, `mem.c`, `imc.c` remain intentionally out of scope for parity because Python GC / the alternate IMC implementation replace the ROM surfaces.
+**Last Updated**: May 2, 2026
 
 | File | Priority | Status | QuickMUD Module | Coverage | Notes |
 |------|----------|--------|-----------------|----------|-------|
@@ -90,7 +82,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Communication & Social** | | | | | |
 | `comm.c` | P3 | ✅ Audited | `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py`, `mud/utils/fix_sex.py`, `mud/net/ansi.py` | 95% | Non-networking surface fully audited (`COMM_C_AUDIT.md`); 8/9 gaps closed (COMM-001/002/003/004/006/007/008/009). COMM-005 (double-newbie sweep) deferred-by-design — overlaps the asyncio architectural carve-out. Networking layer (`main`, `init_socket`, `game_loop_*`, descriptor I/O) deferred-by-design. |
 | `nanny.c` | P3 | ✅ Audited | `mud/net/connection.py`, `mud/account/account_service.py`, `mud/account/account_manager.py`, `mud/handler.py` | 90% | Apr 29, 2026 — `NANNY_C_AUDIT.md` Phase 1–4 complete. 12/14 gaps closed (NANNY-001/002/003/004/005/006/007/008/011/012/013/014). NANNY-009 (`title_table` + `set_title`) deferred — 488-entry data port from `src/const.c:421-721`; deserves dedicated session. NANNY-010 (full descriptor sweep on CON_BREAK_CONNECT) deferred-by-design — Python's `SESSIONS` dict is keyed by name, structurally enforcing ROM's "close all duplicates" invariant. |
-| `board.c` | P2 | ⚠️ Partial | `mud/notes.py`, `mud/models/board.py`, `mud/commands/notes.py` | **97%** | 10 gaps closed (BOARD-001..005/008/010..013; BOARD-006 subsumed; BOARD-009 no-gap). Deferred: BOARD-014 (architectural — AFK plumbing). BOARD-010 FIXED 2026-05-02. See `docs/parity/BOARD_C_AUDIT.md`. |
+| `board.c` | P2 | ✅ Audited | `mud/notes.py`, `mud/models/board.py`, `mud/commands/notes.py` | **100%** | 2026-05-02 — board.c audit reconciled complete: BOARD-001..005/008/010..013 closed, BOARD-006/007 subsumed, BOARD-009 no-gap, BOARD-014 deferred-by-design (AFK note-writing architecture). See `docs/parity/BOARD_C_AUDIT.md`. |
 | `music.c` | P2 | ✅ Audited | `mud/music/__init__.py`, `mud/commands/player_info.py`, `mud/world/world_state.py` | 95% | Apr 29, 2026 — `MUSIC_C_AUDIT.md` Phase 1–5 complete. 4/6 gaps closed (MUSIC-001 do_play queueing, MUSIC-002 load_songs + boot wiring, MUSIC-003 play list ROM formatting, MUSIC-004 can_see_obj filter). MUSIC-005 / MUSIC-006 deferred MINOR cosmetics (descriptor-state plumbing and per-viewer `$p` substitution; no gameplay impact). |
 | **Utilities & Helpers** | | | | | |
 | `const.c` | P3 | ✅ Audited | `mud/models/constants.py`, `mud/models/races.py`, `mud/models/classes.py`, `mud/skills/groups.py`, `mud/wiznet.py`, `mud/world/movement.py`, `mud/commands/equipment.py`, `mud/math/stat_apps.py`, `mud/advancement.py`, `mud/combat/engine.py`, `mud/commands/session.py`, `mud/commands/imm_search.py` | 95% | Apr 29, 2026 — `CONST_C_AUDIT.md` Phase 1–4 complete. 16/16 tables ✅ AUDITED (str_app full 4-col, dex_app, con_app, wis_app, int_app, liq, skill, group, item, wiznet, attack, race, pc_race, class). 5 of 7 gaps closed: CONST-002 (`GET_HITROLL` + `str_app[STR].tohit`), CONST-003 (`GET_DAMROLL` + `str_app[STR].todam`), CONST-004 (`GET_AC` + `dex_app[DEX].defensive` with IS_AWAKE gate), CONST-005 (`advance_level` HP roll `number_range(hp_min,hp_max) + con_app[CON].hitp` × 9/10, UMAX(2)), CONST-006 (`advance_level` practice gain `wis_app[WIS].practice`). 2 deferred-by-design: CONST-001 `title_table` (480 entries) → NANNY-009 dedicated session; CONST-007 `weapon_table` → OLC audit (BIT-style). See `docs/parity/CONST_C_AUDIT.md`. |
@@ -1020,11 +1012,11 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 | Priority | Total Files | Audited | Partial | Not Audited | Coverage % |
 |----------|-------------|---------|---------|-------------|------------|
-| P0 | 7 | 7 | 0 | 0 | **100%** ✅ |
-| P1 | 11 | 6 | 5 | 0 | **86%** ✅ |
-| P2 | 9 | 0 | 3 | 6 | **26%** ❌ |
-| P3 | 16 | 3 | 7 | 2 | **75%** ⚠️ (4 N/A) |
-| **Total** | **43** | **16** | **16** | **7** | **72%** |
+| P0 | 8 | 8 | 0 | 0 | **100%** ✅ |
+| P1 | 11 | 11 | 0 | 0 | **100%** ✅ |
+| P2 | 12 | 12 | 0 | 0 | **100%** ✅ |
+| P3 | 12 | 9 | 0 | 0 | **75%** ✅ (3 N/A) |
+| **Total** | **43** | **40** | **0** | **0** | **93%** ✅ (3 N/A) |
 
 ### Work Estimates
 
@@ -1036,13 +1028,13 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | P3 | 3-5 days | 5-7 days |
 | **Total** | **13-20 days** | **25-37 days** |
 
-### Next 5 Files to Audit (Highest Priority)
+### Next 5 Follow-up Targets
 
-1. **act_info.c** (P1) - Information commands (1 day) - **HIGHEST ROI**
-2. **act_obj.c** (P1) - Object commands (2-3 days)
-3. **mob_prog.c + mob_cmds.c** (P1) - Mobprog edge cases (1 day)
-4. **special.c** (P2) - Spec procs (3-5 days)
-5. **act_wiz.c** (P2) - Admin commands (2-3 days)
+1. Re-triage deferred-by-design audit items for any architecture that is now practical to port.
+2. Broaden regression coverage around recently completed OLC, board, and nanny clusters.
+3. Sweep the broader test suite for stale expectations that still contradict ROM behavior.
+4. Revisit remaining 95%-coverage audited files only where the documented gap is still user-visible.
+5. Keep `docs/sessions/SESSION_STATUS.md` pointed at the next concrete non-deferred parity target.
 
 **Total**: ~8-13 days for next 5 audits
 

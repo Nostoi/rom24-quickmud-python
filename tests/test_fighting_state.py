@@ -60,6 +60,32 @@ def test_stop_fighting():
     assert attacker.position == Position.STANDING
 
 
+def test_stop_fighting_uses_identity_not_recursive_dataclass_equality():
+    """Mutual combatants should not recurse via dataclass `__eq__` during membership checks."""
+    rng_mm.seed_mm(12345)
+
+    from mud.models.character import character_registry
+
+    character_registry.clear()
+
+    attacker = Character(name="Attacker", level=20, hit=100, max_hit=100)
+    victim = Character(name="Victim", level=18, hit=80, max_hit=80)
+
+    attacker.fighting = victim
+    victim.fighting = attacker
+    attacker.position = Position.FIGHTING
+    victim.position = Position.FIGHTING
+
+    character_registry.append(victim)
+
+    try:
+        stop_fighting(attacker, both=False)
+        assert attacker.fighting is None
+        assert victim.fighting is attacker
+    finally:
+        character_registry.clear()
+
+
 def test_update_pos_healthy():
     """Test update_pos with healthy character."""
     victim = Character(name="Victim", level=18, hit=80, max_hit=80)

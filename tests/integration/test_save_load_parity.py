@@ -25,7 +25,9 @@ import pytest
 import mud.persistence as persistence
 from mud.models.character import character_registry
 from mud.models.constants import ItemType, WearLocation
-from mud.models.obj import Affect
+from mud.models.obj import Affect, ObjIndex
+from mud.models.object import Object
+from mud.registry import obj_registry
 from mud.world import create_test_character, initialize_world
 
 
@@ -39,6 +41,56 @@ def _setup_persistence(tmp_path):
     character_registry.clear()
 
 
+@pytest.fixture
+def registered_test_object_factory():
+    """Create temporary object prototypes in `obj_registry` for save/load tests.
+
+    The save/load parity tests need stable prototype vnums so serialized
+    objects can be reconstructed on load. The world boot used in these tests
+    only registers a tiny core object set, so these tests seed the exact
+    prototypes they exercise locally instead of relying on area object data.
+    """
+
+    created_vnums: list[int] = []
+
+    def _factory(
+        vnum: int,
+        *,
+        name: str,
+        short_descr: str,
+        item_type: ItemType | int | str,
+        value: list[int] | None = None,
+        level: int = 1,
+        cost: int = 0,
+        weight: int = 1,
+        wear_flags: int | str = "",
+    ) -> Object:
+        proto = ObjIndex(
+            vnum=vnum,
+            name=name,
+            short_descr=short_descr,
+            description=f"{short_descr.capitalize()} is here.",
+            item_type=item_type,
+            wear_flags=wear_flags,
+            level=level,
+            cost=cost,
+            weight=weight,
+            value=list(value or [0, 0, 0, 0, 0]),
+        )
+        obj_registry[vnum] = proto
+        created_vnums.append(vnum)
+        obj = Object(instance_id=None, prototype=proto)
+        obj.value = list(proto.value)
+        obj.contained_items = []
+        obj.affected = []
+        return obj
+
+    yield _factory
+
+    for vnum in created_vnums:
+        obj_registry.pop(vnum, None)
+
+
 # ============================================================================
 # TEST 1: Container Nesting (3+ Levels) - ROM C rgObjNest[] Behavior
 # ============================================================================
@@ -49,7 +101,7 @@ def _setup_persistence(tmp_path):
 # ============================================================================
 
 
-def test_container_nesting_three_levels_deep(tmp_path, inventory_object_factory):
+def test_container_nesting_three_levels_deep(tmp_path, registered_test_object_factory):
     """Verify 3-level deep container nesting survives save/load cycle.
 
     ROM C Behavior (src/save.c:1800-1850):
@@ -65,9 +117,9 @@ def test_container_nesting_three_levels_deep(tmp_path, inventory_object_factory)
     char = create_test_character("Nester", 3001)
 
     # Create 3-level nesting: backpack → pouch → small_bag
-    backpack = inventory_object_factory(3101)  # Leather backpack (container)
-    pouch = inventory_object_factory(3010)  # Small pouch (container)
-    small_bag = inventory_object_factory(3012)  # Small bag (container)
+    backpack = registered_test_object_factory(3101, name="backpack", short_descr="a leather backpack", item_type=ItemType.CONTAINER)
+    pouch = registered_test_object_factory(3010, name="pouch", short_descr="a small pouch", item_type=ItemType.CONTAINER)
+    small_bag = registered_test_object_factory(3012, name="small bag", short_descr="a small bag", item_type=ItemType.CONTAINER)
 
     # Add nested structure
     char.add_object(backpack)
@@ -75,8 +127,8 @@ def test_container_nesting_three_levels_deep(tmp_path, inventory_object_factory)
     pouch.contained_items.append(small_bag)
 
     # Put items in deepest container
-    gold = inventory_object_factory(3069)  # Some gold coins
-    bread = inventory_object_factory(3375)  # Bread
+    gold = registered_test_object_factory(3069, name="gold", short_descr="some gold coins", item_type=ItemType.MONEY)
+    bread = registered_test_object_factory(3375, name="bread", short_descr="a loaf of bread", item_type=ItemType.FOOD)
     small_bag.contained_items.append(gold)
     small_bag.contained_items.append(bread)
 
@@ -107,7 +159,7 @@ def test_container_nesting_three_levels_deep(tmp_path, inventory_object_factory)
     assert vnums == {3069, 3375}, "Deepest container should have gold and bread"
 
 
-def test_container_nesting_preserves_object_state(tmp_path, inventory_object_factory):
+def test_container_nesting_preserves_object_state(tmp_path, registered_test_object_factory):
     """Verify nested containers preserve timer/cost/level/value[] fields.
 
     ROM C Behavior (src/save.c:526-652, fwrite_obj):
@@ -122,7 +174,7 @@ def test_container_nesting_preserves_object_state(tmp_path, inventory_object_fac
     char = create_test_character("StatePreserver", 3001)
 
     # Create container with custom state
-    container = inventory_object_factory(3010)
+    container = registered_test_object_factory(3010, name="pouch", short_descr="a small pouch", item_type=ItemType.CONTAINER)
     container.timer = 12
     container.cost = 777
     container.level = 8
@@ -132,7 +184,7 @@ def test_container_nesting_preserves_object_state(tmp_path, inventory_object_fac
     container.affected = [Affect(where=0, type=0, level=5, duration=3, location=2, modifier=4, bitvector=0)]
 
     # Create nested item with custom state
-    nested = inventory_object_factory(3012)
+    nested = registered_test_object_factory(3012, name="small bag", short_descr="a small bag", item_type=ItemType.CONTAINER)
     nested.timer = 2
     nested.value[1] = 55
     container.contained_items.append(nested)
@@ -169,7 +221,7 @@ def test_container_nesting_preserves_object_state(tmp_path, inventory_object_fac
 # ============================================================================
 
 
-def test_equipment_affects_reapplied_on_load(tmp_path, inventory_object_factory):
+def test_equipment_affects_reapplied_on_load(tmp_path, registered_test_object_factory):
     """Verify equipment with +hitroll affects are reapplied correctly on load.
 
     ROM C Behavior (src/save.c:175-446, fwrite_char):
@@ -182,7 +234,7 @@ def test_equipment_affects_reapplied_on_load(tmp_path, inventory_object_factory)
     char = create_test_character("Equipped", 3001)
 
     # Create weapon with +5 hitroll affect
-    weapon = inventory_object_factory(3022)  # Wooden sword
+    weapon = registered_test_object_factory(3022, name="sword", short_descr="a wooden sword", item_type=ItemType.WEAPON)
     weapon.affected = [
         Affect(
             where=1,  # TO_OBJECT
@@ -218,7 +270,7 @@ def test_equipment_affects_reapplied_on_load(tmp_path, inventory_object_factory)
     assert loaded.equipment["wield"].affected[0].modifier == 5
 
 
-def test_armor_ac_affects_preserved(tmp_path, inventory_object_factory):
+def test_armor_ac_affects_preserved(tmp_path, registered_test_object_factory):
     """Verify armor with AC bonuses preserves affects through save/load.
 
     ROM C Behavior (src/save.c:526-652):
@@ -228,7 +280,7 @@ def test_armor_ac_affects_preserved(tmp_path, inventory_object_factory):
     char = create_test_character("Armored", 3001)
 
     # Create helmet with -10 AC affect (negative AC is better in ROM)
-    helmet = inventory_object_factory(3356)  # Leather helmet
+    helmet = registered_test_object_factory(3356, name="helmet", short_descr="a leather helmet", item_type=ItemType.ARMOR)
     helmet.affected = [
         Affect(
             where=1,  # TO_OBJECT
@@ -443,7 +495,7 @@ def test_atomic_save_preserves_old_on_corruption(tmp_path):
 # ============================================================================
 
 
-def test_complete_save_load_integration(tmp_path, inventory_object_factory):
+def test_complete_save_load_integration(tmp_path, registered_test_object_factory):
     """Comprehensive test combining all save/load scenarios.
 
     Verifies:
@@ -456,18 +508,18 @@ def test_complete_save_load_integration(tmp_path, inventory_object_factory):
 
     # Setup: Character with full inventory and equipment
     # 1. Nested containers
-    backpack = inventory_object_factory(3101)
-    pouch = inventory_object_factory(3010)
+    backpack = registered_test_object_factory(3101, name="backpack", short_descr="a leather backpack", item_type=ItemType.CONTAINER)
+    pouch = registered_test_object_factory(3010, name="pouch", short_descr="a small pouch", item_type=ItemType.CONTAINER)
     char.add_object(backpack)
     backpack.contained_items.append(pouch)
 
     # 2. Equipment with affects
-    weapon = inventory_object_factory(3022)
+    weapon = registered_test_object_factory(3022, name="sword", short_descr="a wooden sword", item_type=ItemType.WEAPON)
     weapon.affected = [Affect(where=1, type=0, level=10, duration=-1, location=18, modifier=5, bitvector=0)]
     char.equip_object(weapon, "wield")
 
     # 3. Regular inventory items
-    bread = inventory_object_factory(3375)
+    bread = registered_test_object_factory(3375, name="bread", short_descr="a loaf of bread", item_type=ItemType.FOOD)
     char.add_object(bread)
 
     # Save and load

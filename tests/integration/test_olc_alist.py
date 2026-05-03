@@ -78,11 +78,16 @@ def test_do_alist_npc_returns_empty(alist_areas) -> None:
 
 def test_do_alist_empty_registry_returns_header_only(player_char) -> None:
     # mirrors ROM src/olc.c:1487-1490 — header always emitted.
-    out = do_alist(player_char, "")
-    assert "Area Name" in out
-    # No area rows beyond the header.
-    lines = [ln for ln in out.split("\n") if ln.strip()]
-    assert len(lines) == 1
+    original = dict(area_registry)
+    area_registry.clear()
+    try:
+        out = do_alist(player_char, "")
+        assert "Area Name" in out
+        # No area rows beyond the header.
+        lines = [ln for ln in out.split("\n") if ln.strip()]
+        assert len(lines) == 1
+    finally:
+        area_registry.update(original)
 
 
 def test_do_alist_uses_file_name_not_filename(player_char) -> None:

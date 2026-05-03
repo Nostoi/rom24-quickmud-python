@@ -1,18 +1,18 @@
-from enum import IntFlag
 import shlex
+from enum import IntFlag
 
 from mud.models.constants import (
+    LIQUID_TABLE,
     AffectFlag,
     ContainerFlag,
     ExtraFlag,
     ImmFlag,
     ItemType,
-    LIQUID_TABLE,
     ResFlag,
     VulnFlag,
-    WearFlag,
     WeaponFlag,
     WeaponType,
+    WearFlag,
     attack_lookup,
     convert_flags_from_letters,
 )
@@ -21,7 +21,6 @@ from mud.registry import obj_registry
 from mud.skills.metadata import ROM_SKILL_NAMES_BY_INDEX
 
 from .base_loader import BaseTokenizer
-
 
 _CONDITION_MAP = {
     "P": 100,
@@ -94,9 +93,11 @@ _SKILL_NAMES_LOWER: tuple[str, ...] = tuple(
 )
 
 
-def _resolve_item_type_code(token: str | None) -> int:
+def _resolve_item_type_code(token: str | int | None) -> int:
     if token is None:
         return int(ItemType.TRASH)
+    if isinstance(token, int):
+        return token
     stripped = token.strip()
     if not stripped:
         return int(ItemType.TRASH)
