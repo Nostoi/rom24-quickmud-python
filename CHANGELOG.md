@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.4]
+
 ### Added
+- **INV-005 SAME-ROOM-COMBAT-ONLY enforcement test** (`tests/integration/test_inv005_same_room_combat.py`): proves `mud/game_loop.py:violence_tick` skips `multi_hit` and stops fighting when attacker and victim are in different rooms (ROM `src/fight.c:violence_update`). Plus a same-room sanity case so a flipped equality wouldn't silently pass.
+- **INV-006 FIGHTING-POINTER-COHERENCE enforcement test** (`tests/integration/test_inv006_fighting_pointer_coherence.py`): proves `mud/combat/engine.py:stop_fighting(victim, both=True)` sweeps `character_registry` and clears every attacker pointing at the victim (ROM `src/fight.c:stop_fighting(victim, TRUE)`); inverse case confirms `both=False` does not sweep.
+- Both invariants flipped from ⚠️ VERIFIED MANUALLY → ✅ ENFORCED in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
 - **Cross-File Invariants tracker** (`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`): new top-level parity doc enumerating contracts the per-file audit methodology can't enforce on its own (single-delivery, registry membership, prompt-render-after-raw_kill, etc.). Eight INV-NNN entries seeded from this year's bug history; each has a stable ID, ROM mechanism, Python enforcement point, and regression test (or an action-item placeholder when the test is still missing).
 - **AGENTS.md "Cross-File Invariants" section**: methodology note explaining what per-file audits miss and how to use the new tracker. Tracker added to the "Trackers" table.
 - **rom-parity-audit skill update**: Phase 2 now requires following the call chain across module boundaries and consulting the cross-file invariants tracker; Phase 5 requires citing relevant INV-NNN statuses in each tracker row's Notes column ("Audited (per-file)" replaces bare "Audited").

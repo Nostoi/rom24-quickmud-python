@@ -1,7 +1,15 @@
-# Session Status — 2026-05-02 — death-path parity sweep shipped
+# Session Status — 2026-05-03 — INV-005 / INV-006 enforcement tests shipped
 
 ## Current State
 
+- **Cross-file invariants INV-005 / INV-006 — ENFORCED (this
+  session, version 2.7.4).** Both were ⚠️ VERIFIED MANUALLY in the
+  cross-file invariants tracker; they now have failing-test-able
+  enforcement at `tests/integration/test_inv005_same_room_combat.py`
+  and `tests/integration/test_inv006_fighting_pointer_coherence.py`.
+  Tracker rows flipped to ✅ ENFORCED. Remaining unenforced
+  invariants: INV-007 (RNG-DETERMINISM, decision pending) and
+  INV-008 (DUAL-LOAD-CHARACTER-COHERENCE, requires consolidation).
 - **Death-path parity sweep — SHIPPED (commits `f586d11`, `59bebf0`,
   + this session's release commit).** User reported "I die in combat
   and get disconnected." Live log proved two real bugs (not the
@@ -25,7 +33,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.7.3 |
+| Version | 2.7.4 |
+| Cross-file invariants enforced | 6/8 (INV-001..006); INV-007 convention, INV-008 known divergence |
 | Audit-bound ROM C files | 40/40 audited (100%) |
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
 | `comm.c` message delivery | ✅ single-delivery; mailbox is fallback only |
