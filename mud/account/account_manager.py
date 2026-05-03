@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from sqlalchemy.orm import Session
 from mud.models.character import Character, character_registry, from_orm
 from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
-from mud.persistence import (
+from mud.db.serializers import (
     _normalize_int_list,
     _serialize_colour_table,
     _serialize_object,

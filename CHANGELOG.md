@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.3]
+
+### Changed
+- **Extract `time_info` persistence to `mud/world/time_persistence.py`.** `save_time_info`, `load_time_info`, `TimeSave`, and `TIME_FILE` now live in the new module. `tests/test_time_persistence.py` updated to import from the new location.
+- **Extract serialization helpers to `mud/db/serializers.py`.** All live helpers imported by `mud/account/account_manager.py` (`_normalize_int_list`, `_serialize_colour_table`, `_serialize_object`, `_serialize_pet`, `_serialize_skill_map`, `_serialize_groups`) and `mud/models/character.py:from_orm` (`_apply_colour_table`, `_normalize_int_list`, `_deserialize_object`, `ObjectSave`, `_deserialize_pet`) now live in `mud/db/serializers.py`. Both importers updated.
+
+### Removed
+- **`mud/persistence.py` deleted.** The deprecated stub (holding only the two extracted surfaces above, plus dead code from the now-gone JSON-pfile path) is gone. No behavior change; `mud/persistence` was already a non-functional deprecation banner since 2.8.1.
+
 ## [2.8.2]
 
 ### Changed

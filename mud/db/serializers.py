@@ -1,36 +1,29 @@
 from __future__ import annotations
 
-# ============================================================================
-# DEPRECATED: This module is deprecated in favor of mud.account.account_manager
-# ============================================================================
-# This JSON-based persistence system is kept for backward compatibility only.
-# All new code should use mud.account.account_manager for database persistence.
-#
-# Migration status: All active save_character() calls now use database version.
-# ============================================================================
+"""Serialization helpers for DB-canonical player persistence (INV-008).
 
-import json
-import os
-import time
+Extracted from mud.persistence (deprecated stub) in 2.8.3.
+These helpers convert runtime Character / Object / Pet state to/from
+the JSON blob columns written by mud.account.account_manager and read
+back by mud.models.character.from_orm.
+
+ROM C reference: src/save.c fwrite_char / fread_char,
+fwrite_obj / fread_obj, fwrite_pet / fread_pet.
+"""
+
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any
 
-from mud.models.character import Character, PCData, PCDATA_COLOUR_FIELDS, character_registry
-from mud.models.constants import (
-    PlayerFlag,
-    WearLocation,
-    ROOM_VNUM_LIMBO,
-    ROOM_VNUM_TEMPLE,
-)
-from mud.models.clans import lookup_clan_id
-from mud.models.json_io import dataclass_from_dict, dump_dataclass, load_dataclass
+from mud.models.character import PCDATA_COLOUR_FIELDS, PCData
+from mud.models.constants import WearLocation
+from mud.models.json_io import dataclass_from_dict
 from mud.models.obj import Affect
-from mud.notes import DEFAULT_BOARD_NAME, find_board, get_board
-from mud.registry import room_registry
-from mud.spawning.obj_spawner import spawn_object
-from mud.time import Sunlight, time_info
+
+
+# ---------------------------------------------------------------------------
+# Integer list helper
+# ---------------------------------------------------------------------------
 
 
 def _normalize_int_list(values: Iterable[int] | None, length: int) -> list[int]:
@@ -45,6 +38,11 @@ def _normalize_int_list(values: Iterable[int] | None, length: int) -> list[int]:
         except (TypeError, ValueError):
             normalized[idx] = 0
     return normalized
+
+
+# ---------------------------------------------------------------------------
+# Skill / group helpers
+# ---------------------------------------------------------------------------
 
 
 def _serialize_skill_map(raw_skills: Any) -> dict[str, int]:
@@ -101,6 +99,11 @@ def _serialize_groups(raw_groups: Any) -> list[str]:
     return ordered
 
 
+# ---------------------------------------------------------------------------
+# Colour helpers
+# ---------------------------------------------------------------------------
+
+
 def _normalize_colour_entry(values: Any) -> list[int]:
     """Return a sanitized colour triplet drawn from ``values``."""
 
@@ -137,59 +140,46 @@ def _apply_colour_table(pcdata: PCData, table: Any) -> None:
         setattr(pcdata, field_name, _normalize_colour_entry(values))
 
 
-def _deserialize_skill_map(raw_skills: Any) -> dict[str, int]:
-    """Convert persisted skill data back into a runtime map."""
-
-    if isinstance(raw_skills, dict):
-        items = raw_skills.items()
-    else:
-        try:
-            items = dict(raw_skills or {}).items()
-        except Exception:
-            return {}
-    skills: dict[str, int] = {}
-    for name, value in items:
-        try:
-            key = str(name).strip()
-        except Exception:
-            continue
-        if not key:
-            continue
-        try:
-            learned = int(value)
-        except (TypeError, ValueError):
-            continue
-        learned = max(0, min(100, learned))
-        if learned <= 0:
-            continue
-        skills[key] = learned
-    return skills
+# ---------------------------------------------------------------------------
+# Internal object helpers
+# ---------------------------------------------------------------------------
 
 
-def _deserialize_groups(raw_groups: Any) -> tuple[str, ...]:
-    """Convert persisted group knowledge into a tuple of group names."""
+def _safe_int(value: Any, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
 
-    if isinstance(raw_groups, str):
-        iterable = [raw_groups]
-    elif raw_groups is None:
-        iterable = []
-    else:
-        try:
-            iterable = list(raw_groups)
-        except Exception:
-            iterable = []
-    seen: set[str] = set()
-    ordered: list[str] = []
-    for entry in iterable:
-        try:
-            name = str(entry).strip().lower()
-        except Exception:
-            continue
-        if not name or name in seen:
-            continue
-        seen.add(name)
-        ordered.append(name)
-    return tuple(ordered)
+
+_SLOT_TO_WEAR_LOC_MAP: dict[str, int] = {}
+for _loc in WearLocation:
+    _SLOT_TO_WEAR_LOC_MAP[_loc.name.lower()] = int(_loc)
+    _SLOT_TO_WEAR_LOC_MAP[_loc.name.lower().replace("_", "")] = int(_loc)
+_SLOT_TO_WEAR_LOC_MAP.update(
+    {
+        "fingerleft": int(WearLocation.FINGER_L),
+        "fingerright": int(WearLocation.FINGER_R),
+        "neck1": int(WearLocation.NECK_1),
+        "neck2": int(WearLocation.NECK_2),
+        "wristleft": int(WearLocation.WRIST_L),
+        "wristright": int(WearLocation.WRIST_R),
+    }
+)
+
+
+def _slot_to_wear_loc(slot: str | None) -> int:
+    if not slot:
+        return int(WearLocation.NONE)
+    key = slot.lower().replace(" ", "")
+    if key in _SLOT_TO_WEAR_LOC_MAP:
+        return _SLOT_TO_WEAR_LOC_MAP[key]
+    return int(WearLocation.NONE)
+
+
+# ---------------------------------------------------------------------------
+# Object dataclasses
+# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -222,6 +212,11 @@ class ObjectSave:
     item_type: str | None = None
     contains: list[ObjectSave] = field(default_factory=list)
     affects: list[ObjectAffectSave] = field(default_factory=list)
+
+
+# ---------------------------------------------------------------------------
+# Pet dataclasses
+# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -281,113 +276,9 @@ class PetSave:
     affects: list[PetAffectSave] = field(default_factory=list)
 
 
-@dataclass
-class PlayerSave:
-    """Serializable snapshot of a player's state."""
-
-    name: str
-    level: int
-    race: int = 0
-    ch_class: int = 0
-    clan: int = 0
-    sex: int = 0
-    trust: int = 0
-    security: int = 0
-    invis_level: int = 0
-    incog_level: int = 0
-    hit: int = 0
-    max_hit: int = 0
-    mana: int = 0
-    max_mana: int = 0
-    move: int = 0
-    max_move: int = 0
-    perm_hit: int = 0
-    perm_mana: int = 0
-    perm_move: int = 0
-    gold: int = 0
-    silver: int = 0
-    exp: int = 0
-    practice: int = 0
-    train: int = 0
-    played: int = 0
-    lines: int = 0
-    logon: int = 0
-    prompt: str | None = None
-    prefix: str | None = None
-    title: str | None = None
-    bamfin: str | None = None
-    bamfout: str | None = None
-    saving_throw: int = 0
-    alignment: int = 0
-    hitroll: int = 0
-    damroll: int = 0
-    wimpy: int = 0
-    points: int = 0
-    true_sex: int = 0
-    last_level: int = 0
-    position: int = 0
-    armor: list[int] = field(default_factory=lambda: [0, 0, 0, 0])
-    perm_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
-    mod_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
-    conditions: list[int] = field(default_factory=lambda: [0, 48, 48, 48])
-    # ROM bitfields to preserve flags parity
-    act: int = 0
-    affected_by: int = 0
-    comm: int = 0
-    wiznet: int = 0
-    log_commands: bool = False
-    newbie_help_seen: bool = False
-    room_vnum: int | None = None
-    inventory: list[ObjectSave] = field(default_factory=list)
-    equipment: dict[str, ObjectSave] = field(default_factory=dict)
-    aliases: dict[str, str] = field(default_factory=dict)
-    skills: dict[str, int] = field(default_factory=dict)
-    groups: list[str] = field(default_factory=list)
-    board: str = DEFAULT_BOARD_NAME
-    last_notes: dict[str, float] = field(default_factory=dict)
-    colours: dict[str, list[int]] = field(default_factory=dict)
-    pet: PetSave | None = None  # ROM save.c pet persistence (fwrite_pet/fread_pet)
-    # TABLES-001 — schema version for AffectFlag bit-position migration.
-    # 0 = legacy pfile (pre-2.6.34) using old Python bits; 1 = ROM-canonical.
-    pfile_version: int = 0
-    # INV-008 — auth credential round-trip.  Stored here so the JSON pfile is
-    # the single source of truth for ALL player state (gameplay + auth).  The
-    # DB row's password_hash is only written explicitly (e.g. on do_password)
-    # for the auth path that reads from the DB; the JSON copy is the canonical
-    # one loaded at login.
-    password_hash: str = ""
-
-
-_SLOT_TO_WEAR_LOC_MAP: dict[str, int] = {}
-for _loc in WearLocation:
-    _SLOT_TO_WEAR_LOC_MAP[_loc.name.lower()] = int(_loc)
-    _SLOT_TO_WEAR_LOC_MAP[_loc.name.lower().replace("_", "")] = int(_loc)
-_SLOT_TO_WEAR_LOC_MAP.update(
-    {
-        "fingerleft": int(WearLocation.FINGER_L),
-        "fingerright": int(WearLocation.FINGER_R),
-        "neck1": int(WearLocation.NECK_1),
-        "neck2": int(WearLocation.NECK_2),
-        "wristleft": int(WearLocation.WRIST_L),
-        "wristright": int(WearLocation.WRIST_R),
-    }
-)
-
-
-def _safe_int(value: Any, default: int = 0) -> int:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return default
-
-
-def _slot_to_wear_loc(slot: str | None) -> int:
-    if not slot:
-        return int(WearLocation.NONE)
-    key = slot.lower().replace(" ", "")
-    if key in _SLOT_TO_WEAR_LOC_MAP:
-        return _SLOT_TO_WEAR_LOC_MAP[key]
-    return int(WearLocation.NONE)
+# ---------------------------------------------------------------------------
+# Object serialize / deserialize
+# ---------------------------------------------------------------------------
 
 
 def _serialize_affects(obj: Any) -> list[ObjectAffectSave]:
@@ -435,6 +326,8 @@ def _serialize_object(obj: Any, *, wear_slot: str | None = None) -> ObjectSave:
 
 
 def _deserialize_object(snapshot: ObjectSave) -> Any:
+    from mud.spawning.obj_spawner import spawn_object
+
     obj = spawn_object(snapshot.vnum)
     if obj is None:
         return None
@@ -473,7 +366,12 @@ def _deserialize_object(snapshot: ObjectSave) -> Any:
     return obj
 
 
-def _serialize_pet(pet: Character) -> PetSave | None:
+# ---------------------------------------------------------------------------
+# Pet serialize / deserialize
+# ---------------------------------------------------------------------------
+
+
+def _serialize_pet(pet: Any) -> PetSave | None:
     """Serialize a pet/follower to PetSave (ROM save.c:fwrite_pet lines 449-523).
 
     Args:
@@ -576,7 +474,7 @@ def _serialize_pet(pet: Character) -> PetSave | None:
     )
 
 
-def _deserialize_pet(snapshot: PetSave | dict, owner: Character) -> Character | None:
+def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
     """Deserialize a PetSave to Character (ROM save.c:fread_pet lines 1406-1595).
 
     Args:
@@ -590,7 +488,6 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Character) -> Character | 
     """
     from mud.spawning.mob_spawner import spawn_mob
     from mud.skills.registry import skill_registry
-    from mud.models.obj import Affect
 
     # ROM C constant: #define MOB_VNUM_FIDO 3006 (src/merc.h)
     MOB_VNUM_FIDO = 3006
@@ -723,224 +620,3 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Character) -> Character | 
     setattr(pet, "leader", owner)
 
     return pet
-
-
-def _migrate_affect_bits_in_objects(entries: Any) -> None:
-    """In-place: translate ``affects[*].bitvector`` on object snapshots
-    (recursively into ``contains``)."""
-    if not isinstance(entries, list):
-        return
-    for entry in entries:
-        if not isinstance(entry, dict):
-            continue
-        affects = entry.get("affects")
-        if isinstance(affects, list):
-            for aff in affects:
-                if isinstance(aff, dict):
-                    aff["bitvector"] = translate_legacy_affect_bits(_safe_int(aff.get("bitvector", 0)))
-        _migrate_affect_bits_in_objects(entry.get("contains"))
-
-
-def _upgrade_legacy_save(raw_data: dict[str, Any]) -> dict[str, Any]:
-    upgraded: dict[str, Any] = dict(raw_data)
-
-    # TABLES-001 — translate AffectFlag bits to ROM-canonical layout for
-    # legacy pfiles (pfile_version < 1). Touches the character bitvector,
-    # any persisted item-affect bitvectors, and the pet's bitvectors.
-    pfile_version = _safe_int(upgraded.get("pfile_version", 0))
-    if pfile_version < 1:
-        upgraded["affected_by"] = translate_legacy_affect_bits(_safe_int(upgraded.get("affected_by", 0)))
-        _migrate_affect_bits_in_objects(upgraded.get("inventory"))
-        equipment = upgraded.get("equipment")
-        if isinstance(equipment, dict):
-            _migrate_affect_bits_in_objects(list(equipment.values()))
-        pet = upgraded.get("pet")
-        if isinstance(pet, dict):
-            if pet.get("affected_by") is not None:
-                pet["affected_by"] = translate_legacy_affect_bits(_safe_int(pet.get("affected_by", 0)))
-            pet_affects = pet.get("affects")
-            if isinstance(pet_affects, list):
-                for aff in pet_affects:
-                    if isinstance(aff, dict):
-                        aff["bitvector"] = translate_legacy_affect_bits(_safe_int(aff.get("bitvector", 0)))
-        upgraded["pfile_version"] = PFILE_SCHEMA_VERSION
-
-    raw_inventory = upgraded.get("inventory", [])
-    if isinstance(raw_inventory, list):
-        new_inventory: list[dict[str, Any]] = []
-        for entry in raw_inventory:
-            if isinstance(entry, dict):
-                normalized = dict(entry)
-                normalized.setdefault("wear_loc", normalized.get("wear_loc", int(WearLocation.NONE)))
-                normalized.setdefault("wear_slot", normalized.get("wear_slot"))
-                normalized.setdefault("value", _normalize_int_list(normalized.get("value", []), 5))
-                normalized.setdefault("contains", [])
-                normalized.setdefault("affects", [])
-                new_inventory.append(normalized)
-            elif entry is not None:
-                new_inventory.append(
-                    {
-                        "vnum": _safe_int(entry),
-                        "wear_loc": int(WearLocation.NONE),
-                        "wear_slot": None,
-                        "value": [0, 0, 0, 0, 0],
-                        "contains": [],
-                        "affects": [],
-                    }
-                )
-        upgraded["inventory"] = new_inventory
-
-    raw_equipment = upgraded.get("equipment", {})
-    if isinstance(raw_equipment, dict):
-        new_equipment: dict[str, dict[str, Any]] = {}
-        for slot, entry in raw_equipment.items():
-            if isinstance(entry, dict):
-                normalized = dict(entry)
-                normalized.setdefault("wear_slot", slot)
-                normalized.setdefault("wear_loc", _slot_to_wear_loc(slot))
-                normalized.setdefault("value", _normalize_int_list(normalized.get("value", []), 5))
-                normalized.setdefault("contains", [])
-                normalized.setdefault("affects", [])
-                new_equipment[slot] = normalized
-            elif entry is not None:
-                new_equipment[slot] = {
-                    "vnum": _safe_int(entry),
-                    "wear_slot": slot,
-                    "wear_loc": _slot_to_wear_loc(slot),
-                    "value": [0, 0, 0, 0, 0],
-                    "contains": [],
-                    "affects": [],
-                }
-        upgraded["equipment"] = new_equipment
-
-    colours = upgraded.get("colours")
-    if isinstance(colours, dict):
-        normalized_colours: dict[str, list[int]] = {}
-        for field_name in PCDATA_COLOUR_FIELDS:
-            normalized_colours[field_name] = _normalize_colour_entry(colours.get(field_name))
-        upgraded["colours"] = normalized_colours
-    else:
-        upgraded["colours"] = {}
-
-    return upgraded
-
-
-PLAYERS_DIR = Path("data/players")
-TIME_FILE = Path("data/time.json")
-
-
-# TABLES-001 — AffectFlag bit-position migration.
-# Pre-2.6.34 pfiles encoded AffectFlag with the legacy Python bit positions
-# (mud/models/constants.py prior to renumber). Those positions diverge from
-# ROM merc.h:953-982 for 20 of 29 bits. Saves are now ROM-canonical
-# (pfile_version=1); older saves (pfile_version=0) get translated on load.
-#
-# Map: legacy Python bit index -> ROM-canonical bit index. Bits not listed
-# (0..5, 22, 27, 28) coincide between old and new and pass through unchanged.
-_AFFECT_BIT_TRANSLATION: dict[int, int] = {
-    6: 7,    # SANCTUARY
-    7: 8,    # FAERIE_FIRE
-    8: 9,    # INFRARED
-    9: 10,   # CURSE
-    10: 6,   # DETECT_GOOD
-    11: 12,  # POISON (legacy bit 11 → ROM bit M=12; old bit 11 vacated)
-    12: 13,  # PROTECT_EVIL
-    13: 14,  # PROTECT_GOOD
-    14: 15,  # SNEAK
-    15: 16,  # HIDE
-    16: 17,  # SLEEP
-    17: 18,  # CHARM
-    18: 19,  # FLYING
-    19: 20,  # PASS_DOOR
-    20: 24,  # WEAKEN
-    21: 26,  # BERSERK
-    23: 21,  # HASTE
-    24: 29,  # SLOW
-    25: 23,  # PLAGUE
-    26: 25,  # DARK_VISION
-}
-
-
-def translate_legacy_affect_bits(value: int) -> int:
-    """Translate a pre-TABLES-001 AffectFlag int to ROM-canonical bits.
-
-    Used during pfile load when pfile_version < 1. See mud/models/constants.py
-    AffectFlag and ROM src/merc.h:953-982 for the canonical bit layout.
-    """
-    if not value:
-        return 0
-    result = 0
-    for bit_index in range(30):
-        if value & (1 << bit_index):
-            new_bit = _AFFECT_BIT_TRANSLATION.get(bit_index, bit_index)
-            result |= 1 << new_bit
-    return result
-
-
-PFILE_SCHEMA_VERSION = 1
-
-
-# ---------------------------------------------------------------------------
-# save_character / load_character have been removed (INV-008 Phase 2).
-# Use mud.account.account_manager.save_character / load_character instead.
-# The DB row is now the canonical source for all player state.
-# ---------------------------------------------------------------------------
-
-
-def save_world() -> None:
-    """Write all registered characters to DB (DB-canonical path, INV-008 phase 2)."""
-    from mud.account.account_manager import save_character as _am_save
-    save_time_info()
-    for char in list(character_registry):
-        if not getattr(char, "name", None):
-            continue
-        if getattr(char, "is_npc", False):
-            continue
-        _am_save(char)
-
-
-# --- Time persistence ---
-
-
-@dataclass
-class TimeSave:
-    hour: int
-    day: int
-    month: int
-    year: int
-    sunlight: int
-
-
-def save_time_info() -> None:
-    """Persist global time_info to TIME_FILE (atomic write)."""
-    TIME_FILE.parent.mkdir(parents=True, exist_ok=True)
-    data = TimeSave(
-        hour=time_info.hour,
-        day=time_info.day,
-        month=time_info.month,
-        year=time_info.year,
-        sunlight=int(time_info.sunlight),
-    )
-    tmp_path = TIME_FILE.with_suffix(".tmp")
-    with tmp_path.open("w") as f:
-        dump_dataclass(data, f, indent=2)
-        f.flush()
-        os.fsync(f.fileno())
-    os.replace(tmp_path, TIME_FILE)
-
-
-def load_time_info() -> None:
-    """Load global time_info from TIME_FILE if present."""
-    if not TIME_FILE.exists():
-        return
-    with TIME_FILE.open() as f:
-        data = load_dataclass(TimeSave, f)
-    time_info.hour = data.hour
-    time_info.day = data.day
-    time_info.month = data.month
-    time_info.year = data.year
-    try:
-        time_info.sunlight = Sunlight(data.sunlight)
-    except Exception:
-        # Fallback if invalid value
-        time_info.sunlight = Sunlight.DARK
