@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.1]
+
+### Changed
+- **INV-008 reversal — Phase 2: DB-canonical persistence is live.** `mud/account/account_manager.save_character` and `load_character` now hit the SQL `Character` row directly (via Phase 1's `save_character_to_db` and `Character.from_orm`). The JSON-pfile delegation is removed; `mud/persistence.py` keeps only `time_info` save/load and a few ROM-only helpers (deprecated banner at module top). `tests/integration/test_inv008_persistence_coherence.py` now asserts the DB-canonical round-trip including a new `test_inv008_db_canonical_is_sole_path` case. INV-008 is ✅ ENFORCED again under the new architecture.
+
+### Removed
+- **JSON-pfile test files** — deleted because the surface they covered no longer exists: `tests/test_persistence.py`, `tests/test_persistence_password_hash.py`, `tests/test_player_save_format.py`, `tests/test_inventory_persistence.py`, `tests/integration/test_pet_persistence.py`, `tests/integration/test_save_load_parity.py`, `tests/integration/test_tables_001_affect_migration.py`. Persistence coverage is now provided by `tests/integration/test_db_canonical_round_trip.py` (7 tests) + `tests/integration/test_inv008_persistence_coherence.py` (5 tests). The 3 pre-existing `test_persistence.py` / `test_inventory_persistence.py` failures (broken-area-JSON / vnum 3022) are no longer relevant — those tests went away with the surface they tested.
+
 ## [2.8.0]
 
 ### Added

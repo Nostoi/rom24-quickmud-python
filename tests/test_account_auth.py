@@ -79,7 +79,6 @@ from mud.commands.inventory import give_school_outfit
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import verify_password
 from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
-import mud.persistence as _persistence
 from mud.wiznet import WiznetFlag
 
 TELNET_IAC = 255
@@ -92,13 +91,9 @@ TELNET_TELOPT_ECHO = 1
 
 
 @pytest.fixture(autouse=True)
-def _isolate_players_dir(tmp_path):
-    """INV-008: redirect persistence.PLAYERS_DIR so save_character writes to
-    a throwaway directory instead of the real data/players/ tree."""
-    original = _persistence.PLAYERS_DIR
-    _persistence.PLAYERS_DIR = tmp_path / "players"
+def _isolate_players_dir():
+    """DB-canonical path: no pfile dir isolation needed (INV-008 phase 2)."""
     yield
-    _persistence.PLAYERS_DIR = original
 
 
 def strip_telnet(data: bytes) -> bytes:

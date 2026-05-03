@@ -4,7 +4,6 @@ import pytest
 
 import mud.commands.notes as note_cmds
 import mud.notes as notes
-from mud import persistence
 from mud.commands.dispatcher import process_command
 from mud.models.board import BoardForceType
 from mud.models.character import character_registry
@@ -258,10 +257,20 @@ def test_board_listing_uses_rom_colors(tmp_path):
 
 def test_board_switching_persists_last_note(tmp_path):
     boards_dir = tmp_path / "boards"
-    players_dir = tmp_path / "players"
     orig_board_dir = _setup_boards(boards_dir)
-    orig_players = persistence.PLAYERS_DIR
-    persistence.PLAYERS_DIR = players_dir
+    from mud.account.account_manager import load_character, save_character
+    from mud.account.account_service import clear_active_accounts, create_character
+    from mud.db.models import Base, Character as DBCharacter
+    from mud.db.session import SessionLocal, engine
+    from mud.models.character import from_orm
+    from mud.models.constants import ROOM_VNUM_SCHOOL
+    from mud.security import bans
+    from mud.world.world_state import reset_lockdowns
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
     try:
         initialize_world("area/area.lst")
         character_registry.clear()
@@ -277,7 +286,13 @@ def test_board_switching_persists_last_note(tmp_path):
             read_level=0,
             write_level=0,
         )
-        char = create_test_character("Archivist", 3001)
+        create_character(None, "Archivist", starting_room_vnum=ROOM_VNUM_SCHOOL)
+        session = SessionLocal()
+        try:
+            db_char = session.query(DBCharacter).filter_by(name="Archivist").first()
+            char = from_orm(db_char)
+        finally:
+            session.close()
         char.level = 50
         char.trust = 50
 
@@ -287,7 +302,7 @@ def test_board_switching_persists_last_note(tmp_path):
         assert "ideas" in switch_output.lower()
         assert char.pcdata.board_name == ideas.storage_key()
 
-        persistence.save_character(char)
+        save_character(char)
 
         general.post("Immortal", "Update", "New policies", timestamp=time.time() + 1)
         notes.save_board(general)
@@ -297,7 +312,7 @@ def test_board_switching_persists_last_note(tmp_path):
         notes.load_boards()
         character_registry.clear()
 
-        loaded = persistence.load_character("Archivist")
+        loaded = load_character("Archivist")
         assert loaded is not None
         assert loaded.pcdata.board_name == ideas.storage_key()
         board_listing = process_command(loaded, "board")
@@ -306,7 +321,6 @@ def test_board_switching_persists_last_note(tmp_path):
     finally:
         character_registry.clear()
         _teardown_boards(orig_board_dir)
-        persistence.PLAYERS_DIR = orig_players
 
 
 def test_board_listing_retains_current_board_without_access(tmp_path):

@@ -1,5 +1,4 @@
 # START affects_saves
-import mud.persistence as persistence
 from mud.affects.engine import tick_spell_effects
 from mud.affects.saves import _check_immune, check_dispel, saves_dispel, saves_spell
 from mud.math.c_compat import c_div
@@ -432,20 +431,38 @@ def test_check_immune_specific_bits_holy_energy_mental_drowning(monkeypatch):
         assert saves_spell(10, imm, dtype) is True
 
 
-def test_affect_persistence(tmp_path):
-    # Arrange a character with multiple affect flags, save and reload.
-    persistence.PLAYERS_DIR = tmp_path
-    from mud.models.character import character_registry
-    from mud.world import create_test_character, initialize_world
+def test_affect_persistence():
+    # Arrange a character with multiple affect flags, save and reload via DB-canonical path.
+    from mud.account.account_manager import load_character, save_character
+    from mud.account.account_service import clear_active_accounts, create_character
+    from mud.db.models import Base, Character as DBCharacter
+    from mud.db.session import SessionLocal, engine
+    from mud.models.character import character_registry, from_orm
+    from mud.models.constants import ROOM_VNUM_SCHOOL
+    from mud.security import bans
+    from mud.world import initialize_world
+    from mud.world.world_state import reset_lockdowns
 
-    character_registry.clear()
     initialize_world("area/area.lst")
-    ch = create_test_character("Flags", 3001)
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    create_character(None, "Flags", starting_room_vnum=ROOM_VNUM_SCHOOL)
+    session = SessionLocal()
+    try:
+        db_char = session.query(DBCharacter).filter_by(name="Flags").first()
+        ch = from_orm(db_char)
+    finally:
+        session.close()
+
     ch.add_affect(AffectFlag.BLIND)
     ch.add_affect(AffectFlag.INVISIBLE)
 
-    persistence.save_character(ch)
-    loaded = persistence.load_character("Flags")
+    save_character(ch)
+    loaded = load_character("Flags")
     assert loaded is not None
     assert loaded.has_affect(AffectFlag.BLIND)
     assert loaded.has_affect(AffectFlag.INVISIBLE)
