@@ -1051,11 +1051,136 @@ def from_orm(db_char: DBCharacter) -> Character:
             seeded_skills[weapon_skill] = 40
     recall_learned = seeded_skills.get("recall", 0)
     seeded_skills["recall"] = 50 if recall_learned < 50 else recall_learned
-    char.skills = seeded_skills
-    char.pcdata.learned = dict(seeded_skills)
+
+    # --- INV-008 Phase 1: read new DB columns if present ---
+    # If skills column exists (DB-canonical save), use saved skills over defaults
+    saved_skills_raw = getattr(db_char, "skills", None)
+    if saved_skills_raw and isinstance(saved_skills_raw, dict):
+        char.skills = dict(saved_skills_raw)
+        char.pcdata.learned = dict(saved_skills_raw)
+    else:
+        char.skills = seeded_skills
+        char.pcdata.learned = dict(seeded_skills)
+
+    # Groups from DB column (takes precedence over creation_groups seeding)
+    saved_groups_raw = getattr(db_char, "groups", None)
+    if saved_groups_raw and isinstance(saved_groups_raw, list):
+        char.pcdata.group_known = tuple(saved_groups_raw)
+
     char.perm_stat = _decode_perm_stats(db_char.perm_stats)
     char.is_npc = False
     char.sex = true_sex_value
+
+    # Scalar fields added in Phase 1
+    char.hit = getattr(db_char, "hp", 20) or 20  # keep using hp column name
+    # max_hit: use saved value only if it exceeds what perm_hit already set.
+    # For freshly-created characters the max_hit column defaults to 20 while
+    # perm_hit=100 — never let a stale default lower the correct perm_hit value.
+    # (mirroring ROM src/handler.c:607: char.max_hit = char.pcdata.perm_hit)
+    saved_max_hit = getattr(db_char, "max_hit", None)
+    if saved_max_hit is not None and saved_max_hit > char.max_hit:
+        char.max_hit = saved_max_hit
+    saved_mana = getattr(db_char, "mana", None)
+    if saved_mana is not None:
+        char.mana = saved_mana
+    # max_mana: same guard as max_hit — perm_mana takes floor
+    saved_max_mana = getattr(db_char, "max_mana", None)
+    if saved_max_mana is not None and saved_max_mana > char.max_mana:
+        char.max_mana = saved_max_mana
+    saved_move = getattr(db_char, "move", None)
+    if saved_move is not None:
+        char.move = saved_move
+    # max_move: same guard
+    saved_max_move = getattr(db_char, "max_move", None)
+    if saved_max_move is not None and saved_max_move > char.max_move:
+        char.max_move = saved_max_move
+    char.gold = int(getattr(db_char, "gold", 0) or 0)
+    char.silver = int(getattr(db_char, "silver", 0) or 0)
+    char.exp = int(getattr(db_char, "exp", 0) or 0)
+    char.trust = int(getattr(db_char, "trust", 0) or 0)
+    char.invis_level = int(getattr(db_char, "invis_level", 0) or 0)
+    char.incog_level = int(getattr(db_char, "incog_level", 0) or 0)
+    char.saving_throw = int(getattr(db_char, "saving_throw", 0) or 0)
+    char.hitroll = int(getattr(db_char, "hitroll", 0) or 0)
+    char.damroll = int(getattr(db_char, "damroll", 0) or 0)
+    char.wimpy = int(getattr(db_char, "wimpy", 0) or 0)
+    saved_position = getattr(db_char, "position", None)
+    if saved_position is not None:
+        char.position = int(saved_position)
+    char.played = int(getattr(db_char, "played", 0) or 0)
+    char.logon = int(getattr(db_char, "logon", 0) or 0)
+    char.lines = int(getattr(db_char, "lines", 22) or 22)
+    saved_prefix = getattr(db_char, "prefix", None)
+    char.prefix = str(saved_prefix) if saved_prefix is not None else ""
+    char.affected_by = int(getattr(db_char, "affected_by", 0) or 0)
+    saved_wiznet = getattr(db_char, "wiznet", None)
+    if saved_wiznet is not None:
+        char.wiznet = int(saved_wiznet)
+    char.log_commands = bool(getattr(db_char, "log_commands", False))
+    char.newbie_help_seen = bool(getattr(db_char, "newbie_help_seen", False))
+
+    # pcdata fields added in Phase 1
+    pcdata = char.pcdata
+    # INV-008: restore auth credential from DB row so do_password / auth can read pcdata.pwd
+    saved_pwd = getattr(db_char, "password_hash", "") or ""
+    if saved_pwd:
+        pcdata.pwd = saved_pwd
+    pcdata.title = getattr(db_char, "title", None)
+    saved_bamfin = getattr(db_char, "bamfin", None)
+    if saved_bamfin is not None:
+        pcdata.bamfin = str(saved_bamfin)
+    saved_bamfout = getattr(db_char, "bamfout", None)
+    if saved_bamfout is not None:
+        pcdata.bamfout = str(saved_bamfout)
+    pcdata.security = int(getattr(db_char, "security", 0) or 0)
+    pcdata.points = int(getattr(db_char, "points", 0) or 0)
+    pcdata.last_level = int(getattr(db_char, "last_level", 0) or 0)
+
+    # conditions list [drunk, full, thirst, hunger]
+    saved_conditions = getattr(db_char, "conditions", None)
+    if saved_conditions and isinstance(saved_conditions, list):
+        cond = [0, 48, 48, 48]
+        for idx, val in enumerate(saved_conditions[:4]):
+            try:
+                cond[idx] = int(val)
+            except (TypeError, ValueError):
+                pass
+        pcdata.condition = cond
+
+    # aliases dict
+    saved_aliases = getattr(db_char, "aliases", None)
+    if saved_aliases and isinstance(saved_aliases, dict):
+        try:
+            char.aliases.update(saved_aliases)
+        except Exception:
+            pass
+
+    # board name
+    saved_board = getattr(db_char, "board", None)
+    if saved_board and isinstance(saved_board, str):
+        pcdata.board_name = saved_board
+
+    # last_notes
+    saved_last_notes = getattr(db_char, "last_notes", None)
+    if saved_last_notes and isinstance(saved_last_notes, dict):
+        pcdata.last_notes.update(saved_last_notes)
+
+    # colours
+    saved_colours = getattr(db_char, "colours", None)
+    if saved_colours and isinstance(saved_colours, dict):
+        from mud.persistence import _apply_colour_table, _normalize_int_list
+        _apply_colour_table(pcdata, saved_colours)
+    else:
+        from mud.persistence import _normalize_int_list
+
+    # mod_stat and armor
+    saved_mod_stat = getattr(db_char, "mod_stat", None)
+    if saved_mod_stat and isinstance(saved_mod_stat, list):
+        char.mod_stat = _normalize_int_list(saved_mod_stat, 5)
+    saved_armor = getattr(db_char, "armor", None)
+    if saved_armor and isinstance(saved_armor, list):
+        char.armor = _normalize_int_list(saved_armor, 4)
+
     # ROM: admin status is conveyed via trust/level on the Character row,
     # not via a separate account table.  is_admin is set by login flow if needed.
     return char

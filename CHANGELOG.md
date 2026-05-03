@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.0]
+
+### Added
+- **INV-008 reversal — Phase 1 of 2: DB-canonical persistence schema.** Following the discovery that `mud/account/account_service.create_character` and `mud/models/character.py:from_orm` still write/read the DB row at first-login (the JSON-pfile path was load-bearing only after first save), the project is reversing course on INV-008: the DB row is being made canonical for ALL player state, the JSON pfile path will be deleted in Phase 2. This commit extends the `Character` SQLAlchemy model with 39 new columns to hold every field `PlayerSave` round-trips (scalars: `max_hit`, `mana`, `move`, `gold`, `silver`, `exp`, `trust`, `invis_level`, `incog_level`, `saving_throw`, `hitroll`, `damroll`, `wimpy`, `position`, `played`, `logon`, `lines`, `prompt`, `prefix`, `title`, `bamfin`, `bamfout`, `security`, `points`, `last_level`, `affected_by`, `comm`, `wiznet`, `log_commands`, `pfile_version`, `board`; JSON columns: `mod_stat`, `armor`, `conditions`, `aliases`, `skills`, `groups`, `last_notes`, `colours`, `pet_state`, `inventory_state`, `equipment_state`). Extended `Character.from_orm` to hydrate every new column. New `save_character_to_db(session, char)` in `mud/account/account_manager.py` writes the full state via UPDATE. Round-trip proven by 7 new tests in `tests/integration/test_db_canonical_round_trip.py` (all green). Public `save_character` / `load_character` surface unchanged in this phase — Phase 2 swaps the implementations and deletes `mud/persistence.py`. INV-008 reopened in the cross-file invariants tracker.
+- **`docs/parity/INV008_REVERSAL_AUDIT.md`** — 71-field map (PlayerSave → Character columns), `from_orm` audit, new code surface, caller surface, INV-008 test rewrite plan, and risk register; produced as the spec for both phases of the migration.
+
+### Notes
+- Pre-existing test slowness (full suite ~12 min vs. AGENTS.md's "~16s") and ~30 pre-existing test failures verified at the pre-Phase-1 baseline (git stash). Not introduced by this commit.
+
 ## [2.7.6]
 
 ### Changed
