@@ -1764,7 +1764,13 @@ async def handle_connection_with_stream(
             except asyncio.CancelledError:
                 break
             except Exception as exc:
-                print(f"[ERROR] Connection loop error for {session.name if session else 'unknown'}: {exc}")
+                import traceback
+                print(
+                    f"[ERROR] Connection loop error for "
+                    f"{session.name if session else 'unknown'}: "
+                    f"{type(exc).__name__}: {exc!r}"
+                )
+                traceback.print_exc()
                 break
 
     except Exception as exc:
@@ -2006,7 +2012,13 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             except asyncio.CancelledError:
                 break
             except Exception as exc:
-                print(f"[ERROR] Connection loop error for {session.name if session else 'unknown'}: {exc}")
+                import traceback
+                print(
+                    f"[ERROR] Connection loop error for "
+                    f"{session.name if session else 'unknown'}: "
+                    f"{type(exc).__name__}: {exc!r}"
+                )
+                traceback.print_exc()
                 break
 
     except Exception as exc:
