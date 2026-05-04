@@ -1,4 +1,4 @@
-# Session Status — 2026-05-03 — INV-008 reversed to DB-canonical (cross-file invariants 8/8)
+# Session Status — 2026-05-03 — hedit test rewrite + RecursionError fix (v2.8.7)
 
 ## Current State
 
@@ -94,15 +94,7 @@
   All fail via `inventory_object_factory` returning None for vnum
   3022 — likely a world-init / fixture issue, not the persistence
   code. Triage separately.
-- **Two ROM parity gaps surfaced during combat triage (separate
-  FIGHT-XXX entries):**
-  - `do_kill` calls `attack_round` (one swing); ROM `src/fight.c:2817`
-    calls `multi_hit`. `mud/commands/combat.py:125`.
-  - `is_safe()` is implemented (`mud/combat/safety.py`) but never
-    gated inside the damage path. ROM calls `is_safe(ch, victim)`
-    inside `damage()` and inside every special-attack handler.
-    Combatants dragged into a safe room mid-fight keep swinging in
-    Python; ROM stops them.
+- ~~**Two ROM parity gaps surfaced during combat triage (FIGHT-001/002):**~~ Both closed in commits `df0e455` (FIGHT-001) and `e12c946` (FIGHT-002). `do_kill` now routes through `multi_hit`; `apply_damage` re-checks `is_safe()` at entry. Regression tests: `tests/integration/test_fight_c_do_kill_parity.py` and `tests/integration/test_fight_c_safe_room_damage_gate.py`.
 - **Pre-existing `tests/test_logging_admin.py` failures** (8 cases,
   "Huh?" dispatcher misses). Verified pre-existing during the
   death-path sweep via `git stash` baseline. Not blocking.
