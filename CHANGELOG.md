@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.8]
+
+### Fixed
+- **Admin `log` command parity**: dispatcher trust for `log` now matches ROM `src/interp.c`/`src/act_wiz.c`, `cmd_log` keeps the persisted `PLR_LOG` bit and `log_commands` boolean in sync, and admin player lookup now resolves through the live runtime character registry so `log <player>` works reliably.
+
 ## [2.8.7]
 
 ### Fixed

@@ -2,7 +2,7 @@ import asyncio
 
 from mud.account.account_manager import save_character as save_player_file
 from mud.admin_logging.admin import toggle_log_all
-from mud.commands.imm_commands import get_char_world, get_trust
+from mud.commands.imm_commands import get_trust
 from mud.config import (
     get_qmconfig,
     load_qmconfig,
@@ -18,6 +18,7 @@ from mud.security import bans
 from mud.security.bans import BanFlag, BanPermissionError
 from mud.spawning.mob_spawner import spawn_mob
 from mud.wiznet import wiznet
+from mud.world.char_find import get_char_world
 from mud.world.world_state import toggle_newlock, toggle_wizlock
 
 ROM_NEWLINE = "\n\r"
@@ -371,10 +372,12 @@ def cmd_log(char: Character, args: str) -> str:
         return "Not on NPC's.\n\r"
     if victim.act & int(PlayerFlag.LOG):
         victim.act &= ~int(PlayerFlag.LOG)
+        victim.log_commands = False
         # mirroring ROM src/act_wiz.c:2972-2973
         return "LOG removed.\n\r"
     else:
         victim.act |= int(PlayerFlag.LOG)
+        victim.log_commands = True
         # mirroring ROM src/act_wiz.c:2977-2978
         return "LOG set.\n\r"
 

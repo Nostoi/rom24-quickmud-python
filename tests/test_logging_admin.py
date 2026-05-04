@@ -54,7 +54,7 @@ def test_log_toggles_per_character_logging(monkeypatch, tmp_path):
     admin, player = _create_admin_and_player()
 
     out_on = process_command(admin, "log Player")
-    assert out_on == "LOG set."
+    assert out_on == "LOG set.\n\r"
     assert player.log_commands is True
 
     process_command(player, "look")
@@ -70,7 +70,7 @@ def test_log_toggles_per_character_logging(monkeypatch, tmp_path):
     assert fields[2] == "look"
 
     out_off = process_command(admin, "log Player")
-    assert out_off == "LOG removed."
+    assert out_off == "LOG removed.\n\r"
     assert player.log_commands is False
 
     lines_after_disable = log_path.read_text(encoding="utf-8").splitlines()
@@ -85,7 +85,7 @@ def test_log_all_rotation_retains_flag(monkeypatch, tmp_path):
     admin, player = _create_admin_and_player()
 
     out_on = process_command(admin, "log all")
-    assert out_on == "Log ALL on."
+    assert out_on == "Log ALL on.\n\r"
     assert is_log_all_enabled() is True
 
     process_command(player, "look")
@@ -104,7 +104,7 @@ def test_log_all_rotation_retains_flag(monkeypatch, tmp_path):
     assert any("\tPlayer\tlook" in line for line in rotated_lines)
 
     out_off = process_command(admin, "log all")
-    assert out_off == "Log ALL off."
+    assert out_off == "Log ALL off.\n\r"
     assert is_log_all_enabled() is False
 
 
@@ -113,11 +113,11 @@ def test_log_all_accepts_trailing_args(monkeypatch, tmp_path):
     admin, _player = _create_admin_and_player()
 
     out_on = process_command(admin, "log all now please")
-    assert out_on == "Log ALL on."
+    assert out_on == "Log ALL on.\n\r"
     assert is_log_all_enabled() is True
 
     out_off = process_command(admin, "log all later")
-    assert out_off == "Log ALL off."
+    assert out_off == "Log ALL off.\n\r"
     assert is_log_all_enabled() is False
 
 
@@ -126,11 +126,11 @@ def test_log_command_allows_prefix_lookup(monkeypatch, tmp_path):
     admin, player = _create_admin_and_player()
 
     out_on = process_command(admin, "log pla")
-    assert out_on == "LOG set."
+    assert out_on == "LOG set.\n\r"
     assert player.log_commands is True
 
     out_off = process_command(admin, "log p")
-    assert out_off == "LOG removed."
+    assert out_off == "LOG removed.\n\r"
     assert player.log_commands is False
 
 
@@ -174,7 +174,7 @@ def test_log_all_captures_unknown_command_and_sanitizes(monkeypatch, tmp_path):
     admin, player = _create_admin_and_player()
 
     out_on = process_command(admin, "log all")
-    assert out_on == "Log ALL on."
+    assert out_on == "Log ALL on.\n\r"
 
     response = process_command(player, "frobnicate$  42\n")
     assert response == "Huh?"
@@ -208,7 +208,7 @@ def test_logging_logs_alias_expansion(monkeypatch, tmp_path):
     admin, player = _create_admin_and_player()
 
     out_on = process_command(admin, "log Player")
-    assert out_on == "LOG set."
+    assert out_on == "LOG set.\n\r"
 
     player.aliases["x"] = "look"
 

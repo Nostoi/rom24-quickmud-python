@@ -573,7 +573,7 @@ COMMANDS: list[Command] = [
     Command("allow", cmd_allow, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=MAX_LEVEL - 2),
     Command("unban", cmd_unban, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("banlist", cmd_banlist, admin_only=True, min_trust=LEVEL_HERO),
-    Command("log", cmd_log, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=MAX_LEVEL - 1),
+    Command("log", cmd_log, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("incognito", cmd_incognito, admin_only=True, min_trust=LEVEL_HERO),
     Command("holylight", cmd_holylight, admin_only=True, min_trust=LEVEL_HERO),
     Command(

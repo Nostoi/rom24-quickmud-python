@@ -84,6 +84,10 @@ def get_char_world(char: "Character", name: str) -> "Character | None":
     if not name:
         return None
 
+    victim = get_char_room(char, name)
+    if victim is not None:
+        return victim
+
     # Parse N.name format
     count = 0
     target_count = 1
