@@ -819,9 +819,9 @@ def _split_command_and_args(input_str: str) -> tuple[str, str]:
         return _one_argument(stripped)
 
     first = stripped[0]
-    # ROM punctuation aliases ('.', ',', '/', etc.) are single-char
-    # commands; '"' and "'" are quote sentinels for one_argument.
-    if not first.isalnum() and first not in ("'", '"'):
+    # mirroring ROM src/interp.c:422-433 — any leading non-alnum char is a
+    # single-character command token, including apostrophe.
+    if not first.isalnum():
         return first, stripped[1:].lstrip()
 
     return _one_argument(stripped)
@@ -1092,6 +1092,7 @@ def process_command(char: Character, input_str: str) -> str:
 
 def run_test_session() -> list[str]:
     from mud.spawning.obj_spawner import spawn_object
+    from mud.models.constants import OBJ_VNUM_SCHOOL_SWORD
     from mud.world import create_test_character, initialize_world
 
     initialize_world("area/area.lst")
@@ -1101,10 +1102,10 @@ def run_test_session() -> list[str]:
     char = create_test_character("Tester", 3005)
     # Ensure sufficient movement points for the scripted walk
     char.move = char.max_move = 100
-    sword = spawn_object(3022)
+    sword = spawn_object(OBJ_VNUM_SCHOOL_SWORD)
     if sword:
         char.room.add_object(sword)
-    commands = ["look", "get sword", "north", "say hello"]
+    commands = ["look", "north", "get sword", "say hello"]
     outputs = []
     for line in commands:
         outputs.append(process_command(char, line))

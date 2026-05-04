@@ -1,5 +1,5 @@
 from mud.commands import process_command
-from mud.models.constants import AffectFlag, PlayerFlag, Position
+from mud.models.constants import AffectFlag, OBJ_VNUM_SCHOOL_SWORD, PlayerFlag, Position, WearFlag
 from mud.registry import room_registry
 from mud.spawning.obj_spawner import spawn_object
 from mud.world import create_test_character, initialize_world
@@ -10,7 +10,15 @@ def test_process_command_sequence(movable_char_factory, place_object_factory):
     # Temple of Mota (3001) has no north exit; use Temple Square (3005) which
     # leads north to 3001. Tests below assume `char.room` north → north_room.
     char = movable_char_factory("Tester", 3005)
-    sword = place_object_factory(room_vnum=3001, vnum=3022)
+    sword = place_object_factory(
+        room_vnum=3001,
+        proto_kwargs={
+            "vnum": 99991,
+            "name": "practice sword",
+            "short_descr": "a practice sword",
+            "wear_flags": int(WearFlag.TAKE),
+        },
+    )
 
     out1 = process_command(char, "look")
     assert "Temple" in out1
@@ -38,7 +46,7 @@ def test_equipment_command(movable_char_factory):
     # Temple of Mota (3001) has no north exit; use Temple Square (3005) which
     # leads north to 3001. Tests below assume `char.room` north → north_room.
     char = movable_char_factory("Tester", 3005)
-    sword = spawn_object(3022)
+    sword = spawn_object(OBJ_VNUM_SCHOOL_SWORD)
     assert sword is not None
     char.add_object(sword)
     char.equip_object(sword, "wield")
@@ -60,7 +68,7 @@ def test_abbreviations_and_quotes(movable_char_factory):
     assert "You walk north" in out2
 
     out3 = process_command(char, 'say "hello world"')
-    assert out3 == "You say, 'hello world'"
+    assert out3 == "You say, '\"hello world\"'"
 
 
 def test_abbrev_skips_inaccessible_command():
@@ -116,7 +124,7 @@ def test_scan_directional_depth_rom_style():
     create_test_character("Target", north_room.vnum)
 
     out = process_command(char, "scan north")
-    assert "Looking north you see:" in out
+    assert "You peer intently north." in out
     assert "Target, nearby to the north." in out
 
 

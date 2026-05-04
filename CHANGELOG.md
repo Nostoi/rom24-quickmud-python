@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.9]
+
+### Fixed
+- **Command parser test parity**: leading punctuation commands now follow ROM `src/interp.c` single-character tokenization, restoring apostrophe-as-`say` handling. Updated scripted-session/command tests to match current ROM-faithful transcript ordering and scan output, and replaced a stale non-takeable school-sword pickup assumption with an explicit takeable test object.
+
 ## [2.8.8]
 
 ### Fixed
