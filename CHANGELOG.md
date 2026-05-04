@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.10]
+
+### Fixed
+- **Legacy character-row compatibility**: `mud/db/migrations.py` now backfills the DB-canonical `characters` columns that `load_character()` queries, so older SQLite databases with only the pre-2.8.0 schema can still load characters after migration. `mud/models/character.py:from_orm` and `mud/account/account_service.py:create_character` also keep persistent `points` aligned with ROM creation-point state.
+
 ## [2.8.9]
 
 ### Fixed

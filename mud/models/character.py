@@ -1133,7 +1133,11 @@ def from_orm(db_char: DBCharacter) -> Character:
     if saved_bamfout is not None:
         pcdata.bamfout = str(saved_bamfout)
     pcdata.security = int(getattr(db_char, "security", 0) or 0)
-    pcdata.points = int(getattr(db_char, "points", 0) or 0)
+    saved_points = getattr(db_char, "points", None)
+    if saved_points is None:
+        pcdata.points = int(char.creation_points or 0)
+    else:
+        pcdata.points = int(saved_points or 0)
     pcdata.last_level = int(getattr(db_char, "last_level", 0) or 0)
 
     # conditions list [drunk, full, thirst, hunger]

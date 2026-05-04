@@ -1064,6 +1064,9 @@ def create_character(
         "default_weapon_vnum": weapon_vnum,
         "newbie_help_seen": False,
         "creation_points": int(creation_points_value),
+        # mirroring ROM src/nanny.c: the creation point total is persistent
+        # character state, so keep DB-canonical `points` in sync on initial save.
+        "points": int(creation_points_value),
         "creation_groups": json.dumps(list(groups_tuple)),
         "creation_skills": json.dumps(list(skills_tuple)),
     }
