@@ -12,7 +12,7 @@ from mud.commands.advancement import do_practice, do_train
 from mud.models import Room
 from mud.models.character import Character, PCData
 from mud.models.classes import CLASS_TABLE
-from mud.models.constants import Position
+from mud.models.constants import Position, Sex
 from mud.models.mob import MobIndex
 from mud.models.races import list_playable_races
 from mud.skills.registry import load_skills, skill_registry
@@ -270,6 +270,30 @@ def test_advance_level_reports_gains(monkeypatch):
 
     expected = f"You gain 6 hit points, 8 mana, 4 move, and 1 practice.{ROM_NEWLINE}"
     assert expected in char.messages
+
+
+def test_advance_level_resets_title_to_rom_default(monkeypatch):
+    """ROM src/update.c:61-75 resets the class title on level gain."""
+
+    from mud.utils import rng_mm
+
+    monkeypatch.setattr("mud.advancement.time.time", lambda: 5000)
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
+
+    pcdata = PCData(title=" the Custom Title")
+    char = Character(
+        level=4,
+        ch_class=0,
+        sex=int(Sex.FEMALE),
+        is_npc=False,
+        pcdata=pcdata,
+    )
+    char.perm_stat = [13, 13, 13, 13, 13]
+    char.mod_stat = [0, 0, 0, 0, 0]
+
+    advance_level(char)
+
+    assert char.pcdata.title == " the Delveress in Spells"
 
 
 def _load_fireball() -> None:

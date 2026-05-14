@@ -21,8 +21,8 @@ from mud.account.account_service import (
     login,
 )
 from mud.commands.dispatcher import process_command
-from mud.db.models import Base, Character as DBCharacter
-from mud.db.session import SessionLocal, engine
+from mud.db.models import Base
+from mud.db.session import engine
 from mud.models.character import Character
 from mud.models.constants import ROOM_VNUM_SCHOOL, Stat
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
@@ -256,6 +256,14 @@ class TestCharacterPersistence:
 
         assert reloaded_char.level == 2
         assert reloaded_char.practice == 10
+
+
+def test_new_character_gets_rom_default_title_on_load():
+    """ROM src/nanny.c:778-780 assigns `the <class title>` on creation."""
+
+    runtime_char = create_and_load_character("titleuser", "password", "TestTitle")
+    assert runtime_char is not None
+    assert runtime_char.pcdata.title == " the Apprentice of Magic"
 
 
 class TestCharacterRegistryRegistration:

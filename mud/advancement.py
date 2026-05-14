@@ -8,6 +8,7 @@ from mud.models.character import Character
 from mud.models.classes import CLASS_TABLE, ClassType
 from mud.models.constants import LEVEL_HERO
 from mud.models.races import PcRaceType, list_playable_races
+from mud.models.titles import default_title_text
 from mud.utils import rng_mm
 from mud.wiznet import WiznetFlag, wiznet
 
@@ -138,6 +139,9 @@ def advance_level(char: Character) -> None:
         pcdata.perm_hit = int(getattr(pcdata, "perm_hit", 0) or 0) + hp
         pcdata.perm_mana = int(getattr(pcdata, "perm_mana", 0) or 0) + mana
         pcdata.perm_move = int(getattr(pcdata, "perm_move", 0) or 0) + move
+        from mud.commands.character import set_title
+
+        set_title(char, default_title_text(char.ch_class, char.level, getattr(char, "sex", 0)))
 
     if hasattr(char, "send_to_char") and not getattr(char, "is_npc", False):
         hit_suffix = "" if hp == 1 else "s"

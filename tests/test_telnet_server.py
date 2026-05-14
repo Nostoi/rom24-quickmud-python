@@ -531,6 +531,8 @@ def test_telnet_break_connect_prompts_and_reconnects():
         server = await create_server(host="127.0.0.1", port=0)
         host, port = server.sockets[0].getsockname()
         server_task = asyncio.create_task(server.serve_forever())
+        w1 = None
+        w2 = None
         try:
             r1, w1 = await asyncio.open_connection(host, port)
             await negotiate_ansi_prompt(r1, w1)
@@ -578,6 +580,14 @@ def test_telnet_break_connect_prompts_and_reconnects():
             w2.close()
             await w2.wait_closed()
         finally:
+            if w1 is not None and not w1.is_closing():
+                w1.close()
+                with suppress(Exception):
+                    await w1.wait_closed()
+            if w2 is not None and not w2.is_closing():
+                w2.close()
+                with suppress(Exception):
+                    await w2.wait_closed()
             server.close()
             await server.wait_closed()
             server_task.cancel()

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import mud.game_loop as gl
 from mud import mobprog
 from mud.combat import attack_round, multi_hit
 from mud.commands.combat import do_surrender
@@ -269,6 +270,7 @@ def test_event_hooks_fire_rom_triggers(monkeypatch) -> None:
 
     monkeypatch.setattr("mud.game_loop.reset_tick", lambda: None)
     monkeypatch.setattr("mud.game_loop.run_npc_specs", lambda: None)
+    gl._mobile_counter = 1
     game_tick()
 
     for required in [

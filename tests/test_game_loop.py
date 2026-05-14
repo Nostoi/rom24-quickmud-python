@@ -534,7 +534,9 @@ def test_light_decay_extinguishes_worn_torch():
     assert "bronze torch goes out." in watcher.messages
 
 
-def test_mobile_update_returns_home_when_out_of_zone(monkeypatch):
+def test_char_update_extracts_out_of_zone_mob(monkeypatch):
+    from mud.game_loop import char_update
+
     area_home = Area(name="Town")
     area_foreign = Area(name="Dungeon")
     home_room = Room(vnum=400, area=area_home)
@@ -549,8 +551,7 @@ def test_mobile_update_returns_home_when_out_of_zone(monkeypatch):
         position=int(Position.STANDING),
         default_pos=int(Position.STANDING),
     )
-    wanderer.home_room_vnum = home_room.vnum
-    wanderer.home_area = area_home
+    wanderer.zone = area_home
     away_room.add_character(wanderer)
     character_registry.append(wanderer)
 
@@ -565,10 +566,11 @@ def test_mobile_update_returns_home_when_out_of_zone(monkeypatch):
 
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 0)
 
-    mobile_update()
+    char_update()
 
-    assert wanderer.room is home_room
-    assert wanderer in home_room.people
+    assert wanderer.room is None
+    assert wanderer not in character_registry
+    assert wanderer not in home_room.people
     assert wanderer not in away_room.people
     assert "Rover wanders on home." in watcher.messages
 

@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
+from mud.combat.messages import TYPE_HIT
 from mud.combat.engine import (
     apply_damage,
     attack_round,
@@ -44,7 +45,7 @@ def test_defense_order_matches_rom():
 
     # Patch the check functions to verify call order
     with patch("mud.combat.engine.check_parry", side_effect=mock_parry) as mock_check_parry:
-        result = apply_damage(attacker, victim, 10, int(DamageType.BASH))
+        result = apply_damage(attacker, victim, 10, int(DamageType.BASH), dt=TYPE_HIT)
 
         # Should return parry message, not apply damage
         assert "parries your attack" in result

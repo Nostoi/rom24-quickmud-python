@@ -1,6 +1,6 @@
 # `const.c` ROM Parity Audit
 
-- **Status**: ⚠️ Partial 80% — 5 CRITICAL/IMPORTANT gaps (combat + advancement) + 2 MINOR data ports (title_table, weapon_table) open
+- **Status**: ⚠️ Partial 95% — 1 MINOR data port (`weapon_table`) remains deferred to the OLC cluster
 - **Date**: 2026-04-29
 - **Source**: `src/const.c` (ROM 2.4b6, 1936 lines, 16 top-level data tables)
 - **Python primaries**:
@@ -25,7 +25,7 @@
 | `race_table[]` | 161-355 | race-name + flags + form/parts (~14 races) | `mud/models/races.py:496` `RACE_TABLE` | ✅ AUDITED via prior `RACE_*` audits |
 | `pc_race_table[]` | 356-393 | playable-race entry (5 races) | `mud/models/races.py:116` `PC_RACE_TABLE` | ✅ AUDITED |
 | `class_table[]` | 394-419 | class metadata (4 classes) | `mud/models/classes.py:35` `CLASS_TABLE` | ✅ AUDITED |
-| `title_table[][]` | 421-721 | 4 classes × 60 levels × 2 (M/F) → title strings (480 entries) | — (not ported) | ❌ MISSING (CONST-001) |
+| `title_table[][]` | 421-721 | 4 classes × 61 levels × 2 (M/F) → title strings (488 strings / 244 title pairs) | `mud/models/titles.py` | ✅ AUDITED (CONST-001 FIXED) |
 | `str_app[26]` | 728-755 | tohit, todam, carry, wield (4 cols × 26 rows) | `mud/world/movement.py:115` (carry only), `mud/commands/equipment.py:21` (wield only); tohit/todam absent | ⚠️ PARTIAL (CONST-002, CONST-003) |
 | `int_app[26]` | 759-786 | learn (1 col × 26 rows) | `mud/models/constants.py:232` `INT_APP_LEARN` | ✅ AUDITED — Phase 2 verified all 26 entries |
 | `wis_app[26]` | 790-817 | practice (1 col × 26 rows) | `mud/math/stat_apps.py::WIS_APP` (full single-column port) + `wis_practice_bonus(ch)` accessor; consumed in `mud/advancement.py:advance_level` | ✅ AUDITED (CONST-006 FIXED) |
@@ -86,7 +86,7 @@ Python misses both the CON modifier and the per-level RNG roll. **CONST-005 (CRI
 
 ### `title_table` (ROM 421-721)
 
-Used by `nanny.c` set-on-creation, `update.c` `gain_exp`/`advance_level` set-on-level, `do_title` reset-to-default, and `do_advance` for IMM forced level changes. Python has `set_title` (`mud/commands/character.py:84`) and `do_title` (`character.py:108`) but no port of the 480-entry name table — `do_title` accepts a free-form string and `advance_level` never sets a default title at all. **CONST-001 (IMPORTANT)** — visible default title strings on level changes are absent; reset-title behavior diverges from ROM.
+Used by `nanny.c` set-on-creation, `update.c` `gain_exp`/`advance_level` set-on-level, and `do_advance` for IMM forced level changes. Python now ports the full 4×61×2 ROM table in `mud/models/titles.py`, persists the level-1 default title during `create_character()`, and resets the class title during `advance_level()` using the same ROM data. `set_title` (`mud/commands/character.py:85`) remains the shared spacing helper. **CONST-001** is now closed.
 
 ### `weapon_table` (ROM 76-86)
 
@@ -96,7 +96,7 @@ Used by `nanny.c` set-on-creation, `update.c` `gain_exp`/`advance_level` set-on-
 
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|
-| `CONST-001` | IMPORTANT | `src/const.c:421-721`, `src/update.c` (advance_level), `src/act_wiz.c` (do_title) | `mud/commands/character.py:84,108`, `mud/advancement.py:88` | 480-entry `title_table[MAX_CLASS][MAX_LEVEL+1][2]` not ported. `set_title` takes free-form string and `advance_level` does not assign a default title; `do_title` reset paths cannot reproduce ROM-default titles. | 🔄 OPEN — close as NANNY-009 dedicated session per `SESSION_STATUS.md` |
+| `CONST-001` | IMPORTANT | `src/const.c:421-721`, `src/update.c` (advance_level), `src/act_wiz.c` (do_advance), `src/nanny.c:778-780` | `mud/models/titles.py`, `mud/account/account_service.py:create_character`, `mud/advancement.py:advance_level`, `mud/commands/character.py:set_title` | ROM `title_table[MAX_CLASS][MAX_LEVEL+1][2]` was missing, so new characters and level-ups never received ROM default titles. | ✅ FIXED — ported the full table to `mud/models/titles.py`; `create_character()` now persists the level-1 ROM title, `advance_level()` now reapplies the class title for the new level, and `set_title()` reuses the shared formatting helper. Tests: `tests/integration/test_character_creation_runtime.py::test_new_character_gets_rom_default_title_on_load`, `tests/test_advancement.py::test_advance_level_resets_title_to_rom_default`. |
 | `CONST-002` | CRITICAL | `src/merc.h:2107-2108` `GET_HITROLL` macro (consumed at `src/fight.c:471` thac0) | `mud/combat/engine.py:411,420` | Combat reads raw `attacker.hitroll` without `str_app[get_curr_stat(STAT_STR)].tohit`. STR-3 character is missing −5 to-hit; STR-25 is missing +6. | ✅ FIXED — `mud/math/stat_apps.py::get_hitroll` ports `STR_APP[26]` table from `src/const.c:728-755` and the macro from `src/merc.h:2107-2108`; engine THAC0 + percent paths now call it. Test: `tests/integration/test_combat_str_app.py`. |
 | `CONST-003` | CRITICAL | `src/merc.h:2109-2110` `GET_DAMROLL` macro (consumed at `src/fight.c:588`) | `mud/combat/engine.py:1189` | Damage adds raw `attacker.damroll * min(100, skill) / 100` without `str_app[STR].todam` augmentation. Same range: −4 dam at STR-3, +9 dam at STR-25. (Also note the same line uses `//` instead of `c_div` — covered by separate combat-math gap, not this audit.) | ✅ FIXED — `mud/math/stat_apps.py::get_damroll` ports `STR_APP[STR].todam` augmentation; `calculate_weapon_damage` swap at `mud/combat/engine.py:1189`. Test: `tests/integration/test_combat_str_app.py::test_get_damroll_*`. |
 | `CONST-004` | CRITICAL | `src/merc.h:2104-2106` `GET_AC` macro (consumed at `src/fight.c:480-489`, `src/act_info.c:1594-1645`, `src/act_wiz.c:1612-1613`) | `mud/combat/engine.py:391`, `mud/commands/session.py:160-176`, `mud/commands/imm_search.py:976-984` | Combat and AC display read raw `victim.armor[ac_idx]` without `dex_app[DEX].defensive` when victim `IS_AWAKE`. DEX-3 missing +40 penalty; DEX-25 missing −120 bonus. | ✅ FIXED — `mud/math/stat_apps.py::DEX_APP` ports `dex_app[26]` from `src/const.c:821-848`; `get_ac(ch, type)` accessor mirrors `merc.h:2104-2106` with `IS_AWAKE` gate (position > SLEEPING). Combat (`engine.py:391`), do_score (`session.py`), and wiz stat (`imm_search.py`) all swapped. Test: `tests/integration/test_combat_dex_app.py` (11 cases). |
@@ -113,9 +113,8 @@ Recommended close order:
 1. **CONST-002, CONST-003, CONST-004** as a triplet — they all need the same primitive: a ROM-faithful `str_app`/`dex_app` table module + `get_hitroll(ch)` / `get_damroll(ch)` / `get_ac(ch, type)` accessor functions in `mud/models/character.py` (or a new `mud/math/stat_apps.py`). One closer per gap, one commit per gap, but the table import is shared.
 2. **CONST-005** — port `con_app` table, rewrite `advance_level` to roll `number_range(class.hp_min, class.hp_max) + con_app[CON].hitp` (touches `class_table` HP fields too — verify they're ported on `mud/models/classes.py:ClassType`).
 3. **CONST-006** — port `wis_app` (1-column), apply in `advance_level`.
-4. **CONST-001** — `title_table` port. Plan per `SESSION_STATUS.md` is a dedicated NANNY-009 session.
-5. **CONST-007** — defer to OLC audit, same pattern as `BIT-001/002/003`.
+4. **CONST-007** — defer to OLC audit, same pattern as `BIT-001/002/003`.
 
 ## Phase 5 — Completion summary
 
-`const.c` stays at ⚠️ Partial. Five behavioral gaps and one dataset gap block tracker flip; the OLC-shaped gap (CONST-007) and the data-port gap (CONST-001 — IMPORTANT but isolated) follow once the combat-math four (CONST-002/003/004/005) close. 13 of 16 tables are correctly ported; the failures are concentrated in the stat-bonus app-tables, where ROM's macro-pattern (read at use site) silently dropped during the original Python port. Audit doc + stable gap IDs filed; closures handed off to per-gap `/rom-gap-closer` cycles.
+`const.c` stays at ⚠️ Partial only because `CONST-007` (`weapon_table`) remains deferred to the OLC cluster. The combat-math gaps (`CONST-002`..`CONST-006`) and the title-table gap (`CONST-001`) are now closed; the remaining work is a centralized weapon metadata table, not a live gameplay divergence.

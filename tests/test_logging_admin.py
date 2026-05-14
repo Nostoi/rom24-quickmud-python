@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, cast
 from types import SimpleNamespace
 
+from mud.models.constants import MAX_LEVEL
 from mud.models.room import Room
 from mud.net.connection import TelnetStream
 
@@ -39,11 +40,9 @@ def teardown_function(function):
 
 
 def _create_admin_and_player():
-    from mud.models.constants import LEVEL_HERO
-
     admin = create_test_character("Admin", 3001)
     admin.is_admin = True
-    admin.level = LEVEL_HERO
+    admin.level = MAX_LEVEL - 1
     player = create_test_character("Player", 3001)
     player.is_admin = False
     return admin, player

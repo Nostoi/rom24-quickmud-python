@@ -7,7 +7,7 @@ Tests verify that mobs behave according to ROM 2.4b6 AI patterns:
 - Scavenger mobs pick up items
 - Aggressive mobs attack players
 - Wimpy mobs flee at low HP
-- Mobs return home when out of area
+- Out-of-area mobs are extracted by the home-roll path
 
 ROM Reference: src/update.c (mobile_update, aggr_update)
 """
@@ -29,7 +29,9 @@ from mud.models.constants import (
 )
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
+from mud.models.room import Room
 from mud.registry import room_registry, area_registry
+from mud.utils import rng_mm
 from mud.world import initialize_world
 
 
@@ -58,6 +60,29 @@ def adjacent_room():
 def valhalla_room():
     """Get a room in Valhalla (area 1200) for cross-area tests."""
     return room_registry.get(1200)
+
+
+@pytest.fixture
+def isolated_mobile_room():
+    """Provide an isolated room and registry slice for deterministic mob AI tests."""
+    snapshot = list(character_registry)
+    character_registry.clear()
+
+    room = Room(
+        vnum=999001,
+        name="Isolated Mob AI Room",
+        description="A deterministic room for mob AI parity tests.",
+        room_flags=0,
+        sector_type=0,
+    )
+    room_registry[room.vnum] = room
+
+    try:
+        yield room
+    finally:
+        character_registry.clear()
+        character_registry.extend(snapshot)
+        room_registry.pop(room.vnum, None)
 
 
 def create_test_mob(room_vnum: int, **kwargs) -> Character:
@@ -189,17 +214,17 @@ class TestSentinelBehavior:
 class TestScavengerBehavior:
     """Test ACT_SCAVENGER flag causes mobs to pick up items."""
 
-    def test_scavenger_picks_up_items(self, test_room):
+    def test_scavenger_picks_up_items(self, isolated_mobile_room):
         """ROM parity: src/update.c:621 - Scavenger mobs pick up valuable items."""
         scavenger = create_test_mob(
-            3001,
+            isolated_mobile_room.vnum,
             name="scavenger rat",
             act=int(ActFlag.SCAVENGER),
         )
 
         obj = create_test_object(
             9100,
-            3001,
+            isolated_mobile_room.vnum,
             name="gold coin",
             short_descr="a shiny gold coin",
             cost=500,
@@ -212,9 +237,9 @@ class TestScavengerBehavior:
                 break
 
         assert obj in scavenger.inventory
-        assert obj not in test_room.contents
+        assert obj not in isolated_mobile_room.contents
 
-    def test_scavenger_prefers_valuable_items(self, test_room):
+    def test_scavenger_prefers_valuable_items(self, isolated_mobile_room):
         """ROM parity: src/update.c:633 - Scavengers pick most valuable item.
 
         Loop bound generous enough that the 1/64-per-tick action roll fires
@@ -222,14 +247,14 @@ class TestScavengerBehavior:
         autouse fixture for determinism.
         """
         scavenger = create_test_mob(
-            3001,
+            isolated_mobile_room.vnum,
             name="scavenger goblin",
             act=int(ActFlag.SCAVENGER),
         )
 
         cheap_obj = create_test_object(
             9101,
-            3001,
+            isolated_mobile_room.vnum,
             name="rusty dagger",
             cost=10,
             wear_flags=int(WearFlag.TAKE),
@@ -237,7 +262,7 @@ class TestScavengerBehavior:
 
         expensive_obj = create_test_object(
             9102,
-            3001,
+            isolated_mobile_room.vnum,
             name="diamond ring",
             cost=1000,
             wear_flags=int(WearFlag.TAKE),
@@ -252,10 +277,12 @@ class TestScavengerBehavior:
 
 
 class TestHomeReturn:
-    """Test mobs return home when out of their area."""
+    """Test ROM out-of-zone mobs are extracted during char_update."""
 
-    def test_mob_returns_home_when_out_of_area(self, test_room, valhalla_room):
-        """ROM parity: src/update.c:688-693 - Mobs return to home area when displaced."""
+    def test_mob_out_of_area_is_extracted_on_home_roll(self, test_room, valhalla_room):
+        """ROM parity: src/update.c:688-693 - Out-of-zone mobs are extracted on a low roll."""
+        from mud.game_loop import char_update
+
         home_vnum = 3001
         away_vnum = 1200
 
@@ -271,12 +298,15 @@ class TestHomeReturn:
         assert mob.room == valhalla_room
         assert mob.zone != mob.room.area
 
-        for i in range(2000):
-            mobile_update()
-            if mob.room == test_room:
-                break
+        original = rng_mm.number_percent
+        rng_mm.number_percent = lambda: 1
+        try:
+            char_update()
+        finally:
+            rng_mm.number_percent = original
 
-        assert mob.room == test_room, "Mob failed to return home after 2000 iterations"
+        assert mob.room is None
+        assert mob not in character_registry
 
 
 class TestAggressiveBehavior:

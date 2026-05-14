@@ -137,6 +137,15 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
         area_list_path: Path to area.lst file (for legacy .are loading)
         use_json: If True, load from JSON files in data/areas/. If False, use legacy .are files.
     """
+    # Test and service code may re-run world initialization within one process.
+    # ROM boot_db starts from a fresh process image, so mirror that by clearing
+    # boot-populated registries before loading a new world snapshot.
+    character_registry.clear()
+    room_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    area_registry.clear()
+
     # Tiny fix: ensure a clean ban registry at boot and between tests.
     # ROM loads bans from disk at boot; tests may add bans in-memory.
     # Clearing here avoids leakage across test modules without affecting

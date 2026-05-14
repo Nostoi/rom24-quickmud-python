@@ -114,57 +114,6 @@ def _broadcast_room(room: Room, message: str, exclude: object | None = None) -> 
             messages.append(message)
 
 
-def _maybe_return_home(mob: Character, room: Room) -> bool:
-    if getattr(mob, "desc", None) is not None:
-        return False
-    if getattr(mob, "fighting", None) is not None:
-        return False
-    if _is_charmed(mob):
-        return False
-
-    home_vnum = getattr(mob, "home_room_vnum", None)
-    try:
-        home_vnum_int = int(home_vnum or 0)
-    except (TypeError, ValueError):
-        return False
-    if home_vnum_int <= 0:
-        return False
-
-    current_area = getattr(room, "area", None)
-    home_area = getattr(mob, "home_area", None) or getattr(mob, "zone", None)
-    if home_area is None or home_area is current_area:
-        return False
-
-    if rng_mm.number_percent() >= 5:
-        return False
-
-    destination = room_registry.get(home_vnum_int)
-    if destination is None:
-        return False
-
-    name = getattr(mob, "short_descr", None) or getattr(mob, "name", None) or "Someone"
-    _broadcast_room(room, f"{name} wanders on home.", exclude=mob)
-
-    if hasattr(room, "remove_character"):
-        room.remove_character(mob)
-    else:
-        occupants = getattr(room, "people", None)
-        if isinstance(occupants, list) and mob in occupants:
-            occupants.remove(mob)
-        setattr(mob, "room", None)
-
-    if isinstance(mob, Character):
-        destination.add_character(mob)
-    else:
-        add_mob = getattr(destination, "add_mob", None)
-        if callable(add_mob):
-            add_mob(mob)
-        else:
-            destination.add_character(mob)
-
-    return True
-
-
 def _can_loot(mob: Character, obj: ObjectData) -> bool:
     if getattr(mob, "is_admin", False):
         return True
@@ -331,9 +280,6 @@ def mobile_update() -> None:
         if room is None:
             continue
         if _is_charmed(mob):
-            continue
-
-        if _maybe_return_home(mob, room):
             continue
 
         area = getattr(room, "area", None)

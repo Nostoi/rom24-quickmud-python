@@ -137,11 +137,14 @@ def _weapon_level(weapon) -> int:
 
 def _is_weapon(weapon) -> bool:
     item_type = getattr(weapon, "item_type", None)
-    if isinstance(item_type, str):
-        if item_type.lower() == "weapon":
-            return True
+    if item_type == int(ItemType.WEAPON) or item_type == ItemType.WEAPON:
+        return True
+    if isinstance(item_type, str) and item_type.lower() == "weapon":
+        return True
     if hasattr(weapon, "prototype"):
         proto_type = getattr(weapon.prototype, "item_type", None)
+        if proto_type == int(ItemType.WEAPON) or proto_type == ItemType.WEAPON:
+            return True
         if isinstance(proto_type, str) and proto_type.lower() == "weapon":
             return True
     return False
@@ -316,7 +319,7 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
     """
     results: list[str] = []
 
-    # ROM wait/daze timer decrements for non-player characters
+    # ROM src/fight.c:192-196 decrements wait/daze for descriptor-less characters
     # PULSE_VIOLENCE is typically 3 in ROM
     PULSE_VIOLENCE = 3
     if not hasattr(attacker, "desc") or attacker.desc is None:
@@ -411,6 +414,9 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
     attack_index = attacker.dam_type or 0
     if wield is not None:
         attack_index = _weapon_attack_index(wield)
+    attack_dt = dt
+    if attack_dt is None or attack_dt == -1:
+        attack_dt = TYPE_HIT + attack_index
     dam_type_lookup = attack_damage_type(attack_index)
     dam_type = int(dam_type_lookup) if dam_type_lookup is not None else int(DamageType.BASH)
     ac_idx = ac_index_for_dam_type(dam_type)
@@ -443,7 +449,7 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
         # Miss if nat 0 or (not 19 and diceroll < thac0 - victim_ac)
         if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
             # Miss — ROM C calls damage(ch, victim, 0, dt, dam_type, TRUE).
-            return apply_damage(attacker, victim, 0, int(dam_type), dt=dt)
+            return apply_damage(attacker, victim, 0, int(dam_type), dt=attack_dt)
     else:
         # Percent model kept for parity stability outside feature flag
         # ROM src/merc.h:2107-2108 GET_HITROLL adds str_app[STR].tohit.
@@ -453,7 +459,7 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
         to_hit = urange(5, to_hit, 100)
         if rng_mm.number_percent() > to_hit:
             # Miss — ROM C calls damage(ch, victim, 0, dt, dam_type, TRUE).
-            return apply_damage(attacker, victim, 0, int(dam_type), dt=dt)
+            return apply_damage(attacker, victim, 0, int(dam_type), dt=attack_dt)
 
     # Hit determined - calculate weapon damage following C src/fight.c:one_hit logic
     damage = calculate_weapon_damage(
@@ -462,7 +468,7 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
         dam_type,
         wield=wield,
         skill=skill_total,
-        dt=dt,
+        dt=attack_dt,
     )
 
     # Apply damage reduction modifiers (sanctuary, protection, drunk) following C src/fight.c:damage logic
@@ -485,7 +491,7 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
     weapon_special_messages = process_weapon_special_attacks(attacker, victim)
 
     # Apply damage and update fighting state (defenses checked inside apply_damage)
-    main_message = apply_damage(attacker, victim, damage, dam_type, dt=dt, immune=immune)
+    main_message = apply_damage(attacker, victim, damage, dam_type, dt=attack_dt, immune=immune)
 
     # Combine main attack message with weapon special messages
     if weapon_special_messages:
@@ -549,16 +555,16 @@ def apply_damage(
             if attacker.fighting is None:
                 set_fighting(attacker, victim)
 
-    # Check for parry, dodge, and shield block following C src/fight.c:damage() order
-    # These are checked AFTER hit determination but BEFORE damage application
-    # Order is critical: shield_block → parry → dodge (per ROM C src/fight.c:one_hit)
+    # Check for parry, dodge, and shield block following C src/fight.c:790-800.
+    # These are checked AFTER hit determination but BEFORE damage application.
+    # Order is critical: parry → dodge → shield_block.
     if dam_type is not None and attacker != victim and _should_check_weapon_defenses(dt):
-        if check_shield_block(attacker, victim):
-            return f"{victim.name} blocks your attack with a shield."
         if check_parry(attacker, victim):
             return f"{victim.name} parries your attack."
         if check_dodge(attacker, victim):
             return f"{victim.name} dodges your attack."
+        if check_shield_block(attacker, victim):
+            return f"{victim.name} blocks your attack with a shield."
 
     # Apply damage type resistance/vulnerability modifiers (ROM fight.c:804-816)
     # This must happen AFTER defense checks but BEFORE damage application
@@ -1189,7 +1195,7 @@ def calculate_weapon_damage(
         dam = rng_mm.number_range(min_dam, max_dam)
 
     # Enhanced damage skill
-    enhanced_damage_skill = getattr(attacker, "enhanced_damage_skill", 0)
+    enhanced_damage_skill = _get_skill_percent(attacker, "enhanced damage", "enhanced_damage_skill")
     if enhanced_damage_skill > 0:
         diceroll = rng_mm.number_percent()
         if diceroll <= enhanced_damage_skill:

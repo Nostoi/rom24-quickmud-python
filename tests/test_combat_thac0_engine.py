@@ -45,7 +45,7 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.hitroll = 0
     vic.hit = 50  # Increase HP to be consistent
     out = process_command(atk, "kill vic")
-    assert out == "You miss Vic."
+    assert out == "{2You miss Vic.{x"
 
 
 def test_weapon_skill_influences_thac0(monkeypatch):
@@ -105,4 +105,4 @@ def test_weapon_skill_influences_thac0(monkeypatch):
     atk.level = 32
     vic.hit = 10
     out = process_command(atk, "kill vic")
-    assert out == "You miss Vic."
+    assert out == "{2You miss Vic.{x"

@@ -1,46 +1,55 @@
 import json
 from collections.abc import Iterable
-from functools import lru_cache
 from dataclasses import dataclass, field
 from enum import Enum
+from functools import lru_cache
 from pathlib import Path
-from typing import Final, Iterable, NamedTuple
+from typing import Final, NamedTuple
 
+from mud.advancement import exp_per_level_for_creation
 from mud.db.models import Character
 from mud.db.session import SessionLocal
 from mud.models.classes import (
     ClassType,
+)
+from mud.models.classes import (
     get_player_class as _get_player_class,
+)
+from mud.models.classes import (
     list_player_classes as _list_player_classes,
 )
 from mud.models.constants import (
     OBJ_VNUM_SCHOOL_DAGGER,
     OBJ_VNUM_SCHOOL_MACE,
     OBJ_VNUM_SCHOOL_SWORD,
-    PlayerFlag,
     ROOM_VNUM_SCHOOL,
+    PlayerFlag,
     Sex,
-    Stat,
 )
 from mud.models.races import (
     PcRaceType,
     RaceType,
+)
+from mud.models.races import (
     get_pc_race as _get_pc_race,
+)
+from mud.models.races import (
     get_race as _get_race,
+)
+from mud.models.races import (
     list_playable_races as _list_playable_races,
 )
+from mud.models.titles import default_title_storage
 from mud.security import bans
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import hash_password, verify_password
 from mud.skills.groups import get_group, iter_group_names, list_groups
 from mud.skills.metadata import ROM_SKILL_METADATA, ROM_SKILL_NAMES_BY_INDEX
+from mud.utils import rng_mm
 from mud.world.world_state import (
     is_newlock_enabled,
     is_wizlock_enabled,
 )
-from mud.utils import rng_mm
-
-from mud.advancement import exp_per_level_for_creation
 
 
 class LoginFailureReason(Enum):
@@ -1062,6 +1071,7 @@ def create_character(
         "perm_move": 100,
         "act": int(PlayerFlag.NOSUMMON),
         "default_weapon_vnum": weapon_vnum,
+        "title": default_title_storage(_class_index_for(selected_class), 1, sex_value),
         "newbie_help_seen": False,
         "creation_points": int(creation_points_value),
         # mirroring ROM src/nanny.c: the creation point total is persistent

@@ -262,6 +262,10 @@ class TestPassiveSkillsIntegration:
         mob.hit = 50
         mob.level = 1
         mob.imm_flags = 0  # Remove weapon immunity so test can verify damage
+        mob.ac_pierce = 0
+        mob.ac_bash = 0
+        mob.ac_slash = 0
+        mob.ac_exotic = 0
 
         char.fighting = mob
         mob.fighting = char

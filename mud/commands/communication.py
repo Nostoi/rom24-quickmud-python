@@ -621,7 +621,11 @@ def do_yell(char: Character, args: str) -> str:
 
             # Send yell message to victim (ROM C: act("$n yells '$t'", ch, argument, d->character, TO_VICT))
             victim_message = f"{char.name} yells '{args}'"
-            send_to_char(victim_message, victim)
+            writer = getattr(victim, "connection", None)
+            if writer is not None:
+                asyncio.create_task(send_to_char(victim, victim_message))
+                continue
+            _queue_personal_message(victim, victim_message)
 
     return f"You yell '{args}'"
 

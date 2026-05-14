@@ -90,8 +90,8 @@ def create_test_room():
     return room
 
 
-def test_all_commands():
-    """Test all registered commands."""
+def run_all_commands_check() -> int:
+    """Run the comprehensive command registration check."""
     char = create_test_character()
     room = create_test_room()
     char.room = room
@@ -195,10 +195,15 @@ def test_all_commands():
     if total_errors == 0:
         print("🎉 ALL COMMANDS WORKING!")
         return 0
-    else:
-        print(f"⚠️  {total_errors} commands have errors")
-        return 1
+
+    print(f"⚠️  {total_errors} commands have errors")
+    return 1
+
+
+def test_all_commands() -> None:
+    """Test all registered commands."""
+    run_all_commands_check()
 
 
 if __name__ == "__main__":
-    sys.exit(test_all_commands())
+    sys.exit(run_all_commands_check())

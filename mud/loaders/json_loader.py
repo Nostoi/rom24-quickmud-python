@@ -408,7 +408,11 @@ def _load_rooms_from_json(rooms_data: list[dict[str, Any]], area: Area) -> None:
         # Set ROM defaults
         room.heal_rate = room_data.get("heal_rate", 100)
         room.mana_rate = room_data.get("mana_rate", 100)
-        room.clan = lookup_clan_id(room_data.get("clan", 0))
+        clan_value = room_data.get("clan", 0)
+        if isinstance(clan_value, int):
+            room.clan = clan_value
+        else:
+            room.clan = lookup_clan_id(clan_value)
         room.owner = room_data.get("owner", "")
 
         # Set ROOM_LAW flag for Midgaard law zone (vnums 3000-3400)

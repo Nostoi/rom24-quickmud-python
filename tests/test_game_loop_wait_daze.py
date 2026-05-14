@@ -16,6 +16,7 @@ def setup_function(_):
 
 
 def teardown_function(_):
+    character_registry.clear()
     mud_config.TIME_SCALE = 1
     gl._pulse_counter = 0
     gl._point_counter = 0

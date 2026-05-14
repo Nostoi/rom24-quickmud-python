@@ -230,11 +230,14 @@ class TestShoutCommand:
 
 
 class TestYellCommand:
-    def test_yell_broadcasts_to_adjacent_rooms(self, alice):
-        """Test yell broadcasts to current and adjacent rooms."""
+    def test_yell_broadcasts_to_adjacent_rooms(self, alice, bob):
+        """Test yell broadcasts to same-area listeners without a live connection."""
+        bob.messages.clear()
+
         result = do_yell(alice, "Help!")
 
         assert "help" in result.lower()
+        assert bob.messages == ["Alice yells 'Help!'"]
 
     def test_yell_requires_argument(self, alice):
         """Test yell without argument shows error."""

@@ -1,6 +1,7 @@
 import pytest
 
 from mud.loaders import load_all_areas
+from mud.models.character import character_registry
 from mud.registry import area_registry, room_registry
 from mud.world import initialize_world, look, move_character
 
@@ -45,3 +46,16 @@ def test_area_list_requires_sentinel(tmp_path):
     with pytest.raises(ValueError):
         load_all_areas(str(area_list), use_json=False)
     area_registry.clear()
+
+
+def test_initialize_world_resets_character_registry_between_calls():
+    initialize_world("area/area.lst")
+    first_count = len(room_registry[3001].people)
+    first_registry_count = len(character_registry)
+
+    initialize_world("area/area.lst")
+    second_count = len(room_registry[3001].people)
+    second_registry_count = len(character_registry)
+
+    assert second_count == first_count
+    assert second_registry_count == first_registry_count

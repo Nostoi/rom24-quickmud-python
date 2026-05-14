@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI, WebSocket
@@ -16,21 +17,9 @@ from mud.world.world_state import initialize_world
 
 from .websocket_stream import WebSocketStream
 
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# Global game tick task
 _game_task = None
 
 
-@app.on_event("startup")
 async def startup() -> None:
     global _game_task
     load_qmconfig()
@@ -42,7 +31,6 @@ async def startup() -> None:
     print("🎮 Game loop started for WebSocket server")
 
 
-@app.on_event("shutdown")
 async def shutdown() -> None:
     global _game_task
     if _game_task:
@@ -52,6 +40,26 @@ async def shutdown() -> None:
         except asyncio.CancelledError:
             print("Game loop stopped")
             pass
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    await startup()
+    try:
+        yield
+    finally:
+        await shutdown()
+
+
+app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.websocket("/ws")

@@ -19,7 +19,7 @@ def _setup_pair():
     return attacker, victim
 
 
-def test_shield_block_triggers_before_parry_and_dodge(monkeypatch):
+def test_parry_triggers_before_dodge_and_shield_block(monkeypatch):
     from mud.utils import rng_mm
 
     attacker, victim = _setup_pair()
@@ -32,7 +32,7 @@ def test_shield_block_triggers_before_parry_and_dodge(monkeypatch):
     # Ensure percent roll always hits the threshold
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
     out = process_command(attacker, "kill victim")
-    assert out == "Victim blocks your attack with a shield."
+    assert out == "Victim parries your attack."
 
 
 def test_parry_triggers_when_no_shield(monkeypatch):

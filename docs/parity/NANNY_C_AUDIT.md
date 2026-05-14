@@ -1,11 +1,11 @@
 # NANNY.C Parity Audit — ROM 2.4b6 → QuickMUD
 
 **Created**: 2026-04-28
-**Status**: ✅ Audited (12/14 closed; NANNY-009 data-port deferred; NANNY-010 deferred-by-design)
-**Coverage**: 1 ROM function (`nanny()`, 824 lines, 16 connection-state cases) mapped to Python; 14 gaps identified (8 CRITICAL, 5 IMPORTANT, 1 MINOR). All 8 CRITICAL gaps fixed/verified; 4 of 5 IMPORTANT closed; NANNY-009 deferred for dedicated data-port session; NANNY-010 deferred-by-design (`SESSIONS`-dict architecture is ROM-equivalent).
+**Status**: ✅ Audited (13/14 closed; NANNY-010 deferred-by-design)
+**Coverage**: 1 ROM function (`nanny()`, 824 lines, 16 connection-state cases) mapped to Python; 14 gaps identified (8 CRITICAL, 5 IMPORTANT, 1 MINOR). All 8 CRITICAL gaps fixed/verified; all 5 IMPORTANT gaps now closed except NANNY-010, which remains deferred-by-design because the `SESSIONS`-dict architecture is ROM-equivalent.
 
 ROM source: `src/nanny.c`
-Python entry points: `mud/net/connection.py` (login & creation flow), `mud/account/account_service.py` (creation logic, name validation), `mud/account/account_manager.py` (load/persist), `mud/handler.py` (`reset_char`).
+Python entry points: `mud/net/connection.py` (login & creation flow), `mud/account/account_service.py` (creation logic, name validation), `mud/account/account_manager.py` (load/persist), `mud/handler.py` (`reset_char`), `mud/models/titles.py` (ROM title table port).
 
 ---
 
@@ -36,7 +36,7 @@ Python entry points: `mud/net/connection.py` (login & creation flow), `mud/accou
 | `CON_READ_MOTD` (entry broadcast) | 804-815 | — | — | ❌ MISSING — see NANNY-007, NANNY-008 |
 | `check_parse_name` | (called from 188) | `is_valid_account_name` | `mud/account/account_service.py:572` | ⚠️ PARTIAL — see NANNY-012 |
 | `reset_char` (called from 760) | (handler.c) | `reset_char` exists but unwired on login | `mud/handler.py:1046` | ❌ MISSING — see NANNY-014 |
-| `set_title` / `title_table` | (called from 778-780) | — | — | ❌ MISSING — see NANNY-009 |
+| `set_title` / `title_table` | (called from 778-780) | `create_character` + `mud/models/titles.py` | `mud/account/account_service.py:1027`, `mud/models/titles.py:1` | ✅ AUDITED — see NANNY-009 |
 
 ---
 
@@ -126,7 +126,7 @@ Python:
 - `give_school_outfit` (`mud/commands/inventory.py:142-198`) gives outfit + `OBJ_VNUM_MAP = 3162`. ✅
 - Starting room SCHOOL applied via `starting_room_vnum`. ✅
 - **Missing**: `perm_stat[attr_prime] += 3` first-login bonus. See NANNY-005.
-- **Missing**: `set_title("the …")` — `title_table` data is not present in the port. See NANNY-009.
+- **Fixed**: ROM `title_table` is now ported in `mud/models/titles.py`, and `create_character()` persists `set_title("the …")` equivalent storage for new characters. See NANNY-009.
 
 ### `CON_READ_MOTD` — resource refresh + `reset_char` (lines 760, 772-775)
 
@@ -182,7 +182,7 @@ ROM enforces length 3–12, alpha-only, and rejects reserved tokens including `a
 | `NANNY-007` | CRITICAL | `nanny.c:804` | `mud/net/connection.py:1554-1601` | `act("$n has entered the game.", TO_ROOM)` broadcast missing on login — other players in the room never see arrivals. | ✅ FIXED — `broadcast_entry_to_room` helper added; called in both non-reconnecting branches of `handle_connection`. Test: `tests/integration/test_nanny_login_parity.py::test_login_broadcasts_entry_to_room`. |
 | `NANNY-014` | CRITICAL | `nanny.c:760` | `mud/handler.py:1046` (defined but unwired) | `reset_char(ch)` not invoked on login; max stats / hit / mana / move / armor not recomputed from equipment. | ✅ FIXED — `apply_login_state_refresh` wired into both branches of `handle_connection`; latent `WearLocation.MAX` typo in `reset_char` corrected to `19` (ROM `MAX_WEAR`). Test: `tests/integration/test_nanny_login_parity.py`. |
 | `NANNY-008` | IMPORTANT | `nanny.c:810-815` | `mud/net/connection.py:broadcast_entry_to_room` | Pet does not follow owner into room on login (`char_to_room(pet, in_room)` + entry act missing). | ✅ FIXED — `broadcast_entry_to_room` extended to move `char.pet` into `char.room` via `char_to_room` and emit a TO_ROOM "$n has entered the game." for the pet (excluding the pet itself). Test: `tests/integration/test_nanny_login_parity.py::test_login_pet_follows_owner_into_room`. |
-| `NANNY-009` | IMPORTANT | `nanny.c:778-780` | — | `title_table[class][level][sex]` data and `set_title("the …")` first-login call missing — new chars get no class title. | 🔄 DEFERRED — data-port task. ROM `src/const.c:421-721` defines a 4×61×2 = 488-entry string table (mage/cleric/thief/warrior × levels 0..60 × M/F). Mechanical port; no behavioral risk; deserves its own session so the data block is reviewed in isolation. |
+| `NANNY-009` | IMPORTANT | `nanny.c:778-780` | `mud/models/titles.py`, `mud/account/account_service.py:create_character` | `title_table[class][level][sex]` data and `set_title("the …")` first-login call missing — new chars get no class title. | ✅ FIXED — ported ROM `title_table` from `src/const.c:421-721` into `mud/models/titles.py`, then wired `create_character()` to persist the ROM default title (`the <class title>`) at level 1 using the correct sex branch. Test: `tests/integration/test_character_creation_runtime.py::test_new_character_gets_rom_default_title_on_load`. |
 | `NANNY-010` | IMPORTANT | `nanny.c:307-352` | `mud/net/connection.py:1420-1443` | `CON_BREAK_CONNECT` Y-path doesn't iterate the full descriptor list; only closes one duplicate session. | ✅ DEFERRED-BY-DESIGN — Python's `SESSIONS` dict is keyed by character name (`mud/net/connection.py:1517`), so the dict invariant guarantees at most one descriptor per name. ROM's `for (d_old = descriptor_list; …)` loop is functionally redundant under this architecture. The "switched immortal" branch (`d_old->original ? d_old->original->name : d_old->character->name`) is also covered: `do_switch` (`mud/commands/imm_admin.py:198`) preserves the immortal's name as the SESSIONS key, so a re-login attempt under that name still hits the existing single-session disconnect path. Architectural twin of `COMM-005`. |
 | `NANNY-012` | IMPORTANT | `nanny.c:188` (`check_parse_name`) | `mud/account/account_service.py:572-613` | Name validator allows length 2 (ROM minimum is 3) and is missing `god` / `imp` from reserved-name list. | ✅ FIXED — minimum length raised from 2 to 3, `god` and `imp` added to `_RESERVED_NAMES`. Test: `tests/integration/test_nanny_login_parity.py::test_name_validator_matches_rom_check_parse_name`. |
 | `NANNY-013` | IMPORTANT | `nanny.c:772-775` | `mud/models/character.py:from_orm` + NANNY-014 reset_char | First-login `hit=max_hit; mana=max_mana; move=max_move; exp=exp_per_level(ch,points)` not explicitly applied at MOTD completion. | ✅ VERIFIED — Python persists fresh chars with hp=100 and perm_hit=100; `from_orm` initialises max_hit/mana/move from perm_* and `hit` from saved hp, so a brand-new char is at full resources on first login. NANNY-014 reset_char further guarantees max_* come back from perm_* on every subsequent login. Test: `tests/integration/test_nanny_login_parity.py::test_first_login_resources_at_max`. |

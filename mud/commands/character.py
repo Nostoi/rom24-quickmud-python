@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.account.account_manager import save_character
+from mud.models.titles import format_title_storage
 from mud.security.hash_utils import hash_password, verify_password
 from mud.utils.text import smash_tilde
 
@@ -99,10 +100,7 @@ def set_title(ch: Character, title: str) -> None:
     if not pcdata:
         return
 
-    if title and title[0] not in (".", ",", "!", "?"):
-        pcdata.title = " " + title
-    else:
-        pcdata.title = title
+    pcdata.title = format_title_storage(title)
 
 
 def do_title(ch: Character, args: str) -> str:

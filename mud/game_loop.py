@@ -684,9 +684,8 @@ def char_update() -> None:
     for character in list(character_registry):
         position = Position(int(getattr(character, "position", Position.STANDING)))
         if position >= Position.STUNNED:
-            # GL-009: NPC wanders home — ROM src/update.c:688-696
-            # If an NPC is outside its home zone and not fighting/charmed,
-            # 5% chance per tick to be extracted (despawned).
+            # GL-009: NPC wanders home — mirroring ROM src/update.c:687-694.
+            # Out-of-zone NPCs with no descriptor are extracted, not moved.
             if getattr(character, "is_npc", False):
                 room = getattr(character, "room", None)
                 ch_zone = getattr(character, "zone", None)
@@ -700,7 +699,8 @@ def char_update() -> None:
                     and rng_mm.number_percent() < 5
                 ):
                     from mud.mob_cmds import _extract_character
-                    _message_room(room, f"{getattr(character, 'name', 'Someone')} wanders on home.")
+                    room_name = getattr(character, "short_descr", None) or getattr(character, "name", None) or "Someone"
+                    _message_room(room, f"{room_name} wanders on home.")
                     _extract_character(character, fPull=True)
                     continue
 

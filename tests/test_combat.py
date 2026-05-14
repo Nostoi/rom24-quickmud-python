@@ -99,6 +99,8 @@ def test_kill_flags_player_as_killer(monkeypatch: pytest.MonkeyPatch) -> None:
     initialize_world("area/area.lst")
     attacker = create_test_character("Attacker", 3001)
     victim = create_test_character("Duelist", 3001)
+    attacker.desc = object()
+    victim.desc = object()
     attacker.clan = 1
     victim.clan = 1
     attacker.skills["hand to hand"] = 100
@@ -197,7 +199,7 @@ def test_attack_misses_target(monkeypatch):
     # Guarantee miss deterministically
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 100)
     out = process_command(attacker, "kill victim")
-    assert out == "You miss Victim."
+    assert out == "{2You miss Victim.{x"
     assert victim.hit == 10
     assert attacker.position == Position.FIGHTING
     assert victim.position == Position.FIGHTING
@@ -229,8 +231,8 @@ def test_defense_order_and_early_out(monkeypatch):
 
     out = process_command(attacker, "kill victim")
     assert out == "Victim dodges your attack."
-    # ROM defense order: shield_block → parry → dodge (dodge early-exits, so shield not reached after)
-    assert calls == ["shield", "parry", "dodge"]
+    # ROM src/fight.c:793-799 checks parry → dodge → shield_block.
+    assert calls == ["parry", "dodge"]
 
 
 def test_parry_blocks_when_skill_learned(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -550,7 +552,7 @@ def test_ac_influences_hit_chance(monkeypatch):
     victim.hit = 50
     victim.armor = [-22, -22, -22, -22]
     out = process_command(attacker, "kill victim")
-    assert out == "You miss Victim."
+    assert out == "{2You miss Victim.{x"
 
     # Reset combat state for next test
     attacker.position = Position.STANDING

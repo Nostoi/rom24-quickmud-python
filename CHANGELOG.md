@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.11]
+
+### Fixed
+- **`log` command trust parity**: restored the dispatcher registration for `log` to ROM `src/interp.c` level `L1` (`MAX_LEVEL - 1`) and updated the admin-logging tests to use a ROM-valid immortal trust level instead of `LEVEL_HERO`.
+
 ## [2.8.10]
 
 ### Fixed

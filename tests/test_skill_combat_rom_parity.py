@@ -565,15 +565,26 @@ class TestBashRomParity:
         char.skills["bash"] = 50
         char.size = 2
         char.wait = 0
+        char.carry_weight = 0
+        char.perm_stat = [0, 0, 0, 0, 0]
+        char.mod_stat = [0, 0, 0, 0, 0]
+        char.level = 0
+        char.off_flags = 0
 
         mob = movable_mob_factory(3001, 3001)
         mob.name = "mob"
+        mob.size = 2
+        mob.carry_weight = 0
+        mob.perm_stat = [0, 0, 0, 0, 0]
+        mob.mod_stat = [0, 0, 0, 0, 0]
+        mob.armor = [0, 0, 0, 0]
+        mob.level = 0
+        mob.off_flags = 0
 
-        captured: dict[str, object] = {}
+        captured: list[tuple[int, int]] = []
 
         def _range_stub(low, high):
-            captured["low"] = low
-            captured["high"] = high
+            captured.append((low, high))
             return low
 
         expected_upper = 2 + 2 * int(char.size) + (50 // 20)
@@ -584,8 +595,8 @@ class TestBashRomParity:
         ):
             do_bash(char, "mob")
 
-        assert captured["low"] == 2 or captured["low"] == 1
-        assert captured["high"] == expected_upper or captured["high"] == 1000 or captured["high"] == 1000
+        assert captured
+        assert captured[0] == (2, expected_upper)
 
     def test_bash_damage_value_passed_to_apply_damage(self, movable_char_factory, movable_mob_factory):
         """ROM L2471-2472: damage() called with the rolled damage on success."""
