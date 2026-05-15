@@ -440,83 +440,32 @@ if not (values[1] & EX_ISDOOR) or (values[1] & EX_NOCLOSE):
 
 ## Position Commands Detailed Verification
 
-### do_stand() Verification
+This section previously captured a pre-fix snapshot where furniture support was
+missing from `do_stand` / `do_rest` / `do_sit` / `do_sleep` / `do_wake`.
+That snapshot is now historical only.
 
-**ROM C**: `src/act_move.c::do_stand()` (lines 999-1106, 107 lines)  
-**QuickMUD**: `mud/commands/position.py::do_stand()` (lines 65-85, 20 lines)
+### Current verified state (April 27, 2026; revalidated May 13, 2026)
 
-| ROM C Check | Lines | QuickMUD Implementation | Status |
-|-------------|-------|-------------------------|--------|
-| **Furniture argument parsing** | 1003-1031 | Lines 69-70: placeholder "You can't stand on furniture yet." | ❌ **CRITICAL GAP** |
-| **get_obj_list() lookup** | 1010 | **MISSING** | ❌ **CRITICAL GAP** |
-| **ITEM_FURNITURE type check** | 1016 | **MISSING** | ❌ **CRITICAL GAP** |
-| **STAND_AT/ON/IN flags check** | 1017-1019 | **MISSING** | ❌ **CRITICAL GAP** |
-| **count_users() capacity check** | 1024 | **MISSING** | ❌ **CRITICAL GAP** |
-| **ch->on = obj assignment** | 1030 | **MISSING** | ❌ **CRITICAL GAP** |
-| **POS_SLEEPING + AFF_SLEEP check** | 1035-1040 | Lines 72-74: ✅ PARITY |
-| **POS_SLEEPING message (no furniture)** | 1044-1046 | Lines 75-76: ✅ PARITY |
-| **POS_SLEEPING at/on/in messages** | 1048-1065 | **MISSING** | ❌ **CRITICAL GAP** |
-| **Auto-look after wake** | 1067 | **MISSING** | ❌ **CRITICAL GAP** |
-| **POS_RESTING/SITTING message (no furniture)** | 1072-1076 | Lines 78-80: ✅ PARITY |
-| **POS_RESTING/SITTING at/on/in messages** | 1078-1092 | **MISSING** | ❌ **CRITICAL GAP** |
-| **POS_STANDING check** | 1096-1098 | Lines 82-83: ✅ PARITY |
-| **POS_FIGHTING check** | 1100-1102 | Lines 66-67: ✅ PARITY |
+- `mud/commands/position.py` implements the full ROM furniture path:
+  - `get_obj_list(...)` lookup from room contents
+  - `ITEM_FURNITURE` validation
+  - `STAND_*` / `REST_*` / `SIT_*` / `SLEEP_*` flag gating
+  - `count_users(obj)` capacity checks
+  - `ch.on` tracking
+  - ROM-style `at/on/in` message variants
+  - target wake handling in `do_wake()`
+- Supporting contracts are also covered:
+  - furniture occupancy protection in object pickup paths
+  - `char_from_room()` clearing `ch.on` when a character leaves the room
 
-**Result**: ❌ **CRITICAL GAPS FOUND** - Missing entire furniture support (5/14 checks pass, 35.7% parity)
+### Verification
 
-**QuickMUD Explicitly Acknowledges Gap**: Line 70 says "You can't stand on furniture yet."
-
-### Position Commands Summary (Quick Scan)
-
-Based on ROM C structure and QuickMUD placeholder messages:
-
-| Command | ROM C Lines | QuickMUD Lines | Furniture Support | Estimated Parity |
-|---------|-------------|----------------|-------------------|------------------|
-| `do_stand()` | 999-1106 (107) | position.py:111 | ✅ AUDITED | 100% |
-| `do_rest()` | 1110-1246 (136) | position.py:209 | ✅ AUDITED | 100% |
-| `do_sit()` | 1249-1372 (123) | position.py:290 | ✅ AUDITED | 100% |
-| `do_sleep()` | 1375-1449 (74) | position.py:371 | ✅ AUDITED | 100% |
-| `do_wake()` | 1453-1492 (39) | 28-39 (11) | ❌ "You can't wake others yet." | ~60% |
-
-**Critical Finding**: ALL 5 position commands have **MASSIVE GAPS** - furniture support completely missing despite ROM C having 100+ lines of furniture logic per command!
-
-### Position Commands - Furniture System Gap Analysis
-
-#### P0 CRITICAL: Missing Furniture System (ALL 5 Commands)
-
-**Scope**: ~400 lines of ROM C code missing across all position commands
-
-**ROM C Furniture System**:
-- ITEM_FURNITURE objects in room (chairs, beds, tables, etc.)
-- Furniture flags in `obj->value[2]`: STAND_AT, STAND_ON, STAND_IN, REST_AT, REST_ON, REST_IN, SIT_AT, SIT_ON, SIT_IN, SLEEP_AT, SLEEP_ON, SLEEP_IN
-- Capacity check: `count_users(obj) >= obj->value[0]`
-- Character tracking: `ch->on = obj` pointer
-- Message variations: "at $p", "on $p", "in $p" based on flags
-
-**QuickMUD Current State**:
-- **NO furniture support in ANY position command**
-- Explicit placeholder messages acknowledging the gap
-- Missing `count_users()` helper function
-- Missing `ch->on` pointer tracking
-- Missing furniture flag constants
-
-**Impact**: 
-- Players cannot use furniture objects (beds, chairs, etc.)
-- Major immersion/roleplay feature missing
-- ROM areas with furniture are unusable for intended purpose
-
-**Fix Required**:
-1. Add furniture flag constants (STAND_AT/ON/IN, REST_AT/ON/IN, SIT_AT/ON/IN, SLEEP_AT/ON/IN)
-2. Implement `count_users()` helper function
-3. Add `ch.on` pointer to Character model (if not present)
-4. Add furniture argument parsing to all 5 commands
-5. Add furniture validation (type, flags, capacity)
-6. Add at/on/in message variations
-7. Track furniture usage via `ch.on`
-
-**Estimated Effort**: 6-8 hours (substantial missing functionality)
-
-**Priority Justification**: While technically P0 for ROM parity, furniture is primarily a roleplay/immersion feature. Could be deferred to P2 if core gameplay is priority.
+- `tests/integration/test_position_commands.py` — full position/furniture suite
+- `tests/integration/test_furniture_occupancy.py` — pickup blocked while furniture is in use
+- `tests/integration/test_room_safety_features.py` — room transitions clear furniture references
+- Revalidated on May 13, 2026:
+  - `./venv/bin/python -m pytest -q tests/integration/test_position_commands.py tests/integration/test_furniture_occupancy.py tests/integration/test_room_safety_features.py`
+  - `54 passed`
 
 ---
 

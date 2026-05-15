@@ -16,10 +16,8 @@ from mud.models.constants import (
     Position,
     Sex,
     Stat,
-    OBJ_VNUM_SCHOOL_DAGGER,
-    OBJ_VNUM_SCHOOL_MACE,
-    OBJ_VNUM_SCHOOL_SWORD,
 )
+from mud.models.weapon_table import weapon_skill_name_for_school_vnum
 
 if TYPE_CHECKING:
     from mud.db.models import Character as DBCharacter
@@ -111,13 +109,6 @@ def _object_carry_number(obj: "Object") -> int:
         total += _object_carry_number(child)
 
     return total
-
-
-_STARTING_WEAPON_SKILL_BY_VNUM: dict[int, str] = {
-    OBJ_VNUM_SCHOOL_DAGGER: "dagger",
-    OBJ_VNUM_SCHOOL_MACE: "mace",
-    OBJ_VNUM_SCHOOL_SWORD: "sword",
-}
 
 
 def _normalize_token(value: str | None) -> str:
@@ -1044,7 +1035,7 @@ def from_orm(db_char: DBCharacter) -> Character:
         if not normalized:
             continue
         seeded_skills.setdefault(normalized, 1)
-    weapon_skill = _STARTING_WEAPON_SKILL_BY_VNUM.get(int(char.default_weapon_vnum or 0))
+    weapon_skill = weapon_skill_name_for_school_vnum(int(char.default_weapon_vnum or 0))
     if weapon_skill:
         current = seeded_skills.get(weapon_skill, 0)
         if current < 40:

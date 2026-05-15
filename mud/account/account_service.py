@@ -19,9 +19,6 @@ from mud.models.classes import (
     list_player_classes as _list_player_classes,
 )
 from mud.models.constants import (
-    OBJ_VNUM_SCHOOL_DAGGER,
-    OBJ_VNUM_SCHOOL_MACE,
-    OBJ_VNUM_SCHOOL_SWORD,
     ROOM_VNUM_SCHOOL,
     PlayerFlag,
     Sex,
@@ -40,6 +37,7 @@ from mud.models.races import (
     list_playable_races as _list_playable_races,
 )
 from mud.models.titles import default_title_storage
+from mud.models.weapon_table import weapon_table_entry_by_name
 from mud.security import bans
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import hash_password, verify_password
@@ -102,13 +100,6 @@ _WEAPON_CHOICES: Final[dict[str, tuple[str, ...]]] = {
     "thief": ("dagger", "sword"),
     "warrior": ("sword", "mace"),
 }
-
-_WEAPON_VNUMS: Final[dict[str, int]] = {
-    "dagger": OBJ_VNUM_SCHOOL_DAGGER,
-    "mace": OBJ_VNUM_SCHOOL_MACE,
-    "sword": OBJ_VNUM_SCHOOL_SWORD,
-}
-
 
 @lru_cache(maxsize=1)
 def _load_skill_data() -> dict[str, dict[str, object]]:
@@ -572,7 +563,8 @@ def get_weapon_choices(class_type: ClassType) -> tuple[str, ...]:
 def lookup_weapon_choice(name: str) -> int | None:
     """Map a weapon name from creation prompts to its object vnum."""
 
-    return _WEAPON_VNUMS.get(name.strip().lower())
+    entry = weapon_table_entry_by_name(name)
+    return entry.school_vnum if entry is not None else None
 
 
 def sanitize_account_name(username: str) -> str:

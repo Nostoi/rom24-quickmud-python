@@ -1,17 +1,18 @@
-# Session Status — 2026-05-13 — NANNY-009 title-table parity closed
+# Session Status — 2026-05-15 — full suite re-certified, next target set to combat→XP verification
 
 ## Current State
 
 - **Full suite is green.**
 - Verified with:
   - `./venv/bin/python -m pytest -q --maxfail=1`
-  - `4527 passed, 11 skipped in 645.82s (0:10:45)`
-- **This session closed `NANNY-009` / `CONST-001`**:
-  - ported ROM `title_table` into `mud/models/titles.py`
-  - persisted the level-1 ROM default title during `create_character()`
-  - reset the class title during `advance_level()`
+  - `4535 passed, 11 skipped in 340.16s (0:05:40)`
+- **This session re-ran the full suite from a written execution plan**:
+  - plan saved at `docs/superpowers/plans/2026-05-15-full-suite-rerun-and-next-rom-verification.md`
+- **This session stabilized two flaky tests surfaced by the rerun**:
+  - `tests/test_account_auth.py::test_new_player_triggers_wiznet_newbie_alert` now isolates `global_registry.descriptor_list` so wiznet delivery does not inherit prior test state
+  - `tests/integration/test_character_advancement.py::test_kill_mob_grants_xp_integration` now uses fixed ROM RNG seed `1` instead of wall-clock seeding
 - **Pointer to latest summary**:
-  - `docs/sessions/SESSION_SUMMARY_2026-05-13_NANNY-009_TITLE_TABLE_PORT_AND_DEFAULT_TITLE_WIRING.md`
+  - `docs/sessions/SESSION_SUMMARY_2026-05-15_FULL_SUITE_RECERT_AND_XP_ALERT_FLAKE_STABILIZATION.md`
 
 ## Project Status (snapshot)
 
@@ -21,19 +22,18 @@
 | Cross-file invariants enforced | **8/8 ✅ ENFORCED** |
 | Audit-bound ROM C files | 40/40 audited (100%) |
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
-| Broader reduced baseline | ✅ green |
 | Full suite | ✅ green |
 | Warnings | ✅ zero |
-| Current focus | next parity follow-up selection |
+| Current focus | fresh ROM verification on combat→XP flow |
 
 ## Next Intended Task
 
-1. Return to `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`.
-2. Pick the next real follow-up that is **not** already marked deferred-by-design.
-3. Keep `CONST-007` (`weapon_table`) attached to the OLC cluster unless the scope explicitly shifts to OLC data/table work.
+1. Run a ROM-source-first verification pass on the combat → XP advancement flow.
+2. Authoritative ROM sources:
+   - `src/fight.c` — `group_gain`, `xp_compute`, `raw_kill`
+   - `src/update.c` — `gain_exp`
+3. Treat the recent XP test failure as a signal about this surface, but not as evidence of a production bug; the rerun proved it was test nondeterminism.
 
 ## Open Follow-ups
 
-- **`NANNY-010`** — remains deferred-by-design (`SESSIONS` keyed by name already enforces the ROM duplicate-session invariant)
-- **`CONST-007`** — remains deferred to the OLC audit cluster
-- **No known failing tests or warning regressions**
+- **Combat → XP advancement verification** — proactive parity pass chosen from the clean full-suite rerun

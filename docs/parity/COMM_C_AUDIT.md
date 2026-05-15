@@ -11,7 +11,7 @@
   - `mud/account/account_service.py:is_valid_account_name` — `check_parse_name` port
   - `mud/commands/auto_settings.py:do_prompt` — sets `pcdata.prompt`
   - `mud/handler.py` — inline `fix_sex` clamp at affect-strip site
-- **Status:** 🔄 IN PROGRESS — Phase 1–3 complete, gap closures pending.
+- **Status:** ✅ AUDITED 100% — non-networking parity surface complete
 
 ## Scope notes
 
@@ -55,19 +55,19 @@ subsystem's audit doc, not this one.
 | `init_descriptor` | 939–1051 | `mud/net/connection.py` (login dispatcher) | N/A | Networking arch |
 | `close_socket` | 1052–1123 | `mud/net/connection.py` (cleanup paths) | N/A | Networking arch |
 | `read_from_descriptor` / `read_from_buffer` / `process_output` / `write_to_descriptor` | 1124–1684 | asyncio stream readers/writers | N/A | Networking arch |
-| `bust_a_prompt` | 1420–1595 | ❌ NONE | ❌ MISSING | `pcdata.prompt` is stored but never expanded; `send_prompt` always emits literal `"> "` (COMM-001). |
+| `bust_a_prompt` | 1420–1595 | `mud/utils/prompt.py:bust_a_prompt` | ✅ AUDITED | Prompt tokens and AFK/default handling are ported and wired into connection prompts. |
 | `write_to_buffer` | 1602–1654 | `Character.send_to_char` + per-stream writer | N/A | Buffer-management diverges with asyncio |
 | `log_f` | 1685–1694 | `mud/logging` helpers | N/A | Logging plumbing |
-| `check_parse_name` | 1699–1829 | `mud/account/account_service.py:is_valid_account_name` | ⚠️ PARTIAL | Length lower bound (COMM-003), mob-name collision (COMM-004), clan-name reject (COMM-006), double-newbie-disconnect (COMM-005) all missing. |
+| `check_parse_name` | 1699–1829 | `mud/account/account_service.py:is_valid_account_name` + `is_valid_character_name` | ✅ AUDITED (with deferred MINOR) | Length floor, mob-keyword collision, and clan-name reject are fixed; only the duplicate-newbie sweep/wiznet path remains deferred as COMM-005. |
 | `check_reconnect` | 1836–1878 | `mud/net/connection.py:_broadcast_reconnect_notifications` + login flow | ✅ AUDITED | "$N groks the fullness of $S link." wiznet broadcast and "note in progress" reminder both present. |
 | `check_playing` | 1885–1906 | `mud/net/connection.py:_prompt_yes_no("This account is already playing. Reconnect? (Y/N)")` | ✅ AUDITED | Y/N branch matches `CON_BREAK_CONNECT`. |
-| `stop_idling` | 1910–1924 | `mud/net/connection.py:_stop_idling` | ⚠️ PARTIAL | Broadcast uses literal name, not `act("$n has returned from the void.")` PERS-aware text (COMM-007). |
-| `send_to_char_bw` / `send_to_char` / `send_to_desc` | 1931 / 1965 / 2016 | `mud/models/character.py:Character.send_to_char` + `mud/net/protocol.py:send_to_char` + `mud/net/ansi.py:render_ansi` | ⚠️ PARTIAL | ANSI token table is a strict subset of ROM (COMM-008). pcdata-customizable channel codes intentionally not implemented (no pfile parity goal — like `sha256_crypt`). |
+| `stop_idling` | 1910–1924 | `mud/net/connection.py:_stop_idling` | ✅ AUDITED | Broadcast now routes through ROM-style `$n` expansion. |
+| `send_to_char_bw` / `send_to_char` / `send_to_desc` | 1931 / 1965 / 2016 | `mud/models/character.py:Character.send_to_char` + `mud/net/protocol.py:send_to_char` + `mud/net/ansi.py:render_ansi` | ✅ AUDITED (subset by design) | ROM special tokens are covered; pcdata-customizable channel codes remain intentionally out of scope with no pfile parity goal. |
 | `page_to_char_bw` / `page_to_char` | 1941 / 2064 | `mud/net/protocol.py:send_to_char` → `Session.start_paging` | ✅ AUDITED | `send_to_char` auto-routes through the pager when `lines > 0` and text exceeds the page limit (architectural simplification of ROM's per-callsite `page_to_char` opt-in). |
 | `show_string` | 2123–2174 | `mud/net/session.py:Session.send_next_page` + `mud/net/connection.py:_read_player_command` | ✅ AUDITED | ROM dispatch semantics verified after COMM-002: empty input continues; any non-empty input aborts and is consumed as no-op. |
 | `fix_sex` | 2178–2182 | `mud/utils/fix_sex.py:fix_sex` + `mud/handler.py:1110-1112` | ✅ AUDITED | COMM-009 closed: standalone helper extracted; inline clamp at affect-strip site now calls `fix_sex(ch)`. |
 | `act_new` | 2184–2388 | `mud/utils/act.py:act_format` (wiznet subset) + per-call-site broadcasts | ⚠️ PARTIAL — architectural | No central dispatcher. TO_CHAR/TO_VICT/TO_ROOM/TO_NOTVICT modes, `min_pos` filter, `MOBtrigger` handoff are reimplemented per command in `mud/spec_funs.py`, `mud/mob_cmds.py`, `mud/commands/*`. Per-site gaps are tracked in the calling subsystem's audit (`ACT_OBJ_C_AUDIT.md`, `ACT_MOVE_C_AUDIT.md`, `HANDLER_C_AUDIT.md`). Not booked as a single closeable gap here. |
-| `colour` | 2391–2739 | `mud/net/ansi.py:translate_ansi` | ⚠️ PARTIAL | Subset of token table (COMM-008). |
+| `colour` | 2391–2739 | `mud/net/ansi.py:translate_ansi` | ✅ AUDITED (subset by design) | ROM specials `{D {* {/ {- {{` are covered; per-player customizable colour codes remain an intentional divergence. |
 | `colourconv` | 2741–2790 | `mud/net/ansi.py:render_ansi` | ✅ AUDITED | ANSI-on/off branch driven by `conn.ansi_enabled` (different gate from `PLR_COLOUR`, but functionally equivalent for QuickMUD's per-connection ANSI prompt). |
 | `printf_to_desc` / `printf_to_char` / `bugf` / `gettimeofday` | 2791–2831 | Python `f"…"` / `logging` | N/A | C variadic boilerplate. |
 
@@ -157,7 +157,7 @@ a single-gap close.
 | COMM-002 | IMPORTANT | `src/comm.c:632-633,1941-2174` | `mud/net/session.py:Session.start_paging`, `mud/net/connection.py:_read_player_command` | Pager machinery (`Session.start_paging` / `send_next_page` / `clear_paging`) was already wired into `send_to_char` and `_read_player_command`, but the input-handling diverged from ROM: `"c"` was treated as continue (ROM has no continue hotkey — only empty input continues), and arbitrary non-empty input was dispatched to `interpret()` instead of being consumed as the abort signal. Fixed `_read_player_command` to mirror ROM `comm.c:632-633`: while paging, ROM dispatches input to `show_string` instead of `interpret`; empty input continues, ANY non-empty input aborts and is consumed as no-op (returns `" "`). | ✅ FIXED |
 | COMM-003 | IMPORTANT | `src/comm.c:1729` | `mud/account/account_service.py:591` | `check_parse_name` length lower bound was `< 3`, ROM is `< 2`. Two-letter ROM-legal names (e.g. `Bo`) were rejected. Fixed by flipping the bound to `< 2` and updating `test_name_validator_matches_rom_check_parse_name` (NANNY-012) which had locked in the wrong threshold with a docstring misreading ROM. | ✅ FIXED |
 | COMM-004 | IMPORTANT | `src/comm.c:1782-1796` | `mud/account/account_service.py:is_valid_character_name` | New `is_valid_character_name` helper layered on top of `is_valid_account_name` adds the ROM mob-keyword collision check. `create_character` and `_run_character_creation_flow` now use it; the old `is_valid_account_name` keeps syntactic-only semantics so account-name validation (a Python addition with no ROM analogue) still works. | ✅ FIXED |
-| COMM-005 | MINOR | `src/comm.c:1804-1825` | `mud/account/account_service.py:575-617` | `check_parse_name` doesn't sweep `descriptor_list` for not-yet-`CON_PLAYING` duplicates and doesn't emit the `"Double newbie alert (%s)"` wiznet broadcast. | 🔄 OPEN |
+| COMM-005 | MINOR | `src/comm.c:1804-1825` | `mud/net/connection.py:_close_duplicate_newbie_descriptors`, `mud/net/connection.py:_run_character_login` | New-character name validation now sweeps live `descriptor_list` entries for non-playing duplicates, closes those descriptors, emits the ROM `"Double newbie alert (%s)"` wiznet broadcast, and rejects the name. | ✅ FIXED |
 | COMM-006 | MINOR | `src/comm.c:1713-1718` | `mud/account/account_service.py:is_valid_character_name` | `is_valid_character_name` now iterates `CLAN_TABLE` and rejects exact (case-insensitive) matches. `rom` and `loner` are now both rejected. | ✅ FIXED |
 | COMM-007 | MINOR | `src/comm.c:1922` | `mud/net/connection.py:_stop_idling` | `_stop_idling` now broadcasts via `act_format("$n has returned from the void.", recipient=None, actor=char)` instead of the literal `f"{name} has returned from the void."` fallback. Routes through ROM-style `$n` token expansion (`mud/utils/act.py:_pers`) so name → short_descr fallback works correctly for entities without a literal `name`. | ✅ FIXED |
 | COMM-008 | MINOR | `src/comm.c:2714-2728` | `mud/net/ansi.py` | ROM specials added: `{D` → `\x1b[1;30m`, `{*` → `\x07` (bell), `{/` → `\n\r`, `{-` → `~`, `{{` → `{`. Translator rewritten as a single-pass regex so `{{` resolves before adjacent letters can be re-matched as colour tokens. `strip_ansi` mirrors ROM `send_to_char` non-colour branch (`src/comm.c:1995-2007`) by eating both characters of every `{X` pair. pcdata-customizable channel codes (`{p {s {6 {7 {k …`) remain out of scope (no pfile parity). | ✅ FIXED |
@@ -174,6 +174,19 @@ a single-gap close.
   parallel to SHA-256 → PBKDF2 deliberate divergence.
 - **`_RESERVED_NAMES` extras (`god`, `imp`)**: stricter than ROM, not a
   parity regression.
+
+### COMM-005 — duplicate-newbie descriptor sweep (MINOR)
+
+- **Tests:** `tests/test_account_auth.py::test_new_character_name_rejects_duplicate_newbie_and_wiznets`
+  covers the ROM `descriptor_list` scan: a non-playing duplicate descriptor
+  holding the same new-character name is closed, the current login is rejected,
+  and immortals on `WIZ_LOGINS` receive `"Double newbie alert (Hero)"`.
+- **Implementation:** `mud/net/connection.py` now maintains a lightweight
+  ROM-style `descriptor_list` entry for each live telnet/SSH connection.
+  `_run_character_login` updates the descriptor's pending name and calls
+  `_close_duplicate_newbie_descriptors(...)` after the clan/mob-name checks,
+  mirroring `src/comm.c:1804-1825`. Matching non-`CON_PLAYING` descriptors are
+  closed and removed, then `wiznet(..., WIZ_LOGINS, ...)` broadcasts the alert.
 
 ---
 
@@ -283,11 +296,10 @@ a single-gap close.
 
 ## Phase 5 — Completion
 
-- Tracker row `comm.c | P3 | ❌ Not Audited | 50%` will flip to
-  `⚠️ Partial — non-networking audited` once COMM-001 / COMM-002 / COMM-003 /
-  COMM-004 are closed (the four CRITICAL/IMPORTANT items). The MINORs may
-  ship together or in a follow-up patch session.
-- The "P3-6: comm.c (NOT AUDITED - 50%) — Different architecture" block at
-  `ROM_C_SUBSYSTEM_AUDIT_TRACKER.md:1007-1018` is correct *for the networking
-  layer* but underestimates the non-networking surface; will be revised to
-  cite `COMM_C_AUDIT.md` and the deferred-by-design list.
+- The top-level tracker now correctly records `comm.c` as audited at 100% for the non-networking surface.
+- Closed here:
+  - `COMM-001`, `COMM-002`, `COMM-003`, `COMM-004`, `COMM-005`
+  - `COMM-006`, `COMM-007`, `COMM-008`, `COMM-009`
+- Remaining:
+  - No open non-networking `comm.c` gaps.
+- Networking-layer code remains intentionally out of scope for ROM line-by-line parity because QuickMUD uses asyncio instead of ROM's descriptor/select loop.

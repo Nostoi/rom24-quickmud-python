@@ -37,6 +37,7 @@ from mud.models.constants import (
     WearFlag,
     attack_damage_type,
 )
+from mud.models.weapon_table import weapon_skill_name_for_type
 from mud.models.social import expand_placeholders
 from mud.net.protocol import broadcast_room as _broadcast_room
 from mud.skills import check_improve
@@ -45,17 +46,6 @@ from mud.wiznet import WiznetFlag, wiznet
 from mud.world.vision import can_see_object
 
 HAND_TO_HAND_SKILL = "hand to hand"
-
-WEAPON_SKILL_BY_TYPE: dict[WeaponType, str] = {
-    WeaponType.SWORD: "sword",
-    WeaponType.DAGGER: "dagger",
-    WeaponType.SPEAR: "spear",
-    WeaponType.MACE: "mace",
-    WeaponType.AXE: "axe",
-    WeaponType.FLAIL: "flail",
-    WeaponType.WHIP: "whip",
-    WeaponType.POLEARM: "polearm",
-}
 
 
 def _coerce_int(value: object) -> int:
@@ -172,7 +162,7 @@ def get_weapon_sn(attacker: Character, weapon=None) -> str | None:
         return None
     if wtype == WeaponType.EXOTIC:
         return None
-    return WEAPON_SKILL_BY_TYPE.get(wtype, HAND_TO_HAND_SKILL)
+    return weapon_skill_name_for_type(wtype) or HAND_TO_HAND_SKILL
 
 
 def _lookup_skill_percent(attacker: Character, skill_name: str) -> int:

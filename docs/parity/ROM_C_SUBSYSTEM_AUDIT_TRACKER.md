@@ -55,7 +55,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | `handler.c` | P1 | ✅ **COMPLETE!** | `mud/handler.py`, `mud/world/`, `mud/models/` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 74 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 4 - See HANDLER_C_AUDIT.md |
 | `effects.c` | P1 | ✅ **COMPLETE!** | `mud/magic/effects.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 5 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - 23 integration tests - See EFFECTS_C_AUDIT.md |
 | **Movement & Rooms** | | | | | |
-| `act_move.c` | P0 | ✅ **AUDITED** | `mud/movement/`, `mud/commands/doors.py`, `mud/commands/session.py`, `mud/commands/advancement.py` | **85%** | ✅ **Phase 4 Complete!** Jan 8 - Door/portal/recall/train 100% parity - See ACT_MOVE_C_AUDIT.md |
+| `act_move.c` | P0 | ✅ **AUDITED** | `mud/movement/`, `mud/commands/doors.py`, `mud/commands/session.py`, `mud/commands/advancement.py` | **85%** | ✅ **Phase 4 Complete!** Jan 8 - Door/portal/recall/train 100% parity. Position/furniture commands revalidated May 13, 2026: `tests/integration/test_position_commands.py`, `test_furniture_occupancy.py`, and `test_room_safety_features.py` all green (`54 passed`). See `ACT_MOVE_C_AUDIT.md`. |
 | `act_enter.c` | P1 | ✅ **COMPLETE!** | `mud/commands/movement.py`, `mud/world/movement.py` | **100%** | 🎉 **FULL PARITY — all 15 gaps closed (ENTER-001..016), 25 integration tests** 🎉 Apr 27 — See ACT_ENTER_C_AUDIT.md |
 | `scan.c` | P2 | ✅ AUDITED | `mud/commands/inspection.py` | **100%** | Apr 28, 2026 — all 3 gaps closed (SCAN-001 TO_ROOM "looks all around", SCAN-002 directional "peer intently" TO_CHAR/TO_ROOM pair + spurious header removed, SCAN-003 non-ROM fallback lines removed). 3 integration + 13 unit tests green. See SCAN_C_AUDIT.md |
 | **Commands** | | | | | |
@@ -80,15 +80,15 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Special Procedures** | | | | | |
 | `special.c` | P2 | ✅ Audited | `mud/spec_funs.py` | 100% | Apr 28, 2026 — all 8 CRITICAL/IMPORTANT gaps closed (SPEC-001..SPEC-008: area-wide yell, guard NPC targeting, mayor gate messages, c_div integer math, do_murder, is_safe, mayor move_character, c_div gold). See SPECIAL_C_AUDIT.md |
 | **Communication & Social** | | | | | |
-| `comm.c` | P3 | ✅ Audited (per-file) | `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py`, `mud/utils/fix_sex.py`, `mud/net/ansi.py` | 95% | Non-networking surface fully audited (`COMM_C_AUDIT.md`); 8/9 gaps closed. COMM-005 deferred-by-design. Networking layer deferred-by-design. **Cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`):** INV-001 SINGLE-DELIVERY ✅ (root cause was in `mud/combat/engine.py`, fixed 2026-05-02 `59bebf0`); INV-002 PROMPT-CLAMP ✅ (fixed 2026-05-02 `f586d11`). Both broke the `write_to_buffer` / `bust_a_prompt` contracts that single-file audit treated as in-scope but missed. |
-| `nanny.c` | P3 | ✅ Audited | `mud/net/connection.py`, `mud/account/account_service.py`, `mud/account/account_manager.py`, `mud/handler.py`, `mud/models/titles.py` | 95% | May 13, 2026 — `NANNY_C_AUDIT.md` now has 13/14 gaps closed. NANNY-009 fixed: ROM `title_table` ported from `src/const.c:421-721` and wired into `create_character()` so new characters persist `the <class title>` on first login. Test: `tests/integration/test_character_creation_runtime.py::test_new_character_gets_rom_default_title_on_load`. NANNY-010 (full descriptor sweep on CON_BREAK_CONNECT) remains deferred-by-design — Python's `SESSIONS` dict is keyed by name, structurally enforcing ROM's "close all duplicates" invariant. |
+| `comm.c` | P3 | ✅ Audited (per-file) | `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py`, `mud/utils/fix_sex.py`, `mud/net/ansi.py` | 100% | May 15, 2026 — non-networking surface fully audited (`COMM_C_AUDIT.md`); COMM-005 fixed. `_run_character_login` now mirrors ROM `check_parse_name`'s duplicate-newbie `descriptor_list` sweep by closing matching non-playing descriptors and wiznetting `"Double newbie alert (%s)"`. Networking layer remains deferred-by-design. **Cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`):** INV-001 SINGLE-DELIVERY ✅ (root cause was in `mud/combat/engine.py`, fixed 2026-05-02 `59bebf0`); INV-002 PROMPT-CLAMP ✅ (fixed 2026-05-02 `f586d11`). Both broke the `write_to_buffer` / `bust_a_prompt` contracts that single-file audit treated as in-scope but missed. |
+| `nanny.c` | P3 | ✅ Audited | `mud/net/connection.py`, `mud/account/account_service.py`, `mud/account/account_manager.py`, `mud/handler.py`, `mud/models/titles.py`, `mud/commands/imm_admin.py` | 100% | May 15, 2026 — `NANNY_C_AUDIT.md` is fully closed. NANNY-010 fixed: `_select_character()` now mirrors ROM `CON_BREAK_CONNECT` by sweeping the full lightweight `descriptor_list`, closing every extra matching descriptor and honoring the switched-immortal `original->name` branch. The canonical active session is still handed to `_disconnect_session(...)` so the takeover notice is preserved. Tests: `tests/test_account_auth.py::test_break_connect_closes_all_matching_descriptors`, `tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects`. |
 | `board.c` | P2 | ✅ Audited | `mud/notes.py`, `mud/models/board.py`, `mud/commands/notes.py` | **100%** | 2026-05-02 — board.c audit reconciled complete: BOARD-001..005/008/010..013 closed, BOARD-006/007 subsumed, BOARD-009 no-gap, BOARD-014 deferred-by-design (AFK note-writing architecture). See `docs/parity/BOARD_C_AUDIT.md`. |
 | `music.c` | P2 | ✅ Audited | `mud/music/__init__.py`, `mud/commands/player_info.py`, `mud/world/world_state.py` | 95% | Apr 29, 2026 — `MUSIC_C_AUDIT.md` Phase 1–5 complete. 4/6 gaps closed (MUSIC-001 do_play queueing, MUSIC-002 load_songs + boot wiring, MUSIC-003 play list ROM formatting, MUSIC-004 can_see_obj filter). MUSIC-005 / MUSIC-006 deferred MINOR cosmetics (descriptor-state plumbing and per-viewer `$p` substitution; no gameplay impact). |
 | **Utilities & Helpers** | | | | | |
-| `const.c` | P3 | ✅ Audited | `mud/models/constants.py`, `mud/models/races.py`, `mud/models/classes.py`, `mud/skills/groups.py`, `mud/wiznet.py`, `mud/world/movement.py`, `mud/commands/equipment.py`, `mud/math/stat_apps.py`, `mud/advancement.py`, `mud/combat/engine.py`, `mud/commands/session.py`, `mud/commands/imm_search.py`, `mud/models/titles.py`, `mud/account/account_service.py` | 98% | May 13, 2026 — `CONST_C_AUDIT.md` now has 6 of 7 gaps closed. CONST-001 fixed: full ROM `title_table` ported to `mud/models/titles.py`, `create_character()` now persists level-1 ROM titles, and `advance_level()` reapplies the class title on level gain. Tests: `tests/integration/test_character_creation_runtime.py::test_new_character_gets_rom_default_title_on_load`, `tests/test_advancement.py::test_advance_level_resets_title_to_rom_default`. Remaining deferred-by-design item: CONST-007 `weapon_table` → OLC audit (BIT-style). |
+| `const.c` | P3 | ✅ Audited | `mud/models/constants.py`, `mud/models/races.py`, `mud/models/classes.py`, `mud/skills/groups.py`, `mud/wiznet.py`, `mud/world/movement.py`, `mud/commands/equipment.py`, `mud/math/stat_apps.py`, `mud/advancement.py`, `mud/combat/engine.py`, `mud/commands/session.py`, `mud/commands/imm_search.py`, `mud/models/titles.py`, `mud/account/account_service.py`, `mud/models/weapon_table.py`, `mud/models/character.py`, `mud/handler.py` | 100% | May 14, 2026 — `CONST_C_AUDIT.md` fully closed. `CONST-007` fixed: canonical ROM `weapon_table` ported to `mud/models/weapon_table.py`, duplicated local subsets removed from combat, account creation, and character-load skill seeding. Tests: `tests/test_weapon_table_parity.py`. |
 | `tables.c` | P3 | ✅ AUDITED | `mud/models/constants.py` | 100% | Apr 29, 2026 — TABLES-001 closed: `AffectFlag` renumbered to ROM `merc.h:953-982` bits + on-load pfile migration (`pfile_version` schema field, legacy bits translated via `translate_legacy_affect_bits`). TABLES-001/002/003 all closed. `tests/integration/test_tables_parity.py` (`test_affect_flag_letters_match_rom_merc_h`, `test_merc_h_letter_macros_match_python_intflag_values` now includes `AFF_*`) + `test_tables_001_affect_migration.py` green. See `docs/parity/TABLES_C_AUDIT.md`. |
 | `lookup.c` | P3 | ✅ AUDITED | `mud/utils/prefix_lookup.py`, `mud/models/races.py`, `mud/models/clans.py`, `mud/commands/remaining_rom.py` | 100% | Apr 28, 2026 — all 8 gaps closed (LOOKUP-001..008). New `mud/utils/prefix_lookup.py` provides ROM-faithful prefix-match helpers + `position_lookup`, `sex_lookup`, `size_lookup`, `item_lookup`, `liq_lookup`. `race_lookup`, `_lookup_flag_bit`, `lookup_clan_id` migrated to prefix-match. help_lookup/had_lookup UNVERIFIED (help-system audit). See LOOKUP_C_AUDIT.md |
-| `flags.c` | P3 | ✅ AUDITED | `mud/commands/remaining_rom.py:do_flag` | 100% | Apr 28, 2026 — FLAG-001 closed (do_flag fully implemented: operator parsing, 9-field dispatcher, IntFlag name lookup, bit mutation). FLAG-002 (settable-bit preservation) deferred MINOR. See FLAGS_C_AUDIT.md |
+| `flags.c` | P3 | ✅ AUDITED | `mud/commands/remaining_rom.py:do_flag` | 100% | May 15, 2026 — FLAG-002 closed: `do_flag` now preserves ROM `settable=FALSE` rows across the `=` operator using explicit per-field masks derived from `src/tables.c` (`act`, `plr`, `comm`). `tests/integration/test_flag_command_parity.py` expanded to 14 green cases. See FLAGS_C_AUDIT.md |
 | `bit.c` | P3 | ✅ AUDITED | `mud/utils/prefix_lookup.py`, `mud/utils/bit.py`, `mud/commands/remaining_rom.py` | 100% | Apr 29, 2026 — `flag_lookup` adjacent helper (lookup.c) ported as `prefix_lookup_intflag` (TABLES-002); `do_flag` inline accumulator faithfully mirrors ROM `do_flag` (not ROM `flag_value`). All 3 BIT gaps closed: BIT-001 `flag_value`, BIT-002 `flag_string`, BIT-003 `is_stat` — `mud/utils/bit.py` hosts the standalone helpers needed by the OLC cluster. See BIT_C_AUDIT.md |
 | `string.c` | P3 | ✅ AUDITED 100% | `mud/utils/string_editor.py` (all 12 helpers), `mud/utils/text.py` (`smash_tilde`) | 100% | Apr 29, 2026 — all 12 gaps closed (STRING-001..012). Final gap STRING-004 (`string_add` OLC input dispatcher) closed with 24 integration tests. See `STRING_C_AUDIT.md`. |
 | `recycle.c` | P3 | N/A | - | N/A | Python GC handles this |
@@ -710,21 +710,19 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ⚠️ P1-7: act_obj.c (IN PROGRESS - `do_get()`/`do_put()` complete)
+### ✅ P1-7: act_obj.c (COMPLETE - 100%)
 
-**Status**: 🔄 **Active parity audit; `do_drop()` verified, `do_give()` complete, `do_wear()` initial batch underway**
+**Status**: ✅ **Full parity verified.** The earlier in-progress notes in this section are historical; the canonical state matches the top summary row and `docs/parity/ACT_OBJ_C_AUDIT.md`.
 
 **ROM Functions**: Object commands (get, drop, put, give, wear, remove, shops, consumables)
 **QuickMUD Modules**: `mud/commands/inventory.py`, `mud/commands/obj_manipulation.py`, `mud/commands/equipment.py`, `mud/commands/shop.py`, `mud/commands/give.py`, `mud/commands/consumption.py`, `mud/commands/liquids.py`, `mud/commands/magic_items.py`, `mud/commands/thief_skills.py`
 
 **Audit Status**:
-- ✅ `do_get()` - 100% ROM parity complete (60/60 integration tests passing)
-- ✅ `do_put()` - 100% ROM parity complete (15/15 integration tests passing)
-- 🔄 `do_drop()` - core parity batch verified; 15 targeted integration tests now cover bulk drop handling, money-drop semantics, room messages, melt-drop behavior, no-drop rejection, and wear-state exclusion
-- ✅ `do_give()` - final sweep complete; 14 targeted integration tests now cover money handling, room/victim messaging, inventory transfer, shopkeeper refusal, equipped-item rejection, victim visibility checks, carry-slot and carry-weight saturation, NPC bribe triggers, changer exchange behavior, numeric money error wording, ROM-confirmed lack of `give all` support, and correct TO_NOTVICT observer-only broadcasts
-- ✅ `do_wear()` - replace/multi-slot/two-hand batch complete; ROM `remove_obj` "You can't remove $p." surfaced on blocked replacements, NECK/WRIST multi-slot replace covered, all-NOREMOVE multi-slot returns ROM "You already wear two rings/items." text, `wear all` honors `fReplace=FALSE` (no slot stomp), `do_wield`/`do_wear` shield path now check `ch.size < SIZE_LARGE` and skip strength/two-hand restrictions for NPCs (matches ROM `IS_NPC` short-circuits). Also fixed an upstream bug: `Object.__post_init__` now mirrors prototype `extra_flags`/`wear_flags` so direct-construction (test fixtures, OLC) honors ITEM_NOREMOVE and friends.
-- ✅ `do_remove()` - line-by-line ROM parity verified against `src/act_obj.c:1740-1763` and `src/handler.c:remove_obj` (1372-1392). Gap fixed: ROM emits a TO_ROOM `"$n stops using $p."` broadcast in addition to the TO_CHAR `"You stop using $p."` reply; Python now mirrors both via a new `_perform_remove()` helper that calls `unequip_char` + `act_format` + `broadcast_room`. NOREMOVE wording matches ROM exactly (`"You can't remove $p."`). `wear_loc` reset to `WEAR_NONE` is handled by `unequip_char` (verified). `remove all` retained as a documented Python extension (skips NOREMOVE items). New suite `tests/integration/test_remove_command.py` adds 6 targeted tests (happy path TO_CHAR+TO_ROOM, NOREMOVE block, no-args, item-not-worn, AC bonus revert, `remove all` skipping NOREMOVE).
-- ⚠️ Remaining P1 object commands/helpers still need line-by-line audit
+- ✅ `do_get()` / `do_put()` / `do_drop()` / `do_give()` - complete
+- ✅ `do_wear()` / `do_remove()` / `wear_obj()` / `remove_obj()` - complete
+- ✅ Consumables and magic items (`do_quaff`, `do_drink`, `do_eat`, `do_fill`, `do_pour`, `do_recite`, `do_brandish`, `do_zap`) - complete
+- ✅ `do_sacrifice()` / `do_steal()` - complete
+- ✅ No remaining act_obj parity gaps are scheduled
 
 **Recent Verification**:
 - ✅ `_obj_from_char()` inventory bug fixed (`char.inventory`, not `char.carrying`)
@@ -732,225 +730,243 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 - ✅ Targeted pytest run passes: `test_player_npc_interaction.py`, `test_mobprog_scenarios.py`, `test_new_player_workflow.py` (24/24)
 
 **Critical Gaps Remaining**:
-- [ ] Equipment slot/removal parity verification
-- [ ] Finish remaining `do_wear()` replace/multi-slot/two-hand parity cases
-- [ ] Consumables and special-object command audit completion
-- [ ] **Consumables audit (April 24, 2026)** — see `docs/parity/ACT_OBJ_C_CONSUMABLES_AUDIT.md`. All eight commands (`do_eat`, `do_drink`, `do_quaff`, `do_recite`, `do_brandish`, `do_zap`, `do_pour`, `do_fill`) are wired in `dispatcher.py`, but `do_recite`/`do_brandish`/`do_zap` raise at runtime (`ItemType.ITEM_STAFF`/`ITEM_WAND` undefined; `find_char_in_room`/`find_obj_in_room`/`SkillTarget` not imported). `do_eat`/`do_drink` ignore the canonical `Character.condition[]` array (DRUNK/FULL/THIRST/HUNGER), substitute a non-ROM dict, omit the COND_FULL > 40/45 gates, and apply non-canonical poison affects. `do_pour` reads `target_char.equipped` instead of `equipment` so pour-into-character never finds the held container. New integration suite at `tests/integration/test_consumables.py` (13 pass, 7 skip pointing to the audit doc).
+- None
 
-**Integration Tests**: 🔄 Strong GET/PUT coverage complete; `do_drop()` has 15 targeted parity tests passing, `do_give()` has 14 targeted parity tests passing, and `test_equipment_system.py` now covers 18 relevant `do_wear()` scenarios (plus 1 existing skip)
+**Integration Tests**: ✅ Verified complete. Latest targeted slice: `215 passed, 1 skipped` across container retrieval, drop, give, remove, equipment, consumables, and steal suites on 2026-05-14.
 
-**Estimated Work**: 2-3 days for the next P0 object-command batch (`do_give()` then wear/remove follow-up)
+**Estimated Work**: None
 
 **Next Steps**:
-- [x] `do_drop()` parity batch committed as `97c901e` (`feat: finish do_drop parity batch`)
-- [x] Start line-by-line `do_give()` audit against `src/act_obj.c`
-- [x] Add `do_give()` money-transfer and observer-message integration tests
-- [x] Add `do_give()` carry-limit and special-NPC parity coverage
-- [x] Verify carry-weight saturation, numeric money error wording, and ROM-confirmed lack of `give all` support
-- [x] Fix TO_NOTVICT room-broadcast parity so giver no longer receives observer messages
-- [x] Start `do_wear()` audit against `src/act_obj.c`
-- [x] Verify initial `do_wear()` gaps: location-specific wear text, light handling, TO_ROOM observer messages, and `wear all` weapon/light routing
-- [x] Finish `do_wear()` replace logic, multi-slot edge cases, and two-hand interactions (NOREMOVE messaging, NECK/WRIST replace, all-NOREMOVE multi-slot, `wear all` non-replace, SIZE_LARGE bypass, NPC bypass) — `tests/integration/test_equipment_system.py` now covers 26 scenarios (1 ROM-non-parity skip)
-- [x] Audit `do_remove()` line-by-line and add dedicated remove-command coverage (6 tests in `tests/integration/test_remove_command.py`; TO_ROOM broadcast gap closed via `_perform_remove()` helper)
-- [ ] Audit consumables and special-object commands (`do_eat`/`do_drink`/`do_quaff`/`do_recite`/`do_brandish`/`do_zap`/`do_pour`/`do_fill`)
+- None — `act_obj.c` is complete. Pick the next real open non-deferred tracker row instead of this historical section.
 
 ---
 
-### ⚠️ P1-8: mob_prog.c + mob_cmds.c (PARTIAL - 85%)
+### ✅ P1-8: mob_prog.c + mob_cmds.c (COMPLETE - 100%)
 
-**Status**: ⚠️ **Edge-case audit completed April 24, 2026 — `mpat`/`mptransfer`/`mppurge` parity verified, variable substitution exercised**
+**Status**: ✅ **Both audits are complete.** The earlier partial notes in this section are historical; canonical status lives in `MOB_PROG_C_AUDIT.md` and `MOB_CMDS_C_AUDIT.md`.
 
 **ROM Functions**: Mob programs and mob commands
-**QuickMUD Module**: `mud/mobprog/`, `mud/mob_cmds.py`
+**QuickMUD Modules**: `mud/mobprog.py`, `mud/mob_cmds.py`, `mud/commands/mobprog_tools.py`
+**Audit Docs**:
+- `docs/parity/MOB_PROG_C_AUDIT.md`
+- `docs/parity/MOB_CMDS_C_AUDIT.md`
 
 **Audit Status**:
-- ✅ Mobprog triggers (100%)
-- ✅ Mobprog conditionals (95%)
-- ✅ Quest workflows (90% - tested)
-- ✅ Mob commands (85%) — `mpat`, `mptransfer`, `mppurge` audited and patched as needed
-- ⚠️ Recursion limits (80% - tested but edge cases remain)
+- ✅ `mob_prog.c` complete — all 7 audit gaps closed (`MOBPROG-001..007`)
+- ✅ `mob_cmds.c` complete — all 18 audit gaps closed (`MOBCMD-001..018`)
+- ✅ Trigger dispatch, control flow, `$`-code substitution, and edge-case command semantics verified
+- ✅ Admin/debug helpers (`do_mpstat`, `do_mpdump`) covered via `mud/commands/mobprog_tools.py`
 
-**Critical Gaps Closed (April 24, 2026)**:
-- [x] `mpat <location> <command>` — round-trip teleport verified; mob's room saved, command dispatched at target, mob returned (`tests/integration/test_mobprog_edge_cases.py`)
-- [x] `mptransfer <victim|'all'> <location>` — single-target and `all` forms verified
-- [x] `mppurge` edge cases — purges room contents while excluding PCs and the running mob
-- [x] Variable substitution ($i, $I, $n, $N, $t, $T, $e/$E, $m/$M, $s/$S, $r/$R, $p) exercised in a single mobprog snippet test
+**Integration Tests**:
+- `tests/integration/test_mobprog_predicates.py`
+- `tests/integration/test_mobprog_greet_trigger.py`
+- `tests/integration/test_mobprog_program_flow.py`
+- `tests/integration/test_mobprog_edge_cases.py`
+- `tests/integration/test_mob_cmds_*.py`
 
-**Integration Tests**: ✅ `tests/integration/test_mobprog_scenarios.py` (existing) + `tests/integration/test_mobprog_edge_cases.py` (7 new tests, all green)
-
-**Remaining Work**: Recursion-limit edge cases and any rare mob commands still need a final pass before declaring 100% parity.
+**Remaining Work**: None in the audited parity set
 
 ---
 
 ## Priority 2: Important Features
 
-### ❌ P2-1: olc.c + olc_act.c + olc_save.c (NOT AUDITED - 28%)
+### ✅ P2-1: olc.c + olc_act.c + olc_save.c (AUDITED - 100% on audit-bound gaps)
 
-**Status**: ❌ **No systematic audit**
+**Status**: ✅ **OLC cluster audited.** Earlier “not audited” text here is historical and superseded by the audit docs and top matrix.
 
 **ROM Functions**: Online building system
-**QuickMUD Module**: `mud/olc/`
+**QuickMUD Modules**: `mud/commands/build.py`, `mud/commands/imm_olc.py`, `mud/commands/dispatcher.py`, `mud/olc/`, `mud/utils/prompt.py`
+**Audit Docs**:
+- `docs/parity/OLC_C_AUDIT.md`
+- `docs/parity/OLC_ACT_C_AUDIT.md`
+- `docs/parity/OLC_SAVE_C_AUDIT.md`
+- `docs/parity/OLC_MPCODE_C_AUDIT.md`
 
 **Known Status**:
-- ✅ Basic OLC framework exists
-- ⚠️ Area editor (partial)
-- ⚠️ Room editor (partial)
-- ⚠️ Mob editor (partial)
-- ⚠️ Object editor (partial)
-- ❌ Mobprog editor (missing)
+- ✅ `olc.c` complete — OLC-INFRA-001 and OLC-001..023 closed
+- ✅ `olc_act.c` audit-bound gaps complete — OLC_ACT-001..014 closed
+- ✅ `olc_save.c` audit-bound gaps complete — OLC_SAVE-001..017 closed
+- ✅ `olc_mpcode.c` complete — mpcode editor parity closed
 
-**Critical Gaps**:
-- [ ] Complete audit needed (200+ functions)
-- [ ] Save functionality verification
-- [ ] Undo/redo commands
-- [ ] Security checks (builder permissions)
+**Deferred / Architectural Notes**:
+- `OLC_SAVE-018..020` remain deferred-by-design under JSON-authoritative save semantics
+- `OLC_ACT_C_AUDIT.md` explicitly defers deep TIER C coverage beyond the closed audit-bound gaps
 
-**Integration Tests**: ❌ None
+**Integration Tests**: ✅ Present across the OLC cluster; see the per-file audit docs for the dedicated suites
 
-**Estimated Work**: 1-2 weeks for full audit + implementation
+**Estimated Work**: None in the current audit-bound scope
 
 **Next Steps**:
-- [ ] Create comprehensive OLC audit document
-- [ ] Prioritize missing features
-- [ ] Add integration tests
+- None — only deferred/design-scoped OLC items remain
 
 ---
 
-### ❌ P2-2: special.c (NOT AUDITED - 40%)
+### ✅ P2-2: special.c (AUDITED - 100%)
 
-**Status**: ❌ **No systematic audit**
+**Status**: ✅ **Per-file audit completed and re-verified**
 
 **ROM Functions**: Special procedures (shopkeepers, guards, etc.)
 **QuickMUD Module**: `mud/spec_funs.py`
+**Audit Doc**: `docs/parity/SPECIAL_C_AUDIT.md`
 
 **Known Status**:
-- ✅ Shopkeeper spec proc (100%)
-- ⚠️ Guard spec procs (partial)
-- ❌ Many spec procs missing
+- ✅ Full ROM `special.c` function inventory mapped
+- ✅ Gameplay-visible spec-proc gaps closed (`executioner`, `guard`, `mayor`, `thief`, `nasty`, faction members)
+- ✅ Existing spec-function test slice re-verified green on 2026-05-14
 
 **Critical Gaps**:
-- [ ] Complete inventory of ROM spec procs
-- [ ] Which spec procs are essential vs. optional
-- [ ] Spec proc integration with mobprogs
+- [x] Complete inventory of ROM spec procs
+- [x] Which spec procs are essential vs. optional
+- [x] Spec proc integration with mobprogs
 
-**Integration Tests**: ❌ None
+**Verification**:
+- `./venv/bin/python -m pytest -q tests/test_spec_funs.py tests/test_spec_fun_behaviors.py tests/test_healer.py` → `54 passed`
 
-**Estimated Work**: 3-5 days for audit + implementation
+**Estimated Work**: complete
 
 **Next Steps**:
-- [ ] List all ROM spec procs from special.c
-- [ ] Categorize by priority
-- [ ] Implement missing critical spec procs
+- [x] None — row reconciled to completed audit state
 
 ---
 
-### ❌ P2-3: act_wiz.c (PARTIAL - 50%)
+### ✅ P2-3: act_wiz.c (AUDITED - 100%)
 
-**Status**: ⚠️ **First parity pass landed; core admin movement + snoop-proof flow improved**
+**Status**: ✅ **Fully audited and covered by dedicated integration parity tests**
 
 **ROM Functions**: Immortal/admin commands
 **QuickMUD Modules**: `mud/wiznet.py`, `mud/commands/imm_*.py`, `mud/commands/admin_commands.py`, `mud/commands/inventory.py`, `mud/commands/remaining_rom.py`
+**Audit Doc**: `docs/parity/ACT_WIZ_C_AUDIT.md`
 
 **Known Status**:
-- ✅ `goto` private-room gating now respects owner rooms
-- ✅ `transfer` uses the corrected private-room helper
-- ✅ `violate` now uses ROM `find_location()` semantics
-- ✅ `protect` / `snoop` now use canonical `COMM_SNOOP_PROOF`
-- ⚠️ `force` (partial)
-- ⚠️ `wiznet` (basic)
-- ❌ `rstat` / `ostat` / `mstat` still missing as ROM-faithful detailed views
-- ❌ `log` still missing
-- ❌ Many admin commands still need line-by-line ROM audit
+- ✅ Full immortal/admin command surface audited against ROM `src/act_wiz.c`
+- ✅ `stat` family (`do_stat` / `do_rstat` / `do_ostat` / `do_mstat`) closed and covered
+- ✅ `log`, `force`, punishments, echo family, invis/incognito, load/clone/set, and copyover flows closed
+- ✅ Dedicated parity suite remains green
 
 **Critical Gaps**:
 - [x] `protect` command (`WIZ-003`)
 - [x] canonical snoop-proof check in `snoop` (`WIZ-004`)
 - [x] owner/private-room admin movement gates (`WIZ-001`)
 - [x] ROM `violate` location semantics (`WIZ-002`)
-- [ ] `stat` command family (`WIZ-005`)
-- [ ] `log` command (`WIZ-006`)
-- [ ] `force` ROM flow/message parity (`WIZ-007`)
+- [x] `stat` command family (`WIZ-005`)
+- [x] `log` command (`WIZ-006`)
+- [x] `force` ROM flow/message parity (`WIZ-007`)
+- [x] residual stat parity fixes (`WIZ-039`..`WIZ-044`)
 
-**Integration Tests**: ✅ `tests/integration/test_act_wiz_command_parity.py` (4 focused parity tests)
+**Integration Tests**: ✅ `tests/integration/test_act_wiz_command_parity.py` (`108 passed` on 2026-05-14)
 
-**Estimated Work**: 2-3 days
+**Estimated Work**: complete
 
 **Next Steps**:
-- [ ] Finish `do_stat` / `do_rstat` / `do_ostat` / `do_mstat`
-- [ ] Audit `do_force`
-- [ ] Audit `do_log` and remaining punishment/server-control commands
+- [x] None — row reconciled to completed audit state
 
 ---
 
-### ❌ P2-4: scan.c (NOT AUDITED - 0%)
+### ✅ P2-4: scan.c (AUDITED - 100%)
 
-**Status**: ❌ **Command missing**
+**Status**: ✅ **Implemented and verified**
 
-**ROM Functions**: Scan command (look at distance)
-**QuickMUD Module**: None
+**ROM Functions**: `do_scan`
+**QuickMUD Module**: `mud/commands/inspection.py`
 
-**Next Steps**:
-- [ ] Implement `scan` command
-- [ ] Add directional looking
-- [ ] Add scan skill integration
+**Audit doc**: `docs/parity/SCAN_C_AUDIT.md`
 
-**Estimated Work**: 4-6 hours
+**Verified**:
+- `scan` command is wired in `mud/commands/dispatcher.py`
+- directional scan tokens and depth handling match ROM `src/scan.c`
+- room broadcasts match ROM act-pair behavior
+- no Python-only fallback lines are emitted on empty scans
+- `spell_farsight` delegates to `do_scan`, matching ROM call structure
+
+**Test coverage**:
+- `tests/test_scan_parity.py`
+- `tests/integration/test_scan_broadcasts.py`
+- `tests/test_commands.py`
+- `tests/test_spell_farsight_rom_parity.py`
 
 ---
 
-### ❌ P2-5: healer.c (NOT AUDITED - 0%)
+### ✅ P2-5: healer.c (AUDITED - 100%)
 
-**Status**: ❌ **Healer spec proc missing**
+**Status**: ✅ **Fully audited and covered by dedicated healer parity tests**
 
-**ROM Functions**: Healer mob special procedure
-**QuickMUD Module**: None
+**ROM Functions**: `do_heal`
+**QuickMUD Module**: `mud/commands/healer.py`
+**Audit Doc**: `docs/parity/HEALER_C_AUDIT.md`
 
-**Next Steps**:
-- [ ] Implement healer spec proc
-- [ ] Add healing services
-- [ ] Add curing services
+**Known Status**:
+- ✅ `ACT_IS_HEALER` lookup and ROM price table restored
+- ✅ Silver-aware affordability, `deduct_cost`, healer payout, and room utterance restored
+- ✅ `mana`, `refresh`, and `heal` route through ROM-faithful logic
 
-**Estimated Work**: 6-8 hours
+**Critical Gaps**:
+- [x] `HEALER-001` healer detection + price table
+- [x] `HEALER-002` mana/economy/utterance parity
+- [x] `HEALER-003` refresh spell parity
+- [x] `HEALER-004` heal spell parity
+
+**Verification**:
+- `./venv/bin/python -m pytest -q tests/integration/test_healer_command_parity.py tests/test_healer.py tests/test_healer_parity.py tests/test_healer_rom_parity.py` → `23 passed`
+
+**Estimated Work**: complete
 
 ---
 
 ## Priority 3: Infrastructure & Utilities
 
-### ⚠️ P3-1: const.c / tables.c / lookup.c (PARTIAL - 72%)
+### ✅ P3-1: const.c / tables.c / lookup.c (AUDITED - 100%)
 
-**Status**: ⚠️ **Most ported, needs verification**
+**Status**: ✅ **Fully audited**
 
 **ROM Functions**: Constants, tables, lookups
-**QuickMUD Modules**: `mud/models/constants.py`, `mud/data/`
+**QuickMUD Modules**: `mud/models/constants.py`, `mud/models/titles.py`, `mud/models/races.py`, `mud/models/classes.py`, `mud/models/weapon_table.py`, `mud/models/character.py`, `mud/skills/groups.py`, `mud/utils/prefix_lookup.py`, `mud/wiznet.py`, `mud/account/account_service.py`, `mud/combat/engine.py`, `mud/handler.py`
+**Audit Docs**:
+- `docs/parity/CONST_C_AUDIT.md`
+- `docs/parity/LOOKUP_C_AUDIT.md`
+- `docs/parity/TABLES_C_AUDIT.md`
 
 **Known Status**:
-- ✅ Most enums ported (ActFlag, AffectFlag, etc.)
-- ✅ Position, Direction, Wear locations
-- ⚠️ Lookup tables (70% - some missing)
-- ⚠️ Conversion functions (partial)
+- ✅ `lookup.c` fully audited — all 8 gaps closed
+- ✅ `tables.c` fully audited — all 3 gaps closed
+- ✅ `const.c` fully closed (`CONST-001`..`CONST-007`)
 
 **Critical Gaps**:
-- [ ] Verify all ROM constants present
-- [ ] Verify enum values match ROM bit positions
-- [ ] Verify lookup tables complete
+- [x] Verify all ROM constants present
+- [x] Verify enum values match ROM bit positions
+- [x] Verify lookup tables complete
+- [x] Port canonical `weapon_table` as shared data (`CONST-007`)
 
-**Estimated Work**: 1-2 days for verification
+**Verification**:
+- `./venv/bin/python -m pytest -q tests/integration/test_lookup_parity.py tests/test_nanny_rom_parity.py tests/integration/test_nanny_login_parity.py tests/test_healer_rom_parity.py tests/integration/test_do_equipment.py -k 'lookup or weapon or title or equipment or liq'` → `22 passed, 24 deselected`
+- `./venv/bin/python -m pytest -q tests/test_weapon_table_parity.py tests/integration/test_nanny_login_parity.py tests/test_nanny_rom_parity.py tests/integration/test_do_equipment.py -k 'weapon or equipment or chosen_weapon_skill'` → `14 passed, 19 deselected`
+
+**Estimated Work**: complete
 
 ---
 
-### ⚠️ P3-2: flags.c / bit.c (PARTIAL - 82%)
+### ✅ P3-2: flags.c / bit.c (AUDITED - 100%)
 
-**Status**: ⚠️ **Mostly complete**
+**Status**: ✅ **Audited 100%.** `bit.c` is fully closed and `flags.c` now has no open gaps.
 
 **ROM Functions**: Flag manipulation utilities
-**QuickMUD Module**: `mud/flags.py`, `mud/utils.py`
+**QuickMUD Modules**: `mud/commands/remaining_rom.py`, `mud/utils/bit.py`, `mud/utils/prefix_lookup.py`
+**Audit Docs**:
+- `docs/parity/FLAGS_C_AUDIT.md`
+- `docs/parity/BIT_C_AUDIT.md`
 
 **Known Status**:
-- ✅ Bit operations (90%)
-- ✅ Flag setting/clearing (85%)
-- ⚠️ Flag name resolution (75%)
+- ✅ `flags.c` `FLAG-001` closed — `do_flag` fully implemented and tested
+- ✅ `flags.c` `FLAG-002` closed — `=` now preserves non-`settable` rows exactly like ROM
+- ✅ `bit.c` fully closed — `BIT-001`, `BIT-002`, `BIT-003` all fixed
 
-**Estimated Work**: 4-6 hours
+**Verification**:
+- `tests/integration/test_flag_command_parity.py`
+- `tests/integration/test_bit_flag_value.py`
+- `tests/integration/test_bit_flag_string.py`
+- `tests/integration/test_bit_is_stat.py`
+
+**Estimated Work**:
+- None
 
 ---
 
@@ -1000,7 +1016,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 **QuickMUD Modules**: `mud/net/`, `mud/utils/prompt.py`, `mud/account/account_service.py`, `mud/utils/act.py`, `mud/utils/fix_sex.py`, `mud/net/ansi.py`.
 
-**Audit doc**: [`COMM_C_AUDIT.md`](COMM_C_AUDIT.md) — 9 stable gap IDs (COMM-001..COMM-009). Closed: COMM-001 (`bust_a_prompt` rendering), COMM-002 (`show_string` pager input semantics), COMM-003 (`check_parse_name` length floor), COMM-004 (mob-keyword collision), COMM-006 (clan-name reject), COMM-007 (`stop_idling` act-broadcast), COMM-008 (ANSI specials `{D {* {/ {- {{`), COMM-009 (`fix_sex` standalone helper). Deferred-by-design: COMM-005 (double-newbie-disconnect sweep) — overlaps the asyncio architectural carve-out.
+**Audit doc**: [`COMM_C_AUDIT.md`](COMM_C_AUDIT.md) — 9 stable gap IDs (COMM-001..COMM-009). Closed: COMM-001 (`bust_a_prompt` rendering), COMM-002 (`show_string` pager input semantics), COMM-003 (`check_parse_name` length floor), COMM-004 (mob-keyword collision), COMM-005 (double-newbie descriptor sweep + wiznet alert), COMM-006 (clan-name reject), COMM-007 (`stop_idling` act-broadcast), COMM-008 (ANSI specials `{D {* {/ {- {{`), COMM-009 (`fix_sex` standalone helper). Only the asyncio networking architecture itself remains deferred-by-design.
 
 **Networking** (`main`, `init_socket`, `game_loop_*`, descriptor I/O, telnet protocol): intentional architectural divergence — QuickMUD uses asyncio. Not audit-bound.
 

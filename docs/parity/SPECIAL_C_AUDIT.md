@@ -1,7 +1,7 @@
-# SPECIAL.C Parity Audit — ROM 2.4b6 → QuickMUD
+# `special.c` Audit — ROM 2.4b6 → QuickMUD-Python
 
 **Created**: 2026-04-28  
-**Status**: ✅ Phase 4 — All CRITICAL/IMPORTANT gaps closed, 8 FIXED, 4 VERIFIED, 2 N/A, 2 MINOR  
+**Status**: ✅ AUDITED — all gameplay-visible `special.c` gaps closed; 2026-05-14 reconciled the stale tracker row  
 **Coverage**: 22/22 ROM functions mapped, 8 gaps fixed, 4 verified equal
 
 ---
@@ -136,13 +136,22 @@ ROM: `number_percent() > 2 * ch->level` → check. Python: `rng_mm.number_percen
 
 ## Phase 4: Gap Closures
 
-*(To be filled as gaps are closed via rom-gap-closer)*
+All CRITICAL and IMPORTANT gaps listed in Phase 3 are already closed in code and
+covered by the existing spec-function test slice. 2026-05-14 re-verified the
+surface with:
+
+- `./venv/bin/python -m pytest -q tests/test_spec_funs.py tests/test_spec_fun_behaviors.py tests/test_healer.py`
+
+Result: `54 passed`
 
 ---
 
 ## Phase 5: Completion Summary
 
-*(To be filled when all P0/P1 gaps are closed)*
+- `special.c` is effectively closed at the per-file audit level.
+- The subsystem tracker had not been updated to reflect the completed audit.
+- No production code changes were required on 2026-05-14; this session only
+  reconciles documentation state after re-verification.
 
 ---
 

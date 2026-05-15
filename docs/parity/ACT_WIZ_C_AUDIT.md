@@ -1,7 +1,7 @@
 # `act_wiz.c` Audit — ROM 2.4b6 → QuickMUD-Python Parity
 
-**Status:** ⚠️ PARTIAL — first 2026-04-28 parity pass closed 4 gameplay-visible gaps (`WIZ-001`..`004`)  
-**Date:** 2026-04-28  
+**Status:** ✅ AUDITED — all verified `act_wiz.c` gaps are closed; 2026-05-14 reconciled the stale tracker row to the completed audit  
+**Date:** 2026-05-14  
 **ROM C:** `src/act_wiz.c` (4685 lines, immortal/admin command family)  
 **Python:** `mud/wiznet.py`, `mud/commands/imm_commands.py`, `mud/commands/imm_admin.py`, `mud/commands/imm_server.py`, `mud/commands/imm_display.py`, `mud/commands/imm_punish.py`, `mud/commands/imm_load.py`, `mud/commands/imm_search.py`, `mud/commands/imm_set.py`, `mud/commands/imm_emote.py`, `mud/commands/admin_commands.py`, `mud/commands/inventory.py`, `mud/commands/remaining_rom.py`, `mud/commands/alias_cmds.py`, `mud/commands/typo_guards.py`  
 **Priority:** P2 (immortal/admin command surface)
@@ -249,6 +249,11 @@ Python now:
 ## Phase 5 — Current State
 
 `act_wiz.c` is now **AUDITED** — all functions verified or closed.
+
+2026-05-14 reconciliation note:
+- The subsystem tracker still showed `act_wiz.c` as partial/open.
+- Current code and the dedicated parity suite already reflected the completed audit state.
+- `tests/integration/test_act_wiz_command_parity.py` remains green (`108 passed`), so this session only reconciles documentation state.
 
 Completed this session (WIZ-023..038):
 - `do_guild` now uses `lookup_clan_id`/`CLAN_TABLE` for clan lookup; distinguishes independent-clan vs member-clan messaging; `\n\r`.

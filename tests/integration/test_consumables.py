@@ -2,9 +2,6 @@
 
 Covers do_eat / do_drink / do_quaff / do_recite / do_brandish / do_zap.
 ROM Parity Reference: src/act_obj.c — see docs/parity/ACT_OBJ_C_CONSUMABLES_AUDIT.md.
-
-Tests for commands whose Python implementation is currently broken (do_recite,
-do_brandish, do_zap) skip with a pointer to the audit doc rather than fail.
 """
 from __future__ import annotations
 
@@ -21,9 +18,6 @@ from mud.models.object import Object
 from mud.models.room import Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import create_test_character
-
-
-_AUDIT_REF = "not yet implemented in Python port — see ACT_OBJ_C_CONSUMABLES_AUDIT.md"
 
 
 @pytest.fixture(autouse=True)

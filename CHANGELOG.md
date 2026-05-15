@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.12]
+
+### Added
+- **Canonical ROM `weapon_table`**: added `/mud/models/weapon_table.py` as the shared source for weapon class name, school weapon vnum, weapon type, and linked proficiency mapping, then wired combat, character-load skill seeding, and creation-time weapon handling to it.
+- **`NANNY-010` reconnect descriptor sweep**: `mud/net/connection.py` now mirrors ROM `src/nanny.c:307-352` by sweeping duplicate descriptors on break-connect reconnect, including the switched-immortal `original->name` branch.
+
+### Fixed
+- **`COMM-005` duplicate-newbie parity**: new-character name validation now closes matching non-playing duplicate descriptors and emits ROM's `Double newbie alert` wiznet notice.
+- **`FLAG-002` settable-bit preservation**: `do_flag` now preserves ROM `settable=FALSE` bits across the `=` operator for `act`, `plr`, and `comm` fields.
+- **Test determinism and suite stability**: stabilized wiznet and advancement integration tests by isolating shared descriptor-list state and replacing wall-clock ROM RNG seeding with a fixed Mitchell-Moore seed.
+
+### Changed
+- **Parity tracker reconciliation**: refreshed stale audit/tracker rows for `act_obj.c`, `act_wiz.c`, `scan.c`, `special.c`, `healer.c`, `const/tables/lookup`, `fight.c`, and `comm.c` so docs match the verified codebase.
+- **Full-suite recertification**: the suite now reruns clean at `4535 passed, 11 skipped`.
+
 ## [2.8.11]
 
 ### Fixed

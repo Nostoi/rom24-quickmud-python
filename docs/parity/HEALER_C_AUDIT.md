@@ -1,7 +1,7 @@
 # `healer.c` Audit — ROM 2.4b6 → QuickMUD-Python Parity
 
-**Status:** ✅ AUDITED — all 4 gameplay-visible gaps closed (`HEALER-001`..`HEALER-004`)
-**Date:** 2026-04-28
+**Status:** ✅ AUDITED — all 4 gameplay-visible gaps closed (`HEALER-001`..`HEALER-004`); 2026-05-14 reconciled the stale tracker row
+**Date:** 2026-05-14
 **ROM C:** `src/healer.c` (157 lines, 1 function)
 **Python:** `mud/commands/healer.py`
 **Priority:** P2 (service command, economy-visible and gameplay-visible)
@@ -122,6 +122,11 @@ Python now:
 ## Phase 5 — Completion
 
 ✅ `healer.c` is fully audited.
+
+2026-05-14 reconciliation note:
+- The subsystem tracker still listed `healer.c` as missing/not audited.
+- Current code and the dedicated healer parity suites already reflected the completed audit state.
+- This session re-verified the surface with `23 passed`; no production code changes were required.
 
 - Command lookup now mirrors ROM healer detection and prefix behavior.
 - Economic handling now mirrors ROM silver/gold semantics.

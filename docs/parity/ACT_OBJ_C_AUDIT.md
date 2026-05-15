@@ -39,14 +39,12 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 **Function Count**: 24 command functions + 5 helper functions = **29 total functions**
 
-**Current Estimated Parity**: ~60% overall; `do_get()` and `do_put()` are complete, `do_drop()` is the next active audit target
+**Current Estimated Parity**: **100% overall**; all 12 audited object-command surfaces are complete and verified.
 
-**Critical Gaps (Known)**:
-- Container operations (put/get from containers)
-- Equipment slot validation
-- Consumables (potions, scrolls, food, water)
-- Sacrifice command
-- Theft mechanics
+**Current State**:
+- All tracked `GET-*`, `PUT-*`, `WEAR-*`, and `STEAL-*` gaps are closed.
+- Consumables and magic-item command coverage (`quaff`, `drink`, `eat`, `fill`, `pour`, `recite`, `brandish`, `zap`) is complete.
+- The detailed sections below include preserved historical phase notes from earlier audit passes; the status lines above and the per-command summaries are canonical.
 
 ---
 

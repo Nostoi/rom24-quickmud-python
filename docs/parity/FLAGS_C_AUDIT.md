@@ -1,7 +1,7 @@
 # `flags.c` ROM Parity Audit
 
-- **Status**: ✅ AUDITED — FLAG-001 closed; FLAG-002 (settable-bit preservation) deferred as MINOR follow-up
-- **Date**: 2026-04-28
+- **Status**: ✅ AUDITED — FLAG-001 and FLAG-002 closed
+- **Date**: 2026-05-15
 - **Source**: `src/flags.c` (ROM 2.4b6, 251 lines, 1 public function: `do_flag`)
 - **Python primary**: `mud/commands/remaining_rom.py:do_flag`
 
@@ -54,7 +54,7 @@ This is one cohesive gap (the entire mutation pipeline is missing), recorded as 
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|
 | `FLAG-001` | CRITICAL | `src/flags.c:44-251` | `mud/commands/remaining_rom.py:do_flag` | `do_flag` is a syntax-validator stub; no operator parsing, no flag-table lookup, no bit mutation. The command silently lies — it confirms a change that never happens. | ✅ FIXED — full operator parsing (`=`/`+`/`-`/toggle), 9-field dispatcher, IntFlag-based name lookup, and bit mutation wired through. NPC/PC field guards mirror ROM 105-187. Tests: `tests/integration/test_flag_command_parity.py` 9/9 passing. |
-| `FLAG-002` | MINOR | `src/flags.c:220-227` | `mud/commands/remaining_rom.py:do_flag` | Non-`settable` bits in ROM `flag_type` tables are preserved across the `=` operator (`act_flags` marks `IS_NPC`, `IS_AFFECTED` etc. as `settable=FALSE`). Python IntFlag carries no per-bit settable metadata, so `=` clears these structural bits. | 🔄 OPEN — deferred. Requires per-flag-table settable mask (~30 bits across act/plr/aff/imm/comm/form/parts). Low risk: only triggered when an immortal explicitly uses `=` on a mob's act field. |
+| `FLAG-002` | MINOR | `src/flags.c:220-227` | `mud/commands/remaining_rom.py:do_flag` | Non-`settable` bits in ROM `flag_type` tables are preserved across the `=` operator (`act_flags` marks `npc` settable=FALSE; `plr_flags` preserves all rows except `permit`; `comm_flags` preserves `noemote`/`noshout`/`notell`/`nochannels`/`snoop_proof`). Python now mirrors that behavior with explicit per-field preservation masks. | ✅ FIXED — `_NON_SETTABLE_FLAGS_BY_FIELD` encodes the ROM `settable=FALSE` rows from `src/tables.c`, and `do_flag` now seeds `new` with `old & preserve_mask` on `=` before applying requested bits. Tests: `tests/integration/test_flag_command_parity.py` (14 passing, including `=` preservation on `plr` and `act`). |
 
 ## Phase 4 — Closures
 
@@ -64,7 +64,12 @@ This is one cohesive gap (the entire mutation pipeline is missing), recorded as 
 - **Python**: `mud/commands/remaining_rom.py:do_flag` + new `_FLAG_FIELDS` dispatch table + `_lookup_flag_bit` helper.
 - **Test**: `tests/integration/test_flag_command_parity.py` (9 tests covering add/remove/toggle/set, aff/immunity/comm field routing, unknown-field and unknown-flag error paths).
 
+### `FLAG-002` — ✅ FIXED
+
+- **ROM C**: `src/flags.c:220-227` + `src/tables.c:82-127,271-295` (`settable=FALSE` rows).
+- **Python**: `mud/commands/remaining_rom.py:do_flag` + `_NON_SETTABLE_FLAGS_BY_FIELD`.
+- **Test**: `tests/integration/test_flag_command_parity.py` (`test_flag_char_plr_set_equals_clears_settable_bits_only`, `test_flag_char_plr_set_equals_preserves_rom_non_settable_bits`, `test_flag_mob_act_set_equals_preserves_rom_is_npc_bit`).
+
 ## Phase 5 — Completion summary
 
-flags.c is ✅ AUDITED. The single P0 gap (FLAG-001) is closed: `do_flag` is now a fully-wired immortal command that parses operators, looks up flag names against the matching IntFlag enum, and mutates the victim's flag field. NPC/PC guards mirror ROM exactly. The minor FLAG-002 (preserve non-`settable` bits across `=`) is documented and deferred — it requires per-bit metadata not yet present in the Python flag enums and only affects a narrow `=` use-case on NPC fields.
-
+flags.c is ✅ AUDITED. `do_flag` now mirrors the full ROM mutation path: operator parsing, field dispatch, prefix lookup, bit mutation, and the `settable=FALSE` preservation loop for the `=` operator. NPC/PC guards mirror ROM exactly. The full `tests/integration/test_flag_command_parity.py` suite is green with 14 cases, including ROM preservation of non-settable `plr`, `act`, and `comm` rows.

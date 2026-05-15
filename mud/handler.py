@@ -714,12 +714,9 @@ def weapon_name(weapon_type: int) -> str:
         - Uses WeaponType enum from constants.py
         - Falls back to "exotic" (ROM C default)
     """
-    from mud.models.constants import WeaponType
+    from mud.models.weapon_table import weapon_name_for_type
 
-    try:
-        return WeaponType(weapon_type).name.lower()
-    except ValueError:
-        return "exotic"
+    return weapon_name_for_type(weapon_type)
 
 
 # ==============================================================================

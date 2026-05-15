@@ -256,6 +256,10 @@ def do_switch(char: Character, args: str) -> str:
     # Perform the switch
     desc.character = victim
     desc.original = char
+    descriptor = getattr(getattr(desc, "connection", None), "_rom_descriptor", None)
+    if descriptor is not None:
+        descriptor.character = victim
+        descriptor.original = char
     victim.desc = desc
     char.desc = None
 
@@ -304,6 +308,10 @@ def do_return(char: Character, args: str) -> str:
     # Perform the return
     desc.character = original
     desc.original = None
+    descriptor = getattr(getattr(desc, "connection", None), "_rom_descriptor", None)
+    if descriptor is not None:
+        descriptor.character = original
+        descriptor.original = None
     original.desc = desc
     char.desc = None
 

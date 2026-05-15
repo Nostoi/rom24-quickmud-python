@@ -12,6 +12,7 @@ from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker
 
 import mud.net.connection as net_connection
+from mud import registry as global_registry
 
 from mud.account import (
     load_character as load_player_character,
@@ -526,7 +527,9 @@ def test_immortal_receives_imotd():
             await writer.drain()
 
             look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=10)
-            assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob or b"Borogon" in look_blob
+            assert (
+                b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob or b"Borogon" in look_blob
+            )
 
             writer.close()
             with suppress(Exception):
@@ -575,7 +578,9 @@ def test_creation_race_help(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(net_connection, "do_help", fake_do_help)
 
     async def run() -> None:
-        race = await net_connection._prompt_for_race(cast(net_connection.TelnetStream, object()), helper)  # test double for TelnetStream
+        race = await net_connection._prompt_for_race(
+            cast(net_connection.TelnetStream, object()), helper
+        )  # test double for TelnetStream
         assert race is not None
         assert race.name == "human"
 
@@ -1630,15 +1635,116 @@ def test_character_login_rejects_wrong_password_once(monkeypatch):
 
     # login_with_host is what _run_character_login actually calls
     from mud.account.account_service import LoginResult, LoginFailureReason
+
     bad_result = LoginResult(account=None, failure=LoginFailureReason.BAD_CREDENTIALS, was_reconnect=False)
     monkeypatch.setattr(net_connection, "login_with_host", lambda *a, **kw: bad_result, raising=False)
 
-    result = asyncio.run(_run_character_login(cast(net_connection.TelnetStream, FakeStream()), None))  # test double for TelnetStream
+    result = asyncio.run(
+        _run_character_login(cast(net_connection.TelnetStream, FakeStream()), None)
+    )  # test double for TelnetStream
 
     assert result is None
     assert prompts.count("Name: ") == 1
     assert prompts.count("Password: ") == 1
     assert any("Wrong password" in message for message in messages)
+
+
+def test_new_character_name_rejects_duplicate_newbie_and_wiznets(monkeypatch):
+    from mud.net.connection import _run_character_login
+
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    prompts: list[str] = []
+    messages: list[str] = []
+    previous_descriptors = getattr(global_registry, "descriptor_list", None)
+    previous_registry = list(character_registry)
+    character_registry.clear()
+
+    class FakeStream:
+        peer_host = "current.example"
+
+        def __init__(self) -> None:
+            self.closed = False
+
+        def set_ansi(self, _enabled):
+            pass
+
+        async def close(self) -> None:
+            self.closed = True
+
+    class DuplicateConn:
+        def __init__(self) -> None:
+            self.closed = False
+
+        async def close(self) -> None:
+            self.closed = True
+
+    async def fake_prompt(_conn, label, *, hide_input=False):
+        prompts.append(label)
+        if prompts.count("Name: ") == 1:
+            return "Hero"
+        return None
+
+    async def fake_send_line(_conn, msg):
+        messages.append(msg)
+
+    listener = RuntimeCharacter(
+        name="LogImm",
+        is_admin=True,
+        is_npc=False,
+        trust=60,
+        level=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS),
+    )
+    character_registry.append(listener)
+
+    duplicate_conn = DuplicateConn()
+    global_registry.descriptor_list = [
+        SimpleNamespace(
+            character=listener,
+            connected=1,
+            connection=SimpleNamespace(),
+            host="imm.example",
+            original=None,
+        ),
+        SimpleNamespace(
+            character=SimpleNamespace(name="Hero"),
+            connected=0,
+            connection=duplicate_conn,
+            host="old.example",
+            original=None,
+        ),
+    ]
+
+    monkeypatch.setattr(net_connection, "_prompt", fake_prompt)
+    monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
+    monkeypatch.setattr(net_connection, "character_exists", lambda _name: False, raising=False)
+
+    current = FakeStream()
+    try:
+        result = asyncio.run(_run_character_login(cast(net_connection.TelnetStream, current), None))
+    finally:
+        net_connection._unregister_descriptor(current)
+        character_registry.clear()
+        character_registry.extend(previous_registry)
+        if previous_descriptors is None:
+            if hasattr(global_registry, "descriptor_list"):
+                delattr(global_registry, "descriptor_list")
+        else:
+            global_registry.descriptor_list = previous_descriptors
+
+    assert result is None
+    assert duplicate_conn.closed is True
+    assert any(message == "Illegal name, try another." for message in messages)
+    assert any("Double newbie alert (Hero)" in message for message in listener.messages)
+    assert len(getattr(global_registry, "descriptor_list", [])) == 0 or all(
+        getattr(desc, "connection", None) is not duplicate_conn
+        for desc in getattr(global_registry, "descriptor_list", [])
+    )
 
 
 def test_password_echo_suppressed():
@@ -1698,6 +1804,8 @@ def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
     import mud.net.connection as net_connection
 
     previous_registry = list(character_registry)
+    previous_descriptors = getattr(global_registry, "descriptor_list", None)
+    global_registry.descriptor_list = []
     character_registry.clear()
     try:
 
@@ -1811,7 +1919,9 @@ def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
             monkeypatch.setattr(net_connection, "_prompt_for_weapon", fake_prompt_for_weapon)
             monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
 
-            dummy_conn = cast(net_connection.TelnetStream, SimpleNamespace(peer_host="academy.example"))  # test double for TelnetStream
+            dummy_conn = cast(
+                net_connection.TelnetStream, SimpleNamespace(peer_host="academy.example")
+            )  # test double for TelnetStream
             dummy_account = SimpleNamespace(id=1)
 
             result = await net_connection._run_character_creation_flow(dummy_conn, dummy_account, "Nova")
@@ -1828,6 +1938,10 @@ def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
     finally:
         character_registry.clear()
         character_registry.extend(previous_registry)
+        if previous_descriptors is None:
+            delattr(global_registry, "descriptor_list")
+        else:
+            global_registry.descriptor_list = previous_descriptors
 
 
 def test_newbie_banned_blocks_character_creation(monkeypatch):
@@ -1859,7 +1973,9 @@ def test_newbie_banned_blocks_character_creation(monkeypatch):
     monkeypatch.setattr(net_connection, "create_character", fake_create_character)
 
     async def run_test() -> bool:
-        dummy_conn = cast(net_connection.TelnetStream, SimpleNamespace(peer_host="blocked.example"))  # test double for TelnetStream
+        dummy_conn = cast(
+            net_connection.TelnetStream, SimpleNamespace(peer_host="blocked.example")
+        )  # test double for TelnetStream
         dummy_account = SimpleNamespace(id=1)
         return await net_connection._run_character_creation_flow(
             dummy_conn,
@@ -2226,10 +2342,105 @@ def test_newlock_blocks_new_accounts():
 
         # create_character_record (without skip_newlock) is blocked by newlock
         from mud.account.account_service import create_character_record
+
         assert not create_character_record("brand", "pw")
     finally:
         set_newlock(False)
         clear_active_accounts()
+
+
+def test_break_connect_closes_all_matching_descriptors(monkeypatch):
+    previous_descriptors = getattr(global_registry, "descriptor_list", None)
+
+    class FakeConn:
+        def __init__(self) -> None:
+            self.closed = False
+            self.peer_host = "reconnect.example"
+
+        async def close(self) -> None:
+            self.closed = True
+
+    messages: list[str] = []
+
+    async def fake_send_line(conn, message):  # noqa: ARG001
+        messages.append(message)
+
+    async def fake_prompt_yes_no(conn, prompt):  # noqa: ARG001
+        assert "Reconnect?" in prompt
+        return True
+
+    transferred = RuntimeCharacter(name="Hero", is_npc=False)
+    existing_conn = FakeConn()
+    switched_conn = FakeConn()
+    current_conn = cast(net_connection.TelnetStream, FakeConn())
+
+    existing_session = SimpleNamespace(
+        name="Hero",
+        connection=existing_conn,
+        character=transferred,
+    )
+
+    disconnect_calls: list[object] = []
+
+    async def fake_disconnect_session(session):
+        disconnect_calls.append(session)
+        await existing_conn.close()
+        net_connection.SESSIONS.pop("Hero", None)
+        return transferred
+
+    monkeypatch.setattr(net_connection, "_send_line", fake_send_line)
+    monkeypatch.setattr(net_connection, "_prompt_yes_no", fake_prompt_yes_no)
+    monkeypatch.setattr(net_connection, "_disconnect_session", fake_disconnect_session)
+
+    net_connection.SESSIONS.clear()
+    net_connection.SESSIONS["Hero"] = existing_session
+
+    current_descriptor = SimpleNamespace(
+        character=SimpleNamespace(name="Hero"),
+        connected=net_connection.CON_GET_NAME,
+        connection=current_conn,
+        host="reconnect.example",
+        original=None,
+    )
+    current_conn._rom_descriptor = current_descriptor
+
+    global_registry.descriptor_list = [
+        current_descriptor,
+        SimpleNamespace(
+            character=transferred,
+            connected=net_connection.CON_PLAYING,
+            connection=existing_conn,
+            host="old.example",
+            original=None,
+        ),
+        SimpleNamespace(
+            character=RuntimeCharacter(name="cityguard", is_npc=True),
+            connected=net_connection.CON_PLAYING,
+            connection=switched_conn,
+            host="old.example",
+            original=SimpleNamespace(name="Hero"),
+        ),
+    ]
+
+    async def run_test():
+        account = SimpleNamespace(act=0)
+        return await net_connection._select_character(current_conn, account, "hero")
+
+    try:
+        result = asyncio.run(run_test())
+    finally:
+        net_connection.SESSIONS.clear()
+        if previous_descriptors is None:
+            if hasattr(global_registry, "descriptor_list"):
+                delattr(global_registry, "descriptor_list")
+        else:
+            global_registry.descriptor_list = previous_descriptors
+
+    assert result == (transferred, True)
+    assert existing_conn.closed is True
+    assert switched_conn.closed is True
+    assert disconnect_calls == [existing_session]
+    assert messages == []
 
 
 def test_duplicate_login_requires_reconnect_consent():
@@ -2254,6 +2465,8 @@ def test_duplicate_login_requires_reconnect_consent():
 
 
 def test_reconnect_announces_wiz_links(monkeypatch):
+    previous_descriptors = getattr(global_registry, "descriptor_list", None)
+    global_registry.descriptor_list = []
     character_registry.clear()
 
     room = Room(vnum=42, name="Limbo")
@@ -2311,6 +2524,10 @@ def test_reconnect_announces_wiz_links(monkeypatch):
         _broadcast_reconnect_notifications(reconnecting)
     finally:
         character_registry.clear()
+        if previous_descriptors is None:
+            delattr(global_registry, "descriptor_list")
+        else:
+            global_registry.descriptor_list = previous_descriptors
 
     assert any("Hero has reconnected." in msg for msg in watcher.messages)
     expected = "{ZHero groks the fullness of his link.\n\r{x"
@@ -2328,11 +2545,17 @@ def test_reconnect_announces_wiz_links(monkeypatch):
 
     reconnecting.connection.peer_host = None
 
+    second_previous_descriptors = getattr(global_registry, "descriptor_list", None)
+    global_registry.descriptor_list = []
     character_registry.extend([imm_receives, imm_blocked, imm_plain])
     try:
         _broadcast_reconnect_notifications(reconnecting)
     finally:
         character_registry.clear()
+        if second_previous_descriptors is None:
+            delattr(global_registry, "descriptor_list")
+        else:
+            global_registry.descriptor_list = second_previous_descriptors
 
     assert any("Hero has reconnected." in msg for msg in watcher.messages)
     assert logged == ["Hero@(unknown) reconnected."]
@@ -2341,6 +2564,8 @@ def test_reconnect_announces_wiz_links(monkeypatch):
 
 
 def test_reconnect_skips_login_announcements(monkeypatch):
+    previous_descriptors = getattr(global_registry, "descriptor_list", None)
+    global_registry.descriptor_list = []
     character_registry.clear()
 
     reconnecting = RuntimeCharacter(
@@ -2385,6 +2610,10 @@ def test_reconnect_skips_login_announcements(monkeypatch):
         reminder = _announce_login_or_reconnect(reconnecting, "midgaard.example", reconnecting=True)
     finally:
         character_registry.clear()
+        if previous_descriptors is None:
+            delattr(global_registry, "descriptor_list")
+        else:
+            global_registry.descriptor_list = previous_descriptors
 
     assert not login_called
     assert link_listener.messages == ["{ZHero groks the fullness of his link.\n\r{x"]
@@ -2393,6 +2622,8 @@ def test_reconnect_skips_login_announcements(monkeypatch):
 
 
 def test_reconnect_announces_note_reminder(monkeypatch):
+    previous_descriptors = getattr(global_registry, "descriptor_list", None)
+    global_registry.descriptor_list = []
     character_registry.clear()
 
     reconnecting = RuntimeCharacter(
@@ -2528,9 +2759,7 @@ def test_character_selection_filters_permit_hosts():
         account_q = permit_login.account
 
         conn_q = cast(net_connection.TelnetStream, SimpleNamespace(host="127.0.0.1"))  # test double for TelnetStream
-        result = await net_connection._select_character(
-            conn_q, account_q, "quorblix", permit_banned=True
-        )
+        result = await net_connection._select_character(conn_q, account_q, "quorblix", permit_banned=True)
         assert result is not None
         char, forced = result
         assert char.name == "Quorblix"

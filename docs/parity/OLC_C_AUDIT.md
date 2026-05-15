@@ -76,7 +76,7 @@ This carve-out is **OLC-INFRA-001** (a single blocking gap, not a backlog item) 
 | Game-loop string-editor hook | Without it, no `string_add` call is ever issued; STRING-001..012 are uncloseable. | OLC-INFRA-001 |
 | `flag_value(table, argument)` standalone helper | Required by `aedit` flag-toggle prefix, `do_resets` wear-loc gate, every `oedit_extra`/`oedit_wear`/`medit_act`/`medit_affect`/etc. builder in `olc_act.c`. | BIT-001 (already filed) |
 | `flag_string(table, bits)` decoder | Required by `display_resets` (wear-loc + door-reset decode) and every `*_show` builder in `olc_act.c`. | BIT-002 (already filed) |
-| `weapon_table` data port | Required by `oedit` weapon-class display. | CONST-007 (already filed) |
+| `weapon_table` data port | Canonical table now exists in `mud/models/weapon_table.py`; OLC may consume it directly where useful. | CONST-007 ✅ closed |
 
 ---
 
@@ -195,7 +195,7 @@ The OLC audit also unblocks 16 already-filed gaps from sibling audits:
 
 - `STRING-001` … `STRING-012` (`docs/parity/STRING_C_AUDIT.md`) — all 12 string-editor helpers; closure depends on OLC-INFRA-001 + STRING-001..012 themselves.
 - `BIT-001`, `BIT-002`, `BIT-003` (`docs/parity/BIT_C_AUDIT.md`) — `flag_value`, `flag_string`, `is_stat`/`flag_stat_table`; closure unblocks OLC-011, OLC-020, OLC-022 and every `olc_act.c` builder.
-- `CONST-007` (`docs/parity/CONST_C_AUDIT.md`) — `weapon_table` data port; closure unblocks `oedit` weapon-class display.
+- `CONST-007` (`docs/parity/CONST_C_AUDIT.md`) — ✅ closed; canonical `weapon_table` now lives in `mud/models/weapon_table.py`.
 
 ### Historical close order (completed)
 

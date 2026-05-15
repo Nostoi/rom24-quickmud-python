@@ -85,12 +85,10 @@ def test_kill_mob_grants_xp_integration(test_character, test_mob):
     get 0 XP from trivial mobs (ROM parity). Using equal levels
     ensures XP is granted for testing the XP flow itself.
     """
-    import time
-
     from mud.models.constants import Position
     from mud.utils import rng_mm
 
-    rng_mm.seed_mm(int(time.time()))
+    rng_mm.seed_mm(1)
 
     char = test_character
     mob = test_mob

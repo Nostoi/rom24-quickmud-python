@@ -1,7 +1,7 @@
 # `const.c` ROM Parity Audit
 
-- **Status**: ⚠️ Partial 95% — 1 MINOR data port (`weapon_table`) remains deferred to the OLC cluster
-- **Date**: 2026-04-29
+- **Status**: ✅ AUDITED 100% — all 7 gaps closed, including canonical `weapon_table`
+- **Date**: 2026-05-14
 - **Source**: `src/const.c` (ROM 2.4b6, 1936 lines, 16 top-level data tables)
 - **Python primaries**:
   - `mud/models/constants.py` (LIQUID_TABLE, ATTACK_TABLE, INT_APP_LEARN, ItemType, …)
@@ -19,7 +19,7 @@
 | ROM table | ROM lines | Shape | Python counterpart | Status |
 |-----------|-----------|-------|--------------------|--------|
 | `item_table[]` | 41-72 | name → `ITEM_X` lookup (29 rows) | `mud/models/constants.py:286` `ItemType` IntEnum (no name table; lookups use `ItemType[name.upper()]`) | ✅ AUDITED — names + values match `merc.h` `ITEM_*` constants |
-| `weapon_table[]` | 76-86 | weapon-class → vnum + WEAPON_X + gsn pointer (8 rows) | — (not ported as data table; `get_weapon_sn` derives gsn ad-hoc in `mud/combat/engine.py:158`) | ⚠️ PARTIAL (CONST-007) |
+| `weapon_table[]` | 76-86 | weapon-class → vnum + WEAPON_X + gsn pointer (8 rows) | `mud/models/weapon_table.py` + consumers in `mud/combat/engine.py`, `mud/account/account_service.py`, `mud/models/character.py`, `mud/handler.py` | ✅ AUDITED (CONST-007 FIXED) |
 | `wiznet_table[]` | 91-113 | name → `WIZ_X` flag + level (20 rows) | `mud/wiznet.py:51` `WIZNET_TABLE` | ✅ AUDITED — names, flags, levels match |
 | `attack_table[]` | 116-158 | attack-name → noun + DAM_X (39 rows) | `mud/models/constants.py:646` `ATTACK_TABLE` | ✅ AUDITED — verified Phase 2 |
 | `race_table[]` | 161-355 | race-name + flags + form/parts (~14 races) | `mud/models/races.py:496` `RACE_TABLE` | ✅ AUDITED via prior `RACE_*` audits |
@@ -90,7 +90,26 @@ Used by `nanny.c` set-on-creation, `update.c` `gain_exp`/`advance_level` set-on-
 
 ### `weapon_table` (ROM 76-86)
 
-8 rows: `(name, school_obj_vnum, WEAPON_X, &gsn_X)`. Used by `db.c` to wire `gsn_*` after skill load, by `act_obj.c:get_eq_char` weapon-class display, and by `mob_cmds`/`fight.c` weapon-naming. Python derives gsn ad-hoc (`mud/combat/engine.py:158` `get_weapon_sn`) and has no centralized weapon-class table. Current consumers work but the table itself is the canonical lookup ROM expects when OLC ports are written. **CONST-007 (MINOR)** — defer alongside the OLC audit cluster the same way `BIT-001/002/003` were filed.
+ROM defines 8 rows of `(name, school_obj_vnum, WEAPON_X, &gsn_X)` and treats the
+table as the canonical source for school-weapon selection and weapon-skill
+lookup. Python previously duplicated parts of this across:
+
+- `mud/combat/engine.py` (`WEAPON_SKILL_BY_TYPE`)
+- `mud/account/account_service.py` (`_WEAPON_VNUMS`)
+- `mud/models/character.py` (`_STARTING_WEAPON_SKILL_BY_VNUM`)
+
+Python now ports the canonical table to `mud/models/weapon_table.py` and routes
+those consumers through shared helpers:
+
+- `weapon_table_entry_by_name`
+- `weapon_table_entry_by_school_vnum`
+- `weapon_skill_name_for_type`
+- `weapon_skill_name_for_school_vnum`
+
+This closes the structural parity gap and fixes a real behavioral miss the
+subset mappings hid: non-default ROM school weapons like `staff`, `axe`,
+`flail`, `whip`, and `polearm` now resolve and seed learned weapon skill
+through the same canonical mapping.
 
 ## Phase 3 — Gaps
 
@@ -102,7 +121,7 @@ Used by `nanny.c` set-on-creation, `update.c` `gain_exp`/`advance_level` set-on-
 | `CONST-004` | CRITICAL | `src/merc.h:2104-2106` `GET_AC` macro (consumed at `src/fight.c:480-489`, `src/act_info.c:1594-1645`, `src/act_wiz.c:1612-1613`) | `mud/combat/engine.py:391`, `mud/commands/session.py:160-176`, `mud/commands/imm_search.py:976-984` | Combat and AC display read raw `victim.armor[ac_idx]` without `dex_app[DEX].defensive` when victim `IS_AWAKE`. DEX-3 missing +40 penalty; DEX-25 missing −120 bonus. | ✅ FIXED — `mud/math/stat_apps.py::DEX_APP` ports `dex_app[26]` from `src/const.c:821-848`; `get_ac(ch, type)` accessor mirrors `merc.h:2104-2106` with `IS_AWAKE` gate (position > SLEEPING). Combat (`engine.py:391`), do_score (`session.py`), and wiz stat (`imm_search.py`) all swapped. Test: `tests/integration/test_combat_dex_app.py` (11 cases). |
 | `CONST-005` | CRITICAL | `src/update.c:74-79` advance_level | `mud/advancement.py:88-94` | Per-level HP gain uses static `LEVEL_BONUS[ch_class]` only; ROM rolls `number_range(class_table.hp_min, class_table.hp_max) + con_app[CON].hitp`. Both the RNG roll and the CON modifier are absent. | ✅ FIXED — `mud/math/stat_apps.py::CON_APP` ports `con_app[26]` from `src/const.c:850-878`; `con_hitp_bonus(ch)` accessor added; `mud/advancement.py:advance_level` HP path now rolls `number_range(class.hp_min, class.hp_max)` and applies `con_app[CON].hitp + roll`, then `* 9 / 10` (c_div), then `UMAX(2, ...)`. Mana/move stay on legacy LEVEL_BONUS pending separate gaps. Existing tests in `tests/test_advancement.py` and `tests/integration/test_character_advancement.py` updated to seed `rng_mm.number_range` and assert the ROM formula (per AGENTS.md "test contradicting ROM is a bug in the test"). Test: `tests/integration/test_advancement_con_app.py` (14 cases). |
 | `CONST-006` | IMPORTANT | `src/update.c:87` advance_level | `mud/advancement.py:94` | Per-level practice gain is constant `PRACTICES_PER_LEVEL` (== 1); ROM uses `wis_app[WIS].practice`. WIS-25 player misses +5 practices/level. | ✅ FIXED — `mud/math/stat_apps.py::WIS_APP` ports `wis_app[26]` from `src/const.c:790-817`; `wis_practice_bonus(ch)` accessor added; `mud/advancement.py:advance_level` now does `char.practice += wis_practice_bonus(char)` (WIS-3 → 0, WIS-13 → 1, WIS-25 → 5). Level-up message now reflects the actual roll with correct pluralisation. 5 existing tests in `tests/test_advancement.py` and `tests/integration/test_character_advancement.py` updated from `+2 practices/level` constant to ROM `wis_app[WIS].practice`. Test: `tests/integration/test_advancement_wis_app.py` (26 cases). |
-| `CONST-007` | MINOR | `src/const.c:76-86` weapon_table | (no central port) | 8-entry weapon-class lookup not ported as data; current consumers (`get_weapon_sn`) derive ad-hoc. Will be needed by OLC weapon paths. | 🔄 DEFERRED — close alongside OLC audit |
+| `CONST-007` | MINOR | `src/const.c:76-86` weapon_table | `mud/models/weapon_table.py`, `mud/combat/engine.py`, `mud/account/account_service.py`, `mud/models/character.py`, `mud/handler.py` | 8-entry weapon-class lookup was duplicated in local mappings instead of ported as canonical shared data. | ✅ FIXED — canonical ROM `weapon_table` now lives in `mud/models/weapon_table.py`; duplicated local subsets removed from combat, account creation, and character-load skill seeding. Tests: `tests/test_weapon_table_parity.py`. |
 
 ## Phase 4 — Closures
 
@@ -113,8 +132,19 @@ Recommended close order:
 1. **CONST-002, CONST-003, CONST-004** as a triplet — they all need the same primitive: a ROM-faithful `str_app`/`dex_app` table module + `get_hitroll(ch)` / `get_damroll(ch)` / `get_ac(ch, type)` accessor functions in `mud/models/character.py` (or a new `mud/math/stat_apps.py`). One closer per gap, one commit per gap, but the table import is shared.
 2. **CONST-005** — port `con_app` table, rewrite `advance_level` to roll `number_range(class.hp_min, class.hp_max) + con_app[CON].hitp` (touches `class_table` HP fields too — verify they're ported on `mud/models/classes.py:ClassType`).
 3. **CONST-006** — port `wis_app` (1-column), apply in `advance_level`.
-4. **CONST-007** — defer to OLC audit, same pattern as `BIT-001/002/003`.
+4. **CONST-007** — ✅ closed 2026-05-14 by centralizing the ROM `weapon_table`.
 
 ## Phase 5 — Completion summary
 
-`const.c` stays at ⚠️ Partial only because `CONST-007` (`weapon_table`) remains deferred to the OLC cluster. The combat-math gaps (`CONST-002`..`CONST-006`) and the title-table gap (`CONST-001`) are now closed; the remaining work is a centralized weapon metadata table, not a live gameplay divergence.
+`const.c` is now ✅ complete. All seven gaps are closed:
+
+- `CONST-001` — title table
+- `CONST-002` / `003` — STR hit/dam app
+- `CONST-004` — DEX AC app
+- `CONST-005` — CON HP app
+- `CONST-006` — WIS practice app
+- `CONST-007` — canonical `weapon_table`
+
+Validation added for `CONST-007`:
+
+- `tests/test_weapon_table_parity.py`

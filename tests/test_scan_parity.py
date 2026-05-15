@@ -45,8 +45,7 @@ def test_scan_single_direction():
     # Try scanning north (most rooms have this exit)
     result = do_scan(char, "north")
 
-    # Should show ROM-faithful TO_CHAR or empty fallback
-    assert "You peer intently north." in result or "Nothing of note" in result
+    assert "You peer intently north." in result
 
 
 def test_scan_distance_messages():
@@ -91,8 +90,7 @@ def test_scan_direction_mapping():
 
     for direction in directions:
         result = do_scan(char, direction)
-        # Should successfully parse and scan (SCAN-002: ROM emits "You peer intently …")
-        assert "You peer intently" in result or "Nothing of note" in result
+        assert "You peer intently" in result
 
 
 def test_scan_direction_abbreviations():
@@ -107,8 +105,8 @@ def test_scan_direction_abbreviations():
         result_full = do_scan(char, full)
 
         # SCAN-002: ROM emits "You peer intently …" TO_CHAR
-        assert result_abbrev.startswith("You peer intently") or "Nothing of note" in result_abbrev
-        assert result_full.startswith("You peer intently") or "Nothing of note" in result_full
+        assert result_abbrev.startswith("You peer intently")
+        assert result_full.startswith("You peer intently")
 
 
 def test_scan_room_messages():
@@ -147,8 +145,7 @@ def test_scan_empty_room():
 
     result = do_scan(char, "")
 
-    # Should show "No one is nearby." when empty
-    assert "No one is nearby." in result or "Looking around you see:" in result
+    assert result == "Looking around you see:"
 
 
 def test_scan_directional_depth():

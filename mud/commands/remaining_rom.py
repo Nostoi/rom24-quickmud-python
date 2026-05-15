@@ -49,6 +49,43 @@ _FLAG_FIELDS: dict[str, tuple[str, type[IntFlag], bool, bool]] = {
     "comm": ("comm", CommFlag, False, True),
 }
 
+# ROM src/tables.c `flag_type.settable` metadata encoded as per-field masks.
+# Mirrors the preservation loop in src/flags.c:220-227: when `=` is used,
+# any old bit whose table row has `settable == FALSE` is carried into `new`
+# before the requested bits are applied.
+_NON_SETTABLE_FLAGS_BY_FIELD: dict[str, int] = {
+    # src/tables.c:82-106 — only `npc` is settable FALSE on act_flags.
+    "act": int(ActFlag.IS_NPC),
+    # src/tables.c:108-127 — every plr flag except `permit` is settable FALSE.
+    "plr": int(
+        PlayerFlag.IS_NPC
+        | PlayerFlag.AUTOASSIST
+        | PlayerFlag.AUTOEXIT
+        | PlayerFlag.AUTOLOOT
+        | PlayerFlag.AUTOSAC
+        | PlayerFlag.AUTOGOLD
+        | PlayerFlag.AUTOSPLIT
+        | PlayerFlag.HOLYLIGHT
+        | PlayerFlag.CANLOOT
+        | PlayerFlag.NOSUMMON
+        | PlayerFlag.NOFOLLOW
+        | PlayerFlag.COLOUR
+        | PlayerFlag.LOG
+        | PlayerFlag.DENY
+        | PlayerFlag.FREEZE
+        | PlayerFlag.THIEF
+        | PlayerFlag.KILLER
+    ),
+    # src/tables.c:271-295 — these comm flags are settable FALSE.
+    "comm": int(
+        CommFlag.NOEMOTE
+        | CommFlag.NOSHOUT
+        | CommFlag.NOTELL
+        | CommFlag.NOCHANNELS
+        | CommFlag.SNOOP_PROOF
+    ),
+}
+
 
 def _lookup_flag_bit(token: str, flag_enum: type[IntFlag]) -> int | None:
     """Case-insensitive prefix-match lookup of a ROM flag name on an IntFlag.
@@ -447,13 +484,14 @@ def do_flag(char: Character, args: str) -> str:
         marked |= bit
 
     old = int(getattr(victim, attr_name, 0) or 0)
-    # mirroring ROM src/flags.c:198-199 — `=` resets baseline to 0; everything
-    # else starts from the existing value.
-    new = 0 if op == "set" else old
+    # mirroring ROM src/flags.c:198-199, 220-227 — `=` starts from 0, then
+    # preserves any old bits whose flag_table row has settable=FALSE.
+    if op == "set":
+        new = old & _NON_SETTABLE_FLAGS_BY_FIELD.get(field, 0)
+    else:
+        new = old
 
-    # mirroring ROM src/flags.c:220-247 — apply marked bits per operator.
-    # (FLAG-002 deferred: ROM also preserves non-`settable` bits across `=`;
-    # Python IntFlag carries no per-bit settable metadata yet.)
+    # mirroring ROM src/flags.c:229-247 — apply marked bits per operator.
     if op in ("set", "add"):
         new |= marked
     elif op == "remove":

@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from collections import deque
 from collections.abc import Iterable
+from contextlib import suppress
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
@@ -70,6 +71,8 @@ MAX_INPUT_LENGTH = 256
 SPAM_REPEAT_THRESHOLD = 25
 
 RECONNECT_MESSAGE = "Reconnecting. Type replay to see missed tells."
+CON_GET_NAME = 0
+CON_PLAYING = 1
 
 
 if TYPE_CHECKING:
@@ -198,6 +201,169 @@ def announce_wiznet_new_player(
         None,
         max(trust_level, 0),
     )
+
+
+def _descriptor_list() -> list[object]:
+    from mud import registry as global_registry
+
+    descriptor_list = getattr(global_registry, "descriptor_list", None)
+    if descriptor_list is None:
+        descriptor_list = []
+        global_registry.descriptor_list = descriptor_list
+    return descriptor_list
+
+
+def _register_descriptor(conn: object, host: str | None = None) -> object:
+    """Register a lightweight ROM-style descriptor for this connection."""
+
+    descriptor = getattr(conn, "_rom_descriptor", None)
+    if descriptor is not None:
+        return descriptor
+
+    descriptor = SimpleNamespace(
+        character=None,
+        connected=CON_GET_NAME,
+        connection=conn,
+        host=host,
+        original=None,
+    )
+    _descriptor_list().append(descriptor)
+    setattr(conn, "_rom_descriptor", descriptor)
+    return descriptor
+
+
+def _unregister_descriptor(conn: object) -> None:
+    descriptor = getattr(conn, "_rom_descriptor", None)
+    if descriptor is None:
+        return
+
+    descriptor_list = _descriptor_list()
+    with suppress(ValueError):
+        descriptor_list.remove(descriptor)
+    try:
+        delattr(conn, "_rom_descriptor")
+    except AttributeError:
+        pass
+
+
+def _set_descriptor_name(conn: object, name: str) -> None:
+    descriptor = _register_descriptor(conn, getattr(conn, "peer_host", None))
+    normalized = sanitize_account_name(name).capitalize()
+    if not normalized:
+        descriptor.character = None
+        return
+    descriptor.character = SimpleNamespace(name=normalized)
+    descriptor.connected = CON_GET_NAME
+
+
+def _mark_descriptor_playing(conn: object, char: "Character") -> None:
+    descriptor = _register_descriptor(conn, getattr(conn, "peer_host", None))
+    descriptor.character = char
+    descriptor.connected = CON_PLAYING
+
+
+def _descriptor_login_name(descriptor: object) -> str | None:
+    original = getattr(descriptor, "original", None)
+    original_name = getattr(original, "name", None)
+    if original_name:
+        return sanitize_account_name(original_name).capitalize()
+
+    character = getattr(descriptor, "character", None)
+    character_name = getattr(character, "name", None)
+    if character_name:
+        return sanitize_account_name(character_name).capitalize()
+    return None
+
+
+async def _close_descriptor(connection: object) -> None:
+    close = getattr(connection, "close", None)
+    if close is None:
+        return
+    result = close()
+    if asyncio.iscoroutine(result):
+        await result
+
+
+async def _close_duplicate_newbie_descriptors(current_conn: object, name: str) -> bool:
+    """Mirror ROM ``check_parse_name`` duplicate-newbie sweep.
+
+    mirroring ROM src/comm.c:1804-1825 — close any non-playing descriptor
+    already holding the same character name, wiznet the alert, and reject the
+    new name.
+    """
+
+    candidate = sanitize_account_name(name).capitalize()
+    if not candidate:
+        return False
+
+    current_descriptor = _register_descriptor(current_conn, getattr(current_conn, "peer_host", None))
+    duplicates: list[object] = []
+    for descriptor in list(_descriptor_list()):
+        if descriptor is current_descriptor:
+            continue
+        if getattr(descriptor, "connected", CON_GET_NAME) == CON_PLAYING:
+            continue
+        existing_name = _descriptor_login_name(descriptor)
+        if existing_name and existing_name.lower() == candidate.lower():
+            duplicates.append(descriptor)
+
+    if not duplicates:
+        return False
+
+    for descriptor in duplicates:
+        with suppress(ValueError):
+            _descriptor_list().remove(descriptor)
+        connection = getattr(descriptor, "connection", None)
+        if connection is not None:
+            await _close_descriptor(connection)
+
+    wiznet(
+        f"Double newbie alert ({candidate})",
+        None,
+        None,
+        WiznetFlag.WIZ_LOGINS,
+        None,
+        0,
+    )
+    return True
+
+
+async def _close_duplicate_reconnect_descriptors(
+    current_conn: object,
+    name: str,
+    *,
+    exclude_connection: object | None = None,
+) -> int:
+    """Mirror ROM ``CON_BREAK_CONNECT`` duplicate sweep.
+
+    mirroring ROM src/nanny.c:317-330 — close every descriptor whose
+    effective login name matches *name*, including switched immortals that
+    carry the original player name separately from the active mobile.
+    """
+
+    candidate = sanitize_account_name(name).capitalize()
+    if not candidate:
+        return 0
+
+    current_descriptor = _register_descriptor(current_conn, getattr(current_conn, "peer_host", None))
+    duplicates: list[object] = []
+    for descriptor in list(_descriptor_list()):
+        if descriptor is current_descriptor:
+            continue
+        existing_name = _descriptor_login_name(descriptor)
+        if existing_name and existing_name.lower() == candidate.lower():
+            duplicates.append(descriptor)
+
+    for descriptor in duplicates:
+        with suppress(ValueError):
+            _descriptor_list().remove(descriptor)
+        connection = getattr(descriptor, "connection", None)
+        if connection is exclude_connection:
+            continue
+        if connection is not None:
+            await _close_descriptor(connection)
+
+    return len(duplicates)
 
 
 def _broadcast_reconnect_notifications(char: "Character", host: str | None = None) -> None:
@@ -882,7 +1048,9 @@ def _format_stats(stats: Iterable[int]) -> str:
     return ", ".join(f"{label} {value}" for label, value in zip(STAT_LABELS, stats, strict=True))
 
 
-async def _run_character_login(conn: TelnetStream, host_for_ban: str | None) -> tuple[DBCharacter, str, bool, bool] | None:
+async def _run_character_login(
+    conn: TelnetStream, host_for_ban: str | None
+) -> tuple[DBCharacter, str, bool, bool] | None:
     """ROM-faithful character-first login.
 
     mirroring ROM src/nanny.c:CON_GET_NAME / CON_GET_OLD_PASSWORD /
@@ -891,6 +1059,7 @@ async def _run_character_login(conn: TelnetStream, host_for_ban: str | None) -> 
 
     Returns (account, username, was_reconnect, is_new_character).
     """
+    _register_descriptor(conn, host_for_ban or getattr(conn, "peer_host", None))
     while True:
         submitted = await _prompt(conn, "Name: ")
         if submitted is None:
@@ -898,6 +1067,7 @@ async def _run_character_login(conn: TelnetStream, host_for_ban: str | None) -> 
         username = sanitize_account_name(submitted)
         if not username:
             continue
+        _set_descriptor_name(conn, username)
         if not is_valid_account_name(username):
             await _send_line(conn, "Illegal name, try another.")
             continue
@@ -950,6 +1120,9 @@ async def _run_character_login(conn: TelnetStream, host_for_ban: str | None) -> 
         # New character — apply pre-creation bans before confirming the name.
         # mirroring ROM src/comm.c:check_parse_name — reject mob-keyword collisions early
         if not is_valid_character_name(username):
+            await _send_line(conn, "Illegal name, try another.")
+            continue
+        if await _close_duplicate_newbie_descriptors(conn, username):
             await _send_line(conn, "Illegal name, try another.")
             continue
 
@@ -1516,6 +1689,11 @@ async def _select_character(
                 await _send_line(conn, "Ok, goodbye.")
                 return None
 
+        await _close_duplicate_reconnect_descriptors(
+            conn,
+            chosen_name,
+            exclude_connection=active_connection,
+        )
         transferred_char = await _disconnect_session(existing_session)
         if transferred_char is not None:
             if permit_banned and not _has_permit_flag(transferred_char):
@@ -1554,10 +1732,10 @@ async def handle_connection_with_stream(
 ) -> None:
     """
     Handle a connection using a pre-created stream object (TelnetStream or SSHStream).
-    
+
     This function is used by SSH and other connection types that create their own
     stream wrapper before calling the connection handler.
-    
+
     Args:
         conn: Pre-created TelnetStream or SSHStream object
         host_for_ban: IP address for ban checking (optional)
@@ -1566,11 +1744,12 @@ async def handle_connection_with_stream(
     session = None
     char = None
     username = ""
-    
+
     # Set peer host if not already set
     if host_for_ban and not conn.peer_host:
         conn.peer_host = host_for_ban
-    
+    _register_descriptor(conn, host_for_ban)
+
     permit_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT))
     newbie_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES))
     qmconfig = get_qmconfig()
@@ -1671,6 +1850,7 @@ async def handle_connection_with_stream(
         )
         SESSIONS[session.name] = session
         char.desc = session
+        _mark_descriptor_playing(conn, char)
 
         outfit_message: str | None = None
         if is_new_player and give_school_outfit(char):
@@ -1685,7 +1865,7 @@ async def handle_connection_with_stream(
         )
 
         print(f"[{connection_type}] {char.name} entered the game")
-        
+
         # Send welcome messages
         try:
             if outfit_message:
@@ -1741,11 +1921,11 @@ async def handle_connection_with_stream(
                 try:
                     response = process_command(char, command)
                     await send_to_char(char, response)
-                    
+
                     # Check if player requested quit
                     if getattr(char, "_quit_requested", False):
                         break
-                        
+
                 except Exception as exc:
                     print(f"[ERROR] Command processing failed for '{command}': {exc}")
                     await send_to_char(
@@ -1765,6 +1945,7 @@ async def handle_connection_with_stream(
                 break
             except Exception as exc:
                 import traceback
+
                 print(
                     f"[ERROR] Connection loop error for "
                     f"{session.name if session else 'unknown'}: "
@@ -1815,6 +1996,7 @@ async def handle_connection_with_stream(
             await conn.close()
         except Exception as exc:
             print(f"[ERROR] Failed to close connection: {exc}")
+        _unregister_descriptor(conn)
 
         print(f"[{connection_type} DISCONNECT] {session.name if session else 'unknown'}")
 
@@ -1832,6 +2014,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
     username = ""
     conn = TelnetStream(reader, writer)
     conn.peer_host = host_for_ban
+    _register_descriptor(conn, host_for_ban)
     permit_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.PERMIT))
     newbie_banned = bool(host_for_ban and bans.is_host_banned(host_for_ban, BanFlag.NEWBIES))
     qmconfig = get_qmconfig()
@@ -1926,6 +2109,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         )
         SESSIONS[session.name] = session
         char.desc = session
+        _mark_descriptor_playing(conn, char)
         outfit_message: str | None = None
         if is_new_player and give_school_outfit(char):
             outfit_message = "You have been equipped by Mota."
@@ -1989,11 +2173,11 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                 try:
                     response = process_command(char, command)
                     await send_to_char(char, response)
-                    
+
                     # Check if player requested quit
                     if getattr(char, "_quit_requested", False):
                         break
-                        
+
                 except Exception as exc:
                     print(f"[ERROR] Command processing failed for '{command}': {exc}")
                     await send_to_char(
@@ -2013,6 +2197,7 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                 break
             except Exception as exc:
                 import traceback
+
                 print(
                     f"[ERROR] Connection loop error for "
                     f"{session.name if session else 'unknown'}: "
@@ -2063,5 +2248,6 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             await conn.close()
         except Exception as exc:
             print(f"[ERROR] Failed to close connection: {exc}")
+        _unregister_descriptor(conn)
 
         print(f"[DISCONNECT] {addr} as {session.name if session else 'unknown'}")

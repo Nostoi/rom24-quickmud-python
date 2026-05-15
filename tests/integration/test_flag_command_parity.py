@@ -12,6 +12,7 @@ from mud import registry as global_registry
 from mud.commands.remaining_rom import do_flag
 from mud.models.character import character_registry
 from mud.models.constants import (
+    ActFlag,
     AffectFlag,
     CommFlag,
     ImmFlag,
@@ -109,18 +110,51 @@ def test_flag_char_plr_toggle_default_inverts_bit():
     assert not (victim.act & int(PlayerFlag.HOLYLIGHT))
 
 
-def test_flag_char_plr_set_equals_replaces_field():
-    # mirrors ROM src/flags.c:198-199, 233-236 — `=` operator: new = 0 then SET marked bits.
+def test_flag_char_plr_set_equals_clears_settable_bits_only():
+    # mirrors ROM src/flags.c:198-199, 220-236 + src/tables.c:108-127 —
+    # `=` clears settable plr bits, but preserves rows with settable=FALSE.
     _room(3001)
     immortal = _imm("Imp", 3001)
     victim = _pc("Bob", 3001)
-    victim.act = int(PlayerFlag.HOLYLIGHT) | int(PlayerFlag.AUTOLOOT)
+    victim.act = int(PlayerFlag.PERMIT) | int(PlayerFlag.HOLYLIGHT) | int(PlayerFlag.AUTOLOOT)
 
     do_flag(immortal, "char Bob plr =autosac")
 
     assert victim.act & int(PlayerFlag.AUTOSAC)
-    assert not (victim.act & int(PlayerFlag.HOLYLIGHT)), "HOLYLIGHT must be cleared by `=`"
-    assert not (victim.act & int(PlayerFlag.AUTOLOOT)), "AUTOLOOT must be cleared by `=`"
+    assert not (victim.act & int(PlayerFlag.PERMIT)), "Settable PERMIT must be cleared by `=` when not requested."
+    assert victim.act & int(PlayerFlag.HOLYLIGHT), "Non-settable HOLYLIGHT must be preserved by ROM `=`."
+    assert victim.act & int(PlayerFlag.AUTOLOOT), "Non-settable AUTOLOOT must be preserved by ROM `=`."
+
+
+def test_flag_char_plr_set_equals_preserves_rom_non_settable_bits():
+    # mirrors ROM src/flags.c:220-227 + src/tables.c:108-127 — `=` preserves
+    # plr_flags entries with settable=FALSE (e.g. autoloot, holylight).
+    _room(3001)
+    immortal = _imm("Imp", 3001)
+    victim = _pc("Bob", 3001)
+    victim.act = int(PlayerFlag.AUTOLOOT) | int(PlayerFlag.HOLYLIGHT)
+
+    do_flag(immortal, "char Bob plr =permit")
+
+    assert victim.act & int(PlayerFlag.PERMIT), "Requested settable flag must be applied."
+    assert victim.act & int(PlayerFlag.AUTOLOOT), "ROM preserves non-settable AUTOLOOT across `=`."
+    assert victim.act & int(PlayerFlag.HOLYLIGHT), "ROM preserves non-settable HOLYLIGHT across `=`."
+
+
+def test_flag_mob_act_set_equals_preserves_rom_is_npc_bit():
+    # mirrors ROM src/flags.c:220-227 + src/tables.c:82-106 — `=` on act_flags
+    # preserves `npc` because that row is settable=FALSE.
+    _room(3001)
+    immortal = _imm("Imp", 3001)
+    victim = _pc("Guard", 3001)
+    victim.is_npc = True
+    victim.act = int(ActFlag.IS_NPC) | int(ActFlag.SENTINEL)
+
+    do_flag(immortal, "mob Guard act =scavenger")
+
+    assert victim.act & int(ActFlag.IS_NPC), "ROM preserves IS_NPC across `=`."
+    assert victim.act & int(ActFlag.SCAVENGER), "Requested settable flag must be applied."
+    assert not (victim.act & int(ActFlag.SENTINEL)), "Settable bits not named in `=` are cleared."
 
 
 def test_flag_char_aff_targets_affected_by():

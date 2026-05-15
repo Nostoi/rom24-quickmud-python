@@ -1,6 +1,6 @@
 # `fight.c` ROM Parity Audit
 
-- **Status**: ⚠️ Partial 95% — 2 CRITICAL combat-path gaps open
+- **Status**: ✅ Audited 95% — named combat-path regressions closed; remaining 5% is broader sweep debt, not a live documented gap
 - **Date**: 2026-05-03
 - **Source**: `src/fight.c` (ROM 2.4b6)
 - **Python primaries**:
@@ -9,17 +9,17 @@
   - `mud/commands/combat.py`
   - `mud/game_loop.py`
 
-This audit doc exists to track the two combat-path regressions surfaced during the 2026-05-02 death/combat triage. `fight.c` was already broadly audited; the remaining work is to restore two ROM-critical call-site contracts: `do_kill()` must enter combat via `multi_hit()`, and `damage()` must re-run `is_safe()` at function entry so safe-room transitions stop combat immediately.
+This audit doc was opened to track the two combat-path regressions surfaced during the 2026-05-02 death/combat triage. Both named regressions are now closed. `fight.c` remains at 95% in the top-level tracker only because the file has not had a full post-triage refresh sweep; there is no remaining named `FIGHT-*` implementation gap in this document.
 
 ## Phase 1 — Function inventory
 
 | ROM function | ROM lines | Python counterpart | Status | Notes |
 |--------------|-----------|--------------------|--------|-------|
-| `multi_hit` | `src/fight.c:187-247` | `mud/combat/engine.py:312` | ⚠️ PARTIAL | Core player multi-attack loop exists, but `do_kill()` does not call it. |
-| `damage` | `src/fight.c:688-1016` | `mud/combat/engine.py:498` | ⚠️ PARTIAL | Damage pipeline exists, but the ROM `is_safe(ch, victim)` entry gate is missing. |
-| `is_safe` | `src/fight.c:1018-1124` | `mud/combat/safety.py:14` | ⚠️ PARTIAL | Port exists, but `damage()` and special-attack call chains do not consistently use it. |
+| `multi_hit` | `src/fight.c:187-247` | `mud/combat/engine.py:312` | ✅ AUDITED | `do_kill()` now enters combat through `multi_hit()` as ROM does. |
+| `damage` | `src/fight.c:688-1016` | `mud/combat/engine.py:498` | ✅ AUDITED | `apply_damage()` now re-runs `is_safe()` at entry, matching ROM `damage()`. |
+| `is_safe` | `src/fight.c:1018-1124` | `mud/combat/safety.py:14` | ✅ AUDITED | Port exists and the combat damage path now consistently uses it at the ROM-critical entry point. |
 | `is_safe_spell` | `src/fight.c:1126-1221` | `mud/combat/safety.py:75` | ✅ AUDITED | Present; separate from the open melee-damage gap. |
-| `do_kill` | `src/fight.c:2758-2819` | `mud/commands/combat.py:94` | ⚠️ PARTIAL | Command entry exists, but ends with `attack_round()` instead of `multi_hit()`. |
+| `do_kill` | `src/fight.c:2758-2819` | `mud/commands/combat.py:94` | ✅ AUDITED | Command now routes through `multi_hit()` instead of a single `attack_round()`. |
 
 ## Phase 2 — Verification highlights
 
@@ -70,11 +70,9 @@ ROM applies the same safety contract by routing attack variants through `damage(
 
 ## Phase 4 — Closures
 
-None yet. The intended closure order for this session is:
-
-1. `FIGHT-001` — ✅ closed in this session with `tests/integration/test_fight_c_do_kill_parity.py`.
-2. `FIGHT-002` — ✅ closed in this session with `tests/integration/test_fight_c_safe_room_damage_gate.py`.
+1. `FIGHT-001` — ✅ closed with `tests/integration/test_fight_c_do_kill_parity.py`.
+2. `FIGHT-002` — ✅ closed with `tests/integration/test_fight_c_safe_room_damage_gate.py`.
 
 ## Phase 5 — Completion summary
 
-`fight.c`'s remaining named combat-path regressions from the 2026-05-02 triage are now closed. The audit tracker can stay at 95% until the next full sweep reconciles any adjacent findings, but `FIGHT-001` and `FIGHT-002` are both covered by dedicated integration tests and no longer block live combat parity in the documented surfaces.
+`fight.c`'s remaining named combat-path regressions from the 2026-05-02 triage are closed. Keep the tracker row at 95% until a broader refresh sweep is done, but this audit doc no longer carries open implementation work. Verification is locked by `tests/integration/test_fight_c_do_kill_parity.py` and `tests/integration/test_fight_c_safe_room_damage_gate.py`.
