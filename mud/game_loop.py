@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import datetime
 from enum import IntEnum
 
 from mud.account.account_manager import save_character
@@ -37,6 +38,7 @@ from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs
 from mud.time import time_info
 from mud.utils import rng_mm
+from mud.wiznet import WiznetFlag, wiznet
 
 _AUTOSAVE_ROTATION = 0
 _AUTOSAVE_WINDOW = 30
@@ -85,8 +87,6 @@ weather = _seed_weather_state()
 
 # Track boot time for do_time command (ROM C: extern char str_boot_time[])
 # Initialized at module load time (when server starts)
-from datetime import datetime
-
 boot_time = datetime.now()
 
 _TO_OBJECT = 1
@@ -1354,6 +1354,8 @@ def game_tick() -> None:
     # 5. Point pulse: time/weather/regen — ROM: if (--pulse_point <= 0)
     _point_counter -= 1
     if _point_counter <= 0:
+        # ROM src/update.c:1186 — immortal tick/debug notice before point updates.
+        wiznet("TICK!", None, None, WiznetFlag.WIZ_TICKS, 0, 0)
         _point_counter = get_pulse_tick()
         time_tick()
         weather_tick()

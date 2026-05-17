@@ -1,5 +1,7 @@
-import mud.game_loop as gl
 from types import SimpleNamespace
+
+import mud.game_loop as gl
+import mud.mobprog as mobprog
 from mud.ai import mobile_update
 from mud.config import get_pulse_tick, get_pulse_violence
 from mud.game_loop import (
@@ -14,25 +16,23 @@ from mud.game_loop import (
 )
 from mud.models.area import Area
 from mud.models.character import Character, PCData, SpellEffect, character_registry
-from mud.models.mob import MobIndex
 from mud.models.constants import (
+    ROOM_VNUM_LIMBO,
     ActFlag,
-    Condition,
     ItemType,
     Position,
     RoomFlag,
     Size,
     WearFlag,
     WearLocation,
-    ROOM_VNUM_LIMBO,
 )
-from mud.models.obj import ObjIndex, ObjectData, object_registry
+from mud.models.mob import MobIndex
+from mud.models.obj import ObjectData, ObjIndex, object_registry
+from mud.models.room import Room, room_registry
 from mud.models.shop import Shop
-from mud.models.room import Room
-from mud.models.room import room_registry
-from mud.utils import rng_mm
 from mud.time import time_info
-import mud.mobprog as mobprog
+from mud.utils import rng_mm
+from mud.wiznet import WiznetFlag
 
 
 def setup_function(_):
@@ -156,6 +156,40 @@ def test_timed_event_fires_after_delay():
     assert not triggered
     game_tick()
     assert triggered == [1]
+
+
+def test_point_pulse_emits_tick_wiznet_before_updates(monkeypatch):
+    gl._pulse_counter = 0
+    gl._point_counter = 1
+    gl._area_counter = 999999
+    gl._music_counter = 999999
+    gl._mobile_counter = 999999
+    gl._violence_counter = 999999
+
+    calls: list[object] = []
+
+    def fake_wiznet(message, sender=None, obj=None, flag=None, flag_skip=None, min_level=0):
+        calls.append(("wiznet", message, flag))
+
+    monkeypatch.setattr(gl, "wiznet", fake_wiznet)
+    monkeypatch.setattr(gl, "time_tick", lambda: calls.append("time_tick"))
+    monkeypatch.setattr(gl, "weather_tick", lambda: calls.append("weather_tick"))
+    monkeypatch.setattr(gl, "char_update", lambda: calls.append("char_update"))
+    monkeypatch.setattr(gl, "obj_update", lambda: calls.append("obj_update"))
+    monkeypatch.setattr(gl, "pump_idle", lambda: calls.append("pump_idle"))
+    monkeypatch.setattr(gl, "event_tick", lambda: calls.append("event_tick"))
+    monkeypatch.setattr(gl, "aggressive_update", lambda: calls.append("aggressive_update"))
+
+    game_tick()
+
+    assert calls[0] == ("wiznet", "TICK!", WiznetFlag.WIZ_TICKS)
+    assert calls[1:6] == [
+        "time_tick",
+        "weather_tick",
+        "char_update",
+        "obj_update",
+        "pump_idle",
+    ]
 
 
 def test_violence_update_waits_for_pulse_violence(monkeypatch):

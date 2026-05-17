@@ -1,18 +1,20 @@
 # update.c Parity Audit
 
 **ROM C source**: `src/update.c`  
-**Python module**: `mud/game_loop.py`  
-**Audited**: 2026-05-01  
+**Python modules**: `mud/game_loop.py`, `mud/advancement.py`  
+**Audited**: 2026-05-17  
 **Auditor**: OpenCode session  
 
 ---
 
 ## Scope
 
-`src/update.c` contains nine functions:
+`src/update.c` contains eleven functions:
 
 | ROM C function | Python equivalent | Notes |
 |---|---|---|
+| `advance_level()` | `advance_level()` | mud/advancement.py |
+| `gain_exp()` | `gain_exp()` | mud/advancement.py |
 | `hit_gain()` | `hit_gain()` | game_loop.py |
 | `mana_gain()` | `mana_gain()` | game_loop.py |
 | `move_gain()` | `move_gain()` | game_loop.py |
@@ -49,7 +51,9 @@
 | GL-018 | GAP | update.c:1017-1023 | Pit-corpse suppression: items inside a no-take pit suppress room decay message | ✅ FIXED |
 | GL-019 | DIVERGENCE | update.c:530-556 | Time advancement is inside `weather_update` in ROM C; Python splits into `time_tick()` | INTENTIONAL |
 | GL-020 | N/A | — | `weather_info.change` RNG expression — Python 3-call equivalent produces same distribution | ✅ CORRECT |
-| GL-021 | N/A | — | `wiznet("TICK!")` — minor admin message; low priority | DEFERRED-MINOR |
+| GL-021 | GAP | update.c:1186 | Point pulse emits `wiznet("TICK!", NULL, NULL, WIZ_TICKS, 0, 0)` before weather/char/obj update work. | ✅ FIXED |
+| GL-022 | BUG | update.c:128-139 | `gain_exp()` sent the level-up banner after `advance_level()` and skipped ROM `log_string("%s gained level %d")` entirely. | ✅ FIXED |
+| GL-023 | BUG | update.c:61-139 | `advance_level()` / `gain_exp()` XP-path verification was not represented in this audit even though the ROM functions live in `update.c`. | ✅ FIXED — audit coverage now explicitly includes `mud/advancement.py`; targeted tests lock message order, log-before-wiznet ordering, and death-floor behavior. |
 
 ### Notes on DEFERRED items
 
@@ -60,14 +64,11 @@
   list with type tracking, which is an architectural change. No gameplay breakage — at worst players see
   an extra wear-off message.
 
-- **GL-021** (`wiznet TICK!`): Low-priority admin/debug message. Deferred until wiznet infrastructure
-  is fully wired.
-
 ---
 
 ## Integration Tests
 
-See `tests/integration/test_update_c_parity.py`.
+See `tests/integration/test_update_c_parity.py`, `tests/test_advancement.py`, and `tests/integration/test_character_advancement.py`.
 
 | Test | Gap(s) covered |
 |---|---|
@@ -80,3 +81,7 @@ See `tests/integration/test_update_c_parity.py`.
 | `test_incap_tick_damage` | GL-013 |
 | `test_mortal_tick_damage` | GL-014 |
 | `test_pit_corpse_suppresses_decay_message` | GL-018 |
+| `test_point_pulse_emits_tick_wiznet_before_updates` | GL-021 |
+| `test_gain_exp_sends_level_message_before_advance_level_gains` | GL-022 |
+| `test_gain_exp_logs_level_gain_before_wiznet` | GL-022 |
+| `test_xp_loss_on_death` / `test_player_kill_applies_rom_death_penalty` | GL-023 |

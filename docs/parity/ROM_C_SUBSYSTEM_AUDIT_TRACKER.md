@@ -46,12 +46,12 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | File | Priority | Status | QuickMUD Module | Coverage | Notes |
 |------|----------|--------|-----------------|----------|-------|
 | **Combat & Violence** | | | | | |
-| `fight.c` | P0 | ✅ Audited (per-file) | `mud/combat/` | 95% | See `docs/parity/FIGHT_C_AUDIT.md`. Violence tick fixed Dec 2025. `FIGHT-001` (`do_kill → multi_hit`) and `FIGHT-002` (`is_safe()` inside `damage()`) closed 2026-05-03. **Cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`):** INV-001 (single-delivery, ✅), INV-005 (same-room combat, ⚠️ no test), INV-006 (fighting-pointer coherence after death, ⚠️ no test). |
+| `fight.c` | P0 | ✅ Audited (per-file) | `mud/combat/` | 95% | See `docs/parity/FIGHT_C_AUDIT.md`. Violence tick fixed Dec 2025. `FIGHT-001` (`do_kill → multi_hit`), `FIGHT-002` (`is_safe()` inside `damage()`), and `FIGHT-003` (player death XP penalty before `raw_kill`) are closed as of 2026-05-15. **Cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`):** INV-001 (single-delivery, ✅), INV-005 (same-room combat, ⚠️ no test), INV-006 (fighting-pointer coherence after death, ⚠️ no test). |
 | `skills.c` | P0 | ✅ Audited | `mud/skills/` | 100% | All 37 skills have ROM parity tests |
 | `magic.c` | P0 | ✅ Audited | `mud/spells/` | 98% | 97 spells tested |
 | `magic2.c` | P0 | ✅ Audited | `mud/spells/` | 98% | Continuation of magic.c |
 | **Core Game Loop** | | | | | |
-| `update.c` | P0 | ✅ Audited | `mud/game_loop.py` | 95% | PULSE_MOBILE added Dec 2025 |
+| `update.c` | P0 | ✅ Audited | `mud/game_loop.py`, `mud/advancement.py` | 100% | May 17, 2026 — `GL-021` closed: `game_tick()` now mirrors ROM `update_handler` point-pulse `wiznet("TICK!")` before point-update work. Prior May 15 refresh already closed `GL-022` (level-up banner/log order) and `GL-023` (combat→XP verification). |
 | `handler.c` | P1 | ✅ **COMPLETE!** | `mud/handler.py`, `mud/world/`, `mud/models/` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 74 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 4 - See HANDLER_C_AUDIT.md |
 | `effects.c` | P1 | ✅ **COMPLETE!** | `mud/magic/effects.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 5 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - 23 integration tests - See EFFECTS_C_AUDIT.md |
 | **Movement & Rooms** | | | | | |
@@ -120,10 +120,20 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 - ✅ `damage()` → `damage()` (100% parity with ROM formula)
 - ✅ All combat mechanics verified with ROM parity tests
 
-**Missing Functions**:
-- [ ] `check_killer()` - PK flag management (5% of fight.c)
+**Missing Functions**: None
 
 **Integration Tests**: ✅ Complete (`tests/integration/test_player_npc_interaction.py`)
+
+**May 16, 2026 verification refresh**:
+- Re-checked the historical `check_killer()` note against ROM `src/fight.c:1226-1287` and the live Python path in `mud/combat/engine.py`.
+- Added/ran proving tests for:
+  - innocent player target sets `PLR_KILLER`
+  - already-flagged `PLR_KILLER` target does **not** flag the attacker
+  - charmed attacker stops following instead of becoming `PLR_KILLER`
+- Verification:
+  - `tests/test_combat.py -k 'target_already_killer or charmed_attacker_stops_following_without_killer_flag or flags_player_as_killer'`
+  - broader slice: `tests/test_combat.py tests/test_player_flags.py tests/test_combat_death.py tests/test_spec_fun_behaviors.py -k 'killer or thief or pardon or outlaw or criminal or kill'`
+- Result: the old tracker note was stale; `check_killer()` is implemented on the active combat path.
 
 **Next Steps**: None - 95% coverage acceptable
 
@@ -205,13 +215,10 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 - GL-015: `_idle_to_limbo` uses `stop_fighting(ch, both=True)` (was `fighting=None`)
 - GL-018: Pit (vnum 3010) decay message suppression (was missing)
 
-**Remaining**:
-- GL-021: `wiznet("TICK!")` message (P3 — low priority)
-
 **Integration Tests**: ✅ Complete (`tests/test_game_loop.py`, `tests/integration/test_update_c_parity.py`)
 
 **Next Steps**:
-- [ ] Add TICK! wiznet message (P3 priority)
+- [x] Add TICK! wiznet message
 
 ---
 
