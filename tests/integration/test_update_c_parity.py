@@ -6,12 +6,12 @@ from __future__ import annotations
 
 import pytest
 
-from mud.models.character import AffectData, Character, character_registry
+from mud.models.character import AffectData, Character, SpellEffect, character_registry
 from mud.models.constants import AffectFlag, Position
+from mud.models.obj import Affect, ObjectData, ObjIndex, object_registry
 from mud.models.room import Room
 from mud.registry import room_registry
 from mud.utils import rng_mm
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -67,6 +67,7 @@ def _cleanup():
     for vnum in list(room_registry.keys()):
         if vnum >= 9000:
             room_registry.pop(vnum, None)
+    object_registry.clear()
     # Remove any test characters added
     for ch in list(character_registry):
         if getattr(ch, "name", "") in ("a mob", "TestPlayer"):
@@ -96,7 +97,6 @@ class TestNpcWandersHome:
         rng_mm.seed_mm(0)
         # Find a seed that makes number_percent() < 5
         # Instead, monkeypatch
-        import mud.game_loop as gl
         original = rng_mm.number_percent
 
         call_count = 0
@@ -124,7 +124,6 @@ class TestNpcWandersHome:
 
         mob = _make_mob(room, zone=zone_a)  # same zone — no extraction
 
-        import mud.game_loop as gl
         original = rng_mm.number_percent
         rng_mm.number_percent = lambda: 1  # always < 5 if check ran
         try:
@@ -239,7 +238,7 @@ class TestPoisonTick:
 
     def test_poison_tick_sends_shiver_message(self, capsys):
         """Poisoned character receives the 'You shiver and suffer' message."""
-        from mud.game_loop import char_update, _send_to_char
+        from mud.game_loop import char_update
 
         room = _make_room(9011)
         ch = _make_player(room)
@@ -264,6 +263,61 @@ class TestPoisonTick:
         )
 
 
+class TestAffectWearOffSuppression:
+    def test_char_update_keeps_spell_effect_when_same_type_affect_remains(self):
+        from mud.game_loop import char_update
+
+        room = _make_room(9012)
+        ch = _make_player(room)
+        ch.desc = object()
+        ch.messages = []
+        ch.affected = [
+            AffectData(type="armor", level=20, duration=0, location=17, modifier=-20, bitvector=0),
+            AffectData(type="armor", level=20, duration=2, location=17, modifier=-20, bitvector=0),
+        ]
+        ch.spell_effects["armor"] = SpellEffect(
+            name="armor",
+            duration=0,
+            level=20,
+            ac_mod=-20,
+            wear_off_message="You feel less protected.",
+        )
+
+        char_update()
+
+        assert sum("less protected" in message for message in ch.messages) == 1
+        assert "armor" in ch.spell_effects
+        assert ch.spell_effects["armor"].duration == 1
+        assert len([affect for affect in ch.affected if affect.type == "armor"]) == 1
+
+    def test_obj_update_suppresses_duplicate_same_type_wear_off_messages(self):
+        from mud.game_loop import obj_update
+
+        room = _make_room(9013)
+        watcher = _make_player(room)
+        watcher.messages = []
+
+        proto = ObjIndex(vnum=1000, short_descr="a glowing blade")
+        obj = ObjectData(
+            item_type=5,
+            timer=10,
+            short_descr="a glowing blade",
+            pIndexData=proto,
+            in_room=room,
+        )
+        first = Affect(where=0, type=1, duration=0, modifier=10, location=1, bitvector=0, level=10)
+        second = Affect(where=0, type=1, duration=0, modifier=10, location=1, bitvector=0, level=10)
+        first.wear_off_message = "$p stops glowing."
+        second.wear_off_message = "$p stops glowing."
+        obj.affected = [first, second]
+        object_registry.append(obj)
+
+        obj_update()
+
+        assert sum("stops glowing" in message for message in watcher.messages) == 1
+        assert obj.affected == []
+
+
 # ---------------------------------------------------------------------------
 # GL-013/GL-014: Incap/Mortal tick damage — ROM src/update.c:864-871
 # ---------------------------------------------------------------------------
@@ -286,7 +340,6 @@ class TestIncapMortalTick:
         for _ in range(trials):
             ch.hit = 50
             rng_mm.seed_mm(0)  # seed that makes number_range(0,1)==0
-            import mud.game_loop as gl
             original_range = rng_mm.number_range
             rng_mm.number_range = lambda lo, hi: 0  # always deal damage
             try:

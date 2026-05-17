@@ -11,9 +11,10 @@ from __future__ import annotations
 
 import pytest
 
-from mud.game_loop import obj_update, _tick_object_affects, _object_decay_message, _spill_contents
-from mud.models.constants import ItemType, WearLocation, WearFlag
-from mud.models.obj import ObjIndex, ObjectData, Affect, object_registry
+import mud.game_loop as game_loop
+from mud.game_loop import _object_decay_message, _spill_contents, _tick_object_affects, obj_update
+from mud.models.constants import ItemType, WearFlag, WearLocation
+from mud.models.obj import Affect, ObjectData, ObjIndex, object_registry
 
 
 @pytest.fixture(autouse=True)
@@ -125,6 +126,20 @@ class TestObjectAffectDuration:
         # Second tick: duration 0 -> removed
         _tick_object_affects(obj)
         assert affect not in obj.affected  # Removed
+
+    def test_wear_off_suppressed_for_consecutive_zero_duration_same_type_affects(self, monkeypatch):
+        obj = create_test_object(ItemType.WEAPON, timer=10)
+        obj.affected = [
+            Affect(where=0, type=1, duration=0, modifier=10, location=1, bitvector=0, level=10),
+            Affect(where=0, type=1, duration=0, modifier=10, location=1, bitvector=0, level=10),
+        ]
+        seen: list[tuple[object, object]] = []
+        monkeypatch.setattr(game_loop, "_broadcast_object_wear_off", lambda obj_arg, aff_arg: seen.append((obj_arg, aff_arg)))
+
+        _tick_object_affects(obj)
+
+        assert len(seen) == 1
+        assert len(obj.affected) == 0
 
 
 # =============================================================================

@@ -240,12 +240,14 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 - ✅ PULSE timing verified
 - ✅ Violence tick processes combat
 - ✅ Mobile update on correct cadence
+- ✅ Character affect wear-off ordering mirrors ROM `char_update()`
+- ✅ Object affect wear-off suppression mirrors ROM `obj_update()`
 
 **Missing Tests**:
 - [ ] Update function call order matters
 - [ ] Pulse counter edge cases
 
-**Test File**: `tests/test_game_loop.py`
+**Test Files**: `tests/test_game_loop.py`, `tests/integration/test_update_c_parity.py`
 
 ---
 
@@ -715,9 +717,9 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 
 ---
 
-### ✅ P2-3: Mob AI Integration (COMPLETE - 87%)
+### ✅ P2-3: Mob AI Integration (COMPLETE - 100%)
 
-**Status**: ✅ **Core behaviors verified** (13/15 tests passing)
+**Status**: ✅ **All documented ROM movement/combat AI behaviors verified** (15/15 tests passing)
 
 **✅ Completed Tests** (`tests/integration/test_mob_ai.py`):
 - ✅ Sentinel mobs stay in place
@@ -732,18 +734,17 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 - ✅ **Mobs return home when displaced** (✅ FIXED Jan 1, 2026 - registry import bug)
 - ✅ **Mob assist: ASSIST_VNUM** (same vnum helps in combat)
 - ✅ **Mob assist: ASSIST_ALL** (any mob helps) (✅ FIXED Jan 1, 2026 - room placement)
+- ✅ **ACT_STAY_AREA prevents cross-area wandering**
 - ✅ **ACT_OUTDOORS mobs avoid ROOM_INDOORS**
+- ✅ **ACT_INDOORS mobs require ROOM_INDOORS**
 
-**⏭️ Skipped Tests** (Need additional setup):
-- ⏭️ ACT_STAY_AREA prevents cross-area wandering (needs multi-area test setup)
-- ⏭️ ACT_INDOORS mobs require ROOM_INDOORS (needs indoor/outdoor room pair)
-
-**Recent Fixes (Jan 1, 2026)**:
+**Recent Fixes**:
 1. **Wandering test stability**: Increased iterations from 100 → 600 for 99.5% confidence (probability: 0.78% per tick)
 2. **ASSIST_ALL bug**: Test was placing mobs in different rooms (3001, 3002, 3003) - now all in room 3001
 3. **Mob assist integration**: Both ASSIST_VNUM and ASSIST_ALL now verified working with `check_assist()` 
+4. **Deterministic wander-gate enforcement (May 17, 2026)**: synthetic multi-area and indoor/outdoor room topology now proves the exact ROM `mobile_update()` movement gates instead of skipping on boot-world room assumptions.
 
-**Test File**: `tests/integration/test_mob_ai.py` (15 tests: 13 passing, 2 skipped)
+**Test File**: `tests/integration/test_mob_ai.py` (15 tests passing)
 
 ---
 

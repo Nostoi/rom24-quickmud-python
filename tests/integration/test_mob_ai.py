@@ -16,7 +16,8 @@ from __future__ import annotations
 
 import pytest
 
-from mud.ai import mobile_update, aggressive_update
+from mud.ai import aggressive_update, mobile_update
+from mud.models.area import Area
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     ActFlag,
@@ -29,8 +30,8 @@ from mud.models.constants import (
 )
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
-from mud.models.room import Room
-from mud.registry import room_registry, area_registry
+from mud.models.room import Exit, Room
+from mud.registry import area_registry, room_registry
 from mud.utils import rng_mm
 from mud.world import initialize_world
 
@@ -83,6 +84,63 @@ def isolated_mobile_room():
         character_registry.clear()
         character_registry.extend(snapshot)
         room_registry.pop(room.vnum, None)
+
+
+@pytest.fixture
+def isolated_wander_rooms():
+    """Provide deterministic room/area topology for ROM wander-gate tests."""
+    snapshot = list(character_registry)
+    character_registry.clear()
+
+    room_snapshot = {}
+    area_snapshot = {}
+    area_ids = (999101, 999102)
+    room_ids = (999111, 999112, 999113, 999114)
+
+    for area_id in area_ids:
+        area_snapshot[area_id] = area_registry.get(area_id)
+    for room_id in room_ids:
+        room_snapshot[room_id] = room_registry.get(room_id)
+
+    area_one = Area(vnum=area_ids[0], name="Mob AI Area One", min_vnum=room_ids[0], max_vnum=room_ids[2])
+    area_two = Area(vnum=area_ids[1], name="Mob AI Area Two", min_vnum=room_ids[3], max_vnum=room_ids[3])
+    area_registry[area_one.vnum] = area_one
+    area_registry[area_two.vnum] = area_two
+
+    stay_area_start = Room(vnum=room_ids[0], name="Stay Area Start", area=area_one)
+    indoor_start = Room(vnum=room_ids[1], name="Indoor Start", area=area_one, room_flags=int(RoomFlag.ROOM_INDOORS))
+    outdoor_start = Room(vnum=room_ids[2], name="Outdoor Start", area=area_one)
+    cross_area_target = Room(vnum=room_ids[3], name="Cross Area Target", area=area_two)
+
+    stay_area_start.exits[int(Direction.NORTH)] = Exit(to_room=cross_area_target)
+    indoor_start.exits[int(Direction.NORTH)] = Exit(to_room=outdoor_start)
+    outdoor_start.exits[int(Direction.NORTH)] = Exit(to_room=indoor_start)
+
+    room_registry[stay_area_start.vnum] = stay_area_start
+    room_registry[indoor_start.vnum] = indoor_start
+    room_registry[outdoor_start.vnum] = outdoor_start
+    room_registry[cross_area_target.vnum] = cross_area_target
+
+    try:
+        yield {
+            "stay_area_start": stay_area_start,
+            "indoor_start": indoor_start,
+            "outdoor_start": outdoor_start,
+            "cross_area_target": cross_area_target,
+        }
+    finally:
+        character_registry.clear()
+        character_registry.extend(snapshot)
+        for room_id, prior in room_snapshot.items():
+            if prior is None:
+                room_registry.pop(room_id, None)
+            else:
+                room_registry[room_id] = prior
+        for area_id, prior in area_snapshot.items():
+            if prior is None:
+                area_registry.pop(area_id, None)
+            else:
+                area_registry[area_id] = prior
 
 
 def create_test_mob(room_vnum: int, **kwargs) -> Character:
@@ -252,7 +310,7 @@ class TestScavengerBehavior:
             act=int(ActFlag.SCAVENGER),
         )
 
-        cheap_obj = create_test_object(
+        create_test_object(
             9101,
             isolated_mobile_room.vnum,
             name="rusty dagger",
@@ -363,7 +421,7 @@ class TestAggressiveBehavior:
             level=5,
         )
 
-        player = create_test_player("TestHighLevel", 3001, level=20)
+        create_test_player("TestHighLevel", 3001, level=20)
 
         for _ in range(10):
             aggressive_update()
@@ -415,37 +473,25 @@ class TestCharmedMobBehavior:
 class TestStayAreaBehavior:
     """Test ACT_STAY_AREA flag prevents cross-area movement."""
 
-    def test_stay_area_mob_wont_leave_area(self, test_room, valhalla_room):
+    def test_stay_area_mob_wont_leave_area(self, isolated_wander_rooms, monkeypatch):
         """ROM parity: src/update.c:503 - Mobs with STAY_AREA won't leave their area."""
-        from mud.models.room import Exit
+        import mud.ai as ai_module
 
-        if not test_room or not test_room.area:
-            pytest.skip("Test room has no area")
-        if not valhalla_room or not valhalla_room.area:
-            pytest.skip("Valhalla room has no area")
-        if test_room.area == valhalla_room.area:
-            pytest.skip("Need rooms in different areas for this test")
-
-        # Create exit to another area (so mob CAN wander, but STAY_AREA prevents it)
-        north_exit = Exit(to_room=valhalla_room, key=0, exit_info=0, keyword="", description="")
-        test_room.exits[int(Direction.NORTH)] = north_exit
+        monkeypatch.setattr(ai_module.rng_mm, "number_bits", lambda bits: 0)
+        monkeypatch.setattr(ai_module.rng_mm, "number_door", lambda: int(Direction.NORTH))
 
         stay_area = create_test_mob(
-            3001,
+            isolated_wander_rooms["stay_area_start"].vnum,
             name="area guardian",
             act=int(ActFlag.STAY_AREA),
         )
 
-        original_area = test_room.area
+        original_room = isolated_wander_rooms["stay_area_start"]
 
-        # ROM: number_bits(3) != 0 check means ~12.5% chance to wander per tick
-        # So 100 ticks should be enough to attempt wander multiple times
-        for _ in range(100):
-            mobile_update()
-            if stay_area.room and stay_area.room.area != original_area:
-                pytest.fail("STAY_AREA mob left its area")
+        mobile_update()
 
-        assert stay_area.room and stay_area.room.area == original_area
+        assert stay_area.room is original_room
+        assert stay_area.room.area is original_room.area
 
 
 class TestMobAssistBehavior:
@@ -537,44 +583,42 @@ class TestMobAssistBehavior:
 class TestIndoorOutdoorRestrictions:
     """Test ACT_INDOORS and ACT_OUTDOORS movement restrictions."""
 
-    def test_outdoors_mob_wont_enter_indoors(self, test_room):
+    def test_outdoors_mob_wont_enter_indoors(self, isolated_wander_rooms, monkeypatch):
         """ROM parity: src/update.c:698 - ACT_OUTDOORS mobs avoid ROOM_INDOORS."""
-        outdoor_room = room_registry.get(3054)
-        if not outdoor_room or int(getattr(outdoor_room, "room_flags", 0)) & int(RoomFlag.ROOM_INDOORS):
-            pytest.skip("Need outdoor room for this test")
+        import mud.ai as ai_module
+
+        monkeypatch.setattr(ai_module.rng_mm, "number_bits", lambda bits: 0)
+        monkeypatch.setattr(ai_module.rng_mm, "number_door", lambda: int(Direction.NORTH))
 
         outdoor_mob = create_test_mob(
-            3054,
+            isolated_wander_rooms["outdoor_start"].vnum,
             name="sunlight creature",
             act=int(ActFlag.OUTDOORS),
         )
 
-        original_outdoor = outdoor_mob.room
+        original_outdoor = isolated_wander_rooms["outdoor_start"]
 
-        for _ in range(300):
-            mobile_update()
-            if outdoor_mob.room and int(getattr(outdoor_mob.room, "room_flags", 0)) & int(RoomFlag.ROOM_INDOORS):
-                pytest.fail("ACT_OUTDOORS mob entered ROOM_INDOORS")
+        mobile_update()
 
-        assert outdoor_mob.room is not None
+        assert outdoor_mob.room is original_outdoor
+        assert not (int(getattr(outdoor_mob.room, "room_flags", 0)) & int(RoomFlag.ROOM_INDOORS))
 
-    def test_indoors_mob_wont_go_outdoors(self, test_room):
+    def test_indoors_mob_wont_go_outdoors(self, isolated_wander_rooms, monkeypatch):
         """ROM parity: src/update.c:700 - ACT_INDOORS mobs require ROOM_INDOORS."""
-        if not int(getattr(test_room, "room_flags", 0)) & int(RoomFlag.ROOM_INDOORS):
-            pytest.skip("Need indoor room for this test")
+        import mud.ai as ai_module
+
+        monkeypatch.setattr(ai_module.rng_mm, "number_bits", lambda bits: 0)
+        monkeypatch.setattr(ai_module.rng_mm, "number_door", lambda: int(Direction.NORTH))
 
         indoor_mob = create_test_mob(
-            3001,
+            isolated_wander_rooms["indoor_start"].vnum,
             name="cave dweller",
             act=int(ActFlag.INDOORS),
         )
 
-        indoor_mob_room_flags = int(getattr(indoor_mob.room, "room_flags", 0))
+        indoor_mob_room_flags = int(getattr(isolated_wander_rooms["indoor_start"], "room_flags", 0))
         assert indoor_mob_room_flags & int(RoomFlag.ROOM_INDOORS)
 
-        for _ in range(300):
-            mobile_update()
-            if indoor_mob.room and not (int(getattr(indoor_mob.room, "room_flags", 0)) & int(RoomFlag.ROOM_INDOORS)):
-                pytest.fail("ACT_INDOORS mob left ROOM_INDOORS")
+        mobile_update()
 
         assert int(getattr(indoor_mob.room, "room_flags", 0)) & int(RoomFlag.ROOM_INDOORS)

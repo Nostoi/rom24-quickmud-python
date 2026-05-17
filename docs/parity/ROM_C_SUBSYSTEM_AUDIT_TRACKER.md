@@ -41,17 +41,17 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 **Overall**: ✅ **100% audit-bound coverage** (40 audited, 0 partial, 0 not audited, 3 N/A).
 **Audit-bound files**: every ROM C file that applies to QuickMUD now has a completed audit document and a reconciled tracker row.
 **N/A files**: `recycle.c`, `mem.c`, `imc.c` remain intentionally out of scope for parity because Python GC / the alternate IMC implementation replace the ROM surfaces.
-**Last Updated**: May 2, 2026
+**Last Updated**: May 17, 2026
 
 | File | Priority | Status | QuickMUD Module | Coverage | Notes |
 |------|----------|--------|-----------------|----------|-------|
 | **Combat & Violence** | | | | | |
-| `fight.c` | P0 | ✅ Audited (per-file) | `mud/combat/` | 95% | See `docs/parity/FIGHT_C_AUDIT.md`. Violence tick fixed Dec 2025. `FIGHT-001` (`do_kill → multi_hit`), `FIGHT-002` (`is_safe()` inside `damage()`), and `FIGHT-003` (player death XP penalty before `raw_kill`) are closed as of 2026-05-15. **Cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`):** INV-001 (single-delivery, ✅), INV-005 (same-room combat, ⚠️ no test), INV-006 (fighting-pointer coherence after death, ⚠️ no test). |
+| `fight.c` | P0 | ✅ Audited (per-file) | `mud/combat/` | 95% | See `docs/parity/FIGHT_C_AUDIT.md`. Violence tick fixed Dec 2025. `FIGHT-001` (`do_kill → multi_hit`), `FIGHT-002` (`is_safe()` inside `damage()`), and `FIGHT-003` (player death XP penalty before `raw_kill`) are closed as of 2026-05-15. **Cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`):** INV-001 (single-delivery, ✅), INV-005 (same-room combat, ✅), INV-006 (fighting-pointer coherence after death, ✅). |
 | `skills.c` | P0 | ✅ Audited | `mud/skills/` | 100% | All 37 skills have ROM parity tests |
 | `magic.c` | P0 | ✅ Audited | `mud/spells/` | 98% | 97 spells tested |
 | `magic2.c` | P0 | ✅ Audited | `mud/spells/` | 98% | Continuation of magic.c |
 | **Core Game Loop** | | | | | |
-| `update.c` | P0 | ✅ Audited | `mud/game_loop.py`, `mud/advancement.py` | 100% | May 17, 2026 — `GL-021` closed: `game_tick()` now mirrors ROM `update_handler` point-pulse `wiznet("TICK!")` before point-update work. Prior May 15 refresh already closed `GL-022` (level-up banner/log order) and `GL-023` (combat→XP verification). |
+| `update.c` | P0 | ✅ Audited | `mud/game_loop.py`, `mud/advancement.py` | 100% | May 17, 2026 — `GL-010` and `GL-017` closed: character/object affect ticking now mirrors ROM same-type wear-off handling, keeping active spell effects synchronized while suppressing duplicate object wear-off messages for consecutive zero-duration affects. Earlier the same day `GL-021` closed the point-pulse `wiznet("TICK!")` ordering; prior May 15 refresh already closed `GL-022` (level-up banner/log order) and `GL-023` (combat→XP verification). |
 | `handler.c` | P1 | ✅ **COMPLETE!** | `mud/handler.py`, `mud/world/`, `mud/models/` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 74 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 4 - See HANDLER_C_AUDIT.md |
 | `effects.c` | P1 | ✅ **COMPLETE!** | `mud/magic/effects.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 5 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - 23 integration tests - See EFFECTS_C_AUDIT.md |
 | **Movement & Rooms** | | | | | |
@@ -186,7 +186,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ✅ P0-4: update.c (AUDITED - 99%)
+### ✅ P0-4: update.c (AUDITED - 100%)
 
 **Status**: ✅ **Re-audited May 2026 — GL gaps closed**
 
@@ -213,6 +213,8 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 - GL-013: INCAP tick 50% chance 1 HP damage (was missing)
 - GL-014: MORTAL tick 1 HP damage (was missing)
 - GL-015: `_idle_to_limbo` uses `stop_fighting(ch, both=True)` (was `fighting=None`)
+- GL-010: `tick_spell_effects` now preserves active merged spell effects while following ROM same-type wear-off handling
+- GL-017: `_tick_object_affects` now suppresses duplicate same-type zero-duration wear-off messages
 - GL-018: Pit (vnum 3010) decay message suppression (was missing)
 
 **Integration Tests**: ✅ Complete (`tests/test_game_loop.py`, `tests/integration/test_update_c_parity.py`)

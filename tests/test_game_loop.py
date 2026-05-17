@@ -410,9 +410,9 @@ def test_char_update_applies_conditions(monkeypatch):
     assert hero.mana == 4
     assert hero.move == 10
     assert hero.pcdata.condition == [0, 0, 0, 0]
-    assert hero.spell_effects == {}
+    assert "armor" in hero.spell_effects
+    assert hero.spell_effects["armor"].duration == 0
     assert hero.messages == [
-        "You feel less protected.\n\r",
         "You are sober.",
         "You are thirsty.",
         "You are hungry.",

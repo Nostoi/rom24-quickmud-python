@@ -95,9 +95,10 @@ the cross-file work is tracked here.
   in code outside `comm.c` itself.
 - **`fight.c` (95% per-file)**: INV-001 root cause lived in
   `mud/combat/engine.py` (the audit row's primary Python file) but
-  surfaced as a `comm.c` symptom. INV-005 and INV-006 still need
-  enforcement tests. Open FIGHT-XXX gaps (`do_kill → multi_hit`,
-  `is_safe()` inside `damage()`) remain on the open-followups list.
+  surfaced as a `comm.c` symptom. INV-005 and INV-006 are now both
+  enforced by dedicated integration tests. Open FIGHT-XXX gaps
+  (`do_kill → multi_hit`, `is_safe()` inside `damage()`) have also
+  been closed in the file audit.
 - **`save.c` (100% per-file)**: row points only at
   `mud/persistence.py`. INV-003 was broken in
   `mud/account/account_manager.py` (the production path), not the

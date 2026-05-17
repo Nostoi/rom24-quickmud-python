@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.13]
+
+### Added
+- **ROM wear-off suppression enforcement**: added targeted regression coverage for `char_update()` and `obj_update()` so consecutive same-type affect expirations now stay locked to ROM `src/update.c` semantics, including single-message suppression for object wear-off.
+- **Deterministic `mobile_update()` wander-gate enforcement**: added isolated integration coverage for `ACT_STAY_AREA`, `ACT_OUTDOORS`, and `ACT_INDOORS` movement restrictions using synthetic room topology instead of boot-world assumptions.
+
+### Fixed
+- **`GL-010` character affect wear-off parity**: `mud/affects/engine.py` now preserves merged spell effects while any same-type `AffectData` remains active, matching ROM `src/update.c:762-786`.
+- **`GL-017` object affect wear-off parity**: `mud/game_loop.py` now suppresses duplicate same-type object wear-off messages exactly once per tick, matching ROM `src/update.c:939-957`.
+
+### Changed
+- **Parity tracker reconciliation**: cross-file invariant and integration-coverage trackers now record the enforced wander-gate and wear-off parity slices, and the full suite is recertified at `4547 passed, 10 skipped`.
+
 ## [2.8.12]
 
 ### Added

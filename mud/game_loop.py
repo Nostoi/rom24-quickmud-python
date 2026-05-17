@@ -1121,7 +1121,8 @@ def _tick_object_affects(obj: ObjectData) -> None:
     if not affects:
         return
 
-    for affect in list(affects):
+    ordered_affects = list(affects)
+    for index, affect in enumerate(ordered_affects):
         duration = int(getattr(affect, "duration", 0) or 0)
         if duration > 0:
             affect.duration = duration - 1
@@ -1133,8 +1134,15 @@ def _tick_object_affects(obj: ObjectData) -> None:
         if duration < 0:
             continue
 
+        next_affect = ordered_affects[index + 1] if index + 1 < len(ordered_affects) else None
+        should_emit = (
+            next_affect is None
+            or getattr(next_affect, "type", None) != getattr(affect, "type", None)
+            or int(getattr(next_affect, "duration", 0) or 0) > 0
+        )
         _clear_object_affect(obj, affect)
-        _broadcast_object_wear_off(obj, affect)
+        if should_emit:
+            _broadcast_object_wear_off(obj, affect)
 
 
 def obj_update() -> None:

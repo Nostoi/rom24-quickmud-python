@@ -2,10 +2,9 @@
 from mud.affects.engine import tick_spell_effects
 from mud.affects.saves import _check_immune, check_dispel, saves_dispel, saves_spell
 from mud.math.c_compat import c_div
-from mud.models.character import Character, SpellEffect
+from mud.models.character import AffectData, Character, SpellEffect
 from mud.models.constants import AffectFlag, DamageType, DefenseBit, Stat
 from mud.utils import rng_mm
-
 
 ROM_NEWLINE = "\n\r"
 
@@ -60,6 +59,11 @@ def test_affect_to_char_applies_stat_modifiers():
     )
     assert ch.apply_spell_effect(effect) is True
     assert ch.get_curr_stat(Stat.STR) == 13
+
+    messages = tick_spell_effects(ch)
+    assert messages == []
+    assert ch.get_curr_stat(Stat.STR) == 13
+    assert ch.spell_effects["weaken"].duration == 0
 
     messages = tick_spell_effects(ch)
     assert messages == [f"You feel stronger.{ROM_NEWLINE}"]
@@ -267,6 +271,27 @@ def test_wear_off_messages_include_rom_newline(monkeypatch):
     )
 
 
+def test_tick_spell_effects_keeps_spell_effect_when_same_spell_affect_remains_active():
+    ch = Character(level=20)
+    ch.affected = [
+        AffectData(type="armor", level=20, duration=0, location=17, modifier=-20, bitvector=0),
+        AffectData(type="armor", level=20, duration=2, location=17, modifier=-20, bitvector=0),
+    ]
+    ch.spell_effects["armor"] = SpellEffect(
+        name="armor",
+        duration=0,
+        level=20,
+        ac_mod=-20,
+        wear_off_message="You feel less protected.",
+    )
+
+    messages = tick_spell_effects(ch)
+
+    assert messages == ["You feel less protected.\n\r"]
+    assert "armor" in ch.spell_effects
+    assert ch.spell_effects["armor"].duration == 1
+
+
 def test_check_dispel_allows_negative_levels(monkeypatch):
     target = Character(level=20)
     effect = SpellEffect(
@@ -435,9 +460,10 @@ def test_affect_persistence():
     # Arrange a character with multiple affect flags, save and reload via DB-canonical path.
     from mud.account.account_manager import load_character, save_character
     from mud.account.account_service import clear_active_accounts, create_character
-    from mud.db.models import Base, Character as DBCharacter
+    from mud.db.models import Base
+    from mud.db.models import Character as DBCharacter
     from mud.db.session import SessionLocal, engine
-    from mud.models.character import character_registry, from_orm
+    from mud.models.character import from_orm
     from mud.models.constants import ROOM_VNUM_SCHOOL
     from mud.security import bans
     from mud.world import initialize_world
