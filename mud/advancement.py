@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import time
 
+from mud.logging import log_game_event
 from mud.math.c_compat import c_div
 from mud.math.stat_apps import con_hitp_bonus, wis_practice_bonus
 from mud.models.character import Character
@@ -216,10 +217,10 @@ def gain_exp(char: Character, amount: int) -> None:
 
     # Level up while total exp meets threshold for next level.
     while char.level < LEVEL_HERO and char.exp >= exp_per_level(char) * (char.level + 1):
-        char.level += 1
-        advance_level(char)
         if hasattr(char, "send_to_char"):
             char.send_to_char("{GYou raise a level!!  {x")
+        char.level += 1
+        log_game_event(f"{getattr(char, 'name', 'Someone')} gained level {char.level}")
         wiznet(
             f"$N has attained level {char.level}!",
             char,
@@ -228,6 +229,7 @@ def gain_exp(char: Character, amount: int) -> None:
             None,
             0,
         )
+        advance_level(char)
         # Lazy import to avoid circular dependency
         from mud.account.account_manager import save_character
         save_character(char)

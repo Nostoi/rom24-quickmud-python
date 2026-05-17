@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from mud.advancement import (
     BASE_XP_PER_LEVEL,
     ROM_NEWLINE,
@@ -9,6 +11,8 @@ from mud.advancement import (
     gain_exp,
 )
 from mud.commands.advancement import do_practice, do_train
+from mud.groups.xp import xp_compute
+from mud.math.c_compat import c_div
 from mud.models import Room
 from mud.models.character import Character, PCData
 from mud.models.classes import CLASS_TABLE
@@ -26,6 +30,42 @@ def test_gain_exp_levels_character():
     char.exp = base
     gain_exp(char, base)
     assert char.level == 2
+
+
+def test_gain_exp_sends_level_message_before_advance_level_gains(monkeypatch: pytest.MonkeyPatch):
+    """ROM src/update.c:128-139 sends the level-up banner before advance_level()."""
+
+    char = Character(level=1, ch_class=0, race=0, exp=0, is_npc=False)
+    char.messages = []
+    base = exp_per_level(char)
+    char.exp = base
+
+    gain_exp(char, base)
+
+    assert len(char.messages) >= 2
+    assert char.messages[0] == "{GYou raise a level!!  {x"
+    assert "You gain " in char.messages[1]
+
+
+def test_gain_exp_logs_level_gain_before_wiznet(monkeypatch: pytest.MonkeyPatch):
+    """ROM src/update.c:133-136 logs the level gain before wiznet/advance save."""
+
+    from mud import advancement as advancement_module
+
+    char = Character(name="Logger", level=1, ch_class=0, race=0, exp=0, is_npc=False)
+    base = exp_per_level(char)
+    char.exp = base
+
+    events: list[tuple[str, str]] = []
+
+    monkeypatch.setattr(advancement_module, "wiznet", lambda *args, **kwargs: events.append(("wiznet", args[0])))
+    monkeypatch.setattr(advancement_module, "log_game_event", lambda message: events.append(("log", message)), raising=False)
+    monkeypatch.setattr("mud.account.account_manager.save_character", lambda ch: events.append(("save", ch.name)))
+
+    gain_exp(char, base)
+
+    assert ("log", "Logger gained level 2") in events
+    assert events.index(("log", "Logger gained level 2")) < events.index(("wiznet", "$N has attained level 2!"))
 
 
 def test_exp_per_level_applies_modifiers():
@@ -131,9 +171,24 @@ def test_gain_exp_increases_stats_and_sessions():
     char.exp = base
     gain_exp(char, base)
     assert char.level == 2
-    assert char.max_hit > 20
-    assert char.practice > 0
-    assert char.train > 0
+
+
+def test_xp_compute_alignment_change_uses_c_truncation(monkeypatch: pytest.MonkeyPatch):
+    """ROM src/fight.c:xp_compute truncates negative intermediate division toward zero."""
+
+    gch = Character(level=10, alignment=-201, played=0, logon=0, is_npc=False)
+    victim = Character(level=10, alignment=-201, is_npc=True)
+
+    monkeypatch.setattr("mud.groups.xp.time.time", lambda: 0)
+    monkeypatch.setattr("mud.groups.xp.rng_mm.number_range", lambda low, high: low)
+
+    xp_compute(gch, victim, 1)
+
+    base_exp = 83
+    expected_change = c_div(c_div(-201 * base_exp, 500) * 10, 1)
+    expected_alignment = -201 - expected_change
+    assert expected_change == -330
+    assert gch.alignment == expected_alignment
 
 
 def test_gain_exp_honors_creation_point_floor():

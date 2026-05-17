@@ -119,6 +119,53 @@ def test_kill_flags_player_as_killer(monkeypatch: pytest.MonkeyPatch) -> None:
     assert out
 
 
+def test_kill_does_not_flag_attacker_when_target_already_killer(monkeypatch: pytest.MonkeyPatch) -> None:
+    initialize_world("area/area.lst")
+    attacker = create_test_character("Attacker", 3001)
+    victim = create_test_character("Outlaw", 3001)
+    attacker.desc = object()
+    victim.desc = object()
+    attacker.clan = 1
+    victim.clan = 1
+    victim.act = int(PlayerFlag.KILLER)
+    attacker.skills["hand to hand"] = 100
+    attacker.hitroll = 100
+
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+
+    process_command(attacker, "kill outlaw")
+
+    assert not (int(attacker.act) & int(PlayerFlag.KILLER))
+    assert "*** You are now a KILLER!! ***" not in attacker.messages
+
+
+def test_kill_with_charmed_attacker_stops_following_without_killer_flag(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    initialize_world("area/area.lst")
+    master = create_test_character("Master", 3001)
+    attacker = create_test_character("Thrall", 3001)
+    victim = create_test_character("Victim", 3001)
+    attacker.desc = object()
+    victim.desc = object()
+    attacker.clan = 1
+    victim.clan = 1
+    attacker.master = master
+    attacker.add_affect(AffectFlag.CHARM)
+    attacker.skills["hand to hand"] = 100
+    attacker.hitroll = 100
+
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+
+    process_command(attacker, "kill victim")
+
+    assert attacker.master is None
+    assert not (int(attacker.act) & int(PlayerFlag.KILLER))
+    assert "*** You are now a KILLER!! ***" not in attacker.messages
+
+
 def test_kill_blocks_stealing_existing_fight() -> None:
     attacker, victim = setup_combat()
     ally = create_test_character("Ally", 3001)

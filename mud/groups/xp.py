@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import time
-from typing import Iterable
+from collections.abc import Iterable
 
 from mud.advancement import gain_exp
 from mud.characters import is_same_group
-from mud.math.c_compat import urange
+from mud.math.c_compat import c_div, urange
 from mud.models.character import Character
 from mud.models.constants import ActFlag, ExtraFlag, WearLocation
 from mud.utils import rng_mm
@@ -160,75 +160,75 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
 
     if not _act_has_flag(victim, ActFlag.NOALIGN):
         if align_delta > 500:
-            change = (align_delta - 500) * base_exp // 500 * gch_level // max(1, total_levels)
+            change = c_div(c_div((align_delta - 500) * base_exp, 500) * gch_level, max(1, total_levels))
             change = max(1, change)
             gch.alignment = max(-1000, gch_alignment - change)
         elif align_delta < -500:
-            change = (-align_delta - 500) * base_exp // 500 * gch_level // max(1, total_levels)
+            change = c_div(c_div((-align_delta - 500) * base_exp, 500) * gch_level, max(1, total_levels))
             change = max(1, change)
             gch.alignment = min(1000, gch_alignment + change)
         else:
-            change = gch_alignment * base_exp // 500 * gch_level // max(1, total_levels)
+            change = c_div(c_div(gch_alignment * base_exp, 500) * gch_level, max(1, total_levels))
             gch.alignment -= change
 
     if _act_has_flag(victim, ActFlag.NOALIGN):
         xp = base_exp
     elif gch_alignment > 500:
         if victim_alignment < -750:
-            xp = (base_exp * 4) // 3
+            xp = c_div(base_exp * 4, 3)
         elif victim_alignment < -500:
-            xp = (base_exp * 5) // 4
+            xp = c_div(base_exp * 5, 4)
         elif victim_alignment > 750:
-            xp = base_exp // 4
+            xp = c_div(base_exp, 4)
         elif victim_alignment > 500:
-            xp = base_exp // 2
+            xp = c_div(base_exp, 2)
         elif victim_alignment > 250:
-            xp = (base_exp * 3) // 4
+            xp = c_div(base_exp * 3, 4)
         else:
             xp = base_exp
     elif gch_alignment < -500:
         if victim_alignment > 750:
-            xp = (base_exp * 5) // 4
+            xp = c_div(base_exp * 5, 4)
         elif victim_alignment > 500:
-            xp = (base_exp * 11) // 10
+            xp = c_div(base_exp * 11, 10)
         elif victim_alignment < -750:
-            xp = base_exp // 2
+            xp = c_div(base_exp, 2)
         elif victim_alignment < -500:
-            xp = (base_exp * 3) // 4
+            xp = c_div(base_exp * 3, 4)
         elif victim_alignment < -250:
-            xp = (base_exp * 9) // 10
+            xp = c_div(base_exp * 9, 10)
         else:
             xp = base_exp
     elif gch_alignment > 200:
         if victim_alignment < -500:
-            xp = (base_exp * 6) // 5
+            xp = c_div(base_exp * 6, 5)
         elif victim_alignment > 750:
-            xp = base_exp // 2
+            xp = c_div(base_exp, 2)
         elif victim_alignment > 0:
-            xp = (base_exp * 3) // 4
+            xp = c_div(base_exp * 3, 4)
         else:
             xp = base_exp
     elif gch_alignment < -200:
         if victim_alignment > 500:
-            xp = (base_exp * 6) // 5
+            xp = c_div(base_exp * 6, 5)
         elif victim_alignment < -750:
-            xp = base_exp // 2
+            xp = c_div(base_exp, 2)
         elif victim_alignment < 0:
-            xp = (base_exp * 3) // 4
+            xp = c_div(base_exp * 3, 4)
         else:
             xp = base_exp
     else:
         if abs(victim_alignment) > 500:
-            xp = (base_exp * 4) // 3
+            xp = c_div(base_exp * 4, 3)
         elif -200 < victim_alignment < 200:
-            xp = base_exp // 2
+            xp = c_div(base_exp, 2)
         else:
             xp = base_exp
 
     if gch_level < 6:
-        xp = 10 * xp // (gch_level + 4)
+        xp = c_div(10 * xp, gch_level + 4)
     if gch_level > 35:
-        xp = 15 * xp // max(1, gch_level - 25)
+        xp = c_div(15 * xp, max(1, gch_level - 25))
 
     played_seconds = int(getattr(gch, "played", 0) or 0)
     logon_time = getattr(gch, "logon", None)
@@ -240,18 +240,18 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
     numerator = 4 * (played_seconds + elapsed)
     time_per_level = 0
     if gch_level > 0:
-        time_per_level = numerator // 3600 // gch_level
+        time_per_level = c_div(c_div(numerator, 3600), gch_level)
     time_per_level = urange(2, time_per_level, 12)
     if gch_level < 15:
         time_per_level = max(time_per_level, 15 - gch_level)
-    xp = xp * time_per_level // 12
+    xp = c_div(xp * time_per_level, 12)
 
-    low = xp * 3 // 4
-    high = xp * 5 // 4
+    low = c_div(xp * 3, 4)
+    high = c_div(xp * 5, 4)
     xp = rng_mm.number_range(low, high)
 
     divisor = max(1, total_levels - 1)
-    xp = xp * gch_level // divisor
+    xp = c_div(xp * gch_level, divisor)
     return max(0, xp)
 
 

@@ -5,6 +5,7 @@ from types import SimpleNamespace
 
 from mud import mobprog
 from mud.account.account_manager import save_character
+from mud.advancement import exp_per_level, gain_exp
 from mud.affects.saves import _check_immune as _riv_check
 from mud.affects.saves import saves_spell
 from mud.characters import is_clan_member, is_same_clan, is_same_group
@@ -1109,6 +1110,13 @@ def _handle_death(attacker: Character, victim: Character) -> str:
     attacker.position = Position.STANDING
 
     group_gain(attacker, victim)
+    if not getattr(victim, "is_npc", False):
+        # mirroring ROM src/fight.c:887-893 — player deaths lose
+        # 2/3 of the surplus back toward the previous level, plus 50.
+        base = exp_per_level(victim)
+        floor = base * _coerce_int(getattr(victim, "level", 0))
+        if _coerce_int(getattr(victim, "exp", 0)) > floor:
+            gain_exp(victim, c_div(2 * (floor - victim.exp), 3) + 50)
     _send_wiznet_death(attacker, victim)
 
     corpse = raw_kill(victim)

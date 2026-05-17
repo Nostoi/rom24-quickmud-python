@@ -12,6 +12,7 @@ import pytest
 
 import mud.game_loop as _gl
 from mud.advancement import advance_level, exp_per_level, gain_exp
+from mud.combat.engine import attack_round
 from mud.commands.dispatcher import process_command
 from mud.game_loop import game_tick
 from mud.math.c_compat import c_div
@@ -341,6 +342,52 @@ def test_xp_loss_on_death(test_character):
 
     assert char.exp < initial_xp, "Death should reduce XP"
     assert char.exp >= exp_per_level(char) * 5, "XP should not drop below level floor"
+
+
+def test_player_kill_applies_rom_death_penalty(monkeypatch):
+    """Given a player dies in combat
+    When the combat death path runs
+    Then the victim loses ROM death-penalty XP before raw_kill
+
+    ROM Parity: mirrors src/fight.c damage() death branch:
+    gain_exp(victim, (2 * (exp_per_level * level - exp) / 3) + 50)
+    before raw_kill(victim).
+    """
+    from mud.groups import xp as xp_module
+    from mud.models.constants import Position
+
+    attacker = create_test_character("Attacker", room_vnum=3001)
+    victim = create_test_character("Victim", room_vnum=3001)
+
+    attacker.level = 10
+    attacker.hitroll = 100
+    attacker.damroll = 10
+
+    victim.level = 5
+    victim.hit = 1
+    victim.max_hit = 1
+    victim.position = Position.FIGHTING
+    victim.exp = exp_per_level(victim) * victim.level + 500
+
+    expected_loss = c_div(2 * ((exp_per_level(victim) * victim.level) - victim.exp), 3) + 50
+    expected_exp = victim.exp + expected_loss
+
+    attacker.position = Position.FIGHTING
+    attacker.fighting = victim
+    victim.fighting = attacker
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
+    monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
+    monkeypatch.setattr("mud.combat.engine.check_shield_block", lambda *args, **kwargs: False)
+
+    attack_round(attacker, victim)
+
+    assert victim.hit >= 1, "raw_kill should clamp player HP after death"
+    assert victim.exp == expected_exp, "Combat death should apply ROM death-penalty XP"
 
 
 def test_group_xp_split_among_members(test_character):
