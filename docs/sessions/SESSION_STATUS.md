@@ -30,10 +30,10 @@
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
 | Full suite | ✅ green (`4553 passed, 4 skipped`) |
 | Warnings | ✅ zero |
-| Current focus | current parity stack committed; choose the next ROM-source-first target |
+| Current focus | reconcile remaining stale audit headers now that the canonical tracker is green |
 
 ## Next Intended Task
 
 1. Treat the current integration-skip sweep as closed unless a newly added skip starts firing in CI.
-2. Return to the next ROM-source-first parity target or tracker row outside the integration coverage cleanup work.
+2. Reconcile stale audit headers that still advertise fixed `nanny.c` / persistence gaps as open, then choose the next real ROM-source-first target.
 3. If a new failing/skip-only slice appears, confirm it reproduces under normal world boot before changing test expectations.

@@ -16,26 +16,26 @@ Python entry points: `mud/net/connection.py` (login & creation flow), `mud/accou
 | ROM State (case) | ROM Lines | Python Counterpart | File:Line | Status |
 |---|---|---|---|---|
 | `CON_ANSI` | 143-178 | `_prompt_ansi_preference` | `mud/net/connection.py:481` | ✅ AUDITED |
-| `CON_GET_NAME` | 180-262 | `_run_account_login` / `_select_character` | `mud/net/connection.py:789, 1374` | ⚠️ PARTIAL — see NANNY-002 |
-| `CON_GET_OLD_PASSWORD` | 264-303 | `_run_account_login` (password loop) | `mud/net/connection.py:812` | ⚠️ PARTIAL — see NANNY-001 |
-| `CON_BREAK_CONNECT` | 307-352 | `_select_character` (reconnect path) | `mud/net/connection.py:1420` | ⚠️ PARTIAL — see NANNY-010 |
+| `CON_GET_NAME` | 180-262 | `_run_account_login` / `_select_character` | `mud/net/connection.py:789, 1374` | ✅ AUDITED — account name selection, reconnect prompt, and name validation parity closed via NANNY-001/002/012. |
+| `CON_GET_OLD_PASSWORD` | 264-303 | `_run_account_login` (password loop) | `mud/net/connection.py:812` | ✅ AUDITED — old-password loop and duplicate-descriptor handling parity closed; see NANNY-001/010. |
+| `CON_BREAK_CONNECT` | 307-352 | `_select_character` (reconnect path) | `mud/net/connection.py:1420` | ✅ AUDITED — full descriptor sweep, switched-immortal branch, and takeover flow closed by NANNY-010. |
 | `CON_CONFIRM_NEW_NAME` | 354-380 | `_run_character_creation_flow` | `mud/net/connection.py:1303` | ✅ AUDITED |
-| `CON_GET_NEW_PASSWORD` | 382-411 | `_prompt_new_password` | `mud/net/connection.py:768` | ⚠️ PARTIAL — see NANNY-011 |
+| `CON_GET_NEW_PASSWORD` | 382-411 | `_prompt_new_password` | `mud/net/connection.py:768` | ✅ AUDITED — minimum length and `~` rejection parity closed by NANNY-011. |
 | `CON_CONFIRM_NEW_PASSWORD` | 413-439 | `_prompt_new_password` (confirmation) | `mud/net/connection.py:776` | ✅ AUDITED |
 | `CON_GET_NEW_RACE` | 441-499 | `_prompt_for_race` + race apply in `create_character` | `mud/net/connection.py:885`, `mud/account/account_service.py:939` | ✅ AUDITED |
 | `CON_GET_NEW_SEX` | 502-531 | `_prompt_for_sex` | `mud/net/connection.py:914` | ✅ AUDITED |
 | `CON_GET_NEW_CLASS` | 533-554 | `_prompt_for_class` + `announce_wiznet_new_player` | `mud/net/connection.py:927, 155` | ✅ AUDITED |
-| `CON_GET_ALIGNMENT` | 556-588 | `_prompt_for_alignment` | `mud/net/connection.py:940` | ⚠️ PARTIAL — see NANNY-003 |
+| `CON_GET_ALIGNMENT` | 556-588 | `_prompt_for_alignment` | `mud/net/connection.py:940` | ✅ AUDITED — alignment prompt/menu parity closed by NANNY-003. |
 | `CON_DEFAULT_CHOICE` | 590-630 | `_prompt_customization_choice` | `mud/net/connection.py:957` | ✅ AUDITED |
-| `CON_PICK_WEAPON` | 632-657 | `_prompt_for_weapon` | `mud/net/connection.py:1257` | ⚠️ PARTIAL — see NANNY-004 |
+| `CON_PICK_WEAPON` | 632-657 | `_prompt_for_weapon` | `mud/net/connection.py:1257` | ✅ AUDITED — weapon-choice parity now routes through canonical ROM `weapon_table`; see NANNY-004 and CONST-007. |
 | `CON_GEN_GROUPS` | 659-711 | `_run_customization_menu` | `mud/net/connection.py:967` | ✅ AUDITED |
 | `CON_READ_IMOTD` | 713-717 | `_send_login_motd` (immortal branch) | `mud/net/connection.py:597` | ✅ AUDITED |
 | `CON_NOTE_*` | 722-740 | external note handlers | `mud/notes.py` | N/A (delegated) |
-| `CON_READ_MOTD` (level 0 branch) | 742-790 | `_finalize_login` / `give_school_outfit` | `mud/net/connection.py:1554`, `mud/commands/inventory.py:142` | ⚠️ PARTIAL — see NANNY-005 |
-| `CON_READ_MOTD` (room routing) | 791-802 | login room placement | `mud/account/account_manager.py:119` | ⚠️ PARTIAL — see NANNY-006 |
-| `CON_READ_MOTD` (entry broadcast) | 804-815 | — | — | ❌ MISSING — see NANNY-007, NANNY-008 |
-| `check_parse_name` | (called from 188) | `is_valid_account_name` | `mud/account/account_service.py:572` | ⚠️ PARTIAL — see NANNY-012 |
-| `reset_char` (called from 760) | (handler.c) | `reset_char` exists but unwired on login | `mud/handler.py:1046` | ❌ MISSING — see NANNY-014 |
+| `CON_READ_MOTD` (level 0 branch) | 742-790 | `_finalize_login` / `give_school_outfit` | `mud/net/connection.py:1554`, `mud/commands/inventory.py:142` | ✅ AUDITED — school outfit, resource initialization, title assignment, and newbie help flow closed by NANNY-005/009/013/014. |
+| `CON_READ_MOTD` (room routing) | 791-802 | login room placement | `mud/account/account_manager.py:119` | ✅ AUDITED — school/chat/temple room routing parity closed by NANNY-006. |
+| `CON_READ_MOTD` (entry broadcast) | 804-815 | `broadcast_entry_to_room` | `mud/net/connection.py` | ✅ AUDITED — player/pet room-entry broadcasts closed by NANNY-007/008. |
+| `check_parse_name` | (called from 188) | `is_valid_account_name` | `mud/account/account_service.py:572` | ✅ AUDITED — reserved-name and minimum-length parity closed by NANNY-012. |
+| `reset_char` (called from 760) | (handler.c) | `apply_login_state_refresh` + `reset_char` | `mud/net/connection.py:744,1813,2074`, `mud/handler.py:1046` | ✅ AUDITED — login now refreshes runtime stats/armor/resources per NANNY-014. |
 | `set_title` / `title_table` | (called from 778-780) | `create_character` + `mud/models/titles.py` | `mud/account/account_service.py:1027`, `mud/models/titles.py:1` | ✅ AUDITED — see NANNY-009 |
 
 ---

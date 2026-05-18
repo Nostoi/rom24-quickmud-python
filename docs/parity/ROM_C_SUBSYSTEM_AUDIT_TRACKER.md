@@ -67,7 +67,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 | **Database & World** | | | | | |
 | `db.c` | P1 | ✅ **COMPLETE!** | `mud/loaders/`, `mud/spawning/`, `mud/utils/math_utils.py`, `mud/utils/rng_mm.py`, `mud/utils/text.py`, `mud/registry.py` | **100%** | 🎉🎉🎉 **FULL PARITY ACHIEVED - ALL 44 FUNCTIONS IMPLEMENTED!** 🎉🎉🎉 Jan 5 - See DB_C_AUDIT.md |
 | `db2.c` | P1 | ✅ AUDITED | `mud/loaders/` | **100%** (CRITICAL/IMPORTANT) | Apr 28 — DB2-001/002/003/006 closed; DB2-004/005 MINOR deferred (not user-reachable). See DB2_C_AUDIT.md |
-| `save.c` | P1 | ✅ Complete (per-file, JSON path) | `mud/persistence.py`, `mud/account/account_manager.py` | **100%** (JSON path) | Jan 5 — full parity vs `mud/persistence.py` + 17 integration tests. **Caveat:** production WS logins use `mud/account/account_manager.py` (SQLAlchemy path) which the audit did not cover. INV-003 (`character_registry` membership, ✅ enforced 2026-05-02 `d2fafcd`) and INV-008 (DUAL-LOAD-CHARACTER coherence, ⚠️ known divergence) track the gap. See `CROSS_FILE_INVARIANTS_TRACKER.md`. |
+| `save.c` | P1 | ✅ Complete (historical per-file audit) | `mud/account/account_manager.py`, `mud/db/serializers.py`, `mud/world/time_persistence.py` | **100%** (canonical DB path) | Jan 5 audit originally targeted the deleted JSON-pfile path; the canonical SQLAlchemy/DB load-save path is now covered by INV-003 and INV-008, both ✅ enforced. `mud/persistence.py` was removed in 2.8.3. See `CROSS_FILE_INVARIANTS_TRACKER.md`. |
 | **Mob Programs** | | | | | |
 | `mob_prog.c` | P1 | ✅ Complete | `mud/mobprog.py` | 100% | Apr 27, 2026 — all 7 audit gaps closed (MOBPROG-001..007: 2 CRITICAL, 4 IMPORTANT, 1 MINOR). Integration coverage in `tests/integration/test_mobprog_predicates.py`, `test_mobprog_greet_trigger.py`, `test_mobprog_program_flow.py`. See `MOB_PROG_C_AUDIT.md`. |
 | `mob_cmds.c` | P1 | ✅ Complete | `mud/mob_cmds.py`, `mud/commands/mobprog_tools.py` | 100% | Apr 27, 2026 — all 18 gaps closed (6 CRITICAL, 9 IMPORTANT, 3 MINOR). Integration coverage in `tests/integration/test_mob_cmds_*.py`. See `MOB_CMDS_C_AUDIT.md`. |
@@ -523,16 +523,22 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ✅ P1-4: save.c (AUDITED - 75% + Integration Tests Complete)
+### ✅ P1-4: save.c (historical section — canonical DB path now enforced)
 
-**Status**: ✅ **AUDIT COMPLETE + Integration Tests Passing** (January 5, 2026)
+**Status**: ✅ Historical JSON-path audit complete; canonical DB/login persistence path is now enforced by INV-003 and INV-008.
 
 **ROM Functions**: Player save/load (8 functions total)
-**QuickMUD Module**: `mud/persistence.py`
+**QuickMUD Module**: `mud/account/account_manager.py`, `mud/db/serializers.py`, `mud/world/time_persistence.py`
 
 **Detailed Audit Document**: `docs/parity/SAVE_C_AUDIT.md`
 
-**Audit Status** (6/8 functions implemented):
+**Status Note**:
+
+- This subsection documents the original January 2026 JSON-persistence audit.
+- `mud/persistence.py` was deleted in 2.8.3.
+- The live canonical path is the SQLAlchemy/DB loader-save stack, tracked by `CROSS_FILE_INVARIANTS_TRACKER.md` INV-003 and INV-008, both ✅ enforced.
+
+**Historical Audit Status** (6/8 functions implemented at the time):
 
 **✅ Fully Implemented (6 functions)**:
 - ✅ `save_char_obj()` → `save_character()` (100% - atomic saves with temp file pattern)

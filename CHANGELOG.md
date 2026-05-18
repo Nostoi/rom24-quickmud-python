@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.15]
+
+### Changed
+- **Parity audit reconciliation**: refreshed stale `nanny.c` audit headers and the historical `save.c` tracker narrative so the docs match the verified codebase and enforced invariants (`INV-003`, `INV-008`).
+
 ## [2.8.14]
 
 ### Added
