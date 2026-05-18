@@ -21,16 +21,13 @@ Test Coverage:
 from __future__ import annotations
 
 import pytest
-import time
 
 from mud.commands.dispatcher import process_command
-from mud.game_loop import game_tick
 from mud.config import get_pulse_violence
-from mud.models.character import Character
-from mud.models.constants import Position, Stat, ItemType, WearFlag, WearLocation
-from mud.spawning.templates import MobInstance
-from mud.world import initialize_world
+from mud.game_loop import game_tick
+from mud.models.constants import ItemType, Position, WearFlag, WearLocation
 from mud.utils import rng_mm
+from mud.world import initialize_world
 
 
 @pytest.fixture(autouse=True)
@@ -159,7 +156,7 @@ class TestCombatSkillsIntegration:
 
         # Bash the mob
         initial_wait = getattr(char, "wait", 0)
-        result = process_command(char, "bash")
+        process_command(char, "bash")
 
         # Should have wait state (WAIT_STATE is skill_table[gsn_bash].beats)
         current_wait = getattr(char, "wait", 0)
@@ -300,52 +297,42 @@ class TestPassiveSkillsIntegration:
 class TestSkillImprovementIntegration:
     """Test skills improve when used successfully."""
 
-    @pytest.mark.skip(reason="Probabilistic test - check_improve is implemented and called, but RNG makes this flaky")
-    def test_skill_improves_on_successful_use(self, skilled_character, movable_mob_factory):
+    def test_skill_improves_on_successful_use_above_class_adept(
+        self,
+        monkeypatch,
+        skilled_character,
+        movable_mob_factory,
+    ):
         """
-        Test: Skills improve when used successfully.
+        Test: Combat-driven skill improvement can exceed class adept.
 
         ROM Parity: Mirrors ROM src/handler.c:check_improve()
 
-        Given: A character with low skill % and good INT
-        When: Character uses skill successfully many times
-        Then: Skill % increases (probabilistic - may take many attempts)
-
-        Note: Uses unseed RNG for this test since improvement is probabilistic.
-        ROM C uses rand() which can't guarantee improvement in N iterations.
+        Given: A PC at class adept (75%) for bash
+        When: A successful bash triggers check_improve() with forced improve rolls
+        Then: Skill increases above adept toward 100, matching ROM
         """
-        rng_mm.seed_mm(int(time.time()))
-
         char = skilled_character
-        char.skills["bash"] = 20
-        char.perm_stats[Stat.INT] = 25
+        char.skills["bash"] = 75
         char.level = 10
 
         mob = movable_mob_factory(3000, 3001)
         mob.level = 1
         mob.size = 1
 
-        initial_skill = char.skills["bash"]
-        improved = False
+        char.fighting = mob
+        mob.fighting = char
+        char.position = Position.FIGHTING
+        mob.position = Position.FIGHTING
+        char.wait = 0
 
-        for i in range(500):
-            char.fighting = mob
-            mob.fighting = char
-            char.position = Position.FIGHTING
-            mob.hit = 100
-            char.wait = 0
+        monkeypatch.setattr("mud.commands.combat.rng_mm.number_percent", lambda: 1)
+        monkeypatch.setattr("mud.skills.registry.rng_mm.number_range", lambda low, high: 1)
+        monkeypatch.setattr("mud.skills.registry.rng_mm.number_percent", lambda: 1)
 
-            process_command(char, "bash")
-            game_tick()
+        process_command(char, "bash")
 
-            current_skill = char.skills.get("bash", initial_skill)
-            if current_skill > initial_skill:
-                improved = True
-                break
-
-        assert improved, (
-            f"Skill should improve after 500 uses (started at {initial_skill}, ended at {char.skills['bash']})"
-        )
+        assert char.skills["bash"] == 76
 
 
 # ============================================================================
@@ -371,7 +358,7 @@ class TestSkillWaitStateIntegration:
         char.fighting = mob
         char.position = Position.FIGHTING
 
-        result1 = process_command(char, "bash")
+        process_command(char, "bash")
 
         wait_after_first = char.wait
         assert wait_after_first > 0, "First bash should set wait state"
@@ -430,9 +417,7 @@ class TestSkillCommandIntegration:
         When: Character practices a skill
         Then: Skill % increases
         """
-        # This would need a proper practice mob setup
-        # Skipping for now
-        pytest.skip("Practice command integration not yet tested")
+        pytest.skip("Duplicate historical slice; canonical practice coverage lives in tests/integration/test_do_practice_command.py")
 
     def test_skills_command_lists_character_skills(self, skilled_character):
         """
@@ -473,8 +458,6 @@ class TestSkillFailureCases:
         char = movable_char_factory("Newbie", 3001)
         char.level = 1
         char.skills = {"backstab": 75}  # Has skill but too low level
-        mob = movable_mob_factory(3000, 3001)
-
         result = process_command(char, "backstab Hassan")
 
         # Should fail (either "You don't know that skill" or level check)
@@ -492,7 +475,6 @@ class TestSkillFailureCases:
         Then: Skill fails with position message
         """
         char = skilled_character
-        mob = movable_mob_factory(3000, 3001)
         char.position = Position.SITTING
 
         result = process_command(char, "bash Hassan")

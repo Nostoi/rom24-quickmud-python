@@ -15,17 +15,16 @@ from __future__ import annotations
 import pytest
 
 from mud.combat.death import raw_kill
+from mud.commands.dispatcher import process_command
 from mud.handler import create_money
-from mud.models.character import Character
 from mud.models.constants import (
-    ItemType,
     OBJ_VNUM_COINS,
     OBJ_VNUM_GOLD_ONE,
     OBJ_VNUM_GOLD_SOME,
     OBJ_VNUM_SILVER_ONE,
     OBJ_VNUM_SILVER_SOME,
+    ItemType,
 )
-from mud.models.object import Object
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import initialize_world
 
@@ -345,7 +344,7 @@ def test_autosplit_with_group_enabled(movable_char_factory, movable_mob_factory,
     test_room_3001.add_object(money)
 
     # Leader picks up money
-    result = do_get(leader, "coins")
+    do_get(leader, "coins")
 
     # Verify money was split
     # ROM C: do_split divides 100 silver between 2 members = 50 each
@@ -386,7 +385,7 @@ def test_autosplit_disabled_keeps_all_money(movable_char_factory, test_room_3001
     test_room_3001.add_object(money)
 
     # Leader picks up money
-    result = do_get(leader, "coins")
+    do_get(leader, "coins")
 
     # Verify leader keeps all money (no split)
     assert leader.silver == 100, f"Leader should keep all 100 silver, got {leader.silver}"
@@ -419,7 +418,7 @@ def test_autosplit_solo_player_keeps_all_money(movable_char_factory, test_room_3
     test_room_3001.add_object(money)
 
     # Player picks up money
-    result = do_get(player, "coins")
+    do_get(player, "coins")
 
     # Verify player keeps all money (solo = no split)
     assert player.silver == 100, f"Solo player should keep all 100 silver, got {player.silver}"
@@ -469,7 +468,7 @@ def test_autosplit_excludes_charmed_members(movable_char_factory, test_room_3001
     test_room_3001.add_object(money)
 
     # Leader picks up money
-    result = do_get(leader, "coins")
+    do_get(leader, "coins")
 
     # Verify split excludes charmed member
     # ROM C: members = 2 (leader + follower, excluding charmed)
@@ -514,7 +513,7 @@ def test_autosplit_with_mixed_gold_and_silver(movable_char_factory, test_room_30
     test_room_3001.add_object(money)
 
     # Leader picks up money
-    result = do_get(leader, "coins")
+    do_get(leader, "coins")
 
     # Verify both currencies split correctly
     # 50 silver / 2 = 25 each
@@ -549,7 +548,7 @@ def test_money_object_extracted_not_in_inventory(movable_char_factory, test_room
     assert money in test_room_3001.contents
 
     # Player picks up money
-    result = do_get(player, "coins")
+    do_get(player, "coins")
 
     # Verify money is consumed (ROM C: extract_obj)
     assert money not in player.inventory, "Money should not be in inventory (extracted)"
@@ -563,54 +562,61 @@ def test_money_object_extracted_not_in_inventory(movable_char_factory, test_room
 # =============================================================================
 
 
-@pytest.mark.skip(reason="Drop command money consolidation not yet implemented")
 def test_drop_command_consolidates_money_objects(movable_char_factory):
     """
-    Test: Dropping multiple money objects consolidates them into one.
+    Test: Dropping coins consolidates them with existing room money objects.
 
     ROM Parity: src/act_obj.c:541-589 (do_drop with "coins" or "gold" or "silver")
-        - Scans inventory for all money objects
+        - Drops a numeric silver/gold amount from the character's coin fields
+        - Scans room contents for existing money objects
         - Accumulates gold/silver totals
-        - Extracts all money objects
+        - Extracts all room money objects
         - Creates single consolidated money object in room
         - Act message: "$n drops some coins."
 
-    Given: Player has 3 separate money objects in inventory
-    When: Player drops all money
+    Given: Room already contains separate money objects
+    When: Player drops silver coins into the room
     Then: Single consolidated money object appears in room
     """
     player = movable_char_factory(name="Dropper", room_vnum=3001)
+    room = player.room
+    room.contents.clear()
+    player.gold = 3
+    player.silver = 40
 
-    # Give player 3 separate money objects
+    # Existing room money that ROM do_drop consolidates before creating new pile.
     money1 = create_money(gold=10, silver=0)
     money2 = create_money(gold=0, silver=50)
     money3 = create_money(gold=5, silver=25)
+    room.add_object(money1)
+    room.add_object(money2)
+    room.add_object(money3)
 
-    player.inventory.extend([money1, money2, money3])
+    result = process_command(player, "drop 15 silver")
 
-    # TODO: Implement drop command with money consolidation
-    # result = process_command(player, "drop coins")
+    assert result == "OK."
+    assert player.silver == 25
+    assert player.gold == 3
 
-    # Expected: Room should have 1 money object with 15 gold, 75 silver
-    # room_money = [obj for obj in player.room.objects if obj.item_type == ItemType.MONEY]
-    # assert len(room_money) == 1
-    # assert room_money[0].value[0] == 75  # silver
-    # assert room_money[0].value[1] == 15  # gold
+    room_money = [obj for obj in room.contents if obj.item_type == ItemType.MONEY]
+    assert len(room_money) == 1
+    assert room_money[0].value[0] == 90  # 50 + 25 + 15
+    assert room_money[0].value[1] == 15  # 10 + 5
 
 
-@pytest.mark.skip(reason="Drop command money consolidation not yet implemented")
 def test_drop_command_with_no_money(movable_char_factory):
     """
-    Test: Drop coins when player has no money.
+    Test: Drop silver when player has no silver.
 
     ROM Parity: src/act_obj.c:541-589
-        Returns early if no money objects found
+        Returns early if the character lacks the requested amount.
     """
     player = movable_char_factory(name="Broke", room_vnum=3001)
+    player.gold = 0
+    player.silver = 0
 
-    # TODO: Implement drop command
-    # result = process_command(player, "drop coins")
-    # assert "you don't have" in result.lower() or "you aren't carrying" in result.lower()
+    result = process_command(player, "drop 1 silver")
+    assert result == "You don't have that much silver."
 
 
 # =============================================================================

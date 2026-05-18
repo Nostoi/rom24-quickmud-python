@@ -14,10 +14,13 @@ from __future__ import annotations
 
 import pytest
 
+from mud.commands.dispatcher import process_command
 from mud.config import get_pulse_tick
 from mud.game_loop import game_tick
-from mud.models.character import SpellEffect, character_registry
-from mud.models.constants import AffectFlag
+from mud.models.character import AffectData, SpellEffect, character_registry
+from mud.models.constants import AffectFlag, ExtraFlag, ItemType, WearFlag, WearLocation
+from mud.models.room import Room
+from mud.registry import room_registry
 
 
 @pytest.fixture(autouse=True)
@@ -709,7 +712,7 @@ class TestAffectFlags:
 class TestAffectInteractions:
     """Test interactions between multiple affects."""
 
-    def test_curse_prevents_item_removal(self, movable_char_factory):
+    def test_curse_prevents_item_removal(self, movable_char_factory, object_factory):
         """
         Test: AFFECT_CURSE prevents removing equipment.
 
@@ -719,7 +722,28 @@ class TestAffectInteractions:
         When: Try to remove item
         Then: Command fails
         """
-        pytest.skip("P2 feature - Requires curse mechanic in item removal commands - implement separately")
+        char = movable_char_factory("Cursed", 3001, points=200)
+        cursed_ring = object_factory(
+            {
+                "vnum": 9010,
+                "name": "cursed ring",
+                "short_descr": "a cursed ring",
+                "item_type": int(ItemType.ARMOR),
+                "wear_flags": int(WearFlag.TAKE) | int(WearFlag.WEAR_FINGER),
+                "extra_flags": int(ExtraFlag.NOREMOVE),
+                "value": [1, 0, 0, 0],
+            }
+        )
+        char.add_object(cursed_ring)
+
+        wear_result = process_command(char, "wear ring")
+        assert "wear" in wear_result.lower()
+        assert cursed_ring.wear_loc in {int(WearLocation.FINGER_L), int(WearLocation.FINGER_R)}
+
+        result = process_command(char, "remove ring")
+        assert result == "You can't remove a cursed ring."
+        assert cursed_ring.wear_loc in {int(WearLocation.FINGER_L), int(WearLocation.FINGER_R)}
+        assert cursed_ring in char.equipment.values()
 
     def test_poison_damages_over_time(self, movable_char_factory):
         """
@@ -731,9 +755,28 @@ class TestAffectInteractions:
         When: Game ticks execute
         Then: HP decreases each tick
         """
-        pytest.skip("P3 feature - Requires damage-over-time (DOT) system in game_tick - implement separately")
+        char = movable_char_factory("Poisoned", 3001, points=200)
+        char.hit = 80
+        char.max_hit = 100
+        char.desc = object()
+        char.affect_to_char(
+            AffectData(
+                type="poison",
+                level=20,
+                duration=5,
+                location="none",
+                modifier=0,
+                bitvector=int(AffectFlag.POISON),
+            )
+        )
 
-    def test_plague_spreads_to_nearby_characters(self, movable_char_factory):
+        before = char.hit
+        run_point_pulses(1)
+
+        assert char.hit < before
+        assert any("shiver and suffer" in message.lower() for message in getattr(char, "messages", []))
+
+    def test_plague_spreads_to_nearby_characters(self, movable_char_factory, monkeypatch: pytest.MonkeyPatch):
         """
         Test: AFFECT_PLAGUE can spread to others in room.
 
@@ -743,4 +786,42 @@ class TestAffectInteractions:
         When: Game ticks execute
         Then: Chance to infect others
         """
-        pytest.skip("P3 feature - Requires contagion spreading system in game_tick - implement separately")
+        from mud import game_loop as gl
+
+        room_vnum = 91000
+        room_registry[room_vnum] = Room(vnum=room_vnum, name="Isolation Room", description="A sealed test room")
+
+        try:
+            victim = movable_char_factory("Patient", room_vnum, points=200)
+            victim.level = 20
+            victim.mana = 100
+            victim.move = 100
+            victim.desc = object()
+            bystander = movable_char_factory("Bystander", room_vnum, points=200)
+            bystander.level = 10
+            bystander.desc = object()
+
+            victim.affect_to_char(
+                AffectData(
+                    type="plague",
+                    level=12,
+                    duration=5,
+                    location="str",
+                    modifier=-5,
+                    bitvector=int(AffectFlag.PLAGUE),
+                )
+            )
+
+            monkeypatch.setattr(gl.rng_mm, "number_bits", lambda _bits: 0)
+            monkeypatch.setattr(gl.rng_mm, "number_range", lambda _low, high: high)
+
+            from mud.affects import saves as saves_module
+
+            monkeypatch.setattr(saves_module, "saves_spell", lambda *_args, **_kwargs: False)
+
+            run_point_pulses(1)
+
+            assert bystander.has_affect(AffectFlag.PLAGUE)
+            assert any("feel hot and feverish" in message.lower() for message in getattr(bystander, "messages", []))
+        finally:
+            room_registry.pop(room_vnum, None)

@@ -11,19 +11,17 @@ ROM Reference:
 
 from __future__ import annotations
 
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
-from mud.commands.combat import do_backstab, do_bash, do_kick, do_disarm, do_trip, do_dirt, do_rescue, do_berserk
-from mud.combat.engine import apply_damage
+import pytest
+
+from mud.commands.combat import do_backstab, do_bash, do_berserk, do_dirt, do_disarm, do_kick, do_rescue, do_trip
 from mud.models.character import Character
-from mud.models.constants import Position, AffectFlag, DamageType, ItemType, WeaponType, Sector
+from mud.models.constants import AffectFlag, DamageType, ItemType, Position, Sector, Stat, WeaponType
 from mud.skills import skill_registry
+from mud.spawning.templates import MobInstance
 from mud.utils import rng_mm
 from mud.world import initialize_world
-
-from mud.spawning.templates import MobInstance
-from mud.models.constants import Stat
 
 
 # Monkeypatch MobInstance only where tests rely on inventory helpers.
@@ -1038,6 +1036,7 @@ class TestKickRomParity:
             patch("mud.commands.combat.rng_mm.number_percent", return_value=10),
             patch("mud.skills.handlers.rng_mm.number_range", return_value=7) as number_range,
             patch("mud.skills.handlers.apply_damage", side_effect=_apply_damage_stub),
+            patch("mud.commands.combat.skill_registry._check_improve"),
         ):
             result = do_kick(char, "")
 
@@ -1045,7 +1044,7 @@ class TestKickRomParity:
         assert captured["damage"] == 7
         assert captured["dam_type"] == DamageType.BASH
         assert captured["dt"] == "kick"
-        number_range.assert_called_once_with(1, char.level)
+        assert number_range.call_args_list[0].args == (1, char.level)
 
     def test_kick_failure_does_zero_damage_and_skips_number_range(self, movable_char_factory, movable_mob_factory):
         """ROM L3133-3137: Failed kick calls damage(..., 0, ..., DAM_BASH) and improves."""
@@ -1072,6 +1071,7 @@ class TestKickRomParity:
             patch("mud.commands.combat.rng_mm.number_percent", return_value=99),
             patch("mud.skills.handlers.rng_mm.number_range") as number_range,
             patch("mud.skills.handlers.apply_damage", side_effect=_apply_damage_stub),
+            patch("mud.commands.combat.skill_registry._check_improve"),
         ):
             result = do_kick(char, "")
 
@@ -2265,7 +2265,6 @@ class TestDirtKickingRomParity:
 
     def test_dirt_kicking_success_chance_formula(self, movable_char_factory, movable_mob_factory):
         """ROM L2547-2567: chance = skill + DEX - 2*victim_DEX + speed_mods + level_diff*2."""
-        from mud.skills import handlers as skill_handlers
 
         char = movable_char_factory("thief", 3001)
         char.skills["dirt kicking"] = 50

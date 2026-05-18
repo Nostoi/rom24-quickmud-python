@@ -32,8 +32,8 @@
 - [x] Character Advancement - 100% tested (19/19 tests)
 - [x] Death/Corpse System - 100% tested (17/17 tests)
 - [x] Equipment System - 93.75% tested (15/16 tests, 1 P2 skip)
-- [x] Skills System - 100% tested (10/12 tests, 2 P2 skips)
-- [x] Spell Affects Persistence - 100% tested (18/21 tests, 3 P2/P3 skips)
+- [x] Skills System - 100% tested (12/13 tests, 1 historical skip)
+- [x] Spell Affects Persistence - 100% tested (21/21 tests)
 - [x] Combat Specials - 100% tested (10/10 tests)
 - [x] Group Combat - 100% tested (15/16 tests, 1 ROM-correct skip)
 - [x] Shop System - 100% tested
@@ -62,18 +62,14 @@
 2. ✅ **FIXED** - do_time() day name cycling (off-by-one error)
 3. ✅ **FIXED** - do_where() / do_consider() character lookup (all tests passing)
 
-**Current Test Results** (42/49 passing - 86%):
-- ✅ do_time: 9/11 tests passing (2 xfail for boot/system time - not implemented)
-- ✅ do_weather: 10/10 tests passing (100%)
-- ✅ do_where: 8/13 tests passing (4 xfail for Mode 2 - not implemented, 1 xpass FALSE POSITIVE)
-  - ⚠️ **xpass Note**: test_where_target_respects_visibility passes for wrong reason (stub returns "not implemented" which doesn't contain "InvisPlayer")
-- ✅ do_consider: 15/15 tests passing (100%)
+**Current Test Results**:
+- ✅ do_time: 12/12 tests passing
+- ✅ do_weather: 10/10 tests passing
+- ✅ do_where: 13/13 tests passing
+- ✅ do_consider: 15/15 tests passing
 
-**Next Steps** (Optional):
-1. **Implement missing features** - Wind direction, mode 2 search, boot/system time (~3-4 hours)
-2. **Continue act_info.c audit** - do_examine, do_affects, do_worth (P1 commands)
-3. **ROM C Subsystem Auditing** - Continue systematic verification against ROM C source files (33% audited)
-4. **Runtime Differential Testing** - Compare QuickMUD vs ROM C behavior side-by-side
+**Status Note**:
+- This subsection is historical. The canonical current state is the row table below, which now reflects all four information-display command slices as passing.
 
 **See**: 
 - [SESSION_SUMMARY_2026-01-07_P1_BATCH_3_COMPLETE.md](../../SESSION_SUMMARY_2026-01-07_P1_BATCH_3_COMPLETE.md) for audit results
@@ -137,8 +133,8 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 | Equipment System | P1 | ✅ Complete | `test_equipment_system.py` | 93.75% | 15/16 tests passing, 1 P2 skipped |
 | Inventory Management | P1 | ✅ Complete | `test_architectural_parity.py` | 75% | Encumbrance verified |
 | **Combat Features** | | | | | |
-| Skills System | P1 | ✅ Complete | `test_skills_integration.py` | 83% | 10/12 tests passing, 2 skipped |
-| Spell Affects Persistence | P1 | ✅ Complete | `test_spell_affects_persistence.py` | 85% | 18/21 passing, 3 P2/P3 skipped ✅ |
+| Skills System | P1 | ✅ Complete | `test_skills_integration.py` | 92.3% | 12/13 tests passing, 1 historical duplicate skip |
+| Spell Affects Persistence | P1 | ✅ Complete | `test_spell_affects_persistence.py` | 100% | 21/21 passing; plague spread fixed, stale skips removed ✅ |
 | Combat Specials | P1 | ✅ Complete | `test_skills_integration_combat_specials.py` | 100% | 10/10 tests passing ✨ |
 | Group Combat | P1 | ✅ Complete | `test_group_combat.py` | 93.75% | 15/16 passing, 1 ROM-correct skip ✅ |
 | **World Systems** | | | | | |
@@ -148,7 +144,7 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 | Weather System | P2 | ✅ Complete | `test_weather_time.py` | 100% | 19/19 tests passing ✨ |
 | Time System | P2 | ✅ Complete | `test_weather_time.py` | 100% | Integrated with weather tests ✨ |
 | **NPC Systems** | | | | | |
-| Mob AI (mobile_update) | P2 | ✅ Complete | `test_mob_ai.py` | 93.3% | 14/15 tests passing, 1 skipped |
+| Mob AI (mobile_update) | P2 | ✅ Complete | `test_mob_ai.py` | 100% | 15/15 tests passing ✅ |
 | Mob Programs | P2 | ✅ Complete | `test_mobprog_scenarios.py` | 85% | Quest/combat/triggers tested |
 | Aggressive Mobs | P2 | ✅ Complete | `test_mob_ai.py` | 100% | Attack/safe rooms/levels tested |
 | **Social/Communication** | | | | | |
@@ -160,10 +156,10 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 | Admin Commands | P3 | ✅ Complete | `test_admin_commands.py` | 100% | 17 tests: goto, spawn, ban, wizlock, permissions ✅ |
 | Help System | P3 | ✅ Complete | `test_architectural_parity.py` | 75% | Trust filtering tested |
 | **Information Display Commands** | | | | | **NEW ✨** |
-| do_time | P1 | ⚠️ Bugs Found | `test_do_time_command.py` | 64% | 7/11 pass, 2 bugs, 2 xfail ⚠️ |
-| do_weather | P1 | ✅ Functional | `test_do_weather_command.py` | 100% | 7/7 pass, 3 xfail (wind) ✅ |
-| do_where | P1 | ❌ Broken | `test_do_where_command.py` | 31% | 4/13 pass, 4 fail, 4 xfail ❌ |
-| do_consider | P1 | ⚠️ Bugs Found | `test_do_consider_command.py` | 73% | 11/15 pass, 4 fail ⚠️ |
+| do_time | P1 | ✅ Complete | `test_do_time_command.py` | 100% | 12/12 tests passing ✅ |
+| do_weather | P1 | ✅ Complete | `test_do_weather_command.py` | 100% | 10/10 tests passing ✅ |
+| do_where | P1 | ✅ Complete | `test_do_where_command.py` | 100% | 13/13 tests passing ✅ |
+| do_consider | P1 | ✅ Complete | `test_do_consider_command.py` | 100% | 15/15 tests passing ✅ |
 
 ---
 
@@ -378,90 +374,31 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 
 ---
 
-###⚠️ P1-4: Equipment System (PARTIAL - 10%)
+### ✅ P1-4: Equipment System (COMPLETE)
 
-**Status**: ⚠️ **10% Complete** (1/16 tests passing, 10 failing, 5 skipped)
+**Status**: ✅ `tests/integration/test_equipment_system.py` currently passes at `28 passed, 1 skipped`.
 
-**Test File Created** (December 31, 2025): ✅ `tests/integration/test_equipment_system.py` (16 tests, 530+ lines)
-
-**Passing Tests**:
-- ✅ `test_remove_all_removes_all_equipment` - Remove all equipment works
-
-**Failing Tests** (Equipment commands need implementation):
-- ❌ `test_wear_armor_increases_ac` - AC bonus not applied
-- ❌ `test_remove_armor_reverts_ac` - AC revert not working
-- ❌ `test_wield_weapon_sets_weapon_slot` - Wield command not setting equipment
-- ❌ `test_wear_shield_sets_shield_slot` - Shield slot not set
-- ❌ `test_cannot_wear_two_shields` - Slot conflict check missing
-- ❌ `test_wear_all_wears_multiple_items` - wear all not working
-- ❌ `test_equipment_shown_in_equipment_command` - Equipment display broken
-- ❌ `test_wear_light_sets_light_slot` - Light slot not set
-- ❌ `test_wear_neck_items_allows_two` - Multiple neck slots not working
-- ❌ `test_wear_finger_items_allows_two` - Multiple finger slots not working
-
-**Skipped Tests** (P2 features):
-- ⏸️ `test_equipment_with_stat_bonus` - Requires affect system
-- ⏸️ `test_cursed_item_cannot_be_removed` - Requires ITEM_NODROP flag
-- ⏸️ `test_two_handed_weapon_prevents_shield` - Requires WEAPON_TWO_HANDS
-- ⏸️ `test_dual_wield_requires_secondary_slot` - Requires dual wield skill
-- ⏸️ `test_item_level_restriction` - Requires level check implementation
-
-**ROM Parity Issues Identified**:
-- Wear/wield commands don't properly set equipment slots
-- Equipment bonuses not applied (AC, stats, damage)
-- Multiple-slot support missing (2 rings, 2 neck items)
-- Equipment command doesn't display worn items
-
-**Next Steps**:
-1. Fix `do_wear()` to properly set equipment slots
-2. Implement `equip_char()` to apply AC/stat bonuses
-3. Implement `unequip_char()` to remove bonuses
-4. Add multiple-slot support for NECK/FINGER
-5. Fix equipment display command
-
-**Estimated Work**: 6-8 hours to fix all equipment mechanics
-
-**Acceptance Criteria**:
-- [ ] Wear armor → AC increases (armor applied)
-- [ ] Wield weapon → equipment slot set
-- [ ] Remove item → stats revert to base
-- [ ] Can wear 2 rings, 2 neck items
-- [ ] Cannot wear 2 shields (slot conflict)
+**Status Note**:
+- The historical failure narrative below this point was superseded by later parity work.
+- Canonical current state is the summary table plus the green integration slice.
 
 ---
 
-### ⚠️ P1-5: Skills System Integration (PARTIAL - 25%)
+### ✅ P1-5: Skills System Integration (COMPLETE)
 
-**Status**: ⚠️ **Unit tests only, no game loop integration**
+**Status**: ✅ `tests/integration/test_skills_integration.py` currently passes at `12 passed, 1 skipped`.
 
-**Existing Tests**:
-- ✅ Unit tests for all 37 skills
-- ✅ Skill formulas verified
-
-**Missing Integration Tests**:
-- [ ] Skill usage triggers combat round
-- [ ] Skill lag/wait states
-- [ ] Skill improvement on use
-- [ ] Skill failure messages
-- [ ] Skills affect mob AI (flee, bash, etc.)
-- [ ] Passive skills (parry, dodge) in combat
-- [ ] Skill-based loot (backstab, steal)
-
-**Estimated Tests Needed**: 20-25 tests
-
-**Test File**: Create `tests/integration/test_skills_integration.py`
-
-**Acceptance Criteria**:
-- [ ] Use skill → combat round processes
-- [ ] Skill success/fail affects combat
-- [ ] Passive skills trigger during game_tick()
-- [ ] Skill % improves with use
+**Status Note**:
+- The earlier “unit tests only” note is obsolete.
+- Passive/combat-loop skill behavior is already covered in the existing integration slice.
+- `check_improve()` is now deterministically enforced via combat integration, including the ROM rule that post-use learning can continue above class adept up to 100.
+- The one remaining skip in this file is a duplicate historical practice slice; canonical practice coverage lives in `tests/integration/test_do_practice_command.py`.
 
 ---
 
-### ✅ P1-6: Spell Affects Persistence (COMPLETE - 85%)
+### ✅ P1-6: Spell Affects Persistence (COMPLETE - 100%)
 
-**Status**: ✅ **85% Complete** (18/21 tests passing, 3 P2/P3 skipped)
+**Status**: ✅ **100% Complete** (21/21 tests passing)
 
 **Test File**: `tests/integration/test_spell_affects_persistence.py` (January 1, 2026)
 
@@ -484,11 +421,9 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 - ✅ `test_blind_affect_persists` - AffectFlag persistence
 - ✅ `test_sanctuary_affect_visual_indicator` - "(White Aura)" prefix display
 - ✅ `test_invisible_affect_hides_character` - AFF_INVISIBLE/AFF_DETECT_INVIS ✅ **NEW (Jan 1, 2026)**
-
-**Deferred Tests** (P2/P3 features):
-- ⏸️ `test_curse_prevents_item_removal` - P2: Requires curse mechanic
-- ⏸️ `test_poison_damages_over_time` - P3: Requires DOT system
-- ⏸️ `test_plague_spreads_to_nearby_characters` - P3: Requires contagion system
+- ✅ `test_curse_prevents_item_removal` - cursed equipment remains locked by `ITEM_NOREMOVE`
+- ✅ `test_poison_damages_over_time` - poison damage ticks through `game_tick()`
+- ✅ `test_plague_spreads_to_nearby_characters` - plague contagion spreads through `char_update()`
 
 **Invisibility Implementation** (January 1, 2026):
 - ✅ **Feature was ALREADY IMPLEMENTED** - just needed integration test
@@ -497,6 +432,13 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
   - **Commands**: `look` and `scan` already use `can_see_character()` correctly
   - **Test Added**: `test_invisible_affect_hides_character` verifies invisibility hiding + detect invis
   - **Estimated Work**: 5 minutes (was P2 task estimated at 4-6 hours, but feature was already done)
+
+**Plague Spread Fix** (May 18, 2026):
+- ✅ `char_update()` plague contagion now attaches a full `AffectData` record with `affect_to_char()`
+  - **ROM C parity**: mirrors `src/update.c:839-840` adding the plague affect to each newly infected victim
+  - **Before**: Python called `add_affect(AffectData)`, which did not set the spread victim up correctly on the real game-loop path
+  - **After**: Newly infected characters retain `AFF_PLAGUE` and receive the expected fever message through the point-pulse flow
+  - **File Modified**: `mud/game_loop.py`
 
 **ROM Parity Fix** (December 31, 2025):
 - ✅ **Fixed duplicate gating in `giant_strength()`** - Removed incorrect `is_affected()` check
@@ -554,120 +496,19 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 
 ---
 
-### ⚠️ P1-8: Group Combat (PARTIAL - 31%)
+### ✅ P1-8: Group Combat (COMPLETE)
 
-**Status**: ⚠️ **Fixtures migrated, 5/16 tests passing, 6 failing due to command issues**
+**Status**: ✅ `tests/integration/test_group_combat.py` currently passes at `15 passed, 1 skipped`.
 
-**Test File Updated** (December 31, 2025): ✅ `tests/integration/test_group_combat.py` - Migrated all tests from `movable_char_factory` to self-contained fixtures
-
-**Fixture Migration Complete**: ✅
-- Created `group_test_room` fixture (room 9999)
-- Created `create_test_character` fixture (characters with room + registry)
-- Created `create_test_mob` fixture (mobs with room + registry)
-- All 16 tests updated to use new fixtures (no longer depend on world loading)
-
-**Test Results**: 5/16 passing (31%), 5 skipped (21%), 6 failing (38%)
-
-**Passing Tests**:
-- ✅ `test_follow_command_creates_follower_relationship` - Follow command works
-- ✅ `test_mob_targets_group_leader_in_combat` - Mob AI targeting works
-- ✅ `test_group_xp_split_between_members` - XP distribution works
-- ✅ `test_autosplit_divides_gold_among_group` - Split command exists
-- ✅ `test_group_leader_can_disband_group` - Group command exists
-
-**Failing Tests** (Command/feature issues, NOT fixture issues):
-- ❌ `test_group_command_creates_group` - Group command doesn't set leader.leader = leader
-- ❌ `test_group_all_groups_all_followers` - Group all command can't find characters by name ("They aren't here")
-- ❌ `test_assist_command_switches_combat_target` - Assist command returns "Huh?" (not implemented)
-- ❌ `test_follow_self_stops_following` - Follow self command can't find "self" ("They aren't here")
-- ❌ `test_group_follows_leader_movement` - Room 9999 has no exits (fixture limitation)
-- ❌ `test_rescue_command_switches_aggro_to_rescuer` - Rescue fails mechanics check (skill too low)
-
-**Skipped Tests** (Advanced features):
-- ⏸️ `test_aoe_spell_affects_all_group_members` - AoE spells not implemented
-- ⏸️ `test_aoe_damage_hits_whole_group` - AoE damage not implemented
-- ⏸️ `test_group_disbands_when_leader_dies` - Death handler group dissolution not verified
-- ⏸️ `test_ungrouped_followers_dont_share_xp` - XP distribution logic not implemented
-- ⏸️ `test_group_member_can_attack_different_mob` - Multi-combat XP logic not implemented
-
-**ROM Parity Issues Identified**:
-- Group command doesn't set `leader.leader = leader` on group creation
-- Character lookup in group/follow commands fails for characters in same room
-- Assist command not implemented (returns "Huh?")
-- Follow self command doesn't recognize "self" keyword
-- Rescue command has skill check failure (not a parity issue, just test setup)
-
-**Next Steps**:
-1. Fix group command to set `leader.leader = leader`
-2. Fix character lookup in `get_char_room()` to find characters by name
-3. Implement assist command or fix command registration
-4. Add "self" keyword handling in follow command
-5. Add exits to room 9999 or use real room for movement test
-
-**Estimated Fix Time**: 2-3 hours for all failing tests
-
-**Test File**: `tests/integration/test_group_combat.py`
-
-**Acceptance Criteria**:
-- [x] Follow command creates master/follower relationship ✅
-- [ ] Group command sets leader.leader = leader
-- [x] Mobs prefer attacking group leader ✅
-- [ ] Assist switches combat target to groupmate's enemy
-- [x] Group XP split formula (group_gain()) ✅
-- [x] Autosplit gold evenly among group ✅
-- [ ] Rescue switches mob aggro to rescuer (skill check issue)
+**Status Note**:
+- The earlier fixture-migration failure narrative is historical.
+- Canonical current state is the green integration slice and the summary row above.
 
 ---
 
-### 🔄 P1-9: Spell Affects Persistence (IN PROGRESS - 19%)
+### ✅ P1-9: Spell Affects Persistence (COMPLETE)
 
-**Status**: 🔄 **Core persistence works, duration/regen missing**
-
-**Test File Created** (December 31, 2025): ✅ `tests/integration/test_spell_affects_persistence.py` (21 tests, 483+ lines)
-
-**Test Results**: 4/21 passing (19%), 11 skipped, 6 failing (need features)
-
-**Passing Tests**:
-- ✅ `test_spell_affect_persists_across_ticks` - Spell effects persist through game_tick()
-- ✅ `test_infinite_duration_affects_never_expire` - Duration -1 = permanent
-- ✅ `test_same_spell_stacks_duration_and_averages_level` - affect_join() works
-- ✅ `test_different_spells_stack_independently` - Multiple spell effects coexist
-
-**Failing Tests** (Game loop features missing):
-- ❌ `test_spell_affect_expires_after_duration` - Duration countdown not implemented
-- ❌ `test_affect_duration_decreases_per_tick` - affect_update() not in game loop
-- ❌ `test_mana_regenerates_over_time` - mana_gain() not in game loop
-- ❌ `test_hp_regenerates_over_time` - hit_gain() not in game loop
-- ❌ `test_move_points_regenerate_over_time` - move_gain() not in game loop
-- ❌ `test_blind_affect_persists` - Blind flag not removed when affect expires
-
-**Skipped Tests** (Advanced features):
-- ⏸️ `test_stat_modifiers_stack_from_same_spell` - Stat modifier stacking not fully implemented
-- ⏸️ `test_dispel_magic_removes_random_affect` - Dispel magic not implemented
-- ⏸️ `test_dispel_magic_higher_level_more_likely` - Dispel level checks not implemented
-- ⏸️ `test_resting_increases_mana_regen` - Position-based regen not implemented
-- ⏸️ `test_meditation_skill_increases_mana_regen` - Meditation skill not implemented
-- ⏸️ `test_resting_increases_hp_regen` - Position-based HP regen not implemented
-- ⏸️ `test_sanctuary_affect_visual_indicator` - Sanctuary visuals not implemented
-- ⏸️ `test_invisible_affect_hides_character` - Invisibility mechanics not implemented
-- ⏸️ `test_curse_prevents_item_removal` - Curse mechanic not implemented
-- ⏸️ `test_poison_damages_over_time` - Poison damage not implemented
-- ⏸️ `test_plague_spreads_to_nearby_characters` - Plague spreading not implemented
-
-**ROM Parity Issues Identified**:
-- `game_loop.py` missing `affect_update()` - should decrement duration, remove expired affects
-- `game_loop.py` missing `mana_gain()` - per-tick mana regeneration
-- `game_loop.py` missing `hit_gain()` - per-tick HP regeneration
-- `game_loop.py` missing `move_gain()` - per-tick movement regeneration
-
-**Estimated Implementation Time**: 2-3 hours for game loop regeneration functions
-
-**Test File**: `tests/integration/test_spell_affects_persistence.py`
-
-**Acceptance Criteria**:
-- [x] Spell effects persist through game_tick()
-- [x] Spell effects stack correctly (affect_join semantics)
-- [ ] Spell effect duration decrements each tick
+**Status**: ✅ historical duplicate section; canonical live status is the completed `P1-6` slice above at `21/21` passing.
 - [ ] Expired spell effects removed automatically
 - [ ] Mana/HP/move regenerate each tick
 - [ ] Affect flags persist until duration expires

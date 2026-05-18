@@ -1,43 +1,39 @@
-# Session Status — 2026-05-17 — mobile_update wander-gate enforcement added
+# Session Status — 2026-05-18 — skill improvement parity and stale skip sweep recertified
 
 ## Current State
 
-- **`mobile_update()` wander-gate enforcement is now complete.**
-- ROM source verified:
-  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/src/update.c:495`
-- Python behavior was already correct:
-  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/ai/__init__.py`
-- Integration coverage is now deterministic instead of boot-world-dependent:
-  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/tests/integration/test_mob_ai.py`
+- **The `check_improve()` parity gap is closed.**
+- ROM combat learning above class adept is now enforced in `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/skills/registry.py`, with deterministic integration coverage in `tests/integration/test_skills_integration.py`.
+- The stale money/spell integration skips were converted to executable tests.
+- The plague-contagion path exposed a **real parity bug** in `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/game_loop.py`, now fixed by applying a full spread affect with `affect_to_char(new_af)` per ROM `src/update.c:839-840`.
+- The kick ROM parity test was tightened so it asserts the real damage-roll call without conflating follow-up `check_improve()` RNG.
 - **Pointer to latest summary**:
-  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-17_MOBILE_UPDATE_WANDER_GATES_ENFORCED.md`
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-18_SKILL_IMPROVEMENT_AND_STALE_SKIP_SWEEP_RECERTIFIED.md`
 
 ## Verification
 
-- Focused mob-AI gate slice:
-  - `./venv/bin/python -m pytest -q tests/integration/test_mob_ai.py -k 'stay_area or outdoors_mob_wont_enter_indoors or indoors_mob_wont_go_outdoors'`
-  - `3 passed, 12 deselected`
-- Full mob-AI integration slice:
-  - `./venv/bin/python -m pytest -q tests/integration/test_mob_ai.py`
-  - `15 passed`
-- Full suite recertification:
+- Focused parity slices:
+  - `./venv/bin/python -m pytest tests/integration/test_skills_integration.py tests/test_skills.py tests/integration/test_do_practice_command.py tests/integration/test_money_objects.py tests/integration/test_spell_affects_persistence.py tests/integration/test_update_c_parity.py` → `112 passed, 1 skipped`
+  - `./venv/bin/python -m pytest -q tests/test_skill_combat_rom_parity.py -k 'kick_success_damage_formula_and_type or kick_failure_does_zero_damage_and_skips_number_range or kick_success_probability_is_strictly_greater'` → `3 passed`
+  - `./venv/bin/ruff check mud/skills/registry.py mud/game_loop.py tests/integration/test_skills_integration.py tests/test_skills.py tests/integration/test_money_objects.py tests/integration/test_spell_affects_persistence.py tests/test_skill_combat_rom_parity.py` → clean
+- Full-suite recertification on record:
   - `./venv/bin/python -m pytest -q --maxfail=1`
-  - `4547 passed, 10 skipped`
+  - `4553 passed, 4 skipped`
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.13 |
+| Version | 2.8.14 |
 | Cross-file invariants enforced | **8/8 ✅ ENFORCED** |
 | Audit-bound ROM C files | 40/40 audited (100%) |
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
-| Full suite | ✅ green |
+| Full suite | ✅ green (`4553 passed, 4 skipped`) |
 | Warnings | ✅ zero |
-| Current focus | `do_time` command parity/coverage slice |
+| Current focus | current parity stack committed; choose the next ROM-source-first target |
 
 ## Next Intended Task
 
-1. Take `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md` `do_time` as the next bounded partial item.
-2. Trace `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/src/act_info.c` / `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/src/weather.c` equivalents before changing Python behavior.
-3. Re-run the focused `do_time` slice first, then recertify the full suite before the next shared push.
+1. Treat the current integration-skip sweep as closed unless a newly added skip starts firing in CI.
+2. Return to the next ROM-source-first parity target or tracker row outside the integration coverage cleanup work.
+3. If a new failing/skip-only slice appears, confirm it reproduces under normal world boot before changing test expectations.

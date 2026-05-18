@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.14]
+
+### Added
+- **Deterministic ROM skill-improvement coverage**: `tests/integration/test_skills_integration.py` now enforces `check_improve()` on the live combat path, including the ROM rule that combat learning can continue above class adept up to 100.
+- **Executable money and spell-affect integration coverage**: replaced stale skipped placeholders with live tests for drop-money consolidation, cursed no-remove equipment, poison damage-over-time, and plague contagion spread.
+
+### Fixed
+- **`check_improve()` adept-cap parity**: `mud/skills/registry.py` now mirrors ROM `src/skills.c` by allowing post-use learning through 100 instead of stopping at the class adept cap.
+- **Plague contagion parity**: `mud/game_loop.py` now applies a full `AffectData` record to newly infected victims during `char_update()`, matching ROM `src/update.c:839-840`.
+- **Kick ROM parity test stability**: `tests/test_skill_combat_rom_parity.py` now isolates `check_improve()` from the kick damage-roll assertions so the test verifies the ROM damage call instead of incidental follow-up RNG.
+
+### Changed
+- **Integration coverage tracker reconciliation**: the skills and spell-affects slices now record their real enforced status, and the stale info-command / equipment / group-combat historical narratives were collapsed to canonical current-state notes.
+- **Full-suite recertification**: the suite now reruns clean at `4553 passed, 4 skipped`.
+
 ## [2.8.13]
 
 ### Added

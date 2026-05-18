@@ -320,8 +320,7 @@ class SkillRegistry:
         learned = caster.skills.get(name)
         if learned is None or learned <= 0:
             return
-        adept = caster.skill_adept_cap()
-        if learned >= adept:
+        if learned >= 100:
             return
         rating = skill.rating.get(caster.ch_class, 1)
         if rating <= 0:
@@ -336,7 +335,7 @@ class SkillRegistry:
         if success:
             improve_chance = max(5, min(95, 100 - learned))
             if rng_mm.number_percent() < improve_chance:
-                caster.skills[name] = min(adept, learned + 1)
+                caster.skills[name] = min(100, learned + 1)
                 _deliver_message(caster, f"You have become better at {skill.name}!")
                 caster.messages.append(f"You have become better at {skill.name}!")
                 gain_exp(caster, 2 * rating)
@@ -344,7 +343,7 @@ class SkillRegistry:
             improve_chance = max(5, min(30, learned // 2))
             if rng_mm.number_percent() < improve_chance:
                 increment = rng_mm.number_range(1, 3)
-                caster.skills[name] = min(adept, learned + increment)
+                caster.skills[name] = min(100, learned + increment)
                 _deliver_message(caster, f"You learn from your mistakes, and your {skill.name} skill improves.")
                 caster.messages.append(f"You learn from your mistakes, and your {skill.name} skill improves.")
                 gain_exp(caster, 2 * rating)

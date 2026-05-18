@@ -18,8 +18,8 @@ from mud.models.constants import (
     Stat,
     WeaponType,
 )
-from mud.models.room import Room
 from mud.models.object import Object, ObjIndex
+from mud.models.room import Room
 from mud.skills import SkillRegistry, SkillUseResult, load_skills, skill_registry
 from mud.utils import rng_mm
 
@@ -103,9 +103,10 @@ def test_skill_use_reports_result(monkeypatch: pytest.MonkeyPatch) -> None:
     )
     target = Character()
 
-    # Provide enough rolls for: skill check + check_improve (range + percent) per use
-    percent_rolls = iter([50, 1000, 1000, 999, 999, 999])
-    range_rolls = iter([1, 1, 1, 1])
+    # Provide enough rolls for: skill check + check_improve (range + percent) per use.
+    # ROM check_improve continues to run above class adept up to 100 learned.
+    percent_rolls = iter([50, 1000, 1000, 999, 999, 999, 999, 999])
+    range_rolls = iter([1, 1, 1, 1, 1, 1])
 
     monkeypatch.setattr(rng_mm, "number_percent", lambda: next(percent_rolls))
     monkeypatch.setattr(rng_mm, "number_range", lambda a, b: next(range_rolls))

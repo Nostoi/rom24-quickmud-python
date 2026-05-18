@@ -617,7 +617,12 @@ def _char_update_tick_effects(character: Character) -> bool:
                             modifier=-5,
                             bitvector=int(AffectFlag.PLAGUE),
                         )
-                        vch.add_affect(new_af)
+                        # mirroring ROM src/update.c:839-840 — plague spread adds a full
+                        # AFFECT_DATA record to the victim, not just the AFF_PLAGUE bit.
+                        if hasattr(vch, "affect_to_char"):
+                            vch.affect_to_char(new_af)
+                        else:  # pragma: no cover - defensive fallback for test doubles
+                            vch.add_affect(AffectFlag.PLAGUE)
 
             # Drain mana and move — ROM src/update.c:843-845
             dam = min(int(getattr(character, "level", 1) or 1), af_level // 5 + 1)
