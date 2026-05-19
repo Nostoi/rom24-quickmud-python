@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.17]
+
+### Added
+- **`BOARD-014` AFK parity coverage**: added ROM-backed integration tests for note-editor AFK ownership, including `note write`, `note send`, and the new `note forget` cancel path.
+
+### Fixed
+- **`BOARD-014` note-editor AFK parity**: `mud/commands/notes.py` and `mud/models/board.py` now mirror ROM `src/board.c` by setting AFK when note composition begins, clearing only note-owned AFK when posting or forgetting a note, and preserving manually enabled AFK.
+
+### Changed
+- **`board.c` audit closure**: `docs/parity/BOARD_C_AUDIT.md` and `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` now record `board.c` as fully closed with `BOARD-014` no longer deferred.
+- **Full-suite recertification**: the suite now reruns clean at `4559 passed, 4 skipped`.
+
 ## [2.8.16]
 
 ### Fixed

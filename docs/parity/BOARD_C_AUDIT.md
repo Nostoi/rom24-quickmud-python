@@ -8,7 +8,7 @@
   - `mud/models/note.py` (`Note` dataclass)
   - `mud/commands/notes.py` (`do_board`, `do_note` and helpers)
   - `mud/models/character.py` `PCData.board_name` / `last_notes` / `in_progress`
-- **Status:** ✅ AUDITED — Phases 1–5 complete. All concrete parity gaps are closed; `BOARD-014` remains deferred-by-design because QuickMUD has no ROM-style AFK note-writing plumbing.
+- **Status:** ✅ AUDITED — Phases 1–5 complete. All concrete parity gaps are closed, including `BOARD-014` note-editor AFK parity.
 
 The Python implementation is structurally a port of the ROM/Erwin board system
 but executes against a JSON registry instead of ROM's per-board flat files,
@@ -157,7 +157,7 @@ mechanism (in-memory tells) that does not interact with the boards subsystem.
 | BOARD-011 | IMPORTANT | `src/board.c:482-488` | `mud/commands/notes.py:327-357` | ROM `do_nwrite` discards an `in_progress` draft whose `text` is NULL ("cancelled because you did not manage to write any text before losing link"); Python silently reuses any draft. | ✅ FIXED |
 | BOARD-012 | IMPORTANT | `src/board.c:707-737` | `mud/commands/notes.py:240-479` | `do_note` did not call `do_help "note"` for unknown subcommands; Python's fallthrough returned `"Huh?"`. Now mirrors ROM by dispatching to `do_help(ch, "note")`. (Vocabulary divergence on accepted verbs — `post`/`to`/`subject`/`text`/`send`/`expire` — remains intentional given no telnet state machine.) | ✅ FIXED |
 | BOARD-013 | CRITICAL | `src/board.c:843-886` | `mud/notes.py:make_note` / `personal_message` | `personal_message` / `make_note` programmatic posting API not exposed; subsystems cannot inject Personal-board notes. | ✅ FIXED |
-| BOARD-014 | MINOR | `src/board.c:49,1175-1182` | none | ROM AFK-flags the player while writing a note; no Python AFK plumbing in place. Architectural — deferred-by-design. | ✅ DEFERRED |
+| BOARD-014 | MINOR | `src/board.c:49,1175-1190` | `mud/models/board.py:NoteDraft`, `mud/commands/notes.py` | ROM AFK-flags the player while writing a note and clears that editor-owned AFK on post/forget. QuickMUD now mirrors that visible contract via draft-owned AFK tracking and a `note forget` cancel path. | ✅ FIXED |
 
 ---
 
@@ -175,6 +175,7 @@ mechanism (in-memory tells) that does not interact with the boards subsystem.
 | BOARD-008 | `tests/integration/test_boards_rom_parity.py::test_load_boards_archives_expired_notes` | (this commit) | ✅ |
 | BOARD-013 | `tests/integration/test_boards_rom_parity.py::test_personal_message_posts_to_personal_board` (+ unknown-board / oversized-text) | (pending commit) | ✅ |
 | BOARD-011 | `tests/integration/test_boards_rom_parity.py::test_note_write_discards_textless_in_progress_draft` | (this commit) | ✅ |
+| BOARD-014 | `tests/integration/test_boards_rom_parity.py::test_note_write_sets_afk_and_note_send_clears_note_owned_afk` + `::test_note_send_preserves_manual_afk` + `::test_note_forget_clears_note_owned_afk` + `::test_note_forget_preserves_manual_afk` | (pending commit) | ✅ |
 
 ---
 
@@ -182,16 +183,17 @@ mechanism (in-memory tells) that does not interact with the boards subsystem.
 
 `board.c` is now audit-complete for QuickMUD's supported architecture.
 
-- **Closed gaps**: `BOARD-001..005`, `BOARD-008`, `BOARD-010..013`
+- **Closed gaps**: `BOARD-001..005`, `BOARD-008`, `BOARD-010..014`
 - **Subsumed / no-gap**: `BOARD-006`, `BOARD-007`, `BOARD-009`
-- **Deferred-by-design**: `BOARD-014` only
+- **Deferred-by-design**: none
 
 Focused verification is green:
 
-- `pytest tests/test_boards.py tests/integration/test_boards_rom_parity.py -q` — `32 passed`
+- `./venv/bin/python -m pytest -q tests/integration/test_boards_rom_parity.py -k 'afk or forget'` — `4 passed`
+- `./venv/bin/python -m pytest -q tests/integration/test_boards_rom_parity.py tests/test_boards.py tests/test_act_comm_rom_parity.py tests/integration/test_do_who_command.py tests/integration/test_prompt_rom_parity.py` — `89 passed`
+- `./venv/bin/python -m pytest -q --maxfail=1` — `4559 passed, 4 skipped`
 
-The remaining deferred item is architectural rather than behavioral: ROM toggles
-AFK state while a player sits inside the interactive note editor, but QuickMUD
-uses request/response note subcommands instead of the telnet-state machine from
-`src/board.c`. That does not block parity for visible board behavior, unread
-counts, posting, archiving, default boards, or programmatic note injection.
+QuickMUD still does not implement ROM's modal `CON_NOTE_*` telnet editor, but
+the visible AFK contract now matches ROM as closely as the request/response
+architecture allows: entering note-writing sets AFK, posting/forgetting clears
+only note-owned AFK, and pre-existing manual AFK is preserved.

@@ -26,6 +26,7 @@ class NoteDraft:
     subject: str = ""
     text: str = ""
     expire: float | None = None
+    set_afk: bool = False
 
 
 @dataclass

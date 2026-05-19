@@ -9,13 +9,11 @@ from __future__ import annotations
 
 import time
 
-import pytest
-
 import mud.notes as notes
 from mud.commands.dispatcher import process_command
 from mud.models.board import BoardForceType
 from mud.models.character import character_registry
-from mud.models.constants import LEVEL_IMMORTAL, MAX_LEVEL
+from mud.models.constants import LEVEL_IMMORTAL, CommFlag
 from mud.world import create_test_character, initialize_world
 
 
@@ -343,6 +341,131 @@ def test_note_send_broadcasts_to_room(tmp_path):
         _teardown_boards(orig_dir)
 
 
+def test_note_write_sets_afk_and_note_send_clears_note_owned_afk(tmp_path):
+    """Mirror ROM note-editor AFK ownership in ``src/board.c:49,1175-1182``.
+
+    BOARD-014: entering note-writing sets AFK; posting exits the note editor
+    and clears only the note-owned AFK state.
+    """
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        notes.load_boards()
+
+        author = create_test_character("Author", 3001)
+        author.level = 5
+        process_command(author, "board General")
+
+        assert not (author.comm & CommFlag.AFK)
+
+        process_command(author, "note write")
+        assert author.comm & CommFlag.AFK
+        assert author.pcdata is not None
+        assert author.pcdata.in_progress is not None
+
+        process_command(author, "note subject Hello")
+        process_command(author, "note text Greetings, friends.")
+        process_command(author, "note send")
+
+        assert not (author.comm & CommFlag.AFK)
+        assert author.pcdata.in_progress is None
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_send_preserves_manual_afk(tmp_path):
+    """Mirror ROM editor-owned AFK semantics without clobbering manual AFK.
+
+    QuickMUD's request/response note flow must preserve pre-existing AFK when
+    the note editor did not set it.
+    """
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        notes.load_boards()
+
+        author = create_test_character("Author", 3001)
+        author.level = 5
+        author.comm |= CommFlag.AFK
+        process_command(author, "board General")
+
+        process_command(author, "note write")
+        process_command(author, "note subject Hello")
+        process_command(author, "note text Greetings, friends.")
+        process_command(author, "note send")
+
+        assert author.comm & CommFlag.AFK
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_forget_clears_note_owned_afk(tmp_path):
+    """Mirror ROM note-finish forget path at ``src/board.c:1184-1190``.
+
+    BOARD-014: forgetting the in-progress note exits note-writing and clears
+    the note-owned AFK state.
+    """
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        notes.load_boards()
+
+        author = create_test_character("Author", 3001)
+        author.level = 5
+        process_command(author, "board General")
+
+        process_command(author, "note write")
+        process_command(author, "note subject Hello")
+
+        assert author.comm & CommFlag.AFK
+        assert author.pcdata is not None
+        assert author.pcdata.in_progress is not None
+
+        result = process_command(author, "note forget")
+
+        assert "cancel" in result.lower()
+        assert not (author.comm & CommFlag.AFK)
+        assert author.pcdata.in_progress is None
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
+def test_note_forget_preserves_manual_afk(tmp_path):
+    """Manual AFK must survive note cancellation when the draft did not set it."""
+
+    orig_dir = _setup_boards(tmp_path)
+    try:
+        initialize_world("area/area.lst")
+        character_registry.clear()
+        notes.load_boards()
+
+        author = create_test_character("Author", 3001)
+        author.level = 5
+        author.comm |= CommFlag.AFK
+        process_command(author, "board General")
+
+        process_command(author, "note write")
+        process_command(author, "note subject Hello")
+        result = process_command(author, "note forget")
+
+        assert "cancel" in result.lower()
+        assert author.comm & CommFlag.AFK
+        assert author.pcdata is not None
+        assert author.pcdata.in_progress is None
+    finally:
+        character_registry.clear()
+        _teardown_boards(orig_dir)
+
+
 def test_note_unknown_subcommand_shows_help(tmp_path):
     """Mirror ROM ``do_note`` fallthrough at ``src/board.c:736-737``.
 
@@ -447,5 +570,3 @@ def test_board_010_note_read_again_is_noop(movable_char_factory, tmp_path):
     finally:
         character_registry.clear()
         _teardown_boards(orig_dir)
-
-

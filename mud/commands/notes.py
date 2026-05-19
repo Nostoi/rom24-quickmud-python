@@ -4,7 +4,7 @@ import time
 
 from mud.models.board import BoardForceType, NoteDraft
 from mud.models.character import Character, PCData
-from mud.models.constants import MAX_LEVEL
+from mud.models.constants import MAX_LEVEL, CommFlag
 from mud.notes import (
     DEFAULT_BOARD_NAME,
     find_board,
@@ -160,6 +160,33 @@ def _ensure_draft(char: Character, board) -> NoteDraft:
         if draft.expire is None:
             draft.expire = board.default_expire()
     return draft
+
+
+def _set_note_afk(char: Character, draft: NoteDraft) -> None:
+    """Mirror ROM note-editor AFK entry at ``src/board.c:49``.
+
+    QuickMUD has no modal ``CON_NOTE_*`` state machine, so the AFK ownership
+    is tracked on the in-progress draft instead.
+    """
+
+    comm_flags = getattr(char, "comm", 0)
+    if comm_flags & int(CommFlag.AFK):
+        draft.set_afk = False
+        return
+
+    char.comm = comm_flags | int(CommFlag.AFK)
+    draft.set_afk = True
+
+
+def _clear_note_afk(char: Character, draft: NoteDraft | None) -> None:
+    """Clear editor-owned AFK on note exit, preserving manual AFK."""
+
+    if draft is None or not draft.set_afk:
+        return
+
+    comm_flags = getattr(char, "comm", 0)
+    char.comm = comm_flags & ~int(CommFlag.AFK)
+    draft.set_afk = False
 
 
 def _recipient_message(board, final: str, added: bool, used_default: bool) -> str:
@@ -335,12 +362,14 @@ def do_note(char: Character, args: str) -> str:
         cancellation = ""
         existing = pcdata.in_progress
         if existing is not None and not existing.text:
+            _clear_note_afk(char, existing)
             pcdata.in_progress = None
             cancellation = (
                 "Note in progress cancelled because you did not manage to write any text\n"
                 "before losing link.\n\n"
             )
         draft = _ensure_draft(char, board)
+        _set_note_afk(char, draft)
         # Mirror ROM do_nwrite act() at src/board.c:503 — broadcast to the
         # actor's room (excluding the actor) so bystanders see the action.
         room = getattr(char, "room", None)
@@ -419,6 +448,7 @@ def do_note(char: Character, args: str) -> str:
         )
         save_board(board)
         _set_last_read(pcdata, board, note.timestamp)
+        _clear_note_afk(char, draft)
         pcdata.in_progress = None
         # Mirror ROM finish-note act() at src/board.c:1181 — TO_ROOM
         # broadcast announcing the post to bystanders.
@@ -426,6 +456,14 @@ def do_note(char: Character, args: str) -> str:
         if room is not None and hasattr(room, "broadcast"):
             room.broadcast(f"{char.name} finishes {_possessive(char)} note.", exclude=char)
         return "Note posted."
+
+    if subcmd == "forget":
+        draft = pcdata.in_progress
+        if draft is None or draft.board_key != board.storage_key():
+            return "You have no note in progress."
+        _clear_note_afk(char, draft)
+        pcdata.in_progress = None
+        return "Note cancelled!"
 
     if subcmd == "expire":
         if not board.can_write(trust):
