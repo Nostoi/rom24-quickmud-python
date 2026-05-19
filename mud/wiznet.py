@@ -201,6 +201,23 @@ def _wiznet_check(
     min_level: int,
 ) -> bool:
     """Check whether *ch* should receive a wiznet message."""
+    if getattr(ch, "is_npc", True):
+        return False
+
+    is_admin = bool(getattr(ch, "is_admin", False))
+    is_immortal = False
+    try:
+        is_immortal = (
+            bool(ch.is_immortal())
+            if hasattr(ch, "is_immortal") and callable(ch.is_immortal)
+            else _get_trust(ch) >= LEVEL_IMMORTAL
+        )
+    except Exception:
+        is_immortal = _get_trust(ch) >= LEVEL_IMMORTAL
+
+    if not (is_admin or is_immortal):
+        return False
+
     wiz = getattr(ch, "wiznet", 0)
     if not wiz & WiznetFlag.WIZ_ON:
         return False

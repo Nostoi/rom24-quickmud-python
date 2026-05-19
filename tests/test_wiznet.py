@@ -1,23 +1,26 @@
 from types import SimpleNamespace
 
+import mud.net.connection as net_connection
+from mud import registry as global_registry
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character, character_registry
-from mud.models.constants import Sex, LEVEL_IMMORTAL
-import mud.net.connection as net_connection
+from mud.models.constants import LEVEL_IMMORTAL, Sex
 from mud.net.connection import announce_wiznet_login, announce_wiznet_logout
 from mud.wiznet import WiznetFlag, wiznet
-
 
 ROM_NEWLINE = "\n\r"
 
 
 def setup_function(_):
     character_registry.clear()
+    global_registry.descriptor_list = []
 
 
 def _connected_character(**kwargs) -> Character:
     character = Character(**kwargs)
-    character.desc = SimpleNamespace()
+    descriptor = SimpleNamespace(character=character, connected=1, original=None, host=None)
+    character.desc = descriptor
+    global_registry.descriptor_list.append(descriptor)
     return character
 
 
@@ -172,9 +175,9 @@ def test_wiznet_persistence():
     from mud.account.account_manager import load_character, save_character
     from mud.account.account_service import clear_active_accounts, create_character
     from mud.db.models import Base
+    from mud.db.models import Character as DBCharacter
     from mud.db.session import SessionLocal, engine
     from mud.models.character import from_orm
-    from mud.db.models import Character as DBCharacter
     from mud.models.constants import ROOM_VNUM_SCHOOL
     from mud.security import bans
     from mud.world import initialize_world
@@ -610,6 +613,34 @@ def test_wiznet_logins_channel_broadcasts():
         "Artemis rejoins the real world.", prefix=True
     ) in skip_sites.messages
     assert low_trust.messages == []
+
+
+def test_wiznet_login_broadcasts_survive_preseeded_descriptor_list():
+    global_registry.descriptor_list.append(
+        SimpleNamespace(character=None, connected=1, original=None, host=None)
+    )
+
+    watcher = _connected_character(
+        name="Watcher",
+        is_admin=True,
+        is_npc=False,
+        level=60,
+        trust=60,
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS),
+    )
+    logging_char = _connected_character(
+        name="Artemis",
+        level=60,
+        trust=60,
+        is_admin=True,
+        is_npc=False,
+    )
+
+    character_registry.extend([watcher, logging_char])
+
+    announce_wiznet_login(logging_char, host="aurora.example")
+
+    assert _wiznet_payload("Artemis has left real life behind.") in watcher.messages
 
 
 def test_reconnect_wiz_links_ignores_reconnect_trust_gate(monkeypatch):

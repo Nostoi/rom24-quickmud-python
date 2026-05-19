@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.18]
+
+### Added
+- **Descriptor-backed `wiznet` regression coverage**: `tests/test_wiznet.py` now registers ROM-style playing descriptors for listeners and includes a stale-descriptor regression, so the suite exercises the production descriptor path instead of relying on the character-registry fallback.
+
+### Fixed
+- **`wiznet` descriptor-path immortal gate parity**: `mud/wiznet.py` now mirrors ROM `src/act_wiz.c:171-194` on the real descriptor path by rejecting NPC and non-immortal recipients before checking wiznet flags.
+
+### Changed
+- **Full-suite recertification**: the suite now reruns clean at `4560 passed, 4 skipped`.
+
 ## [2.8.17]
 
 ### Added

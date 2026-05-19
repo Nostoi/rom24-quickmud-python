@@ -1,6 +1,6 @@
 # `act_wiz.c` Audit — ROM 2.4b6 → QuickMUD-Python Parity
 
-**Status:** ✅ AUDITED — all verified `act_wiz.c` gaps are closed; 2026-05-14 reconciled the stale tracker row to the completed audit  
+**Status:** ✅ AUDITED — all verified `act_wiz.c` gaps are closed; 2026-05-19 hardened `wiznet` to enforce ROM's immortal gate on the descriptor path too  
 **Date:** 2026-05-14  
 **ROM C:** `src/act_wiz.c` (4685 lines, immortal/admin command family)  
 **Python:** `mud/wiznet.py`, `mud/commands/imm_commands.py`, `mud/commands/imm_admin.py`, `mud/commands/imm_server.py`, `mud/commands/imm_display.py`, `mud/commands/imm_punish.py`, `mud/commands/imm_load.py`, `mud/commands/imm_search.py`, `mud/commands/imm_set.py`, `mud/commands/imm_emote.py`, `mud/commands/admin_commands.py`, `mud/commands/inventory.py`, `mud/commands/remaining_rom.py`, `mud/commands/alias_cmds.py`, `mud/commands/typo_guards.py`  
@@ -300,5 +300,6 @@ Still outstanding: (none — act_wiz.c fully audited)
 Validation:
 - `pytest tests/integration/test_act_wiz_command_parity.py -q` — `108 passed` (+6 new tests)
 - `pytest tests/integration/test_act_comm_gaps.py::TestPmoteGaps -q` — `5 passed`
-- `pytest tests/test_wiznet.py -q` — `32 passed`
+- `pytest tests/test_wiznet.py -q` — `33 passed`
+- `pytest tests/test_networking_telnet.py tests/test_telnet_server.py tests/integration/test_nanny_login_parity.py tests/test_wiznet.py -k 'network or telnet or paging or reconnect or ansi or prompt or idle or break_connect or show_string or newbie or login' -q` — `46 passed, 1 skipped`
 - `ruff check` — clean (no F/E9 errors)
