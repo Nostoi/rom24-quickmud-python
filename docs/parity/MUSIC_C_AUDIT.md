@@ -1,6 +1,6 @@
 # `music.c` Audit — ROM 2.4b6 → QuickMUD-Python Parity
 
-**Status:** ✅ AUDITED — all CRITICAL + IMPORTANT gaps closed (`MUSIC-001..MUSIC-004`); `MUSIC-005`/`MUSIC-006` deferred MINOR (cosmetic, no gameplay impact)
+**Status:** ✅ AUDITED — all gaps closed (`MUSIC-001..MUSIC-006`)
 **Date:** 2026-04-29
 **ROM C:** `src/music.c` (355 lines, 3 public functions)
 **Python:** `mud/music/__init__.py`, `mud/commands/player_info.py:67-144`
@@ -10,9 +10,9 @@
 
 | ROM C function | ROM lines | Python equivalent | Status |
 |----------------|-----------|-------------------|--------|
-| `song_update` | `src/music.c:45-156` | `mud/music/__init__.py:43-126` (`song_update` + helpers) | ✅ AUDITED (minor pending: MUSIC-005, MUSIC-006) |
-| `load_songs` | `src/music.c:160-218` | _none_ | ❌ MISSING (MUSIC-002) |
-| `do_play` | `src/music.c:220-354` | `mud/commands/player_info.py:67-144` | ⚠️ PARTIAL — stub (MUSIC-001, MUSIC-003, MUSIC-004) |
+| `song_update` | `src/music.c:45-156` | `mud/music/__init__.py` (`song_update` + helpers) | ✅ AUDITED |
+| `load_songs` | `src/music.c:160-218` | `mud/music/__init__.py:load_songs` | ✅ AUDITED |
+| `do_play` | `src/music.c:220-354` | `mud/commands/player_info.py:do_play` | ✅ AUDITED |
 
 ## Phase 2 — Line-by-line Verification
 
@@ -24,16 +24,16 @@ ROM `src/music.c:55-99` (global channel):
 - Lines 59-99: gate on `channel_songs[1] > -1`; otherwise no global broadcast. ✅ Python `:54-56`.
 - Lines 61-69: when `channel_songs[0] >= MAX_LINES` or past `song.lines`, mark `[0]=-1` and shift the queue forward (`channel_songs[i] = channel_songs[i+1]`) with the tail slot cleared. ✅ Python `_advance_channel_queue` `:78-82`.
 - Lines 73-86: first tick of a song prints `"Music: <group>, <name>"` and sets `channel_songs[0] = 0`; later ticks print `"Music: '<lyric>'"` and increment the line counter. ✅ Python `:68-73`.
-- Lines 88-97: broadcast filter — `d->connected == CON_PLAYING && !COMM_NOMUSIC && !COMM_QUIET`, using `act_new(... POS_SLEEPING)` so even sleeping players hear the global channel. Python uses `broadcast_global(should_send=_can_hear_music)` which iterates `character_registry` and filters NOMUSIC + QUIET. **Diverges (MINOR, MUSIC-005):** Python doesn't gate on `connected == CON_PLAYING` (linkdead/menu players are counted as long as `is_npc=False`), and doesn't honor switched players (`d->original ? d->original : d->character`).
+- Lines 88-97: broadcast filter — `d->connected == CON_PLAYING && !COMM_NOMUSIC && !COMM_QUIET`, using `act_new(... POS_SLEEPING)` so even sleeping players hear the global channel. ✅ Python now mirrors this by iterating the lightweight ROM-style `descriptor_list`, filtering on `connected == CON_PLAYING`, checking music flags against `descriptor.original or descriptor.character`, and delivering through the active descriptor character.
 
 ROM `src/music.c:101-155` (jukebox tick):
 
 - Lines 101-104: iterate `object_list`, skip non-jukeboxes or `value[1] < 0`. ✅ Python `_update_jukeboxes` `:85-95`.
 - Lines 106-110: `value[1] >= MAX_SONGS` → reset to `-1`, continue. ✅ Python `:97-99`.
 - Lines 114-120: room resolution — `obj->in_room` else `obj->carried_by->in_room`. ✅ Python `_resolve_room` `:136-143`.
-- Lines 122-131: first tick of a song calls `act("$p starts playing %s, %s.", room->people, obj, NULL, TO_ALL)` and sets `value[0] = 0`. Python emits `"<short_descr> starts playing <group>, <name>."` via `broadcast_room`. **Diverges (MINOR, MUSIC-006):** ROM's `act()` runs `$p` substitution per-viewer and respects `can_see_obj`/short-vs-name. Python passes a single string for everyone.
+- Lines 122-131: first tick of a song calls `act("$p starts playing %s, %s.", room->people, obj, NULL, TO_ALL)` and sets `value[0] = 0`. ✅ Python now formats the jukebox prefix per viewer using `act_format("$p", recipient=occupant, arg1=obj)`, so object visibility falls back to `"something"` when the recipient cannot see the jukebox.
 - Lines 134-146: line index past end → `value[0]=-1`, scroll queue (`value[1..4]` ← `value[2..4], -1`), continue. ✅ Python `_scroll_jukebox_queue` `:129-133` (note: this leaves `value[0]=-1` so the next tick runs the "starts playing" branch for the new song, matching ROM).
-- Lines 148-154: print `"$p bops: '<line>'"` via `act(... TO_ALL)` and increment. ✅ Python `:122-126` (with the same MUSIC-006 caveat re: `$p`).
+- Lines 148-154: print `"$p bops: '<line>'"` via `act(... TO_ALL)` and increment. ✅ Python mirrors the same per-viewer `$p` behavior on lyric lines.
 
 ### `load_songs` — `area/music.txt` ingestion
 
@@ -78,8 +78,8 @@ Python `mud/commands/player_info.py:67-144`:
 | MUSIC-002 | CRITICAL | `src/music.c:160-218` | `mud/music/__init__.py:load_songs` | No `load_songs` equivalent — `mud/music/song_table` is never populated from `area/music.txt`. The global "MUSIC:" channel and `play list` have nothing to play. | ✅ FIXED — `mud/music/__init__.py:load_songs(path)` ports the ROM parser (group~ / name~ / lyrics / `~` / `#`), resets `channel_songs[0..MAX_GLOBAL]` to `-1`, drops lyrics past `MAX_LINES` with a warning, and is invoked from `mud/world/world_state.py:initialize_world` so `area/music.txt` is loaded at boot. Tested by `tests/integration/test_music_load_songs.py`. |
 | MUSIC-003 | IMPORTANT | `src/music.c:246-292` | `mud/commands/player_info.py:108-137` | `play list` pulls from a non-existent `mud.registry.song_table`, falls back to a 3-song hardcoded stub, and is missing the `list artist` mode, `str_prefix` filter, and ROM column/header formatting (`capitalize`, two-column `%-35s`, single-column `%-39s %-39s` for artist mode). | ✅ FIXED — `play list` now reads `mud.music.song_table`, capitalizes the header, supports `list artist [<prefix>]` with `%-39s %-39s` formatting, and falls back to the two-column `%-35s` name listing with prefix filtering for non-artist mode. Tested by `tests/integration/test_music_play.py` (4 new cases). |
 | MUSIC-004 | MINOR | `src/music.c:229-232` | `mud/commands/player_info.py:91-100` | Jukebox lookup doesn't filter by `can_see_obj(ch, juke)`; invisible/dark jukeboxes are still pickable. | ✅ FIXED — jukebox lookup now applies `mud.world.vision.can_see_object(ch, obj)` so INVIS / VIS_DEATH / dark-room hits drop out, mirroring ROM. Tested by `tests/integration/test_music_play.py::test_do_play_skips_invisible_jukebox`. |
-| MUSIC-005 | MINOR | `src/music.c:88-97` | `mud/music/__init__.py:75, 146-151` | Global broadcast doesn't gate on `connected == CON_PLAYING` and doesn't honor switched-puppet `d->original`. Linkdead/menu PCs receive music; switched immortals would receive on the puppet body, not their original. | ⚠️ DEFERRED (MINOR) — needs descriptor-state plumbing through `mud.net.protocol.broadcast_global` (current `should_send` callback only sees the `Character`, not its `Connection`/state). No gameplay impact: linkdead PCs are not actively playing, and the project does not implement the ROM `switch` immortal command. Revisit if a session-state refactor lands. |
-| MUSIC-006 | MINOR | `src/music.c:122-154` | `mud/music/__init__.py:111-126` | Jukebox `act(... TO_ALL)` runs ROM's `$p` substitution per-viewer with `can_see_obj`. Python broadcasts a single pre-formatted string, so blind/dark viewers see the jukebox's short descr regardless of visibility. | ⚠️ DEFERRED (MINOR) — would require routing the jukebox broadcast through `mud.utils.act:act_format` with per-viewer `$p` resolution that respects `can_see_object`. Cosmetic only (a blind PC sees "the jukebox starts playing…" instead of "something starts playing…"). Tracked here so a future `act()` infrastructure pass can pick it up. |
+| MUSIC-005 | MINOR | `src/music.c:88-97` | `mud/music/__init__.py` | Global broadcast doesn't gate on `connected == CON_PLAYING` and doesn't honor switched-puppet `d->original`. Linkdead/menu PCs receive music; switched immortals would receive on the puppet body, not their original. | ✅ FIXED — channel music now iterates the ROM-style `descriptor_list`, requires `CON_PLAYING`, filters flags on `descriptor.original or descriptor.character`, and delivers to the active descriptor character. Tested by `tests/integration/test_music_play.py::test_song_update_global_music_respects_playing_descriptors`. |
+| MUSIC-006 | MINOR | `src/music.c:122-154` | `mud/music/__init__.py`, `mud/utils/act.py` | Jukebox `act(... TO_ALL)` runs ROM's `$p` substitution per-viewer with `can_see_obj`. Python broadcasts a single pre-formatted string, so blind/dark viewers see the jukebox's short descr regardless of visibility. | ✅ FIXED — jukebox output now resolves `$p` per recipient via `act_format("$p", ...)`, and `act_format` falls back to `"something"` when `can_see_object` rejects the object. Tested by `tests/integration/test_music_play.py::test_song_update_jukebox_visibility_uses_per_viewer_object_rendering`. |
 
 ## Phase 4 — Gap Closures
 
@@ -89,7 +89,7 @@ _(One subsection per gap as it lands; each closure cites the integration test na
 
 - **Date:** 2026-04-29
 - **Closed:** `MUSIC-001` (do_play queueing), `MUSIC-002` (load_songs + boot wiring), `MUSIC-003` (play list ROM formatting + real song table), `MUSIC-004` (can_see_obj on jukebox lookup).
-- **Deferred MINOR:** `MUSIC-005` (descriptor-state plumbing for broadcast_global), `MUSIC-006` (per-viewer `$p` substitution on jukebox act).
-- **Tests added:** `tests/integration/test_music_play.py` (12 cases), `tests/integration/test_music_load_songs.py` (3 cases).
-- **Tracker flip:** `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` `music.c` row → ✅ AUDITED 95% (the remaining 5% reserved for the deferred MINOR cosmetics).
+- **Closed:** `MUSIC-001` through `MUSIC-006`.
+- **Tests added:** `tests/integration/test_music_play.py` (14 cases), `tests/integration/test_music_load_songs.py` (3 cases), `tests/test_music.py` (2 unit cases).
+- **Tracker flip:** `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` `music.c` row → ✅ AUDITED 100%.
 - **CHANGELOG:** `[Unreleased] Added` (MUSIC-002, MUSIC-003 are net-new behaviour) + `Fixed` (MUSIC-001, MUSIC-004) entries land alongside this audit.

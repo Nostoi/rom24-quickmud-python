@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.16]
+
+### Fixed
+- **`MUSIC-005` global-channel recipient parity**: `mud/music/__init__.py` now mirrors ROM `src/music.c:88-97` by iterating the ROM-style descriptor list, requiring `CON_PLAYING`, checking `COMM_NOMUSIC` / `COMM_QUIET` on `descriptor.original` when switched, and delivering the line to the active descriptor character.
+- **`MUSIC-006` jukebox visibility parity**: jukebox room output now resolves `$p` per viewer, so recipients who cannot see the jukebox get ROM-style `"something"` fallback instead of a leaked short description. Implemented in `mud/music/__init__.py` with object visibility fallback in `mud/utils/act.py`.
+
+### Changed
+- **`music.c` audit closure**: `docs/parity/MUSIC_C_AUDIT.md` and `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` now record `music.c` at 100% with all six gaps closed.
+
 ## [2.8.15]
 
 ### Changed

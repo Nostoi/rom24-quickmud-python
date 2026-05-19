@@ -6,7 +6,6 @@ from typing import Any
 
 from mud.models.constants import Sex
 
-
 _SUBJECT_PRONOUNS: dict[Sex, str] = {
     Sex.MALE: "he",
     Sex.FEMALE: "she",
@@ -74,9 +73,15 @@ def _pers(target: Any | None, viewer: Any | None) -> str:
     return "someone"
 
 
-def _object_name(obj: Any | None) -> str:
+def _object_name(obj: Any | None, viewer: Any | None = None) -> str:
     if obj is None:
         return "something"
+
+    if viewer is not None:
+        from mud.world.vision import can_see_object
+
+        if not can_see_object(viewer, obj):
+            return "something"
 
     short_descr = getattr(obj, "short_descr", None)
     if short_descr:
@@ -147,9 +152,9 @@ def act_format(
         elif token == "T":
             result.append("" if arg2 is None else str(arg2))
         elif token == "p":
-            result.append(_object_name(arg1))
+            result.append(_object_name(arg1, recipient))
         elif token == "P":
-            result.append(_object_name(arg2))
+            result.append(_object_name(arg2, recipient))
         elif token == "d":
             if arg2 is None:
                 result.append("door")
@@ -165,4 +170,3 @@ def act_format(
             result.append(f"${token}")
 
     return "".join(result)
-

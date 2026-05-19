@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from dataclasses import dataclass
 from pathlib import Path
 
-from mud.models.character import Character
+from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, ItemType
 from mud.models.obj import ObjectData, object_registry
 from mud.models.room import Room
-from mud.net.protocol import broadcast_global, broadcast_room
+from mud.net.protocol import send_to_char
+from mud.utils.act import act_format
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +77,7 @@ def _update_channel_music() -> None:
         message = f"Music: '{song.lyrics[line_index]}'"
         channel_songs[0] = line_index + 1
 
-    broadcast_global(message, channel="music", should_send=_can_hear_music)
+    _broadcast_global_music(message)
 
 
 def _advance_channel_queue() -> None:
@@ -111,11 +113,11 @@ def _update_jukeboxes() -> None:
             continue
 
         if values[0] < 0:
-            message = (
-                f"{_object_display_name(obj)} starts playing {song.group}, {song.name}."
-            )
+            # mirroring ROM src/music.c:122-131 — act("$p starts playing ...", TO_ALL)
+            # resolves `$p` per viewer rather than sharing one preformatted string.
+            message = f"starts playing {song.group}, {song.name}."
             values[0] = 0
-            broadcast_room(room, message)
+            _broadcast_jukebox_message(room, obj, message)
             continue
 
         if values[0] >= MAX_LINES or values[0] >= song.lines:
@@ -125,8 +127,7 @@ def _update_jukeboxes() -> None:
 
         lyric = song.lyrics[values[0]]
         values[0] += 1
-        message = f"{_object_display_name(obj)} bops: '{lyric}'"
-        broadcast_room(room, message)
+        _broadcast_jukebox_message(room, obj, f"bops: '{lyric}'")
 
 
 def _scroll_jukebox_queue(values: list[int]) -> None:
@@ -144,6 +145,65 @@ def _resolve_room(obj: ObjectData) -> Room | None:
     if carrier is None:
         return None
     return getattr(carrier, "room", None)
+
+
+async def _send_music_line(recipient: Character, writer: object, message: str) -> None:
+    original_writer = getattr(recipient, "connection", None)
+    if original_writer is None:
+        recipient.connection = writer
+    try:
+        await send_to_char(recipient, message)
+    finally:
+        if original_writer is None:
+            recipient.connection = None
+
+
+def _push_music_message(recipient: Character, message: str, *, writer: object | None = None) -> None:
+    actual_writer = getattr(recipient, "connection", None) or writer
+    if actual_writer is not None:
+        asyncio.create_task(_send_music_line(recipient, actual_writer, message))
+    if hasattr(recipient, "messages"):
+        recipient.messages.append(message)
+
+
+def _broadcast_global_music(message: str) -> None:
+    # mirroring ROM src/music.c:88-97 — iterate descriptor_list, require
+    # CON_PLAYING, filter music flags on d->original when switched, and
+    # deliver through d->character.
+    from mud import registry as global_registry
+    from mud.net.connection import CON_PLAYING
+
+    descriptor_list = getattr(global_registry, "descriptor_list", None)
+    if descriptor_list:
+        for descriptor in list(descriptor_list):
+            if getattr(descriptor, "connected", 0) != CON_PLAYING:
+                continue
+
+            recipient = getattr(descriptor, "character", None)
+            if recipient is None:
+                continue
+
+            effective = getattr(descriptor, "original", None) or recipient
+            if not _can_hear_music(effective):
+                continue
+            if "music" in getattr(effective, "muted_channels", set()):
+                continue
+
+            _push_music_message(recipient, message, writer=getattr(descriptor, "connection", None))
+        return
+
+    for char in list(character_registry):
+        if not _can_hear_music(char):
+            continue
+        if "music" in getattr(char, "muted_channels", set()):
+            continue
+        _push_music_message(char, message)
+
+
+def _broadcast_jukebox_message(room: Room, obj: ObjectData, suffix: str) -> None:
+    for occupant in list(getattr(room, "people", [])):
+        prefix = act_format("$p", recipient=occupant, arg1=obj)
+        _push_music_message(occupant, f"{prefix} {suffix}")
 
 
 def _can_hear_music(character: Character) -> bool:

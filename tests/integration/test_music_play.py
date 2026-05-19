@@ -13,14 +13,16 @@ and the `"That song isn't available."` rejection when no song matches by
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest
 
 from mud.commands.player_info import do_play
-from mud.models.character import Character
-from mud.models.constants import ItemType
+from mud.models.character import Character, character_registry
+from mud.models.constants import AffectFlag, ExtraFlag, ItemType
 from mud.models.obj import ObjectData, object_registry
 from mud.models.room import Room
-from mud.music import MAX_GLOBAL, Song, channel_songs, song_table
+from mud.music import MAX_GLOBAL, Song, channel_songs, song_table, song_update
 
 
 @pytest.fixture
@@ -200,3 +202,81 @@ def test_do_play_matches_song_by_prefix(music_world) -> None:
 
     assert reply == "Coming right up."
     assert juke.value[1] == 1  # "Ballad of the Blue"
+
+
+def test_song_update_global_music_respects_playing_descriptors(music_world) -> None:
+    # mirrors ROM src/music.c:88-97 — global music iterates descriptor_list,
+    # filters by CON_PLAYING on the descriptor, uses original for comm flags,
+    # and delivers to d->character.
+    from mud import registry as global_registry
+
+    previous_descriptors = getattr(global_registry, "descriptor_list", None)
+    previous_characters = list(character_registry)
+    try:
+        character_registry.clear()
+
+        room = Room(vnum=4300, name="Concert Hall")
+        active = Character(name="Active", is_npc=False, comm=0)
+        menu_state = Character(name="Menu", is_npc=False, comm=0)
+        original = Character(name="Immortal", is_npc=False, comm=0)
+        puppet = Character(name="cityguard", short_descr="a cityguard", is_npc=True, comm=0)
+
+        for char in (active, menu_state, original, puppet):
+            char.messages.clear()
+            room.add_character(char)
+            character_registry.append(char)
+
+        global_registry.descriptor_list = [
+            SimpleNamespace(character=active, connected=1, connection=None, original=None),
+            SimpleNamespace(character=menu_state, connected=0, connection=None, original=None),
+            SimpleNamespace(character=puppet, connected=1, connection=None, original=original),
+        ]
+
+        channel_songs[0] = -1
+        channel_songs[1] = 0
+        song_update()
+
+        assert active.messages[-1] == "Music: The Band, Anthem"
+        assert menu_state.messages == []
+        assert puppet.messages[-1] == "Music: The Band, Anthem"
+        assert original.messages == []
+    finally:
+        character_registry[:] = previous_characters
+        if previous_descriptors is None:
+            if hasattr(global_registry, "descriptor_list"):
+                delattr(global_registry, "descriptor_list")
+        else:
+            global_registry.descriptor_list = previous_descriptors
+
+
+def test_song_update_jukebox_visibility_uses_per_viewer_object_rendering(music_world) -> None:
+    # mirrors ROM src/music.c:122-154 — act(... TO_ALL) resolves $p per viewer,
+    # so invisible jukeboxes fall back to "something" for recipients who cannot
+    # see the object.
+    room = Room(vnum=4301, name="Shadowed Arcade")
+    seer = Character(name="Seer", is_npc=False, affected_by=int(AffectFlag.DETECT_INVIS))
+    occluded = Character(name="Occluded", is_npc=False)
+    for char in (seer, occluded):
+        char.messages.clear()
+        room.add_character(char)
+
+    jukebox = ObjectData(
+        item_type=int(ItemType.JUKEBOX),
+        short_descr="the jukebox",
+        extra_flags=int(ExtraFlag.INVIS),
+        value=[-1, 0, -1, -1, -1],
+    )
+    jukebox.in_room = room
+    room.contents.append(jukebox)
+    object_registry.append(jukebox)
+
+    try:
+        song_update()
+        assert seer.messages[-1] == "the jukebox starts playing The Band, Anthem."
+        assert occluded.messages[-1] == "something starts playing The Band, Anthem."
+
+        song_update()
+        assert seer.messages[-1] == "the jukebox bops: 'Line one'"
+        assert occluded.messages[-1] == "something bops: 'Line one'"
+    finally:
+        object_registry.remove(jukebox)
