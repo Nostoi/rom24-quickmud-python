@@ -1,11 +1,11 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.6.3-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.8.21-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-3508%2F3521%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Tests](https://img.shields.io/badge/tests-4560%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-gameplay%20100%25-success.svg)](ROM_2.4B6_PARITY_CERTIFICATION.md)
-[![Function Coverage](https://img.shields.io/badge/ROM%20C%20Functions-96.1%25-blue.svg)](FUNCTION_MAPPING.md)
+[![ROM C Audit](https://img.shields.io/badge/ROM%20C%20Audit-40%2F40%20audited-success.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![Integration Tests](https://img.shields.io/badge/integration%20tests-1000%2B-brightgreen.svg)](tests/integration/)
 
 **QuickMUD is a modern Python port of the legendary ROM 2.4b6 MUD engine**, derived from ROM 2.4b6, Merc 2.1 and DikuMUD. This is a complete rewrite that brings the classic text-based MMORPG experience to modern Python with async networking, JSON world data, and **100% ROM 2.4b behavioral parity**.
@@ -24,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 3,508 / 3,521 tests passing (99.6%) across unit, integration (1,000+), and command-registry suites
+- **📊 Comprehensive Testing**: 4,560 passing tests across unit, integration, and command-registry suites
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -138,8 +138,6 @@ parity logic in this backend repo.
 
 ## 🏗️ For Developers
 
-## 🏗️ For Developers
-
 ### Development Installation
 
 ```bash
@@ -153,8 +151,8 @@ pip install -e .[dev]
 ### Running Tests
 
 ```bash
-pytest  # Run all 3,500+ tests
-pytest tests/integration/ -v  # Run integration suite (1,000+ tests)
+pytest  # Run the full suite
+pytest tests/integration/ -v  # Run the integration suite
 ```
 
 ### Development Server
@@ -165,26 +163,19 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.6.73 (Production Ready — gameplay parity shipped, OLC cluster in progress)
+- **Version**: 2.8.21
 - **ROM 2.4b Gameplay Parity**: ✅ **100%** ([official certification](ROM_2.4B6_PARITY_CERTIFICATION.md)) —
   combat, skills, spells, movement, communication, world/db, save/load, mob programs,
   and all 255 ROM commands are implemented and audited.
-- **ROM C Source Audit**: 34 of 43 ROM C source files audited (24 at strict 100%);
-  remaining work is the OLC editor cluster (`olc.c`, `olc_act.c`, `olc_save.c`,
-  `olc_mpcode.c`, `hedit.c`) plus a small partial-audit tail (`board.c` 95%).
-  Several audited files sit at 85–98% with deferred-by-design or sibling-gated
-  gaps (`act_move.c`, `comm.c`, `nanny.c`, `const.c`, `music.c`, `board.c`).
-  Gameplay is not blocked on any of them. See
+- **ROM C Source Audit**: ✅ **100% audit-bound coverage** — 40 of 40 applicable ROM C files are audited, with
+  3 additional ROM files intentionally N/A (`recycle.c`, `mem.c`, `imc.c`). See
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
-- **ROM C Function Coverage**: 96.1% (716/745 functions mapped)
-- **Test Suite**: 3,508 / 3,521 passing (99.6%), 11 skipped, 2 known
-  pre-existing failures, full run ~8 min. Three layers — unit (`tests/test_*.py`),
-  integration (`tests/integration/`, 1,000+ tests), and command-registry
-  (`test_all_commands.py`). Pre-existing skips/failures are catalogued in
-  [`docs/parity/PRE_EXISTING_FAILURES_TRIAGE.md`](docs/parity/PRE_EXISTING_FAILURES_TRIAGE.md).
-- **Active focus**: `olc.c` cluster — OLC-020/022/023 + STRING-001..012 closed;
-  remaining CRITICAL gaps (OLC-016/017/018/019, the `*edit create` subcommands)
-  gated on the held `olc_act.c` sibling audit.
+- **Cross-file Invariants**: ✅ **8/8 enforced** — message delivery, prompt clamping, registry membership,
+  same-room combat, death/connection behavior, RNG determinism, and persistence coherence are locked by dedicated tests.
+- **Test Suite**: ✅ **4560 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
+  integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
+- **Active focus**: parity work is effectively complete; current work is maintenance, frontend coordination,
+  and investigation only when a deterministic regression is reproduced.
 - **Compatibility**: Python 3.10+, cross-platform
 
 ## 🏛️ Architecture
@@ -270,7 +261,7 @@ Game systems are implemented in Python modules:
 - `mud/game_loop.py` drives the tick-based update loop.
 - `mud/commands` contains the command dispatcher and handlers.
 - `mud/combat` and `mud/skills` implement combat and abilities.
-- `mud/persistence.py` handles saving characters and world state.
+- `mud/account/` and `mud/db/` handle character persistence and account state.
 
 Start the server with:
 
@@ -324,17 +315,12 @@ QuickMUD is a **production-ready ROM 2.4b MUD** with ✅ **100% behavioral parit
 
 ### 📈 Quality Metrics
 
-- **Test Suite**: 3,508 / 3,521 passing (99.6%), 11 skipped, 2 known
-  pre-existing failures (full run ~8 min); pre-existing skips/failures are
-  catalogued in
-  [`docs/parity/PRE_EXISTING_FAILURES_TRIAGE.md`](docs/parity/PRE_EXISTING_FAILURES_TRIAGE.md).
+- **Test Suite**: 4,560 passing, 4 skipped on the last full recertification.
 - **Behavioral Parity**: 100% of ROM 2.4b6 gameplay subsystems audited (combat,
   skills, spells, movement, communication, world/db, save/load, mob programs,
   255/255 commands).
-- **Function Coverage**: 716/745 ROM C functions mapped (96.1%)
-- **ROM C Source Audit**: 34 of 43 files audited (24 at strict 100%); remainder
-  is the OLC editor cluster (`olc.c`/`olc_act.c`/`olc_save.c`/`olc_mpcode.c`/`hedit.c`)
-  and a small partial tail (`board.c` 95%).
+- **ROM C Source Audit**: 40 of 40 applicable ROM files audited, plus 3 intentional N/A files.
+- **Cross-file Invariants**: 8 of 8 enforced by dedicated regression tests.
 
 ### 🔧 Advanced Features
 

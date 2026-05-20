@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.21]
+
+### Changed
+- **README status refresh**: updated the public project status, audit coverage, test counts, and active-focus guidance so the README now matches the audited trackers and current session status.
+- **Release wrap-up**: recertified the published repo state around the current fully green parity program (`4560 passed, 4 skipped`) and the completed 40/40 audit-bound ROM C file coverage.
+
 ## [2.8.20]
 
 ### Changed

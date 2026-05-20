@@ -23,7 +23,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.18 |
+| Version | 2.8.21 |
 | Cross-file invariants enforced | **8/8 ✅ ENFORCED** |
 | Audit-bound ROM C files | 40/40 audited (100%) |
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
