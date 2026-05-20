@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.20]
+
+### Changed
+- **Stability investigation recertified clean**: executed the queued descriptor/session reproduction subset and a full-suite rerun with no reproducing leak (`36 passed, 36 deselected` in the networking subset; full suite still `4560 passed, 4 skipped`).
+- **Session guidance tightened**: `docs/sessions/SESSION_STATUS.md` now records that descriptor/session cleanup work should not proceed without a deterministic reproduction, and points the next agent at the standing investigation plan only if a leak reappears.
+
 ## [2.8.19]
 
 ### Added

@@ -1,23 +1,23 @@
-# Session Status — 2026-05-19 — stability / invariant hardening queued
+# Session Status — 2026-05-20 — stability reproduction slice clean
 
 ## Current State
 
 - **The canonical ROM-parity surface is effectively green.**
-- The last concrete deferred/user-visible parity bug (`wiznet` descriptor-path gating) is closed.
-- A fresh scan of the remaining deferred surfaces did **not** reveal another bounded parity gap worth taking before stability work.
-- **Pointer to latest handoff summary**:
-  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-19_STABILITY_INVARIANT_HARDENING_HANDOFF.md`
-- **Execution plan for the next agent**:
+- The queued stability / invariant hardening investigation was started with the planned reproduction-first workflow.
+- The initial descriptor/session reproduction subset is currently **clean**; no deterministic leak was reproduced, so no cleanup change was justified.
+- **Pointer to latest summary**:
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-20_STABILITY_REPRODUCTION_SLICE_CLEAN.md`
+- **Standing investigation plan**:
   - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-19-stability-invariant-hardening-descriptor-session-globals.md`
 
 ## Verification
 
-- Last full-suite recertification:
+- Latest full-suite recertification:
   - `./venv/bin/python -m pytest -q --maxfail=1`
   - `4560 passed, 4 skipped`
-- Most recent targeted networking/wiznet verification:
-  - `./venv/bin/python -m pytest -q tests/test_wiznet.py` → `33 passed`
-  - `./venv/bin/python -m pytest -q tests/test_networking_telnet.py tests/test_telnet_server.py tests/integration/test_nanny_login_parity.py tests/test_wiznet.py -k 'network or telnet or paging or reconnect or ansi or prompt or idle or break_connect or show_string or newbie or login'` → `46 passed, 1 skipped`
+- Stability reproduction subset:
+  - `./venv/bin/python -m pytest -q tests/test_wiznet.py tests/test_telnet_server.py tests/test_networking_telnet.py tests/integration/test_nanny_login_parity.py -k 'wiznet or reconnect or break_connect or paging or prompt or idle'`
+  - `36 passed, 36 deselected`
 
 ## Project Status (snapshot)
 
@@ -29,11 +29,10 @@
 | N/A ROM C files | 3/3 (`recycle.c`, `mem.c`, `imc.c`) |
 | Full suite | ✅ green (`4560 passed, 4 skipped`) |
 | Warnings | ✅ zero |
-| Current focus | execute the stability / invariant hardening plan around descriptor/session global state and cross-test leakage |
+| Current focus | keep the stability / invariant hardening plan available, but do not implement cleanup changes until a deterministic reproduction exists |
 
 ## Next Intended Task
 
-1. Execute `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-19-stability-invariant-hardening-descriptor-session-globals.md`.
-2. Start with deterministic reproductions in `tests/test_wiznet.py`, `tests/test_telnet_server.py`, `tests/test_networking_telnet.py`, and `tests/integration/test_nanny_login_parity.py`.
-3. Fix cleanup at the true owner boundary before adding any broad autouse fixture resets.
-4. Add a new `INV-NNN` in `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` only if the root cause is genuinely cross-module.
+1. Do not add descriptor/session cleanup code without first reproducing a deterministic failure.
+2. If a future mixed subset or CI ordering exposes a leak, resume from `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-19-stability-invariant-hardening-descriptor-session-globals.md`.
+3. Otherwise, pick a new evidence-backed engineering slice rather than speculative hardening.
