@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.19]
+
+### Added
+- **Stability / invariant hardening handoff plan**: added a concrete next-agent execution plan for descriptor/session global-state isolation, targeting `descriptor_list`, `character_registry`, telnet/session teardown, and any newly discovered cross-file invariant.
+
+### Changed
+- **Session handoff updated**: `docs/sessions/SESSION_STATUS.md` now points at the stability / invariant hardening queue, with a dedicated handoff summary and explicit first verification commands for the next agent.
+
 ## [2.8.18]
 
 ### Added
