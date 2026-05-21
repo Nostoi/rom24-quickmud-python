@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import re
 import time
+from types import SimpleNamespace
 
 import pytest
 
+import mud.net.connection as net_connection
+from mud import registry as global_registry
 from mud.commands.info_extended import do_whois, do_worth
 from mud.commands.session import do_score
 from mud.models.character import PCData
-from mud.models.constants import PlayerFlag, Sex
+from mud.models.constants import CommFlag, PlayerFlag, Sex
 from mud.handler import class_name, race_name
 from mud.world import create_test_character, initialize_world
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
@@ -17,11 +20,13 @@ from mud.registry import area_registry, mob_registry, obj_registry, room_registr
 @pytest.fixture(autouse=True)
 def setup_world():
     initialize_world("area/area.lst")
+    global_registry.descriptor_list = []
     yield
     area_registry.clear()
     mob_registry.clear()
     obj_registry.clear()
     room_registry.clear()
+    global_registry.descriptor_list = []
 
 
 class TestScoreCommand:
@@ -145,20 +150,28 @@ class TestScoreCommand:
 
         assert "standing" in output.lower() or "position" in output.lower()
 
-    def test_score_shows_class_and_race(self):
+    def test_score_shows_exact_race_sex_class_line(self):
         player = create_test_character("Warrior", 3001)
+        player.race = 0
+        player.ch_class = 3
+        player.sex = int(Sex.FEMALE)
 
         output = do_score(player, "")
 
-        assert len(output) > 50
+        assert "Race: human  Sex: female  Class: warrior" in output
 
-    def test_score_output_not_empty(self):
+    def test_score_keeps_name_on_opening_line(self):
         player = create_test_character("Anyone", 3001)
+        player.pcdata = PCData()
+        player.pcdata.title = " the Adventurer"
+        player.level = 1
+        player.race = 0
+        player.ch_class = 0
+        player.sex = int(Sex.MALE)
 
         output = do_score(player, "")
 
-        assert len(output) > 50
-        assert "Anyone" in output
+        assert output.splitlines()[0] == "You are Anyone the Adventurer, level 1, 17 years old (0 hours)."
 
 
 class TestWorthCommand:
@@ -206,6 +219,45 @@ class TestWorthCommand:
 
 
 class TestWhoisCommand:
+    def test_whois_uses_rom_descriptor_formatting_and_flags(self):
+        searcher = create_test_character("Searcher", 3001)
+        target = create_test_character("Gandalf", 3001)
+        target.level = 12
+        target.race = 1
+        target.ch_class = 0
+        target.sex = int(Sex.MALE)
+        target.pcdata = PCData()
+        target.pcdata.title = " the Apprentice of Magic"
+        target.act |= int(PlayerFlag.KILLER | PlayerFlag.THIEF)
+        target.comm |= int(CommFlag.AFK)
+
+        global_registry.descriptor_list = [
+            SimpleNamespace(character=target, connected=net_connection.CON_PLAYING, original=None)
+        ]
+
+        output = do_whois(searcher, "Gan")
+
+        assert output == "[12  Elf   Mag] [AFK] (KILLER) (THIEF) Gandalf the Apprentice of Magic"
+
+    def test_whois_prefers_original_character_for_switched_descriptor(self):
+        searcher = create_test_character("Searcher", 3001)
+        original = create_test_character("Archon", 3001)
+        shell = create_test_character("cityguard", 3001)
+
+        original.level = 52
+        original.race = 0
+        original.ch_class = 0
+        original.pcdata = PCData()
+        original.pcdata.title = " the Implementor"
+
+        global_registry.descriptor_list = [
+            SimpleNamespace(character=shell, connected=net_connection.CON_PLAYING, original=original)
+        ]
+
+        output = do_whois(searcher, "Arc")
+
+        assert output == "[52 Human  AVA] Archon the Implementor"
+
     def test_whois_shows_player_info(self):
         target = create_test_character("Gandalf", 3001)
         target.level = 50

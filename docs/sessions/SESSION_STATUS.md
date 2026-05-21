@@ -1,25 +1,28 @@
-# Session Status — 2026-05-21 — score parity bug fixed, trust-rebuild re-audit queued
+# Session Status — 2026-05-21 — act_info trust-rebuild started (`score` + `whois`)
 
 ## Current State
 
-- **A real ROM-parity bug was found on the live `score` surface after earlier “100% verified” claims.**
-- Fixed:
+- **The first trust-rebuild sub-slice inside `act_info.c` is now underway.**
+- Confirmed and fixed:
   - session `logon` refresh on ORM load
   - `score` title/race/class rendering
+  - `score` player-race name mapping for human/pc-race ids
   - low-level AC wording in `score`
-  - integer race-name lookup
-- The completed create → reconnect path currently persists correctly under the real WebSocket flow.
+  - `whois` descriptor-path formatting, flag display, and switched-original output
+- The completed create → reconnect path still persists correctly under the real WebSocket flow.
 - **Pointer to latest summary**:
-  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-21_SCORE_PARITY_FIX_AND_TRUST_REBUILD_PIVOT.md`
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-21_ACT_INFO_TRUST_REBUILD_SCORE_AND_WHOIS.md`
 
-## What changed in this investigation
+## What changed in this sub-slice
 
 - Fixed `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/commands/session.py`
 - Fixed `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/handler.py`
 - Fixed `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/models/character.py`
+- Fixed `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/commands/info_extended.py`
 - Added stricter regressions in:
   - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/tests/test_player_info_commands.py`
   - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/tests/test_websocket_server.py`
+- Updated `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/parity/ACT_INFO_C_AUDIT.md`
 - Wrote the trust-rebuild re-audit plan:
   - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-21-parity-trust-rebuild-reaudit.md`
 - Wrote the differential-testing design spec:
@@ -29,7 +32,7 @@
 
 - Focused verification slice:
   - `./venv/bin/python -m pytest -q tests/test_player_info_commands.py tests/test_websocket_server.py tests/integration/test_character_creation_runtime.py tests/integration/test_db_canonical_round_trip.py tests/test_act_info_rom_parity.py`
-  - `49 passed`
+  - `51 passed`
 - Latest full-suite recertification after the score/login fixes:
   - `./venv/bin/python -m pytest -q --maxfail=1`
   - `4571 passed, 4 skipped`
@@ -39,14 +42,18 @@
 | Metric | Value |
 |--------|-------|
 | Version | 2.8.22 |
-| Score parity bug | **fixed** |
+| `score` parity bug | **fixed** |
+| `whois` ROM formatting bug | **fixed** |
 | WebSocket create → reconnect path | **green in test** |
-| Focused verification slice | **49 passed** |
+| Focused verification slice | **51 passed** |
 | Full suite | **green (`4571 passed, 4 skipped`)** |
 
 ## Next Intended Task
 
-1. Commit the score/login/session fix slice.
-2. Execute the trust-rebuild plan at `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-21-parity-trust-rebuild-reaudit.md`.
-3. Use the differential-testing design at `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/specs/2026-05-21-rom-differential-testing-design.md` to choose the right comparison mode per surface.
-4. Start with `act_info.c`, `nanny.c`, and `save.c` re-audits using ROM-exact output and runtime-path assertions, not smoke coverage.
+1. Commit the first `act_info.c` trust-rebuild slice (`score` + `whois`).
+2. Continue `act_info.c` revalidation with the next user-visible weak-output surface:
+   - `where`
+   - `equipment`
+   - `inventory`
+3. Keep using the differential-testing design at `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/specs/2026-05-21-rom-differential-testing-design.md`.
+4. After the next `act_info.c` slice, move to `nanny.c` / `save.c` runtime-path re-audits.

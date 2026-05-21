@@ -1662,15 +1662,14 @@ def sex_name(sex_val: int) -> str:
 
 
 def race_name(race_val: int | str) -> str:
-    """Convert race to ROM name string."""
+    """Convert player race ids to ROM-visible race names."""
     if isinstance(race_val, str):
         return race_val.lower()
 
-    from mud.models.races import get_race_by_index
+    from mud.models.races import PC_RACE_TABLE
 
-    race = get_race_by_index(race_val)
-    if race is not None:
-        return getattr(race, "name", f"unknown({race_val})").lower()
+    if 0 <= race_val < len(PC_RACE_TABLE):
+        return PC_RACE_TABLE[race_val].name.lower()
     return f"unknown({race_val})"
 
 

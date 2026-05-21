@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.24]
+
+### Fixed
+- **`act_info.c` trust-rebuild: `whois` formatting parity**: `mud/commands/info_extended.py` now mirrors ROM descriptor-path `whois` behavior more closely, including race/class display, immortal rank labels, AFK/KILLER/THIEF flags via enums, and switched-descriptor `original` handling.
+- **`score` player-race mapping**: fixed the player-facing race-name helper so playable race id `0` renders as `human` instead of the base-race sentinel `unique`.
+
+### Changed
+- **Stricter `act_info.c` regressions**: `tests/test_player_info_commands.py` now replaces several weak smoke assertions with ROM-exact `score` and `whois` output checks.
+- **Trust-rebuild handoff updated**: `ACT_INFO_C_AUDIT.md` and the session docs now explicitly record that `act_info.c` is under observable-behavior revalidation rather than relying on legacy structural-audit completion claims.
+
+
 ## [2.8.23]
 
 ### Fixed

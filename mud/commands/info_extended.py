@@ -145,6 +145,13 @@ def do_whois(char: Character, args: str) -> str:
 
     ROM Reference: src/act_info.c do_whois (lines 1916-2010)
     """
+    from mud.models.classes import CLASS_TABLE
+    from mud.models.clans import CLAN_TABLE
+    from mud.models.constants import CommFlag, LEVEL_HERO, MAX_LEVEL, PlayerFlag
+    from mud.models.races import PC_RACE_TABLE
+    from mud.net.connection import CON_PLAYING
+    from mud.world.vision import can_see_character
+
     if not args or not args.strip():
         return "You must provide a name."
 
@@ -152,72 +159,102 @@ def do_whois(char: Character, args: str) -> str:
 
     from mud import registry
 
+    def class_display_for(wch: Character) -> str:
+        level = getattr(wch, "level", 1)
+        if level == MAX_LEVEL - 0:
+            return "IMP"
+        if level == MAX_LEVEL - 1:
+            return "CRE"
+        if level == MAX_LEVEL - 2:
+            return "SUP"
+        if level == MAX_LEVEL - 3:
+            return "DEI"
+        if level == MAX_LEVEL - 4:
+            return "GOD"
+        if level == MAX_LEVEL - 5:
+            return "IMM"
+        if level == MAX_LEVEL - 6:
+            return "DEM"
+        if level == MAX_LEVEL - 7:
+            return "ANG"
+        if level == MAX_LEVEL - 8:
+            return "AVA"
+        ch_class = getattr(wch, "ch_class", 0)
+        if 0 <= ch_class < len(CLASS_TABLE):
+            return CLASS_TABLE[ch_class].who_name
+        return "???"
+
+    def race_who_name_for(wch: Character) -> str:
+        race = getattr(wch, "race", 0)
+        if isinstance(race, int) and 0 <= race < len(PC_RACE_TABLE):
+            return PC_RACE_TABLE[race].who_name
+        return "     "
+
+    def clan_who_name_for(wch: Character) -> str:
+        clan = getattr(wch, "clan", 0)
+        if isinstance(clan, int) and 0 <= clan < len(CLAN_TABLE):
+            return CLAN_TABLE[clan].who_name
+        return ""
+
+    def format_whois_line(wch: Character) -> str:
+        level = getattr(wch, "level", 1)
+        race_who_name = race_who_name_for(wch)
+        class_display = class_display_for(wch)
+        flags: list[str] = []
+        if getattr(wch, "incog_level", 0) >= LEVEL_HERO:
+            flags.append("(Incog)")
+        if getattr(wch, "invis_level", 0) >= LEVEL_HERO:
+            flags.append("(Wizi)")
+
+        clan_who_name = clan_who_name_for(wch)
+        if clan_who_name:
+            flags.append(clan_who_name.rstrip())
+        if getattr(wch, "comm", 0) & CommFlag.AFK:
+            flags.append("[AFK]")
+        if getattr(wch, "act", 0) & PlayerFlag.KILLER:
+            flags.append("(KILLER)")
+        if getattr(wch, "act", 0) & PlayerFlag.THIEF:
+            flags.append("(THIEF)")
+
+        flag_str = ""
+        if flags:
+            flag_str = " ".join(flags) + " "
+
+        name = getattr(wch, "name", "Unknown")
+        title = ""
+        if not getattr(wch, "is_npc", False):
+            pcdata = getattr(wch, "pcdata", None)
+            title = getattr(pcdata, "title", "") if pcdata is not None else getattr(wch, "title", "")
+
+        return f"[{level:2d} {race_who_name:6s} {class_display:3s}] {flag_str}{name}{title}"
+
     results = []
 
-    # Search descriptors/players
+    # Search descriptor list first, mirroring ROM src/act_info.c:1933-2008
     for desc in getattr(registry, "descriptor_list", []):
+        if getattr(desc, "connected", 0) != CON_PLAYING:
+            continue
         if not hasattr(desc, "character") or not desc.character:
             continue
+        if not can_see_character(char, desc.character):
+            continue
 
-        wch = desc.character
+        wch = desc.original if getattr(desc, "original", None) is not None else desc.character
+        if not can_see_character(char, wch):
+            continue
+
         wch_name = (getattr(wch, "name", None) or "").lower()
 
         if wch_name.startswith(target_name):
-            level = getattr(wch, "level", 1)
-            race = getattr(wch, "race", "human")
-            if hasattr(race, "name"):
-                race = race.name
+            results.append(format_whois_line(wch))
 
-            # Determine class display
-            char_class = getattr(wch, "char_class", None) or getattr(wch, "guild", "Adventurer")
-            if hasattr(char_class, "name"):
-                char_class = char_class.name
-
-            # Check for immortal levels
-            max_level = 51
-            if level >= max_level - 8:
-                immortal_classes = ["AVA", "ANG", "DEM", "IMM", "GOD", "DEI", "SUP", "CRE", "IMP"]
-                idx = min(level - (max_level - 9), 8)
-                class_display = immortal_classes[idx] if idx < len(immortal_classes) else char_class
-            else:
-                class_display = str(char_class)[:3].upper() if char_class else "ADV"
-
-            # Build display line
-            name = getattr(wch, "name", "Unknown")
-            title = ""
-            pcdata = getattr(wch, "pcdata", None)
-            if pcdata:
-                title = getattr(pcdata, "title", "")
-
-            flags = ""
-            act_flags = getattr(wch, "act", 0)
-            if act_flags & 0x10:  # PLR_KILLER
-                flags += "(KILLER) "
-            if act_flags & 0x20:  # PLR_THIEF
-                flags += "(THIEF) "
-
-            comm_flags = getattr(wch, "comm", 0)
-            if comm_flags & 0x1:  # COMM_AFK
-                flags += "[AFK] "
-
-            line = f"[{level:2d} {str(race)[:5]:>5} {class_display:>3}] {flags}{name}{title}"
-            results.append(line)
-
-    # Also check player registry
+    # Fallback for tests/contexts without descriptor-backed sessions.
     players = getattr(registry, "player_registry", {})
     for name, player in players.items():
         if name.lower().startswith(target_name):
             if any(name.lower() in r.lower() for r in results):
                 continue  # Already in list
-            level = getattr(player, "level", 1)
-            race = getattr(player, "race", "human")
-            if hasattr(race, "name"):
-                race = race.name
-            char_class = getattr(player, "char_class", "Adv")
-            if hasattr(char_class, "name"):
-                char_class = char_class.name
-            line = f"[{level:2d} {str(race)[:5]:>5} {str(char_class)[:3].upper():>3}] {name}"
-            results.append(line)
+            results.append(format_whois_line(player))
 
     if not results:
         return "No one of that name is playing."

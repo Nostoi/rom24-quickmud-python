@@ -2,8 +2,8 @@
 
 **Purpose**: Systematic line-by-line audit of ROM 2.4b6 act_info.c (2,944 lines, 60 functions)  
 **Created**: January 5, 2026  
-**Updated**: January 8, 2026 17:55 CST (**100% COMPLETE - ALL 60 FUNCTIONS!**)  
-**Status**: ✅ **100% COMPLETE!** 🎉 (60/60 functions audited - 100%)  
+**Updated**: May 21, 2026 14:35 CST (legacy structural audit complete; trust-rebuild revalidation in progress)  
+**Status**: ✅ **Structurally complete; ROM-exact trust rebuild in progress**  
 **Priority**: P1 - Core Information Display Commands
 
 ---
@@ -22,7 +22,30 @@ These are the most commonly used commands in ROM - essential for player experien
 
 **ROM C Location**: `src/act_info.c` (2,944 lines)  
 **QuickMUD Locations**: `mud/commands/info.py`, `mud/commands/session.py`, `mud/commands/inspection.py`, `mud/commands/info_extended.py`, `mud/commands/affects.py`, `mud/commands/auto_settings.py`  
-**Integration Tests**: 157/170 passing (92%) - Need to add auto-flag tests
+**Integration Tests**: legacy counts in this document are historical. Use the current session docs and trust-rebuild plan for the active verification state.
+
+## Trust-Rebuild Note (2026-05-21)
+
+The original `act_info.c` audit declared the file “100% complete,” but that
+judgment was based too heavily on structural comparison and smoke tests. A live
+`score` bug in May 2026 proved that observable-behavior verification on
+user-visible commands was not strict enough.
+
+Current rule:
+- keep the legacy structural audit history
+- treat `do_score`, `do_whois`, `do_where`, `do_equipment`, `do_inventory`, and
+  other player-facing surfaces as under **ROM-exact revalidation**
+- do not rely on weak checks like `len(output) > 0` as closure evidence
+
+Trust-rebuild progress now started:
+- `do_score`: live parity bug fixed; exact title/race/class/opening-line and AC
+  wording assertions added
+- `do_whois`: descriptor-path formatting revalidated against ROM; exact race /
+  class / flag / switched-original output tests added
+
+See:
+- `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-21-parity-trust-rebuild-reaudit.md`
+- `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/specs/2026-05-21-rom-differential-testing-design.md`
 
 ---
 
