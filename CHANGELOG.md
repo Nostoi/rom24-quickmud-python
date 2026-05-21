@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.27]
+
+### Fixed
+- **`act_info.c` trust-rebuild: `do_look` autoexit parity**: `mud/world/look.py` no longer emits a manual exits line on every room look; exits now appear only through the ROM `PLR_AUTOEXIT` branch.
+- **`act_info.c` trust-rebuild: `do_look` room rendering parity**: room contents and visible occupants are now appended as raw lines instead of Python-only `Objects:` / `Characters:` labels, matching ROM `show_list_to_char` / `show_char_to_char` behavior more closely.
+
+### Changed
+- **Direct `do_look` regression coverage**: added ROM-exact room-look tests for autoexit gating and raw room content / occupant line formatting.
+
+
 ## [2.8.26]
 
 ### Fixed

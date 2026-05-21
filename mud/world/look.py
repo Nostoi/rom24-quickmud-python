@@ -149,25 +149,17 @@ def _look_room(char: Character, room) -> str:
         room_desc = room.description or ""
         lines.append(room_desc)
 
-    # Exits
-    exit_list = [dir_names[Direction(i)] for i, ex in enumerate(room.exits) if ex]
-    if exit_list:
-        lines.append(f"[Exits: {' '.join(exit_list)}]")
+    # Objects in room — ROM appends raw object lines via show_list_to_char.
+    for obj in room.contents:
+        lines.append(obj.short_descr or obj.name or "object")
 
-    # Objects in room
-    if room.contents:
-        lines.append("Objects: " + ", ".join(obj.short_descr or obj.name or "object" for obj in room.contents))
-
-    # Characters in room
-    visible_characters: list[str] = []
+    # Characters in room — ROM appends raw character lines via show_char_to_char.
     for occupant in room.people:
         if occupant is char:
             continue
         if not can_see_character(char, occupant):
             continue
-        visible_characters.append(describe_character(char, occupant))
-    if visible_characters:
-        lines.append("Characters: " + ", ".join(visible_characters))
+        lines.append(describe_character(char, occupant))
 
     result = "\n".join(lines).strip()
 
