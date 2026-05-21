@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.26]
+
+### Fixed
+- **`act_info.c` trust-rebuild: `do_who` switched-session parity**: `mud/commands/info.py` now mirrors ROM `do_who` by preferring the switched descriptor `original` character for output and title rendering instead of always showing the shell character.
+
+### Changed
+- **Stricter `do_who` output coverage**: `tests/integration/test_do_who_command.py` now includes exact ROM-style output assertions for switched sessions and representative fully-flagged player rows.
+
+
 ## [2.8.25]
 
 ### Fixed

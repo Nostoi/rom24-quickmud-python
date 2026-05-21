@@ -21,6 +21,7 @@ import pytest
 
 from mud.commands.info import do_who
 from mud.models.character import Character
+from mud.models.character import PCData
 from mud.models.constants import (
     CommFlag,
     LEVEL_HERO,
@@ -338,6 +339,45 @@ def test_who_multiple_status_flags(clear_sessions, create_test_session):
     assert "(KILLER)" in result
     assert "(THIEF)" in result
     assert "FlaggedPlayer" in result
+
+
+def test_who_exact_line_format_for_flagged_player(clear_sessions, create_test_session):
+    """Use one exact line assertion for a representative ROM who row."""
+    viewer = create_test_session("TestViewer", 60, 0, 0).character
+    create_test_session(
+        "FlaggedPlayer",
+        20,
+        0,
+        1,
+        title=" the Apprentice of Magic",
+        comm=CommFlag.AFK,
+        act=PlayerFlag.KILLER | PlayerFlag.THIEF,
+    )
+
+    result = do_who(viewer, "")
+
+    assert "[20  Elf   Mag] [AFK] (KILLER) (THIEF) FlaggedPlayer the Apprentice of Magic" in result
+
+
+def test_who_prefers_original_character_for_switched_session(clear_sessions, create_test_session):
+    """ROM iterates descriptors and uses d->original when switched."""
+    viewer = create_test_session("TestViewer", 60, 0, 0).character
+    switched = create_test_session("cityguard", 10, 0, 0)
+
+    original = Character()
+    original.name = "Archon"
+    original.level = MAX_LEVEL - 1
+    original.ch_class = 0
+    original.race = 0
+    original.pcdata = PCData()
+    original.pcdata.title = " the Implementor"
+
+    switched.original = original
+
+    result = do_who(viewer, "")
+
+    assert "[59 Human  CRE] Archon the Implementor" in result
+    assert "cityguard" not in result
 
 
 def test_who_output_format_matches_rom_c(clear_sessions, create_test_session):

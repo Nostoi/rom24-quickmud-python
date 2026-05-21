@@ -160,13 +160,15 @@ def do_who(char: Character, args: str) -> str:
     match_count = 0
 
     for sess in SESSIONS.values():
-        wch = sess.character
-        if not wch:
+        descriptor_char = sess.character
+        if not descriptor_char:
             continue
 
         # Check visibility (ROM C line 2145-2151)
-        if not can_see_character(char, wch):
+        if not can_see_character(char, descriptor_char):
             continue
+
+        wch = getattr(sess, "original", None) or descriptor_char
 
         # Apply filters (ROM C lines 2153-2160)
         if wch.level < level_lower or wch.level > level_upper:
@@ -227,7 +229,8 @@ def do_who(char: Character, args: str) -> str:
         if flag_str:
             flag_str += " "
 
-        title = getattr(wch, "title", "")
+        pcdata = getattr(wch, "pcdata", None)
+        title = getattr(pcdata, "title", "") if pcdata is not None else getattr(wch, "title", "")
         lines.append(f"[{wch.level:2d} {race_who_name:6s} {class_name:3s}] {flag_str}{wch.name}{title}")
 
     # Footer (ROM C lines 2221-2222)
