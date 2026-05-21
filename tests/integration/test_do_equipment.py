@@ -279,3 +279,31 @@ def test_equipment_multiline_format(movable_char_factory, object_factory):
     assert lines[0] == "You are using:"
     assert "wielded" in lines[1] or "shield" in lines[1]
     assert "wielded" in lines[2] or "shield" in lines[2]
+
+
+def test_equipment_follows_rom_slot_order_not_dict_insertion(movable_char_factory, object_factory):
+    """ROM iterates slots from 0..MAX_WEAR; Python must not depend on dict insertion order."""
+    from mud.models.constants import WearLocation
+
+    char = movable_char_factory("TestChar", 3001)
+
+    shield = object_factory({"vnum": 2, "name": "shield", "short_descr": "a wooden shield"})
+    shield.wear_loc = int(WearLocation.SHIELD)
+
+    sword = object_factory({"vnum": 1, "name": "sword", "short_descr": "a steel sword"})
+    sword.wear_loc = int(WearLocation.WIELD)
+
+    char.equipment = {
+        int(WearLocation.WIELD): sword,
+        int(WearLocation.SHIELD): shield,
+    }
+
+    from mud.commands.inventory import do_equipment
+
+    output = do_equipment(char, "")
+
+    assert output == (
+        "You are using:\n"
+        "<worn as shield>    a wooden shield\n"
+        "<wielded>           a steel sword\n"
+    )

@@ -1,4 +1,4 @@
-# Session Status — 2026-05-21 — act_info trust-rebuild started (`score` + `whois`)
+# Session Status — 2026-05-21 — act_info trust-rebuild extended through `equipment` / `inventory` / `where`
 
 ## Current State
 
@@ -11,7 +11,7 @@
   - `whois` descriptor-path formatting, flag display, and switched-original output
 - The completed create → reconnect path still persists correctly under the real WebSocket flow.
 - **Pointer to latest summary**:
-  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-21_ACT_INFO_TRUST_REBUILD_SCORE_AND_WHOIS.md`
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-21_ACT_INFO_TRUST_REBUILD_EQUIPMENT_INVENTORY_WHERE.md`
 
 ## What changed in this sub-slice
 
@@ -44,16 +44,17 @@
 | Version | 2.8.22 |
 | `score` parity bug | **fixed** |
 | `whois` ROM formatting bug | **fixed** |
+| `do_equipment` slot-order bug | **fixed** |
+| `do_where` private-room bug | **fixed** |
 | WebSocket create → reconnect path | **green in test** |
-| Focused verification slice | **51 passed** |
+| Focused verification slice | **66 passed** |
 | Full suite | **green (`4571 passed, 4 skipped`)** |
 
 ## Next Intended Task
 
-1. Commit the first `act_info.c` trust-rebuild slice (`score` + `whois`).
+1. Commit the second `act_info.c` trust-rebuild slice (`equipment` / `inventory` / `where`).
 2. Continue `act_info.c` revalidation with the next user-visible weak-output surface:
-   - `where`
-   - `equipment`
-   - `inventory`
+   - `who`
+   - `look`
 3. Keep using the differential-testing design at `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/specs/2026-05-21-rom-differential-testing-design.md`.
 4. After the next `act_info.c` slice, move to `nanny.c` / `save.c` runtime-path re-audits.

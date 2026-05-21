@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.25]
+
+### Fixed
+- **`act_info.c` trust-rebuild: `do_equipment` slot order parity**: `mud/commands/inventory.py` now mirrors ROM `do_equipment` by iterating wear slots in numeric `MAX_WEAR` order instead of Python dict insertion order.
+- **`act_info.c` trust-rebuild: `do_where` private-room parity**: `mud/commands/info.py` mode 1 now applies the ROM room-owner/private-room gate on the live session path, so mortals no longer see descriptor-backed players in genuinely private rooms.
+
+### Changed
+- **Stricter `inventory` / `equipment` / `where` regressions**: added ROM-exact layout assertions for `do_inventory` and `do_equipment`, plus a real descriptor-path private-room regression for `do_where`.
+
+
 ## [2.8.24]
 
 ### Fixed

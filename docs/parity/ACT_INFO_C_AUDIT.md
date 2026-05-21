@@ -42,6 +42,11 @@ Trust-rebuild progress now started:
   wording assertions added
 - `do_whois`: descriptor-path formatting revalidated against ROM; exact race /
   class / flag / switched-original output tests added
+- `do_equipment`: exact ROM slot-order regression added; dict-insertion-order
+  bug fixed
+- `do_inventory`: exact combined-layout regression added
+- `do_where`: live descriptor-path private-room regression added; ROM room-owner
+  / private-room gate restored
 
 See:
 - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-21-parity-trust-rebuild-reaudit.md`

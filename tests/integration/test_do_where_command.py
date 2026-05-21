@@ -160,6 +160,34 @@ class TestDoWhereMode1:
 
         character_registry.remove(player2)
 
+    def test_where_excludes_private_room_sessions_for_mortals(self, clear_sessions, test_character, setup_area_rooms):
+        """ROM mode 1 scans live descriptors; private-room filtering must happen there too."""
+        test_character.room = setup_area_rooms["temple"]
+        setup_area_rooms["temple"].people = [test_character]
+
+        sess1 = Session(name="WhereTest", character=test_character, reader=None, connection=None)
+        SESSIONS["WhereTest"] = sess1
+
+        player2 = Character()
+        player2.name = "PrivatePlayer"
+        player2.is_npc = False
+        player2.level = 1
+        player2.room = setup_area_rooms["private"]
+        other = Character()
+        other.name = "OtherOccupant"
+        other.is_npc = False
+        other.level = 1
+        other.room = setup_area_rooms["private"]
+        setup_area_rooms["private"].people = [player2, other]
+
+        sess2 = Session(name="PrivatePlayer", character=player2, reader=None, connection=None)
+        SESSIONS["PrivatePlayer"] = sess2
+
+        result = do_where(test_character, "")
+
+        assert "PrivatePlayer" not in result
+        assert result == "Players near you:\n\rWhereTest                    Midgaard Temple\n\r"
+
     def test_where_shows_private_rooms_for_immortals(self, clear_sessions, immortal_character, setup_area_rooms):
         """Test immortals can see players in private rooms."""
         immortal_character.room = setup_area_rooms["temple"]

@@ -849,11 +849,14 @@ def do_equipment(char: Character, args: str = "") -> str:
     # ROM C line 2268: send_to_char ("You are using:\n\r", ch);
     output = "You are using:\n"
 
-    # ROM C lines 2269-2289: Iterate through equipment slots
+    # ROM C lines 2269-2289: Iterate through equipment slots in numeric wear
+    # order (`for (iWear = 0; iWear < MAX_WEAR; iWear++)`), not dict insertion
+    # order.
     equipment = getattr(char, "equipment", {}) or {}
     found = False
 
-    for slot, obj in equipment.items():
+    for slot in sorted(equipment):
+        obj = equipment[slot]
         slot_name = slot_names.get(slot, f"<slot {slot}>")
 
         # ROM C line 2277: if (can_see_obj (ch, obj))

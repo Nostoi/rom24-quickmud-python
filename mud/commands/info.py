@@ -282,6 +282,7 @@ def do_where(char: Character, args: str) -> str:
     from mud.net.session import SESSIONS
     from mud.world.vision import can_see_character
     from mud.models.constants import RoomFlag
+    from mud.world.movement import _is_room_owner, _room_is_private
 
     char_room = getattr(char, "room", None)
     if not char_room:
@@ -317,8 +318,8 @@ def do_where(char: Character, args: str) -> str:
                 continue
 
             # ROM C check: is_room_owner(ch, victim->in_room) || !room_is_private(victim->in_room)
-            # TODO: Implement is_room_owner and room_is_private checks
-            # For now, skip private room check (will be added in future)
+            if not _is_room_owner(char, victim_room) and _room_is_private(victim_room):
+                continue
 
             victim_area = getattr(victim_room, "area", None)
             if victim_area != char_area:

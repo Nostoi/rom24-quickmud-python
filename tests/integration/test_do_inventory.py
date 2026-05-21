@@ -301,6 +301,30 @@ def test_inventory_duplicate_order_preserved(movable_char_factory, object_factor
     assert "vest" in lines[2].lower()
 
 
+def test_inventory_combined_output_matches_rom_line_layout(movable_char_factory, object_factory):
+    """Use one exact golden-style assertion for a small combined inventory layout."""
+    char = movable_char_factory("TestChar", 3001)
+    char.comm = int(CommFlag.COMBINE)
+
+    potion1 = object_factory({"vnum": 1, "name": "potion", "short_descr": "a healing potion"})
+    sword = object_factory({"vnum": 2, "name": "sword", "short_descr": "a wooden sword"})
+    potion2 = object_factory({"vnum": 3, "name": "potion", "short_descr": "a healing potion"})
+
+    char.add_object(potion1)
+    char.add_object(sword)
+    char.add_object(potion2)
+
+    from mud.commands.inventory import do_inventory
+
+    output = do_inventory(char, "")
+
+    assert output == (
+        "You are carrying:\n"
+        "( 2) a healing potion\n"
+        "     a wooden sword\n"
+    )
+
+
 # P2 Tests (Optional - Advanced Features)
 
 
