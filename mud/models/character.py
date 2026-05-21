@@ -1098,8 +1098,12 @@ def from_orm(db_char: DBCharacter) -> Character:
     saved_position = getattr(db_char, "position", None)
     if saved_position is not None:
         char.position = int(saved_position)
+    import time
+
     char.played = int(getattr(db_char, "played", 0) or 0)
-    char.logon = int(getattr(db_char, "logon", 0) or 0)
+    # mirroring ROM src/db.c:2550 + src/save.c — pfiles persist played time,
+    # but a loaded character's live session logon is always current_time.
+    char.logon = int(time.time())
     char.lines = int(getattr(db_char, "lines", 22) or 22)
     saved_prefix = getattr(db_char, "prefix", None)
     char.prefix = str(saved_prefix) if saved_prefix is not None else ""

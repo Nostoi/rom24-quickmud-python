@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.23]
+
+### Fixed
+- **`score` parity and load-session hydration**: fixed ROM-visible `score` output so loaded characters now refresh live session `logon`, render race/class/title correctly, and use ROM-style low-level AC wording instead of stale helper-path values.
+- **Runtime-path persistence regression coverage**: added a full WebSocket create → disconnect → reconnect test to prove completed character creation persists and the second login reaches `Password:` instead of restarting character creation.
+
+### Changed
+- **Verification language downgraded to match evidence**: README and session guidance now mark ROM parity as under active revalidation rather than fully certified, after a live `score` bug showed gaps in prior observable-behavior coverage.
+- **Trust-rebuild program documented**: added a re-audit plan and a differential-testing design spec covering ROM-exact output, runtime-path verification, and data parity for future audit closure work.
+
+
 ## [2.8.22]
 
 ### Fixed

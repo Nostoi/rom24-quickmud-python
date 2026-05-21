@@ -3,7 +3,8 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 
 from mud.account.account_service import clear_active_accounts
-from mud.db.models import Base
+from mud.db.models import Base, Character
+from mud.db.session import SessionLocal
 from mud.db.session import engine
 from mud.network.websocket_server import app
 from mud.registry import room_registry
@@ -56,3 +57,56 @@ def test_websocket_boots_loaded_world_and_uses_account_login_flow() -> None:
             _, prompt = _receive_until_prompt(websocket)
             assert prompt["text"] == "Confirm password: "
             assert prompt["secret"] is True
+
+
+def test_websocket_created_character_persists_and_reconnects_with_password_prompt() -> None:
+    with TestClient(app) as client:
+        assert room_registry
+
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+
+            for text in (
+                "Eddol",
+                "y",
+                "secret1",
+                "secret1",
+                "elf",
+                "m",
+                "mage",
+                "g",
+                "n",
+                "k",
+                "y",
+                "dagger",
+            ):
+                websocket.send_json({"type": "input", "text": text})
+                _, prompt = _receive_until_prompt(websocket)
+
+            assert prompt["text"].endswith("> ")
+
+        session = SessionLocal()
+        try:
+            row = session.query(Character).filter_by(name="Eddol").first()
+            assert row is not None
+            assert row.level == 1
+            assert row.race == 1
+            assert row.ch_class == 0
+            assert row.title == " the Apprentice of Magic"
+        finally:
+            session.close()
+
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+
+            websocket.send_json({"type": "input", "text": "Eddol"})
+            _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Password: "

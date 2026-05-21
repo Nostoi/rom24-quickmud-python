@@ -4,11 +4,11 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-4567%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
-[![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-gameplay%20100%25-success.svg)](ROM_2.4B6_PARITY_CERTIFICATION.md)
+[![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-revalidation%20in%20progress-orange.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![ROM C Audit](https://img.shields.io/badge/ROM%20C%20Audit-40%2F40%20audited-success.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![Integration Tests](https://img.shields.io/badge/integration%20tests-1000%2B-brightgreen.svg)](tests/integration/)
 
-**QuickMUD is a modern Python port of the legendary ROM 2.4b6 MUD engine**, derived from ROM 2.4b6, Merc 2.1 and DikuMUD. This is a complete rewrite that brings the classic text-based MMORPG experience to modern Python with async networking, JSON world data, and **100% ROM 2.4b behavioral parity**.
+**QuickMUD is a modern Python port of the legendary ROM 2.4b6 MUD engine**, derived from ROM 2.4b6, Merc 2.1 and DikuMUD. This is a complete rewrite that brings the classic text-based MMORPG experience to modern Python with async networking and JSON world data. The engine currently has a green suite and broad ROM audit coverage, but **parity trust rebuild / revalidation is in progress** after live bugs exposed gaps in observable-behavior verification.
 
 ## 🎮 What is a MUD?
 
@@ -16,7 +16,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 
 ## ✨ Key Features
 
-- **🎯 100% ROM 2.4b Behavioral Parity CERTIFIED**: Official certification with comprehensive audits ([see certification](ROM_2.4B6_PARITY_CERTIFICATION.md))
+- **🎯 ROM parity trust rebuild in progress**: audit coverage is broad, but user-visible command/session surfaces are being revalidated against stricter ROM-exact tests
 - **🚀 Modern Python Architecture**: Fully async/await networking with SQLAlchemy ORM
 - **📡 Multiple Connection Options**: Telnet, WebSocket, and SSH server support
 - **🗺️ JSON World Loading**: Easy-to-edit world data with 352+ room resets
@@ -24,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 4,560 passing tests across unit, integration, and command-registry suites
+- **📊 Comprehensive Testing**: 4,571 passing tests across unit, integration, and command-registry suites
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -164,18 +164,17 @@ python -m mud  # Start development server
 ## 🎯 Project Status
 
 - **Version**: 2.8.22
-- **ROM 2.4b Gameplay Parity**: ✅ **100%** ([official certification](ROM_2.4B6_PARITY_CERTIFICATION.md)) —
+- **ROM 2.4b Gameplay Parity**: ⚠️ **broadly audited, currently being revalidated** —
   combat, skills, spells, movement, communication, world/db, save/load, mob programs,
-  and all 255 ROM commands are implemented and audited.
+  and all 255 ROM commands are implemented, but some previously “verified” user-visible surfaces were only smoke-tested and are being rechecked with ROM-exact assertions.
 - **ROM C Source Audit**: ✅ **100% audit-bound coverage** — 40 of 40 applicable ROM C files are audited, with
   3 additional ROM files intentionally N/A (`recycle.c`, `mem.c`, `imc.c`). See
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
 - **Cross-file Invariants**: ✅ **8/8 enforced** — message delivery, prompt clamping, registry membership,
   same-room combat, death/connection behavior, RNG determinism, and persistence coherence are locked by dedicated tests.
-- **Test Suite**: ✅ **4567 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
+- **Test Suite**: ✅ **4571 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
   integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
-- **Active focus**: parity work is effectively complete; current work is maintenance, frontend coordination,
-  and investigation only when a deterministic regression is reproduced.
+- **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact output, boundary, and runtime-path tests on the highest-risk user-visible surfaces.
 - **Compatibility**: Python 3.10+, cross-platform
 
 ## 🏛️ Architecture
@@ -196,8 +195,10 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 
 ## 📚 Documentation
 
-### Official Certification
-- [ROM 2.4b6 Parity Certification](ROM_2.4B6_PARITY_CERTIFICATION.md) - **Official 100% parity certification**
+### Verification Status
+- [ROM C subsystem tracker](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md) - canonical audit surface
+- [ROM parity verification guide](docs/ROM_PARITY_VERIFICATION_GUIDE.md) - current verification standard
+- [ROM 2.4b6 Parity Certification](ROM_2.4B6_PARITY_CERTIFICATION.md) - historical certification document; claims are being revalidated
 
 ### User Documentation
 - [User Guide](docs/USER_GUIDE.md) - Player and server operator documentation

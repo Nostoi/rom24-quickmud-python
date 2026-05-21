@@ -70,18 +70,22 @@ def do_score(ch: Character, args: str) -> str:
 
     # Name and title - ROM src/act_info.c lines 1482-1488
     name = getattr(ch, "name", "Unknown")
-    title = getattr(ch, "title", "")
+    pcdata = getattr(ch, "pcdata", None)
+    title = getattr(pcdata, "title", "") if pcdata is not None else getattr(ch, "title", "")
     level = getattr(ch, "level", 1)
 
     # Get age and played hours
-    from mud.handler import get_age
+    from mud.handler import class_name, get_age, race_name
+    from mud.math.c_compat import c_div
     import time
 
     age = get_age(ch)
     played = getattr(ch, "played", 0)
-    logon = getattr(ch, "logon", time.time())
     current_time = time.time()
-    total_hours = (played + int(current_time - logon)) // 3600
+    logon = getattr(ch, "logon", current_time)
+    if not logon:
+        logon = current_time
+    total_hours = c_div(int(played + (current_time - logon)), 3600)
 
     if title:
         lines.append(f"You are {name}{title}, level {level}, {age} years old ({total_hours} hours).")
@@ -99,8 +103,8 @@ def do_score(ch: Character, args: str) -> str:
     race = getattr(ch, "race", "unknown")
     sex = getattr(ch, "sex", 0)
     sex_name = "sexless" if sex == 0 else ("male" if sex == 1 else "female")
-    class_name = getattr(ch, "class_name", "unknown")
-    lines.append(f"Race: {race}  Sex: {sex_name}  Class: {class_name}")
+    class_label = "mobile" if getattr(ch, "is_npc", False) else class_name(getattr(ch, "ch_class", 0))
+    lines.append(f"Race: {race_name(race)}  Sex: {sex_name}  Class: {class_label}")
 
     # HP, Mana, Movement
     hp = getattr(ch, "hit", 0)
@@ -167,10 +171,8 @@ def do_score(ch: Character, args: str) -> str:
         ac_slash = get_ac(ch, 2)
         ac_magic = get_ac(ch, 3)
         lines.append(f"Armor: pierce: {ac_pierce}  bash: {ac_bash}  slash: {ac_slash}  magic: {ac_magic}")
-    else:
-        # Low level: show generic description based on AC_SLASH (index 2).
-        ac_slash = get_ac(ch, 2)
-        lines.append(f"You are {_armor_class_description(ac_slash)} armored.")
+    for ac_type, damage_name in enumerate(("piercing", "bashing", "slashing", "magic")):
+        lines.append(f"You are {_armor_class_description(get_ac(ch, ac_type), damage_name)}")
 
     # Immortal info - ROM src/act_info.c lines 1654-1675
     from mud.models.constants import LEVEL_IMMORTAL, PlayerFlag
@@ -270,30 +272,31 @@ def do_score(ch: Character, args: str) -> str:
     return result
 
 
-def _armor_class_description(ac: int) -> str:
-    """Convert armor class to ROM description."""
+def _armor_class_description(ac: int, damage_name: str) -> str:
+    """Convert armor class to ROM score wording."""
     if ac >= 101:
-        return "hopelessly"
-    elif ac >= 80:
-        return "defenseless"
-    elif ac >= 60:
-        return "barely"
-    elif ac >= 40:
-        return "poorly"
-    elif ac >= 20:
-        return "somewhat"
-    elif ac >= 0:
-        return "well"
-    elif ac >= -20:
-        return "very well"
-    elif ac >= -40:
-        return "extremely well"
-    elif ac >= -60:
-        return "superbly"
-    elif ac >= -80:
-        return "almost invulnerably"
-    else:
-        return "divinely"
+        return f"hopelessly vulnerable to {damage_name}."
+    if ac >= 80:
+        return f"defenseless against {damage_name}."
+    if ac >= 60:
+        return f"barely protected from {damage_name}."
+    if ac >= 40:
+        return f"slightly armored against {damage_name}."
+    if ac >= 20:
+        return f"somewhat armored against {damage_name}."
+    if ac >= 0:
+        return f"armored against {damage_name}."
+    if ac >= -20:
+        return f"well-armored against {damage_name}."
+    if ac >= -40:
+        return f"very well-armored against {damage_name}."
+    if ac >= -60:
+        return f"heavily armored against {damage_name}."
+    if ac >= -80:
+        return f"superbly armored against {damage_name}."
+    if ac >= -100:
+        return f"almost invulnerable to {damage_name}."
+    return f"divinely armored against {damage_name}."
 
 
 def _get_alignment_description(alignment: int) -> str:

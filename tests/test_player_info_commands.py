@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import re
+import time
+
 import pytest
 
 from mud.commands.info_extended import do_whois, do_worth
 from mud.commands.session import do_score
-from mud.models.constants import PlayerFlag
+from mud.models.character import PCData
+from mud.models.constants import PlayerFlag, Sex
+from mud.handler import class_name, race_name
 from mud.world import create_test_character, initialize_world
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
@@ -92,6 +97,46 @@ class TestScoreCommand:
         output = do_score(player, "")
 
         assert "armor" in output.lower() or "ac" in output.lower()
+
+    def test_score_uses_rom_title_race_and_class_names(self):
+        player = create_test_character("Eddol", 3001)
+        player.pcdata = PCData()
+        player.pcdata.title = " the Apprentice of Magic"
+        player.level = 1
+        player.race = 1
+        player.ch_class = 0
+        player.sex = int(Sex.MALE)
+
+        output = do_score(player, "")
+
+        assert "You are Eddol the Apprentice of Magic, level 1, 17 years old (0 hours)." in output
+        assert f"Race: {race_name(player.race)}  Sex: male  Class: {class_name(player.ch_class)}" in output
+
+    def test_score_shows_rom_ac_lines_for_low_level_characters(self):
+        player = create_test_character("Armored", 3001)
+        player.level = 1
+        player.armor = [80, 80, 80, 80]
+        player.perm_stat = [13, 13, 13, 13, 13]
+
+        output = do_score(player, "")
+
+        assert "You are defenseless against piercing." in output
+        assert "You are defenseless against bashing." in output
+        assert "You are defenseless against slashing." in output
+        assert "You are defenseless against magic." in output
+
+    def test_score_does_not_treat_zero_logon_as_unix_epoch(self):
+        player = create_test_character("Fresh", 3001)
+        player.pcdata = PCData()
+        player.pcdata.title = " the Apprentice of Magic"
+        player.level = 1
+        player.logon = 0
+        player.played = 0
+
+        output = do_score(player, "")
+
+        assert "24730 years old" not in output
+        assert re.search(r"level 1, 17 years old \(0 hours\)\.", output)
 
     def test_score_shows_position(self):
         player = create_test_character("Standing", 3001)

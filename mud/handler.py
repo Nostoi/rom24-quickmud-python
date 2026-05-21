@@ -745,11 +745,15 @@ def get_age(ch: "Character") -> int:
     """
     import time
 
-    played = getattr(ch, "played", 0)
-    logon = getattr(ch, "logon", time.time())
-    current_time = time.time()
+    from mud.math.c_compat import c_div
 
-    return 17 + int((played + (current_time - logon)) / 72000)
+    played = getattr(ch, "played", 0)
+    current_time = time.time()
+    logon = getattr(ch, "logon", current_time)
+    if not logon:
+        logon = current_time
+
+    return 17 + c_div(int(played + (current_time - logon)), 72000)
 
 
 def get_max_train(ch: "Character", stat: int) -> int:
@@ -1662,9 +1666,9 @@ def race_name(race_val: int | str) -> str:
     if isinstance(race_val, str):
         return race_val.lower()
 
-    from mud.models.races import get_race
+    from mud.models.races import get_race_by_index
 
-    race = get_race(race_val)
+    race = get_race_by_index(race_val)
     if race is not None:
         return getattr(race, "name", f"unknown({race_val})").lower()
     return f"unknown({race_val})"

@@ -124,6 +124,45 @@ Parity violations often **fail silently**:
 
 **All three levels required** - missing any level = parity violation risk.
 
+## Verification Confidence Tiers
+
+The project previously treated “audited” and “green suite” as if they implied
+full parity confidence. That standard was too weak. Use the tiers below when
+describing confidence.
+
+### Tier A: Audit / Structural Coverage
+- The ROM C function was read.
+- The Python equivalent exists.
+- Call sites and control flow were compared.
+
+This is necessary, but not sufficient.
+
+### Tier B: ROM-Exact Behavioral Coverage
+- Tests assert ROM-observable behavior, not broad success.
+- For user-visible commands, prefer exact wording/order when practical.
+- For mechanics, assert exact state transitions, timing, and side effects.
+
+Smoke tests do **not** satisfy Tier B.
+
+### Tier C: Runtime-Path Coverage
+- The behavior was exercised through the real player-facing boundary:
+  telnet/WebSocket login, command dispatch, save/load cycle, combat tick, etc.
+- Helper-only tests are supporting evidence, not closure evidence, for boundary-heavy surfaces.
+
+### Tier D: Data/Input Parity Coverage
+- If the surface depends on JSON areas, DB rows, title tables, help files,
+  resets, or other persisted inputs, those inputs were checked too.
+
+### Claiming “verified”
+
+Do **not** call a surface “verified” unless it has:
+- Tier A structural comparison
+- Tier B ROM-exact assertions
+- Tier C runtime-path coverage when boundary state matters
+- Tier D data parity checks when external data drives behavior
+
+“All tests pass” and “40/40 audited” are status signals, not proof of full parity confidence.
+
 ---
 
 ## Level 1: Code Structure Parity
@@ -252,6 +291,15 @@ def violence_tick() -> None:
 
 Individual functions produce **ROM-identical output** for equivalent inputs.
 
+For user-visible commands, strongly prefer golden-output or exact-line
+assertions over loose checks like:
+- `len(output) > 0`
+- `contains player name`
+- `contains some stat`
+
+Those checks are acceptable smoke coverage, but they are not enough evidence to
+support parity claims.
+
 ### How to Verify
 
 #### Method 1: Golden File Tests
@@ -364,6 +412,10 @@ def test_skill_success_rate_rom_parity():
 Systems work correctly **when integrated into the game loop**, not just in isolation.
 
 **This is where most parity violations hide!**
+
+For login/session/save surfaces, this level should include the real server path
+where possible. A helper-path round-trip is not enough evidence for `nanny.c`,
+`save.c`, or transport-bound behavior.
 
 ### The Integration Gap
 

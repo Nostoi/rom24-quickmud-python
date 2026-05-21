@@ -1,46 +1,52 @@
-# Session Status — 2026-05-21 — area JSON reset warnings repaired and recertified
+# Session Status — 2026-05-21 — score parity bug fixed, trust-rebuild re-audit queued
 
 ## Current State
 
-- **The live server boot warning flood from invalid O/P/D/G/E resets is repaired.**
-- The checked-in area JSON dataset has been regenerated from `.are` sources after fixing loader bugs.
-- Fresh JSON world init now reports:
-  - `warning_count=0`
+- **A real ROM-parity bug was found on the live `score` surface after earlier “100% verified” claims.**
+- Fixed:
+  - session `logon` refresh on ORM load
+  - `score` title/race/class rendering
+  - low-level AC wording in `score`
+  - integer race-name lookup
+- The completed create → reconnect path currently persists correctly under the real WebSocket flow.
 - **Pointer to latest summary**:
-  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-21_AREA_JSON_RESET_REPAIR_FULL_SUITE_RECERT.md`
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/sessions/SESSION_SUMMARY_2026-05-21_SCORE_PARITY_FIX_AND_TRUST_REBUILD_PIVOT.md`
 
-## What changed
+## What changed in this investigation
 
-- Fixed ROM door-lock parsing in `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/loaders/room_loader.py`
-- Fixed ROM object `F` affect parsing in `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/loaders/obj_loader.py`
-- Fixed embedded-tilde string termination in `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/loaders/base_loader.py`
-- Fixed JSON room-sector parity in `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/loaders/json_loader.py`
-- Regenerated checked-in area JSON files under `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/data/areas/`
+- Fixed `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/commands/session.py`
+- Fixed `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/handler.py`
+- Fixed `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/mud/models/character.py`
+- Added stricter regressions in:
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/tests/test_player_info_commands.py`
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/tests/test_websocket_server.py`
+- Wrote the trust-rebuild re-audit plan:
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-21-parity-trust-rebuild-reaudit.md`
+- Wrote the differential-testing design spec:
+  - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/specs/2026-05-21-rom-differential-testing-design.md`
 
 ## Verification
 
-- Area/json parity slice:
-  - `./venv/bin/python -m pytest -q tests/test_area_exits.py tests/test_area_loader.py tests/test_area_counts.py tests/test_json_room_fields.py tests/integration/test_json_loader_parity.py tests/test_scan_parity.py::test_scan_empty_room tests/test_scan_parity.py::test_scan_parity_golden_sequence tests/test_mobprog_commands.py::test_combat_cleanup_commands_handle_inventory_damage_and_escape`
-  - `85 passed`
-- Latest full-suite recertification:
+- Focused verification slice:
+  - `./venv/bin/python -m pytest -q tests/test_player_info_commands.py tests/test_websocket_server.py tests/integration/test_character_creation_runtime.py tests/integration/test_db_canonical_round_trip.py tests/test_act_info_rom_parity.py`
+  - `49 passed`
+- Latest full-suite recertification after the score/login fixes:
   - `./venv/bin/python -m pytest -q --maxfail=1`
-  - `4567 passed, 4 skipped`
-- World-init smoke check:
-  - `initialize_world(use_json=True)`
-  - `warning_count=0`
+  - `4571 passed, 4 skipped`
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
 | Version | 2.8.22 |
-| Original startup warning flood | **fixed** |
-| JSON world-init warnings | **0** |
-| Area/json verification slice | **85 passed** |
-| Full suite | **green (`4567 passed, 4 skipped`)** |
+| Score parity bug | **fixed** |
+| WebSocket create → reconnect path | **green in test** |
+| Focused verification slice | **49 passed** |
+| Full suite | **green (`4571 passed, 4 skipped`)** |
 
 ## Next Intended Task
 
-1. Commit the area-loader and regenerated-data slice with the recertified suite state.
-2. Restart the live server so it reloads the repaired `data/areas/*.json` set.
-3. If any new boot warning appears after restart, treat it as a new isolated parity/data bug rather than part of the repaired reset flood.
+1. Commit the score/login/session fix slice.
+2. Execute the trust-rebuild plan at `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-21-parity-trust-rebuild-reaudit.md`.
+3. Use the differential-testing design at `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/specs/2026-05-21-rom-differential-testing-design.md` to choose the right comparison mode per surface.
+4. Start with `act_info.c`, `nanny.c`, and `save.c` re-audits using ROM-exact output and runtime-path assertions, not smoke coverage.
