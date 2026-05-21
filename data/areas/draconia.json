@@ -19,14 +19,13 @@
           "to_room": 2202,
           "description": "You see a large steel gate.  Beyond is the Foyer of the Tower.\n",
           "keyword": "gate steel",
-          "flags": "7",
+          "flags": 1,
           "key": 2231
         },
         "east": {
           "to_room": 1304,
           "description": "The shadows cloud your vision.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -47,13 +46,13 @@
         "north": {
           "to_room": 2203,
           "description": "You see a long hallway. \n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2201,
           "description": "You see the gate. \n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -75,13 +74,13 @@
         "north": {
           "to_room": 2204,
           "description": "The hall continues. \n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2202,
           "description": "You see the foyer. \n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -98,27 +97,27 @@
         "north": {
           "to_room": 2207,
           "description": "The hall continues. \n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2205,
           "description": "You see a door.  You notice a sign. \n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         },
         "south": {
           "to_room": 2203,
           "description": "The hall continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2206,
           "description": "You see an oak door.  There is an inscription on it. \n",
           "keyword": "oak",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -145,13 +144,13 @@
           "to_room": 2223,
           "description": "You see a large stone door.\n",
           "keyword": "door stone",
-          "flags": "2",
+          "flags": 33,
           "key": 2297
         },
         "west": {
           "to_room": 2204,
           "description": "You see the hallway. \n",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -168,14 +167,14 @@
         "east": {
           "to_room": 2204,
           "description": "You see the hallway. \n",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         },
         "down": {
           "to_room": 2208,
           "description": "You see nothing special. \n",
           "keyword": "trapdoor",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -197,13 +196,13 @@
         "south": {
           "to_room": 2204,
           "description": "The hall continues. \n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 2210,
           "description": "The second floor.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -226,14 +225,14 @@
           "to_room": 2209,
           "description": "A large grey door.\n",
           "keyword": "grey",
-          "flags": "1",
+          "flags": 1,
           "key": 2234
         },
         "up": {
           "to_room": 2206,
           "description": "You see the storage room. \n",
           "keyword": "door trap trapdoor",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -251,14 +250,14 @@
           "to_room": 2208,
           "description": "You see nothing special. \n",
           "keyword": "grey",
-          "flags": "2",
+          "flags": 33,
           "key": 2234
         },
         "west": {
           "to_room": 2218,
           "description": "You see a ruby door!\n",
           "keyword": "door ruby",
-          "flags": "2",
+          "flags": 33,
           "key": 2232
         }
       },
@@ -275,13 +274,13 @@
         "south": {
           "to_room": 2211,
           "description": "You see the court.\n",
-          "flags": "0",
+          "flags": 0,
           "key": 1
         },
         "down": {
           "to_room": 2207,
           "description": "You see the first floor.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -298,20 +297,20 @@
         "north": {
           "to_room": 2210,
           "description": "You see nothing special.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2212,
           "description": "You see a wooden door. \n",
           "keyword": "door wooden",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         },
         "south": {
           "to_room": 2213,
           "description": "You see the court.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -328,7 +327,7 @@
         "west": {
           "to_room": 2211,
           "description": "You see the Court.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -345,27 +344,27 @@
         "north": {
           "to_room": 2211,
           "description": "You see the court.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2214,
           "description": "You see a black door.\n",
           "keyword": "door black",
-          "flags": "1",
+          "flags": 1,
           "key": 2240
         },
         "south": {
           "to_room": 2216,
           "description": "You see the court.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2215,
           "description": "You see a white door.\n",
           "keyword": "door white",
-          "flags": "1",
+          "flags": 1,
           "key": 2233
         }
       },
@@ -383,7 +382,7 @@
           "to_room": 2213,
           "description": "You see the court.\n",
           "keyword": "door black",
-          "flags": "1",
+          "flags": 1,
           "key": 2240
         }
       },
@@ -401,7 +400,7 @@
           "to_room": 2213,
           "description": "You see the Court.\n",
           "keyword": "door white",
-          "flags": "1",
+          "flags": 1,
           "key": 2233
         }
       },
@@ -418,13 +417,13 @@
         "north": {
           "to_room": 2213,
           "description": "You see the court.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2217,
           "description": "You see a private chamber.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -441,7 +440,7 @@
         "west": {
           "to_room": 2216,
           "description": "You see Court.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -459,13 +458,13 @@
           "to_room": 2209,
           "description": "You see the Treasure Vault.\n",
           "keyword": "door ruby",
-          "flags": "2",
+          "flags": 33,
           "key": 2232
         },
         "west": {
           "to_room": 2219,
           "description": "You see the Crypt.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -482,13 +481,13 @@
         "east": {
           "to_room": 2218,
           "description": "You see the entrance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2222,
           "description": "You see nothing special.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -505,8 +504,7 @@
         "south": {
           "to_room": 2235,
           "description": "You the cave opening.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -522,8 +520,7 @@
         "north": {
           "to_room": 2241,
           "description": "You the cave opening.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -539,14 +536,13 @@
         "east": {
           "to_room": 2219,
           "description": "You see the Crypt.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2232,
           "keyword": "coffin",
-          "flags": "7",
-          "key": -1
+          "flags": 1
         }
       },
       "extra_descriptions": [
@@ -567,14 +563,14 @@
         "east": {
           "to_room": 2224,
           "description": "The Hall continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2205,
           "description": "You see the Nursery.\n",
           "keyword": "door stone",
-          "flags": "1",
+          "flags": 1,
           "key": 2297
         }
       },
@@ -591,13 +587,13 @@
         "north": {
           "to_room": 2225,
           "description": "You see a narrow passageway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2229,
           "description": "You see the Hall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -614,13 +610,13 @@
         "north": {
           "to_room": 2226,
           "description": "You see a large Lair.  It looks dangerous.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2224,
           "description": "You see the great hall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -637,14 +633,14 @@
         "south": {
           "to_room": 2225,
           "description": "The narrow passageway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 2227,
           "description": "You see a trap door.\n",
           "keyword": "door trap trapdoor",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -661,14 +657,14 @@
         "north": {
           "to_room": 2228,
           "description": "You see the tunnel.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 2226,
           "description": "You see the red dragon's lair.\n",
           "keyword": "door trap trapdoor",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -685,7 +681,7 @@
         "south": {
           "to_room": 2227,
           "description": "You see the tunnel.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -703,13 +699,13 @@
           "to_room": 2230,
           "description": "You see a great golden door.\n",
           "keyword": "door great golden",
-          "flags": "2",
+          "flags": 33,
           "key": 2299
         },
         "west": {
           "to_room": 2224,
           "description": "You see the hall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -732,7 +728,7 @@
           "to_room": 2229,
           "description": "You see a great golden door.\n",
           "keyword": "door golden great",
-          "flags": "2",
+          "flags": 33,
           "key": 2299
         }
       },
@@ -749,7 +745,7 @@
         "south": {
           "to_room": 2243,
           "description": "You see the top of the mountain.\n",
-          "flags": "2",
+          "flags": 33,
           "key": 2241
         }
       },
@@ -766,14 +762,12 @@
         "east": {
           "to_room": 2222,
           "description": "The crypt",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 2233,
           "description": "A wine cellar",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -789,14 +783,12 @@
         "east": {
           "to_room": 2234,
           "description": "A tunnel\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 2232,
           "description": "The stairwell\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -812,20 +804,17 @@
         "north": {
           "to_room": 2235,
           "description": "A cave opening\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 2236,
           "description": "A tunnel\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 2233,
           "description": "A tunnel\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -841,14 +830,12 @@
         "north": {
           "to_room": 2220,
           "description": "The lair\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 2234,
           "description": "The tunnel\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -864,20 +851,17 @@
         "south": {
           "to_room": 2237,
           "description": "bridge\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 2234,
           "description": "The tunnel\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 2202,
           "description": "trapdoor\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -893,14 +877,12 @@
         "north": {
           "to_room": 2236,
           "description": "The tunnel end\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 2238,
           "description": "A small opening\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -916,14 +898,12 @@
         "north": {
           "to_room": 2237,
           "description": "bridge\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 2239,
           "description": "clearing\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -939,20 +919,17 @@
         "north": {
           "to_room": 2238,
           "description": "the small opening\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 2240,
           "description": "A path\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 2244,
           "description": "The well\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -977,20 +954,17 @@
         "west": {
           "to_room": 2241,
           "description": "cave opening\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 2242,
           "description": "the path continues\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 2239,
           "description": "clearing\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1006,14 +980,12 @@
         "east": {
           "to_room": 2240,
           "description": "the path\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 2221,
           "description": "A lair\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1029,14 +1001,12 @@
         "up": {
           "to_room": 2243,
           "description": "top of the mountain\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 2240,
           "description": "path\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1053,14 +1023,13 @@
           "to_room": 2231,
           "description": "The platinum door\n",
           "keyword": "door platinum",
-          "flags": "2",
+          "flags": 33,
           "key": 2241
         },
         "down": {
           "to_room": 2242,
           "description": "The path continues\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -1090,7 +1059,7 @@
       "long_description": "A dragon hatchling is here, chewing on a bone.\n",
       "description": "This small dragon hisses at you as you enter the room.  Although it is only a\nfew feet long, its sharp teeth make you think twice about petting it.\n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "ABG",
       "affected_by": "0JT",
       "alignment": -900,
       "group": 0,
@@ -1100,19 +1069,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
-      "resist": "0BEH",
-      "vuln": "0FI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
+      "resist": "0BE",
+      "vuln": "0F",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 100
+      "wealth": 100,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2201,
@@ -1121,7 +1094,7 @@
       "long_description": "The Draconian is standing here.\n",
       "description": "This horrible creature is a bizarre cross between a man and a dragon.  He \nhas black scales and a seven foot wingspan.  He scowls at you and hefts his \nspear as you enter the room.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "D",
       "alignment": -900,
       "group": 0,
@@ -1131,19 +1104,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 100
+      "wealth": 100,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2202,
@@ -1152,7 +1129,7 @@
       "long_description": "The lord of this crypt is here.\n",
       "description": "He doesn't look happy to see you.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "T",
       "alignment": -1000,
       "group": 0,
@@ -1162,19 +1139,23 @@
       "hit_dice": "13d9+100",
       "mana_dice": "5d4+7",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1750
+      "wealth": 1750,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2203,
@@ -1183,7 +1164,7 @@
       "long_description": "A man is here, studying some books.\n",
       "description": "A powerful looking mage is standing in this room studying his spells.  You are\nsurprised at the fact that he is human, and realize that he must be very\npowerful to have been accepted by the creatures which live here.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABR",
       "affected_by": "BDH",
       "alignment": -900,
       "group": 0,
@@ -1193,19 +1174,23 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d7+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 3,
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 30
+      "wealth": 30,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2204,
@@ -1214,7 +1199,7 @@
       "long_description": "A Draconian is here, deep in thought.          \n",
       "description": "A Draconian stands here, dressed in simple robes.  Around his neck you \nnotice a golden medallion in the shape of a five headed dragon.  \n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCFQ",
       "affected_by": "DH",
       "alignment": -900,
       "group": 0,
@@ -1224,19 +1209,23 @@
       "hit_dice": "22d9+100",
       "mana_dice": "2d8+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 5,
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 20
+      "wealth": 20,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2205,
@@ -1245,7 +1234,7 @@
       "long_description": "A Draconian wearing fine clothes is here, pondering his greatness.          \n",
       "description": "The king of the draconians sits here on a golden throne.  He looks as \nthough he could crush your head with a single blow.  Yet you sense that he \nis controlled by a greater power. \n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABC",
       "affected_by": "DH",
       "alignment": -900,
       "group": 0,
@@ -1255,19 +1244,23 @@
       "hit_dice": "13d9+100",
       "mana_dice": "3d7+7",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 40
+      "wealth": 40,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2206,
@@ -1276,7 +1269,7 @@
       "long_description": "A concubine is resting here. \n",
       "description": "This is a concubine of the king.  She is lounging here, wearing nothing at \nall.  You find yourself strangely repulsed as she draws a knife and \nprepares to defend herself. \n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -1286,19 +1279,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5
+      "wealth": 5,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2207,
@@ -1307,7 +1304,7 @@
       "long_description": "A bodyguard is here, staring at you menacingly. \n",
       "description": "This creature has devoted its life to defending the king.  Your intrusion has\nnot pleased it.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "CDF",
       "alignment": -800,
       "group": 0,
@@ -1317,19 +1314,23 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250
+      "wealth": 250,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2220,
@@ -1338,7 +1339,7 @@
       "long_description": "A five headed dragon hisses at you as you enter this room.\n",
       "description": "You see before you the master of this Tower, Tiamat.  She frowns at you as she\nprepares to make you pay for your insolence ... with your lives!\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DFTV",
       "alignment": -1000,
       "group": 0,
@@ -1348,19 +1349,23 @@
       "hit_dice": "26d9+100",
       "mana_dice": "6d7+20",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -22,
+      "ac_bash": -22,
+      "ac_slash": -22,
+      "ac_exotic": 2,
       "offensive": "EFNU",
       "immune": "AB",
       "resist": "CD",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 2500
+      "wealth": 2500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2221,
@@ -1369,7 +1374,7 @@
       "long_description": "A red dragon is here, contemplating your existence. \n",
       "description": "This huge red dragon dominates the chamber.  As you turn to flee, he grins at\nyou and invites you to stay ... forever! \n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DFJT",
       "alignment": -1000,
       "group": 0,
@@ -1379,19 +1384,23 @@
       "hit_dice": "22d9+100",
       "mana_dice": "8d4+16",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": 4,
       "offensive": "EFNR",
       "immune": "H",
-      "resist": "0BEH",
+      "resist": "0BE",
       "vuln": "0FI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2222,
@@ -1400,7 +1409,7 @@
       "long_description": "A black dragon is here, laughing at your insolence. \n",
       "description": "This huge black wyrm laughs at your puny weapons.  You realize that he is not\ngoing to roll over and die for you.\n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DFJT",
       "alignment": -900,
       "group": 0,
@@ -1410,19 +1419,23 @@
       "hit_dice": "19d9+100",
       "mana_dice": "5d6+13",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -13,
+      "ac_bash": -13,
+      "ac_slash": -13,
+      "ac_exotic": 5,
       "offensive": "EFNR",
       "immune": "K",
-      "resist": "0BEH",
-      "vuln": "JFI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
+      "resist": "0BE",
+      "vuln": "JF",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1000
+      "wealth": 1000,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2223,
@@ -1431,7 +1444,7 @@
       "long_description": "A white dragon is here, waiting for you. \n",
       "description": "This dragon towers over you.  Recalling your previous experiences with white\ndragons, you are not afraid.  She smiles at you and says 'I think you will find\nme a greater challenge than my offspring.'\n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DFJT",
       "alignment": -1000,
       "group": 0,
@@ -1441,19 +1454,23 @@
       "hit_dice": "18d9+100",
       "mana_dice": "3d10+12",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -12,
+      "ac_bash": -12,
+      "ac_slash": -12,
+      "ac_exotic": 5,
       "offensive": "EFNR",
       "immune": "I",
-      "resist": "0BEH",
-      "vuln": "HFI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
+      "resist": "0BE",
+      "vuln": "HF",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 1750
+      "wealth": 1750,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2225,
@@ -1462,7 +1479,7 @@
       "long_description": "A green dragon is here, looking distraught. \n",
       "description": "This huge beast appears to be the most directly related to the draconians. \nShe looks at you with sorrow in her eyes and says 'You have slaughtered my \nchildren.  Prepare to die.'\n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DFJT",
       "alignment": -1000,
       "group": 0,
@@ -1472,19 +1489,23 @@
       "hit_dice": "20d9+100",
       "mana_dice": "4d8+14",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -14,
+      "ac_bash": -14,
+      "ac_slash": -14,
+      "ac_exotic": 4,
       "offensive": "EFNR",
       "immune": "L",
-      "resist": "0BEH",
-      "vuln": "PFI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
+      "resist": "0BE",
+      "vuln": "PF",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 1000
+      "wealth": 1000,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2226,
@@ -1493,7 +1514,7 @@
       "long_description": "A hydra is here, blocking the doorway. \n",
       "description": "A hydra is here, guarding the entrance to a sealed vault.  You have the feeling\nit isn't happy to see you.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DF",
       "alignment": -800,
       "group": 0,
@@ -1503,19 +1524,23 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 250
+      "wealth": 250,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2227,
@@ -1524,7 +1549,7 @@
       "long_description": "A Human slave is here, hard at work.          \n",
       "description": "He looks like he's under a lot of stress.  He would probably like it if you\nleft him alone.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABS",
       "affected_by": "DF",
       "alignment": 0,
       "group": 0,
@@ -1534,19 +1559,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5
+      "wealth": 5,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2240,
@@ -1555,7 +1584,7 @@
       "long_description": "A Draconian zombie is here, staring at nothing in particular.\n",
       "description": "This used to be one of the warriors of this tribe.  He was denied his final\nrest, however, and now guards this corridor tirelessly as a zombie.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DF",
       "alignment": -400,
       "group": 0,
@@ -1565,19 +1594,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 75
+      "wealth": 75,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2241,
@@ -1586,7 +1619,7 @@
       "long_description": "A Phase Dragon is darting around the room.          \n",
       "description": "This small dragon looks like he's up to no good. \n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "ACFGH",
       "affected_by": "DFJT",
       "alignment": -300,
       "group": 0,
@@ -1596,19 +1629,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0BEH",
       "vuln": "0FI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250
+      "wealth": 250,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2242,
@@ -1617,7 +1654,7 @@
       "long_description": "A Fool is here, making fun of you.          \n",
       "description": "This dragon man looks VERY foolish, dressed in a green and blue striped \nsuit.  As you enter the room, he points at you and laughs. \n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AGHS",
       "affected_by": "DF",
       "alignment": 0,
       "group": 0,
@@ -1627,19 +1664,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25
+      "wealth": 25,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2243,
@@ -1648,7 +1689,7 @@
       "long_description": "A Female Draconian sits, here, looking very important.          \n",
       "description": "This draconian looks VERY busy as she orders her slaves around.  You think \nit might be a good idea to leave her alone. \n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABC",
       "affected_by": "DFH",
       "alignment": -600,
       "group": 0,
@@ -1658,92 +1699,1074 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [
+  "objects": [
     {
-      "mob_vnum": 2200,
-      "spec": "spec_breath_any"
+      "id": 2200,
+      "name": "a jagged spear",
+      "keywords": "spear jagged",
+      "description": "A jagged spear has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 10,
+      "weight": 150,
+      "cost": 153,
+      "condition": 100,
+      "values": [
+        3,
+        2,
+        6,
+        34,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2203,
-      "spec": "spec_cast_mage"
+      "id": 2201,
+      "name": "a silver dagger",
+      "keywords": "dagger silver",
+      "description": "A silver dagger is lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 22,
+      "weight": 10,
+      "cost": 2000,
+      "condition": 100,
+      "values": [
+        2,
+        3,
+        6,
+        11,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2204,
-      "spec": "spec_cast_cleric"
+      "id": 2202,
+      "name": "a dragon's tooth knife",
+      "keywords": "knife tooth dragon",
+      "description": "A dangerous looking knife made from a dragon's tooth has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 30,
+      "weight": 80,
+      "cost": 3200,
+      "condition": 100,
+      "values": [
+        2,
+        5,
+        5,
+        11,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 2,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2205,
-      "spec": "spec_breath_any"
+      "id": 2203,
+      "name": "a dragon skin bracelet",
+      "keywords": "bracelet dragon",
+      "description": "A scaly bracelet lies on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 4097,
+      "level": 15,
+      "weight": 100,
+      "cost": 1170,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2220,
-      "spec": "spec_breath_any"
+      "id": 2204,
+      "name": "a black silk belt",
+      "keywords": "belt silk black",
+      "description": "A black belt made of the finest silk is hanging here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 2049,
+      "level": 17,
+      "weight": 250,
+      "cost": 3900,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2221,
-      "spec": "spec_breath_fire"
+      "id": 2210,
+      "name": "a white silk belt",
+      "keywords": "belt silk white",
+      "description": "A white belt made of the finest silk is hanging here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 2049,
+      "level": 17,
+      "weight": 250,
+      "cost": 3900,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2222,
-      "spec": "spec_breath_acid"
+      "id": 2211,
+      "name": "a platinum bracelet.",
+      "keywords": "bracelet platinum",
+      "description": "A tarnished platinum bracelet has been dropped here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 1,
+      "wear_flags": 4097,
+      "level": 20,
+      "weight": 50,
+      "cost": 1450,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2223,
-      "spec": "spec_breath_frost"
+      "id": 2220,
+      "name": "a holy symbol",
+      "keywords": "symbol holy",
+      "description": "A golden holy symbol is here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": 1,
+      "wear_flags": 16389,
+      "level": 10,
+      "weight": 20,
+      "cost": 270,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 15
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2225,
-      "spec": "spec_breath_gas"
+      "id": 2221,
+      "name": "a plain black robe",
+      "keywords": "robe black",
+      "description": "A black robe is hanging on a hook on the wall.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 1025,
+      "level": 21,
+      "weight": 30,
+      "cost": 2000,
+      "condition": 100,
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2226,
-      "spec": "spec_poison"
+      "id": 2222,
+      "name": "an emerald sword",
+      "keywords": "sword emerald",
+      "description": "An emerald long sword is leaning against the wall.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 28,
+      "weight": 240,
+      "cost": 2300,
+      "condition": 100,
+      "values": [
+        1,
+        4,
+        6,
+        3,
+        8
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2227,
-      "spec": "spec_thief"
+      "id": 2223,
+      "name": "a stone club",
+      "keywords": "club stone",
+      "description": "A heavy looking stone club is here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 18,
+      "weight": 180,
+      "cost": 940,
+      "condition": 100,
+      "values": [
+        4,
+        3,
+        6,
+        8,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2240,
-      "spec": "spec_cast_undead"
+      "id": 2224,
+      "name": "a diamond ring",
+      "keywords": "ring diamond",
+      "description": "A diamond ring lies gleaming on the ground.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": 0,
+      "wear_flags": 3,
+      "level": 37,
+      "weight": 60,
+      "cost": 6800,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2241,
-      "spec": "spec_breath_gas"
+      "id": 2230,
+      "name": "a copper ring",
+      "keywords": "ring copper",
+      "description": "A copper ring is here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": 0,
+      "wear_flags": 3,
+      "level": 15,
+      "weight": 10,
+      "cost": 2600,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2242,
-      "spec": "spec_thief"
+      "id": 2231,
+      "name": "a steel key",
+      "keywords": "key steel",
+      "description": "A steel key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2243,
-      "spec": "spec_breath_any"
+      "id": 2232,
+      "name": "a ruby key",
+      "keywords": "key ruby",
+      "description": "A ruby key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2233,
+      "name": "a white key",
+      "keywords": "key white",
+      "description": "A white key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2234,
+      "name": "a grey key",
+      "keywords": "key grey",
+      "description": "A grey key is resting on the ground here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2237,
+      "name": "a stone key",
+      "keywords": "key stone",
+      "description": "A stone key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2240,
+      "name": "a black key",
+      "keywords": "key black",
+      "description": "A black key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2241,
+      "name": "a platinum key",
+      "keywords": "key platinum",
+      "description": "A platinum key.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2242,
+      "name": "a crested shield",
+      "keywords": "shield crested",
+      "description": "A large crested shield draws your attention.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 513,
+      "level": 25,
+      "weight": 200,
+      "cost": 3900,
+      "condition": 100,
+      "values": [
+        8,
+        8,
+        8,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2243,
+      "name": "a golden wand",
+      "keywords": "wand golden",
+      "description": "A golden wand has been dropped here.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": 1,
+      "wear_flags": 16385,
+      "level": 14,
+      "weight": 50,
+      "cost": 5500,
+      "condition": 100,
+      "values": [
+        25,
+        10,
+        10,
+        38,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2244,
+      "name": "a silver staff",
+      "keywords": "staff silver",
+      "description": "A silver staff.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": 65,
+      "wear_flags": 16385,
+      "level": 14,
+      "weight": 50,
+      "cost": 11700,
+      "condition": 100,
+      "values": [
+        25,
+        20,
+        20,
+        44,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2245,
+      "name": "the staff of the dragon",
+      "keywords": "staff dragon",
+      "description": "A powerful oak staff has been left here.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": 65,
+      "wear_flags": 16385,
+      "level": 15,
+      "weight": 50,
+      "cost": 10200,
+      "condition": 100,
+      "values": [
+        25,
+        10,
+        10,
+        6,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2246,
+      "name": "scale mail",
+      "keywords": "mail scale",
+      "description": "A set of scale mail has been abandoned here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 1,
+      "wear_flags": 9,
+      "level": 25,
+      "weight": 200,
+      "cost": 3900,
+      "condition": 100,
+      "values": [
+        8,
+        8,
+        8,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2250,
+      "name": "a black staff",
+      "keywords": "staff black",
+      "description": "You notice the faint outline of a staff.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": 513,
+      "wear_flags": 16385,
+      "level": 14,
+      "weight": 250,
+      "cost": 5300,
+      "condition": 100,
+      "values": [
+        30,
+        3,
+        3,
+        42,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2251,
+      "name": "a cyan potion",
+      "keywords": "potion cyan",
+      "description": "A small cyan potion has been left here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 9,
+      "weight": 10,
+      "cost": 1060,
+      "condition": 100,
+      "values": [
+        30,
+        4,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2252,
+      "name": "a magenta potion",
+      "keywords": "potion magenta",
+      "description": "A magenta potion.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 128,
+      "wear_flags": 1,
+      "level": 7,
+      "weight": 10,
+      "cost": 600,
+      "condition": 100,
+      "values": [
+        30,
+        23,
+        72,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2254,
+      "name": "a pair of spiked gauntlets",
+      "keywords": "gauntlets spiked",
+      "description": "A pair of spiked gauntlets.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 65,
+      "wear_flags": 129,
+      "level": 20,
+      "weight": 100,
+      "cost": 2500,
+      "condition": 100,
+      "values": [
+        4,
+        4,
+        4,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 1
+        },
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2260,
+      "name": "a golden scimitar",
+      "keywords": "scimitar golden",
+      "description": "A golden scimitar.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 1,
+      "wear_flags": 8193,
+      "level": 16,
+      "weight": 100,
+      "cost": 2500,
+      "condition": 100,
+      "values": [
+        1,
+        3,
+        5,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        },
+        {
+          "location": 3,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2261,
+      "name": "a diamond brooch",
+      "keywords": "brooch diamond",
+      "description": "A diamond brooch.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": 64,
+      "wear_flags": 5,
+      "level": 25,
+      "weight": 20,
+      "cost": 980,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 25
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2270,
+      "name": "a runed scroll",
+      "keywords": "scroll",
+      "description": "A runed scroll.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "level": 12,
+      "weight": 10,
+      "cost": 1960,
+      "condition": 100,
+      "values": [
+        30,
+        2,
+        72,
+        79,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2271,
+      "name": "a pair of dragon skin gloves",
+      "keywords": "gloves dragon",
+      "description": "A pair of dragon skin gloves are lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 129,
+      "level": 17,
+      "weight": 50,
+      "cost": 4000,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2275,
+      "name": "a helm of dragon kind",
+      "keywords": "helm dragon",
+      "description": "A helm made of a dragon's skull is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 17,
+      "level": 35,
+      "weight": 150,
+      "cost": 4100,
+      "condition": 100,
+      "values": [
+        10,
+        10,
+        10,
+        5,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 15
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2276,
+      "name": "a fur cloak",
+      "keywords": "fur cloak",
+      "description": "A large mound of fur is lying here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 1025,
+      "level": 16,
+      "weight": 100,
+      "cost": 1910,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        1,
+        0
+      ],
+      "affects": [
+        {
+          "location": 13,
+          "modifier": 10
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2280,
+      "name": "a pair of dragon scale leggings",
+      "keywords": "leggings dragon scale",
+      "description": "A pair of dragon scale leggings is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 33,
+      "level": 20,
+      "weight": 150,
+      "cost": 1590,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2281,
+      "name": "a set of dragon scale sleeves",
+      "keywords": "sleeves dragon scale",
+      "description": "A set of dragon scale sleeves is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 257,
+      "level": 20,
+      "weight": 120,
+      "cost": 1590,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2285,
+      "name": "a dragon tailed whip",
+      "keywords": "whip dragon tail",
+      "description": "A dragon tailed whip is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 514,
+      "wear_flags": 8193,
+      "level": 24,
+      "weight": 140,
+      "cost": 1530,
+      "condition": 100,
+      "values": [
+        7,
+        4,
+        5,
+        4,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2286,
+      "name": "a copper hammer",
+      "keywords": "hammer copper",
+      "description": "A copper hammer is lying on the ground.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 15,
+      "weight": 120,
+      "cost": 750,
+      "condition": 100,
+      "values": [
+        4,
+        3,
+        5,
+        8,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2287,
+      "name": "a silver dagger",
+      "keywords": "dagger silver",
+      "description": "A silver dagger is lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 5,
+      "weight": 10,
+      "cost": 360,
+      "condition": 100,
+      "values": [
+        2,
+        2,
+        4,
+        11,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2299,
+      "name": "a tarnished gold key",
+      "keywords": "key gold tarnished",
+      "description": "A tarnished gold key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 2200,
-    "high": 2299
-  },
   "resets": [
     {
       "command": "M",
@@ -2493,6 +3516,68 @@
       "arg2": 1,
       "arg3": 2231,
       "arg4": 1
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 2200,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 2203,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 2204,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 2205,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 2220,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 2221,
+      "spec": "spec_breath_fire"
+    },
+    {
+      "mob_vnum": 2222,
+      "spec": "spec_breath_acid"
+    },
+    {
+      "mob_vnum": 2223,
+      "spec": "spec_breath_frost"
+    },
+    {
+      "mob_vnum": 2225,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 2226,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 2227,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 2240,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 2241,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 2242,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 2243,
+      "spec": "spec_breath_any"
     }
   ]
 }

@@ -19,13 +19,13 @@
           "to_room": 3604,
           "description": "The chapel door is made of dark wood.\n",
           "keyword": "door",
-          "flags": "7",
+          "flags": 1,
           "key": -1
         },
         "down": {
           "to_room": 3421,
           "keyword": "altar",
-          "flags": "2",
+          "flags": 33,
           "key": 3430
         }
       },
@@ -51,13 +51,12 @@
         "west": {
           "to_room": 3449,
           "keyword": "door",
-          "flags": "7",
+          "flags": 1,
           "key": 3411
         },
         "down": {
           "to_room": 3450,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -87,13 +86,11 @@
       "exits": {
         "east": {
           "to_room": 3415,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3411,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -108,8 +105,7 @@
       "exits": {
         "north": {
           "to_room": 3410,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -124,14 +120,13 @@
       "exits": {
         "east": {
           "to_room": 3417,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3413,
           "description": "A door to the south\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -157,13 +152,13 @@
         "north": {
           "to_room": 3412,
           "keyword": "north",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "south": {
           "to_room": 3414,
           "keyword": "south",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -180,13 +175,11 @@
         "north": {
           "to_room": 3413,
           "keyword": "door north",
-          "flags": "1",
-          "key": -1
+          "flags": 1
         },
         "east": {
           "to_room": 3419,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -206,18 +199,15 @@
       "exits": {
         "east": {
           "to_room": 3420,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3416,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3410,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -232,13 +222,12 @@
       "exits": {
         "north": {
           "to_room": 3415,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 3418,
           "keyword": "tunnel",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -259,13 +248,11 @@
       "exits": {
         "east": {
           "to_room": 3422,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3412,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -280,13 +267,12 @@
       "exits": {
         "south": {
           "to_room": 3419,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 3416,
           "keyword": "staircase",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -311,13 +297,11 @@
       "exits": {
         "north": {
           "to_room": 3418,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3414,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -332,13 +316,11 @@
       "exits": {
         "east": {
           "to_room": 3425,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3415,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -355,14 +337,14 @@
           "to_room": 3422,
           "description": "Finely polished oak doors stand to the south.\n",
           "keyword": "oak",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "up": {
           "to_room": 3405,
           "description": "You see a large set of stone stairs leading upwards to a small stone door at\nthe top. \n",
           "keyword": "stone trapdoor door",
-          "flags": "2",
+          "flags": 33,
           "key": 3410
         }
       },
@@ -400,25 +382,23 @@
         "north": {
           "to_room": 3421,
           "keyword": "oak",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "east": {
           "to_room": 3427,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3423,
           "description": "The door has written above it: 'May all the lands thank Crotus the Victor.\nWithout his guidance this kingdom would not have stood.'\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "west": {
           "to_room": 3417,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -434,13 +414,12 @@
         "north": {
           "to_room": 3422,
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "south": {
           "to_room": 3424,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -455,13 +434,11 @@
       "exits": {
         "north": {
           "to_room": 3423,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 3429,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -476,13 +453,11 @@
       "exits": {
         "south": {
           "to_room": 3426,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3420,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -497,13 +472,11 @@
       "exits": {
         "north": {
           "to_room": 3425,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 3430,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -518,19 +491,17 @@
       "exits": {
         "east": {
           "to_room": 3432,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3428,
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "west": {
           "to_room": 3422,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -546,18 +517,16 @@
         "north": {
           "to_room": 3427,
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "east": {
           "to_room": 3433,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3429,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -572,13 +541,11 @@
       "exits": {
         "north": {
           "to_room": 3428,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3424,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -593,18 +560,15 @@
       "exits": {
         "east": {
           "to_room": 3435,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3431,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3426,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -619,13 +583,11 @@
       "exits": {
         "north": {
           "to_room": 3430,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 3436,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -640,13 +602,11 @@
       "exits": {
         "east": {
           "to_room": 3437,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3427,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -661,13 +621,11 @@
       "exits": {
         "east": {
           "to_room": 3438,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3428,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -682,8 +640,7 @@
       "exits": {
         "down": {
           "to_room": 3439,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -698,18 +655,15 @@
       "exits": {
         "east": {
           "to_room": 3440,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3436,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3430,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -724,18 +678,15 @@
       "exits": {
         "north": {
           "to_room": 3435,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 3441,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3431,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -751,13 +702,12 @@
         "north": {
           "to_room": 3409,
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "west": {
           "to_room": 3432,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -772,13 +722,11 @@
       "exits": {
         "south": {
           "to_room": 3439,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3433,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -793,13 +741,11 @@
       "exits": {
         "north": {
           "to_room": 3438,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 3434,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -814,18 +760,15 @@
       "exits": {
         "east": {
           "to_room": 3445,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3441,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3435,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -840,18 +783,15 @@
       "exits": {
         "north": {
           "to_room": 3440,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 3446,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3436,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -866,13 +806,11 @@
       "exits": {
         "east": {
           "to_room": 3447,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3443,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -887,13 +825,11 @@
       "exits": {
         "north": {
           "to_room": 3442,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3444,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -908,13 +844,11 @@
       "exits": {
         "north": {
           "to_room": 3443,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 3449,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -929,13 +863,11 @@
       "exits": {
         "south": {
           "to_room": 3446,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3440,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -950,18 +882,15 @@
       "exits": {
         "north": {
           "to_room": 3445,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3447,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3441,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -976,18 +905,15 @@
       "exits": {
         "north": {
           "to_room": 3446,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3448,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3442,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1002,8 +928,7 @@
       "exits": {
         "north": {
           "to_room": 3447,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -1024,13 +949,12 @@
         "east": {
           "to_room": 3408,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 3411
         },
         "west": {
           "to_room": 3444,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1046,30 +970,30 @@
         "north": {
           "to_room": 3451,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3452,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3453,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3454,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 3408,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1086,13 +1010,13 @@
         "east": {
           "to_room": 3455,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3450,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1109,13 +1033,12 @@
         "north": {
           "to_room": 3461,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3450,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1132,7 +1055,7 @@
         "north": {
           "to_room": 3450,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1149,7 +1072,7 @@
         "east": {
           "to_room": 3450,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1166,14 +1089,13 @@
         "south": {
           "to_room": 3456,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3451,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1189,13 +1111,13 @@
         "north": {
           "to_room": 3455,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3457,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1212,14 +1134,13 @@
         "south": {
           "to_room": 3458,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3456,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1234,19 +1155,18 @@
       "exits": {
         "north": {
           "to_room": 3457,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3472,
           "description": "You see unfathomable blackness to the south ...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3459,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1263,13 +1183,13 @@
         "east": {
           "to_room": 3458,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3460,
           "description": "You see something's den.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1286,14 +1206,14 @@
         "east": {
           "to_room": 3459,
           "description": "Too dark to tell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 3475,
           "description": "A jet black coffin ... who knows what lurks beneath.\n",
           "keyword": "coffin",
-          "flags": "2",
+          "flags": 33,
           "key": 3419
         }
       },
@@ -1310,14 +1230,12 @@
         "east": {
           "to_room": 3462,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3452,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1333,14 +1251,12 @@
         "south": {
           "to_room": 3463,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3461,
           "description": "Too dark too tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1356,14 +1272,12 @@
         "north": {
           "to_room": 3462,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 3464,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1380,20 +1294,18 @@
           "to_room": 3470,
           "description": "There is a secret door here.",
           "keyword": "secret",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "south": {
           "to_room": 3465,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3463,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1409,14 +1321,12 @@
         "north": {
           "to_room": 3464,
           "description": "The glow of your light reflects off the walls and you see the catacombs.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3466,
           "description": "The glow of your light reflects off the walls ... the gilded hallway.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -1437,14 +1347,12 @@
         "north": {
           "to_room": 3465,
           "description": "Your light reveals more of the hallway.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3467,
           "description": "Your light reveals more of the hallway.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -1465,14 +1373,12 @@
         "north": {
           "to_room": 3466,
           "description": "Your light reveals more of the hallway.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3468,
           "description": "Your light reveals more of the hallway.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -1493,14 +1399,12 @@
         "north": {
           "to_room": 3467,
           "description": "Your light reveals more of the hallway.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 3469,
           "description": "Your light reveals more of the hallway.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -1521,8 +1425,7 @@
         "north": {
           "to_room": 3468,
           "description": "Your light reveals more of the hallway.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -1543,8 +1446,7 @@
         "south": {
           "to_room": 3471,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -1565,8 +1467,7 @@
         "north": {
           "to_room": 3470,
           "description": "Too dark to tell.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1582,8 +1483,7 @@
         "north": {
           "to_room": 10401,
           "description": "The fires of hell grow hotter to the north...\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1599,7 +1499,7 @@
         "up": {
           "to_room": 3460,
           "keyword": "lid coffin",
-          "flags": "7",
+          "flags": 1,
           "key": 3419
         }
       },
@@ -1615,7 +1515,7 @@
       "long_description": "A bony skeleton is here.\n",
       "description": "Brown bones with tufts of clothing still hanging from them.  This\nskeleton looks very mindless but still dangerous ...\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AF",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1625,19 +1525,23 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 9,
+      "ac_bash": 9,
+      "ac_slash": 9,
+      "ac_exotic": 10,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3401,
@@ -1646,7 +1550,7 @@
       "long_description": "An undead zombie sits here munching on something ...\n",
       "description": "His body is totally white and slowly rotting away.  Each Zombie looks\nquite different from the next because they were, of course, once alive and\nhuman.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "DF",
       "alignment": -100,
       "group": 0,
@@ -1656,19 +1560,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2
+      "wealth": 2,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3402,
@@ -1677,7 +1585,7 @@
       "long_description": "A ghoul is here staring at you hungrily.\n",
       "description": "The ghoul no longer resembles the adventurer he once was.  Nonetheless\nhe looks like he hasn't forgot his fighting skills.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AF",
       "affected_by": "D",
       "alignment": -500,
       "group": 0,
@@ -1687,19 +1595,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 7
+      "wealth": 7,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3403,
@@ -1708,7 +1620,7 @@
       "long_description": "You spot a wraith advancing towards you from the shadows.\n",
       "description": "The wraith no longer has a material form.  He is wearing a tattered\nblack robe which hides all but the darkness of his face and the glimmer\nin his eyes.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "BDF",
       "alignment": -750,
       "group": 0,
@@ -1718,19 +1630,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3404,
@@ -1739,7 +1655,7 @@
       "long_description": "A vampire is here hiding his face from your light source.\n",
       "description": "The guardian vampire looks quite EVIL.  Just by looking at him the hair on your\narms raises. He looks mighty tough to be just a minor minion.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "DF",
       "alignment": -1000,
       "group": 0,
@@ -1749,19 +1665,23 @@
       "hit_dice": "14d9+100",
       "mana_dice": "5d4+8",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 750
+      "wealth": 750,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3405,
@@ -1770,7 +1690,7 @@
       "long_description": "A priest of God stands here solemnly speaking words of praise.\n",
       "description": "Obviously a goodly man, you feel closer to God just by gazing upon this man.\nDressed in white, fine white hair, and a soft slightly wrinkled face ...\nthis man has a sacred beauty.  You see a halo around his head.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABLQ",
       "affected_by": "DFH",
       "alignment": 1000,
       "group": 0,
@@ -1780,19 +1700,23 @@
       "hit_dice": "15d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 6,
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 20
+      "wealth": 20,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3406,
@@ -1801,7 +1725,7 @@
       "long_description": "A Mi-Go is crawling here.\n",
       "description": "Mi-Go, the Fungi from Yuggoth ... it is a pinkish being about five feet long;\nwith a crustaceous body bearing a vast pair of membranous wings and several\nsets of articulate limbs, body a sort of convoluted ellipsoid, covered with\nmultitudes of very small antennae, where a head would ordinarily be.  These\nbeings sometimes walk on all their legs and sometimes on the hind pair only.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AF",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -1811,19 +1735,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 32
+      "wealth": 32,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3407,
@@ -1832,7 +1760,7 @@
       "long_description": "A nightgaunt is standing here\n",
       "description": "... shocking and uncouth black thing with smooth, oily, skin, unpleasant horns\nthat curve inward toward each other, bat wings whose beating make no sound,\nugly prehensile paws, and a barbed tail that lashes disquietingly.  And worst\nof all, it makes absolutely no sound or speech and smiles not at all because\nit has no face, only a suggestive blackness where a face ought to be ...\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AFG",
       "affected_by": "PQ",
       "alignment": -1000,
       "group": 0,
@@ -1842,19 +1770,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 7
+      "wealth": 7,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3408,
@@ -1863,7 +1795,7 @@
       "long_description": "The hunting horror is here in wait of an unwary traveler.\n",
       "description": "Serving Nyarlathotep and Roch'tar, these beings are hunting for victims.\nThey resemble enormous ropy black serpents or worms possessing bat-like or\numbrella-like wings.  Their forms continually shift and change, twitching\nand writhing, so it is hard to look at them.  They speak in great harsh\nvoices.  A hunting horror is HUGE, normally around 40 feet long.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AF",
       "affected_by": "DF",
       "alignment": -1000,
       "group": 0,
@@ -1873,19 +1805,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 100
+      "wealth": 100,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3409,
@@ -1894,7 +1830,7 @@
       "long_description": "Some weeds are creeping across the floor.\n",
       "description": "Just some unpleasant looking vine-like growths ...\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACF",
       "affected_by": "DPQ",
       "alignment": 0,
       "group": 0,
@@ -1904,19 +1840,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 4
+      "wealth": 4,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3410,
@@ -1925,7 +1865,7 @@
       "long_description": "Snapper Joe is standing here leering at you chillingly.\n",
       "description": "What an ugly fiend! He is about 6'6'' and has mostly greenish skin with\nbright red hair. Half his face is burnt off and he has a perpetual smile.\nHe is called up from his service in hell in order to aid the Undying One.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "D",
       "alignment": -750,
       "group": 0,
@@ -1935,19 +1875,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 111
+      "wealth": 111,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3411,
@@ -1956,7 +1900,7 @@
       "long_description": "An X-ist flesh eater is sitting here munching on some coffin remains\n",
       "description": "A large hairy monstrous beast, the only LIVE thing you have seen down here.\nIt stands approximately 8 feet tall and hunches over to fit in this\nsmall room.  It has a pair of tremendous claws that it uses to rip and tear.\nIt has dog-like face except ... different.  Bright glowing eyes and a grimace\nlead you to believe that he knew that you were coming.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "D",
       "alignment": -1000,
       "group": 0,
@@ -1966,19 +1910,23 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 78
+      "wealth": 78,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3412,
@@ -1987,7 +1935,7 @@
       "long_description": "The spirit of King Crotus is floating lazily above the floor.\n",
       "description": "Floating above the ground here and looking a bit dead, he whispers\nsoftly into the air:\n\n    The forces of evil have unlocked my spirit as\n    well as one other.  Free me from this misery,\n    anyone that can hear. The peace of the grave\n    calls me but I am blocked from its quiet.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABR",
       "affected_by": "DF",
       "alignment": 350,
       "group": 0,
@@ -1997,19 +1945,23 @@
       "hit_dice": "20d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 3,
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2
+      "wealth": 2,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3413,
@@ -2018,7 +1970,7 @@
       "long_description": "A rock slug is slowly creeping along, leaving a slime trail behind it.\n",
       "description": "It is a large brownish slug.  Got any salt?  Didn't think so ...\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AC",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2028,19 +1980,23 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3414,
@@ -2049,7 +2005,7 @@
       "long_description": "The mad etcher is sitting here babbling to himself and working on the wall.\n",
       "description": "Quite insane, the mad etcher has been here for two decades.  His hair is\nwhite; he babbles nonsense to himself; a layer of dust covers his out-of-date\nclothing; and he seems to be working on the same portion of the wall near\nthe base ... oh and he seems quite blind.\n\nHe leers insanely at you and says 'heh heh what can I do for you children?\nPlease don't mind my wife, she is always like that ... hello dear can you\nmake some tea for our company?  Oh good!  Now sit right down will you?\nWould you like hot or cold tea?  Yes the weather is ...'\n\nAnd on he babbles ...\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AGR",
       "affected_by": "A",
       "alignment": 1000,
       "group": 0,
@@ -2059,19 +2015,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 8,
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 2
+      "wealth": 2,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3415,
@@ -2080,7 +2040,7 @@
       "long_description": "The spectral wife of the etcher is very faintly floating here.\n",
       "description": "You can barely make her out ... though it almost makes you vomit.\nShe is missing half her head.  The remaining half is smashed in horribly like\nshe took a nasty fall.  Her one damaged eye hangs on its own.  She smiles\ninsanely at you thru a broken jaw and missing teeth.  One hand of hers is\nresting on the shoulder of the etcher ... her husband.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "Q",
       "alignment": 1000,
       "group": 0,
@@ -2090,19 +2050,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 6
+      "wealth": 6,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 3416,
@@ -2111,7 +2075,7 @@
       "long_description": "A half-decomposed body is lying in the corner here.\n",
       "description": "YUK! It's ugly, disgusting ... it smells ... it also moves a bit!\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACF",
       "affected_by": "0",
       "alignment": -350,
       "group": 0,
@@ -2121,88 +2085,735 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 4
+      "wealth": 4,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [
+  "objects": [
     {
-      "mob_vnum": 3400,
-      "spec": "spec_cast_undead"
+      "id": 3400,
+      "name": "a candlestick",
+      "keywords": "candlestick",
+      "description": "A pewter candlestick is standing here.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "level": 0,
+      "weight": 50,
+      "cost": 50,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        24,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "candlestick",
+          "description": "It is a rather old-looking three-armed candlestick made from pewter.  Its\ncandles are a yellowish white colour.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3401,
-      "spec": "spec_cast_undead"
+      "id": 3402,
+      "name": "a nightgaunt's tickler",
+      "keywords": "tickler",
+      "description": "A nightgaunt's tickler has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 128,
+      "wear_flags": 8193,
+      "level": 7,
+      "weight": 80,
+      "cost": 540,
+      "condition": 100,
+      "values": [
+        7,
+        2,
+        4,
+        35,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "tickler",
+          "description": "A horrid black mass of gooey tentacles obviously ripped from the corpse\nof a nightgaunt ... disgusting.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3402,
-      "spec": "spec_cast_undead"
+      "id": 3403,
+      "name": "disgusting pinkish plasma webbing",
+      "keywords": "plasma webbing",
+      "description": "A pile of pink material is lying here",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 2560,
+      "wear_flags": 9,
+      "level": 10,
+      "weight": 100,
+      "cost": 1800,
+      "condition": 100,
+      "values": [
+        5,
+        5,
+        5,
+        4,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "plasma webbing",
+          "description": "Yuck, mossy and wet.  It looks like some sort of webbing.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3403,
-      "spec": "spec_cast_undead"
+      "id": 3410,
+      "name": "a queerly shaped rod",
+      "keywords": "rod key",
+      "description": "A queerly shaped rod is lying here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 50,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "rod key",
+          "description": "This rod looks sort of octagonal, and sort of like a key and crowbar.  You\nrecognize that it will probably fit the lock at the entrance of the tombs.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3404,
-      "spec": "spec_cast_undead"
+      "id": 3411,
+      "name": "a large black dirty key",
+      "keywords": "large black dirty key",
+      "description": "A large black dirty key is lying here",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 30,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "large black dirty key",
+          "description": "One of those traditional old lock type keys ... except huge, black and\nfilthy ... hmm ... like it has been buried for some time ...\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3405,
-      "spec": "spec_cast_cleric"
+      "id": 3412,
+      "name": "the mummified head of Jubal the Benevolent",
+      "keywords": "head jubal mummy",
+      "description": "The mummified head of Jubal the Benevolent is lolling back and forth.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": 1024,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 200,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        3,
+        5,
+        -1,
+        3,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "head jubal mummy",
+          "description": "ACK! It's half eaten away ... yet it is whole ... in fact I think it can be\nopened and closed ... is there something in its teeth!?!?!? ACK you do it!\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3407,
-      "spec": "spec_cast_undead"
+      "id": 3413,
+      "name": "a black marble ring",
+      "keywords": "ring black marble",
+      "description": "A black marble ring is lying here on the ground.",
+      "material": "oldstyle",
+      "item_type": "treasure",
+      "extra_flags": 1088,
+      "wear_flags": 3,
+      "level": 3,
+      "weight": 20,
+      "cost": 26,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": 1
+        },
+        {
+          "location": 14,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "black marble ring",
+          "description": "It is pitch black and has beautiful swirls characteristic of marble all\nthrough it.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3408,
-      "spec": "spec_cast_undead"
+      "id": 3414,
+      "name": "a whisper thin rapier",
+      "keywords": "rapier thin",
+      "description": "A rapier is lying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 2,
+      "wear_flags": 8193,
+      "level": 16,
+      "weight": 40,
+      "cost": 3500,
+      "condition": 100,
+      "values": [
+        1,
+        4,
+        2,
+        11,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        },
+        {
+          "location": 2,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "thin rapier",
+          "description": "It seems so thin that it would be useless but at the same time it looks deadly.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3410,
-      "spec": "spec_cast_undead"
+      "id": 3415,
+      "name": "a stone sarcophagus",
+      "keywords": "sarcophagus coffin",
+      "description": "A stone sarcophagus is sitting here.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": 0,
+      "wear_flags": 0,
+      "level": 0,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        400,
+        15,
+        3416,
+        400,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "sarcophagus coffin",
+          "description": "A well crafted, if dusty and ancient, home for the afterworld, it seems\nto be able to be opened but needs a key.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3411,
-      "spec": "spec_cast_undead"
+      "id": 3416,
+      "name": "a heavy iron key",
+      "keywords": "iron heavy key",
+      "description": "A heavy iron key is lying here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 40,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key iron heavy",
+          "description": "It looks to be a very heavy old iron key.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3412,
-      "spec": "spec_cast_mage"
+      "id": 3417,
+      "name": "a wineflask",
+      "keywords": "flask wineflask",
+      "description": "A wineflask has been been left here.",
+      "material": "oldstyle",
+      "item_type": "drink",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "level": 0,
+      "weight": 10,
+      "cost": 400,
+      "condition": 100,
+      "values": [
+        30,
+        30,
+        2,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "wineflask flask",
+          "description": "A nice leather wineflask that has somehow survived the ages in a coffin.\nThe wine should be nicely aged.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3414,
-      "spec": "spec_cast_mage"
+      "id": 3418,
+      "name": "a mound of coins fit for a dead king",
+      "keywords": "coins",
+      "description": "You see a mound of coins fit for a dead king here",
+      "material": "oldstyle",
+      "item_type": "money",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 500,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        400,
+        8,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 3415,
-      "spec": "spec_cast_undead"
+      "id": 3419,
+      "name": "key to the coffin",
+      "keywords": "key",
+      "description": "The key to the coffin is lying here",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 30,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key",
+          "description": "Neat you have the key to the coffin...is is a soft orange color\nand burns in your hand a bit.\n"
+        }
+      ]
     },
     {
-      "mob_vnum": 3416,
-      "spec": "spec_cast_undead"
+      "id": 3420,
+      "name": "a hidden compartment in the room",
+      "keywords": "rathcor",
+      "description": "",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": 4,
+      "wear_flags": 0,
+      "level": 0,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        10,
+        5,
+        0,
+        10,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "rathcor",
+          "description": "Ah HA!  A hidden compartment!\n"
+        }
+      ]
+    },
+    {
+      "id": 3421,
+      "name": "a rusty curved scimitar",
+      "keywords": "rusty sword curved scimitar",
+      "description": "A sword has been left lying here",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 3,
+      "weight": 60,
+      "cost": 370,
+      "condition": 100,
+      "values": [
+        1,
+        2,
+        3,
+        3,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "rusty sword scimitar",
+          "description": "Very rusty and old...it has a wide blade and chunks missing from\nits cutting edge.\n"
+        }
+      ]
+    },
+    {
+      "id": 3422,
+      "name": "a piece of slime",
+      "keywords": "piece slime",
+      "description": "You step on a piece of slime...your foot squishes a bit",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        15,
+        15,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "slime piece",
+          "description": "ICK! This is a piece of slug-like brownish green slime...\nBlech!\n"
+        }
+      ]
+    },
+    {
+      "id": 3423,
+      "name": "an artist's smock",
+      "keywords": "smock",
+      "description": "An artist's smock is lying here on the floor.",
+      "material": "oldstyle",
+      "item_type": "clothing",
+      "extra_flags": 0,
+      "wear_flags": 9,
+      "level": 0,
+      "weight": 70,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "smock",
+          "description": "It has paint and little shavings of different materials all over it.\nIt is very old an smells of paint, mildew, and rot.\n"
+        }
+      ]
+    },
+    {
+      "id": 3424,
+      "name": "a tightly rolled scroll",
+      "keywords": "scroll tightly rolled",
+      "description": "A yellowing tightly rolled scroll is here",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "level": 8,
+      "weight": 50,
+      "cost": 1070,
+      "condition": 100,
+      "values": [
+        15,
+        15,
+        18,
+        64,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "scroll tightly rolled",
+          "description": "It is tightly wound. The writing on the inside when opened up is very\nunreadable but the scroll has a seal on it with a grey :\n\n    88\n    88\n8888  8888\n    88\n    88\n\n"
+        }
+      ]
+    },
+    {
+      "id": 3425,
+      "name": "an auburn-colored orb",
+      "keywords": "auburn orb",
+      "description": "An orb is here",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": 66,
+      "wear_flags": 16385,
+      "level": 15,
+      "weight": 100,
+      "cost": 4700,
+      "condition": 100,
+      "values": [
+        10,
+        2,
+        2,
+        13,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "auburn orb",
+          "description": "You gaze into the orb and are almost lost in the swirling mists of color\ninside of this rare and beautiful object.\n"
+        }
+      ]
+    },
+    {
+      "id": 3426,
+      "name": "a bar of gold",
+      "keywords": "bar gold",
+      "description": "A bar of gold is lying here",
+      "material": "oldstyle",
+      "item_type": "treasure",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 30,
+      "cost": 1000,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "bar gold",
+          "description": "A nice little brick of gold...very dusty and old... it has some emblem\non it...The emblem is a large 'J'\n"
+        }
+      ]
+    },
+    {
+      "id": 3427,
+      "name": "a dark black cape",
+      "keywords": "cape dark black",
+      "description": "A dark black cape is lying here",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 64,
+      "wear_flags": 1025,
+      "level": 0,
+      "weight": 100,
+      "cost": 100,
+      "condition": 100,
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": 10
+        },
+        {
+          "location": 13,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "dark black cape",
+          "description": "The cape is gently flows and pulls in the light so evenly and perfectly\nthat the cape seems to be simply a void of blackness. It is quite beautiful\n"
+        }
+      ]
+    },
+    {
+      "id": 3428,
+      "name": "the pitch-black flaming longsword",
+      "keywords": "flaming black sword long longsword",
+      "description": "A pitch-black long swor here",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 64,
+      "wear_flags": 8193,
+      "level": 28,
+      "weight": 200,
+      "cost": 2200,
+      "condition": 100,
+      "values": [
+        1,
+        2,
+        12,
+        3,
+        5
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "flaming sword long longsword",
+          "description": "This sword is amazing! It almost wields itself! As you test it out, the\nflames seems to roar brighter as you go thru basic swordsman routines.\nit is obviously a great find!\n"
+        }
+      ]
+    },
+    {
+      "id": 3429,
+      "name": "a worn and dented breast plate",
+      "keywords": "breast plate dented worn",
+      "description": "A piece of armour is here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 9,
+      "level": 15,
+      "weight": 500,
+      "cost": 2100,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "breast dented plate worn",
+          "description": "Though this piece of armour is worn and dented it looks very usable.\n"
+        }
+      ]
+    },
+    {
+      "id": 3430,
+      "name": "a silver key",
+      "keywords": "key silver",
+      "description": "You see a silver key here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key silver",
+          "description": "for the altar...\n"
+        }
+      ]
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 3400,
-    "high": 3499
-  },
   "resets": [
     {
       "command": "M",
@@ -2924,6 +3535,64 @@
       "arg2": 1,
       "arg3": 1,
       "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 3400,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3401,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3402,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3403,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3404,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3405,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 3407,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3408,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3410,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3411,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3412,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 3414,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 3415,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 3416,
+      "spec": "spec_cast_undead"
     }
   ]
 }

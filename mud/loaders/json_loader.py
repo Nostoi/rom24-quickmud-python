@@ -385,14 +385,18 @@ def _load_rooms_from_json(rooms_data: list[dict[str, Any]], area: Area) -> None:
 
     for room_data in rooms_data:
         # Parse sector type
-        sector_str = room_data.get("sector_type", "inside")
+        sector_raw = room_data.get("sector_type", "inside")
         try:
-            if sector_str.isdigit():
-                sector = Sector(int(sector_str))
+            if isinstance(sector_raw, int):
+                sector = sector_raw
             else:
-                sector = Sector[sector_str.upper()]
+                sector_str = str(sector_raw)
+                if sector_str.lstrip("-").isdigit():
+                    sector = int(sector_str)
+                else:
+                    sector = Sector[sector_str.upper()]
         except (ValueError, KeyError):
-            logger.warning(f"Unknown sector type: {sector_str}, defaulting to INSIDE")
+            logger.warning(f"Unknown sector type: {sector_raw}, defaulting to INSIDE")
             sector = Sector.INSIDE
 
         # Create room

@@ -18,13 +18,13 @@
         "north": {
           "to_room": 6125,
           "description": "The path looks drier here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 8302,
           "description": "A broken road leading southward into the marsh.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -45,19 +45,19 @@
       "exits": {
         "north": {
           "to_room": 8301,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 8303,
           "description": "To the east lies a series of bogs and shallows that look rather threatening.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 8304,
           "description": "You notice a large hill rising out of the marsh to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -74,13 +74,13 @@
         "east": {
           "to_room": 8305,
           "description": "Eastward is the thick bog of ooze...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8302,
           "description": "Westward lies the remanents of a broken and shattered roadway being swallowed\nby the marsh.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -106,19 +106,19 @@
         "north": {
           "to_room": 8302,
           "description": "To the north lies a damp broken roadway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 8309,
           "description": "A dark pool congeals to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 8310,
           "description": "A gloomy path leads down the hill into the swamp.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -135,13 +135,13 @@
         "east": {
           "to_room": 8306,
           "description": "Eastward lies a horde of disgusting looking monsters.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8303,
           "description": "Westward lies a marshy area.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -164,7 +164,7 @@
           "to_room": 8305,
           "description": "You see a large tree limb that looks easily moved.\n",
           "keyword": "limb",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -186,7 +186,7 @@
         "west": {
           "to_room": 8308,
           "description": "A pool of quick sand lies to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -208,19 +208,19 @@
         "east": {
           "to_room": 8307,
           "description": "The swamp thing's lair.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 8314,
           "description": "A murky bog.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8309,
           "description": "A dark pool lies to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -246,19 +246,19 @@
         "east": {
           "to_room": 8308,
           "description": "A large pool of quicksand lies to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 8311,
           "description": "You see a cloud of darkness to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8304,
           "description": "A hill rises out of the swamp to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -280,13 +280,13 @@
         "north": {
           "to_room": 8304,
           "description": "To the north a hill protrudes from the marshes.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 8312,
           "description": "To the south a huge mass of vegetation seems to quiver with life.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -320,13 +320,13 @@
         "north": {
           "to_room": 8309,
           "description": "A dark pool lies to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 8313,
           "description": "An obelisk lies to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -343,13 +343,13 @@
         "north": {
           "to_room": 8310,
           "description": "To the north is a gloomy path through the marsh.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 8313,
           "description": "Eastward is a large, black stone monolith.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -371,19 +371,19 @@
         "north": {
           "to_room": 8311,
           "description": "To the north is a cloud of darkest evil.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 8314,
           "description": "Eastward lies a murky bog.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8312,
           "description": "Near Vegetation from Hell.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -405,19 +405,19 @@
         "north": {
           "to_room": 8308,
           "description": "To the north lies a huge pool of quicksand.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 8315,
           "description": "To the east the marsh turns into a small lake.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8313,
           "description": "Westward a large monolith awaits adventurers.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -439,13 +439,13 @@
         "south": {
           "to_room": 8316,
           "description": "The southern portion of the lake lies to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8314,
           "description": "To the west lies a murky bog.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -462,13 +462,13 @@
         "north": {
           "to_room": 8315,
           "description": "Northern lake side.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8317,
           "description": "To the west is a beach where your boat can land.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -490,13 +490,13 @@
         "east": {
           "to_room": 8316,
           "description": "To the east lies the southern portion of a small lake.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 8318,
           "description": "The great gates.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -518,12 +518,12 @@
         "east": {
           "to_room": 8317,
           "description": "To the east is a marshy beach.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": -1,
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -539,7 +539,7 @@
       "long_description": "A swamp troll charges towards you.\n",
       "description": "This huge behemoth towers to a height of 15 feet.  He sneers at you \nas he approaches and raises two black taloned claws to strike you.\n",
       "race": "troll",
-      "act_flags": "0",
+      "act_flags": "ABCFG",
       "affected_by": "0FJc",
       "alignment": -600,
       "group": 0,
@@ -549,19 +549,23 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNRD",
       "immune": "0",
       "resist": "0BE",
       "vuln": "0HK",
-      "form": "2101379",
-      "parts": "3147775",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "rest",
       "sex": "male",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0ABHMV",
+      "parts": "0ABCDEFGHIJKUV",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8302,
@@ -570,7 +574,7 @@
       "long_description": "A green troll attempts to get a hold on you.\n",
       "description": "This big troll towers several feet over you.  He has a large spear\nwhich he seems to ply with utmost prowess.  He jabs his spear at you\nand cackles with glee.\n",
       "race": "troll",
-      "act_flags": "0",
+      "act_flags": "ACFG",
       "affected_by": "0FJc",
       "alignment": -400,
       "group": 0,
@@ -580,19 +584,23 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
       "offensive": "EFNRD",
       "immune": "0",
       "resist": "0BE",
       "vuln": "0HK",
-      "form": "2101379",
-      "parts": "3147775",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 400
+      "wealth": 400,
+      "form": "0ABHMV",
+      "parts": "0ABCDEFGHIJKUV",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8303,
@@ -601,7 +609,7 @@
       "long_description": "An ogre stands here getting ready to beat in your face.\n",
       "description": "This mean bastard looks like he could tear you limb from limb.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACFG",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -611,19 +619,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8304,
@@ -632,7 +644,7 @@
       "long_description": "The Swamp Thing shambles about here.  It seems hungry.\n",
       "description": "The Swamp Thing has huge fists, which look like they could pound you flat.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACFG",
       "affected_by": "0",
       "alignment": -700,
       "group": 0,
@@ -642,19 +654,23 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "rest",
       "sex": "none",
-      "wealth": 1250
+      "wealth": 1250,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8305,
@@ -663,7 +679,7 @@
       "long_description": "There is a mean looking gnoll here.\n",
       "description": "The Gnoll seems annoyed at your presence.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "DF",
       "alignment": -1000,
       "group": 0,
@@ -673,19 +689,23 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+8",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1250
+      "wealth": 1250,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8306,
@@ -694,7 +714,7 @@
       "long_description": "A huge hairy beast shambles towards you with death in his eyes.\n",
       "description": "This huge beast stands about 20 feet in height and has huge green clawed\nappendages. \n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACFG",
       "affected_by": "DF",
       "alignment": -450,
       "group": 0,
@@ -704,19 +724,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "4d4+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8307,
@@ -725,7 +749,7 @@
       "long_description": "A rather small beast cringes in terror as it notices you.\n",
       "description": "This rather small beast looks like you could take it out with a single\nsword blow.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACGH",
       "affected_by": "P",
       "alignment": 0,
       "group": 0,
@@ -735,19 +759,23 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25
+      "wealth": 25,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8308,
@@ -756,7 +784,7 @@
       "long_description": "A Will-O-Wisp darts hear and there, making fun of you.\n",
       "description": "This strange little creature seems very hard to keep your eyes on.\nYou stare as hard as you can at the glowing ball of floating light and\nare just able to notice a small pair of glowing eyes.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACGH",
       "affected_by": "P",
       "alignment": 0,
       "group": 0,
@@ -766,19 +794,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 150
+      "wealth": 150,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8309,
@@ -787,7 +819,7 @@
       "long_description": "A monstrous snake slithers towards you, thinking 'breakfast'.\n",
       "description": "This 10 meter anaconda looks rather hungry.\n",
       "race": "snake",
-      "act_flags": "0",
+      "act_flags": "ACFGH",
       "affected_by": "PQ",
       "alignment": -100,
       "group": 0,
@@ -797,19 +829,23 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0L",
       "vuln": "0I",
-      "form": "293601345",
-      "parts": "10554425",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0AGXYc",
+      "parts": "0ADEFKLQVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8310,
@@ -818,7 +854,7 @@
       "long_description": "A rather large python rests in a coil here.\n",
       "description": "It's the largest Amazon python you have ever seen.\n",
       "race": "snake",
-      "act_flags": "0",
+      "act_flags": "ACFGH",
       "affected_by": "PQ",
       "alignment": -100,
       "group": 0,
@@ -828,19 +864,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0L",
       "vuln": "0I",
-      "form": "293601345",
-      "parts": "10554425",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AGXYc",
+      "parts": "0ADEFKLQVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8312,
@@ -849,7 +889,7 @@
       "long_description": "A Marsh Hag is here.\n",
       "description": "Yech!  She manages to make even Smurfette look attractive.  That's ok,\nbecause she thinks you stink too, and she's about to do something about it.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACGS",
       "affected_by": "DF",
       "alignment": -200,
       "group": 0,
@@ -859,19 +899,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 8,
       "offensive": "BEFJNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8313,
@@ -880,7 +924,7 @@
       "long_description": "A Death Slaad is standing here distraught.  He seems lost.\n",
       "description": "This dark apparition stands a meager 13 feet in height.  Even in the dim\nswamp light, the blade of his scythe gleams.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "DF",
       "alignment": -200,
       "group": 0,
@@ -890,19 +934,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 700
+      "wealth": 700,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8314,
@@ -911,7 +959,7 @@
       "long_description": "A marsh wolf sniffs the ground has followed your scent.\n",
       "description": "This wolf looks plump.  She probably ate a friend or two of yours who came\ninto the marsh.\n",
       "race": "wolf",
-      "act_flags": "0",
+      "act_flags": "ACFG",
       "affected_by": "0Z",
       "alignment": -200,
       "group": 0,
@@ -921,19 +969,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2097217",
-      "parts": "2164285",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AGV",
+      "parts": "0ACDEFJKQV",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8318,
@@ -942,7 +994,7 @@
       "long_description": "A heap of garbage shambles towards you.\n",
       "description": "This grotesque pile of plant matter fills you with utmost horror.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "Q",
       "alignment": -100,
       "group": 0,
@@ -952,19 +1004,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8319,
@@ -973,7 +1029,7 @@
       "long_description": "An orc shaman stands before you holding a staff and wearing robes.\n",
       "description": "This old orc has an array of bones stuck in his hair and strange symbols\npainted on his face and hands.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCDFGQ",
       "affected_by": "DF",
       "alignment": -100,
       "group": 0,
@@ -983,19 +1039,23 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d4+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 7,
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 17
+      "wealth": 17,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8320,
@@ -1004,7 +1064,7 @@
       "long_description": "A marsh giant stomps towards you.\n",
       "description": "This huge monster of a man has green gnarly teeth and a BIG stick.\n",
       "race": "giant",
-      "act_flags": "0",
+      "act_flags": "ABCDFG",
       "affected_by": "DF",
       "alignment": -100,
       "group": 0,
@@ -1014,19 +1074,23 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0HI",
       "vuln": "0JP",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 600
+      "wealth": 600,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 8321,
@@ -1035,7 +1099,7 @@
       "long_description": "A large gargoyle lands next to you, baring his fangs at you.\n",
       "description": "This creepy fellow looks like he could use you as a meal.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCDFG",
       "affected_by": "DF",
       "alignment": -100,
       "group": 0,
@@ -1045,52 +1109,202 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 100
+      "wealth": 100,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [
+  "objects": [
     {
-      "mob_vnum": 8309,
-      "spec": "spec_poison"
+      "id": 8301,
+      "name": "a long spear",
+      "keywords": "spear long two-handed",
+      "description": "A strange spear lies here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 512,
+      "wear_flags": 8193,
+      "level": 11,
+      "weight": 100,
+      "cost": 1330,
+      "condition": 100,
+      "values": [
+        3,
+        1,
+        12,
+        2,
+        32
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 1
+        },
+        {
+          "location": 19,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 8310,
-      "spec": "spec_poison"
+      "id": 8302,
+      "name": "a dark horned helmet",
+      "keywords": "horned helmet",
+      "description": "A wicked looking horned helmet lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 512,
+      "wear_flags": 17,
+      "level": 10,
+      "weight": 50,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        5,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 3,
+          "modifier": -3
+        },
+        {
+          "location": 19,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "horns horn",
+          "description": "These horns appear to be made of adamantite."
+        }
+      ]
     },
     {
-      "mob_vnum": 8312,
-      "spec": "spec_thief"
+      "id": 8303,
+      "name": "a suit of chainmail",
+      "keywords": "chain mail chainmail",
+      "description": "An old suit of chainmail lies here, corroded by the marsh.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 512,
+      "wear_flags": 9,
+      "level": 20,
+      "weight": 200,
+      "cost": 2700,
+      "condition": 100,
+      "values": [
+        5,
+        8,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 8313,
-      "spec": "spec_cast_undead"
+      "id": 8306,
+      "name": "a huge, wicked-looking scythe",
+      "keywords": "scythe",
+      "description": "An evil, wicked-looking scythe lies in the shadows.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 640,
+      "wear_flags": 8193,
+      "level": 19,
+      "weight": 160,
+      "cost": 1770,
+      "condition": 100,
+      "values": [
+        8,
+        4,
+        4,
+        1,
+        32
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 3
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 8319,
-      "spec": "spec_cast_cleric"
+      "id": 8307,
+      "name": "a murky green potion",
+      "keywords": "green potion",
+      "description": "A murky green potion lies here in the mud.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 3,
+      "wear_flags": 1,
+      "level": 5,
+      "weight": 10,
+      "cost": 690,
+      "condition": 100,
+      "values": [
+        43,
+        23,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "potion",
+          "description": "It looks really disgusting and doesn't smell very nice either."
+        }
+      ]
+    },
+    {
+      "id": 8308,
+      "name": "a rusty claymore",
+      "keywords": "claymore rusty sword",
+      "description": "A huge rusted sword lies in a pool of water.",
+      "material": "iron",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 28,
+      "weight": 100,
+      "cost": 3000,
+      "condition": 100,
+      "values": [
+        1,
+        4,
+        7,
+        21,
+        32
+      ],
+      "affects": [],
+      "extra_descriptions": []
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 8300,
-    "high": 8399
-  },
   "resets": [
     {
       "command": "M",
@@ -1455,6 +1669,28 @@
       "arg2": 5,
       "arg3": 6,
       "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 8309,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 8310,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 8312,
+      "spec": "spec_thief"
+    },
+    {
+      "mob_vnum": 8313,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 8319,
+      "spec": "spec_cast_cleric"
     }
   ]
 }

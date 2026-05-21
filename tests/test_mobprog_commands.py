@@ -6,6 +6,7 @@ import pytest
 
 from mud import mob_cmds
 from mud.commands.dispatcher import process_command
+from mud.mobprog import Trigger
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
 from mud.models.constants import LEVEL_HERO, ItemType
@@ -16,9 +17,7 @@ from mud.models.room import Exit, Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.skills import handlers as skill_handlers
 from mud.skills.registry import load_skills
-from mud.mobprog import Trigger
 from mud.utils import rng_mm
-
 
 ROM_NEWLINE = "\n\r"
 
@@ -495,6 +494,8 @@ def test_combat_cleanup_commands_handle_inventory_damage_and_escape(monkeypatch)
 
     mob_cmds.mob_interpret(mob, "remove Hero all")
     assert hero.inventory == []
+
+    monkeypatch.setattr("mud.mob_cmds.rng_mm.number_door", lambda: 0)
 
     mob_cmds.mob_interpret(mob, "flee")
     assert mob.room is escape

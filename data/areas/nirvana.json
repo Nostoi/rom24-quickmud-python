@@ -18,19 +18,19 @@
         "east": {
           "to_room": 9001,
           "description": "To the east, the plane extends for what seems to be forever.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9002,
           "description": "To the west, the plane extends for what seems to be forever.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 8905,
           "description": "Downwards, you see the portal leading back to home.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -47,13 +47,13 @@
         "east": {
           "to_room": 9003,
           "description": "To the east, there seems to be a bend in direction of travel.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9000,
           "description": "To the west, the plane seems to extend forever.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -70,13 +70,13 @@
         "east": {
           "to_room": 9000,
           "description": "The plane seems to strech forever to the east\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9004,
           "description": "The plane continues to the west where is appears to change direction\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -93,13 +93,13 @@
         "north": {
           "to_room": 9005,
           "description": "The plane continues to the north with no end in sight\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9001,
           "description": "The plane contiues to the west with no end in sight\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -116,13 +116,13 @@
         "north": {
           "to_room": 9006,
           "description": "The vast plane seems to have no end to the north\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9002,
           "description": "To the east, the plane has no visible end\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -139,13 +139,13 @@
         "north": {
           "to_room": 9012,
           "description": "To the north, the plane stretches as far as the eye can see.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9003,
           "description": "To the south, the plane stretches as far as the eye can see.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -162,13 +162,13 @@
         "north": {
           "to_room": 9013,
           "description": "To the north, the plane stretches as far as the eye can see.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9004,
           "description": "To the south, the plane stretches as far as the eye can see.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -185,14 +185,14 @@
         "east": {
           "to_room": 9010,
           "description": "The hall continues east into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9013,
           "description": "A great door lies to the west\n",
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -210,13 +210,13 @@
           "to_room": 9012,
           "description": "A great door lies to the east\n",
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "west": {
           "to_room": 9009,
           "description": "the hallway continues west into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -233,13 +233,13 @@
         "east": {
           "to_room": 9008,
           "description": "The hallway continues east into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9011,
           "description": "The Hallway continues west into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -256,13 +256,13 @@
         "east": {
           "to_room": 9011,
           "description": "The Hallway contiues east into oblivion\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9007,
           "description": "The Hallway contiues west into oblivion\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -279,19 +279,19 @@
         "north": {
           "to_room": 9023,
           "description": "The passage continues to the north where it seems to get wider.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9009,
           "description": "The passage ontinues eastward into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9010,
           "description": "The passage continues westward into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -308,20 +308,20 @@
         "north": {
           "to_room": 9014,
           "description": "The plane continues northward as far as the eye can see.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9005,
           "description": "The plane continues southward as far as the eye can see.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9008,
           "description": "A mighty door lies to the west\n",
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -343,20 +343,19 @@
         "north": {
           "to_room": 9015,
           "description": "The plane stretches to the north as far as the eye can see.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9007,
           "description": "A mighty door sits to the east\n",
           "keyword": "door",
-          "flags": "2",
-          "key": -1
+          "flags": 33
         },
         "south": {
           "to_room": 9006,
           "description": "The plane continues to the south as far as the eye can see\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -378,13 +377,13 @@
         "north": {
           "to_room": 9027,
           "description": "The plane continues endlessly to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9012,
           "description": "The plane continues endlessly to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -401,13 +400,13 @@
         "north": {
           "to_room": 9028,
           "description": "The plane continues endlessly to the north\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9013,
           "description": "The plane continues endlessly to the south\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -424,7 +423,7 @@
         "west": {
           "to_room": 9018,
           "description": "The passage continue to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -441,7 +440,7 @@
         "east": {
           "to_room": 9019,
           "description": "The passage continues to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -458,13 +457,13 @@
         "east": {
           "to_room": 9016,
           "description": "The passage continues to the east\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9020,
           "description": "The passage leads west where you can see a bright light ahead.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -481,13 +480,13 @@
         "east": {
           "to_room": 9020,
           "description": "The passage continues eastward where you can see a bright light.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9017,
           "description": "The passage continues westward into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -504,25 +503,25 @@
         "north": {
           "to_room": 9024,
           "description": "A passage leads north into the unknown.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9018,
           "description": "A passage leads east into the unknown.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9021,
           "description": "A passage leads south into the unknown.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9019,
           "description": "A passage leads west into the unknown.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -539,13 +538,13 @@
         "north": {
           "to_room": 9020,
           "description": "The passage leads north where you can see a bright light.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9022,
           "description": "The passage leads south into the unknown.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -562,25 +561,25 @@
         "north": {
           "to_room": 9021,
           "description": "The passage heads northward where you can see nothing.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9046,
           "description": "The passage goes east where you feel it might be bad to go.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9023,
           "description": "The passage goes south into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9053,
           "description": "The passage heads westward into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -597,13 +596,13 @@
         "north": {
           "to_room": 9022,
           "description": "To the north, you spy an intersection of tunnels.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9011,
           "description": "To the south you can barely make out a junction of passageways.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -620,13 +619,13 @@
         "north": {
           "to_room": 9025,
           "description": "To the north, you can make out a intersection of tunnels.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9020,
           "description": "To the south, you can see a bright light.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -643,13 +642,13 @@
         "north": {
           "to_room": 9026,
           "description": "Far to the north you can see a door.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9024,
           "description": "To the south you stare into darkness.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -667,19 +666,18 @@
           "to_room": 9031,
           "description": "you see a massive door\n",
           "keyword": "door",
-          "flags": "2",
-          "key": -1
+          "flags": 33
         },
         "east": {
           "to_room": 9032,
           "description": "To the east, you spy a dark passage\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9025,
           "description": "To the south you stare into oblivion.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -696,13 +694,13 @@
         "south": {
           "to_room": 9014,
           "description": "looking south, you see the plane extending beyond view.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9030,
           "description": "looking west, you can't fathom how far the plane extends.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -719,13 +717,13 @@
         "east": {
           "to_room": 9029,
           "description": "The plane heads east from here. You can't see the end of it.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9015,
           "description": "Looking south, you view the plane extending for miles.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -742,13 +740,13 @@
         "east": {
           "to_room": 9031,
           "description": "looking east, you spy a door far off in the distance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9028,
           "description": "looking west, in the distance you can spy a curve south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -765,13 +763,13 @@
         "east": {
           "to_room": 9027,
           "description": "looking east, you can see a bend in the distance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9031,
           "description": "glancing west, you can spy a door far off in the distance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -788,20 +786,19 @@
         "east": {
           "to_room": 9030,
           "description": "looking east, you see more of the passage.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9026,
           "description": "A large door blocks the way to the south.\n",
           "keyword": "door",
-          "flags": "2",
-          "key": -1
+          "flags": 33
         },
         "west": {
           "to_room": 9029,
           "description": "looking west, you see more of the passage.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -818,25 +815,25 @@
         "north": {
           "to_room": 9033,
           "description": "Looking north, you spy a small room in the distance\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9035,
           "description": "Eastward, the passage continues in the darkness.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9034,
           "description": "South of here is a small room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9026,
           "description": "West, you spy an intersection.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -853,7 +850,7 @@
         "south": {
           "to_room": 9032,
           "description": "looking south, you see an intersection.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -870,7 +867,7 @@
         "north": {
           "to_room": 9032,
           "description": "Looking north, you spy an intersection.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -887,25 +884,25 @@
         "north": {
           "to_room": 9036,
           "description": "Looking north you spy a average sized room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9038,
           "description": "Looking east, you can make out a large room\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9037,
           "description": "Looking south, you can see an average room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9032,
           "description": "Looking west, you can see an intersection ahead.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -922,7 +919,7 @@
         "south": {
           "to_room": 9035,
           "description": "Looking south, you can make out a passage.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -939,7 +936,7 @@
         "north": {
           "to_room": 9035,
           "description": "Looking north, you can make out a hallway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -956,7 +953,7 @@
         "west": {
           "to_room": 9035,
           "description": "Looking west you can see a long hallway\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -973,25 +970,25 @@
         "north": {
           "to_room": 9040,
           "description": "To the north, you spy a small room\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9025,
           "description": "To the east, you see a quadruple junction\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9041,
           "description": "To the south you see a small room\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9042,
           "description": "To the west, the passageway continues\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1008,7 +1005,7 @@
         "south": {
           "to_room": 9039,
           "description": "To the south you can make out a junction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1025,7 +1022,7 @@
         "north": {
           "to_room": 9039,
           "description": "To the north you see a junction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1042,25 +1039,25 @@
         "north": {
           "to_room": 9043,
           "description": "You can see a room to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9039,
           "description": "To the east you can see a junction\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9044,
           "description": "To the south you can make out a averaged sized room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9045,
           "description": "To the west you can see what appears to be a cavernous room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1077,7 +1074,7 @@
         "south": {
           "to_room": 9042,
           "description": "To the south you can see junction\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1094,7 +1091,7 @@
         "north": {
           "to_room": 9042,
           "description": "To the north you can visualize a junction of passages.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1111,7 +1108,7 @@
         "east": {
           "to_room": 9042,
           "description": "To the east you can see a junction\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1128,25 +1125,25 @@
         "north": {
           "to_room": 9047,
           "description": "To the north you can see a small chamber\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9049,
           "description": "To the east, the passage continues,.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9048,
           "description": "To the south, a chamber can be seen\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9022,
           "description": "To the west, a large tunnel can be found.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1163,7 +1160,7 @@
         "south": {
           "to_room": 9046,
           "description": "To the south you can see a passage.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1180,7 +1177,7 @@
         "north": {
           "to_room": 9046,
           "description": "To the north you can see a passageway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1197,25 +1194,25 @@
         "north": {
           "to_room": 9050,
           "description": "To the north you can see a room\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9052,
           "description": "To the east you can make out a large chamber\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9051,
           "description": "To the south, a room can be seen.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9046,
           "description": "to the west, the passageway continues\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1232,7 +1229,7 @@
         "south": {
           "to_room": 9049,
           "description": "To the south you can see a passageway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1249,7 +1246,7 @@
         "north": {
           "to_room": 9049,
           "description": "To the north you can see a passage.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1266,7 +1263,7 @@
         "west": {
           "to_room": 9049,
           "description": "To the west you can see a passageway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1283,25 +1280,25 @@
         "north": {
           "to_room": 9054,
           "description": "To the north lies a small chamber\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9022,
           "description": "To the east, a main passage forms a junction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9055,
           "description": "To the south, you can spot a small room\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9059,
           "description": "To the west, the passageway continues\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1318,7 +1315,7 @@
         "south": {
           "to_room": 9053,
           "description": "To the south you can see a passage\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1335,7 +1332,7 @@
         "north": {
           "to_room": 9053,
           "description": "To the north, you can see a passageway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1352,7 +1349,7 @@
         "south": {
           "to_room": 9059,
           "description": "To the south you can visualize a east-west passage.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1369,7 +1366,7 @@
         "north": {
           "to_room": 9059,
           "description": "To the north you can make out a passageway.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1386,7 +1383,7 @@
         "east": {
           "to_room": 9059,
           "description": "To the east you can spot a hallway\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1403,25 +1400,25 @@
         "north": {
           "to_room": 9056,
           "description": "To the north lies a large chamber\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9053,
           "description": "To the east , the passage continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9057,
           "description": "To the south, a small chamber can be found.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9058,
           "description": "To the west, lies a monstrous room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1437,7 +1434,7 @@
       "long_description": "A tridrone is here doing a menial task.\n",
       "description": "You see what appears to be a 3 sided pyramid with spidery arms and legs.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "0J",
       "alignment": 300,
       "group": 0,
@@ -1447,19 +1444,23 @@
       "hit_dice": "1d1+99",
       "mana_dice": "2d5+3",
       "damage_dice": "pound",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 3,
+      "ac_slash": 4,
+      "ac_exotic": 5,
       "offensive": "NQR",
       "immune": "0BMNPQ",
       "resist": "0HIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0H",
+      "parts": "IABCGHJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9001,
@@ -1468,7 +1469,7 @@
       "long_description": "A quadrone is here watching for trespassers.\n",
       "description": "A cubic creature, with spiny arms and legs.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "AFGT",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1478,19 +1479,23 @@
       "hit_dice": "1d1+99",
       "mana_dice": "3d4+2",
       "damage_dice": "beating",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 0,
+      "ac_slash": 1,
+      "ac_exotic": 2,
       "offensive": "CEKQR",
       "immune": "0BMNPQ",
       "resist": "0HIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0H",
+      "parts": "IABCGHJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9002,
@@ -1499,7 +1504,7 @@
       "long_description": "The pentadrone is here policing the area.\n",
       "description": "A five-armed creature which resembles a starfish on thin stilt-like legs.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGT",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1509,19 +1514,23 @@
       "hit_dice": "1d1+99",
       "mana_dice": "4d4+3",
       "damage_dice": "slap",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": 0,
+      "ac_exotic": -1,
       "offensive": "CEFLNQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0H",
+      "parts": "NABCGHJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9003,
@@ -1530,7 +1539,7 @@
       "long_description": "A decaton is here overseeing the other modrons.\n",
       "description": "The decaton is a large, ten-tentacled sphere on stumpy legs.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQT",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1540,19 +1549,23 @@
       "hit_dice": "17d8+50",
       "mana_dice": "4d5+3",
       "damage_dice": "pound",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": 0,
+      "ac_exotic": -2,
       "offensive": "ACEKNQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "NABCGHJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9004,
@@ -1561,7 +1574,7 @@
       "long_description": "A nonaton is here preserving law and order.\n",
       "description": "A cylidrical modron with 9 tentacles and stubby legs.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQT",
       "affected_by": "DHJ",
       "alignment": 300,
       "group": 0,
@@ -1571,19 +1584,23 @@
       "hit_dice": "20d8+75",
       "mana_dice": "4d6+4",
       "damage_dice": "pound",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -2,
+      "ac_exotic": -3,
       "offensive": "AEFNQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "G",
-      "form": "128",
-      "parts": "1735",
-      "size": "large",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "NABCGHJK",
+      "size": "large",
+      "material": "0"
     },
     {
       "id": 9005,
@@ -1592,7 +1609,7 @@
       "long_description": "An octon is here governing his ward of responsilbility.\n",
       "description": "The octon has a collar at shoulder level with 8 tentacled arms growing out of\nit.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQ",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1602,19 +1619,23 @@
       "hit_dice": "18d10+75",
       "mana_dice": "4d6+5",
       "damage_dice": "crush",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -3,
+      "ac_exotic": -4,
       "offensive": "ACEHKQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "G",
-      "form": "128",
-      "parts": "1735",
-      "size": "large",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "NABCGHJK",
+      "size": "large",
+      "material": "0"
     },
     {
       "id": 9006,
@@ -1623,7 +1644,7 @@
       "long_description": "A septon is here preserving order.\n",
       "description": "The septon appears as a human with a large bald head. It has a shoulder collar\nwith 7 tentacles coming from it.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQR",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1633,19 +1654,23 @@
       "hit_dice": "20d10+100",
       "mana_dice": "6d4+5",
       "damage_dice": "beating",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": -4,
       "offensive": "AFKOQR",
       "immune": "RBMNPQ",
       "resist": "0HIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "INABCGHJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9007,
@@ -1654,7 +1679,7 @@
       "long_description": "A hexton is here watching over his armies.\n",
       "description": "A hexton appears as a humanoid with 6 arms: 2 large human arms with 6 fingers,\nand 4 tentacles below tipped with sharp claws.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQT",
       "affected_by": "DFHJ",
       "alignment": 300,
       "group": 0,
@@ -1664,19 +1689,23 @@
       "hit_dice": "20d10+75",
       "mana_dice": "4d8+6",
       "damage_dice": "slash",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": -4,
       "offensive": "ACEFHIKLNQR",
       "immune": "ARBMNPQ",
       "resist": "CHIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "large",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "INPABCGHJK",
+      "size": "large",
+      "material": "0"
     },
     {
       "id": 9008,
@@ -1685,7 +1714,7 @@
       "long_description": "A quinton is here keeping records.\n",
       "description": "Quintons look like tall, stocky humanoids with 4 flexible arms jutting from the\nshoulders.  A prehensile tail serves as the creature's 5th arm, and they have\nfan-like wings attached to their shoulders.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQ",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1695,19 +1724,23 @@
       "hit_dice": "20d12+100",
       "mana_dice": "4d8+7",
       "damage_dice": "beating",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -8,
+      "ac_slash": -6,
+      "ac_exotic": -8,
       "offensive": "AKMOQR",
       "immune": "ARBMNPQ",
       "resist": "0HIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "large",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "INPQABCGHJK",
+      "size": "large",
+      "material": "0"
     },
     {
       "id": 9009,
@@ -1716,7 +1749,7 @@
       "long_description": "A tertian is here administering the law.\n",
       "description": "Tertians look very human, save for their 12 foot size, the horns jutting from\nthe sides of their bald heads, and the long prehensile tail ending in a mace-\nlike ball.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQRT",
       "affected_by": "DJ",
       "alignment": 300,
       "group": 0,
@@ -1726,19 +1759,23 @@
       "hit_dice": "20d20+50",
       "mana_dice": "8d6+12",
       "damage_dice": "pound",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -11,
+      "ac_bash": -13,
+      "ac_slash": -10,
+      "ac_exotic": -9,
       "offensive": "CEFQR",
       "immune": "ARBMNPQ",
       "resist": "CHIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "huge",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "IWABCGHJK",
+      "size": "huge",
+      "material": "0"
     },
     {
       "id": 9010,
@@ -1747,7 +1784,7 @@
       "long_description": "A Secundus, one of the Viceroys of Nirvana, is here.\n",
       "description": "The secundi is an incredibly thin, tall humanoids with long, narrow faces\nand deepset eyes. It radiates intense power.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQRT",
       "affected_by": "DFHJ",
       "alignment": 0,
       "group": 0,
@@ -1757,19 +1794,23 @@
       "hit_dice": "40d20+50",
       "mana_dice": "7d8+15",
       "damage_dice": "punch",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -11,
+      "ac_bash": -14,
+      "ac_slash": -11,
+      "ac_exotic": -12,
       "offensive": "EFHIKNQR",
       "immune": "AHIKRBMNPQ",
       "resist": "CHIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "huge",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "IABCGHJK",
+      "size": "huge",
+      "material": "0"
     },
     {
       "id": 9011,
@@ -1778,7 +1819,7 @@
       "long_description": "Primus, ruler of the Plane of Nirvana, forms out of an energy pool.\n",
       "description": "Primus is a huge being who rises out of the energy pool and glares at you with\nviolet eyes. His right hand is wreathed in darkness, his left in light, and\nhe looks very displeased to see you.\n",
       "race": "modron",
-      "act_flags": "0",
+      "act_flags": "ABFGQRT",
       "affected_by": "DFHJ",
       "alignment": 0,
       "group": 0,
@@ -1788,31 +1829,92 @@
       "hit_dice": "1d1+3999",
       "mana_dice": "6d10+25",
       "damage_dice": "wrath",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -15,
+      "ac_bash": -15,
+      "ac_slash": -15,
+      "ac_exotic": -15,
       "offensive": "AHQR",
       "immune": "AHIKRSBMNPQ",
       "resist": "CHIK",
       "vuln": "0",
-      "form": "128",
-      "parts": "1735",
-      "size": "giant",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "MH",
+      "parts": "IABCGHJK",
+      "size": "giant",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 9000,
-    "high": 9099
-  },
+  "objects": [
+    {
+      "id": 9000,
+      "name": "THE long sword",
+      "keywords": "sword long the",
+      "description": "THE long sword of Primus is here.",
+      "material": "adamantite",
+      "item_type": "weapon",
+      "extra_flags": 1601,
+      "wear_flags": 8193,
+      "level": 39,
+      "weight": 400,
+      "cost": 8800,
+      "condition": 100,
+      "values": [
+        1,
+        5,
+        6,
+        3,
+        48
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 5
+        },
+        {
+          "location": 18,
+          "modifier": 5
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "sword long the",
+          "description": "This is an extremely long and heavy sword, with many magical runes inscribed\non it.  It glows with the power of Primus, Lord of the Plane of Nirvana.\n"
+        }
+      ]
+    },
+    {
+      "id": 9001,
+      "name": "a luminescent moonstone",
+      "keywords": "moonstone moon stone white",
+      "description": "A softly glowing white stone rests on the floor.",
+      "material": "gem",
+      "item_type": "warp_stone",
+      "extra_flags": 524289,
+      "wear_flags": 16385,
+      "level": 0,
+      "weight": 0,
+      "cost": 500,
+      "condition": 100,
+      "values": [
+        24,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "moonstone moon stone white",
+          "description": "Looking into the smooth surface of this moonstone, you feel strangely at \npeace and balance with the world around you.\n"
+        }
+      ]
+    }
+  ],
   "resets": [
     {
       "command": "M",
@@ -2129,5 +2231,6 @@
       "arg3": 16,
       "arg4": 0
     }
-  ]
+  ],
+  "specials": []
 }

@@ -1,15 +1,18 @@
 import json
+import logging
 from pathlib import Path
 
 import pytest
 
 from mud.loaders import load_area_file
+from mud.loaders.base_loader import BaseTokenizer
 from mud.loaders.json_loader import load_area_from_json
 from mud.loaders.reset_loader import validate_resets
 from mud.mobprog import Trigger, clear_registered_programs, get_registered_program
 from mud.models.constants import (
     EX_CLOSED,
     EX_ISDOOR,
+    EX_LOCKED,
     EX_PICKPROOF,
     LIQUID_TABLE,
     AffectFlag,
@@ -142,6 +145,136 @@ def test_new_areadata_header_populates_metadata(tmp_path):
     assert area.min_vnum == 3000
     assert area.max_vnum == 3099
 
+    area_registry.clear()
+
+
+def test_room_exit_lock_codes_map_to_rom_exit_bits(tmp_path):
+    room_registry.clear()
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "doors.are~\n"
+        "Doors~\n"
+        "Credits~\n"
+        "1000 1001\n"
+        "#ROOMS\n"
+        "#1000\n"
+        "Room A~\n"
+        "A room.~\n"
+        "0 0 0\n"
+        "D0\n"
+        "North door.~\n"
+        "door~\n"
+        "1 1234 1001\n"
+        "S\n"
+        "#1001\n"
+        "Room B~\n"
+        "B room.~\n"
+        "0 0 0\n"
+        "S\n"
+        "#0\n"
+        "#$\n"
+    )
+    path = tmp_path / "doors.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+    room = room_registry[1000]
+    exit_obj = room.exits[0]
+
+    assert exit_obj is not None
+    assert exit_obj.rs_flags & EX_ISDOOR
+    assert not (exit_obj.rs_flags & EX_CLOSED)
+    assert not (exit_obj.rs_flags & EX_LOCKED)
+
+    room_registry.clear()
+    area_registry.clear()
+
+
+def test_read_string_tilde_stops_at_first_tilde_and_discards_suffix():
+    tokenizer = BaseTokenizer(["description line~ROOMS", "0 CDS 0"])
+
+    result = tokenizer.read_string_tilde()
+
+    assert result == "description line"
+    assert tokenizer.next_line() == "0 CDS 0"
+
+
+def test_object_loader_preserves_bare_f_affect_blocks(tmp_path):
+    obj_registry.clear()
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "objects.are~\n"
+        "Objects~\n"
+        "Credits~\n"
+        "9101 9103\n"
+        "#OBJECTS\n"
+        "#9101\n"
+        "winged boots~\n"
+        "a pair of winged boots~\n"
+        "A pair of winged boots flutters about~\n"
+        "oldstyle~\n"
+        "armor G AG\n"
+        "3 3 3 0 0\n"
+        "13 100 2800 P\n"
+        "F\n"
+        "A 0 0 T\n"
+        "#9102\n"
+        "bronze bracer~\n"
+        "A carved bronze bracer~\n"
+        "A carved bronze bracer lies here.~\n"
+        "oldstyle~\n"
+        "armor 0 AM\n"
+        "3 6 6 2 0\n"
+        "10 200 820 P\n"
+        "#0\n"
+        "#$\n"
+    )
+    path = tmp_path / "objects.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+
+    assert 9101 in obj_registry
+    assert 9102 in obj_registry
+    assert obj_registry[9101].affected
+    assert obj_registry[9101].affected[0].bitvector & AffectFlag.FLYING
+
+    obj_registry.clear()
+    area_registry.clear()
+
+
+def test_json_room_loader_preserves_negative_sector_without_warning(tmp_path, caplog):
+    room_registry.clear()
+    area_registry.clear()
+    payload = {
+        "name": "Test Area",
+        "rooms": [
+            {
+                "id": 1221,
+                "name": "The End of the Rainbow Bridge",
+                "description": "A room.",
+                "sector_type": "-1",
+                "flags": 0,
+                "exits": {},
+                "extra_descriptions": [],
+            }
+        ],
+        "mobiles": [],
+        "objects": [],
+        "resets": [],
+    }
+    path = tmp_path / "sector_minus_one.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+    with caplog.at_level(logging.WARNING):
+        load_area_from_json(str(path))
+
+    assert room_registry[1221].sector_type == -1
+    assert "Unknown sector type: -1, defaulting to INSIDE" not in [record.getMessage() for record in caplog.records]
+
+    room_registry.clear()
     area_registry.clear()
 
 

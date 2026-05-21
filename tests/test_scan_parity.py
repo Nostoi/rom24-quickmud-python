@@ -142,6 +142,7 @@ def test_scan_empty_room():
     # Clear other people from room
     if char.room:
         char.room.people = [char]
+        char.room.exits = [None] * len(char.room.exits)
 
     result = do_scan(char, "")
 

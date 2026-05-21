@@ -18,7 +18,7 @@
         "south": {
           "to_room": 1213,
           "description": "Asgard lies to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -35,7 +35,7 @@
         "north": {
           "to_room": 1213,
           "description": "Asgard lies to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -52,7 +52,7 @@
         "east": {
           "to_room": 1213,
           "description": "Asgard lies to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -70,32 +70,32 @@
           "to_room": 1209,
           "description": "Alander's workroom is to the north.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "east": {
           "to_room": 1217,
           "description": "Valhalla continues east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 1208,
           "description": "A sea cave is south of here.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "west": {
           "to_room": 1216,
           "description": "The entrance to Valhalla is to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 1,
           "description": "If you want to know what is up there, you shall have to go look...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -113,7 +113,7 @@
           "to_room": 1218,
           "description": "Valhalla is to the north.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -156,7 +156,7 @@
           "to_room": 1217,
           "description": "Valhalla is to the south.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -215,7 +215,7 @@
           "to_room": 1203,
           "description": "Valhalla lies to the north.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -233,7 +233,7 @@
           "to_room": 1203,
           "description": "Valhalla is to the south.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -260,7 +260,7 @@
           "to_room": 1217,
           "description": "Valhalla is to the north\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -291,7 +291,7 @@
           "to_room": 1218,
           "description": "Valhalla is to the south.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -313,25 +313,25 @@
         "north": {
           "to_room": 1212,
           "description": "The hard floor seems to go on forever.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 1212,
           "description": "The hard floor seems to go on forever.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 1212,
           "description": "The hard floor seems to go on forever.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 1212,
           "description": "The hard floor seems to go on forever.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -357,31 +357,31 @@
         "north": {
           "to_room": 1200,
           "description": "The chat room is to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 1216,
           "description": "The golden doors of Valhalla are to the east\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 1201,
           "description": "Moses' hangout is to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 1202,
           "description": "The center of the universe is to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 1215,
           "description": "The Rainbow Bridge is below you.  You can barely see it through the clouds.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -397,7 +397,7 @@
       "exits": {
         "down": {
           "to_room": 1219,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -414,13 +414,13 @@
         "up": {
           "to_room": 1220,
           "description": "The Rainbow Bridge stretches ahead before you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 3054,
           "description": "The altar of Midgaard is below you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -437,13 +437,13 @@
         "east": {
           "to_room": 1203,
           "description": "Valhalla lies to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 1213,
           "description": "Asgard lies to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -461,32 +461,32 @@
           "to_room": 1207,
           "description": "The Satin Memorial Reading Room is north of here.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "east": {
           "to_room": 1218,
           "description": "Valhalla continues east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 1210,
           "description": "Bigfoots' room is south of here.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "west": {
           "to_room": 1203,
           "description": "Valhalla continues west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 1212,
           "description": "If you want to know what is up there you shall have to go and look...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -504,32 +504,32 @@
           "to_room": 1211,
           "description": "Pontius' room is north of here.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "east": {
           "to_room": 1219,
           "description": "Valhalla continues east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 1204,
           "description": "Priscilla's Pleasure Palace is south of here.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "west": {
           "to_room": 1217,
           "description": "Valhalla continues west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 2,
           "description": "If you want to know what is up there you shall have to go up and see...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -551,31 +551,31 @@
         "north": {
           "to_room": 3161,
           "description": "Melancholys' room is north of here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3150,
           "description": "Kates' room is east of here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3170,
           "description": "The Temple of Stupid is south of here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 1218,
           "description": "Valhalla goes back to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 1214,
           "description": "If you want to know what is up from here, you shall have to go up and see...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -592,13 +592,13 @@
         "up": {
           "to_room": 1221,
           "description": "The Rainbow Bridge continues upwards into the heavens.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 1215,
           "description": "The Rainbow Bridge disappears down into the clouds.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -614,19 +614,19 @@
       "id": 1221,
       "name": "The End of the Rainbow Bridge",
       "description": "You have reached the end of the Rainbow Bridge.  Asgard stretches out above \nyou.  Looking around, you search for the legendary guardian of Asgard.  The\nclouds are far below you and a sense of beauty and peacefulness surrounds you. \n",
-      "sector_type": "inside",
+      "sector_type": "-1",
       "flags": 0,
       "exits": {
         "up": {
           "to_room": 1213,
           "description": "Asgard is above you, spread out in all its glory.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 1220,
           "description": "Bifrost, the Rainbow Bridge leads down to the Temple of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -642,7 +642,7 @@
       "long_description": "Heimdall, guardian of Bifrost, stands guard over the Rainbow Bridge.\n",
       "description": "Standing over 7 feet tall and muscled as only a god can be, Heimdall keeps\nhis unsleeping gaze over the Rainbow bridge.  His trusty Gjallor-horn never\nleaves his side, and shall remain unwinded until the dread ship Naglfar sails\ntowards Valhalla on the dawn of Ragnarok.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABTV",
       "affected_by": "CDFJZ",
       "alignment": 1000,
       "group": 0,
@@ -652,31 +652,26 @@
       "hit_dice": "1d1+499",
       "mana_dice": "5d4+40",
       "damage_dice": "crush",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -20,
+      "ac_bash": -20,
+      "ac_slash": -20,
+      "ac_exotic": -10,
       "offensive": "ACDEFHIKLNOT",
       "immune": "ABP",
       "resist": "CD",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "large",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "large",
+      "material": "0"
     }
   ],
   "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 1200,
-    "high": 1299
-  },
   "resets": [
     {
       "command": "M",
@@ -769,5 +764,6 @@
       "arg3": 1,
       "arg4": 0
     }
-  ]
+  ],
+  "specials": []
 }

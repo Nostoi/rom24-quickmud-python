@@ -449,12 +449,16 @@ def load_objects(tokenizer: BaseTokenizer, area):
                     )
                 elif peek.startswith("F"):
                     parts = tokenizer.next_line().split()
-                    if len(parts) >= 5:
-                        where_token = parts[1]
+                    if len(parts) == 1:
+                        parts = tokenizer.next_line().split()
+                    elif parts and parts[0] == "F":
+                        parts = parts[1:]
+                    if len(parts) >= 4:
+                        where_token = parts[0]
                         where = _resolve_where(where_token)
-                        location = _safe_int(parts[2])
-                        modifier = _safe_int(parts[3])
-                        bitvector = _parse_bitvector(parts[4:], where)
+                        location = _safe_int(parts[1])
+                        modifier = _safe_int(parts[2])
+                        bitvector = _parse_bitvector(parts[3:], where)
                         obj.affects.append(
                             {
                                 "where": where_token,

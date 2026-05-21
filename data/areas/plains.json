@@ -18,25 +18,25 @@
         "north": {
           "to_room": 315,
           "description": "You see the grassy plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 301,
           "description": "You notice nothing special, except that the path in the plains continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3904,
           "description": "Towards the south you notice the north gate of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 316,
           "description": "You see the grassy plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -53,13 +53,13 @@
         "east": {
           "to_room": 302,
           "description": "You notice nothing special, except that the path in the plains continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 300,
           "description": "You notice nothing special, except that the path in the plains continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -76,13 +76,13 @@
         "north": {
           "to_room": 303,
           "description": "You notice nothing special, except that the path in the plains continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 301,
           "description": "You notice nothing special, except that the path in the plains continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -99,25 +99,25 @@
         "north": {
           "to_room": 304,
           "description": "You notice nothing special, except that the path in the plains continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 317,
           "description": "To the east you notice the grassy plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 302,
           "description": "You notice nothing special, except that the path in the plains continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 315,
           "description": "To the west you can see more of the beautiful grassy plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -134,13 +134,13 @@
         "north": {
           "to_room": 305,
           "description": "The path continues north as small foothills begins to appear.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 303,
           "description": "The path leads south towards the town.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -157,25 +157,25 @@
         "north": {
           "to_room": 306,
           "description": "The path continues into the small foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 321,
           "description": "You see the grassy plains here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 304,
           "description": "The path continues towards Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 320,
           "description": "You see the grassy plains here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -192,19 +192,19 @@
         "north": {
           "to_room": 326,
           "description": "You see grassy plains and perhaps some crystal clear water.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 307,
           "description": "The path continues towards east here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 305,
           "description": "The path in the plains wind through the small foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -221,13 +221,13 @@
         "east": {
           "to_room": 308,
           "description": "The path continues in the foothills\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 306,
           "description": "To the west the path takes a bend southwards.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -244,13 +244,13 @@
         "north": {
           "to_room": 309,
           "description": "The narrow path through the foothills turns left here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 307,
           "description": "To the west you can see the path continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -267,19 +267,19 @@
         "east": {
           "to_room": 310,
           "description": "You see the path continues in the foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 308,
           "description": "You see the path continues in the foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 326,
           "description": "You see grassy plains and perhaps some crystal clear water.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -296,19 +296,19 @@
         "north": {
           "to_room": 327,
           "description": "You can't really see much through the vegetation on the foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 311,
           "description": "To the east you notice that the path continues towards a T-intersection.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 309,
           "description": "You just see the path through the foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -325,13 +325,13 @@
         "east": {
           "to_room": 312,
           "description": "You can go to the T-intersection this way.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 310,
           "description": "You can see the long path through the plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -348,19 +348,19 @@
         "north": {
           "to_room": 313,
           "description": "The wide road to Ofcol runs here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 332,
           "description": "Here is a partially hidden, ancient looking path.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 311,
           "description": "You can see the long narrow path running through the foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -377,19 +377,19 @@
         "north": {
           "to_room": 314,
           "description": "The road continues towards Ofcol.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 312,
           "description": "You can see the T-intersection in the souther direction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 327,
           "description": "You think you can climb these foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -406,13 +406,13 @@
         "north": {
           "to_room": 5550,
           "description": "You notice a sign saying : Stranger we welcome you to the\n                           peaceful city of Ofcol.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 313,
           "description": "Here you see the road go towards the intersection.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -429,25 +429,25 @@
         "north": {
           "to_room": 320,
           "description": "The plains extend far to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 303,
           "description": "To the east you can see a small path in the plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 300,
           "description": "To the south you can see a small path in the plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 318,
           "description": "The plains extend far to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -469,13 +469,13 @@
         "north": {
           "to_room": 318,
           "description": "The plains extend far to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 300,
           "description": "When you look to the east you notice at small path.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -492,19 +492,19 @@
         "east": {
           "to_room": 338,
           "description": "The plains extend far to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 345,
           "description": "Some VERY steep slopes prevent you from going this way, it might kill you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 303,
           "description": "A small path is running through the plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -521,19 +521,19 @@
         "north": {
           "to_room": 319,
           "description": "The plains extend far to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 315,
           "description": "The plains extend far to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 316,
           "description": "The plains extend far to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -550,19 +550,19 @@
         "north": {
           "to_room": 330,
           "description": "To the north, the plains extend into small foothills, behind a small hill\nyou notice something ...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 320,
           "description": "The plains extend far to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 318,
           "description": "The plains extend far to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -579,25 +579,25 @@
         "north": {
           "to_room": 322,
           "description": "The plains extend into small foothills to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 305,
           "description": "East of here you see a winding path in the plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 315,
           "description": "The plains extend far to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 319,
           "description": "The plains extend far to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -614,13 +614,13 @@
         "south": {
           "to_room": 338,
           "description": "The plains extend far to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 305,
           "description": "A small path is running through the plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -637,19 +637,19 @@
         "north": {
           "to_room": 324,
           "description": "The small foothills extend into foothills far to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 320,
           "description": "The small foothills extend into plains far to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 330,
           "description": "The small foothills extend far to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -666,19 +666,18 @@
         "north": {
           "to_room": 7800,
           "description": "You see a path toward the valley.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 324,
           "description": "The foothills extend far to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 330,
           "description": "On the horizon you can see the City of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -695,25 +694,25 @@
         "north": {
           "to_room": 901,
           "description": "The path continues up the mountain.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 325,
           "description": "The foothills extend far to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 322,
           "description": "The foothills extend downwards to the south. In the horizon you can\nsee the City Of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 323,
           "description": "The foothills extend far to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -739,13 +738,13 @@
         "east": {
           "to_room": 326,
           "description": "The foothills extend into smaller hills far to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 324,
           "description": "The foothills extend far to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -762,19 +761,19 @@
         "east": {
           "to_room": 309,
           "description": "To the east you notice a small path in the foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 306,
           "description": "To the south a path winds its way south into the plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 325,
           "description": "The foothills extend far to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -796,13 +795,13 @@
         "east": {
           "to_room": 313,
           "description": "To the east you notice a small path in the foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 310,
           "description": "To the south a steep slope runs down to a small path in the foothills.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -819,26 +818,26 @@
         "north": {
           "to_room": 323,
           "description": "The steep foothills seems hard to climb\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 322,
           "description": "The foothills extend far to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 319,
           "description": "To the south the foothills extend into plains far to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 331,
           "description": "You see a small crumbled hut here, must be a hermit living here.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -856,7 +855,7 @@
           "to_room": 330,
           "description": "Through the door you can see the foothills.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -878,13 +877,13 @@
         "north": {
           "to_room": 312,
           "description": "As you look to the north you see a T-intersection.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 333,
           "description": "The ancient path continues through the plains.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -901,13 +900,13 @@
         "north": {
           "to_room": 332,
           "description": "You see the ancient path.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 334,
           "description": "You trace the path carefully and see no immediate dangers.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -924,13 +923,13 @@
         "north": {
           "to_room": 333,
           "description": "You see the ancient path.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 335,
           "description": "You trace the path carefully and see no immediate dangers.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -947,13 +946,13 @@
         "north": {
           "to_room": 334,
           "description": "You see the ancient path winding its way north from here. Looks safe.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 336,
           "description": "Further ahead you see a bridge over a small creak.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -975,13 +974,13 @@
         "east": {
           "to_room": 337,
           "description": "The path continues, further ahead you notice some rock formations.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 335,
           "description": "The ancient path leads west and turns north further ahead.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1003,13 +1002,13 @@
         "east": {
           "to_room": 339,
           "description": "To the east you enter the ring of stones. You wonder if it's safe.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 336,
           "description": "To the west the ancient path leads across the wooden bridge.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1031,13 +1030,13 @@
         "north": {
           "to_room": 321,
           "description": "The plains extend far to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 317,
           "description": "The plains extend far to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1054,13 +1053,13 @@
         "west": {
           "to_room": 337,
           "description": "You see the ancient path and the wooden bridge here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 340,
           "description": "You see a tunnel down there.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1089,18 +1088,18 @@
       "exits": {
         "south": {
           "to_room": 341,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 342,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 339,
           "description": "You welcome the sight of fresh air.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1121,7 +1120,7 @@
       "exits": {
         "north": {
           "to_room": 340,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1138,13 +1137,13 @@
         "east": {
           "to_room": 340,
           "description": "The tunnel continues in this direction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 343,
           "description": "The tunnel continues in this direction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1166,13 +1165,13 @@
         "east": {
           "to_room": 342,
           "description": "The unbearable stench is less intensive in this direction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 344,
           "description": "The tunnel seems to extend into some kind of cave.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1194,7 +1193,7 @@
         "east": {
           "to_room": 343,
           "description": "It looks like a good idea just to run in this direction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1225,7 +1224,7 @@
       "long_description": "Aruncus the Druid is walking around here, searching for herbs.\n",
       "description": "Aruncus is a tall, skinny druid with a face marked by nature.\nHe seems to be in peace with himself and his surroundings.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AGH",
       "affected_by": "D",
       "alignment": -500,
       "group": 0,
@@ -1235,19 +1234,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25
+      "wealth": 25,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 301,
@@ -1256,7 +1259,7 @@
       "long_description": "Sorbus the Hermit is sitting here, roasting a rabbit.\n",
       "description": "Sorbus bares the marks of a long, hard life in solitude.\nHe is dressed in simple clothing and looks like he has little\nor nothing to say.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1266,19 +1269,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 303,
@@ -1287,7 +1294,7 @@
       "long_description": "There is a citizen of Ofcol here glaring at you ... stranger!\n",
       "description": "He seems like a nice person with no interest in harming you or others.\nHe wears normal, light clothing and has an anonymous face.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1297,19 +1304,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 10
+      "wealth": 10,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 304,
@@ -1318,7 +1329,7 @@
       "long_description": "There is a citizen of Ofcol here glaring at you ... stranger!\n",
       "description": "She seems like a nice person with no interest in harming you or others.\nShe wears a minimum of clothing and has big ... eyes.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1328,19 +1339,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5
+      "wealth": 5,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 305,
@@ -1349,7 +1364,7 @@
       "long_description": "Shudde-M'ell the Giant worm of G'harne is guarding his treasure.\n",
       "description": "Shudde-M'ell is about 15 ft long and is surrounded by an evil stench,\nThe worm is the protector of the treasure of G'harne and has been so\nfor as long anyone can remember.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "D",
       "alignment": -1000,
       "group": 0,
@@ -1359,19 +1374,23 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 683
+      "wealth": 683,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 306,
@@ -1380,7 +1399,7 @@
       "long_description": "Luxan the Shopkeeper is here, eager to sell you anything.\n",
       "description": "Luxan is dressed in a strange jacket.\nHe looks like a mean trader from the outskirts of Midgaard.\nHis life is seems to be totally occupied with trading.\nHe looks very fit and capable of protecting his goods.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABC",
       "affected_by": "0",
       "alignment": 400,
       "group": 0,
@@ -1390,19 +1409,23 @@
       "hit_dice": "11d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 400
+      "wealth": 400,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 308,
@@ -1411,7 +1434,7 @@
       "long_description": "An Innkeeper is here waiting for your order.\n",
       "description": "The Innkeeper looks skilled in brewing different beers and mixing the\nwierdest drinks known. He also looks very big.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "0",
       "alignment": -100,
       "group": 0,
@@ -1421,19 +1444,23 @@
       "hit_dice": "11d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5
+      "wealth": 5,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 309,
@@ -1442,7 +1469,7 @@
       "long_description": "A cute rabbit is here.\n",
       "description": "It is a small, furry creature with long ears and big feet.\n",
       "race": "rabbit",
-      "act_flags": "0",
+      "act_flags": "AG",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1452,19 +1479,23 @@
       "hit_dice": "0d9+100",
       "mana_dice": "1d4+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 9,
+      "ac_bash": 9,
+      "ac_slash": 9,
+      "ac_exotic": 10,
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2097217",
-      "parts": "1725",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AGV",
+      "parts": "0ACDEFHJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 350,
@@ -1473,7 +1504,7 @@
       "long_description": "Ravan's pet dragon is bouncing around here flapping her cute wings.\n",
       "description": "Ravan's pet dragon is about 3 ft. tall with small pointy teeth.\nThe small wings are eagerly trying to lift her from the ground,\nbut so far they haven't succeeded.\n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "ABHR",
       "affected_by": "DHJT",
       "alignment": 1000,
       "group": 0,
@@ -1483,65 +1514,348 @@
       "hit_dice": "10d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 6,
       "offensive": "FR",
       "immune": "0",
       "resist": "0BEH",
       "vuln": "0FI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [
+  "objects": [
     {
-      "keeper": 306,
-      "buy_types": [
+      "id": 300,
+      "name": "a small dusk of timian herbs",
+      "keywords": "herbs herb timian",
+      "description": "Some herbs are lying here, small green leaves and tiny pink flowers.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 10,
+      "condition": 100,
+      "values": [
         1,
-        10,
-        11,
-        19,
+        1,
+        0,
+        0,
         0
       ],
-      "profit_buy": 120,
-      "profit_sell": 60,
-      "open_hour": 0,
-      "close_hour": 23
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "herbs herb timian",
+          "description": "This herb smells rather spicy; maybe you should try it?\n"
+        }
+      ]
     },
     {
-      "keeper": 308,
-      "buy_types": [
+      "id": 301,
+      "name": "a small dusk of black gyvel",
+      "keywords": "herbs herb gyvel",
+      "description": "Some black gyvel is lying here, dark green with black leaves and tiny\n\nblood red flowers.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 10,
+      "condition": 100,
+      "values": [
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "herbs herb gyvel",
+          "description": "This herb smells rather special, but is it poisonous?\n"
+        }
+      ]
+    },
+    {
+      "id": 302,
+      "name": "a small dusk of poison ivy",
+      "keywords": "plant ivy",
+      "description": "Some poison ivy is growing here.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        1,
+        1,
+        0,
+        1,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "plant ivy",
+          "description": "This plant has dark green juicy leaves.\nYou notice some small white thorns on it."
+        }
+      ]
+    },
+    {
+      "id": 303,
+      "name": "a dark red jar",
+      "keywords": "blood jar",
+      "description": "A small jar in a dark, red colour.",
+      "material": "oldstyle",
+      "item_type": "drink",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 20,
+      "cost": 20,
+      "condition": 100,
+      "values": [
+        2,
+        2,
+        13,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "blood jar",
+          "description": "The jar is made of dry clay, covered with markings suggesting its\noccult origin.\n"
+        }
+      ]
+    },
+    {
+      "id": 304,
+      "name": "wild flowers",
+      "keywords": "wild flowers",
+      "description": "A bunch of pretty wild flowers is here.",
+      "material": "oldstyle",
+      "item_type": "trash",
+      "extra_flags": 1024,
+      "wear_flags": 16401,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
         0,
         0,
         0,
         0,
         0
       ],
-      "profit_buy": 110,
-      "profit_sell": 100,
-      "open_hour": 0,
-      "close_hour": 23
-    }
-  ],
-  "specials": [
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "wild flowers",
+          "description": "These wild flowers are really pretty.\nJust like the flowers you would wear in your hair."
+        }
+      ]
+    },
     {
-      "mob_vnum": 350,
-      "spec": "spec_cast_mage"
+      "id": 307,
+      "name": "a strange amulet",
+      "keywords": "amulet",
+      "description": "A strange looking amulet is lying here, half covered with dust.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": 192,
+      "wear_flags": 5,
+      "level": 0,
+      "weight": 10,
+      "cost": 1,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": 5
+        }
+      ],
+      "extra_descriptions": [
+        {
+          "keyword": "amulet",
+          "description": "Judging from the signs inscripted in the amulet, you gather it must\nhave belonged to a druid.  It is weird looking with symbols from nature\ndominating it.\n"
+        }
+      ]
+    },
+    {
+      "id": 308,
+      "name": "a druish staff",
+      "keywords": "staff stick",
+      "description": "A staff with druidic marks have been left here.",
+      "material": "oldstyle",
+      "item_type": "trash",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "level": 0,
+      "weight": 40,
+      "cost": 10,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "staff stick",
+          "description": "Then staff is about 5 ft long, engraved with mythical signs and figures.\nOtherwise the staff seems of no real interest.\n"
+        }
+      ]
+    },
+    {
+      "id": 309,
+      "name": "a rabbit roast",
+      "keywords": "rabbit roast wabbit",
+      "description": "You see a deliciously looking rabbit roast.",
+      "material": "oldstyle",
+      "item_type": "food",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 50,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        24,
+        24,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "roast rabbit wabbit",
+          "description": "Well the rabbit looks rather dead.\nYou guess that this once was a ferocious rabbit who's life now has\nchanged to that of a tasty wabbit woast.\n"
+        }
+      ]
+    },
+    {
+      "id": 310,
+      "name": "a strange template",
+      "keywords": "template scroll",
+      "description": "A strange template made of an exotic green metal is placed here",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 16385,
+      "level": 13,
+      "weight": 10,
+      "cost": 1870,
+      "condition": 100,
+      "values": [
+        15,
+        81,
+        4,
+        46,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "template scroll metal",
+          "description": "The template is made of an exotic green metal and looks\ncenturies old.\nInscripted upon is the words 'Ep ep fi'hur G'harne\n                             G'harne fhtagn Shudde-M'ell hyas Negg'h'\nAnd beneath the inscription you see horrifying death scenes depicted.\n"
+        }
+      ]
+    },
+    {
+      "id": 311,
+      "name": "a clear potion",
+      "keywords": "potion clear",
+      "description": "A clear potion wrapped in leather is unnoticed placed here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 20,
+      "cost": 300,
+      "condition": 100,
+      "values": [
+        20,
+        30,
+        33,
+        34,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "leather",
+          "description": "The leather wrapped around the potion is old and decayed, originating\nfrom an, to you, unknown creature."
+        },
+        {
+          "keyword": "potion clear",
+          "description": "As you examine the potion more, you notice the oddities of this\npotion. When you look through it you notice strange things...\nThe clear potion is certainly not of this world.\n"
+        }
+      ]
+    },
+    {
+      "id": 312,
+      "name": "a scroll titled 'jhyfrdow'",
+      "keywords": "scroll jhyfrdow",
+      "description": "An odd looking scroll is here.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 2,
+      "weight": 10,
+      "cost": 640,
+      "condition": 100,
+      "values": [
+        18,
+        72,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "ritual men drawings",
+          "description": "The drawing pictures people gathered round giant stone formations,\nworshipping a giant worm like creature.\nIt seems they are sacrificing some of their own species.\n"
+        },
+        {
+          "keyword": "scroll jhyfrdow",
+          "description": "The scroll is titled 'jhyfrdow' and looks very old.\nAs you examine it closer you notice primitive drawings of\nmen doing some kind of a ritual.\n"
+        }
+      ]
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 300,
-    "high": 399
-  },
   "resets": [
     {
       "command": "O",
@@ -1675,6 +1989,12 @@
       "arg2": 30,
       "arg3": 331,
       "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 350,
+      "spec": "spec_cast_mage"
     }
   ]
 }

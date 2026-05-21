@@ -1,5 +1,5 @@
 {
-  "name": "Unnamed Area",
+  "name": "",
   "vnum_range": {
     "min": 0,
     "max": 0
@@ -10,9 +10,6 @@
   "rooms": [],
   "mobiles": [],
   "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [],
-  "helps": [],
-  "security": 9
+  "resets": [],
+  "specials": []
 }

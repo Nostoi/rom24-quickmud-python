@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.22]
+
+### Fixed
+- **Area JSON boot/reset parity**: repaired the checked-in `data/areas/*.json` dataset and the ROM area loaders so world boot no longer emits the invalid O/P/D/G/E reset warning flood. This includes ROM-accurate room-door lock decoding, object `F` affect parsing, first-tilde string termination, and JSON room-sector preservation.
+
+### Changed
+- **Area dataset regeneration**: regenerated the checked-in area JSON files from their `.are` sources after the loader fixes, restoring missing object prototypes and corrected room topology across the shipped world data.
+- **Stale test cleanup after area repair**: updated area/scan/mobprog parity tests to stop depending on previously broken topology or ambient RNG state.
+- **Full-suite recertification**: the suite now reruns clean at `4567 passed, 4 skipped`.
+
 ## [2.8.21]
 
 ### Changed

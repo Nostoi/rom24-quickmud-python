@@ -32,7 +32,7 @@ def room_to_dict(room) -> dict:
             exits[direction]["description"] = exit_obj.description
         if exit_obj.keyword:
             exits[direction]["keyword"] = exit_obj.keyword
-        exits[direction]["flags"] = getattr(exit_obj, "flags", "0")
+        exits[direction]["flags"] = int(getattr(exit_obj, "rs_flags", 0) or getattr(exit_obj, "exit_info", 0) or 0)
         if exit_obj.key:
             exits[direction]["key"] = exit_obj.key
     extra = []

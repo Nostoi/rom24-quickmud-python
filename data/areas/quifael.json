@@ -18,7 +18,7 @@
         "up": {
           "to_room": 6902,
           "description": "The ladder leads to the laboratory.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -35,7 +35,7 @@
         "south": {
           "to_room": 6904,
           "description": "The corridor leads south to the hall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -69,19 +69,19 @@
         "east": {
           "to_room": 6903,
           "description": "To the east is the magical portal.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6904,
           "description": "To the west is the hall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6900,
           "description": "The virtual ladder leads down to the monster pen.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -107,7 +107,7 @@
         "west": {
           "to_room": 6902,
           "description": "The magical portal is to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -137,26 +137,26 @@
         "north": {
           "to_room": 6901,
           "description": "The study is to the north.",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 6902,
           "description": "The laboratory is to the east.",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6905,
           "description": "The kitchen is to the south.",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3126,
           "description": "The front door leads to Park Road.",
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 3301
         }
       },
@@ -178,7 +178,7 @@
         "north": {
           "to_room": 6904,
           "description": "The hall is to the north.",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -188,13 +188,6 @@
   ],
   "mobiles": [],
   "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 6900,
-    "high": 6999
-  }
+  "resets": [],
+  "specials": []
 }

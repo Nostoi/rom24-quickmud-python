@@ -17,23 +17,19 @@
       "exits": {
         "north": {
           "to_room": 9401,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9407,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9403,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 3047,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -48,18 +44,15 @@
       "exits": {
         "north": {
           "to_room": 9402,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9406,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9400,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -74,13 +67,11 @@
       "exits": {
         "east": {
           "to_room": 9405,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9401,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -95,13 +86,11 @@
       "exits": {
         "north": {
           "to_room": 9400,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9404,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -116,8 +105,7 @@
       "exits": {
         "north": {
           "to_room": 9403,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -132,18 +120,15 @@
       "exits": {
         "east": {
           "to_room": 9410,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9406,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9402,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -158,23 +143,19 @@
       "exits": {
         "north": {
           "to_room": 9405,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9411,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9407,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9401,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -189,23 +170,19 @@
       "exits": {
         "north": {
           "to_room": 9406,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9412,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9408,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9400,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -220,13 +197,11 @@
       "exits": {
         "north": {
           "to_room": 9407,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9409,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -241,8 +216,7 @@
       "exits": {
         "north": {
           "to_room": 9408,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -257,18 +231,15 @@
       "exits": {
         "east": {
           "to_room": 9415,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9411,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9405,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -283,23 +254,19 @@
       "exits": {
         "north": {
           "to_room": 9410,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9416,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9412,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9406,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -314,23 +281,19 @@
       "exits": {
         "north": {
           "to_room": 9411,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9417,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9413,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9407,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -345,13 +308,11 @@
       "exits": {
         "north": {
           "to_room": 9412,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9414,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -366,8 +327,7 @@
       "exits": {
         "north": {
           "to_room": 9413,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -382,18 +342,15 @@
       "exits": {
         "east": {
           "to_room": 9420,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9416,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9410,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -408,23 +365,19 @@
       "exits": {
         "north": {
           "to_room": 9415,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9421,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9417,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9411,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -439,23 +392,19 @@
       "exits": {
         "north": {
           "to_room": 9416,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9422,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9418,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9412,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -470,18 +419,15 @@
       "exits": {
         "north": {
           "to_room": 9417,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9423,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9419,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -496,13 +442,11 @@
       "exits": {
         "north": {
           "to_room": 9418,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 9424,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -517,13 +461,11 @@
       "exits": {
         "south": {
           "to_room": 9421,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9415,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -538,18 +480,15 @@
       "exits": {
         "north": {
           "to_room": 9420,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9422,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9416,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -564,18 +503,15 @@
       "exits": {
         "north": {
           "to_room": 9421,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9423,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9417,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -590,18 +526,15 @@
       "exits": {
         "north": {
           "to_room": 9422,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 9424,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9418,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -616,13 +549,11 @@
       "exits": {
         "north": {
           "to_room": 9423,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 9419,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -637,7 +568,7 @@
       "long_description": "The mutant beastly fido is here, his eyes glowing green!\n",
       "description": "You see a mutant beastly fido, glaring at you with green eyes!  You wonder if\nthis factory meets ASPCA guidlines....\n",
       "race": "fido",
-      "act_flags": "0",
+      "act_flags": "AFGH",
       "affected_by": "D",
       "alignment": -700,
       "group": 0,
@@ -647,19 +578,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "ENFR",
       "immune": "0",
       "resist": "0",
       "vuln": "0C",
-      "form": "2097219",
-      "parts": "2164413",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0ABGV",
+      "parts": "0ACDEFHJKQV",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9402,
@@ -668,7 +603,7 @@
       "long_description": "Foreman Floyd is here, making plans for the factory's future.\n",
       "description": "You see Foreman Floyd of the Mob factory -- a sterling example of what comes\nof dedicated Mudding!  Rewarded for his years of dedication as a monster\nslayer, Floyd now creates the beasts for other adventurers to fight.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABG",
       "affected_by": "DFH",
       "alignment": 2,
       "group": 0,
@@ -678,19 +613,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "sit",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9403,
@@ -699,7 +638,7 @@
       "long_description": "The Cityguard head floats around aimlessly.\n",
       "description": "You see a Cityguard head floating around without a care in the world.\nObviously, this one got past quality control!  Careful, those teeth look\nsharp...\n",
       "race": "unique",
-      "act_flags": "0",
+      "act_flags": "AG",
       "affected_by": "T",
       "alignment": 0,
       "group": 0,
@@ -709,19 +648,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "0",
-      "parts": "0",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "AHV",
+      "parts": "AEJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9404,
@@ -730,7 +673,7 @@
       "long_description": "The Revolving drunk is here, spinning in place.\n",
       "description": "You see and smell a drunk who looks much like other drunks...but he is spinning\nin place!  Someone should tell him that he is a REVOLTING drunk.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACGH",
       "affected_by": "0",
       "alignment": 1,
       "group": 0,
@@ -740,19 +683,23 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d5+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 8,
+      "ac_bash": 8,
+      "ac_slash": 8,
+      "ac_exotic": 10,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2
+      "wealth": 2,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9405,
@@ -761,7 +708,7 @@
       "long_description": "A pool of toxic slime lies on  the floor.\n",
       "description": "Yick.  Looks like someone had digestion problems!  Either that, or the \nhydraulic fluid is leaking again.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABC",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -771,19 +718,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "sit",
       "default_pos": "sit",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9406,
@@ -792,7 +743,7 @@
       "long_description": "A Mob Factory worker is standing here, looking bored.\n",
       "description": "The worker wears a bright orange pair of overalls, with the words \"Mob\nFactory\" written in a bright purple starburst.  Fashion plate, he's not.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AGH",
       "affected_by": "0",
       "alignment": 100,
       "group": 0,
@@ -802,19 +753,23 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2
+      "wealth": 2,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9407,
@@ -823,7 +778,7 @@
       "long_description": "A Mob Factory worker is here, asleep in a chair.\n",
       "description": "If Floyd walks in, you can bet there'll be trouble.  Guess she shouldn't have\nworked the late shift!\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABH",
       "affected_by": "0",
       "alignment": 150,
       "group": 0,
@@ -833,31 +788,26 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sit",
       "sex": "female",
-      "wealth": 3
+      "wealth": 3,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
   "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 9400,
-    "high": 9499
-  },
   "resets": [
     {
       "command": "M",
@@ -1090,5 +1040,6 @@
       "arg3": 9424,
       "arg4": 1
     }
-  ]
+  ],
+  "specials": []
 }

@@ -18,13 +18,13 @@
         "north": {
           "to_room": 5551,
           "description": "You look up the village street noticing nothing special at all.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 314,
           "description": "The wide road leads south here towards the T-crossing.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -41,19 +41,19 @@
         "north": {
           "to_room": 5552,
           "description": "The village square is as usual not overcrowded.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 5553,
           "description": "The small alley looks relative peaceful.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 5550,
           "description": "You see the village street eventually becoming the wide road.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -70,19 +70,19 @@
         "north": {
           "to_room": 5556,
           "description": "You see a local inn called 'The Ofcol Local Inn'. Looks nice.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 5551,
           "description": "You see the village street of Ofcol.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 5555,
           "description": "A small shop with the sign 'Luxan's Mixed goods' hanging in front of it.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -99,19 +99,18 @@
         "east": {
           "to_room": 601,
           "description": "You see a big intersection.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 5554,
           "description": "It looks like the future site of a training room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 5551,
           "description": "You notice nothing but the village street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -128,7 +127,7 @@
         "north": {
           "to_room": 5553,
           "description": "You are able to see the small alley, really not very interesting.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -145,7 +144,7 @@
         "east": {
           "to_room": 5552,
           "description": "The village square is as usual not overcrowded.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -162,7 +161,7 @@
         "south": {
           "to_room": 5552,
           "description": "The village square is as usual not overcrowded.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -195,15 +194,6 @@
   ],
   "mobiles": [],
   "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 5500,
-    "high": 5599
-  },
   "resets": [
     {
       "command": "M",
@@ -289,5 +279,6 @@
       "arg3": 5577,
       "arg4": 1
     }
-  ]
+  ],
+  "specials": []
 }

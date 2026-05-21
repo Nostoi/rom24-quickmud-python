@@ -18,14 +18,12 @@
         "north": {
           "to_room": 7801,
           "description": "The path continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 323,
           "description": "You see the Plains of Ofcol.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -41,26 +39,22 @@
         "north": {
           "to_room": 7804,
           "description": "You see the overlook.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7803,
           "description": "You see the small trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7800,
           "description": "You see the path back toward Ofcol.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7802,
           "description": "You see the small trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -76,14 +70,12 @@
         "north": {
           "to_room": 7867,
           "description": "The trail continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7801,
           "description": "The main path is to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -99,14 +91,12 @@
         "north": {
           "to_room": 7849,
           "description": "The trail continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7801,
           "description": "The main path is to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -122,14 +112,12 @@
         "south": {
           "to_room": 7801,
           "description": "You see the path back toward Ofcol.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7805,
           "description": "You see the entrance to the valley.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -145,26 +133,22 @@
         "north": {
           "to_room": 7810,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7807,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7806,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 7804,
           "description": "The overlook is above you.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -180,14 +164,12 @@
         "north": {
           "to_room": 7809,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7805,
           "description": "The entrance to the valley is to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -203,14 +185,12 @@
         "north": {
           "to_room": 7811,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7805,
           "description": "The entrance to the valley is to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -226,14 +206,12 @@
         "north": {
           "to_room": 7813,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7809,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -249,26 +227,22 @@
         "north": {
           "to_room": 7814,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7810,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7806,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7808,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -284,26 +258,22 @@
         "north": {
           "to_room": 7815,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7811,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7805,
           "description": "You see the entrance to the valley.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7809,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -319,26 +289,22 @@
         "north": {
           "to_room": 7816,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7812,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7807,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7810,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -354,14 +320,12 @@
         "north": {
           "to_room": 7817,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7811,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -377,26 +341,22 @@
         "north": {
           "to_room": 7818,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7814,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7808,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 7863,
           "description": "The steep trail leads up.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -412,26 +372,22 @@
         "north": {
           "to_room": 7819,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7815,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7809,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7813,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -447,26 +403,22 @@
         "north": {
           "to_room": 7820,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7816,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7810,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7814,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -482,26 +434,22 @@
         "north": {
           "to_room": 7821,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7817,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7811,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7815,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -517,26 +465,22 @@
         "north": {
           "to_room": 7822,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7812,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7816,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 7853,
           "description": "The steep trail leads up.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -552,14 +496,12 @@
         "east": {
           "to_room": 7819,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7813,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -575,26 +517,22 @@
         "north": {
           "to_room": 7823,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7820,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7814,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7818,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -610,26 +548,22 @@
         "north": {
           "to_room": 7824,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7821,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7815,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7819,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -645,26 +579,22 @@
         "north": {
           "to_room": 7825,
           "description": "The valley continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7822,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7816,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7820,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -680,14 +610,12 @@
         "south": {
           "to_room": 7817,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7821,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -703,14 +631,12 @@
         "east": {
           "to_room": 7824,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7819,
           "description": "The valley continues south\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -726,26 +652,22 @@
         "north": {
           "to_room": 7826,
           "description": "A small trail leads away from the valley.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7825,
           "description": "The valley continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7820,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7823,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -761,14 +683,12 @@
         "south": {
           "to_room": 7821,
           "description": "The valley continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7824,
           "description": "The valley continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -784,20 +704,17 @@
         "north": {
           "to_room": 7827,
           "description": "The trail continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7824,
           "description": "The trail leads back to the valley.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 7858,
           "description": "You see the rope bridge above you.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -813,20 +730,17 @@
         "east": {
           "to_room": 7828,
           "description": "The trail continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7826,
           "description": "The trail continues south back toward the valley.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7868,
           "description": "The trail continues west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -842,14 +756,12 @@
         "north": {
           "to_room": 7829,
           "description": "You see a small valley north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7827,
           "description": "The trail goes back to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -866,26 +778,23 @@
           "to_room": 7834,
           "description": "You see the building.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "east": {
           "to_room": 7831,
           "description": "You see the trail around the building.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7828,
           "description": "You see the trail leading away from this valley.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7830,
           "description": "You see the trail around the building.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -901,14 +810,12 @@
         "north": {
           "to_room": 7832,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7829,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -924,14 +831,12 @@
         "east": {
           "to_room": 7833,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7829,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -947,14 +852,12 @@
         "north": {
           "to_room": 7837,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7830,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -970,14 +873,12 @@
         "north": {
           "to_room": 7836,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7831,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -993,20 +894,18 @@
         "north": {
           "to_room": 7838,
           "description": "The building continues to the north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7835,
           "description": "The building continues to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7829,
           "description": "The exit is to the south.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -1023,14 +922,12 @@
         "north": {
           "to_room": 7839,
           "description": "The building continues to the north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7834,
           "description": "The building continues to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1046,14 +943,12 @@
         "north": {
           "to_room": 7840,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7833,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1069,14 +964,12 @@
         "north": {
           "to_room": 7841,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7832,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1092,14 +985,12 @@
         "east": {
           "to_room": 7839,
           "description": "The building continues to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7834,
           "description": "The entrance is to the south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1115,20 +1006,17 @@
         "south": {
           "to_room": 7835,
           "description": "The building continues to the south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7838,
           "description": "The building continues to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 7848,
           "description": "You see the second floor.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1144,14 +1032,12 @@
         "north": {
           "to_room": 7844,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7836,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1167,14 +1053,12 @@
         "east": {
           "to_room": 7842,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7837,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1190,14 +1074,12 @@
         "east": {
           "to_room": 7843,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7841,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1213,14 +1095,12 @@
         "east": {
           "to_room": 7844,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7842,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1236,14 +1116,12 @@
         "south": {
           "to_room": 7840,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7843,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1260,14 +1138,14 @@
           "to_room": 7847,
           "description": "You see another room.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "east": {
           "to_room": 7846,
           "description": "You see another room.\n",
           "keyword": "door",
-          "flags": "7",
+          "flags": 1,
           "key": 7804
         }
       },
@@ -1285,14 +1163,14 @@
           "to_room": 7848,
           "description": "You see another room.\n",
           "keyword": "door",
-          "flags": "7",
+          "flags": 1,
           "key": 7804
         },
         "west": {
           "to_room": 7845,
           "description": "You see another room.\n",
           "keyword": "door",
-          "flags": "7",
+          "flags": 1,
           "key": 7804
         }
       },
@@ -1310,14 +1188,14 @@
           "to_room": 7848,
           "description": "You see another room.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "south": {
           "to_room": 7845,
           "description": "You see another room.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -1335,21 +1213,20 @@
           "to_room": 7846,
           "description": "You see another room.\n",
           "keyword": "door",
-          "flags": "7",
+          "flags": 1,
           "key": 7804
         },
         "west": {
           "to_room": 7847,
           "description": "You see another room.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "down": {
           "to_room": 7839,
           "description": "You see the first floor.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1364,19 +1241,16 @@
       "exits": {
         "east": {
           "to_room": 7850,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7803,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1391,19 +1265,16 @@
       "exits": {
         "north": {
           "to_room": 7851,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7849,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1418,19 +1289,16 @@
       "exits": {
         "east": {
           "to_room": 7852,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7850,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1445,19 +1313,16 @@
       "exits": {
         "north": {
           "to_room": 7853,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7851,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1472,19 +1337,16 @@
       "exits": {
         "north": {
           "to_room": 7854,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7852,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7817,
           "description": "The trail down looks safe.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1499,19 +1361,16 @@
       "exits": {
         "south": {
           "to_room": 7853,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7855,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1526,19 +1385,16 @@
       "exits": {
         "north": {
           "to_room": 7856,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7854,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1553,19 +1409,16 @@
       "exits": {
         "south": {
           "to_room": 7855,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7857,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1580,20 +1433,17 @@
       "exits": {
         "east": {
           "to_room": 7856,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7858,
           "description": "You see a rope bridge",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1608,19 +1458,16 @@
       "exits": {
         "east": {
           "to_room": 7857,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7859,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7826,
           "description": "You see the trail.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1636,19 +1483,16 @@
         "east": {
           "to_room": 7858,
           "description": "You see a rope bridge.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7860,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1663,19 +1507,16 @@
       "exits": {
         "east": {
           "to_room": 7859,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7861,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1690,19 +1531,16 @@
       "exits": {
         "north": {
           "to_room": 7860,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7862,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1717,19 +1555,16 @@
       "exits": {
         "east": {
           "to_room": 7861,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7863,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1744,19 +1579,16 @@
       "exits": {
         "north": {
           "to_room": 7862,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7864,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7813,
           "description": "The trail down looks safe.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1771,19 +1603,16 @@
       "exits": {
         "north": {
           "to_room": 7863,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7865,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1798,19 +1627,16 @@
       "exits": {
         "south": {
           "to_room": 7866,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7864,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1825,19 +1651,16 @@
       "exits": {
         "north": {
           "to_room": 7865,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7867,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1852,19 +1675,16 @@
       "exits": {
         "south": {
           "to_room": 7802,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7866,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7883,
           "description": "The trail down doesn't look safe to travel on at all.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1880,14 +1700,12 @@
         "north": {
           "to_room": 7869,
           "description": "The trail continues north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7827,
           "description": "The trail continues east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1903,14 +1721,12 @@
         "south": {
           "to_room": 7868,
           "description": "The trail continues south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7870,
           "description": "The entrance to the small valley is to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1926,26 +1742,23 @@
         "north": {
           "to_room": 7871,
           "description": "The valley continues to the north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7869,
           "description": "The exit from this small valley is to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7872,
           "description": "The valley continues to the south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7878,
           "description": "You see the small shack.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -1962,14 +1775,12 @@
         "south": {
           "to_room": 7870,
           "description": "The valley continues to the south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7873,
           "description": "The valley continues to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1985,14 +1796,12 @@
         "north": {
           "to_room": 7870,
           "description": "The valley continues to the north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7877,
           "description": "The valley continues to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -2008,14 +1817,12 @@
         "east": {
           "to_room": 7871,
           "description": "The valley continues to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7874,
           "description": "The valley continues to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -2031,14 +1838,12 @@
         "east": {
           "to_room": 7873,
           "description": "The valley continues to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7875,
           "description": "The valley continues to the south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -2054,14 +1859,12 @@
         "north": {
           "to_room": 7874,
           "description": "The valley continues to the north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "south": {
           "to_room": 7876,
           "description": "The valley continues to the south.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -2077,14 +1880,12 @@
         "north": {
           "to_room": 7875,
           "description": "The valley continues to the north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7877,
           "description": "The valley continues to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -2100,14 +1901,12 @@
         "east": {
           "to_room": 7872,
           "description": "The valley continues to the east.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "west": {
           "to_room": 7876,
           "description": "The valley continues to the west.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -2124,14 +1923,14 @@
           "to_room": 7870,
           "description": "You see the valley outside.\n",
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "down": {
           "to_room": 7879,
           "description": "You see a trap door!\n",
           "keyword": "trap door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -2148,14 +1947,13 @@
         "south": {
           "to_room": 7880,
           "description": "The room looks reddish down there.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "up": {
           "to_room": 7878,
           "description": "Back to known territory!\n",
           "keyword": "trap door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -2172,21 +1970,20 @@
         "north": {
           "to_room": 7879,
           "description": "You see the relative safety to the north.\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "east": {
           "to_room": 7882,
           "description": "You see breaks in the charred rock to the east.\n",
           "keyword": "secret",
-          "flags": "7",
+          "flags": 1,
           "key": 7805
         },
         "west": {
           "to_room": 7881,
           "description": "You see a door to the west.\n",
           "keyword": "door",
-          "flags": "7",
+          "flags": 1,
           "key": 7805
         }
       },
@@ -2203,7 +2000,7 @@
         "east": {
           "to_room": 7880,
           "keyword": "door",
-          "flags": "7",
+          "flags": 1,
           "key": 7805
         }
       },
@@ -2220,7 +2017,7 @@
         "west": {
           "to_room": 7880,
           "keyword": "secret door",
-          "flags": "7",
+          "flags": 1,
           "key": 7805
         }
       },
@@ -2246,7 +2043,7 @@
       "long_description": "A rather large dog is here, wandering the valley.\n",
       "description": "A beast is the size of the largest common dog.  It has a greenish coat with\nbrown spots.  Its shape, along with its colors, make this cooshee almost\nundetectable as it moves.\n",
       "race": "dog",
-      "act_flags": "0",
+      "act_flags": "AGH",
       "affected_by": "P",
       "alignment": 0,
       "group": 0,
@@ -2256,19 +2053,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
       "offensive": "EFNRH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2097217",
-      "parts": "3147453",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AGV",
+      "parts": "0ACDEFHJKUV",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7801,
@@ -2277,7 +2078,7 @@
       "long_description": "A valley elf wanders here, cautious of your intrusion.\n",
       "description": "This elf is almost as tall as you are, but much slimmer and agile.  You see\nhatred in his eyes, and you try to avoid his stare.  His tense body looks ready\nto spring upon you, like a mountain lion stalking its prey.  He sees you\nnoticing him, and quietly disappears.\n",
       "race": "elf",
-      "act_flags": "0",
+      "act_flags": "ACFGH",
       "affected_by": "PJ",
       "alignment": 0,
       "group": 0,
@@ -2287,19 +2088,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0B",
       "vuln": "0Z",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7802,
@@ -2308,7 +2113,7 @@
       "long_description": "A female valley elf wanders here, skirting between the tall grasses.\n",
       "description": "This elf is almost as tall as you are, but much slimmer and more agile.\nShe glares at you, then quickly disappears before you see more of her.\n",
       "race": "elf",
-      "act_flags": "0",
+      "act_flags": "ACFGH",
       "affected_by": "PJ",
       "alignment": 0,
       "group": 0,
@@ -2318,19 +2123,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0B",
       "vuln": "0Z",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7803,
@@ -2339,7 +2148,7 @@
       "long_description": "A valley elf sentry stands here, then noticing you, attacks quickly!\n",
       "description": "This elf is almost as tall as you are, but much slimmer and more agile.\nHe glares at your intrusion and attacks with menace.\n",
       "race": "elf",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "PJ",
       "alignment": 0,
       "group": 0,
@@ -2349,19 +2158,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0B",
       "vuln": "0Z",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7804,
@@ -2370,7 +2183,7 @@
       "long_description": "A valley elf sentry stands here, then noticing you, attacks quickly!\n",
       "description": "This elf is almost as tall as you are, but much slimmer and more agile.\nShe glares at your intrusion and attacks with menace.\n",
       "race": "elf",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "PJ",
       "alignment": 0,
       "group": 0,
@@ -2380,19 +2193,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0B",
       "vuln": "0Z",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7805,
@@ -2401,7 +2218,7 @@
       "long_description": "A valley elf scout wanders the valley, searching for intruders like you!\n",
       "description": "The elf notices your intrusion and attacks with determination.\n",
       "race": "elf",
-      "act_flags": "0",
+      "act_flags": "ACFG",
       "affected_by": "PJ",
       "alignment": 0,
       "group": 0,
@@ -2411,19 +2228,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0B",
       "vuln": "0Z",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7806,
@@ -2432,7 +2253,7 @@
       "long_description": "A valley elf is here, doing her duties.\n",
       "description": "She is currently doing some menial chores, and ignores your intrusion except\nwhen you are in her way.\n",
       "race": "elf",
-      "act_flags": "0",
+      "act_flags": "AGH",
       "affected_by": "PJ",
       "alignment": 0,
       "group": 0,
@@ -2442,19 +2263,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0B",
       "vuln": "0Z",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7807,
@@ -2463,7 +2288,7 @@
       "long_description": "A valley elf elder is here, studying.  He notices you.\nA valley elf elder shouts 'You have intruded wrongly.  Be prepared to die!'\n",
       "description": "This elf looks quite old, probably twenty or more times your age.  He looks\nquite potent, though.\n",
       "race": "elf",
-      "act_flags": "0",
+      "act_flags": "ABCFQ",
       "affected_by": "HNJ",
       "alignment": 0,
       "group": 0,
@@ -2473,19 +2298,23 @@
       "hit_dice": "15d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 6,
       "offensive": "EIKR",
       "immune": "0",
       "resist": "0B",
       "vuln": "0Z",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7808,
@@ -2494,7 +2323,7 @@
       "long_description": "A valley elf elder is here, studying.  She notices you.\nA valley elf elder says 'Your arrogance will be your end, human.'\n",
       "description": "This elf looks quite old, probably twenty or more times your age.  She looks\nquite potent, though.\n",
       "race": "elf",
-      "act_flags": "0",
+      "act_flags": "ABCFR",
       "affected_by": "NJ",
       "alignment": 0,
       "group": 0,
@@ -2504,19 +2333,23 @@
       "hit_dice": "15d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 5,
       "offensive": "FR",
       "immune": "0",
       "resist": "0B",
       "vuln": "0Z",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7809,
@@ -2525,7 +2358,7 @@
       "long_description": "A big beast with many heads, each breathing fire, stares at you with malice.\n",
       "description": "This big beast looks like a small red dragon, but has many more heads than a\nregular dragon, too.  It doesn't look happy.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2535,19 +2368,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7810,
@@ -2556,7 +2393,7 @@
       "long_description": "An old hermit sits here, smoking a pipe.\n",
       "description": "He looks old and feeble.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCH",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2566,19 +2403,23 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7811,
@@ -2587,7 +2428,7 @@
       "long_description": "An old mage busies himself with some chemicals.\n",
       "description": "Talemon looks harmless, but the fireballs he throws at you don't.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCFR",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2597,19 +2438,23 @@
       "hit_dice": "25d9+100",
       "mana_dice": "4d4+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 2,
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7812,
@@ -2618,7 +2463,7 @@
       "long_description": "A huge guardian daemon is here, watching the treasure.\n",
       "description": "This daemon is unhappy with its summoned job, and is willing to take out it's\nanger at you!\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -2628,19 +2473,23 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7813,
@@ -2649,7 +2498,7 @@
       "long_description": "A wolf is here, looking for small prey.\n",
       "description": "The wolf is covered with brown hair.  It looks at you with fright.\n",
       "race": "wolf",
-      "act_flags": "0",
+      "act_flags": "AFH",
       "affected_by": "0Z",
       "alignment": 0,
       "group": 0,
@@ -2659,19 +2508,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d5+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 6,
+      "ac_bash": 6,
+      "ac_slash": 6,
+      "ac_exotic": 9,
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2097217",
-      "parts": "2164285",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AGV",
+      "parts": "0ACDEFJKQV",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 7814,
@@ -2680,7 +2533,7 @@
       "long_description": "An antelope is here, peacefully munching on grass.\n",
       "description": "With horns and spots over coarse, brown hair, this beast is the spit and\nimage of ... an antelope.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AH",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -2690,48 +2543,660 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [
+  "objects": [
     {
-      "mob_vnum": 7807,
-      "spec": "spec_cast_cleric"
+      "id": 7800,
+      "name": "elven chainmail",
+      "keywords": "chainmail elven chain mail",
+      "description": "A shiny metallic shirt is on the floor.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 9,
+      "level": 5,
+      "weight": 30,
+      "cost": 1080,
+      "condition": 100,
+      "values": [
+        4,
+        4,
+        4,
+        2,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 7808,
-      "spec": "spec_cast_mage"
+      "id": 7801,
+      "name": "elven boots",
+      "keywords": "boots elven",
+      "description": "Some soft boots are on the floor.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 65,
+      "level": 7,
+      "weight": 30,
+      "cost": 390,
+      "condition": 100,
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 14,
+          "modifier": 5
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 7809,
-      "spec": "spec_breath_fire"
+      "id": 7802,
+      "name": "an elven longsword",
+      "keywords": "longsword elven sword long",
+      "description": "A shiny blade is on the floor.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 64,
+      "wear_flags": 8193,
+      "level": 7,
+      "weight": 30,
+      "cost": 670,
+      "condition": 100,
+      "values": [
+        1,
+        3,
+        3,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 7811,
-      "spec": "spec_cast_mage"
+      "id": 7803,
+      "name": "a brown cloak",
+      "keywords": "cloak brown",
+      "description": "A pile of brown cloth is on the floor.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 64,
+      "wear_flags": 5,
+      "level": 7,
+      "weight": 30,
+      "cost": 900,
+      "condition": 100,
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7804,
+      "name": "a key",
+      "keywords": "key",
+      "description": "A shiny key is on the floor.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        7846,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7805,
+      "name": "a key",
+      "keywords": "key",
+      "description": "A shiny key is on the floor.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        7880,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7806,
+      "name": "a gold ring",
+      "keywords": "ring gold",
+      "description": "A shiny ring is on the floor.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": 64,
+      "wear_flags": 3,
+      "level": 5,
+      "weight": 10,
+      "cost": 110,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 12,
+          "modifier": 10
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7807,
+      "name": "a quarterstaff",
+      "keywords": "quarterstaff staff two-handed",
+      "description": "A quarterstaff is on the floor.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 64,
+      "wear_flags": 8193,
+      "level": 21,
+      "weight": 50,
+      "cost": 670,
+      "condition": 100,
+      "values": [
+        3,
+        4,
+        5,
+        7,
+        32
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7808,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 200,
+      "condition": 100,
+      "values": [
+        10,
+        2,
+        60,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7809,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 8,
+      "weight": 10,
+      "cost": 580,
+      "condition": 100,
+      "values": [
+        10,
+        42,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7810,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 4,
+      "weight": 10,
+      "cost": 290,
+      "condition": 100,
+      "values": [
+        10,
+        32,
+        34,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7811,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 6,
+      "weight": 10,
+      "cost": 1380,
+      "condition": 100,
+      "values": [
+        50,
+        38,
+        38,
+        38,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7812,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 2,
+      "weight": 10,
+      "cost": 240,
+      "condition": 100,
+      "values": [
+        10,
+        76,
+        72,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7813,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 1,
+      "weight": 10,
+      "cost": 250,
+      "condition": 100,
+      "values": [
+        10,
+        81,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7814,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 1,
+      "weight": 10,
+      "cost": 220,
+      "condition": 100,
+      "values": [
+        10,
+        3,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7815,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 5,
+      "weight": 10,
+      "cost": 330,
+      "condition": 100,
+      "values": [
+        10,
+        23,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7816,
+      "name": "a potion",
+      "keywords": "potion",
+      "description": "A potion is on the floor.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 6,
+      "weight": 10,
+      "cost": 420,
+      "condition": 100,
+      "values": [
+        14,
+        45,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7817,
+      "name": "a scroll",
+      "keywords": "scroll",
+      "description": "A scroll is on the floor.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 5,
+      "weight": 10,
+      "cost": 660,
+      "condition": 100,
+      "values": [
+        10,
+        23,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7818,
+      "name": "a scroll",
+      "keywords": "scroll",
+      "description": "A scroll is on the floor.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 8,
+      "weight": 10,
+      "cost": 1090,
+      "condition": 100,
+      "values": [
+        16,
+        40,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7819,
+      "name": "a scroll",
+      "keywords": "scroll",
+      "description": "A scroll is on the floor.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 400,
+      "condition": 100,
+      "values": [
+        10,
+        30,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7820,
+      "name": "a scroll",
+      "keywords": "scroll",
+      "description": "A scroll is on the floor.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 400,
+      "condition": 100,
+      "values": [
+        10,
+        21,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7821,
+      "name": "a scroll",
+      "keywords": "scroll",
+      "description": "A scroll is on the floor.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 400,
+      "condition": 100,
+      "values": [
+        10,
+        64,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7822,
+      "name": "a scroll",
+      "keywords": "scroll",
+      "description": "A scroll is on the floor.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 400,
+      "condition": 100,
+      "values": [
+        10,
+        14,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7823,
+      "name": "a scroll",
+      "keywords": "scroll",
+      "description": "A scroll is on the floor.",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 11,
+      "weight": 10,
+      "cost": 1360,
+      "condition": 100,
+      "values": [
+        10,
+        55,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7824,
+      "name": "the Rod of Neutrality",
+      "keywords": "rod light",
+      "description": "A dull iron shaft is on the floor.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": 1600,
+      "wear_flags": 1,
+      "level": 20,
+      "weight": 10,
+      "cost": 1150,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        -1,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 7825,
+      "name": "a quarterstaff",
+      "keywords": "quarterstaff staff two-handed",
+      "description": "A quarterstaff is on the floor.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 64,
+      "wear_flags": 8193,
+      "level": 14,
+      "weight": 50,
+      "cost": 310,
+      "condition": 100,
+      "values": [
+        3,
+        3,
+        5,
+        7,
+        32
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 7800,
-    "high": 7899
-  },
   "resets": [
     {
       "command": "D",
@@ -3803,6 +4268,24 @@
       "arg2": 3,
       "arg3": 7852,
       "arg4": 1
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 7807,
+      "spec": "spec_cast_cleric"
+    },
+    {
+      "mob_vnum": 7808,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 7809,
+      "spec": "spec_breath_fire"
+    },
+    {
+      "mob_vnum": 7811,
+      "spec": "spec_cast_mage"
     }
   ]
 }

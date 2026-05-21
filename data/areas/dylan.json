@@ -18,13 +18,13 @@
         "north": {
           "to_room": 7900,
           "description": "The way back to solid footing, it seems.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9102,
           "description": "There is another cloud above you.  If you jump you might make it...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -41,13 +41,13 @@
         "east": {
           "to_room": 9103,
           "description": "There is another cloud east of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9101,
           "description": "There is another cloud below you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -64,19 +64,19 @@
         "north": {
           "to_room": 9128,
           "description": "You can barely make out a cloud to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9104,
           "description": "You see a cloud somewhere south of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9102,
           "description": "You see a cloud somewhere west of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -93,13 +93,13 @@
         "north": {
           "to_room": 9103,
           "description": "You can barely make out a cloud to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9105,
           "description": "There is another cloud east of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -116,13 +116,13 @@
         "east": {
           "to_room": 9106,
           "description": "There is another cloud east of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9104,
           "description": "You spy a tiny cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -139,13 +139,13 @@
         "north": {
           "to_room": 9107,
           "description": "You can barely make out a cloud to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9105,
           "description": "You spy a tiny cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -162,19 +162,19 @@
         "east": {
           "to_room": 9108,
           "description": "There is another cloud east of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9106,
           "description": "You see a cloud somewhere south of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9126,
           "description": "There is another cloud below you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -191,13 +191,13 @@
         "east": {
           "to_room": 9109,
           "description": "An ominous storm cloud looms to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9107,
           "description": "You spy a tiny cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -214,13 +214,13 @@
         "west": {
           "to_room": 9108,
           "description": "You spy a tiny cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9110,
           "description": "An ominous storm cloud looms below you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -237,19 +237,19 @@
         "east": {
           "to_room": 9111,
           "description": "There is a crag, high and rocky.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9125,
           "description": "You spy a tiny cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9109,
           "description": "There is another cloud above you.  If you jump you might make it...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -265,13 +265,13 @@
       "exits": {
         "south": {
           "to_room": 9112,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9110,
           "description": "An ominous storm cloud looms to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -287,12 +287,12 @@
       "exits": {
         "north": {
           "to_room": 9111,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9113,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -308,12 +308,12 @@
       "exits": {
         "south": {
           "to_room": 9114,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9112,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -329,13 +329,13 @@
       "exits": {
         "north": {
           "to_room": 9113,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9115,
           "description": "The crevice looks a little slippery.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -351,18 +351,18 @@
       "exits": {
         "south": {
           "to_room": 9117,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9116,
           "description": "The mist looks thicker in this direction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9114,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -379,13 +379,13 @@
         "east": {
           "to_room": 9115,
           "description": "The way back to safety.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9199,
           "description": "Only fools would dare tread here!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -401,12 +401,12 @@
       "exits": {
         "north": {
           "to_room": 9115,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9118,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -422,12 +422,12 @@
       "exits": {
         "east": {
           "to_room": 9119,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9117,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -443,13 +443,13 @@
       "exits": {
         "west": {
           "to_room": 9118,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9120,
           "description": "Above you is an almost vertical cliff.  It looks dangerous but\nclimbable.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -466,18 +466,18 @@
         "east": {
           "to_room": 9121,
           "description": "A dank, dark, smelly hole.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9122,
           "description": "A large ledge that looks pretty safe.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9119,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -493,7 +493,7 @@
       "exits": {
         "west": {
           "to_room": 9120,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -509,17 +509,17 @@
       "exits": {
         "north": {
           "to_room": 9124,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9123,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9120,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -536,7 +536,7 @@
         "east": {
           "to_room": 9122,
           "description": "Your only hope to keep your lunch down is to head this way...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -553,7 +553,7 @@
         "south": {
           "to_room": 9122,
           "description": "Your only hope to keep your lunch down is to head this way...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -570,13 +570,13 @@
         "east": {
           "to_room": 9110,
           "description": "An ominous storm cloud looms to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9126,
           "description": "There is another cloud above you.  If you jump you might make it...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -593,25 +593,25 @@
         "north": {
           "to_room": 9131,
           "description": "A cirrus cloud hums peacefully to itself.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9127,
           "description": "You spy a tiny cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9107,
           "description": "There is another cloud above you.  If you jump you might make it...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9125,
           "description": "There is another cloud below you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -628,19 +628,19 @@
         "north": {
           "to_room": 9130,
           "description": "To the north you see an angry cloud lashing out.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9126,
           "description": "There is another cloud east of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9128,
           "description": "There is another cloud above you.  If you jump you might make it...\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -657,13 +657,13 @@
         "south": {
           "to_room": 9103,
           "description": "You see a cloud somewhere south of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9127,
           "description": "There is another cloud below you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -680,13 +680,13 @@
         "north": {
           "to_room": 9132,
           "description": "The cloud to the north blushes and tries to hide when you look at\nit.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9130,
           "description": "The cloud to the east mutters and grumbles at you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -703,19 +703,19 @@
         "east": {
           "to_room": 9131,
           "description": "A happy little cloud is humming peacefully to itself.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9127,
           "description": "You see a cloud somewhere south of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9129,
           "description": "A sleepy little cloud to the west yawns and rolls over.  You hear\nsnoring.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -732,19 +732,19 @@
         "north": {
           "to_room": 9136,
           "description": "There is a pure white cloud north of you.  It is snowing!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9126,
           "description": "You see a cloud somewhere south of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9130,
           "description": "You see an angry little cloud muttering and grumbling to itself.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -761,19 +761,19 @@
         "north": {
           "to_room": 9133,
           "description": "The cloud to the north sneezes!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9129,
           "description": "A sleepy little cloud to the south yawns and rolls over.  You hear\nsnoring.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9142,
           "description": "An isolated little raincloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -789,25 +789,25 @@
       "exits": {
         "north": {
           "to_room": 9145,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9134,
           "description": "This cloud is, like, totally lost, you know?\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9132,
           "description": "The cloud to the south blushes and tries to hide when you look at\nit.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9143,
           "description": "You see a cirrus maximus cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -824,13 +824,13 @@
         "east": {
           "to_room": 9135,
           "description": "You see a very scientific cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9133,
           "description": "The cloud sneezes!  Yuck.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -847,13 +847,13 @@
         "south": {
           "to_room": 9136,
           "description": "There is a pure white cloud south of you.  It is snowing!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9134,
           "description": "This cloud is, like, totally lost, you know?\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -870,18 +870,18 @@
         "north": {
           "to_room": 9135,
           "description": "You see a very scientific cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9131,
           "description": "A happy, peaceful little cloud humming to itself.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9137,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -898,12 +898,12 @@
         "east": {
           "to_room": 9136,
           "description": "There is a pure white cloud east of you.  It is snowing!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9138,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -921,12 +921,12 @@
           "to_room": 9139,
           "description": "Eerie looking house.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         },
         "down": {
           "to_room": 9137,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -942,12 +942,12 @@
       "exits": {
         "east": {
           "to_room": 9140,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9138,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -963,12 +963,12 @@
       "exits": {
         "west": {
           "to_room": 9139,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9141,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -985,12 +985,12 @@
         "east": {
           "to_room": 3001,
           "keyword": "picture",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "down": {
           "to_room": 9140,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1011,13 +1011,13 @@
       "exits": {
         "north": {
           "to_room": 9143,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9132,
           "description": "A bashful little cloud that tries to avoid your notice.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1034,13 +1034,13 @@
         "east": {
           "to_room": 9133,
           "description": "The cloud to the east sneezes!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9142,
           "description": "A suspicious little raincloud with a balloon.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1056,12 +1056,12 @@
       "exits": {
         "north": {
           "to_room": 9148,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9146,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1078,17 +1078,17 @@
         "south": {
           "to_room": 9133,
           "description": "You see a sneezy little cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9150,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9148,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1104,12 +1104,12 @@
       "exits": {
         "north": {
           "to_room": 9147,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9144,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1125,12 +1125,12 @@
       "exits": {
         "east": {
           "to_room": 9148,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9146,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1146,17 +1146,17 @@
       "exits": {
         "south": {
           "to_room": 9144,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9147,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9145,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1172,18 +1172,18 @@
       "exits": {
         "north": {
           "to_room": 9152,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9150,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9157,
           "description": "You see a cumulative nimbus cloud.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1199,17 +1199,17 @@
       "exits": {
         "north": {
           "to_room": 9151,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9145,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9149,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1225,12 +1225,12 @@
       "exits": {
         "south": {
           "to_room": 9150,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9152,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1246,12 +1246,12 @@
       "exits": {
         "east": {
           "to_room": 9151,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9149,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1267,12 +1267,12 @@
       "exits": {
         "west": {
           "to_room": 9154,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9152,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1288,12 +1288,12 @@
       "exits": {
         "east": {
           "to_room": 9153,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9155,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1309,12 +1309,12 @@
       "exits": {
         "east": {
           "to_room": 9154,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9156,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1330,7 +1330,7 @@
       "exits": {
         "down": {
           "to_room": 9155,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1346,17 +1346,17 @@
       "exits": {
         "south": {
           "to_room": 9159,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9158,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9149,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1372,7 +1372,7 @@
       "exits": {
         "east": {
           "to_room": 9157,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1388,12 +1388,12 @@
       "exits": {
         "north": {
           "to_room": 9157,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9160,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1410,13 +1410,13 @@
         "south": {
           "to_room": 9161,
           "description": "You see a huge lawn.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9159,
           "description": "There is a rope ladder leading down.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1432,17 +1432,17 @@
       "exits": {
         "north": {
           "to_room": 9160,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9163,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9162,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1458,12 +1458,12 @@
       "exits": {
         "east": {
           "to_room": 9161,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9164,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1479,12 +1479,12 @@
       "exits": {
         "north": {
           "to_room": 9161,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9164,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1500,17 +1500,17 @@
       "exits": {
         "north": {
           "to_room": 9162,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9163,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9165,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1526,12 +1526,12 @@
       "exits": {
         "up": {
           "to_room": 9166,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9164,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1547,24 +1547,24 @@
       "exits": {
         "east": {
           "to_room": 9173,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9177,
           "description": "You see an ornate oak door.\n",
           "keyword": "oak door",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "west": {
           "to_room": 9167,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9165,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1580,12 +1580,12 @@
       "exits": {
         "east": {
           "to_room": 9166,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9168,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1601,12 +1601,12 @@
       "exits": {
         "north": {
           "to_room": 9167,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9169,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1622,17 +1622,17 @@
       "exits": {
         "north": {
           "to_room": 9168,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9170,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9174,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1648,12 +1648,12 @@
       "exits": {
         "east": {
           "to_room": 9171,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9169,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1669,12 +1669,12 @@
       "exits": {
         "north": {
           "to_room": 9172,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9170,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1690,12 +1690,12 @@
       "exits": {
         "north": {
           "to_room": 9173,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9171,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1711,12 +1711,12 @@
       "exits": {
         "south": {
           "to_room": 9172,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9166,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1732,12 +1732,12 @@
       "exits": {
         "east": {
           "to_room": 9175,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9169,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1753,12 +1753,12 @@
       "exits": {
         "north": {
           "to_room": 9176,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9174,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1774,12 +1774,12 @@
       "exits": {
         "south": {
           "to_room": 9175,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9177,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1797,22 +1797,22 @@
           "to_room": 9166,
           "description": "You see an ornate oak door.\n",
           "keyword": "oak door",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "east": {
           "to_room": 9183,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9178,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 9176,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1828,17 +1828,17 @@
       "exits": {
         "east": {
           "to_room": 9177,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9179,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9180,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1854,7 +1854,7 @@
       "exits": {
         "north": {
           "to_room": 9178,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1870,12 +1870,12 @@
       "exits": {
         "east": {
           "to_room": 9178,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9181,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1891,12 +1891,12 @@
       "exits": {
         "north": {
           "to_room": 9180,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9182,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1912,7 +1912,7 @@
       "exits": {
         "down": {
           "to_room": 9181,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1928,17 +1928,17 @@
       "exits": {
         "east": {
           "to_room": 9185,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 9184,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9177,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1954,7 +1954,7 @@
       "exits": {
         "north": {
           "to_room": 9183,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1970,12 +1970,12 @@
       "exits": {
         "south": {
           "to_room": 9186,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9183,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1991,12 +1991,12 @@
       "exits": {
         "north": {
           "to_room": 9185,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 9187,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2012,7 +2012,7 @@
       "exits": {
         "down": {
           "to_room": 9186,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2038,7 +2038,7 @@
       "long_description": "The screaming, filthy harpy claws madly at your face!\n",
       "description": "The harpy looks at you with blood in her eyes.  Her entire body is\ncaked in filth and grime and she stinks to high heaven.  Her razor-\nsharp talons flex as she considers you for her dinner.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACF",
       "affected_by": "DFP",
       "alignment": -500,
       "group": 0,
@@ -2048,19 +2048,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 1525
+      "wealth": 1525,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9102,
@@ -2069,7 +2073,7 @@
       "long_description": "The screaming harpy leader tries to scratch your eyes out!\n",
       "description": "The harpy leader looks at you and grins menacingly.  She stretches\nher wings and you see insects crawling around them.  Her hair is\nmatted and greasy and you are sickened by the stench that pervades\nher presence.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DFP",
       "alignment": -750,
       "group": 0,
@@ -2079,19 +2083,23 @@
       "hit_dice": "11d9+100",
       "mana_dice": "3d6+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 2125
+      "wealth": 2125,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9103,
@@ -2100,7 +2108,7 @@
       "long_description": "The ghostly air elemental.\n",
       "description": "The air elemental is hard to see.  You know that it is there\nbecause objects behind it seem to waver and are slightly blurred.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACF",
       "affected_by": "DFPQ",
       "alignment": 0,
       "group": 0,
@@ -2110,19 +2118,23 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9104,
@@ -2131,7 +2143,7 @@
       "long_description": "The mysterious efreeti grins in delight at its new prey.\n",
       "description": "The efreeti towers menacingly over you.  It is dressed in the\nfinest ghostly silks and a headdress with an elaborate brooch.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AC",
       "affected_by": "DHP",
       "alignment": -100,
       "group": 0,
@@ -2141,19 +2153,23 @@
       "hit_dice": "13d9+100",
       "mana_dice": "5d4+7",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 2500
+      "wealth": 2500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9105,
@@ -2162,7 +2178,7 @@
       "long_description": "The gigantic roc.\n",
       "description": "This bird has a wingspan that stretches several spear-lengths.  It\nmoves surprisingly fast for something of its size.",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AG",
       "affected_by": "0",
       "alignment": 50,
       "group": 0,
@@ -2172,19 +2188,23 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9106,
@@ -2193,7 +2213,7 @@
       "long_description": "The gigantic roc stares menacingly at you.\n",
       "description": "This bird has a wingspan that stretches several spear-lengths.  It\nmoves surprisingly fast for something of its size.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AG",
       "affected_by": "0",
       "alignment": 50,
       "group": 0,
@@ -2203,19 +2223,23 @@
       "hit_dice": "14d9+100",
       "mana_dice": "5d4+8",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -8,
+      "ac_bash": -8,
+      "ac_slash": -8,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2000
+      "wealth": 2000,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 9107,
@@ -2224,7 +2248,7 @@
       "long_description": "The ugly, wicked witch cackles maniacally.\n",
       "description": "The witch has jet black hair and sickly green skin.  She is covered\nwith warts and boils.  Her nails are long and sharp and look like\nthey would be quite painful.  Her eyes pierce your very soul.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABCF",
       "affected_by": "DH",
       "alignment": -600,
       "group": 0,
@@ -2234,36 +2258,166 @@
       "hit_dice": "15d9+100",
       "mana_dice": "4d6+9",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -10,
+      "ac_bash": -10,
+      "ac_slash": -10,
+      "ac_exotic": 5,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 3000
+      "wealth": 3000,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [
+  "objects": [
     {
-      "mob_vnum": 9107,
-      "spec": "spec_cast_undead"
+      "id": 9101,
+      "name": "a pair of winged boots",
+      "keywords": "winged boots",
+      "description": "A pair of winged boots flutters about",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 64,
+      "wear_flags": 65,
+      "level": 13,
+      "weight": 100,
+      "cost": 2800,
+      "condition": 100,
+      "values": [
+        3,
+        3,
+        3,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": 1
+        },
+        {
+          "location": 2,
+          "modifier": 2
+        },
+        {
+          "where": "A",
+          "location": 0,
+          "modifier": 0,
+          "bitvector": 524288
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9102,
+      "name": "A carved bronze bracer",
+      "keywords": "bronze bracer",
+      "description": "A carved bronze bracer lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 4097,
+      "level": 10,
+      "weight": 200,
+      "cost": 820,
+      "condition": 100,
+      "values": [
+        3,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9103,
+      "name": "an ornate brooch",
+      "keywords": "ornate brooch",
+      "description": "An ornate brooch was carelessly left here.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": 32,
+      "wear_flags": 5,
+      "level": 7,
+      "weight": 100,
+      "cost": 1140,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        },
+        {
+          "location": 3,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9104,
+      "name": "magenta potion",
+      "keywords": "magenta potion",
+      "description": "Bright magenta potion gathers dust.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 512,
+      "wear_flags": 16385,
+      "level": 3,
+      "weight": 20,
+      "cost": 320,
+      "condition": 100,
+      "values": [
+        8,
+        2,
+        25,
+        70,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 9105,
+      "name": "an ancient illustrated parchment",
+      "keywords": "ancient parchment",
+      "description": "An ancient illustrated parchment in the corner",
+      "material": "oldstyle",
+      "item_type": "scroll",
+      "extra_flags": 129,
+      "wear_flags": 16385,
+      "level": 12,
+      "weight": 50,
+      "cost": 1330,
+      "condition": 100,
+      "values": [
+        5,
+        4,
+        28,
+        70,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 9100,
-    "high": 9199
-  },
   "resets": [
     {
       "command": "M",
@@ -2628,6 +2782,12 @@
       "arg2": 1,
       "arg3": 1,
       "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 9107,
+      "spec": "spec_cast_undead"
     }
   ]
 }

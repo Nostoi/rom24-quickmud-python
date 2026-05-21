@@ -1,9 +1,9 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.8.21-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.8.22-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-4560%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Tests](https://img.shields.io/badge/tests-4567%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-gameplay%20100%25-success.svg)](ROM_2.4B6_PARITY_CERTIFICATION.md)
 [![ROM C Audit](https://img.shields.io/badge/ROM%20C%20Audit-40%2F40%20audited-success.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![Integration Tests](https://img.shields.io/badge/integration%20tests-1000%2B-brightgreen.svg)](tests/integration/)
@@ -163,7 +163,7 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.8.21
+- **Version**: 2.8.22
 - **ROM 2.4b Gameplay Parity**: ✅ **100%** ([official certification](ROM_2.4B6_PARITY_CERTIFICATION.md)) —
   combat, skills, spells, movement, communication, world/db, save/load, mob programs,
   and all 255 ROM commands are implemented and audited.
@@ -172,7 +172,7 @@ python -m mud  # Start development server
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
 - **Cross-file Invariants**: ✅ **8/8 enforced** — message delivery, prompt clamping, registry membership,
   same-room combat, death/connection behavior, RNG determinism, and persistence coherence are locked by dedicated tests.
-- **Test Suite**: ✅ **4560 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
+- **Test Suite**: ✅ **4567 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
   integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
 - **Active focus**: parity work is effectively complete; current work is maintenance, frontend coordination,
   and investigation only when a deterministic regression is reproduced.
@@ -315,7 +315,7 @@ QuickMUD is a **production-ready ROM 2.4b MUD** with ✅ **100% behavioral parit
 
 ### 📈 Quality Metrics
 
-- **Test Suite**: 4,560 passing, 4 skipped on the last full recertification.
+- **Test Suite**: 4,567 passing, 4 skipped on the last full recertification.
 - **Behavioral Parity**: 100% of ROM 2.4b6 gameplay subsystems audited (combat,
   skills, spells, movement, communication, world/db, save/load, mob programs,
   255/255 commands).

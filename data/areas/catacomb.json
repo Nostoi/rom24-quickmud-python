@@ -17,13 +17,13 @@
       "exits": {
         "south": {
           "to_room": 2002,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 6524,
           "keyword": "floorboard board",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -39,12 +39,12 @@
       "exits": {
         "north": {
           "to_room": 2001,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2007,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -65,12 +65,12 @@
       "exits": {
         "east": {
           "to_room": 2004,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2008,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -86,12 +86,12 @@
       "exits": {
         "east": {
           "to_room": 2005,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2003,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -107,17 +107,17 @@
       "exits": {
         "east": {
           "to_room": 2006,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2010,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2004,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -133,12 +133,12 @@
       "exits": {
         "east": {
           "to_room": 2007,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2005,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -154,17 +154,17 @@
       "exits": {
         "north": {
           "to_room": 2002,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2012,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2006,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -180,12 +180,12 @@
       "exits": {
         "north": {
           "to_room": 2003,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2009,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -201,12 +201,12 @@
       "exits": {
         "south": {
           "to_room": 2013,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2008,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -222,18 +222,17 @@
       "exits": {
         "north": {
           "to_room": 2005,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2011,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2014,
-          "flags": "0",
-          "key": -1
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -248,7 +247,7 @@
       "exits": {
         "west": {
           "to_room": 2010,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -264,12 +263,12 @@
       "exits": {
         "north": {
           "to_room": 2007,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2019,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -285,17 +284,17 @@
       "exits": {
         "north": {
           "to_room": 2009,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2016,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2069,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -316,17 +315,17 @@
       "exits": {
         "north": {
           "to_room": 2010,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2015,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2017,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -342,7 +341,7 @@
       "exits": {
         "west": {
           "to_room": 2014,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -358,12 +357,12 @@
       "exits": {
         "north": {
           "to_room": 2013,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2023,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -379,17 +378,17 @@
       "exits": {
         "north": {
           "to_room": 2014,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2018,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2024,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -405,7 +404,7 @@
       "exits": {
         "west": {
           "to_room": 2017,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -426,17 +425,17 @@
       "exits": {
         "north": {
           "to_room": 2012,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2020,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2026,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -452,12 +451,12 @@
       "exits": {
         "east": {
           "to_room": 2021,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2019,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -473,22 +472,22 @@
       "exits": {
         "north": {
           "to_room": 2068,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2022,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2027,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2020,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -504,12 +503,12 @@
       "exits": {
         "south": {
           "to_room": 2028,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2021,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -525,12 +524,12 @@
       "exits": {
         "north": {
           "to_room": 2016,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2024,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -546,17 +545,17 @@
       "exits": {
         "north": {
           "to_room": 2017,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2025,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2023,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -572,7 +571,7 @@
       "exits": {
         "west": {
           "to_room": 2024,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -588,12 +587,12 @@
       "exits": {
         "north": {
           "to_room": 2019,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2030,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -609,12 +608,12 @@
       "exits": {
         "north": {
           "to_room": 2021,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2028,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -630,19 +629,19 @@
       "exits": {
         "north": {
           "to_room": 2022,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2032,
           "description": "a glowing forcefield with a small circular hole in it.\n",
           "keyword": "glow glowing field forcefield door",
-          "flags": "2",
+          "flags": 33,
           "key": 2001
         },
         "west": {
           "to_room": 2027,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -658,12 +657,12 @@
       "exits": {
         "east": {
           "to_room": 2030,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2033,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -679,17 +678,17 @@
       "exits": {
         "north": {
           "to_room": 2026,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2031,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2029,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -705,12 +704,12 @@
       "exits": {
         "south": {
           "to_room": 2034,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2030,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -728,7 +727,7 @@
           "to_room": 2028,
           "description": "a glowing forcefield with a small circular hole in it.\n",
           "keyword": "glow glowing field forcefield door",
-          "flags": "2",
+          "flags": 33,
           "key": 2001
         }
       },
@@ -744,12 +743,12 @@
       "exits": {
         "north": {
           "to_room": 2029,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2042,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -765,17 +764,17 @@
       "exits": {
         "north": {
           "to_room": 2031,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2035,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2044,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -791,12 +790,12 @@
       "exits": {
         "east": {
           "to_room": 2036,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2034,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -812,17 +811,17 @@
       "exits": {
         "east": {
           "to_room": 2037,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2045,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2035,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -838,12 +837,12 @@
       "exits": {
         "east": {
           "to_room": 2038,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2036,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -859,12 +858,12 @@
       "exits": {
         "east": {
           "to_room": 2039,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2037,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -880,12 +879,12 @@
       "exits": {
         "south": {
           "to_room": 2047,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2038,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -901,12 +900,12 @@
       "exits": {
         "east": {
           "to_room": 2041,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2048,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -922,12 +921,12 @@
       "exits": {
         "east": {
           "to_room": 2042,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2040,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -943,17 +942,17 @@
       "exits": {
         "north": {
           "to_room": 2033,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2043,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2041,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -969,7 +968,7 @@
       "exits": {
         "west": {
           "to_room": 2042,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -990,12 +989,12 @@
       "exits": {
         "north": {
           "to_room": 2034,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2050,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1011,7 +1010,7 @@
       "exits": {
         "south": {
           "to_room": 2051,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1027,12 +1026,12 @@
       "exits": {
         "east": {
           "to_room": 2047,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 2052,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1053,17 +1052,17 @@
       "exits": {
         "north": {
           "to_room": 2039,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2053,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2046,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1079,17 +1078,17 @@
       "exits": {
         "north": {
           "to_room": 2040,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2049,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2056,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1105,12 +1104,12 @@
       "exits": {
         "east": {
           "to_room": 2050,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2048,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1126,22 +1125,22 @@
       "exits": {
         "north": {
           "to_room": 2044,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2058,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2057,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2049,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1157,17 +1156,17 @@
       "exits": {
         "north": {
           "to_room": 2045,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2052,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2054,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1183,12 +1182,12 @@
       "exits": {
         "west": {
           "to_room": 2051,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 2046,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1204,12 +1203,12 @@
       "exits": {
         "north": {
           "to_room": 2047,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2055,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1225,17 +1224,17 @@
       "exits": {
         "north": {
           "to_room": 2051,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2066,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2059,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1251,12 +1250,12 @@
       "exits": {
         "north": {
           "to_room": 2053,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2062,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1272,12 +1271,12 @@
       "exits": {
         "north": {
           "to_room": 2048,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2057,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1293,17 +1292,17 @@
       "exits": {
         "north": {
           "to_room": 2050,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2066,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2056,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1319,12 +1318,12 @@
       "exits": {
         "east": {
           "to_room": 2059,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2050,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1340,17 +1339,17 @@
       "exits": {
         "north": {
           "to_room": 2054,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2060,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2058,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1366,12 +1365,12 @@
       "exits": {
         "south": {
           "to_room": 2061,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2059,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1387,12 +1386,12 @@
       "exits": {
         "north": {
           "to_room": 2060,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2062,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1408,17 +1407,17 @@
       "exits": {
         "north": {
           "to_room": 2055,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2063,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2061,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1434,12 +1433,12 @@
       "exits": {
         "north": {
           "to_room": 2062,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2064,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1455,12 +1454,12 @@
       "exits": {
         "north": {
           "to_room": 2063,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2065,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1476,13 +1475,13 @@
       "exits": {
         "north": {
           "to_room": 2064,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 6527,
           "keyword": "floorboard board",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -1498,12 +1497,12 @@
       "exits": {
         "east": {
           "to_room": 2067,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 2068,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1519,12 +1518,12 @@
       "exits": {
         "south": {
           "to_room": 2069,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2066,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1540,12 +1539,12 @@
       "exits": {
         "north": {
           "to_room": 2066,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2069,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1561,12 +1560,12 @@
       "exits": {
         "north": {
           "to_room": 2067,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 2068,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1582,7 +1581,7 @@
       "long_description": "A bat flaps wildly at you!\n",
       "description": "Your typical smelly, blind flying mammal.\n",
       "race": "bat",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "FTZ",
       "alignment": 0,
       "group": 0,
@@ -1592,19 +1591,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0S",
-      "form": "2097217",
-      "parts": "34493",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AGV",
+      "parts": "0ACDEFHJKP",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2002,
@@ -1613,7 +1616,7 @@
       "long_description": "A templar page in training is here looking mildly confused.\n",
       "description": "He has lost his family and everything of his former life.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AH",
       "affected_by": "0",
       "alignment": 200,
       "group": 0,
@@ -1623,19 +1626,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 30
+      "wealth": 30,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2003,
@@ -1644,7 +1651,7 @@
       "long_description": "A spelunker knows his way around these tunnels.\n",
       "description": "He recently discovered these catacombs and wants to see where they lead.\nHe just hopes he doesn't get killed in the process.  He carries only\nessential exploration gear; if there IS anything down here, he\nprobably won't last long.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACH",
       "affected_by": "F",
       "alignment": 100,
       "group": 0,
@@ -1654,19 +1661,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 40
+      "wealth": 40,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2004,
@@ -1675,7 +1686,7 @@
       "long_description": "A graverobber uncovers dead bodies.\n",
       "description": "Working for an evil necromancer isn't the greatest thing in the world.\nThey seem like little more than zombie servants themselves.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACF",
       "affected_by": "0",
       "alignment": -500,
       "group": 0,
@@ -1685,19 +1696,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5
+      "wealth": 5,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2005,
@@ -1706,7 +1721,7 @@
       "long_description": "Some mist swirls about you here ... it seems ALIVE!\n",
       "description": "In fact it IS alive in a magical sort of sense.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "A",
       "affected_by": "HPU",
       "alignment": 0,
       "group": 0,
@@ -1716,19 +1731,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 10
+      "wealth": 10,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2006,
@@ -1737,7 +1756,7 @@
       "long_description": "",
       "description": "",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AF",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1747,19 +1766,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2007,
@@ -1768,7 +1791,7 @@
       "long_description": "A skeletal soldier fights in the battle of the underworld.\n",
       "description": "Even though he has died in the physical sense of the word, the battle\ncontinues for him in his charmed state.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACF",
       "affected_by": "0",
       "alignment": -290,
       "group": 0,
@@ -1778,19 +1801,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "1d10+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 55
+      "wealth": 55,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2008,
@@ -1799,7 +1826,7 @@
       "long_description": "A templar shouts \"AKK! SLAY THE INFIDEL!\"\n",
       "description": "As you peer closely he peers back at you\n\nA templar peers closely at you.\nA templar tells you, \"You are an evil force trying to spread your ways!\".\nA templar tells you, \"You must die for your sin!\".\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACF",
       "affected_by": "0",
       "alignment": 600,
       "group": 0,
@@ -1809,19 +1836,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25
+      "wealth": 25,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2009,
@@ -1830,7 +1861,7 @@
       "long_description": "A mysterious ghostly wraith forms before your eyes.\n",
       "description": "Hard to tell much about the mysterious form even upon further inspection.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACF",
       "affected_by": "FU",
       "alignment": 0,
       "group": 0,
@@ -1840,19 +1871,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 30
+      "wealth": 30,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2010,
@@ -1861,7 +1896,7 @@
       "long_description": "A templar officer keeps an eye on things here.\n",
       "description": "A templar officer tells you \"Better move along evil one!\"\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AF",
       "affected_by": "D",
       "alignment": 700,
       "group": 0,
@@ -1871,19 +1906,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 30
+      "wealth": 30,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2011,
@@ -1892,7 +1931,7 @@
       "long_description": "A blank-faced zombie mage joins the battle.\n",
       "description": "He seems to lack real interest in what he is doing.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACFR",
       "affected_by": "0",
       "alignment": -100,
       "group": 0,
@@ -1902,19 +1941,23 @@
       "hit_dice": "13d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 5,
       "offensive": "FU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 27
+      "wealth": 27,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2012,
@@ -1923,7 +1966,7 @@
       "long_description": "Eerie shadows fill the room.\n",
       "description": "Looks vaguely you-shaped.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "A",
       "affected_by": "FPU",
       "alignment": 0,
       "group": 0,
@@ -1933,19 +1976,23 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 40
+      "wealth": 40,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2013,
@@ -1954,7 +2001,7 @@
       "long_description": "A bat flaps wildly at you!\n",
       "description": "A rather LARGE \"bat\" ...\n",
       "race": "bat",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "FTZ",
       "alignment": -100,
       "group": 0,
@@ -1964,19 +2011,23 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "ENRFH",
       "immune": "0",
       "resist": "0",
       "vuln": "0S",
-      "form": "2097217",
-      "parts": "34493",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AGV",
+      "parts": "0ACDEFHJKP",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2014,
@@ -1985,7 +2036,7 @@
       "long_description": "The evil necromancer makes undead soldiers from corpses.\n",
       "description": "Though he seems absorbed in his work, you'd bet he'd take the time out\nto kill you to get a fresh corpse!\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "0",
       "alignment": -888,
       "group": 0,
@@ -1995,19 +2046,23 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 55
+      "wealth": 55,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2015,
@@ -2016,7 +2071,7 @@
       "long_description": "The grand templar stands here quietly observing your actions\n",
       "description": "A slight, tolerant smile comes briefly across his face.  In the blink\nof an eye he seems stern again.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "DFH",
       "alignment": 1000,
       "group": 0,
@@ -2026,19 +2081,23 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75
+      "wealth": 75,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2016,
@@ -2047,7 +2106,7 @@
       "long_description": "The light shines off a beautiful but dangerous dragon lurking here.\n",
       "description": "The spray of colored light bouncing off his scales is almost blinding.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "DF",
       "alignment": -303,
       "group": 0,
@@ -2057,19 +2116,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1500
+      "wealth": 1500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 2017,
@@ -2078,7 +2141,7 @@
       "long_description": "You hear and smell the presence of the darkenbeast.\n",
       "description": "You see nothing more than the sense of darkness and evil.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "0",
       "alignment": -1000,
       "group": 0,
@@ -2088,60 +2151,473 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 1000
+      "wealth": 1000,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [
+  "objects": [
     {
-      "mob_vnum": 2007,
-      "spec": "spec_cast_undead"
+      "id": 2001,
+      "name": "a glowing key",
+      "keywords": "glowing key",
+      "description": "A circular, glowing key radiates a bright aura around it.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 67,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        39,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2009,
-      "spec": "spec_cast_undead"
+      "id": 2002,
+      "name": "a suit of granite platemail",
+      "keywords": "granite plate mail platemail",
+      "description": "A suit of platemail hewn from granite stands by itself in the corner.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 514,
+      "wear_flags": 9,
+      "level": 23,
+      "weight": 550,
+      "cost": 3600,
+      "condition": 100,
+      "values": [
+        8,
+        8,
+        8,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2011,
-      "spec": "spec_cast_mage"
+      "id": 2003,
+      "name": "an onyx ring",
+      "keywords": "onyx ring",
+      "description": "A ring with a very dark onyx stone in it has been left in the dirt.",
+      "material": "oldstyle",
+      "item_type": "jewelry",
+      "extra_flags": 512,
+      "wear_flags": 3,
+      "level": 7,
+      "weight": 10,
+      "cost": 800,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 4,
+          "modifier": 1
+        },
+        {
+          "location": 17,
+          "modifier": -1
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2013,
-      "spec": "spec_cast_undead"
+      "id": 2004,
+      "name": "the neutralizer",
+      "keywords": "neutralizer sword",
+      "description": "A long thin sword with a wide blade makes you wonder.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 1538,
+      "wear_flags": 8193,
+      "level": 16,
+      "weight": 90,
+      "cost": 1280,
+      "condition": 100,
+      "values": [
+        1,
+        3,
+        5,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2014,
-      "spec": "spec_cast_undead"
+      "id": 2005,
+      "name": "the sword Excalibur",
+      "keywords": "sword excalibur",
+      "description": "A sword gleams by the light of its magical silvery blade.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 3137,
+      "wear_flags": 8193,
+      "level": 24,
+      "weight": 150,
+      "cost": 3400,
+      "condition": 100,
+      "values": [
+        1,
+        5,
+        4,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 3
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2016,
-      "spec": "spec_breath_any"
+      "id": 2006,
+      "name": "a kingly crown",
+      "keywords": "crown",
+      "description": "The crown of a long lost King lies forgotten here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 256,
+      "wear_flags": 17,
+      "level": 24,
+      "weight": 100,
+      "cost": 1850,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -6
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 2017,
-      "spec": "spec_poison"
+      "id": 2007,
+      "name": "stone",
+      "keywords": "stone",
+      "description": "The stone is surrounded by a bright glow, better look closer.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": 1,
+      "wear_flags": 0,
+      "level": 0,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        15,
+        15,
+        2006,
+        15,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2008,
+      "name": "a flask of holy water",
+      "keywords": "holy water flask",
+      "description": "A flask of holy water is here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 1,
+      "wear_flags": 16385,
+      "level": 11,
+      "weight": 20,
+      "cost": 880,
+      "condition": 100,
+      "values": [
+        25,
+        3,
+        78,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2009,
+      "name": "a suit of chainmail",
+      "keywords": "chainmail chain mail suit",
+      "description": "A nice suit of chainmail has been left behind.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 256,
+      "wear_flags": 9,
+      "level": 10,
+      "weight": 200,
+      "cost": 1450,
+      "condition": 100,
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2010,
+      "name": "a white cape",
+      "keywords": "white cape",
+      "description": "A blazing cape of white lies in a careful pile.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 1,
+      "wear_flags": 5,
+      "level": 12,
+      "weight": 30,
+      "cost": 1000,
+      "condition": 100,
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2011,
+      "name": "the shield of defense",
+      "keywords": "shield defense",
+      "description": "A large shield lies protecting the ground.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 64,
+      "wear_flags": 513,
+      "level": 13,
+      "weight": 150,
+      "cost": 1920,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        4,
+        0
+      ],
+      "affects": [
+        {
+          "location": 19,
+          "modifier": -1
+        },
+        {
+          "location": 18,
+          "modifier": -2
+        },
+        {
+          "location": 13,
+          "modifier": 10
+        },
+        {
+          "location": 12,
+          "modifier": 10
+        },
+        {
+          "location": 17,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2012,
+      "name": "a dragonscale shield",
+      "keywords": "scale shield dragonscale",
+      "description": "A shield from from the scales of a large dragon lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 513,
+      "level": 22,
+      "weight": 180,
+      "cost": 3500,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        4,
+        0
+      ],
+      "affects": [
+        {
+          "location": 20,
+          "modifier": -2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2013,
+      "name": "a prism wand",
+      "keywords": "prism wand",
+      "description": "A wand made of a triangular prism twinkles in the dust.",
+      "material": "oldstyle",
+      "item_type": "wand",
+      "extra_flags": 65,
+      "wear_flags": 16385,
+      "level": 12,
+      "weight": 40,
+      "cost": 2200,
+      "condition": 100,
+      "values": [
+        11,
+        4,
+        4,
+        15,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2014,
+      "name": "a shadow cloak",
+      "keywords": "shadow cloak",
+      "description": "The shadows in the corner of the room seems strange ...",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 64,
+      "wear_flags": 1025,
+      "level": 14,
+      "weight": 10,
+      "cost": 210,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 14,
+          "modifier": -30
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2015,
+      "name": "a misty potion",
+      "keywords": "misty potion",
+      "description": "A potion of swirling mist-like substance is here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "level": 12,
+      "weight": 10,
+      "cost": 920,
+      "condition": 100,
+      "values": [
+        10,
+        68,
+        43,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 2016,
+      "name": "a templar's sword",
+      "keywords": "templar templars sword wooden",
+      "description": "A sword made of wood has been left here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 256,
+      "wear_flags": 8193,
+      "level": 10,
+      "weight": 60,
+      "cost": 830,
+      "condition": 100,
+      "values": [
+        1,
+        2,
+        6,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 2000,
-    "high": 2099
-  },
   "resets": [
     {
       "command": "M",
@@ -2989,6 +3465,36 @@
       "arg2": 4,
       "arg3": 1,
       "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 2007,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 2009,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 2011,
+      "spec": "spec_cast_mage"
+    },
+    {
+      "mob_vnum": 2013,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 2014,
+      "spec": "spec_cast_undead"
+    },
+    {
+      "mob_vnum": 2016,
+      "spec": "spec_breath_any"
+    },
+    {
+      "mob_vnum": 2017,
+      "spec": "spec_poison"
     }
   ]
 }

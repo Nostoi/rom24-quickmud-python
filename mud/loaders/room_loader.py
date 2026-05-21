@@ -1,7 +1,26 @@
+from mud.models.constants import EX_ISDOOR, EX_NOPASS, EX_PICKPROOF
 from mud.models.room import Exit, ExtraDescr, Room
 from mud.registry import room_registry
 
 from .base_loader import BaseTokenizer
+
+
+def _locks_to_exit_bits(locks: int) -> int:
+    """Translate ROM room-loader ``locks`` encoding into exit bitflags.
+
+    ROM Reference: ``src/db.c:1218-1236``.
+    """
+    match locks:
+        case 1:
+            return EX_ISDOOR
+        case 2:
+            return EX_ISDOOR | EX_PICKPROOF
+        case 3:
+            return EX_ISDOOR | EX_NOPASS
+        case 4:
+            return EX_ISDOOR | EX_NOPASS | EX_PICKPROOF
+        case _:
+            return 0
 
 
 def load_rooms(tokenizer: BaseTokenizer, area):
@@ -80,7 +99,7 @@ def load_rooms(tokenizer: BaseTokenizer, area):
                     info_parts = info_line.split()
                     exit_flags = info_parts[0] if len(info_parts) >= 1 else "0"
                     try:
-                        exit_bits = int(exit_flags)
+                        exit_bits = _locks_to_exit_bits(int(exit_flags))
                     except ValueError:
                         exit_bits = 0
                     if len(info_parts) >= 3:
@@ -94,7 +113,7 @@ def load_rooms(tokenizer: BaseTokenizer, area):
                         key=key,
                         description=exit_desc,
                         keyword=exit_keywords,
-                        flags=exit_flags,
+                        flags=exit_bits,
                         exit_info=exit_bits,
                         rs_flags=exit_bits,
                     )

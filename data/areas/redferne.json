@@ -19,19 +19,18 @@
           "to_room": 7901,
           "description": "You see a HUGE arched gate leading into this magnificent building.\n",
           "keyword": "gate door huge arched",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "south": {
           "to_room": 9101,
           "description": "You see some pretty clouds!\n",
-          "flags": "0",
-          "key": -1
+          "flags": 0
         },
         "down": {
           "to_room": 7918,
           "description": "You see a Huge Chain that anchors the Mansion of Naris to the ground.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -48,34 +47,34 @@
         "north": {
           "to_room": 7904,
           "description": "The hallway continues that way. You can see more doorways under the\nwooden staircase in that direction.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 7910,
           "description": "You see there a tall oak door. It looks quite tightly closed to you.\nOn it little runes are chiselled into the wood.\n",
           "keyword": "oak tall east oakdoor talldoor eastdoor",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "south": {
           "to_room": 7900,
           "description": "Here you see a REAL door. It would be more proper to call this a\n\"GATE\", rather than a \"door\". It's really HUGE! On it hangs a large\nsign with very large letters spelling : \"EMERGENCY EXIT\".\n",
           "keyword": "gate",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "west": {
           "to_room": 7902,
           "description": "This looks like a \"door\" in the meaning of the word. The ashen wood\nis painted in a peculiar yellow colour. Small letters are written\nwith black on it.\n",
           "keyword": "ashen ash door west yellow",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "up": {
           "to_room": 7909,
           "description": "You see the staircase extending upwards into the very high tower.\nIt ends in what seems like a large bedroom up there.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -102,7 +101,7 @@
           "to_room": 7901,
           "description": "You can see an old ashen door, painted in a peculiar yellow colour.\n",
           "keyword": "door ash ashen east",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -144,7 +143,7 @@
         "west": {
           "to_room": -1,
           "description": "You see only the back of a safe's steel door.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -160,27 +159,27 @@
       "exits": {
         "north": {
           "to_room": 7906,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 7913,
           "description": "You see a huge metal door. From it a foul stench emanates. The smell is the\nmost awful experience in your entire life. A thought seeps through this\nterrible stench and into your mind : \"Monsters\", you feel BAD about opening\nthat door.\n",
           "keyword": "steel metal huge",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "south": {
           "to_room": 7901,
           "description": "The rest of the hall lies in that direction, and so does the exit.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 7905,
           "description": "The door has \"SITTING ROOM\" written on it. It is made from Aspenwood and\nis beautifully carven with small elves as main issue of sculpture.\n",
           "keyword": "aspen asp",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -198,7 +197,7 @@
           "to_room": 7904,
           "description": "The door seems to be a very HEAVY door, carved completely from the trunk of\nan Aspen tree.\n",
           "keyword": "asp aspen door heavy",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -221,20 +220,20 @@
           "to_room": 7907,
           "description": "It's dark in there,  but the sounds from there are unmistakably from rats.\n",
           "keyword": "larder wooden cupboard",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "east": {
           "to_room": 7908,
           "description": "You can see the fridge from here. In it are drinks all over.\n",
           "keyword": "fridge",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "south": {
           "to_room": 7904,
           "description": "You can see the northern end of the hall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -251,7 +250,7 @@
         "south": {
           "to_room": 7906,
           "keyword": "door wooden larder exit",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -268,7 +267,7 @@
         "west": {
           "to_room": 7906,
           "keyword": "door exit fridge",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -284,12 +283,12 @@
       "exits": {
         "up": {
           "to_room": 7911,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 7901,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -306,14 +305,14 @@
         "east": {
           "to_room": -1,
           "keyword": "safe steel",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 7901,
           "description": "You see a tall oak door.\n",
           "keyword": "door oak tall",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -331,12 +330,12 @@
           "to_room": 7912,
           "description": "The sun seems to shine out there, warmly and comforting.\n",
           "keyword": "doors",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "down": {
           "to_room": 7909,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -354,13 +353,13 @@
           "to_room": 7911,
           "description": "You see the comfortable bedroom of Naris, the mansion of Redferne the Greater\nGod.\n",
           "keyword": "doors",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         },
         "down": {
           "to_room": -1,
           "description": "You see the ground on which this castle is set. Funnily it seems to you that\nit's no more than clouds.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -378,7 +377,7 @@
           "to_room": 7904,
           "description": "This looks like the only exit from here.\n",
           "keyword": "door cage metal pen",
-          "flags": "2",
+          "flags": 33,
           "key": -1
         }
       },
@@ -395,13 +394,13 @@
         "up": {
           "to_room": 7916,
           "description": "Up the way you see the chain disappearing into the clouds above.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 3120,
           "description": "Down below you see the huge chain anchored to the ground in the Road Crossing.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -418,7 +417,7 @@
         "up": {
           "to_room": 7918,
           "description": "There seems to be only one way from here and that's up.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -435,7 +434,7 @@
         "up": {
           "to_room": 7900,
           "description": "You see the sunny top of the clouds. Beyond these, the Mansion towers before\nyour eyes. Beautiful!!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -451,7 +450,7 @@
       "long_description": "The Grand Knight is standing here, waiting for someone to help.\n",
       "description": "The Knight is standing here, smiling at you. He is dressed all in\nwhite, blue and silver. He looks VERY strong, as he stands here, ready to\nhelp the innocent.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AGQ",
       "affected_by": "DH",
       "alignment": 1000,
       "group": 0,
@@ -461,36 +460,115 @@
       "hit_dice": "29d9+100",
       "mana_dice": "5d4+8",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 4,
       "offensive": "EIKU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [
+  "objects": [
     {
-      "mob_vnum": 7900,
-      "spec": "spec_cast_cleric"
+      "id": 7909,
+      "name": "a huge treasure",
+      "keywords": "treasure coins",
+      "description": "A huge treasure is lying here, looking very valuable.",
+      "material": "oldstyle",
+      "item_type": "money",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        -100,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "writing letters",
+          "description": "It reads: \"Hi Conan.  No more coins from here, pal. :) Signed, Redferne\".\n"
+        },
+        {
+          "keyword": "treasure",
+          "description": "Looks like a LOT of coins.  One of them has writing on it.\n"
+        }
+      ]
+    },
+    {
+      "id": 7910,
+      "name": "a wooden chest",
+      "keywords": "chest",
+      "description": "A wooden chest stands in the corner.",
+      "material": "oldstyle",
+      "item_type": "container",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 4000,
+      "cost": 100,
+      "condition": 100,
+      "values": [
+        100,
+        15,
+        7911,
+        20,
+        100
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "chest",
+          "description": "It is a robust chest made from short, heavy planks that have been fastened\ntogether with tenons.  It is equipped with a simple brass lock.\n"
+        }
+      ]
+    },
+    {
+      "id": 7911,
+      "name": "a small brass key",
+      "keywords": "key",
+      "description": "A small brass key lies here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        7910,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "key",
+          "description": "It is a small, simple brass key with no inscriptions or marks of any kind.\n"
+        }
+      ]
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 7900,
-    "high": 7999
-  },
   "resets": [
     {
       "command": "D",
@@ -715,6 +793,12 @@
       "arg2": 10,
       "arg3": 7903,
       "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 7900,
+      "spec": "spec_cast_cleric"
     }
   ]
 }

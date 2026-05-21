@@ -34,10 +34,8 @@ class BaseTokenizer:
             line = self._raw_line()
             if line is None:
                 break
-            # Check for tilde at end (may have trailing whitespace)
-            stripped = line.rstrip()
-            if stripped.endswith("~"):
-                parts.append(stripped[:-1])
+            if "~" in line:
+                parts.append(line.split("~", 1)[0])
                 break
             parts.append(line)
         return "\n".join(parts)

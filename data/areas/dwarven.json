@@ -18,19 +18,19 @@
         "north": {
           "to_room": 6501,
           "description": "The path continues.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6601,
           "description": "You hear the patter of little feet.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6562,
           "description": "A rocky road leads back to Midgaard and the mines of Moria.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -47,13 +47,13 @@
         "north": {
           "to_room": 6502,
           "description": "The path continues up the mountain.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6500,
           "description": "The path heads toward the main city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -70,13 +70,13 @@
         "north": {
           "to_room": 6503,
           "description": "The top of the mountain is easily seen from here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6501,
           "description": "The base of the mountain is near.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -93,19 +93,19 @@
         "east": {
           "to_room": 6540,
           "description": "An entrance to the mountain which seems to lead underground.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6502,
           "description": "The path leads down the mountain to the main city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6505,
           "description": "There is an entrance to the mountain.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -121,12 +121,12 @@
       "exits": {
         "north": {
           "to_room": 6506,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6540,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -142,13 +142,13 @@
       "exits": {
         "east": {
           "to_room": 6503,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6513,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         }
       },
@@ -164,12 +164,12 @@
       "exits": {
         "east": {
           "to_room": 6507,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6504,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -190,12 +190,12 @@
       "exits": {
         "north": {
           "to_room": 6508,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6506,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -211,12 +211,12 @@
       "exits": {
         "north": {
           "to_room": 6509,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6507,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -233,17 +233,17 @@
         "east": {
           "to_room": 6510,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         },
         "south": {
           "to_room": 6508,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6522,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -259,13 +259,13 @@
       "exits": {
         "north": {
           "to_room": 6511,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6509,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         }
       },
@@ -281,12 +281,12 @@
       "exits": {
         "north": {
           "to_room": 6512,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6510,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -303,12 +303,12 @@
         "east": {
           "to_room": 6525,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6514
         },
         "south": {
           "to_room": 6511,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -325,20 +325,20 @@
         "north": {
           "to_room": 6514,
           "description": "The little underground path continues to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 6505,
           "description": "The path leads outside the entrance.\n",
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         },
         "west": {
           "to_room": 6526,
           "description": "This looks like an entrance to some type of store room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -354,12 +354,12 @@
       "exits": {
         "north": {
           "to_room": 6515,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6513,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -375,13 +375,13 @@
       "exits": {
         "south": {
           "to_room": 6514,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6516,
           "description": "The Hide & Tooth shop is seen to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -397,12 +397,12 @@
       "exits": {
         "north": {
           "to_room": 6517,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 6515,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -418,17 +418,17 @@
       "exits": {
         "north": {
           "to_room": 6518,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6516,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6535,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -444,12 +444,12 @@
       "exits": {
         "east": {
           "to_room": 6519,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6517,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -465,17 +465,17 @@
       "exits": {
         "north": {
           "to_room": 6534,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 6520,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6518,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -491,12 +491,12 @@
       "exits": {
         "east": {
           "to_room": 6521,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6519,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -513,12 +513,12 @@
         "south": {
           "to_room": 6523,
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "west": {
           "to_room": 6520,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -534,7 +534,7 @@
       "exits": {
         "east": {
           "to_room": 6509,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -556,12 +556,12 @@
         "north": {
           "to_room": 6521,
           "keyword": "door",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "south": {
           "to_room": 6524,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -577,13 +577,13 @@
       "exits": {
         "north": {
           "to_room": 6523,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 2001,
           "keyword": "floorboards boards",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -600,12 +600,12 @@
         "west": {
           "to_room": 6512,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6514
         },
         "up": {
           "to_room": 6528,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -622,14 +622,13 @@
         "east": {
           "to_room": 6513,
           "description": "A lighted area that looks like a well worn path.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6527,
           "keyword": "trapdoor",
-          "flags": "3",
-          "key": -1
+          "flags": 1
         }
       },
       "extra_descriptions": [
@@ -649,13 +648,13 @@
       "exits": {
         "up": {
           "to_room": 6526,
-          "flags": "3",
+          "flags": 1,
           "key": -1
         },
         "down": {
           "to_room": 2065,
           "keyword": "floorboards boards",
-          "flags": "3",
+          "flags": 1,
           "key": -1
         }
       },
@@ -671,12 +670,12 @@
       "exits": {
         "up": {
           "to_room": 6529,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6525,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -692,12 +691,12 @@
       "exits": {
         "up": {
           "to_room": 6530,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6528,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -713,12 +712,12 @@
       "exits": {
         "east": {
           "to_room": 6531,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6529,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -735,12 +734,12 @@
         "north": {
           "to_room": 6532,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         },
         "west": {
           "to_room": 6530,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -757,7 +756,7 @@
         "south": {
           "to_room": 6531,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         }
       },
@@ -773,7 +772,7 @@
       "exits": {
         "south": {
           "to_room": 6519,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -789,7 +788,7 @@
       "exits": {
         "east": {
           "to_room": 6517,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -805,18 +804,18 @@
       "exits": {
         "north": {
           "to_room": 6504,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 6541,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         },
         "west": {
           "to_room": 6503,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -833,12 +832,12 @@
         "west": {
           "to_room": 6540,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         },
         "down": {
           "to_room": 6542,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -854,12 +853,12 @@
       "exits": {
         "up": {
           "to_room": 6541,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6554,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -875,12 +874,12 @@
       "exits": {
         "east": {
           "to_room": 6544,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6554,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -897,22 +896,22 @@
         "north": {
           "to_room": 6546,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         },
         "east": {
           "to_room": 6545,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6551,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6543,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -928,7 +927,7 @@
       "exits": {
         "west": {
           "to_room": 6544,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -944,13 +943,13 @@
       "exits": {
         "east": {
           "to_room": 6547,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6544,
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 6502
         }
       },
@@ -966,12 +965,12 @@
       "exits": {
         "north": {
           "to_room": 6548,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6546,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -987,12 +986,12 @@
       "exits": {
         "north": {
           "to_room": 6549,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6547,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1008,12 +1007,12 @@
       "exits": {
         "north": {
           "to_room": 6550,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6548,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1029,12 +1028,12 @@
       "exits": {
         "south": {
           "to_room": 6549,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6552,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1050,7 +1049,7 @@
       "exits": {
         "north": {
           "to_room": 6544,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1066,12 +1065,12 @@
       "exits": {
         "east": {
           "to_room": 6550,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6553,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1087,7 +1086,7 @@
       "exits": {
         "east": {
           "to_room": 6552,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1103,12 +1102,12 @@
       "exits": {
         "east": {
           "to_room": 6543,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 6542,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1125,13 +1124,13 @@
         "east": {
           "to_room": 6500,
           "description": "The dwarven kingdom awaits!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 4000,
           "description": "You see the foothills of this mighty mountain range.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1147,7 +1146,7 @@
       "long_description": "A dwarven guard is here.\n",
       "description": "The guard looks very tough and mean.\n",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "DJ",
       "alignment": 500,
       "group": 0,
@@ -1157,19 +1156,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "2d8+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -4,
+      "ac_bash": -4,
+      "ac_slash": -4,
+      "ac_exotic": 7,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6501,
@@ -1178,7 +1181,7 @@
       "long_description": "A dwarven mining worker is here.\n",
       "description": "He is very dirty, and looks extremely over-worked.\n",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "AGL",
       "affected_by": "0J",
       "alignment": 900,
       "group": 0,
@@ -1188,19 +1191,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 175
+      "wealth": 175,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6502,
@@ -1209,7 +1216,7 @@
       "long_description": "A wraith is awaiting your first move here.\n",
       "description": "A black, almost transparent wraith.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "DF",
       "alignment": -900,
       "group": 0,
@@ -1219,19 +1226,23 @@
       "hit_dice": "14d9+100",
       "mana_dice": "2d12+8",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2500
+      "wealth": 2500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6503,
@@ -1240,7 +1251,7 @@
       "long_description": "There is the Hide & Tooth storekeeper standing here, waiting patiently.\n",
       "description": "The storekeeper is very rotund, but looks like a sharp guy.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "0",
       "alignment": 900,
       "group": 0,
@@ -1250,19 +1261,23 @@
       "hit_dice": "17d9+100",
       "mana_dice": "4d7+11",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -11,
+      "ac_bash": -11,
+      "ac_slash": -11,
+      "ac_exotic": 5,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5000
+      "wealth": 5000,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6504,
@@ -1271,7 +1286,7 @@
       "long_description": "Granite Head, the baker, is waiting for a customer here.\n",
       "description": "Granite Head is covered with flour and grains.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "0",
       "alignment": 900,
       "group": 0,
@@ -1281,19 +1296,23 @@
       "hit_dice": "17d9+100",
       "mana_dice": "4d7+11",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -11,
+      "ac_bash": -11,
+      "ac_slash": -11,
+      "ac_exotic": 5,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6505,
@@ -1302,7 +1321,7 @@
       "long_description": "A giant lizard is here.\n",
       "description": "This scaly creature looks like it is well adapted to it's underground\nhabitat.  He looks very powerful.\n",
       "race": "lizard",
-      "act_flags": "0",
+      "act_flags": "AG",
       "affected_by": "D",
       "alignment": 100,
       "group": 0,
@@ -1312,19 +1331,23 @@
       "hit_dice": "9d9+100",
       "mana_dice": "2d7+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0L",
       "vuln": "0I",
-      "form": "276824129",
-      "parts": "2163901",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 60
+      "wealth": 60,
+      "form": "0AGXc",
+      "parts": "0ACDEFHKQV",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6506,
@@ -1333,7 +1356,7 @@
       "long_description": "A giant is here.\n",
       "description": "The giant is about 8 feet tall, with arms of steel, and looks very strong.\n",
       "race": "giant",
-      "act_flags": "0",
+      "act_flags": "AG",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1343,19 +1366,23 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0HI",
       "vuln": "0JP",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 100
+      "wealth": 100,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6507,
@@ -1364,7 +1391,7 @@
       "long_description": "A dwarven miner is here.\n",
       "description": "The mineworker is very tired, and very dirty, and he has bulging muscles.\n",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "0J",
       "alignment": 0,
       "group": 0,
@@ -1374,19 +1401,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2
+      "wealth": 2,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6508,
@@ -1395,7 +1426,7 @@
       "long_description": "A dwarven mine leader is here.\n",
       "description": "The mine leader is very big and very strong.\n",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "0J",
       "alignment": 0,
       "group": 0,
@@ -1405,19 +1436,23 @@
       "hit_dice": "10d9+100",
       "mana_dice": "4d4+5",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -5,
+      "ac_bash": -5,
+      "ac_slash": -5,
+      "ac_exotic": 7,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 1000
+      "wealth": 1000,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6509,
@@ -1426,7 +1461,7 @@
       "long_description": "The dwarven doctor is here.\n",
       "description": "He is a very skilled surgeon, with hands of steel.\n",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "DHJ",
       "alignment": 1000,
       "group": 0,
@@ -1436,19 +1471,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 75
+      "wealth": 75,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6510,
@@ -1457,7 +1496,7 @@
       "long_description": "A dwarven peon is awaiting help here.\n",
       "description": "",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "0J",
       "alignment": 500,
       "group": 0,
@@ -1467,19 +1506,23 @@
       "hit_dice": "1d9+100",
       "mana_dice": "1d6+0",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 7,
+      "ac_bash": 7,
+      "ac_slash": 7,
+      "ac_exotic": 10,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 3
+      "wealth": 3,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6511,
@@ -1488,7 +1531,7 @@
       "long_description": "A grinning dwarf is here.\n",
       "description": "",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "0J",
       "alignment": 500,
       "group": 0,
@@ -1498,19 +1541,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 62
+      "wealth": 62,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6512,
@@ -1519,7 +1566,7 @@
       "long_description": "An unwanted son is here.  You feel sorry for the guy.\n",
       "description": "",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "AG",
       "affected_by": "0J",
       "alignment": 250,
       "group": 0,
@@ -1529,19 +1576,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d8+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 2,
+      "ac_bash": 2,
+      "ac_slash": 2,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 2
+      "wealth": 2,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6513,
@@ -1550,7 +1601,7 @@
       "long_description": "An unwanted daughter is here.  You feel sorry for her.\n",
       "description": "",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "AG",
       "affected_by": "0J",
       "alignment": 250,
       "group": 0,
@@ -1560,19 +1611,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 2
+      "wealth": 2,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6514,
@@ -1581,7 +1636,7 @@
       "long_description": "A barrack guard is here.\n",
       "description": "",
       "race": "dwarf",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "0J",
       "alignment": 100,
       "group": 0,
@@ -1591,19 +1646,23 @@
       "hit_dice": "8d9+100",
       "mana_dice": "2d6+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0LQ",
       "vuln": "0R",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 150
+      "wealth": 150,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6515,
@@ -1612,7 +1671,7 @@
       "long_description": "A man in waiting is here.  He looks nervous and unsure of himself.\n",
       "description": "",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABL",
       "affected_by": "0",
       "alignment": 300,
       "group": 0,
@@ -1622,19 +1681,23 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 348
+      "wealth": 348,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6516,
@@ -1643,7 +1706,7 @@
       "long_description": "A mazekeeper is here.\n",
       "description": "He looks VERY tough.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABFL",
       "affected_by": "H",
       "alignment": -1000,
       "group": 0,
@@ -1653,19 +1716,23 @@
       "hit_dice": "14d9+100",
       "mana_dice": "2d12+8",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -9,
+      "ac_bash": -9,
+      "ac_slash": -9,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 4000
+      "wealth": 4000,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6517,
@@ -1674,7 +1741,7 @@
       "long_description": "There is a giant snake here.\n",
       "description": "",
       "race": "snake",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "0",
       "alignment": -1000,
       "group": 0,
@@ -1684,60 +1751,460 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0L",
       "vuln": "0I",
-      "form": "293601345",
-      "parts": "10554425",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 150
+      "wealth": 150,
+      "form": "0AGXYc",
+      "parts": "0ADEFKLQVX",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [
+  "objects": [
     {
-      "keeper": 6503,
-      "buy_types": [
+      "id": 6502,
+      "name": "a deep green key",
+      "keywords": "key green",
+      "description": "A deep green key is on the floor.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
         0,
         0,
         0,
         0,
         0
       ],
-      "profit_buy": 150,
-      "profit_sell": 50,
-      "open_hour": 0,
-      "close_hour": 23
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "keeper": 6504,
-      "buy_types": [
+      "id": 6504,
+      "name": "a hammer",
+      "keywords": "dwarven hammer",
+      "description": "There is a dwarven hammer laying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 17,
+      "weight": 30,
+      "cost": 880,
+      "condition": 100,
+      "values": [
+        4,
+        4,
+        4,
+        7,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6505,
+      "name": "dwarven plate mail",
+      "keywords": "dwarven plate",
+      "description": "There is dwarven plate mail laying here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 9,
+      "level": 20,
+      "weight": 40,
+      "cost": 2900,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6506,
+      "name": "long, black stick",
+      "keywords": "stick",
+      "description": "There is a long, black stick lying here.",
+      "material": "oldstyle",
+      "item_type": "staff",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "level": 11,
+      "weight": 10,
+      "cost": 4800,
+      "condition": 100,
+      "values": [
+        4,
+        10,
+        10,
+        23,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6507,
+      "name": "long, black stick",
+      "keywords": "stick",
+      "description": "There is a long, black stick here.",
+      "material": "oldstyle",
+      "item_type": "light",
+      "extra_flags": 0,
+      "wear_flags": 16385,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        50,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6508,
+      "name": "dwarven club",
+      "keywords": "club",
+      "description": "There is a dwarven club laying here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 10,
+      "weight": 10,
+      "cost": 510,
+      "condition": 100,
+      "values": [
+        4,
+        2,
+        6,
+        7,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6509,
+      "name": "a two-handed dwarven axe",
+      "keywords": "two-handed dwarven axe",
+      "description": "A two-handed Dwarven axe is here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 0,
+      "wear_flags": 8193,
+      "level": 17,
+      "weight": 50,
+      "cost": 4100,
+      "condition": 100,
+      "values": [
+        5,
+        2,
+        7,
+        21,
+        32
+      ],
+      "affects": [
+        {
+          "location": 1,
+          "modifier": 2
+        },
+        {
+          "location": 18,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6510,
+      "name": "a dwarven helmet",
+      "keywords": "helmet",
+      "description": "A dwarven helmet is here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 17,
+      "level": 20,
+      "weight": 40,
+      "cost": 1450,
+      "condition": 100,
+      "values": [
+        7,
+        7,
+        7,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6511,
+      "name": "a dwarven golden ring",
+      "keywords": "ring golden dwarven",
+      "description": "A pretty golden ring is here.",
+      "material": "oldstyle",
+      "item_type": "gem",
+      "extra_flags": 64,
+      "wear_flags": 3,
+      "level": 7,
+      "weight": 10,
+      "cost": 460,
+      "condition": 100,
+      "values": [
         0,
         0,
         0,
         0,
         0
       ],
-      "profit_buy": 150,
-      "profit_sell": 50,
-      "open_hour": 0,
-      "close_hour": 23
+      "affects": [
+        {
+          "location": 19,
+          "modifier": 1
+        },
+        {
+          "location": 18,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6512,
+      "name": "dwarven gloves",
+      "keywords": "gloves",
+      "description": "Thick dwarven gloves lay here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 0,
+      "wear_flags": 129,
+      "level": 13,
+      "weight": 20,
+      "cost": 2000,
+      "condition": 100,
+      "values": [
+        5,
+        5,
+        5,
+        0,
+        0
+      ],
+      "affects": [
+        {
+          "location": 2,
+          "modifier": 1
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6513,
+      "name": "a note",
+      "keywords": "note",
+      "description": "A crumpled note is here.",
+      "material": "oldstyle",
+      "item_type": "furniture",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "note letter letters",
+          "description": "It seems to be a hot love letter from the Queen.  Unfortunately,\nit's not suitable for transmission across a public data network.\n"
+        }
+      ]
+    },
+    {
+      "id": 6514,
+      "name": "a castle key",
+      "keywords": "castle key",
+      "description": "There is a key to Strangelove Castle here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6516,
+      "name": "a mine key",
+      "keywords": "key mine",
+      "description": "There is a key to the mines here.",
+      "material": "oldstyle",
+      "item_type": "key",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6517,
+      "name": "a chunk of coal",
+      "keywords": "coal",
+      "description": "There is a chunk of coal here.",
+      "material": "oldstyle",
+      "item_type": "trash",
+      "extra_flags": 524288,
+      "wear_flags": 16385,
+      "level": 0,
+      "weight": 10,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6518,
+      "name": "a mining pick",
+      "keywords": "pick",
+      "description": "There is a mining pick here.",
+      "material": "oldstyle",
+      "item_type": "weapon",
+      "extra_flags": 256,
+      "wear_flags": 8193,
+      "level": 3,
+      "weight": 10,
+      "cost": 240,
+      "condition": 100,
+      "values": [
+        4,
+        2,
+        3,
+        11,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
+    },
+    {
+      "id": 6519,
+      "name": "a box of birth control pills",
+      "keywords": "pills",
+      "description": "There is a box of birth control pills here.",
+      "material": "oldstyle",
+      "item_type": "pill",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 300,
+      "condition": 100,
+      "values": [
+        20,
+        0,
+        0,
+        12,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "birth control pills pill",
+          "description": "They are in a circular container, and there are numbers corresponding\nto the day that they are to be taken.  You can tell they haven't been\nused for a while.\n"
+        }
+      ]
+    },
+    {
+      "id": 6520,
+      "name": "a map of Castle Strangelove",
+      "keywords": "map castle strangelove",
+      "description": "A rolled up map is here.",
+      "material": "oldstyle",
+      "item_type": "map",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 10,
+      "cost": 500,
+      "condition": 100,
+      "values": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "map castle strangelove",
+          "description": ".\n* * * Castle Strangelove * * *       __________\n = = ==================== = =        \\ Queen's \\\n      \t\t\t              \\ Bedroom \\\n                                       \\_________\\\n                                                *\n                               __________    ____\\_____\n     North  Up                 \\  Top of \\    \\ Waiting \\\n        \\   |                   \\ Stairs  \\----\\  Room   \\\n          \\ |                    \\_________\\    \\_________\\\n  West ---- + ---- East             |\n            | \\                _____|____\n            |   \\              \\         \\\n          Down  South           \\ Stairs  \\    [] - You need the Castle Key\n                                 \\_________\\        to get beyond this point.\n                                    |               The Castle Key can be\n                               _____|____           found on the Grinning\n                               \\         \\          Dwarves in the Barracks.\n                                \\ Stairs  \\\n                                 \\_________\\    * - You need the Deep Green\n                                    |               Key to get beyond this\n                __________     _____|____           point.  This key can be\n                \\ Door to \\    \\ Inside  \\          found on the Wraith in\n                 \\ Castle  \\-[]-\\ Castle  \\         the wine cellar or on one\n                  \\_________\\    \\_________\\        of the Dwarven Guards on\n                           \\                        the Dark path.\n                         ____\\_____\n                         \\ Path to \\\n                          \\ Castle  \\\n                           \\_________\\\n                                    \\\n                   __________     ____\\_____\n                   \\ Door to \\    \\ Path to \\\n                    \\ Kingdom \\----\\ Castle  \\\n                     \\_________\\    \\_________\\\n                              \\\n                           To Dwarven\n                             Kingdom\n"
+        }
+      ]
     }
   ],
-  "specials": [],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 6500,
-    "high": 6599
-  },
   "resets": [
     {
       "command": "D",
@@ -2537,5 +3004,6 @@
       "arg3": 6520,
       "arg4": 1
     }
-  ]
+  ],
+  "specials": []
 }

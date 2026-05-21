@@ -27,7 +27,7 @@
       "exits": {
         "up": {
           "to_room": 3001,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },

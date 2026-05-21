@@ -11,20 +11,26 @@
     {
       "id": 3001,
       "name": "The Temple Of Mota",
-      "description": "You are in the southern end of the temple hall in the Temple of Mota.\nThe temple has been constructed from giant marble blocks, eternal in\nappearance, and most of the walls are covered by ancient wall paintings\npicturing gods, giants and peasants.\n   Large steps lead down through the grand temple gate, descending the huge\nmound upon which the temple is built and ends on the temple square below.\n   Equally large steps lead UP through a small door into the ENTRANCE to MUD \nSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.\n~ROOMS\n0 CDS 0\nD0\nAt the northern end of the temple hall is a statue and a huge altar.\n",
-      "sector_type": "3054",
+      "description": "You are in the southern end of the temple hall in the Temple of Mota.\nThe temple has been constructed from giant marble blocks, eternal in\nappearance, and most of the walls are covered by ancient wall paintings\npicturing gods, giants and peasants.\n   Large steps lead down through the grand temple gate, descending the huge\nmound upon which the temple is built and ends on the temple square below.\n   Equally large steps lead UP through a small door into the ENTRANCE to MUD \nSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.\n",
+      "sector_type": "inside",
       "flags": 0,
       "exits": {
+        "north": {
+          "to_room": 3054,
+          "description": "At the northern end of the temple hall is a statue and a huge altar.\n",
+          "flags": 0,
+          "key": -1
+        },
         "south": {
           "to_room": 3005,
           "description": "You see the temple square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 3700,
           "description": "You see the entrance to Mud School.\n",
-          "flags": "0"
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -45,13 +51,13 @@
         "east": {
           "to_room": 3003,
           "description": "You see your favorite place, the bar of divination.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 7026,
           "description": "You can't see what is down there, it is too dark.  Looks like it would be\nimpossible to climb back up.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -68,13 +74,13 @@
         "south": {
           "to_room": 3004,
           "description": "You see the entrance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3002,
           "description": "You see the inner sanctum.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -96,13 +102,13 @@
         "north": {
           "to_room": 3003,
           "description": "You see the bar, richly decorated with really stylish furniture.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3005,
           "description": "You see the Temple Square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -119,31 +125,31 @@
         "north": {
           "to_room": 3001,
           "description": "You see the temple.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3006,
           "description": "You see the good old Grunting Boar Inn.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3014,
           "description": "You see the Market Square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3004,
           "description": "You see the entrance to the Clerics Guild.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 3057,
           "description": "You see the air.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -160,19 +166,19 @@
         "east": {
           "to_room": 3007,
           "description": "Surprise! You see the bar.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3005,
           "description": "You see the temple square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 3008,
           "description": "You see the defunct reception room.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -189,7 +195,7 @@
         "west": {
           "to_room": 3006,
           "description": "You see the exit to the entrance hall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -215,7 +221,7 @@
         "down": {
           "to_room": 3006,
           "description": "You see the entrance hall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -232,7 +238,7 @@
         "south": {
           "to_room": 3013,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -258,7 +264,7 @@
         "south": {
           "to_room": 3015,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -280,7 +286,7 @@
         "south": {
           "to_room": 3016,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -302,25 +308,25 @@
         "north": {
           "to_room": 3033,
           "description": "You see the magic shop.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3013,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3017,
           "description": "You see the entrance to the Guild of Magic Users.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3040,
           "description": "You see the city gate.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -337,25 +343,25 @@
         "north": {
           "to_room": 3009,
           "description": "You see the bakery.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3014,
           "description": "You see the market square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3020,
           "description": "You see the armoury.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3012,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -372,25 +378,25 @@
         "north": {
           "to_room": 3005,
           "description": "You see the temple square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3015,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3025,
           "description": "You see the common square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3013,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -412,25 +418,25 @@
         "north": {
           "to_room": 3010,
           "description": "You see the general store.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3016,
           "description": "You see Main Street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3034,
           "description": "You see the Jeweller's Shop.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3014,
           "description": "You see the market square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -447,25 +453,25 @@
         "north": {
           "to_room": 3011,
           "description": "You see the weapon shop.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3041,
           "description": "You see the city gate.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3021,
           "description": "You see the swordsmen's guild.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3015,
           "description": "You see the main street leading to the market square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -482,13 +488,13 @@
         "north": {
           "to_room": 3012,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3018,
           "description": "You see your favorite place, the Mage's Bar.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -505,13 +511,13 @@
         "north": {
           "to_room": 3017,
           "description": "You see the lobby.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3019,
           "description": "You see the laboratory.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -528,13 +534,13 @@
         "west": {
           "to_room": 3018,
           "description": "You see the bar.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 7017,
           "description": "You can't see what is down there, it is too dark.  Looks like it would be\nimpossible to climb back up.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -551,7 +557,7 @@
         "north": {
           "to_room": 3013,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -573,13 +579,13 @@
         "north": {
           "to_room": 3016,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3022,
           "description": "You see the swordsmen's bar, many noises comes from there.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -596,13 +602,13 @@
         "south": {
           "to_room": 3023,
           "description": "You see the practice yard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3021,
           "description": "You see the entrance hall to the thieves guild.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -619,13 +625,13 @@
         "north": {
           "to_room": 3022,
           "description": "You see the bar.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 7048,
           "description": "You can't see what is down there, it is too dark.  Looks like it would be\nimpossible to climb back up.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -642,25 +648,25 @@
         "north": {
           "to_room": 3160,
           "description": "You see Melancholy's Map Shop\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3025,
           "description": "You see the common square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3048,
           "description": "You see the Inn.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3044,
           "description": "You see the poor alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -677,25 +683,25 @@
         "north": {
           "to_room": 3014,
           "description": "You see the market square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3026,
           "description": "You see the dark alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3030,
           "description": "You see the city dump.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3024,
           "description": "You see the poor alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -712,25 +718,25 @@
         "north": {
           "to_room": 3352,
           "description": "You see a foul-smelling sailor's dive.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3045,
           "description": "The alley continues east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3027,
           "description": "You see the entrance to the thieves guild.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3025,
           "description": "You see the common square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -752,13 +758,13 @@
         "north": {
           "to_room": 3026,
           "description": "You see the alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3028,
           "description": "You see the thieves bar, where everything disappears.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -775,13 +781,13 @@
         "south": {
           "to_room": 3029,
           "description": "You see the secret yard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3027,
           "description": "You see the entrance hall to the thieves guild.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -803,13 +809,13 @@
         "north": {
           "to_room": 3028,
           "description": "You see the bar.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 7043,
           "description": "You can't see what is down there, it is too dark.  Looks like it would be\nimpossible to climb back up.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -826,19 +832,19 @@
         "north": {
           "to_room": 3025,
           "description": "You see the common square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3254,
           "description": "You see a river between northern and southern Midgaard.  A small bridge\nspans the flow.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 7030,
           "description": "You see the sewers.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -855,7 +861,7 @@
         "south": {
           "to_room": 3045,
           "description": "You see the Alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -887,7 +893,7 @@
         "south": {
           "to_room": 3012,
           "description": "You see the main street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -917,7 +923,7 @@
         "north": {
           "to_room": 3015,
           "description": "You see Main Street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -947,7 +953,7 @@
         "south": {
           "to_room": 3044,
           "description": "You see the alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -981,26 +987,26 @@
         "north": {
           "to_room": 3257,
           "description": "Wall road runs along the inner city wall to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3012,
           "description": "You see Main Street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3042,
           "description": "You see the road running along the inner side of the city wall.  You notice\nthat it is called Wall Road.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3052,
           "description": "The city gate is to the west.\n",
           "keyword": "gate",
-          "flags": "1",
+          "flags": 1,
           "key": 3133
         }
       },
@@ -1034,25 +1040,25 @@
         "north": {
           "to_room": 3267,
           "description": "Wall road heads north along the city wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3053,
           "description": "You see the city gate.\n",
           "keyword": "gate",
-          "flags": "1",
+          "flags": 1,
           "key": 3133
         },
         "south": {
           "to_room": 3250,
           "description": "Wall road heads south towards the poor section of town.\n",
-          "flags": "0"
+          "flags": 0
         },
         "west": {
           "to_room": 3016,
           "description": "You see Main Street.",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1086,13 +1092,13 @@
         "north": {
           "to_room": 3040,
           "description": "You see the city gate.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3043,
           "description": "The road continues further south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1114,19 +1120,19 @@
         "north": {
           "to_room": 3042,
           "description": "The road continues further north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3044,
           "description": "The alley leads east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3047,
           "description": "The road continues further south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1152,25 +1158,25 @@
         "north": {
           "to_room": 3035,
           "description": "The leather shop is to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3024,
           "description": "The alley leads east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3170,
           "description": "There is an ornate doorway to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3043,
           "description": "The alley leads west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1187,24 +1193,24 @@
         "north": {
           "to_room": 3031,
           "description": "You see, hear, and smell the pet shop.\n",
-          "flags": "0"
+          "flags": 0
         },
         "east": {
           "to_room": 3046,
           "description": "The alley leads east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3049,
           "description": "You see the levee.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3026,
           "description": "The alley leads west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1221,24 +1227,24 @@
         "north": {
           "to_room": 3056,
           "description": "You see a pricey-looking potion shop.\n",
-          "flags": "0"
+          "flags": 0
         },
         "east": {
           "to_room": 3251,
           "description": "You see wall road, running a north-south loop around the city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3050,
           "description": "You see the warehouse.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3045,
           "description": "You see the alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1255,19 +1261,19 @@
         "north": {
           "to_room": 3043,
           "description": "You see the road.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 9400,
           "description": "You see the purple-and-orange Mob Factory.  Someone has no taste.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3051,
           "description": "You see the bridge.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1289,7 +1295,7 @@
         "north": {
           "to_room": 3024,
           "description": "You see the alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1306,13 +1312,13 @@
         "north": {
           "to_room": 3045,
           "description": "You see the Alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3203,
           "description": "You see the river flowing west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1329,13 +1335,13 @@
         "north": {
           "to_room": 3046,
           "description": "You see the alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 8604,
           "description": "You see machine dreams and taste violet phosphor.\n",
-          "flags": "0"
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1351,13 +1357,13 @@
         "north": {
           "to_room": 3047,
           "description": "You see the road.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3100,
           "description": "You see the Concourse.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1387,20 +1393,20 @@
         "north": {
           "to_room": 3900,
           "description": "The trail continues around the City of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3040,
           "description": "The city gate is to the east.\n",
           "keyword": "gate",
-          "flags": "1",
+          "flags": 1,
           "key": 3133
         },
         "west": {
           "to_room": 6000,
           "description": "The forest edge is to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1434,20 +1440,20 @@
         "north": {
           "to_room": 3908,
           "description": "The trail continues around the City of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3503,
           "description": "You see the plains.",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3041,
           "description": "You see the city gate.\n",
           "keyword": "gate",
-          "flags": "1",
+          "flags": 1,
           "key": 3133
         }
       },
@@ -1481,13 +1487,13 @@
         "south": {
           "to_room": 3001,
           "description": "You see the southern end of the temple.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 1215,
           "description": "Bifrost, the Rainbow Bridge, hangs in the sky above you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1515,7 +1521,7 @@
         "south": {
           "to_room": 3046,
           "description": "You see the eastern end of alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1532,12 +1538,12 @@
         "up": {
           "to_room": 1017,
           "description": "More of the same.\n",
-          "flags": "0"
+          "flags": 0
         },
         "down": {
           "to_room": 3005,
           "description": "Back down on the earth where you should be!\n",
-          "flags": "0"
+          "flags": 0
         }
       },
       "extra_descriptions": [],
@@ -1553,19 +1559,19 @@
         "north": {
           "to_room": 3051,
           "description": "You see the Bridge.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3101,
           "description": "You see the promenade.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3270,
           "description": "The concourse continues south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1582,19 +1588,19 @@
         "east": {
           "to_room": 3102,
           "description": "The promenade.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3131,
           "description": "Park Road leads south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3100,
           "description": "You see the Concourse.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1611,25 +1617,25 @@
         "north": {
           "to_room": 3254,
           "description": "A rickety old bridge crosses the river, heading towards the city dump.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3103,
           "description": "You see people moving in and out of Kate's Diner.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3105,
           "description": "You see the park entrance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3101,
           "description": "You see the promenade.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1646,25 +1652,25 @@
         "north": {
           "to_room": 3150,
           "description": "You smell the heavenly scents of Kate's Diner.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3104,
           "description": "You see the Concourse.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3132,
           "description": "The small path leads south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3102,
           "description": "You see the promenade.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1681,19 +1687,19 @@
         "north": {
           "to_room": 3253,
           "description": "A strong stone bridge crosses the river.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3272,
           "description": "The Concourse continues south, towards an intersection with Penny Lane.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3103,
           "description": "You Austral Square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1715,19 +1721,19 @@
         "north": {
           "to_room": 3102,
           "description": "You see the promenade.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3106,
           "description": "You see Park Cafe.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3108,
           "description": "You see the park.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1744,7 +1750,7 @@
         "west": {
           "to_room": 3105,
           "description": "You see the park entrance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1760,12 +1766,12 @@
       "exits": {
         "east": {
           "to_room": 3108,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3113,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1782,17 +1788,17 @@
         "north": {
           "to_room": 3105,
           "description": "You see the northern park entrance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3109,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3107,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1808,12 +1814,12 @@
       "exits": {
         "south": {
           "to_room": 3115,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3108,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1831,14 +1837,14 @@
           "to_room": 3111,
           "description": "You see Park Road.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         },
         "west": {
           "to_room": 3142,
           "description": "You see a sign saying 'KEEP OUT'.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": 3120
         }
       },
@@ -1854,25 +1860,25 @@
       "exits": {
         "north": {
           "to_room": 3131,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3112,
           "description": "You see the park entrance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3118,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3110,
           "description": "You see the cityguard head quarters.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": -1
         }
       },
@@ -1893,12 +1899,12 @@
       "exits": {
         "east": {
           "to_room": 3113,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3111,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1914,19 +1920,19 @@
       "exits": {
         "north": {
           "to_room": 3107,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3114,
           "description": "You see the pond.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3112,
           "description": "You see the western park entrance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1942,12 +1948,12 @@
       "exits": {
         "east": {
           "to_room": 3115,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3113,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1963,17 +1969,17 @@
       "exits": {
         "north": {
           "to_room": 3109,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3116,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3114,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1989,12 +1995,12 @@
       "exits": {
         "east": {
           "to_room": 3117,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3115,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2010,22 +2016,22 @@
       "exits": {
         "north": {
           "to_room": 3132,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3137,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3119,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3116,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2041,12 +2047,12 @@
       "exits": {
         "north": {
           "to_room": 3111,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3135,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2062,18 +2068,18 @@
       "exits": {
         "north": {
           "to_room": 3117,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 2101,
           "description": "You see some dangerous looking slums...just the right place for a gang.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3133,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2089,28 +2095,28 @@
       "exits": {
         "north": {
           "to_room": 3133,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3136,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3134,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3135,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 7914,
           "description": "The chain disappears in the clouds.",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2135,12 +2141,12 @@
       "exits": {
         "east": {
           "to_room": 3134,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3125,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2156,17 +2162,17 @@
       "exits": {
         "north": {
           "to_room": 3136,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3123,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3126,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2182,12 +2188,12 @@
       "exits": {
         "east": {
           "to_room": 3124,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3122,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2204,25 +2210,25 @@
         "north": {
           "to_room": 3144,
           "description": "You see the beginnings of Midgaard's bad neighborhoods.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3273,
           "description": "You see the concourse.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3600,
           "description": "Through the solid iron bars you see the graveyard.\n",
           "keyword": "grate",
-          "flags": "1",
+          "flags": 1,
           "key": 3121
         },
         "west": {
           "to_room": 3123,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2251,12 +2257,12 @@
       "exits": {
         "north": {
           "to_room": 3121,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3128,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2272,12 +2278,12 @@
       "exits": {
         "north": {
           "to_room": 3122,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3129,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2293,12 +2299,12 @@
       "exits": {
         "north": {
           "to_room": 3271,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3128,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2315,18 +2321,18 @@
         "north": {
           "to_room": 3125,
           "description": "Emerald avenue lies to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3255,
           "description": "You can see the heavily guarded southern gate of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3127,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2342,18 +2348,18 @@
       "exits": {
         "north": {
           "to_room": 3126,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3130,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3255,
           "description": "You see the south gate of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2369,12 +2375,12 @@
       "exits": {
         "north": {
           "to_room": 3273,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3129,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2390,12 +2396,12 @@
       "exits": {
         "north": {
           "to_room": 3101,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3111,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2411,17 +2417,17 @@
       "exits": {
         "north": {
           "to_room": 3103,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3139,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3117,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2437,12 +2443,12 @@
       "exits": {
         "east": {
           "to_room": 3119,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3120,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2458,12 +2464,12 @@
       "exits": {
         "north": {
           "to_room": 3120,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3121,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2479,12 +2485,12 @@
       "exits": {
         "north": {
           "to_room": 3118,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3120,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2500,12 +2506,12 @@
       "exits": {
         "south": {
           "to_room": 3122,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3120,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2522,13 +2528,13 @@
         "east": {
           "to_room": 3138,
           "description": "It looks like some kind of office.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3117,
           "description": "The exit west leads to Emerald Avenue.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2545,7 +2551,7 @@
         "west": {
           "to_room": 3137,
           "description": "The waiting room is to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2566,12 +2572,12 @@
       "exits": {
         "east": {
           "to_room": 3140,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3132,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2587,18 +2593,18 @@
       "exits": {
         "north": {
           "to_room": 3141,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3272,
           "description": "You see the concourse.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3139,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2614,7 +2620,7 @@
       "exits": {
         "south": {
           "to_room": 3140,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2632,14 +2638,14 @@
           "to_room": 3110,
           "description": "You see the Cityguard Head Quarters.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": 3120
         },
         "south": {
           "to_room": 3143,
           "description": "You see the heavy steel door.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": 3137
         }
       },
@@ -2662,7 +2668,7 @@
           "to_room": 3142,
           "description": "You see the heavy steel door.\n",
           "keyword": "door",
-          "flags": "1",
+          "flags": 1,
           "key": 3137
         }
       },
@@ -2684,13 +2690,13 @@
         "east": {
           "to_room": 2160,
           "description": "You see a run-down slum neighborood.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3124,
           "description": "Elm street continues towards a graveyard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2707,19 +2713,19 @@
         "north": {
           "to_room": 3203,
           "description": "A small boat landing lets boats land at the diner.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3103,
           "description": "You see Austral Square.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 1219,
           "description": "You see the far-off halls of Valhalla.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2742,13 +2748,13 @@
           "to_room": 3161,
           "description": "A sign on the door says, \"Unauthorized Personel Prohibited\".\n",
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 3161
         },
         "south": {
           "to_room": 3024,
           "description": "To the south is the Poor Alley.  Across the alley, you see the Grubby Inn.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2775,12 +2781,12 @@
           "to_room": 3160,
           "description": "A small door to the south leads out into the map shop.\n",
           "keyword": "door",
-          "flags": "2",
+          "flags": 33,
           "key": 3161
         },
         "up": {
           "to_room": 1219,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2802,12 +2808,12 @@
         "north": {
           "to_room": 3044,
           "description": "Poor Alley is to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 1219,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2828,13 +2834,13 @@
       "exits": {
         "east": {
           "to_room": 3201,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 9772,
           "description": "You see the river flowing west into the Forest of Haon-Dor.",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2855,12 +2861,12 @@
       "exits": {
         "east": {
           "to_room": 3202,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3200,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2876,12 +2882,12 @@
       "exits": {
         "east": {
           "to_room": 3203,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3201,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2897,23 +2903,23 @@
       "exits": {
         "north": {
           "to_room": 3049,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3204,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3150,
           "description": "You see the landing in the back of Kate's Diner. \n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3202,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2929,12 +2935,12 @@
       "exits": {
         "east": {
           "to_room": 3205,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3203,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2951,12 +2957,12 @@
         "east": {
           "to_room": 5001,
           "description": "The iron bars are broken, allowing passage through the hole in the wall.\nBeyond the bars you see a dark tunnel.\nbars",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3204,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2973,13 +2979,13 @@
         "north": {
           "to_room": 3041,
           "description": "The eastern gate of the city is north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3251,
           "description": "You see an intersection with a dark alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -2996,19 +3002,19 @@
         "north": {
           "to_room": 3250,
           "description": "Wall road continues to the north, heading towards the gate.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3252,
           "description": "Wall road continues to the south, towards a bridge over the Midgaard river.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3046,
           "description": "A dirty, unlight alley lies to the west...it looks like a perfect spot for a\nmugging.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3025,13 +3031,13 @@
         "north": {
           "to_room": 3251,
           "description": "You see an intersection with a dark alley.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3253,
           "description": "The eastern bridge crosses the river to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3048,13 +3054,13 @@
         "north": {
           "to_room": 3252,
           "description": "Wall road continues to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3104,
           "description": "The concourse stretches around the southern parts of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3076,12 +3082,12 @@
         "north": {
           "to_room": 3030,
           "description": "You can see the clutter of the City Dump.\n",
-          "flags": "0"
+          "flags": 0
         },
         "south": {
           "to_room": 3102,
           "description": "The beautiful promenade lies along the river.  What a romantic place to visit!\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3098,19 +3104,19 @@
         "east": {
           "to_room": 3129,
           "description": "The concourse heads east along the inside of the city wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3256,
           "description": "You see the southern gate.\n",
-          "flags": "1",
+          "flags": 1,
           "key": 3133
         },
         "west": {
           "to_room": 3128,
           "description": "The concourse heads west along the inside of the city wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3127,13 +3133,13 @@
         "north": {
           "to_room": 3255,
           "description": "You see the southern gate.\n",
-          "flags": "1",
+          "flags": 1,
           "key": 3133
         },
         "south": {
           "to_room": 3505,
           "description": "The green forests of the Miden'nir are south, hiding countless goblin warriors.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3150,13 +3156,13 @@
         "north": {
           "to_room": 3258,
           "description": "You see an intersection between wall road and a busy Clan street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3040,
           "description": "The west gate of the city lies south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3173,19 +3179,19 @@
         "north": {
           "to_room": 3259,
           "description": "Wall road continues to the north, towards the northwestern corner of the wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 3301,
           "description": "You see the shops and clan halls of Clan Road.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3257,
           "description": "Wall road continues alongside the western wall, heading towards the west gate.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3202,13 +3208,13 @@
         "north": {
           "to_room": 3260,
           "description": "You see the northwestern corner of the city wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3258,
           "description": "To the south, wall road intersects with a crowded Clan street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3225,13 +3231,13 @@
         "east": {
           "to_room": 3261,
           "description": "Wall road continues along the northern wall of the city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3259,
           "description": "Wall road continues along the western wall of the city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3248,13 +3254,13 @@
         "east": {
           "to_room": 3262,
           "description": "Wall road continues to the east, towards the northern gate of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3260,
           "description": "You can see the northwest corner of the city wall to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3271,19 +3277,19 @@
         "north": {
           "to_room": 3268,
           "description": "The northern plains are visible through the gate.\n",
-          "flags": "1",
+          "flags": 1,
           "key": 3133
         },
         "east": {
           "to_room": 3263,
           "description": "Wall road continues to the east, alongside the northern wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3261,
           "description": "Wall road continues to the west, alongside the northern wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3300,13 +3306,13 @@
         "east": {
           "to_room": 3264,
           "description": "You see the northeastern corner of the city walls.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3262,
           "description": "The northern gate of the city lies east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3323,13 +3329,13 @@
         "south": {
           "to_room": 3265,
           "description": "Wall road continues to the south, along the eastern wall of the city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3263,
           "description": "Wall road continues to the west, along the northern wall of the city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3346,13 +3352,13 @@
         "north": {
           "to_room": 3264,
           "description": "You can see the northeast corner of the city wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3266,
           "description": "You see an intersection with a crowded street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3369,19 +3375,19 @@
         "north": {
           "to_room": 3265,
           "description": "Wall road continues to the north, along the eastern wall of the city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3267,
           "description": "Wall road continues to the south, towards the east gate of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3316,
           "description": "You see a mass of people heading down Clan Road.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3398,13 +3404,13 @@
         "north": {
           "to_room": 3266,
           "description": "You see an intersection with a busy clan street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3041,
           "description": "You see the well-guarded east gate of Midgaard.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3421,13 +3427,13 @@
         "north": {
           "to_room": 3904,
           "description": "You see a dusty trail leading around the city.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3262,
           "description": "You see the north gate of Midgaard.\n",
-          "flags": "1",
+          "flags": 1,
           "key": 3133
         }
       },
@@ -3444,13 +3450,13 @@
         "north": {
           "to_room": 3100,
           "description": "The concourse continues to the north, along the city wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3271,
           "description": "The concourse heads south, passing by a beautiful park.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3467,13 +3473,13 @@
         "north": {
           "to_room": 3270,
           "description": "The concourse heads north, passing by a beautiful park.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3127,
           "description": "You can see the southwest corner of the city wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3490,19 +3496,19 @@
         "north": {
           "to_room": 3104,
           "description": "The concourse continues to the north, towards the east bridge.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3273,
           "description": "The concourse continues south, towards an intersection with Elm Street.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3140,
           "description": "You see Penny Lane.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3519,19 +3525,19 @@
         "north": {
           "to_room": 3272,
           "description": "The concourse continues to the north, towards an intersection with Penny Lane.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3130,
           "description": "The concourse continues to the south, towards the southeast corner of the wall.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3124,
           "description": "You see Elm Street and the graveyard entrance.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3548,13 +3554,13 @@
         "east": {
           "to_room": 3302,
           "description": "Clan Road continues east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3258,
           "description": "Wall Road is to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3571,19 +3577,19 @@
         "east": {
           "to_room": 3303,
           "description": "Clan Road continues east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3334,
           "description": "The money changer is to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3301,
           "description": "Clan Road continues west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3600,13 +3606,13 @@
         "east": {
           "to_room": 3314,
           "description": "Clan Road continues to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3302,
           "description": "Clan Road continues to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3623,13 +3629,13 @@
         "east": {
           "to_room": 3315,
           "description": "Clan Road continues to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3303,
           "description": "Clan Road continues to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3646,19 +3652,19 @@
         "east": {
           "to_room": 3316,
           "description": "Clan Road continues to the east.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3356,
           "description": "A busy pub is to the south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3314,
           "description": "Clan Road continues to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3675,13 +3681,13 @@
         "east": {
           "to_room": 3266,
           "description": "Wall Road is east of here.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3315,
           "description": "Clan Road continues to the west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3698,7 +3704,7 @@
         "north": {
           "to_room": 3302,
           "description": "Clan Road is to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3724,7 +3730,7 @@
         "south": {
           "to_room": 3026,
           "description": "A dark alley is to the south.\n",
-          "flags": "0"
+          "flags": 0
         }
       },
       "extra_descriptions": [
@@ -3749,13 +3755,13 @@
         "east": {
           "to_room": 3356,
           "description": "You see another room in the pub.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3357,
           "description": "The bar is to the south of you.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3772,25 +3778,25 @@
         "north": {
           "to_room": 3315,
           "description": "Clan Road is to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 3358,
           "description": "The bar is to your south.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 3355,
           "description": "Another room in the pub is to your west.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 3359,
           "description": "A set of stairs leads up to the reception area.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3807,7 +3813,7 @@
         "north": {
           "to_room": 3355,
           "description": "The pub proper is to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3829,7 +3835,7 @@
         "north": {
           "to_room": 3356,
           "description": "The pub proper is to the north.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -3851,7 +3857,7 @@
         "down": {
           "to_room": 3356,
           "description": "The stairs lead back down to the pub.\n",
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },

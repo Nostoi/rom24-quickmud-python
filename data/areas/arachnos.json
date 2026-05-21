@@ -17,12 +17,12 @@
       "exits": {
         "north": {
           "to_room": 6203,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6133,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -43,7 +43,7 @@
       "exits": {
         "north": {
           "to_room": 6134,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -64,7 +64,7 @@
       "exits": {
         "east": {
           "to_room": 6134,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -85,12 +85,12 @@
       "exits": {
         "north": {
           "to_room": 6301,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6200,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -111,12 +111,12 @@
       "exits": {
         "north": {
           "to_room": 6302,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6203,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -132,22 +132,22 @@
       "exits": {
         "north": {
           "to_room": 6304,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 6305,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6301,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6303,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -163,7 +163,7 @@
       "exits": {
         "east": {
           "to_room": 6302,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -179,7 +179,7 @@
       "exits": {
         "south": {
           "to_room": 6302,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -195,12 +195,12 @@
       "exits": {
         "west": {
           "to_room": 6302,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 6306,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -216,12 +216,12 @@
       "exits": {
         "south": {
           "to_room": 6307,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6305,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -237,12 +237,12 @@
       "exits": {
         "north": {
           "to_room": 6306,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 6308,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -258,12 +258,12 @@
       "exits": {
         "east": {
           "to_room": 6309,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6307,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -279,17 +279,17 @@
       "exits": {
         "north": {
           "to_room": 6310,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6320,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6308,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -305,12 +305,12 @@
       "exits": {
         "south": {
           "to_room": 6309,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6311,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -326,12 +326,12 @@
       "exits": {
         "east": {
           "to_room": 6310,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6312,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -347,12 +347,12 @@
       "exits": {
         "north": {
           "to_room": 6311,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6313,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -368,7 +368,7 @@
       "exits": {
         "east": {
           "to_room": 6312,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -384,12 +384,12 @@
       "exits": {
         "north": {
           "to_room": 6309,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6321,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -405,17 +405,17 @@
       "exits": {
         "east": {
           "to_room": 6320,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6323,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6322,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -431,7 +431,7 @@
       "exits": {
         "up": {
           "to_room": 6321,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -447,12 +447,12 @@
       "exits": {
         "north": {
           "to_room": 6321,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6324,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -468,12 +468,12 @@
       "exits": {
         "north": {
           "to_room": 6325,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 6323,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -489,12 +489,12 @@
       "exits": {
         "east": {
           "to_room": 6326,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6324,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -510,12 +510,12 @@
       "exits": {
         "west": {
           "to_room": 6325,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 6327,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -531,12 +531,12 @@
       "exits": {
         "north": {
           "to_room": 6328,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6326,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -552,12 +552,12 @@
       "exits": {
         "south": {
           "to_room": 6327,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6331,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -573,7 +573,7 @@
       "exits": {
         "south": {
           "to_room": 6331,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -589,17 +589,17 @@
       "exits": {
         "north": {
           "to_room": 6330,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "east": {
           "to_room": 6332,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6333,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -615,7 +615,7 @@
       "exits": {
         "west": {
           "to_room": 6331,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -631,17 +631,17 @@
       "exits": {
         "north": {
           "to_room": 6331,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6334,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6335,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -657,7 +657,7 @@
       "exits": {
         "north": {
           "to_room": 6333,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -673,12 +673,12 @@
       "exits": {
         "east": {
           "to_room": 6333,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6336,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -694,17 +694,17 @@
       "exits": {
         "east": {
           "to_room": 6335,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6340,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6341,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -720,7 +720,7 @@
       "exits": {
         "north": {
           "to_room": 6336,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -736,17 +736,17 @@
       "exits": {
         "east": {
           "to_room": 6336,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6342,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6345,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -762,7 +762,7 @@
       "exits": {
         "north": {
           "to_room": 6341,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -778,17 +778,17 @@
       "exits": {
         "east": {
           "to_room": 6341,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6350,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6346,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -804,12 +804,12 @@
       "exits": {
         "east": {
           "to_room": 6345,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6347,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -825,12 +825,12 @@
       "exits": {
         "east": {
           "to_room": 6346,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6355,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -846,7 +846,7 @@
       "exits": {
         "north": {
           "to_room": 6345,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -862,17 +862,17 @@
       "exits": {
         "north": {
           "to_room": 6347,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6360,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 6365,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -888,7 +888,7 @@
       "exits": {
         "east": {
           "to_room": 6355,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -904,22 +904,22 @@
       "exits": {
         "north": {
           "to_room": 6371,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6366,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "up": {
           "to_room": 6390,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6355,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -935,7 +935,7 @@
       "exits": {
         "east": {
           "to_room": 6367,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -951,12 +951,12 @@
       "exits": {
         "east": {
           "to_room": 6368,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6366,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -977,12 +977,12 @@
       "exits": {
         "east": {
           "to_room": 6369,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6367,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -998,12 +998,12 @@
       "exits": {
         "east": {
           "to_room": 6370,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6368,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1019,12 +1019,12 @@
       "exits": {
         "east": {
           "to_room": 6371,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6369,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1040,12 +1040,12 @@
       "exits": {
         "east": {
           "to_room": 6372,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6370,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1061,12 +1061,12 @@
       "exits": {
         "east": {
           "to_room": 6373,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6371,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1082,12 +1082,12 @@
       "exits": {
         "east": {
           "to_room": 6380,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "west": {
           "to_room": 6372,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1113,12 +1113,12 @@
       "exits": {
         "north": {
           "to_room": 6391,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "down": {
           "to_room": 6365,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1134,12 +1134,12 @@
       "exits": {
         "north": {
           "to_room": 6392,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         },
         "south": {
           "to_room": 6390,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1156,12 +1156,11 @@
         "north": {
           "to_room": 6399,
           "keyword": "door north",
-          "flags": "3",
-          "key": -1
+          "flags": 1
         },
         "south": {
           "to_room": 6391,
-          "flags": "0",
+          "flags": 0,
           "key": -1
         }
       },
@@ -1178,8 +1177,7 @@
         "south": {
           "to_room": 6392,
           "keyword": "door south",
-          "flags": "3",
-          "key": -1
+          "flags": 1
         }
       },
       "extra_descriptions": [],
@@ -1194,7 +1192,7 @@
       "long_description": "The young spider is ballooning by you.\n",
       "description": "He looks freshly hatched and sprightly.  His young fangs are just\ngrowing in as of late.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "D",
       "alignment": 0,
       "group": 0,
@@ -1204,19 +1202,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 5
+      "wealth": 5,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6302,
@@ -1225,7 +1227,7 @@
       "long_description": "Yevaud the Usurper of Midgaard is here, grinning evilly at you.\n",
       "description": "Old, scaly, but still with a lot of bite in him left.\n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "ABCG",
       "affected_by": "DJT",
       "alignment": -1000,
       "group": 0,
@@ -1235,19 +1237,23 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+6",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -6,
+      "ac_bash": -6,
+      "ac_slash": -6,
+      "ac_exotic": 6,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0BEH",
       "vuln": "0FI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6303,
@@ -1256,7 +1262,7 @@
       "long_description": "The Wolf Spider is here, licking its bloody fangs.\n",
       "description": "The Wolf Spider is hairy, very hairy.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "0",
       "alignment": -300,
       "group": 0,
@@ -1266,19 +1272,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 62
+      "wealth": 62,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6304,
@@ -1287,7 +1297,7 @@
       "long_description": "The orc is stuck in the web and he can't get out.\n",
       "description": "You notice an evil look in his eyes.\n",
       "race": "orc",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "0J",
       "alignment": -400,
       "group": 0,
@@ -1297,19 +1307,23 @@
       "hit_dice": "2d9+100",
       "mana_dice": "1d6+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 5,
+      "ac_bash": 5,
+      "ac_slash": 5,
+      "ac_exotic": 9,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0Q",
       "vuln": "0S",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 5
+      "wealth": 5,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6305,
@@ -1318,7 +1332,7 @@
       "long_description": "The Queen Wasp is here, thinking that you would make a tasty offering\nto her master.\n",
       "description": "You notice a glazed look in her eyes.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "0",
       "alignment": -800,
       "group": 0,
@@ -1328,19 +1342,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "1d10+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 0,
+      "ac_bash": 0,
+      "ac_slash": 0,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 75
+      "wealth": 75,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6306,
@@ -1349,7 +1367,7 @@
       "long_description": "The drone spider walks around doing her master's bidding.\n",
       "description": "An ordinary drone spider.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "0",
       "alignment": -300,
       "group": 0,
@@ -1359,19 +1377,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d7+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 10
+      "wealth": 10,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6307,
@@ -1380,7 +1402,7 @@
       "long_description": "The ethereal spider strides here, traveling to different worlds.\n",
       "description": "She winks in and out.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "0",
       "alignment": 1000,
       "group": 0,
@@ -1390,19 +1412,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 62
+      "wealth": 62,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6308,
@@ -1411,7 +1437,7 @@
       "long_description": "The slave works here relentlessly.\n",
       "description": "The slave does not mind you, but will fight like a warrior if attacked.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACG",
       "affected_by": "0",
       "alignment": 0,
       "group": 0,
@@ -1421,19 +1447,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 25
+      "wealth": 25,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6309,
@@ -1442,7 +1472,7 @@
       "long_description": "The quasit blinks in and out, grinning at you.\n",
       "description": "Demoniac in nature, but more mischievous.  He twiddles his thumbs\nand creates a magical treasure!\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ACEH",
       "affected_by": "BDP",
       "alignment": 1000,
       "group": 0,
@@ -1452,19 +1482,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6310,
@@ -1473,7 +1507,7 @@
       "long_description": "The Bird Spider snaps its powerful jaws.\n",
       "description": "The Bird Spider has very powerful jaws.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "0",
       "alignment": -800,
       "group": 0,
@@ -1483,19 +1517,23 @@
       "hit_dice": "7d9+100",
       "mana_dice": "1d12+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 87
+      "wealth": 87,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6311,
@@ -1504,7 +1542,7 @@
       "long_description": "The Hermit sits here and warns, \"Go back before it's too late!\"\n",
       "description": "A dishevelled veteran warrior in disguise is what he is, but he\nmeans well.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABC",
       "affected_by": "D",
       "alignment": -400,
       "group": 0,
@@ -1514,19 +1552,23 @@
       "hit_dice": "3d9+100",
       "mana_dice": "1d8+1",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 4,
+      "ac_bash": 4,
+      "ac_slash": 4,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 37
+      "wealth": 37,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6312,
@@ -1535,7 +1577,7 @@
       "long_description": "The Donjonkeeper eyes you and wonders how pure your soul is.\n",
       "description": "He delves deeper into you as you stare at him.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABC",
       "affected_by": "D",
       "alignment": 1000,
       "group": 0,
@@ -1545,19 +1587,23 @@
       "hit_dice": "12d9+100",
       "mana_dice": "2d10+7",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 300
+      "wealth": 300,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6313,
@@ -1566,7 +1612,7 @@
       "long_description": "The guardian is obviously not doing his job.\n",
       "description": "He looks like a lazy bum who sleeps half the time.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "AFG",
       "affected_by": "P",
       "alignment": 250,
       "group": 0,
@@ -1576,19 +1622,23 @@
       "hit_dice": "8d9+100",
       "mana_dice": "3d4+4",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -3,
+      "ac_bash": -3,
+      "ac_slash": -3,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "sleep",
       "default_pos": "sleep",
       "sex": "male",
-      "wealth": 80
+      "wealth": 80,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6314,
@@ -1597,7 +1647,7 @@
       "long_description": "Arachnos the Empress of Spiders welcomes you with an evil smile.\n",
       "description": "She is a very attractive spider with an ornate gown.  She tempts you\ninto being one of her many slaves.  She does not possess the venomous\nfangs of normal spiders, but then, as you realize, she does not need\nthem.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABF",
       "affected_by": "BD",
       "alignment": -1000,
       "group": 0,
@@ -1607,19 +1657,23 @@
       "hit_dice": "13d9+100",
       "mana_dice": "3d7+7",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 500
+      "wealth": 500,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6315,
@@ -1628,7 +1682,7 @@
       "long_description": "The Ki-Rin smiles good-naturedly to you.\n",
       "description": "She is the last bastion of good in this realm.  Her mission is to\nsomeday free the slaves of the Empress.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABC",
       "affected_by": "D",
       "alignment": 1000,
       "group": 0,
@@ -1638,19 +1692,23 @@
       "hit_dice": "13d9+100",
       "mana_dice": "3d7+7",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -7,
+      "ac_bash": -7,
+      "ac_slash": -7,
+      "ac_exotic": 6,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 750
+      "wealth": 750,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6316,
@@ -1659,7 +1717,7 @@
       "long_description": "A wormkin with no teeth plays here.\n",
       "description": "Rather small, you almost feel sad in killing it.\n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "DJT",
       "alignment": 1000,
       "group": 0,
@@ -1669,19 +1727,23 @@
       "hit_dice": "5d9+100",
       "mana_dice": "2d4+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 1,
+      "ac_bash": 1,
+      "ac_slash": 1,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0BEH",
       "vuln": "0FI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 50
+      "wealth": 50,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6317,
@@ -1690,7 +1752,7 @@
       "long_description": "A wormkin that has grown a bit stares at you inquisitively.\n",
       "description": "A medium-sized dragon--seems it hasn't killed anything yet by itself.\n",
       "race": "dragon",
-      "act_flags": "0",
+      "act_flags": "AB",
       "affected_by": "DJT",
       "alignment": 100,
       "group": 0,
@@ -1700,19 +1762,23 @@
       "hit_dice": "6d9+100",
       "mana_dice": "2d5+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -1,
+      "ac_bash": -1,
+      "ac_slash": -1,
+      "ac_exotic": 8,
       "offensive": "EFNR",
       "immune": "0",
       "resist": "0BEH",
       "vuln": "0FI",
-      "form": "33554561",
-      "parts": "11634685",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "male",
-      "wealth": 250
+      "wealth": 250,
+      "form": "0AHZ",
+      "parts": "0ACDEFGHIJKPQUVX",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6318,
@@ -1721,7 +1787,7 @@
       "long_description": "A huge, poisonous spider is here.\n",
       "description": "This disgusting creature is at the size of a human crawling on all four.  It\nhas eight hairy legs that gives it a tremendous speed on almost any surface and\nsharp poisonous fangs to paralyze or kill its prey.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABG",
       "affected_by": "0",
       "alignment": -350,
       "group": 0,
@@ -1731,19 +1797,23 @@
       "hit_dice": "4d9+100",
       "mana_dice": "1d7+2",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": 3,
+      "ac_bash": 3,
+      "ac_slash": 3,
+      "ac_exotic": 9,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "none",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     },
     {
       "id": 6319,
@@ -1752,7 +1822,7 @@
       "long_description": "The huge, bulky Queen Spider is here.\n",
       "description": "This disgusting creature is at the size of a small elephant.  It has eight\nhuge, hairy legs that would give it a tremendous speed on almost any surface\nif it wasn't so immensely fat.  Its large, bulbous eyes stare back at you.\n",
       "race": "human",
-      "act_flags": "0",
+      "act_flags": "ABG",
       "affected_by": "D",
       "alignment": -1000,
       "group": 0,
@@ -1762,56 +1832,142 @@
       "hit_dice": "7d9+100",
       "mana_dice": "2d6+3",
       "damage_dice": "none",
-      "damage_type": "none",
+      "damage_type": "beating",
+      "ac_pierce": -2,
+      "ac_bash": -2,
+      "ac_slash": -2,
+      "ac_exotic": 7,
       "offensive": "EFNU",
       "immune": "0",
       "resist": "0",
       "vuln": "0",
-      "form": "2101377",
-      "parts": "2047",
-      "size": "medium",
-      "material": "0",
       "start_pos": "stand",
       "default_pos": "stand",
       "sex": "female",
-      "wealth": 0
+      "wealth": 0,
+      "form": "0AHMV",
+      "parts": "0ABCDEFGHIJK",
+      "size": "medium",
+      "material": "0"
     }
   ],
-  "objects": [],
-  "mob_programs": [],
-  "shops": [],
-  "specials": [
+  "objects": [
     {
-      "mob_vnum": 6302,
-      "spec": "spec_breath_gas"
+      "id": 6303,
+      "name": "a pontiff's headdress",
+      "keywords": "headdress pontiff's",
+      "description": "A white cone-shaped head ornament with religious symbols lies here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 96,
+      "wear_flags": 17,
+      "level": 18,
+      "weight": 50,
+      "cost": 4600,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        3,
+        0
+      ],
+      "affects": [
+        {
+          "location": 17,
+          "modifier": -2
+        },
+        {
+          "location": 4,
+          "modifier": 2
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 6314,
-      "spec": "spec_breath_gas"
+      "id": 6304,
+      "name": "a black knight's visor",
+      "keywords": "visor black knight's",
+      "description": "A black visor sits here.",
+      "material": "oldstyle",
+      "item_type": "armor",
+      "extra_flags": 96,
+      "wear_flags": 17,
+      "level": 17,
+      "weight": 50,
+      "cost": 4600,
+      "condition": 100,
+      "values": [
+        6,
+        6,
+        6,
+        2,
+        0
+      ],
+      "affects": [
+        {
+          "location": 5,
+          "modifier": 2
+        },
+        {
+          "location": 1,
+          "modifier": 1
+        }
+      ],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 6316,
-      "spec": "spec_breath_gas"
+      "id": 6308,
+      "name": "a big pile of coins",
+      "keywords": "coins silver gold",
+      "description": "A big pile of coins is lying here.",
+      "material": "oldstyle",
+      "item_type": "money",
+      "extra_flags": 0,
+      "wear_flags": 1,
+      "level": 0,
+      "weight": 0,
+      "cost": 0,
+      "condition": 100,
+      "values": [
+        500,
+        20,
+        0,
+        0,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": []
     },
     {
-      "mob_vnum": 6317,
-      "spec": "spec_breath_gas"
-    },
-    {
-      "mob_vnum": 6318,
-      "spec": "spec_poison"
-    },
-    {
-      "mob_vnum": 6319,
-      "spec": "spec_poison"
+      "id": 6309,
+      "name": "a blue potion",
+      "keywords": "potion blue",
+      "description": "A blue potion has been left here.",
+      "material": "oldstyle",
+      "item_type": "potion",
+      "extra_flags": 64,
+      "wear_flags": 1,
+      "level": 10,
+      "weight": 20,
+      "cost": 700,
+      "condition": 100,
+      "values": [
+        15,
+        26,
+        23,
+        23,
+        0
+      ],
+      "affects": [],
+      "extra_descriptions": [
+        {
+          "keyword": "potion blue",
+          "description": "It has a nice sky blue colour and a smell like peppermint.\n"
+        }
+      ]
     }
   ],
-  "helps": [],
-  "security": 9,
-  "level_range": {
-    "low": 6200,
-    "high": 6399
-  },
   "resets": [
     {
       "command": "M",
@@ -2099,6 +2255,32 @@
       "arg2": 2,
       "arg3": 1,
       "arg4": 0
+    }
+  ],
+  "specials": [
+    {
+      "mob_vnum": 6302,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 6314,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 6316,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 6317,
+      "spec": "spec_breath_gas"
+    },
+    {
+      "mob_vnum": 6318,
+      "spec": "spec_poison"
+    },
+    {
+      "mob_vnum": 6319,
+      "spec": "spec_poison"
     }
   ]
 }
