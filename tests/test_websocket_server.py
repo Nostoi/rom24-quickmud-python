@@ -251,3 +251,35 @@ def test_websocket_login_emits_board_summary_after_initial_look() -> None:
             assert prompt["session_state"] == "game"
             transcript = "".join(payload.get("text", "") for payload in seen)
             assert "You current board is" in transcript
+
+
+def test_websocket_login_emits_rom_welcome_line_on_entering_game() -> None:
+    """ROM CON_READ_MOTD writes the welcome line when play actually begins."""
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+
+            for text in (
+                "WelcomeLine",
+                "y",
+                "secret1",
+                "secret1",
+                "elf",
+                "m",
+                "mage",
+                "g",
+                "n",
+                "k",
+                "y",
+                "dagger",
+            ):
+                websocket.send_json({"type": "input", "text": text})
+                seen, prompt = _receive_until_prompt(websocket, limit=200)
+
+            assert prompt["session_state"] == "game"
+            transcript = "".join(payload.get("text", "") for payload in seen)
+            assert "Welcome to ROM 2.4.  Please don't feed the mobiles!" in transcript

@@ -1864,6 +1864,8 @@ async def handle_connection_with_stream(
 
         # Send welcome messages
         try:
+            if not reconnecting:
+                await send_to_char(char, "\nWelcome to ROM 2.4.  Please don't feed the mobiles!\n")
             if outfit_message:
                 await send_to_char(char, outfit_message)
             if not reconnecting:
@@ -1893,7 +1895,9 @@ async def handle_connection_with_stream(
         try:
             if hasattr(conn, "set_in_game"):
                 conn.set_in_game(char)
-            if char.room:
+            if reconnecting:
+                pass
+            elif char.room:
                 response = process_command(char, "look")
                 await send_to_char(char, response)
                 await send_to_char(char, "\n")
@@ -2123,6 +2127,8 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         print(f"[CONNECT] {addr} as {session.name}")
 
         try:
+            if not reconnecting:
+                await send_to_char(char, "\nWelcome to ROM 2.4.  Please don't feed the mobiles!\n")
             if outfit_message:
                 await send_to_char(char, outfit_message)
             if not reconnecting:
@@ -2149,7 +2155,9 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             print(f"[ERROR] Failed to announce wiznet login for {session.name}: {exc}")
 
         try:
-            if char.room:
+            if reconnecting:
+                pass
+            elif char.room:
                 response = process_command(char, "look")
                 await send_to_char(char, response)
                 await send_to_char(char, "\n")

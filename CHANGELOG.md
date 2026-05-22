@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.31]
+
+### Fixed
+- **`nanny.c` trust-rebuild: `CON_READ_MOTD` now emits the ROM welcome line**: `mud/net/connection.py` now sends `Welcome to ROM 2.4.  Please don't feed the mobiles!` at the moment a normal login actually enters the game, matching the ROM branch instead of skipping straight to MOTD/help/look output.
+- **Forced reconnects no longer run the normal login tail**: duplicate-session takeover reconnects now skip the normal welcome/look/board path and only emit the ROM reconnect-side output, which restores parity with `check_reconnect(..., TRUE)` and keeps telnet reconnect sequencing stable.
+
+### Changed
+- **Stricter reconnect/login runtime coverage**: `tests/test_websocket_server.py` now asserts the ROM welcome line on first entry, and the full suite recertifies clean with the reconnect split in place (`4593 passed, 4 skipped`).
+
 ## [2.8.30]
 
 ### Fixed
