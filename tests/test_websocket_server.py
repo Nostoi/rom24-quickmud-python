@@ -299,6 +299,80 @@ def test_websocket_reconnect_score_matches_rom_act_info_lines() -> None:
         )
 
 
+def test_websocket_reconnect_look_matches_room_registry_not_cached_snapshot() -> None:
+    """NANNY-RECONNECT-002 — `look` on first command after reconnect matches live room.
+
+    ROM C: src/act_info.c:1037-1116 (do_look, no-arg branch). After
+    reset_char + char_to_room on login, `look` must emit the in_room's
+    canonical name and description from the loaded area data, not a stale
+    cached snapshot from before the disconnect.
+
+    Strategy: capture the live room from `character_registry` after login,
+    then assert both the room name and a substring of its description
+    appear in the transcript produced by sending `look`.
+    """
+    from mud.models.character import character_registry
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+            for text in ("Looker", "y", "secret1", "secret1", "elf", "m", "mage", "g", "n", "dagger"):
+                websocket.send_json({"type": "input", "text": text})
+                _, prompt = _receive_until_prompt(websocket, limit=200)
+            _, prompt = _continue_motd_prompt(websocket, prompt)
+            assert prompt["session_state"] == "game"
+
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+            websocket.send_json({"type": "input", "text": "Looker"})
+            _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Password: "
+            websocket.send_json({"type": "input", "text": "secret1"})
+            _, prompt = _receive_until_prompt(websocket, limit=200)
+            _, prompt = _continue_motd_prompt(websocket, prompt)
+            assert prompt["session_state"] == "game"
+
+            # Snapshot what the live registry says the loaded character's room is.
+            live_char = next(
+                (c for c in character_registry if getattr(c, "name", "") == "Looker"),
+                None,
+            )
+            assert live_char is not None, "reconnected Looker not in character_registry"
+            live_room = live_char.room
+            assert live_room is not None, "reconnected Looker has no room"
+            expected_name = live_room.name
+            expected_desc = (live_room.description or "").strip()
+            assert expected_name, "room registry has empty name for reconnect target"
+            assert expected_desc, "room registry has empty description for reconnect target"
+
+            websocket.send_json({"type": "input", "text": "look"})
+            seen, prompt = _receive_until_prompt(websocket, limit=200)
+            assert prompt["session_state"] == "game"
+            transcript = "".join(payload.get("text", "") for payload in seen)
+
+        # ROM src/act_info.c:1084-1086 — room name printed bracketed by color codes.
+        assert expected_name in transcript, (
+            f"room name {expected_name!r} from registry not in look transcript:\n{transcript}"
+        )
+        # ROM src/act_info.c:1098-1105 — room description printed when arg is empty.
+        # Use the first non-empty line as a discriminator so we catch stale snapshots.
+        desc_signature = next(
+            (line.strip() for line in expected_desc.splitlines() if line.strip()),
+            expected_desc[:40],
+        )
+        assert desc_signature in transcript, (
+            f"room description signature {desc_signature!r} from registry not in look transcript:\n{transcript}"
+        )
+
+
 def test_websocket_login_emits_board_summary_after_initial_look() -> None:
     """ROM CON_READ_MOTD ends with `do_board("")` after the initial look."""
     with TestClient(app) as client:

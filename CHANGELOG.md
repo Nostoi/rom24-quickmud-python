@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **`NANNY-RECONNECT-001` — `score` after reconnect transcript parity** (`src/act_info.c:1477-1507`, `src/nanny.c:760`): added a websocket-runtime-path regression in `tests/test_websocket_server.py::test_websocket_reconnect_score_matches_rom_act_info_lines` that asserts ROM-exact title (`"You are <name> the Apprentice of Magic, level 1, ..."`), race/sex/class line (`"Race: elf  Sex: male  Class: mage"`), and hit/mana/move at full after `reset_char` on login. Verified the live runtime path; no implementation drift found.
+- **`NANNY-RECONNECT-002` — `look` after reconnect matches live room registry** (`src/act_info.c:1037-1116`): added `tests/test_websocket_server.py::test_websocket_reconnect_look_matches_room_registry_not_cached_snapshot` which reconnects an elf mage, snapshots the live `character_registry` entry's `room.name` and description, then asserts the `look` transcript on the **first command after reconnect** contains both — guarding against stale pre-disconnect cached snapshots. Verified the live runtime path; no implementation drift found.
 
 ## [2.8.32]
 
