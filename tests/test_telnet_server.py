@@ -430,13 +430,14 @@ def test_telnet_negotiates_iac_and_disables_echo():
             writer.write(b"y\r\n")
             await writer.drain()
 
-            password_prompt = await reader.readuntil(b"New password: ")
+            await reader.readuntil(b"New character.\n\r")
+            password_prompt = await reader.readuntil(b"Give me a password for Negotiator: ")
             assert bytes([TELNET_IAC, TELNET_WILL, TELNET_TELOPT_ECHO]) in password_prompt
 
             writer.write(b"secret\r\n")
             await writer.drain()
 
-            confirm_prompt = await reader.readuntil(b"Confirm password: ")
+            confirm_prompt = await reader.readuntil(b"Please retype password: ")
             assert bytes([TELNET_IAC, TELNET_WONT, TELNET_TELOPT_ECHO]) in confirm_prompt
             assert bytes([TELNET_IAC, TELNET_WILL, TELNET_TELOPT_ECHO]) in confirm_prompt
             assert b"secret" not in confirm_prompt
@@ -485,12 +486,18 @@ def test_telnet_server_handles_multiple_connections():
             await r1.readuntil(b"Password: ")
             w1.write(b"pw\n")
             await w1.drain()
+            await r1.readuntil(b"[Hit Return to continue] ")
+            w1.write(b"\n")
+            await w1.drain()
 
             await negotiate_ansi_prompt(r2, w2)
             w2.write(b"Bob\n")
             await w2.drain()
             await r2.readuntil(b"Password: ")
             w2.write(b"pw\n")
+            await w2.drain()
+            await r2.readuntil(b"[Hit Return to continue] ")
+            w2.write(b"\n")
             await w2.drain()
 
             await asyncio.wait_for(r1.readuntil(b"> "), timeout=5)
@@ -540,6 +547,9 @@ def test_telnet_break_connect_prompts_and_reconnects():
             await w1.drain()
             await asyncio.wait_for(r1.readuntil(b"Password: "), timeout=5)
             w1.write(b"pw\n")
+            await w1.drain()
+            await asyncio.wait_for(r1.readuntil(b"[Hit Return to continue] "), timeout=5)
+            w1.write(b"\n")
             await w1.drain()
             await asyncio.wait_for(r1.readuntil(b"> "), timeout=5)
 

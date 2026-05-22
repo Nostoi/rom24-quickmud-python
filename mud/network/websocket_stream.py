@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from collections import deque
 from datetime import datetime
 from typing import Any
@@ -43,6 +42,8 @@ class WebSocketStream:
         lowered = prompt.strip().lower()
         if self._in_game:
             return "game"
+        if "hit return to continue" in lowered:
+            return "motd"
         if lowered.startswith("account:"):
             return "account"
         if "password" in lowered:

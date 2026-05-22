@@ -41,7 +41,7 @@ from mud.db.models import Character as DBCharacter
 from mud.handler import reset_char
 from mud.loaders import help_loader
 from mud.logging import log_game_event
-from mud.models.constants import ROOM_VNUM_CHAT, ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE, CommFlag, PlayerFlag, Sex
+from mud.models.constants import ROOM_VNUM_CHAT, ROOM_VNUM_LIMBO, ROOM_VNUM_SCHOOL, ROOM_VNUM_TEMPLE, CommFlag, PlayerFlag, Sex
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
@@ -803,7 +803,7 @@ async def _send_help_greeting(conn: TelnetStream) -> None:
     greeting = help_loader.help_greeting
     if not greeting:
         return
-    text = greeting[1:] if greeting.startswith(".") else greeting
+    text, _ = _split_greeting_and_embedded_motd(greeting)
     if not text:
         return
     if conn.ansi_enabled:
@@ -834,17 +834,26 @@ def _strip_motd_trailer(text: str) -> str:
     return cleaned.strip()
 
 
+def _split_greeting_and_embedded_motd(greeting: str) -> tuple[str, str | None]:
+    text = greeting[1:] if greeting.startswith(".") else greeting
+    marker = "-1 MOTD~"
+    motd: str | None = None
+    if marker in text:
+        text, motd = text.split(marker, 1)
+    text = text.rstrip()
+    if text.endswith("~"):
+        text = text[:-1].rstrip()
+    if motd is not None:
+        motd = _strip_motd_trailer(motd).strip() or None
+    return text, motd
+
+
 def _extract_motd_from_greeting() -> str | None:
     greeting = help_loader.help_greeting
     if not greeting:
         return None
-    text = greeting[1:] if greeting.startswith(".") else greeting
-    marker = "-1 MOTD~"
-    if marker not in text:
-        return None
-    motd = text.split(marker, 1)[1]
-    motd = _strip_motd_trailer(motd)
-    return motd or None
+    _, motd = _split_greeting_and_embedded_motd(greeting)
+    return motd
 
 
 async def _send_login_motd(char: Character) -> None:
@@ -876,6 +885,14 @@ async def _send_login_motd(char: Character) -> None:
             await send_to_char(char, text)
         except Exception as exc:  # pragma: no cover - defensive guard
             print(f"[ERROR] Failed to send help topic '{topic}' to {getattr(char, 'name', '?')}: {exc}")
+
+
+async def _await_login_motd_continue(conn: TelnetStream, char: Character) -> bool:
+    """Mirror ROM's ``do_help(...); d->connected = CON_READ_MOTD`` gate."""
+
+    await _send_login_motd(char)
+    response = await _prompt(conn, "[Hit Return to continue] ")
+    return response is not None
 
 
 def _should_send_newbie_help(char: Character) -> bool:
@@ -1019,23 +1036,27 @@ async def _disconnect_session(session: Session) -> Character | None:
     return old_char
 
 
-async def _prompt_new_password(conn: TelnetStream) -> str | None:
+async def _prompt_new_password(conn: TelnetStream, char_name: str) -> str | None:
+    prompt = f"Give me a password for {char_name}: "
     while True:
-        password = await _prompt(conn, "New password: ", hide_input=True)
+        password = await _prompt(conn, prompt, hide_input=True)
         if password is None:
             return None
         if len(password) < 5:
             await _send_line(conn, "Password must be at least five characters long.")
+            prompt = "Password: "
             continue
         # mirrors ROM src/nanny.c:396-405 — '~' is the pfile field terminator
         if "~" in password:
             await _send_line(conn, "New password not acceptable, try again.")
+            prompt = "Password: "
             continue
-        confirm = await _prompt(conn, "Confirm password: ", hide_input=True)
+        confirm = await _prompt(conn, "Please retype password: ", hide_input=True)
         if confirm is None:
             return None
         if password != confirm:
             await _send_line(conn, "Passwords don't match.")
+            prompt = "Retype password: "
             continue
         return password
 
@@ -1147,7 +1168,8 @@ async def _run_character_login(
             await _send_line(conn, "Ok, what IS it, then?")
             continue
 
-        password = await _prompt_new_password(conn)
+        await _send_line(conn, "New character.")
+        password = await _prompt_new_password(conn, username.capitalize())
         if password is None:
             return None
         if not create_account(username, password):
@@ -1164,11 +1186,12 @@ async def _run_character_login(
 
 async def _prompt_for_race(conn: TelnetStream, help_character: object | None = None) -> PcRaceType | None:
     races = get_creation_races()
-    await _send_line(conn, "Available races: " + ", ".join(race.name.title() for race in races))
-    await _send_line(conn, "What is your race? (help for more information)")
+    race_listing = "The following races are available:\n  " + " ".join(race.name for race in races) + " "
+    await _send_line(conn, race_listing)
     helper = help_character or SimpleNamespace(name="", trust=0, level=0, is_npc=False, room=None)
+    prompt = "What is your race (help for more information)? "
     while True:
-        response = await _prompt(conn, "Choose your race: ")
+        response = await _prompt(conn, prompt)
         if response is None:
             return None
         stripped = response.strip()
@@ -1189,11 +1212,14 @@ async def _prompt_for_race(conn: TelnetStream, help_character: object | None = N
         if race is not None:
             return race
         await _send_line(conn, "That's not a valid race.")
+        await _send_line(conn, race_listing)
+        prompt = "What is your race? (help for more information) "
 
 
 async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
+    prompt = "What is your sex (M/F)? "
     while True:
-        response = await _prompt(conn, "Sex (M/F): ")
+        response = await _prompt(conn, prompt)
         if response is None:
             return None
         lowered = response.lower()
@@ -1201,14 +1227,15 @@ async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
             return Sex.MALE
         if lowered.startswith("f"):
             return Sex.FEMALE
-        await _send_line(conn, "Please enter M or F.")
+        await _send_line(conn, "That's not a sex.")
+        prompt = "What IS your sex? "
 
 
 async def _prompt_for_class(conn: TelnetStream) -> ClassType | None:
     classes = get_creation_classes()
-    await _send_line(conn, "Available classes: " + ", ".join(cls.name.title() for cls in classes))
+    prompt = "Select a class [" + " ".join(cls.name for cls in classes) + "]: "
     while True:
-        response = await _prompt(conn, "Choose your class: ")
+        response = await _prompt(conn, prompt)
         if response is None:
             return None
         class_type = lookup_creation_class(response)
@@ -1536,10 +1563,10 @@ async def _prompt_for_hometown(conn: TelnetStream) -> int | None:
 
 async def _prompt_for_weapon(conn: TelnetStream, class_type: ClassType) -> int | None:
     choices = get_weapon_choices(class_type)
-    await _send_line(conn, "Starting weapons: " + ", ".join(choice.title() for choice in choices))
     normalized = {choice.lower(): choice for choice in choices}
+    prompt = "Please pick a weapon from the following choices:\n" + " ".join(choices) + " \nYour choice? "
     while True:
-        response = await _prompt(conn, "Choose your starting weapon: ")
+        response = await _prompt(conn, prompt)
         if response is None:
             return None
         key = response.strip().lower()
@@ -1547,7 +1574,8 @@ async def _prompt_for_weapon(conn: TelnetStream, class_type: ClassType) -> int |
             vnum = lookup_weapon_choice(key)
             if vnum is not None:
                 return vnum
-        await _send_line(conn, "That is not a valid weapon choice.")
+        await _send_line(conn, "That's not a valid selection. Choices are:")
+        prompt = " ".join(choices) + " \nYour choice? "
 
 
 async def _run_character_creation_flow(
@@ -1581,8 +1609,6 @@ async def _run_character_creation_flow(
         is_npc=False,
         room=None,
     )
-    await _send_line(conn, f"Creating new character '{display}'.")
-
     race = await _prompt_for_race(conn, preview_character)
     if race is None:
         return False
@@ -1608,12 +1634,6 @@ async def _run_character_creation_flow(
     else:
         selection.apply_default_group()
 
-    stats = await _prompt_for_stats(conn, race)
-    if stats is None:
-        return False
-    hometown = await _prompt_for_hometown(conn)
-    if hometown is None:
-        return False
     weapon_vnum = await _prompt_for_weapon(conn, class_type)
     if weapon_vnum is None:
         return False
@@ -1625,8 +1645,8 @@ async def _run_character_creation_flow(
         class_type=class_type,
         race_archetype=get_race_archetype(race.name),
         sex=sex,
-        hometown_vnum=hometown,
-        perm_stats=stats,
+        hometown_vnum=ROOM_VNUM_SCHOOL,
+        perm_stats=race.base_stats,
         alignment=alignment_value,
         default_weapon_vnum=weapon_vnum,
         creation_points=selection.creation_points,
@@ -1644,7 +1664,6 @@ async def _run_character_creation_flow(
         trust_level=1,
         sex=sex,
     )
-    await _send_line(conn, "Character created!")
     return True
 
 
@@ -1862,16 +1881,15 @@ async def handle_connection_with_stream(
 
         print(f"[{connection_type}] {char.name} entered the game")
 
-        # Send welcome messages
         try:
+            if not reconnecting and not await _await_login_motd_continue(conn, char):
+                return
             if not reconnecting:
                 await send_to_char(char, "\nWelcome to ROM 2.4.  Please don't feed the mobiles!\n")
             if outfit_message:
                 await send_to_char(char, outfit_message)
-            if not reconnecting:
-                await _send_login_motd(char)
-                if _should_send_newbie_help(char):
-                    await _send_newbie_help(char)
+            if not reconnecting and _should_send_newbie_help(char):
+                await _send_newbie_help(char)
         except Exception as exc:
             print(f"[ERROR] Failed to send MOTD for {session.name}: {exc}")
 
@@ -2127,14 +2145,14 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         print(f"[CONNECT] {addr} as {session.name}")
 
         try:
+            if not reconnecting and not await _await_login_motd_continue(conn, char):
+                return
             if not reconnecting:
                 await send_to_char(char, "\nWelcome to ROM 2.4.  Please don't feed the mobiles!\n")
             if outfit_message:
                 await send_to_char(char, outfit_message)
-            if not reconnecting:
-                await _send_login_motd(char)
-                if _should_send_newbie_help(char):
-                    await _send_newbie_help(char)
+            if not reconnecting and _should_send_newbie_help(char):
+                await _send_newbie_help(char)
         except Exception as exc:
             print(f"[ERROR] Failed to send MOTD for {session.name}: {exc}")
 

@@ -609,7 +609,11 @@ def test_new_password_rejects_tilde(monkeypatch):
         def set_ansi(self, _enabled):
             pass
 
-    async def fake_prompt(_conn, _label, *, hide_input=False):
+    labels = []
+
+    async def fake_prompt(_conn, label, *, hide_input=False):
+        del hide_input
+        labels.append(label)
         return next(answers)
 
     async def fake_send_line(_conn, msg):
@@ -618,8 +622,13 @@ def test_new_password_rejects_tilde(monkeypatch):
     monkeypatch.setattr(connection_mod, "_prompt", fake_prompt)
     monkeypatch.setattr(connection_mod, "_send_line", fake_send_line)
 
-    result = asyncio.run(connection_mod._prompt_new_password(FakeStream()))
+    result = asyncio.run(connection_mod._prompt_new_password(FakeStream(), "Nova"))
 
     assert result == "goodpw"
+    assert labels == [
+        "Give me a password for Nova: ",
+        "Password: ",
+        "Please retype password: ",
+    ]
     # mirrors ROM src/nanny.c:396-405 — '~' rejected with retry
     assert any("New password not acceptable" in m for m in sent)

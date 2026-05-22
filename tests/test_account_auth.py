@@ -291,8 +291,6 @@ def test_new_character_creation_sequence():
     finally:
         session.close()
 
-    stats_holder: dict[str, bytes] = {}
-
     async def run() -> None:
         server = await create_server(host="127.0.0.1", port=0)
         host, port = _server_address(server)
@@ -313,26 +311,26 @@ def test_new_character_creation_sequence():
             writer.write(b"y\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"New password: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"New character.\n\r"), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Give me a password for Zaphira: "), timeout=5)
             writer.write(b"secret\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Confirm password: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Please retype password: "), timeout=5)
             writer.write(b"secret\r\n")
             await writer.drain()
 
             # ROM character-first login: creation flow starts immediately after password
-            await asyncio.wait_for(reader.readuntil(b"Available races: Human, Elf, Dwarf, Giant"), timeout=5)
-            await asyncio.wait_for(reader.readuntil(b"Choose your race: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"The following races are available:"), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"What is your race (help for more information)? "), timeout=5)
             writer.write(b"elf\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Sex (M/F): "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"What is your sex (M/F)? "), timeout=5)
             writer.write(b"F\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Available classes: Mage, Cleric, Thief, Warrior"), timeout=5)
-            await asyncio.wait_for(reader.readuntil(b"Choose your class: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Select a class [mage cleric thief warrior]: "), timeout=5)
             writer.write(b"mage\r\n")
             await writer.drain()
 
@@ -346,25 +344,18 @@ def test_new_character_creation_sequence():
             writer.write(b"n\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Rolled stats: "), timeout=5)
-            stats_line = await asyncio.wait_for(reader.readline(), timeout=5)
-            stats_holder["rolled"] = b"Rolled stats: " + stats_line
-            await asyncio.wait_for(reader.readuntil(b"(K to keep, R to reroll): "), timeout=5)
-            writer.write(b"k\r\n")
-            await writer.drain()
-
-            # hometown confirm: "Your hometown will be Midgaard. Accept? (Y/N) "
-            await asyncio.wait_for(reader.readuntil(b"Accept? (Y/N) "), timeout=5)
-            writer.write(b"y\r\n")
-            await writer.drain()
-
-            await asyncio.wait_for(reader.readuntil(b"Starting weapons: "), timeout=5)
-            await asyncio.wait_for(reader.readuntil(b"Choose your starting weapon: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Please pick a weapon from the following choices:"), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Your choice? "), timeout=5)
             writer.write(b"dagger\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Character created!"), timeout=5)
+            motd_blob = await asyncio.wait_for(reader.readuntil(b"[Hit Return to continue] "), timeout=5)
+            assert b"Welcome to ROM 2.4.  Please don't feed the mobiles!" not in motd_blob
+            writer.write(b"\r\n")
+            await writer.drain()
+
             look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=5)
+            assert b"Welcome to ROM 2.4.  Please don't feed the mobiles!" in look_blob
             assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob
 
             writer.close()
@@ -392,13 +383,10 @@ def test_new_character_creation_sequence():
         assert "mage default" in groups
         stats = json.loads(created.perm_stats)
         assert len(stats) == 5
-
-        rolled = stats_holder["rolled"].decode()
-        base_stats = [int(part.split()[1]) for part in rolled.split(": ")[1].split(", ")]
         race = lookup_creation_race("elf")
         class_type = lookup_creation_class("mage")
         assert race is not None and class_type is not None
-        expected_stats = finalize_creation_stats(race, class_type, base_stats)
+        expected_stats = finalize_creation_stats(race, class_type, race.base_stats)
         assert stats == expected_stats
         assert created.default_weapon_vnum == OBJ_VNUM_SCHOOL_DAGGER
         assert created.practice >= 0
@@ -431,24 +419,25 @@ def test_new_player_receives_motd():
             writer.write(b"y\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"New password: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"New character.\n\r"), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Give me a password for Trellis: "), timeout=5)
             writer.write(b"secret\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Confirm password: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Please retype password: "), timeout=5)
             writer.write(b"secret\r\n")
             await writer.drain()
 
             # ROM character-first: creation flow starts immediately after password
-            await asyncio.wait_for(reader.readuntil(b"Choose your race: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"What is your race (help for more information)? "), timeout=5)
             writer.write(b"human\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Sex (M/F): "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"What is your sex (M/F)? "), timeout=5)
             writer.write(b"M\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Choose your class: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Select a class [mage cleric thief warrior]: "), timeout=5)
             writer.write(b"warrior\r\n")
             await writer.drain()
 
@@ -460,27 +449,18 @@ def test_new_player_receives_motd():
             writer.write(b"n\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"(K to keep, R to reroll): "), timeout=5)
-            writer.write(b"k\r\n")
-            await writer.drain()
-
-            # hometown confirm: "Your hometown will be Midgaard. Accept? (Y/N) "
-            await asyncio.wait_for(reader.readuntil(b"Accept? (Y/N) "), timeout=5)
-            writer.write(b"y\r\n")
-            await writer.drain()
-
-            await asyncio.wait_for(reader.readuntil(b"Choose your starting weapon: "), timeout=5)
+            await asyncio.wait_for(reader.readuntil(b"Your choice? "), timeout=5)
             writer.write(b"sword\r\n")
             await writer.drain()
 
-            await asyncio.wait_for(reader.readuntil(b"Character created!"), timeout=5)
+            motd_blob = await asyncio.wait_for(reader.readuntil(b"[Hit Return to continue] "), timeout=5)
+            assert b"Welcome to ROM 2.4.  Please don't feed the mobiles!" not in motd_blob
+            writer.write(b"\r\n")
+            await writer.drain()
 
             look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=5)
-            assert (
-                b"Merc Mud School" in look_blob
-                or b"You are floating in a void" in look_blob
-                or b"motd" in look_blob.lower()
-            )
+            assert b"Welcome to ROM 2.4.  Please don't feed the mobiles!" in look_blob
+            assert b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob
 
             writer.close()
             with suppress(Exception):
@@ -526,7 +506,13 @@ def test_immortal_receives_imotd():
             writer.write(b"secret\r\n")
             await writer.drain()
 
+            motd_blob = await asyncio.wait_for(reader.readuntil(b"[Hit Return to continue] "), timeout=10)
+            assert b"Welcome to ROM 2.4.  Please don't feed the mobiles!" not in motd_blob
+            writer.write(b"\r\n")
+            await writer.drain()
+
             look_blob = await asyncio.wait_for(reader.readuntil(b"> "), timeout=10)
+            assert b"Welcome to ROM 2.4.  Please don't feed the mobiles!" in look_blob
             assert (
                 b"Merc Mud School" in look_blob or b"You are floating in a void" in look_blob or b"Borogon" in look_blob
             )
@@ -586,10 +572,13 @@ def test_creation_race_help(monkeypatch: pytest.MonkeyPatch) -> None:
 
     asyncio.run(run())
 
-    assert prompts == ["Choose your race: ", "Choose your race: ", "Choose your race: "]
-    assert sent_lines[:2] == [
-        "Available races: " + ", ".join(r.name.title() for r in get_creation_races()),
-        "What is your race? (help for more information)",
+    assert prompts == [
+        "What is your race (help for more information)? ",
+        "What is your race (help for more information)? ",
+        "What is your race (help for more information)? ",
+    ]
+    assert sent_lines[:1] == [
+        "The following races are available:\n  " + " ".join(r.name for r in get_creation_races()) + " ",
     ]
     assert sent_pages == ["Race overview text\r\n", "Human details\r\n"]
     assert help_calls == [(helper, "race help"), (helper, "human")]
@@ -1346,9 +1335,14 @@ def test_password_prompt_hides_echo():
             writer.write(b"secret\r\n")
             await writer.drain()
 
+            motd_gate = await reader.readuntil(b"[Hit Return to continue] ")
+            assert b"secret" not in motd_gate
+            assert bytes([TELNET_IAC, TELNET_WONT, TELNET_TELOPT_ECHO]) in motd_gate
+            writer.write(b"\r\n")
+            await writer.drain()
+
             post_login = await reader.readuntil(b"> ")
             assert b"secret" not in post_login
-            assert bytes([TELNET_IAC, TELNET_WONT, TELNET_TELOPT_ECHO]) in post_login
 
             writer.close()
             await writer.wait_closed()
@@ -1446,11 +1440,16 @@ def test_help_greeting_respects_ansi_choice():
             assert b"\x1b[" in greeting_on
             assert b"{W" not in greeting_on
             assert b"THIS IS A MUD" in greeting_on.upper()
+            assert b"-1 MOTD~" not in greeting_on
+            assert b"Welcome to ROM 2.4.  Please don't feed the mobiles!" not in greeting_on
 
             writer.write(b"Ansi\r\n")
             await writer.drain()
             await reader.readuntil(b"Password: ")
             writer.write(b"secret\r\n")
+            await writer.drain()
+            await reader.readuntil(b"[Hit Return to continue] ")
+            writer.write(b"\r\n")
             await writer.drain()
             await reader.readuntil(b"> ")
             session = SESSIONS.get("Ansi")
@@ -1473,6 +1472,9 @@ def test_help_greeting_respects_ansi_choice():
             await writer.drain()
             await reader.readuntil(b"Password: ")
             writer.write(b"secret\r\n")
+            await writer.drain()
+            await reader.readuntil(b"[Hit Return to continue] ")
+            writer.write(b"\r\n")
             await writer.drain()
             await reader.readuntil(b"> ")
             session = SESSIONS.get("Ansi")
@@ -1513,6 +1515,9 @@ def test_ansi_preference_persists_between_sessions():
             await reader.readuntil(b"Password: ")
             writer.write(b"secret\r\n")
             await writer.drain()
+            await reader.readuntil(b"[Hit Return to continue] ")
+            writer.write(b"\r\n")
+            await writer.drain()
             await reader.readuntil(b"> ")
             session = SESSIONS.get("Ansi")
             assert session is not None
@@ -1536,6 +1541,9 @@ def test_ansi_preference_persists_between_sessions():
             await writer.drain()
             await reader.readuntil(b"Password: ")
             writer.write(b"secret\r\n")
+            await writer.drain()
+            await reader.readuntil(b"[Hit Return to continue] ")
+            writer.write(b"\r\n")
             await writer.drain()
             await reader.readuntil(b"> ")
             session = SESSIONS.get("Ansi")

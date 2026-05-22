@@ -32,6 +32,13 @@ def _receive_until_prompt(websocket, *, limit: int = 20) -> tuple[list[dict], di
     raise AssertionError("Expected prompt message before receive limit.")
 
 
+def _continue_motd_prompt(websocket, prompt: dict) -> tuple[list[dict], dict]:
+    assert prompt["text"] == "[Hit Return to continue] "
+    assert prompt["session_state"] == "motd"
+    websocket.send_json({"type": "input", "text": ""})
+    return _receive_until_prompt(websocket, limit=200)
+
+
 def test_websocket_boots_loaded_world_and_uses_account_login_flow() -> None:
     """mirroring ROM nanny.c: login starts with Name:, new char gets confirm then password."""
     with TestClient(app) as client:
@@ -52,12 +59,12 @@ def test_websocket_boots_loaded_world_and_uses_account_login_flow() -> None:
 
             websocket.send_json({"type": "input", "text": "y"})
             _, prompt = _receive_until_prompt(websocket)
-            assert prompt["text"] == "New password: "
+            assert prompt["text"] == "Give me a password for Webacct: "
             assert prompt["secret"] is True
 
             websocket.send_json({"type": "input", "text": "secret1"})
             _, prompt = _receive_until_prompt(websocket)
-            assert prompt["text"] == "Confirm password: "
+            assert prompt["text"] == "Please retype password: "
             assert prompt["secret"] is True
 
 
@@ -82,13 +89,12 @@ def test_websocket_created_character_persists_and_reconnects_with_password_promp
                 "mage",
                 "g",
                 "n",
-                "k",
-                "y",
                 "dagger",
             ):
                 websocket.send_json({"type": "input", "text": text})
                 _, prompt = _receive_until_prompt(websocket)
 
+            _, prompt = _continue_motd_prompt(websocket, prompt)
             assert prompt["text"].endswith("> ")
 
         session = SessionLocal()
@@ -134,13 +140,12 @@ def test_websocket_reconnect_does_not_replay_new_character_outfit_flow() -> None
                 "mage",
                 "g",
                 "n",
-                "k",
-                "y",
                 "dagger",
             ):
                 websocket.send_json({"type": "input", "text": text})
                 _, prompt = _receive_until_prompt(websocket)
 
+            _, prompt = _continue_motd_prompt(websocket, prompt)
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _receive_until_prompt(websocket)
             if prompt["text"] == "Do you want ANSI? (Y/n) ":
@@ -153,7 +158,8 @@ def test_websocket_reconnect_does_not_replay_new_character_outfit_flow() -> None
             assert prompt["text"] == "Password: "
 
             websocket.send_json({"type": "input", "text": "secret1"})
-            seen, prompt = _receive_until_prompt(websocket)
+            _, prompt = _receive_until_prompt(websocket, limit=200)
+            seen, prompt = _continue_motd_prompt(websocket, prompt)
             assert prompt["session_state"] == "game"
 
             texts = [payload.get("text", "") for payload in seen]
@@ -181,13 +187,12 @@ def test_websocket_reconnect_preserves_school_outfit_state() -> None:
                 "mage",
                 "g",
                 "n",
-                "k",
-                "y",
                 "dagger",
             ):
                 websocket.send_json({"type": "input", "text": text})
                 _, prompt = _receive_until_prompt(websocket)
 
+            _, prompt = _continue_motd_prompt(websocket, prompt)
             websocket.send_json({"type": "input", "text": "score"})
             seen, prompt = _receive_until_prompt(websocket)
             assert prompt["session_state"] == "game"
@@ -208,7 +213,8 @@ def test_websocket_reconnect_preserves_school_outfit_state() -> None:
             assert prompt["text"] == "Password: "
 
             websocket.send_json({"type": "input", "text": "secret1"})
-            _, prompt = _receive_until_prompt(websocket)
+            _, prompt = _receive_until_prompt(websocket, limit=200)
+            _, prompt = _continue_motd_prompt(websocket, prompt)
             assert prompt["session_state"] == "game"
 
             websocket.send_json({"type": "input", "text": "score"})
@@ -241,13 +247,12 @@ def test_websocket_login_emits_board_summary_after_initial_look() -> None:
                 "mage",
                 "g",
                 "n",
-                "k",
-                "y",
                 "dagger",
             ):
                 websocket.send_json({"type": "input", "text": text})
-                seen, prompt = _receive_until_prompt(websocket, limit=200)
+                _, prompt = _receive_until_prompt(websocket, limit=200)
 
+            seen, prompt = _continue_motd_prompt(websocket, prompt)
             assert prompt["session_state"] == "game"
             transcript = "".join(payload.get("text", "") for payload in seen)
             assert "You current board is" in transcript
@@ -273,13 +278,19 @@ def test_websocket_login_emits_rom_welcome_line_on_entering_game() -> None:
                 "mage",
                 "g",
                 "n",
-                "k",
-                "y",
                 "dagger",
             ):
                 websocket.send_json({"type": "input", "text": text})
                 seen, prompt = _receive_until_prompt(websocket, limit=200)
 
-            assert prompt["session_state"] == "game"
+            motd_transcript = "".join(payload.get("text", "") for payload in seen)
+            assert prompt["session_state"] == "motd"
+            assert "Welcome to ROM 2.4.  Please don't feed the mobiles!" not in motd_transcript
+            assert "You have been equipped by Mota." not in motd_transcript
+
+            websocket.send_json({"type": "input", "text": ""})
+            seen, prompt = _receive_until_prompt(websocket, limit=200)
             transcript = "".join(payload.get("text", "") for payload in seen)
+            assert prompt["session_state"] == "game"
             assert "Welcome to ROM 2.4.  Please don't feed the mobiles!" in transcript
+            assert "You have been equipped by Mota." in transcript
