@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.34]
+
+### Fixed
+- **`INV-009` REGISTRY-DISCONNECT-CLEANUP** (new cross-file invariant): `character_registry` was accumulating duplicate `Character` entries per player name in two places:
+  - **In-session promote-from-bare-row duplication.** The level=0 bare-row Character loaded at `_select_character` (during the nanny name/password phase) was appended to `character_registry` and never replaced. After creation finalised, a fresh level=1 Character was loaded via `load_character` and appended on top, leaving both in the registry. `next((c for c in character_registry if c.name == X), None)` could return the stale level=0 entry (e.g. `hit=20`) while the live session ran against the level=1 entry (`hit=100`).
+  - **Cross-session leak on clean disconnect.** The websocket and telnet disconnect `finally` blocks already saved the character, removed them from their room, and released the account — but never removed them from `character_registry`. Each disconnect-then-reconnect cycle added a new entry without removing the old one.
+- **Fix (`mud/account/account_manager.py:load_character`)**: drop any prior `character_registry` entry with the same name before appending the freshly-loaded one (dedup-by-name on append).
+- **Fix (`mud/net/connection.py` websocket + telnet disconnect cleanup)**: remove the Character from `character_registry` in the `if char: if not forced_disconnect:` block, matching the `save + char_from_room + release_account` quit semantics already present. Forced disconnects (descriptor takeover) skip removal — `_disconnect_session` transfers the live Character to the new descriptor.
+- **Test**: `tests/integration/test_inv009_registry_disconnect_cleanup.py::test_inv009_registry_has_single_entry_after_disconnect_and_reconnect` reproduces both cases on the live websocket path and asserts: (a) zero `Regista` entries after a clean disconnect, (b) exactly one `Regista` entry while a reconnected session is active.
+- **Tracker**: new INV-009 row in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
+
+### Notes
+
+- Full suite at `4603 passed, 4 skipped` (+1 vs 2.8.33 baseline 4602/4; zero regressions).
+- Discovered during NANNY-RECONNECT-003 debugging in 2.8.33 (see SESSION_SUMMARY_2026-05-22_NANNY_RECONNECT_RUNTIME_PATH_PARITY.md "follow-ups").
+
 ## [2.8.33]
 
 ### Changed

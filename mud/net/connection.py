@@ -2018,6 +2018,21 @@ async def handle_connection_with_stream(
                     pass
                 if getattr(char, "connection", None) is conn:
                     char.connection = None
+                # INV-009 REGISTRY-DISCONNECT-CLEANUP: on clean disconnect
+                # the Python port treats the socket close as `do_quit`
+                # semantics (we already save + char_from_room + release
+                # account). Drop the Character from `character_registry`
+                # so the next login by name does not see a phantom
+                # entry. Forced disconnects are skipped because
+                # `_disconnect_session` transfers the live Character to
+                # the new descriptor.
+                try:
+                    from mud.models.character import character_registry as _registry
+
+                    while char in _registry:
+                        _registry.remove(char)
+                except Exception as _registry_exc:  # pragma: no cover — defensive
+                    print(f"[ERROR] Failed to remove character from registry: {_registry_exc}")
 
         if username and not forced_disconnect:
             release_account(username)
@@ -2277,6 +2292,21 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                     pass
                 if getattr(char, "connection", None) is conn:
                     char.connection = None
+                # INV-009 REGISTRY-DISCONNECT-CLEANUP: on clean disconnect
+                # the Python port treats the socket close as `do_quit`
+                # semantics (we already save + char_from_room + release
+                # account). Drop the Character from `character_registry`
+                # so the next login by name does not see a phantom
+                # entry. Forced disconnects are skipped because
+                # `_disconnect_session` transfers the live Character to
+                # the new descriptor.
+                try:
+                    from mud.models.character import character_registry as _registry
+
+                    while char in _registry:
+                        _registry.remove(char)
+                except Exception as _registry_exc:  # pragma: no cover — defensive
+                    print(f"[ERROR] Failed to remove character from registry: {_registry_exc}")
 
         if username and not forced_disconnect:
             release_account(username)

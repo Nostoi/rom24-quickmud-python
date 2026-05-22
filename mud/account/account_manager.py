@@ -57,10 +57,16 @@ def load_character(char_name: str, _ignored: str | None = None) -> Character | N
             return None
         char = from_orm(db_char)
         if char is not None:
-            # Use identity check to avoid triggering dataclass __eq__ on deep
-            # object graphs (inventory/equipment items cause recursion with list `in`)
-            if not any(c is char for c in character_registry):
-                character_registry.append(char)  # INV-003
+            # INV-009 REGISTRY-DISCONNECT-CLEANUP / dedup-by-name:
+            # ROM only ever has one player object by a given name in
+            # char_list. Drop any prior Character with the same name
+            # (e.g. the level=0 bare-row load during nanny name/password
+            # phase) before appending the freshly-loaded one. This
+            # complements INV-003 and prevents in-session duplicates
+            # surfacing through the promote-from-bare-row path.
+            for prior in [c for c in character_registry if getattr(c, "name", None) == char.name]:
+                character_registry.remove(prior)
+            character_registry.append(char)  # INV-003
         return char
     except Exception as e:
         print(f"[ERROR] Failed to load character {char_name} from DB: {e}")
