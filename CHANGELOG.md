@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.40]
+
+### Fixed
+- **`SAY-003` — `do_say` wraps output with ROM colour codes (`{6...{7$T{6'{x`)** (`src/act_comm.c:776-777`): ROM frames the say channel in cyan/green (`{6`), switches to white (`{7`) for the message body, returns to `{6` for the closing quote, and resets with `{x`. The ANSI translation layer at `mud/net/ansi.py` consumes those tokens on websocket send. Python previously emitted no codes, so the say channel rendered in the player's default terminal colour and the framing-vs-body contrast ROM relies on was lost. Fix: `mud/commands/communication.py:do_say` now wraps both TO_CHAR and TO_ROOM strings with the ROM colour sequence. Legacy assertions in `tests/test_commands.py`, `tests/test_command_abbrev.py`, and `tests/integration/test_communication_enhancement.py` were baked to the codeless plain-text form (per AGENTS.md, tests asserting Python behavior contradicting ROM are bugs in the **test**, not the implementation) and have been updated. Locked in by `tests/integration/test_say_parity.py::test_say_003_to_char_wraps_rom_color_codes` and `::test_say_003_to_room_wraps_rom_color_codes`.
+
+### Notes
+
+- Third of four SAY-NNN gaps from the 2026-05-22 `act_comm.c` re-audit. SAY-002 (`$n` PERS for invisible speakers) remains open — requires building a Python `pers()` helper that mirrors ROM's `PERS()` macro.
+- Full suite at `4614 passed, 4 skipped` (+2 vs 2.8.39 baseline 4612/4; zero regressions).
+
 ## [2.8.39]
 
 ### Fixed

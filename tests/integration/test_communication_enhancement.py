@@ -114,7 +114,8 @@ class TestSayCommand:
 
         result = do_say(alice, "Hello everyone!")
 
-        assert result == "You say 'Hello everyone!'"
+        # ROM src/act_comm.c:776-777 — `act("{6You say '{7$T{6'{x", ...)`.
+        assert result == "{6You say '{7Hello everyone!{6'{x"
         assert len(bob.messages) > 0
         assert "alice says" in bob.messages[0].lower()
 

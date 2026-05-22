@@ -19,4 +19,5 @@ def test_ex_abbreviation_resolves_to_exits_command():
 def test_prefix_tie_breaker_uses_first_in_table_order_for_say():
     ch = create_test_character("Tester", 3001)
     out = process_command(ch, "sa hello")
-    assert out == "You say 'hello'"
+    # ROM src/act_comm.c:777 — `act("{6You say '{7$T{6'{x", ...)`
+    assert out == "{6You say '{7hello{6'{x"

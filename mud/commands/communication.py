@@ -127,10 +127,13 @@ def _clear_comm_flag(char: Character, flag: CommFlag) -> None:
 def do_say(char: Character, args: str) -> str:
     if not args:
         return "Say what?"
-    # mirroring ROM src/act_comm.c:776-777 — `act ("$n says '$T'", ...)` and
-    # `act ("You say '$T'", ...)` (SAY-001). No comma between `says`/`say`
-    # and the open quote — ROM emits the literal `says '` / `say '`.
-    message = f"{char.name} says '{args}'"
+    # mirroring ROM src/act_comm.c:776-777 — `act ("{6$n says '{7$T{6'{x", ...)`
+    # and `act ("{6You say '{7$T{6'{x", ...)` (SAY-001 wording, SAY-003
+    # colour). Frame in ROM cyan/say-channel ({6), switch to white ({7)
+    # for the message body, return to {6 for the closing quote, then
+    # reset with {x. The ANSI translation layer in mud/net/ansi.py
+    # consumes these on websocket send.
+    message = f"{{6{char.name} says '{{7{args}{{6'{{x"
     if char.room:
         # mirroring ROM src/act_comm.c:776 — single `act(..., TO_ROOM)`
         # delivers the message to every target in `ch->in_room->people`
@@ -147,7 +150,7 @@ def do_say(char: Character, args: str) -> str:
             if getattr(mob, "position", default_pos) != default_pos:
                 continue
             mobprog.mp_speech_trigger(args, mob, char)
-    return f"You say '{args}'"
+    return f"{{6You say '{{7{args}{{6'{{x"
 
 
 def do_tell(char: Character, args: str) -> str:

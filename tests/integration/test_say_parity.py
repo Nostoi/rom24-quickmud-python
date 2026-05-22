@@ -39,21 +39,32 @@ def _reset_registry() -> None:
     character_registry.clear()
 
 
+import re as _re
+
+_ROM_COLOR_RE = _re.compile(r"\{.")
+
+
+def _strip_rom_colors(text: str) -> str:
+    """Strip ROM `{X` colour-code escapes for plain-text comparisons."""
+    return _ROM_COLOR_RE.sub("", text)
+
+
 def test_say_001_room_broadcast_drops_comma() -> None:
     """SAY-001 — TO_ROOM wording matches ROM `"$n says '$T'"`.
 
     ROM C: src/act_comm.c:776
         act ("{6$n says '{7$T{6'{x", ch, NULL, argument, TO_ROOM);
 
-    Stripping ANSI colour codes, the rendered text is `"<name> says 'hello'"` —
-    no comma after `says`. Python previously emitted `"<name> says, 'hello'"`.
+    Stripping ROM colour codes, the rendered text is
+    `"<name> says 'hello'"` — no comma after `says`. Python previously
+    emitted `"<name> says, 'hello'"`.
     """
     speaker = create_test_character("Sayspeaker", 3001)
     listener = create_test_character("Saylistener", 3001)
 
     process_command(speaker, "say hello")
 
-    delivered = [m for m in listener.messages if "says" in m and "hello" in m]
+    delivered = [_strip_rom_colors(m) for m in listener.messages if "says" in m and "hello" in m]
     assert delivered, f"listener received no say broadcast; messages={listener.messages}"
     assert any("Sayspeaker says 'hello'" in m for m in delivered), (
         f"TO_ROOM wording diverges from ROM `$n says '$T'`; got {delivered!r}"
@@ -71,7 +82,7 @@ def test_say_001_to_char_drops_comma() -> None:
     """
     speaker = create_test_character("Sayself", 3001)
     out = process_command(speaker, "say hello")
-    assert out == "You say 'hello'", (
+    assert _strip_rom_colors(out) == "You say 'hello'", (
         f"TO_CHAR wording diverges from ROM `You say '$T'`; got {out!r}"
     )
 
@@ -97,9 +108,47 @@ def test_say_004_listener_receives_broadcast_exactly_once() -> None:
     process_command(speaker, "say hello")
 
     expected = "Sayemitter says 'hello'"
-    delivered = [m for m in listener.messages if m == expected]
+    delivered = [m for m in listener.messages if _strip_rom_colors(m) == expected]
     assert len(delivered) == 1, (
         f"INV-001 SINGLE-DELIVERY violation on do_say — listener got "
         f"{len(delivered)} copies of {expected!r}; full messages: "
         f"{listener.messages!r}"
+    )
+
+
+def test_say_003_to_char_wraps_rom_color_codes() -> None:
+    """SAY-003 — TO_CHAR output wraps the ROM `{6...{7$T{6'{x` codes.
+
+    ROM C: src/act_comm.c:777
+        act ("{6You say '{7$T{6'{x", ch, NULL, argument, TO_CHAR);
+
+    The literal template stores `{6` (cyan/green frame), `{7` (white
+    message body), and `{x` (reset). The ANSI translation layer at
+    `mud/net/ansi.py` consumes these on websocket send. Python
+    previously emitted no codes, so the say channel rendered in the
+    default terminal colour and the framing-vs-body contrast ROM
+    relies on was lost.
+    """
+    speaker = create_test_character("Sayhue", 3001)
+    out = process_command(speaker, "say hi")
+    assert out == "{6You say '{7hi{6'{x", (
+        f"TO_CHAR colour wrapping diverges from ROM; got {out!r}"
+    )
+
+
+def test_say_003_to_room_wraps_rom_color_codes() -> None:
+    """SAY-003 — TO_ROOM output wraps the ROM `{6...{7$T{6'{x` codes.
+
+    ROM C: src/act_comm.c:776
+        act ("{6$n says '{7$T{6'{x", ch, NULL, argument, TO_ROOM);
+    """
+    speaker = create_test_character("Sayhuesrc", 3001)
+    listener = create_test_character("Sayhuetgt", 3001)
+
+    process_command(speaker, "say hi")
+
+    expected = "{6Sayhuesrc says '{7hi{6'{x"
+    assert expected in listener.messages, (
+        f"TO_ROOM colour wrapping diverges from ROM; "
+        f"expected {expected!r} in {listener.messages!r}"
     )
