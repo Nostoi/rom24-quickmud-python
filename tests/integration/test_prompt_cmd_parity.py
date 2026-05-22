@@ -114,3 +114,31 @@ def test_prompt_cmd_001_preserves_trailing_whitespace_on_template() -> None:
             assert "BOB> " in prompt["text"], (
                 f"trailing space not preserved in rendered prompt; got {prompt['text']!r}"
             )
+
+
+def test_prompt_cmd_003_smash_tilde_on_custom_template() -> None:
+    """PROMPT-CMD-003 — `do_prompt` runs smash_tilde on the custom template.
+
+    ROM C: src/act_info.c:945
+        strcpy (buf, argument);
+        smash_tilde (buf);
+
+    `smash_tilde` (src/db.c:3663) replaces every '~' with '-' so the
+    stored string cannot corrupt the player file (ROM uses '~' as an
+    end-of-string marker on disk). Python's `do_prompt` previously
+    stored the raw argument including any tildes the player typed.
+
+    Note: ROM truncates `argument` to 50 chars BEFORE smash_tilde, so
+    keep the template short enough to avoid coupling this test to
+    PROMPT-CMD-004 (length-cap).
+    """
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _create_elf_mage(websocket, "Promwc")
+            transcript, _ = _send_command(websocket, "prompt T~AG>")
+            assert "Prompt set to T-AG>" in transcript, (
+                f"smash_tilde not applied; transcript:\n{transcript}"
+            )
+            assert "Prompt set to T~AG>" not in transcript, (
+                "tilde leaked through to stored template — would corrupt pfile"
+            )

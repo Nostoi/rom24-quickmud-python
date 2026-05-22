@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.37]
+
+### Fixed
+- **`PROMPT-CMD-003` — `do_prompt` runs `smash_tilde` on custom template before storing** (`src/act_info.c:945`, `src/db.c:3663-3672`): ROM calls `smash_tilde(buf)` before `ch->prompt = str_dup(buf)`, replacing every `~` with `-` so the stored template cannot corrupt the player file on save (ROM treats `~` as the end-of-string marker on disk). Python's `do_prompt` previously stored the raw argument including any tildes the player typed. Fix: `mud/commands/auto_settings.py:do_prompt` now calls `mud.utils.text.smash_tilde` on the custom-template branch before assigning `char.prompt`. Locked in by `tests/integration/test_prompt_cmd_parity.py::test_prompt_cmd_003_smash_tilde_on_custom_template`.
+
+### Notes
+
+- Closes the PROMPT-CMD cluster opened by 2.8.35's NANNY-SAVELOAD-002 probe (PROMPT-CMD-001/002 landed in 2.8.36).
+- Two ROM-divergence corners remain on `do_prompt` but are now stable-IDed for future hardening: PROMPT-CMD-004 (50-char truncation), PROMPT-CMD-005 (`%c`-suffix → append trailing space). Both are corner cases — no behavioral impact for typical players — and tracked in `docs/parity/ACT_INFO_C_AUDIT.md`.
+- Full suite at `4609 passed, 4 skipped` (+1 vs 2.8.36 baseline 4608/4; zero regressions).
+
 ## [2.8.36]
 
 ### Fixed
