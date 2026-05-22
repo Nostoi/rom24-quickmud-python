@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.35]
+
+### Changed
+- **`NANNY-SAVELOAD-001` — wimpy round-trips through reconnect** (`src/act_info.c:2800-2830`, `src/save.c:fwrite_char/fread_char`, `src/act_info.c:1548-1549`): added `tests/integration/test_nanny_saveload_runtime_path.py::test_nanny_saveload_001_wimpy_round_trips_through_reconnect` exercising `wimpy <n>` mid-session, then asserting the value comes back via `score` on the first command after reconnect. Verified the live runtime path; no implementation drift found.
+- **`NANNY-SAVELOAD-002` — custom prompt template round-trips through reconnect** (`src/act_info.c:919-955`, `src/comm.c:1420-1595`): added `tests/integration/test_nanny_saveload_runtime_path.py::test_nanny_saveload_002_prompt_template_round_trips_through_reconnect` exercising `prompt <template>` mid-session, then asserting the first in-game prompt after reconnect renders the saved template (no ROM-default `<Nhp Nm Nmv>` fallback). Verified the live runtime path; the persistence layer round-trip is intact. Probe also surfaced two **separate** `do_prompt` command-side parity gaps (not save→reload bugs): (a) the dispatcher strips trailing whitespace from `prompt <template>` args before `do_prompt` sees them, so a template with a trailing space loses it; (b) the success reply is the truncated `"Prompt set."` instead of ROM's `"Prompt set to <template>\n\r"` which echoes the stored template. Both captured as follow-ups in `docs/sessions/SESSION_STATUS.md`.
+- **`NANNY-SAVELOAD-003` — per-character aliases round-trip through reconnect** (`src/alias.c:102-220`, `src/save.c:fwrite_char/fread_char`): added `tests/integration/test_nanny_saveload_runtime_path.py::test_nanny_saveload_003_alias_round_trips_through_reconnect` exercising `alias k kill` mid-session, then asserting the alias listing on the first command after reconnect re-renders the saved entry with ROM listing format `"    k:  kill"`. Verified the live runtime path through the DB JSON column; no implementation drift found.
+
+### Notes
+
+- Full suite at `4606 passed, 4 skipped` (+3 vs 2.8.34 baseline 4603/4; zero regressions).
+- Plan Task 4 (`docs/superpowers/plans/2026-05-21-parity-trust-rebuild-reaudit.md`) — save → reload → retained-state runtime-path bullet — is now complete. Remaining trust-rebuild work shifts to Plan Task 5 (re-audit other high-risk user-visible command families).
+
 ## [2.8.34]
 
 ### Fixed
