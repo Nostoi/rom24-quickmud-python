@@ -132,8 +132,14 @@ def do_say(char: Character, args: str) -> str:
     # and the open quote — ROM emits the literal `says '` / `say '`.
     message = f"{char.name} says '{args}'"
     if char.room:
+        # mirroring ROM src/act_comm.c:776 — single `act(..., TO_ROOM)`
+        # delivers the message to every target in `ch->in_room->people`
+        # exactly once. Python previously also called `broadcast_room`,
+        # which does the same iterate-and-deliver work as
+        # `room.broadcast`, so every `say` was delivered twice
+        # (SAY-004 / INV-001 SINGLE-DELIVERY violation). Keep
+        # `room.broadcast` only.
         char.room.broadcast(message, exclude=char)
-        broadcast_room(char.room, message, exclude=char)
         for mob in list(char.room.people):
             if mob is char or not getattr(mob, "is_npc", False):
                 continue

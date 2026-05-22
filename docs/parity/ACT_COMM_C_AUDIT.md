@@ -638,7 +638,7 @@ for gch in list(character_registry):
 | `SAY-001` | CRITICAL | src/act_comm.c:776-777 | mud/commands/communication.py:127 | Wording: ROM emits `"says '$T'"` / `"You say '$T'"` (no comma). Python emitted `"says, '..'"` / `"You say, '..'"`. Test: `tests/integration/test_say_parity.py::test_say_001_*`. | ✅ FIXED (2.8.38) |
 | `SAY-002` | CRITICAL | src/act_comm.c:776 | mud/commands/communication.py:127 | `$n` substitution: ROM routes the speaker name through `PERS()` so invisible/hidden speakers show as `"someone"`. Python hardcodes `char.name`, exposing hidden PCs. | 🔄 OPEN |
 | `SAY-003` | IMPORTANT | src/act_comm.c:776-777 | mud/commands/communication.py:127 | ROM wraps with `{6...{7$T{6'{x` cyan/white colour codes. Python emits no codes. | 🔄 OPEN |
-| `SAY-004` | CRITICAL | src/act_comm.c:776-777 | mud/commands/communication.py:127 | Double-delivery: Python calls BOTH `room.broadcast` and `broadcast_room`; both do identical websocket-send + `char.messages.append`. Every `say` is delivered twice. INV-001 SINGLE-DELIVERY violation. | 🔄 OPEN |
+| `SAY-004` | CRITICAL | src/act_comm.c:776-777 | mud/commands/communication.py:127 | Double-delivery: Python called BOTH `room.broadcast` and `broadcast_room`; both do identical websocket-send + `char.messages.append`. Every `say` was delivered twice. INV-001 SINGLE-DELIVERY violation. Fix: dropped the redundant `broadcast_room` call. Test: `tests/integration/test_say_parity.py::test_say_004_listener_receives_broadcast_exactly_once`. | ✅ FIXED (2.8.39) |
 
 **ROM C Behavior**:
 1. Check empty argument → "Say what?"

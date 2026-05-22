@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.39]
+
+### Fixed
+- **`SAY-004` — `do_say` delivers TO_ROOM broadcast exactly once (INV-001 SINGLE-DELIVERY)** (`src/act_comm.c:776`): ROM's `act(..., TO_ROOM)` iterates `ch->in_room->people` and delivers to each target exactly once. Python called BOTH `char.room.broadcast(message, exclude=char)` AND `broadcast_room(char.room, message, exclude=char)`. The two helpers do identical work — iterate `room.people`, fire-and-forget websocket send, append to `char.messages` — so every `say` was delivered twice. Players received "<name> says 'hi'" twice; transcripts and message queues both diverged. Fix: dropped the redundant `broadcast_room` call in `mud/commands/communication.py:do_say`, keeping only `char.room.broadcast`. Locked in by `tests/integration/test_say_parity.py::test_say_004_listener_receives_broadcast_exactly_once`.
+
+### Notes
+
+- Second of four SAY-NNN gaps from the 2026-05-22 `act_comm.c` re-audit. SAY-002 (`$n` PERS for invisible speakers) and SAY-003 (ROM colour codes) remain open.
+- Full suite at `4612 passed, 4 skipped` (+1 vs 2.8.38 baseline 4611/4; zero regressions).
+
 ## [2.8.38]
 
 ### Fixed

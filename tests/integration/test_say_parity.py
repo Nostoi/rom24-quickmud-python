@@ -74,3 +74,32 @@ def test_say_001_to_char_drops_comma() -> None:
     assert out == "You say 'hello'", (
         f"TO_CHAR wording diverges from ROM `You say '$T'`; got {out!r}"
     )
+
+
+def test_say_004_listener_receives_broadcast_exactly_once() -> None:
+    """SAY-004 — listener receives the TO_ROOM broadcast exactly once.
+
+    ROM C: src/act_comm.c:776 issues a single `act()` to TO_ROOM,
+    which routes the formatted message to every target in
+    `ch->in_room->people` exactly once. Python previously called BOTH
+    `char.room.broadcast(message, ...)` AND `broadcast_room(char.room,
+    message, ...)`. The two helpers do identical work (iterate
+    `room.people`, fire-and-forget websocket send, append to
+    `char.messages`), so every `say` was delivered twice (INV-001
+    SINGLE-DELIVERY violation).
+
+    This test pins single-delivery by counting how many copies of the
+    rendered broadcast land in `listener.messages` after one `say`.
+    """
+    speaker = create_test_character("Sayemitter", 3001)
+    listener = create_test_character("Sayrecipient", 3001)
+
+    process_command(speaker, "say hello")
+
+    expected = "Sayemitter says 'hello'"
+    delivered = [m for m in listener.messages if m == expected]
+    assert len(delivered) == 1, (
+        f"INV-001 SINGLE-DELIVERY violation on do_say — listener got "
+        f"{len(delivered)} copies of {expected!r}; full messages: "
+        f"{listener.messages!r}"
+    )
