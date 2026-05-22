@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.33]
+
 ### Changed
 - **`NANNY-RECONNECT-001` — `score` after reconnect transcript parity** (`src/act_info.c:1477-1507`, `src/nanny.c:760`): added a websocket-runtime-path regression in `tests/test_websocket_server.py::test_websocket_reconnect_score_matches_rom_act_info_lines` that asserts ROM-exact title (`"You are <name> the Apprentice of Magic, level 1, ..."`), race/sex/class line (`"Race: elf  Sex: male  Class: mage"`), and hit/mana/move at full after `reset_char` on login. Verified the live runtime path; no implementation drift found.
 - **`NANNY-RECONNECT-002` — `look` after reconnect matches live room registry** (`src/act_info.c:1037-1116`): added `tests/test_websocket_server.py::test_websocket_reconnect_look_matches_room_registry_not_cached_snapshot` which reconnects an elf mage, snapshots the live `character_registry` entry's `room.name` and description, then asserts the `look` transcript on the **first command after reconnect** contains both — guarding against stale pre-disconnect cached snapshots. Verified the live runtime path; no implementation drift found.
 - **`NANNY-RECONNECT-003` — first in-game prompt after reconnect reflects loaded resources** (`src/comm.c:1437-1443`, `src/nanny.c:760`): added `tests/test_websocket_server.py::test_websocket_reconnect_initial_prompt_reflects_loaded_resources` which captures the first post-MOTD prompt on the live websocket, then sends `score` on the same session and asserts the ROM `<Nhp Nm Nmv>` token values equal what `score` reports (self-consistent), and that `hit == max_hit` after `reset_char` on login. Verified the live runtime path; no implementation drift found.
+
+### Notes
+
+- Full suite at `4602 passed, 4 skipped` (+3 vs prior baseline 4599/4; zero regressions).
+- During NANNY-RECONNECT-003 debugging, a `character_registry` reconnect-duplication oddity surfaced (stale pre-disconnect Character returned by name lookup). Recorded as a follow-up in `docs/sessions/SESSION_STATUS.md` for a dedicated future slice.
 
 ## [2.8.32]
 

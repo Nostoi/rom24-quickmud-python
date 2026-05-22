@@ -1,41 +1,47 @@
-# Session Status — 2026-05-22 — `nanny.c` creation transcript and retry parity
+# Session Status — 2026-05-22 — `nanny.c` reconnect runtime-path parity
 
 ## Current State
 
-- **Active audit**: `nanny.c` trust-rebuild (Plan Task 4 — re-audit `nanny.c` / `save.c` session boundaries against the live telnet/websocket path, not helper-only fixtures).
+- **Active audit**: `nanny.c` trust-rebuild (Plan Task 4 — runtime-path verification of post-reconnect first-command transcripts on the live websocket path).
 - **Last completed**:
-  - **Slice 1** (commit `8a747af`): restored ROM-exact happy-path new-character creation prompts (`"New character."`, password prompts, race/sex/class/weapon prompts) and fixed greeting/MOTD leak before `Name:`.
-  - **Slice 2** (commit `cc04b85`): closed `NANNY-RETRY-001..006` — every invalid-entry retry wording and the customization-menu transcript now matches `src/nanny.c:460-657` exactly. Added 6 transcript-parity tests.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-22_NANNY_CREATION_TRANSCRIPT_AND_RETRY_PARITY.md](SESSION_SUMMARY_2026-05-22_NANNY_CREATION_TRANSCRIPT_AND_RETRY_PARITY.md)
+  - `NANNY-RECONNECT-001` (commit `ba79d82`) — `score` after reconnect: ROM-exact title / race / sex / class / resources lines locked in.
+  - `NANNY-RECONNECT-002` (commit `6622775`) — `look` after reconnect: room name and description match live registry, not stale snapshot.
+  - `NANNY-RECONNECT-003` (commit `600d9d5`) — first in-game prompt after reconnect renders live hp/mana/move (self-consistent with `score`); reset_char confirmed via `hit == max_hit`.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-22_NANNY_RECONNECT_RUNTIME_PATH_PARITY.md](SESSION_SUMMARY_2026-05-22_NANNY_RECONNECT_RUNTIME_PATH_PARITY.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.32 |
-| Tests | **4599 passed, 4 skipped** (full suite, ~6m 44s) |
-| Targeted creation/login band | **96 passed, 1 skipped** |
-| `nanny.c` audit | 100% gap rows ✅ (NANNY-001..014 + NANNY-RETRY-001..006) |
+| Version | 2.8.33 |
+| Tests | **4602 passed, 4 skipped** (full suite, ~5m 26s) |
+| `nanny.c` audit | 100% gap rows ✅ (NANNY-001..014 + NANNY-RETRY-001..006 + NANNY-RECONNECT-001..003) |
 | Ruff on touched files | clean (no new errors vs baseline) |
 | GitNexus index | **stale** — last indexed at `0dd803e`; re-run `npx gitnexus analyze --skip-agents-md` |
 
 ## Next Intended Task
 
-Continue the `nanny.c` / `save.c` trust rebuild on the post-login session
-boundaries (Plan Task 4 remaining bullets):
+Two threads, pick either:
 
-1. DB row state after a completed creation — exercise the live websocket/telnet
-   path, then assert the persisted character record matches the ROM-derived
-   defaults (race / class / alignment / title / hp-mana-move / equipped
-   outfit).
-2. Post-login `logon` semantics and first-command output after reconnect —
-   verify `score`, `look`, and prompt rendering match ROM on the runtime
-   path, not helper paths.
-3. Save → reload → retained state on real server paths.
+1. **Plan Task 4 — save → reload → retained state on real server paths.**
+   Still open. Helper tests cover this in isolation; the remaining bullet
+   is a Mode-B/Mode-C reconnect-with-state-change test on the live
+   websocket path (e.g. change wimpy / prompt / equipment between
+   sessions, then verify the reload reflects it on the first command).
+
+2. **Investigate `character_registry` reconnect duplication.** During
+   NANNY-RECONNECT-003 debugging, name lookup in `character_registry`
+   returned a stale pre-reconnect Character (hp=20) while the live
+   reconnect session rendered hp=100. Likely the pre-disconnect entry is
+   never removed when the new reconnect session loads a fresh Character
+   from DB. Worth a dedicated slice; possibly a new
+   "REGISTRY-RECONNECT-DEDUP" cross-file invariant.
 
 Operational follow-ups before pushing:
 
-- Add `log/orphaned_helps.txt` (runtime-generated noise) to `.gitignore` in a
-  small repo-hygiene commit.
-- Re-run `npx gitnexus analyze --skip-agents-md` so `gitnexus_impact` /
-  `gitnexus_detect_changes` reflect commits `8a747af` and `cc04b85`.
+- Re-run `npx gitnexus analyze --skip-agents-md` so the GitNexus index
+  reflects commits `ba79d82`, `6622775`, `600d9d5`, and the handoff
+  commit.
+- `log/orphaned_helps.txt` is still a tracked file that keeps drifting
+  during test runs. Consider `git rm --cached log/orphaned_helps.txt`
+  followed by a `.gitignore` entry in a small repo-hygiene commit.
