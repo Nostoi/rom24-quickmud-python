@@ -373,6 +373,80 @@ def test_websocket_reconnect_look_matches_room_registry_not_cached_snapshot() ->
         )
 
 
+def test_websocket_reconnect_initial_prompt_reflects_loaded_resources() -> None:
+    """NANNY-RECONNECT-003 — initial prompt after reconnect reflects loaded stats.
+
+    ROM C: src/comm.c:1437-1443 (default prompt `"{p<%dhp %dm %dmv>{x %s"`).
+    After NANNY-014 `reset_char` runs on login, hp/mana/move are restored
+    from `perm_*` and the next prompt must render the live character's
+    values from `score`, not fall back to defaults (0/0/0) or a stale
+    pre-disconnect snapshot.
+
+    We compare prompt-rendered hp/mana/move against the same character's
+    `score` output (self-consistent across both readouts on the same
+    websocket session) so the assertion does not depend on whichever
+    character_registry entry would otherwise win the name lookup.
+    """
+    import re
+
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+            for text in ("Prompto", "y", "secret1", "secret1", "elf", "m", "mage", "g", "n", "dagger"):
+                websocket.send_json({"type": "input", "text": text})
+                _, prompt = _receive_until_prompt(websocket, limit=200)
+            _, prompt = _continue_motd_prompt(websocket, prompt)
+            assert prompt["session_state"] == "game"
+
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+            websocket.send_json({"type": "input", "text": "Prompto"})
+            _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Password: "
+            websocket.send_json({"type": "input", "text": "secret1"})
+            _, prompt = _receive_until_prompt(websocket, limit=200)
+            _, prompt = _continue_motd_prompt(websocket, prompt)
+            assert prompt["session_state"] == "game"
+            # ROM src/comm.c:1437-1443 default prompt `<%dhp %dm %dmv>`.
+            initial_prompt_text = prompt["text"]
+
+            # Read the live character's resources via `score` on the same session.
+            websocket.send_json({"type": "input", "text": "score"})
+            seen, prompt = _receive_until_prompt(websocket, limit=200)
+            score_text = "".join(payload.get("text", "") for payload in seen)
+            resources = re.search(
+                r"You have (\d+)/(\d+) hit, (\d+)/(\d+) mana, (\d+)/(\d+) movement\.",
+                score_text,
+            )
+            assert resources, f"score did not produce parseable hit/mana/move line:\n{score_text}"
+            live_hp, live_max_hp, live_mana, _, live_move, _ = (int(x) for x in resources.groups())
+
+        # Guard against falling back to defaults (0/0/0) or a stale snapshot.
+        prompt_match = re.search(r"<(\d+)hp (\d+)m (\d+)mv>", initial_prompt_text)
+        assert prompt_match, (
+            f"initial prompt missing ROM default <Nhp Nm Nmv> shape: {initial_prompt_text!r}"
+        )
+        prompt_hp, prompt_mana, prompt_move = (int(x) for x in prompt_match.groups())
+        assert (prompt_hp, prompt_mana, prompt_move) == (live_hp, live_mana, live_move), (
+            f"initial prompt hp/mana/move {prompt_hp}/{prompt_mana}/{prompt_move} "
+            f"does not match what `score` reports for the same session "
+            f"{live_hp}/{live_mana}/{live_move}"
+        )
+        # And reset_char (NANNY-014) guarantees the live hit equals max_hit on login.
+        assert live_hp == live_max_hp, (
+            f"live hit {live_hp} != live max_hit {live_max_hp} after reconnect "
+            f"(NANNY-014 reset_char regression)"
+        )
+
+
 def test_websocket_login_emits_board_summary_after_initial_look() -> None:
     """ROM CON_READ_MOTD ends with `do_board("")` after the initial look."""
     with TestClient(app) as client:
