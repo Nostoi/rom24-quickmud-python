@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.38]
+
+### Fixed
+- **`SAY-001` — `do_say` wording matches ROM (`says '$T'` / `You say '$T'` — no comma)** (`src/act_comm.c:776-777`): ROM emits `act("$n says '$T'", ...)` and `act("You say '$T'", ...)`. Python emitted `"says, '..'"` and `"You say, '..'"` with a comma the player did not type. Surfaced by a 2026-05-22 re-audit of `act_comm.c` that found the previous "100% VERIFIED" claim was incorrect. Fix: `mud/commands/communication.py:do_say` now produces the ROM-exact wording. Legacy `tests/test_commands.py`, `tests/test_command_abbrev.py`, `tests/integration/test_communication_enhancement.py` assertions were baked to the buggy comma form (per AGENTS.md — tests that assert Python behavior contradicting ROM are bugs in the **test**, not the implementation) and have been updated to the ROM-exact wording. Locked in by `tests/integration/test_say_parity.py::test_say_001_room_broadcast_drops_comma` and `test_say_001_to_char_drops_comma`.
+
+### Notes
+
+- Three additional `do_say` gaps surfaced by the re-audit are stable-IDed in `docs/parity/ACT_COMM_C_AUDIT.md` for sequential closure: SAY-002 (`$n` PERS substitution for invisible speakers), SAY-003 (ROM colour codes), SAY-004 (double-delivery via `room.broadcast` + `broadcast_room` — INV-001 SINGLE-DELIVERY violation).
+- Full suite at `4611 passed, 4 skipped` (+2 vs 2.8.37 baseline 4609/4; zero regressions).
+
 ## [2.8.37]
 
 ### Fixed

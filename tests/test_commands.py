@@ -37,8 +37,8 @@ def test_process_command_sequence(movable_char_factory, place_object_factory):
 
     other = create_test_character("Other", north_room.vnum)
     out4 = process_command(char, "say hello")
-    assert out4 == "You say, 'hello'"
-    assert f"{char.name} says, 'hello'" in other.messages
+    assert out4 == "You say 'hello'"
+    assert f"{char.name} says 'hello'" in other.messages
 
 
 def test_equipment_command(movable_char_factory):
@@ -68,7 +68,7 @@ def test_abbreviations_and_quotes(movable_char_factory):
     assert "You walk north" in out2
 
     out3 = process_command(char, 'say "hello world"')
-    assert out3 == "You say, '\"hello world\"'"
+    assert out3 == "You say '\"hello world\"'"
 
 
 def test_abbrev_skips_inaccessible_command():
@@ -87,8 +87,8 @@ def test_apostrophe_alias_routes_to_say():
     listener = create_test_character("Listener", 3001)
 
     out = process_command(speaker, "'hello there")
-    assert out == "You say, 'hello there'"
-    assert f"{speaker.name} says, 'hello there'" in listener.messages
+    assert out == "You say 'hello there'"
+    assert f"{speaker.name} says 'hello there'" in listener.messages
 
 
 def test_punctuation_inputs_do_not_raise_value_error():
@@ -96,7 +96,7 @@ def test_punctuation_inputs_do_not_raise_value_error():
     speaker = create_test_character("SpeakerTwo", 3001)
 
     out = process_command(speaker, "'   spaced words")
-    assert out == "You say, 'spaced words'"
+    assert out == "You say 'spaced words'"
 
     prompt = process_command(speaker, "'")
     assert prompt == "Say what?"
@@ -259,8 +259,8 @@ def test_prefix_macro_prepends_to_commands():
     assert alias_output == "You have no aliases defined.\n\r"
 
     out = process_command(speaker, "hello there")
-    assert out == "You say, 'hello there'"
-    assert f"{speaker.name} says, 'hello there'" in listener.messages
+    assert out == "You say 'hello there'"
+    assert f"{speaker.name} says 'hello there'" in listener.messages
 
 
 def test_command_execution_breaks_hide():

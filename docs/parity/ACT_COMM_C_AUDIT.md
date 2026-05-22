@@ -628,10 +628,17 @@ for gch in list(character_registry):
 
 ---
 
-#### 3. do_say() - VERIFIED ✅
-**ROM C**: src/act_comm.c lines 768-791 (24 lines)  
-**QuickMUD**: communication.py:127  
-**Status**: ✅ **100% ROM C parity**
+#### 3. do_say() - RE-AUDIT IN PROGRESS 🔄
+**ROM C**: src/act_comm.c lines 768-791 (24 lines)
+**QuickMUD**: communication.py:127
+**Status**: 🔄 **2026-05-22 re-audit** — previous "100% VERIFIED" claim was incorrect. Four gaps surfaced (see SAY-NNN rows below).
+
+| Gap ID | Severity | ROM C | Python | Description | Status |
+|--------|----------|-------|--------|-------------|--------|
+| `SAY-001` | CRITICAL | src/act_comm.c:776-777 | mud/commands/communication.py:127 | Wording: ROM emits `"says '$T'"` / `"You say '$T'"` (no comma). Python emitted `"says, '..'"` / `"You say, '..'"`. Test: `tests/integration/test_say_parity.py::test_say_001_*`. | ✅ FIXED (2.8.38) |
+| `SAY-002` | CRITICAL | src/act_comm.c:776 | mud/commands/communication.py:127 | `$n` substitution: ROM routes the speaker name through `PERS()` so invisible/hidden speakers show as `"someone"`. Python hardcodes `char.name`, exposing hidden PCs. | 🔄 OPEN |
+| `SAY-003` | IMPORTANT | src/act_comm.c:776-777 | mud/commands/communication.py:127 | ROM wraps with `{6...{7$T{6'{x` cyan/white colour codes. Python emits no codes. | 🔄 OPEN |
+| `SAY-004` | CRITICAL | src/act_comm.c:776-777 | mud/commands/communication.py:127 | Double-delivery: Python calls BOTH `room.broadcast` and `broadcast_room`; both do identical websocket-send + `char.messages.append`. Every `say` is delivered twice. INV-001 SINGLE-DELIVERY violation. | 🔄 OPEN |
 
 **ROM C Behavior**:
 1. Check empty argument → "Say what?"

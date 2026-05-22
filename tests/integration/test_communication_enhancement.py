@@ -114,7 +114,7 @@ class TestSayCommand:
 
         result = do_say(alice, "Hello everyone!")
 
-        assert result == "You say, 'Hello everyone!'"
+        assert result == "You say 'Hello everyone!'"
         assert len(bob.messages) > 0
         assert "alice says" in bob.messages[0].lower()
 

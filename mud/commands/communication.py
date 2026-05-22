@@ -127,7 +127,10 @@ def _clear_comm_flag(char: Character, flag: CommFlag) -> None:
 def do_say(char: Character, args: str) -> str:
     if not args:
         return "Say what?"
-    message = f"{char.name} says, '{args}'"
+    # mirroring ROM src/act_comm.c:776-777 — `act ("$n says '$T'", ...)` and
+    # `act ("You say '$T'", ...)` (SAY-001). No comma between `says`/`say`
+    # and the open quote — ROM emits the literal `says '` / `say '`.
+    message = f"{char.name} says '{args}'"
     if char.room:
         char.room.broadcast(message, exclude=char)
         broadcast_room(char.room, message, exclude=char)
@@ -138,7 +141,7 @@ def do_say(char: Character, args: str) -> str:
             if getattr(mob, "position", default_pos) != default_pos:
                 continue
             mobprog.mp_speech_trigger(args, mob, char)
-    return f"You say, '{args}'"
+    return f"You say '{args}'"
 
 
 def do_tell(char: Character, args: str) -> str:
