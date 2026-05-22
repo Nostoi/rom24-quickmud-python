@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.32]
+
+### Fixed
+- **`nanny.c` happy-path new-character creation prompts**: `mud/net/connection.py` now emits ROM-exact `"New character."`, `"Give me a password for <Name>:"`, `"Please retype password:"`, and ROM race/sex/class/weapon prompt wording on the live runtime path. Removed the non-ROM `"Creating new character 'X'."` line and the non-ROM stat-reroll and hometown prompts (ROM `nanny.c:476-478` derives `perm_stat` from `pc_race_table[race].stats[i]` and has no such prompts).
+- **`nanny.c` pre-login greeting parser**: the greeting no longer leaks the embedded MOTD block before `Name:`.
+- **`NANNY-RETRY-001` — race invalid wording** (`src/nanny.c:460-471`): `_prompt_for_race` now sends `"That is not a valid race."` (was `"That's"`); race listing prefix is `"The following races are available:\n\r  "` to match ROM telnet line endings.
+- **`NANNY-RETRY-002` — race "help" branch wording** (`src/nanny.c:444-453`): verified ROM-exact; regression test added.
+- **`NANNY-RETRY-003` — class invalid wording** (`src/nanny.c:538-539`): `_prompt_for_class` now sends `"That's not a class."` (was `"That's not a valid class."`) and switches the retry prompt to `"What IS your class? "`.
+- **`NANNY-RETRY-004` — customize Y/N retry** (`src/nanny.c:626-628`): `_prompt_customization_choice` now sends `"Please answer (Y/N)? "` on invalid entry (was the generic `"Please answer Y or N."`). `_prompt_yes_no` gained an optional `retry_message` kwarg so other Y/N callsites keep their existing wording.
+- **`NANNY-RETRY-005` / `NANNY-RETRY-006` — weapon prompt CRLF** (`src/nanny.c:611-624`, `:638-649`): the weapon-pick prompt and its invalid-entry retry now use ROM `\n\r` line endings before `"Your choice? "` (were bare `\n`).
+
+### Changed
+- **Stricter creation transcript coverage**: `tests/integration/test_nanny_login_parity.py` adds six transcript-parity tests (`NANNY-RETRY-001..006`); full suite now at `4599 passed, 4 skipped` (+6 from prior baseline 4593/4, zero regressions).
+
 ## [2.8.31]
 
 ### Fixed
