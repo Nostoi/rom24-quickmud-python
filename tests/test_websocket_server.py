@@ -159,3 +159,95 @@ def test_websocket_reconnect_does_not_replay_new_character_outfit_flow() -> None
             texts = [payload.get("text", "") for payload in seen]
             assert all("equipped by Mota" not in text for text in texts)
             assert all("Ah! Another mortal trying to find his way" not in text for text in texts)
+
+
+def test_websocket_reconnect_preserves_school_outfit_state() -> None:
+    """Returning players must keep the first-login outfit across save/load."""
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+
+            for text in (
+                "OutfitKeep",
+                "y",
+                "secret1",
+                "secret1",
+                "elf",
+                "m",
+                "mage",
+                "g",
+                "n",
+                "k",
+                "y",
+                "dagger",
+            ):
+                websocket.send_json({"type": "input", "text": text})
+                _, prompt = _receive_until_prompt(websocket)
+
+            websocket.send_json({"type": "input", "text": "score"})
+            seen, prompt = _receive_until_prompt(websocket)
+            assert prompt["session_state"] == "game"
+            score_text = "".join(payload.get("text", "") for payload in seen)
+            created_carry_line = next(
+                line for line in score_text.splitlines() if line.startswith("You are carrying ")
+            )
+
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+
+            websocket.send_json({"type": "input", "text": "OutfitKeep"})
+            _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Password: "
+
+            websocket.send_json({"type": "input", "text": "secret1"})
+            _, prompt = _receive_until_prompt(websocket)
+            assert prompt["session_state"] == "game"
+
+            websocket.send_json({"type": "input", "text": "score"})
+            seen, prompt = _receive_until_prompt(websocket)
+            assert prompt["session_state"] == "game"
+            score_text = "".join(payload.get("text", "") for payload in seen)
+            reloaded_carry_line = next(
+                line for line in score_text.splitlines() if line.startswith("You are carrying ")
+            )
+            assert reloaded_carry_line == created_carry_line
+
+
+def test_websocket_login_emits_board_summary_after_initial_look() -> None:
+    """ROM CON_READ_MOTD ends with `do_board("")` after the initial look."""
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+
+            for text in (
+                "BoardLogin",
+                "y",
+                "secret1",
+                "secret1",
+                "elf",
+                "m",
+                "mage",
+                "g",
+                "n",
+                "k",
+                "y",
+                "dagger",
+            ):
+                websocket.send_json({"type": "input", "text": text})
+                seen, prompt = _receive_until_prompt(websocket, limit=200)
+
+            assert prompt["session_state"] == "game"
+            transcript = "".join(payload.get("text", "") for payload in seen)
+            assert "You current board is" in transcript

@@ -3,14 +3,14 @@ from __future__ import annotations
 import json
 from collections.abc import Iterable
 from dataclasses import dataclass, field, replace
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 from mud.math.c_compat import c_div
 from mud.models.constants import (
+    DEFAULT_PAGE_LINES,
     ActFlag,
     AffectFlag,
     CommFlag,
-    DEFAULT_PAGE_LINES,
     ItemType,
     PlayerFlag,
     Position,
@@ -53,7 +53,7 @@ def _resolve_item_type(raw) -> ItemType | None:
     return None
 
 
-def _object_carry_weight(obj: "Object") -> int:
+def _object_carry_weight(obj: Object) -> int:
     """Compute ROM-style carry weight for an object including nested contents."""
 
     proto = getattr(obj, "prototype", None)
@@ -87,7 +87,7 @@ def _object_carry_weight(obj: "Object") -> int:
     return weight
 
 
-def _object_carry_number(obj: "Object") -> int:
+def _object_carry_number(obj: Object) -> int:
     """Return how many carry slots an object consumes, mirroring ROM `get_obj_number`."""
 
     item_type = _resolve_item_type(getattr(obj, "item_type", None))
@@ -323,10 +323,10 @@ class Character:
     # Relationships
     master: Character | None = None
     leader: Character | None = None
-    pet: "Character | None" = None
+    pet: Character | None = None
     reply: Character | None = None  # ROM: reply target for tells
-    mprog_target: "Character | None" = None  # ROM: mob program target
-    on: "Object | None" = None  # ROM: furniture character is sitting/resting on (affects heal rate)
+    mprog_target: Character | None = None  # ROM: mob program target
+    on: Object | None = None  # ROM: furniture character is sitting/resting on (affects heal rate)
 
     # Skills and training
     practice: int = 0
@@ -1188,7 +1188,7 @@ def from_orm(db_char: DBCharacter) -> Character:
     # in the DB-canonical path — it only restores prototype defaults.
     inventory_state = getattr(db_char, "inventory_state", None)
     if inventory_state and isinstance(inventory_state, list):
-        from mud.db.serializers import _deserialize_object, ObjectSave
+        from mud.db.serializers import ObjectSave, _deserialize_object
         from mud.models.json_io import dataclass_from_dict
         restored_inventory = []
         for obj_dict in inventory_state:
@@ -1203,13 +1203,13 @@ def from_orm(db_char: DBCharacter) -> Character:
 
     equipment_state = getattr(db_char, "equipment_state", None)
     if equipment_state and isinstance(equipment_state, dict):
-        from mud.db.serializers import _deserialize_object, ObjectSave
+        from mud.db.serializers import ObjectSave, _deserialize_object
         from mud.models.json_io import dataclass_from_dict
-        restored_equipment: dict[str, Object] = {}
+        restored_equipment = {}
         for slot, obj_dict in equipment_state.items():
             try:
                 snapshot = dataclass_from_dict(ObjectSave, obj_dict)
-                obj = cast(Object | None, _deserialize_object(snapshot))
+                obj = _deserialize_object(snapshot)
                 if obj is not None:
                     restored_equipment[slot] = obj
             except Exception:
@@ -1226,6 +1226,10 @@ def from_orm(db_char: DBCharacter) -> Character:
                 char.pet = pet
         except Exception:
             pass
+
+    char.carry_number = sum(_object_carry_number(obj) for obj in char.inventory)
+    char.carry_number += sum(_object_carry_number(obj) for obj in char.equipment.values())
+    char._recalculate_carry_weight()
 
     # ROM: admin status is conveyed via trust/level on the Character row,
     # not via a separate account table.  is_admin is set by login flow if needed.

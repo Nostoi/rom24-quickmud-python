@@ -1896,6 +1896,9 @@ async def handle_connection_with_stream(
             if char.room:
                 response = process_command(char, "look")
                 await send_to_char(char, response)
+                await send_to_char(char, "\n")
+                board_response = process_command(char, "board")
+                await send_to_char(char, board_response)
             else:
                 await send_to_char(char, "You are floating in a void...")
         except Exception as exc:
@@ -2149,6 +2152,9 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             if char.room:
                 response = process_command(char, "look")
                 await send_to_char(char, response)
+                await send_to_char(char, "\n")
+                board_response = process_command(char, "board")
+                await send_to_char(char, board_response)
             else:
                 await send_to_char(char, "You are floating in a void...")
         except Exception as exc:

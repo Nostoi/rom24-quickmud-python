@@ -3,7 +3,7 @@
 **Purpose**: Systematic line-by-line audit of ROM 2.4b6 save.c (2,020 lines, 8 functions)  
 **Created**: January 4, 2026  
 **Priority**: P1 (Critical for player persistence and data integrity)  
-**Status**: ✅ **AUDIT COMPLETE - 100% ROM Parity + Integration Tests Passing (8/8 functions, 17/17 tests)**
+**Status**: ✅ **AUDIT COMPLETE — trust-rebuild revalidated live save/load outfit persistence on 2026-05-21**
 
 ---
 
@@ -21,6 +21,11 @@ These functions are CRITICAL for data integrity. Bugs here can cause:
 - Lost equipment/inventory
 - Container nesting failures
 - Pet ownership issues
+
+**Trust-rebuild note (2026-05-21):** a live WebSocket reconnect regression exposed a real load-path bug that prior helper-path coverage missed. The DB row correctly persisted `equipment_state`, but runtime reload silently dropped equipped items because `from_orm()` used a runtime-only `typing.cast(Object | None, ...)` inside the equipment restore loop and then never recomputed carry totals. This is now fixed and covered by:
+
+- `tests/test_websocket_server.py::test_websocket_reconnect_preserves_school_outfit_state`
+- `tests/integration/test_inv008_persistence_coherence.py::test_inv008_equipment_and_carry_state_survive_round_trip`
 
 **ROM C Location**: `src/save.c` (2,020 lines)  
 **QuickMUD Modules**: `mud/persistence/`, `mud/loaders/`, `mud/models/`

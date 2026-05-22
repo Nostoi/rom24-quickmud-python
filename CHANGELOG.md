@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.30]
+
+### Fixed
+- **`save.c` trust-rebuild: reconnect now preserves the school outfit**: `mud/models/character.py` now restores equipped items from DB-canonical `equipment_state` without silently dropping them on load, and recomputes carry totals after inventory/equipment restore so the first `score` after reconnect matches the first `score` after character creation.
+- **`nanny.c` trust-rebuild: login now emits the ROM board summary**: `mud/net/connection.py` now mirrors the tail of `CON_READ_MOTD` by sending a blank line and `board` output after the initial room `look` on both connection paths.
+
+### Changed
+- **Stricter runtime-path persistence coverage**: `tests/test_websocket_server.py` now asserts both reconnect outfit persistence and post-login board summary output on the real WebSocket path, and `tests/integration/test_inv008_persistence_coherence.py` now locks equipment/carry-state save-load round trips directly.
+
 ## [2.8.29]
 
 ### Fixed

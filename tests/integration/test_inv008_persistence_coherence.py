@@ -60,7 +60,7 @@ def _clean():
 # ---------------------------------------------------------------------------
 
 
-def _create_db_char(name: str) -> "Character":
+def _create_db_char(name: str) -> Character:
     """Create a character with a DB row, then load it for modification before save.
 
     Under the DB-canonical path, save_character requires a pre-existing DB row
@@ -171,6 +171,37 @@ def test_inv008_room_placement_survives_round_trip():
     assert loaded is not None
     assert loaded.room is not None
     assert loaded.room.vnum == ROOM_VNUM_SCHOOL
+
+
+def test_inv008_equipment_and_carry_state_survive_round_trip():
+    """INV-008: equipped items must reload and recompute visible carry state."""
+    from mud.account.account_service import get_creation_classes, get_creation_races
+    from mud.commands.inventory import give_school_outfit
+
+    races = get_creation_races()
+    classes = get_creation_classes()
+    elf_race = next(r for r in races if r.name.lower() == "elf")
+    mage_class = next(c for c in classes if c.name.lower() == "mage")
+
+    create_character(
+        None,
+        "Outfitstate",
+        race=elf_race,
+        class_type=mage_class,
+        sex=1,
+        hometown_vnum=ROOM_VNUM_SCHOOL,
+    )
+    loaded = load_character("Outfitstate")
+    assert loaded is not None
+    assert give_school_outfit(loaded) is True
+    save_character(loaded)
+
+    reloaded = load_character("Outfitstate")
+    assert reloaded is not None
+    assert sorted(reloaded.equipment.keys()) == ["body", "light", "shield", "wield"]
+    assert len(reloaded.inventory) == 1
+    assert reloaded.carry_number == 5
+    assert reloaded.carry_weight == 120
 
 
 def test_inv008_db_canonical_is_sole_path():
