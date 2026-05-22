@@ -227,6 +227,78 @@ def test_websocket_reconnect_preserves_school_outfit_state() -> None:
             assert reloaded_carry_line == created_carry_line
 
 
+def test_websocket_reconnect_score_matches_rom_act_info_lines() -> None:
+    """NANNY-RECONNECT-001 — `score` on first command after reconnect matches ROM transcript.
+
+    ROM C: src/act_info.c:1477-1507 (do_score). After reset_char on login
+    (NANNY-014), an elf mage should report Race/Sex/Class as
+    'Race: elf  Sex: male  Class: mage' and have hit/mana/move at full
+    (hp == max_hit etc.).
+    """
+    import re
+
+    with TestClient(app) as client:
+        # Create elf mage and disconnect.
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+            for text in ("Scorer", "y", "secret1", "secret1", "elf", "m", "mage", "g", "n", "dagger"):
+                websocket.send_json({"type": "input", "text": text})
+                _, prompt = _receive_until_prompt(websocket, limit=200)
+            _, prompt = _continue_motd_prompt(websocket, prompt)
+            assert prompt["session_state"] == "game"
+
+        # Reconnect, log in with password, then issue `score`.
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+            websocket.send_json({"type": "input", "text": "Scorer"})
+            _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Password: "
+            websocket.send_json({"type": "input", "text": "secret1"})
+            _, prompt = _receive_until_prompt(websocket, limit=200)
+            _, prompt = _continue_motd_prompt(websocket, prompt)
+            assert prompt["session_state"] == "game"
+
+            websocket.send_json({"type": "input", "text": "score"})
+            seen, prompt = _receive_until_prompt(websocket, limit=200)
+            assert prompt["session_state"] == "game"
+            transcript = "".join(payload.get("text", "") for payload in seen)
+
+        # ROM src/act_info.c:1482-1488 — title line.
+        # Mage level-1 title from src/const.c title_table[0][1] = "Apprentice of Magic".
+        # ROM emits "You are <name><title>, level N, ..." where title already has a leading space.
+        title_match = re.search(
+            r"You are Scorer the Apprentice of Magic, level 1, \d+ years old \(\d+ hours\)\.",
+            transcript,
+        )
+        assert title_match, f"title line not ROM-exact; transcript:\n{transcript}"
+
+        # ROM src/act_info.c:1496-1500 — race/sex/class line.
+        # race_table[2].name == "elf"; class_table[0].name == "mage"; sex==1 == "male".
+        assert "Race: elf  Sex: male  Class: mage" in transcript, (
+            f"race/sex/class line not ROM-exact; transcript:\n{transcript}"
+        )
+
+        # ROM src/act_info.c:1503-1507 — hit/mana/move line; after reset_char hp==max_hit etc.
+        resources_match = re.search(
+            r"You have (\d+)/(\d+) hit, (\d+)/(\d+) mana, (\d+)/(\d+) movement\.",
+            transcript,
+        )
+        assert resources_match, f"hit/mana/move line not ROM-exact; transcript:\n{transcript}"
+        hit, max_hit, mana, max_mana, move, max_move = (int(x) for x in resources_match.groups())
+        assert (hit, mana, move) == (max_hit, max_mana, max_move), (
+            f"resources not at max after reconnect+reset_char: "
+            f"hit={hit}/{max_hit} mana={mana}/{max_mana} move={move}/{max_move}"
+        )
+
+
 def test_websocket_login_emits_board_summary_after_initial_look() -> None:
     """ROM CON_READ_MOTD ends with `do_board("")` after the initial look."""
     with TestClient(app) as client:

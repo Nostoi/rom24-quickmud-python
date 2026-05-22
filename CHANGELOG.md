@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **`NANNY-RECONNECT-001` — `score` after reconnect transcript parity** (`src/act_info.c:1477-1507`, `src/nanny.c:760`): added a websocket-runtime-path regression in `tests/test_websocket_server.py::test_websocket_reconnect_score_matches_rom_act_info_lines` that asserts ROM-exact title (`"You are <name> the Apprentice of Magic, level 1, ..."`), race/sex/class line (`"Race: elf  Sex: male  Class: mage"`), and hit/mana/move at full after `reset_char` on login. Verified the live runtime path; no implementation drift found.
+
 ## [2.8.32]
 
 ### Fixed
