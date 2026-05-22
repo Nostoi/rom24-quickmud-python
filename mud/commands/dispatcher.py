@@ -989,8 +989,21 @@ def process_command(char: Character, input_str: str) -> str:
         snooper_messages = getattr(snooper, "messages", None)
         if snooper_messages is not None:
             snooper_messages.append(f"% {trimmed.rstrip()}")
-    core = trimmed.rstrip()
-    trailing_ws = trimmed[len(core) :]
+    # mirroring ROM src/interp.c — interpret() only strips line-ending
+    # whitespace, not visible trailing spaces, so commands like
+    # `prompt MYTAG> ` keep the trailing space the player typed.
+    # (PROMPT-CMD-001).
+    core = trimmed.rstrip("\r\n")
+    # Recover the original visible-trailing-whitespace tail from `trimmed`
+    # for log composition. Alias expansion via `_one_argument` strips
+    # trailing whitespace by ROM design, so the per-command log line
+    # would otherwise lose what the player actually typed. This
+    # preserves the existing Python log convention
+    # (`tests/test_logging_admin.py::test_logging_logs_alias_expansion`)
+    # while letting `core`/`arg_str` keep the trailing visible bytes
+    # for handlers like `do_prompt` that need them.
+    fully_stripped = trimmed.rstrip()
+    trailing_ws = trimmed[len(fully_stripped) :]
     prefix_warning = ""
     prefix_text = (getattr(char, "prefix", "") or "").strip()
     prefixed_applied = False

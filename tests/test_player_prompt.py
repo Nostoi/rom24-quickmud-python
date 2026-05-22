@@ -80,4 +80,6 @@ class TestPromptPCDataRequirement:
 
         output = do_prompt(player, "<%h hp>")
 
-        assert output == "Prompt set."
+        # mirroring ROM src/act_info.c:953-954 — success reply echoes
+        # the stored template (PROMPT-CMD-002).
+        assert output == "Prompt set to <%h hp>"

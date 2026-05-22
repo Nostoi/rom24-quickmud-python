@@ -110,7 +110,9 @@ def test_nanny_saveload_002_prompt_template_round_trips_through_reconnect() -> N
         with client.websocket_connect("/ws") as websocket:
             _create_elf_mage(websocket, "Promter")
             transcript, _ = _send_command(websocket, f"prompt {custom_prompt}")
-            assert "Prompt set." in transcript, (
+            # mirroring ROM src/act_info.c:953-954 — success reply echoes
+            # the stored template (PROMPT-CMD-002).
+            assert f"Prompt set to {custom_prompt}" in transcript, (
                 f"do_prompt did not confirm set:\n{transcript}"
             )
 

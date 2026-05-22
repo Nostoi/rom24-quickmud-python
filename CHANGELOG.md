@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.36]
+
+### Fixed
+- **`PROMPT-CMD-001` — `do_prompt` preserves trailing whitespace in custom templates** (`src/act_info.c:944`): the dispatcher (`mud/commands/dispatcher.py:process_command`) used `core = trimmed.rstrip()` which stripped visible trailing whitespace from every command before reaching its handler. ROM `src/interp.c:interpret` only strips line-ending whitespace, leaving visible trailing whitespace intact. Fix: dispatcher now uses `core = trimmed.rstrip("\r\n")` and computes log-line trailing whitespace from `trimmed.rstrip()` separately so the existing per-command log convention (`tests/test_logging_admin.py::test_logging_logs_alias_expansion`) is preserved. Also removed `arg = args.strip()` in `mud/commands/auto_settings.py:do_prompt` so the handler now uses the raw arg (matching ROM's raw `argument` usage at `src/act_info.c:944`). Now `prompt MYTAG> ` correctly stores `"MYTAG> "` and `bust_a_prompt` renders the trailing space.
+- **`PROMPT-CMD-002` — `do_prompt` success reply echoes the stored template** (`src/act_info.c:953-954`): Python previously emitted the truncated `"Prompt set."`; ROM emits `"Prompt set to %s\n\r"` with the stored template. Fixed both the `"all"` branch and the custom-template branch in `mud/commands/auto_settings.py:do_prompt`. Existing helper tests (`tests/test_player_prompt.py`) and the live-websocket round-trip in `tests/integration/test_nanny_saveload_runtime_path.py` updated to the ROM-exact wording.
+
+### Notes
+
+- New enforcement tests in `tests/integration/test_prompt_cmd_parity.py` lock in both gaps on the live websocket path.
+- Full suite at `4608 passed, 4 skipped` (+2 vs 2.8.35 baseline 4606/4; zero regressions). Surfaced and fixed in a single session after being flagged in 2.8.35's NANNY-SAVELOAD-002 probe.
+
 ## [2.8.35]
 
 ### Changed

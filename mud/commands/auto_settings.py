@@ -399,7 +399,13 @@ def do_prompt(char: Character, args: str) -> str:
     - prompt all     - Set default full prompt
     - prompt <str>   - Set custom prompt string
     """
-    arg = (args or "").strip()
+    # mirroring ROM src/act_info.c:919-955 — `do_prompt` uses the raw
+    # `argument` string after interpret() has skipped leading whitespace,
+    # preserving trailing whitespace so `prompt MYTAG> ` stores
+    # `"MYTAG> "` (PROMPT-CMD-001). The dispatcher (`process_command`
+    # in mud/commands/dispatcher.py) provides args with leading
+    # whitespace already removed via `_one_argument`.
+    arg = args or ""
 
     if not arg:
         # Toggle prompt
@@ -416,12 +422,14 @@ def do_prompt(char: Character, args: str) -> str:
         # not pcdata->prompt (which in ROM is the colour triplet).
         char.prompt = "<%hhp %mm %vmv> "
         char.comm = getattr(char, "comm", 0) | CommFlag.PROMPT
-        return "Prompt set."
+        # mirroring ROM src/act_info.c:953-954 — echo the stored template.
+        return f"Prompt set to {char.prompt}"
 
     # mirroring ROM src/act_info.c:951-952 — ch->prompt = str_dup(buf)
     char.prompt = arg
     char.comm = getattr(char, "comm", 0) | CommFlag.PROMPT
-    return "Prompt set."
+    # mirroring ROM src/act_info.c:953-954 — echo the stored template.
+    return f"Prompt set to {char.prompt}"
 
 
 def do_telnetga(char: Character, args: str) -> str:
