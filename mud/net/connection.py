@@ -962,7 +962,9 @@ async def _read_player_command(conn: TelnetStream, session: Session) -> str | No
         return command
 
 
-async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> bool | None:
+async def _prompt_yes_no(
+    conn: TelnetStream, prompt: str, *, retry_message: str = "Please answer Y or N."
+) -> bool | None:
     while True:
         response = await _prompt(conn, prompt)
         if response is None:
@@ -972,7 +974,7 @@ async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> bool | None:
             return True
         if lowered.startswith("n"):
             return False
-        await _send_line(conn, "Please answer Y or N.")
+        await _send_line(conn, retry_message)
 
 
 async def _disconnect_session(session: Session) -> Character | None:
@@ -1186,7 +1188,8 @@ async def _run_character_login(
 
 async def _prompt_for_race(conn: TelnetStream, help_character: object | None = None) -> PcRaceType | None:
     races = get_creation_races()
-    race_listing = "The following races are available:\n  " + " ".join(race.name for race in races) + " "
+    # mirroring ROM src/nanny.c:461 — "The following races are available:\n\r  "
+    race_listing = "The following races are available:\n\r  " + " ".join(race.name for race in races) + " "
     await _send_line(conn, race_listing)
     helper = help_character or SimpleNamespace(name="", trust=0, level=0, is_npc=False, room=None)
     prompt = "What is your race (help for more information)? "
@@ -1211,7 +1214,8 @@ async def _prompt_for_race(conn: TelnetStream, help_character: object | None = N
         race = lookup_creation_race(stripped)
         if race is not None:
             return race
-        await _send_line(conn, "That's not a valid race.")
+        # mirroring ROM src/nanny.c:460-471 — "That is not a valid race." then listing + retry prompt
+        await _send_line(conn, "That is not a valid race.")
         await _send_line(conn, race_listing)
         prompt = "What is your race? (help for more information) "
 
@@ -1241,7 +1245,9 @@ async def _prompt_for_class(conn: TelnetStream) -> ClassType | None:
         class_type = lookup_creation_class(response)
         if class_type is not None:
             return class_type
-        await _send_line(conn, "That's not a valid class.")
+        # mirroring ROM src/nanny.c:538-539 — "That's not a class." + "What IS your class? "
+        await _send_line(conn, "That's not a class.")
+        prompt = "What IS your class? "
 
 
 async def _prompt_for_alignment(conn: TelnetStream) -> int | None:
@@ -1268,7 +1274,8 @@ async def _prompt_customization_choice(conn: TelnetStream) -> bool | None:
         conn,
         "Customization takes time, but allows a wider range of skills and abilities.",
     )
-    return await _prompt_yes_no(conn, "Customize (Y/N)? ")
+    # mirroring ROM src/nanny.c:582-628 — Customize prompt with ROM-exact "Please answer (Y/N)? " retry
+    return await _prompt_yes_no(conn, "Customize (Y/N)? ", retry_message="Please answer (Y/N)? ")
 
 
 async def _run_customization_menu(
@@ -1564,7 +1571,8 @@ async def _prompt_for_hometown(conn: TelnetStream) -> int | None:
 async def _prompt_for_weapon(conn: TelnetStream, class_type: ClassType) -> int | None:
     choices = get_weapon_choices(class_type)
     normalized = {choice.lower(): choice for choice in choices}
-    prompt = "Please pick a weapon from the following choices:\n" + " ".join(choices) + " \nYour choice? "
+    # mirroring ROM src/nanny.c:612-622 — weapon prompt uses \n\r line endings
+    prompt = "Please pick a weapon from the following choices:\n\r" + " ".join(choices) + " \n\rYour choice? "
     while True:
         response = await _prompt(conn, prompt)
         if response is None:
@@ -1574,8 +1582,9 @@ async def _prompt_for_weapon(conn: TelnetStream, class_type: ClassType) -> int |
             vnum = lookup_weapon_choice(key)
             if vnum is not None:
                 return vnum
+        # mirroring ROM src/nanny.c:638-649 — invalid retry also uses \n\r
         await _send_line(conn, "That's not a valid selection. Choices are:")
-        prompt = " ".join(choices) + " \nYour choice? "
+        prompt = " ".join(choices) + " \n\rYour choice? "
 
 
 async def _run_character_creation_flow(

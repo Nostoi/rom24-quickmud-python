@@ -406,8 +406,8 @@ def test_immortal_without_saved_room_routes_to_chat_room():
     A returning immortal whose saved room can't be loaded should land in
     the immortal chat room (1200), not the temple (3001).
     """
-    from mud.net.connection import default_login_room_vnum
     from mud.models.constants import ROOM_VNUM_CHAT, ROOM_VNUM_TEMPLE
+    from mud.net.connection import default_login_room_vnum
 
     immortal = Character(name="ImmortalSouL", level=60)
     immortal.is_admin = True
@@ -632,3 +632,357 @@ def test_new_password_rejects_tilde(monkeypatch):
     ]
     # mirrors ROM src/nanny.c:396-405 — '~' rejected with retry
     assert any("New password not acceptable" in m for m in sent)
+
+
+# ---------------------------------------------------------------------------
+# NANNY-RETRY-001 — Race invalid wording (src/nanny.c:460-471)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.p1
+def test_race_invalid_retry_wording(monkeypatch):
+    """NANNY-RETRY-001 — invalid race sends ROM-exact message then re-prompts.
+
+    ROM C: src/nanny.c:460-471
+        send_to_desc("That is not a valid race.\\n\\r", d);
+        send_to_desc("The following races are available:\\n\\r  ", d);
+        <loop: write name + space>
+        write_to_buffer(d, "\\n\\r", 0);
+        send_to_desc("What is your race? (help for more information) ", d);
+
+    Observable transcript after one bad entry:
+      - error message: "That is not a valid race." (NOT "That's")
+      - race listing starts with "The following races are available:\n\r  "
+      - re-prompt wording: "What is your race? (help for more information) "
+        (note: parentheses, comma-space form, differs from help-branch)
+    """
+    import asyncio
+
+    from mud.account.account_service import get_creation_races
+    from mud.net import connection as conn_mod
+
+    sent_lines: list[str] = []
+    prompts: list[str] = []
+    # First input: invalid; second: valid first race name
+    races = get_creation_races()
+    valid_name = races[0].name
+    answers = iter(["notarace", valid_name])
+
+    async def fake_prompt(_conn, label, **_kw):
+        prompts.append(label)
+        return next(iter([next(answers)]))
+
+    async def fake_send_line(_conn, msg):
+        sent_lines.append(msg)
+
+    async def fake_send(_conn, msg):
+        pass
+
+    monkeypatch.setattr(conn_mod, "_prompt", fake_prompt)
+    monkeypatch.setattr(conn_mod, "_send_line", fake_send_line)
+    monkeypatch.setattr(conn_mod, "_send", fake_send)
+
+    async def run():
+        return await conn_mod._prompt_for_race(object())  # type: ignore[arg-type]
+
+    result = asyncio.run(run())
+    assert result is not None
+
+    # mirrors ROM src/nanny.c:460 — "That is not a valid race." (not "That's")
+    assert any(m == "That is not a valid race." for m in sent_lines), (
+        f"Expected 'That is not a valid race.' in sent_lines={sent_lines!r}"
+    )
+
+    # mirrors ROM src/nanny.c:461 — listing header is "The following races are available:\n\r  "
+    # _send_line wraps with \n\r so the stored string must start with the correct prefix
+    race_listing_msgs = [m for m in sent_lines if "The following races are available" in m]
+    assert race_listing_msgs, f"No race listing in sent_lines={sent_lines!r}"
+    listing = race_listing_msgs[0]
+    assert listing.startswith("The following races are available:\n\r  "), (
+        f"Listing must start with 'The following races are available:\\n\\r  ', got {listing!r}"
+    )
+
+    # mirrors ROM src/nanny.c:471 — invalid-entry re-prompt (different from help-branch)
+    assert "What is your race? (help for more information) " in prompts, (
+        f"Expected invalid-entry re-prompt in prompts={prompts!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# NANNY-RETRY-002 — Race help branch re-prompt wording (src/nanny.c:444-453)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.p1
+def test_race_help_branch_reprompt_wording(monkeypatch):
+    """NANNY-RETRY-002 — after 'help', re-prompt uses help-branch form.
+
+    ROM C: src/nanny.c:451-452
+        send_to_desc("What is your race (help for more information)? ", d);
+
+    Note the different wording vs the invalid-entry prompt:
+      help branch:    "What is your race (help for more information)? "
+      invalid branch: "What is your race? (help for more information) "
+    """
+    import asyncio
+
+    from mud.account.account_service import get_creation_races
+    from mud.net import connection as conn_mod
+
+    prompts: list[str] = []
+    races = get_creation_races()
+    valid_name = races[0].name
+    answers = iter(["help", valid_name])
+
+    async def fake_prompt(_conn, label, **_kw):
+        prompts.append(label)
+        val = next(answers)
+        return val
+
+    async def fake_send_line(_conn, msg):
+        pass
+
+    async def fake_send(_conn, msg):
+        pass
+
+    monkeypatch.setattr(conn_mod, "_prompt", fake_prompt)
+    monkeypatch.setattr(conn_mod, "_send_line", fake_send_line)
+    monkeypatch.setattr(conn_mod, "_send", fake_send)
+
+    async def run():
+        return await conn_mod._prompt_for_race(object())  # type: ignore[arg-type]
+
+    result = asyncio.run(run())
+    assert result is not None
+
+    # mirrors ROM src/nanny.c:451-452 — help branch keeps original prompt form
+    assert "What is your race (help for more information)? " in prompts, (
+        f"Expected help-branch re-prompt in prompts={prompts!r}"
+    )
+    # must NOT have switched to the invalid-entry prompt form after help
+    assert prompts[-1] == "What is your race (help for more information)? ", (
+        f"Last prompt should still be help-branch form, got {prompts!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# NANNY-RETRY-003 — Class invalid wording (src/nanny.c:538-539)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.p1
+def test_class_invalid_retry_wording(monkeypatch):
+    """NANNY-RETRY-003 — invalid class sends ROM-exact wording.
+
+    ROM C: src/nanny.c:538-539
+        send_to_desc("That's not a class.\\n\\rWhat IS your class? ", d);
+
+    Two issues to check:
+      1. Error message is "That's not a class." (NOT "That's not a valid class.")
+      2. After the error the prompt changes to "What IS your class? " (capital IS)
+    """
+    import asyncio
+
+    from mud.account.account_service import get_creation_classes
+    from mud.net import connection as conn_mod
+
+    sent_lines: list[str] = []
+    prompts: list[str] = []
+    classes = get_creation_classes()
+    valid_name = classes[0].name
+    answers = iter(["notaclass", valid_name])
+
+    async def fake_prompt(_conn, label, **_kw):
+        prompts.append(label)
+        return next(answers)
+
+    async def fake_send_line(_conn, msg):
+        sent_lines.append(msg)
+
+    monkeypatch.setattr(conn_mod, "_prompt", fake_prompt)
+    monkeypatch.setattr(conn_mod, "_send_line", fake_send_line)
+
+    async def run():
+        return await conn_mod._prompt_for_class(object())  # type: ignore[arg-type]
+
+    result = asyncio.run(run())
+    assert result is not None
+
+    # mirrors ROM src/nanny.c:538 — "That's not a class." (no "valid")
+    assert any(m == "That's not a class." for m in sent_lines), (
+        f"Expected \"That's not a class.\" in sent_lines={sent_lines!r}"
+    )
+    # mirrors ROM src/nanny.c:539 — re-prompt with capital IS
+    assert "What IS your class? " in prompts, (
+        f"Expected 'What IS your class? ' in prompts={prompts!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# NANNY-RETRY-004 — Customize invalid wording (src/nanny.c:626-628)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.p1
+def test_customize_invalid_reprompt_wording(monkeypatch):
+    """NANNY-RETRY-004 — invalid customize entry re-prompts with ROM wording.
+
+    ROM C: src/nanny.c:626-628
+        default:
+            write_to_buffer(d, "Please answer (Y/N)? ", 0);
+            return;
+
+    Python's _prompt_yes_no sends "Please answer Y or N." but the
+    customize prompt must send "Please answer (Y/N)? " to match ROM.
+
+    This tests the CUSTOMIZE path only — not _prompt_ansi_preference or
+    any other Y/N retry site, which have their own separate ROM wording.
+    """
+    import asyncio
+
+    from mud.net import connection as conn_mod
+
+    sent_lines: list[str] = []
+    prompts: list[str] = []
+    answers = iter(["x", "n"])  # invalid, then valid
+
+    async def fake_prompt(_conn, label, **_kw):
+        prompts.append(label)
+        return next(answers)
+
+    async def fake_send_line(_conn, msg):
+        sent_lines.append(msg)
+
+    monkeypatch.setattr(conn_mod, "_prompt", fake_prompt)
+    monkeypatch.setattr(conn_mod, "_send_line", fake_send_line)
+
+    async def run():
+        return await conn_mod._prompt_customization_choice(object())  # type: ignore[arg-type]
+
+    result = asyncio.run(run())
+    assert result is False  # 'n' → no customization
+
+    # mirrors ROM src/nanny.c:627 — "Please answer (Y/N)? " NOT "Please answer Y or N."
+    assert any(m == "Please answer (Y/N)? " for m in sent_lines), (
+        f"Expected 'Please answer (Y/N)? ' in sent_lines={sent_lines!r}"
+    )
+    # must NOT send the non-ROM wording
+    assert not any("Please answer Y or N" in m for m in sent_lines), (
+        f"Must not send 'Please answer Y or N' on customize path, got {sent_lines!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# NANNY-RETRY-005 — Weapon prompt newline format (src/nanny.c:611-624)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.p1
+def test_weapon_prompt_uses_crlf(monkeypatch):
+    r"""NANNY-RETRY-005 — weapon pick prompt uses \n\r (ROM) not bare \n.
+
+    ROM C: src/nanny.c:612-623 (CON_DEFAULT_CHOICE 'N' branch)
+        write_to_buffer(d, "\\n\\r", 2);
+        write_to_buffer(d, "Please pick a weapon from the following choices:\\n\\r", 0);
+        <loop: name + space>
+        strcat(buf, "\\n\\rYour choice? ");
+        write_to_buffer(d, buf, 0);
+
+    The weapon prompt must use \\n\\r (telnet line ending) not bare \\n.
+    Specifically the separator before "Your choice?" must be "\\n\\r".
+    """
+    import asyncio
+
+    from mud.account.account_service import get_creation_classes
+    from mud.net import connection as conn_mod
+
+    prompts: list[str] = []
+    sent_lines: list[str] = []
+    classes = get_creation_classes()
+    class_type = classes[0]
+    answers = iter(["sword"])  # first weapon name, assume valid
+
+    async def fake_prompt(_conn, label, **_kw):
+        prompts.append(label)
+        # Return first word in the weapon list as the answer
+        try:
+            return next(answers)
+        except StopIteration:
+            return None
+
+    async def fake_send_line(_conn, msg):
+        sent_lines.append(msg)
+
+    monkeypatch.setattr(conn_mod, "_prompt", fake_prompt)
+    monkeypatch.setattr(conn_mod, "_send_line", fake_send_line)
+
+    async def run():
+        return await conn_mod._prompt_for_weapon(object(), class_type)  # type: ignore[arg-type]
+
+    asyncio.run(run())
+
+    # mirrors ROM src/nanny.c:622 — \n\r before "Your choice? " (not bare \n)
+    initial_prompts = [p for p in prompts if "Your choice?" in p]
+    assert initial_prompts, f"Expected a prompt containing 'Your choice?', got {prompts!r}"
+    assert all("\n\rYour choice? " in p for p in initial_prompts), (
+        f"Weapon prompt must use \\n\\r before 'Your choice?', got {initial_prompts!r}"
+    )
+
+
+# ---------------------------------------------------------------------------
+# NANNY-RETRY-006 — Weapon invalid newline format (src/nanny.c:638-649)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.p1
+def test_weapon_invalid_uses_crlf(monkeypatch):
+    r"""NANNY-RETRY-006 — weapon invalid retry uses \n\r (ROM) not bare \n.
+
+    ROM C: src/nanny.c:638-649 (CON_PICK_WEAPON invalid branch)
+        write_to_buffer(d, "\\n\\r", 2);
+        write_to_buffer(d, "That's not a valid selection. Choices are:\\n\\r", 0);
+        <loop: name + space>
+        strcat(buf, "\\n\\rYour choice? ");
+        write_to_buffer(d, buf, 0);
+
+    After an invalid weapon entry, the retry prompt must also use \\n\\r.
+    """
+    import asyncio
+
+    from mud.account.account_service import get_creation_classes, get_weapon_choices
+    from mud.net import connection as conn_mod
+
+    prompts: list[str] = []
+    sent_lines: list[str] = []
+    classes = get_creation_classes()
+    class_type = classes[0]
+    weapon_choices = get_weapon_choices(class_type)
+    valid_weapon = weapon_choices[0].lower() if weapon_choices else "sword"
+    answers = iter(["notaweapon", valid_weapon])
+
+    async def fake_prompt(_conn, label, **_kw):
+        prompts.append(label)
+        try:
+            return next(answers)
+        except StopIteration:
+            return None
+
+    async def fake_send_line(_conn, msg):
+        sent_lines.append(msg)
+
+    monkeypatch.setattr(conn_mod, "_prompt", fake_prompt)
+    monkeypatch.setattr(conn_mod, "_send_line", fake_send_line)
+
+    async def run():
+        return await conn_mod._prompt_for_weapon(object(), class_type)  # type: ignore[arg-type]
+
+    asyncio.run(run())
+
+    # mirrors ROM src/nanny.c:648 — retry prompt must use \n\r before "Your choice? "
+    retry_prompts = [p for p in prompts if "Your choice?" in p]
+    assert len(retry_prompts) >= 2, (
+        f"Expected at least 2 'Your choice?' prompts (initial + retry), got {prompts!r}"
+    )
+    assert all("\n\rYour choice? " in p for p in retry_prompts), (
+        f"Weapon retry prompt must use \\n\\r before 'Your choice?', got {retry_prompts!r}"
+    )

@@ -577,8 +577,9 @@ def test_creation_race_help(monkeypatch: pytest.MonkeyPatch) -> None:
         "What is your race (help for more information)? ",
         "What is your race (help for more information)? ",
     ]
+    # mirrors ROM src/nanny.c:461 — listing prefix is "The following races are available:\n\r  "
     assert sent_lines[:1] == [
-        "The following races are available:\n  " + " ".join(r.name for r in get_creation_races()) + " ",
+        "The following races are available:\n\r  " + " ".join(r.name for r in get_creation_races()) + " ",
     ]
     assert sent_pages == ["Race overview text\r\n", "Human details\r\n"]
     assert help_calls == [(helper, "race help"), (helper, "human")]
@@ -601,8 +602,8 @@ def test_creation_prompts_include_alignment_and_groups(monkeypatch: pytest.Monke
         except StopIteration:
             return "done"
 
-    async def fake_prompt_yes_no(conn, prompt):
-        del conn
+    async def fake_prompt_yes_no(conn, prompt, *, retry_message: str = "Please answer Y or N."):
+        del conn, retry_message
         yes_no_prompts.append(prompt)
         return True
 
