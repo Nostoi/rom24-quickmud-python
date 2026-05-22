@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.28]
+
+### Fixed
+- **`act_info.c` trust-rebuild: `do_look` dark-room and container-detail parity**: `mud/world/look.py` now mirrors ROM dark-room output more closely by appending raw visible character lines without a Python-only `Characters:` label, and `look in` now uses the ROM drink-container wording with liquid color plus the correct `CONT_CLOSED` bit for closed containers.
+- **`check_blind()` / `do_look` blind-gate parity**: `mud/rom_api.py` now rejects `AFF_BLIND` correctly, and `mud/world/look.py` now returns the ROM blind message `"You can't see a thing!"` instead of falling through to normal room output.
+
+### Changed
+- **Stricter `do_look` regression coverage**: `tests/integration/test_do_look_command.py` now includes exact ROM-style assertions for dark-room visible occupants, drink-container liquid wording, closed-container gating, and blindness; `tests/test_rom_api.py` now locks the blind helper contract directly.
+
 ## [2.8.27]
 
 ### Fixed

@@ -7,8 +7,6 @@ to underlying Python implementations.
 
 from __future__ import annotations
 
-import pytest
-
 
 def test_board_lookup_finds_existing_board():
     """Test board_lookup wrapper finds board by name."""
@@ -93,6 +91,21 @@ def test_check_blind_returns_visibility(movable_char_factory):
     can_see = check_blind(char)
     assert isinstance(can_see, bool)
     assert can_see is True  # Normal character can see
+
+
+def test_check_blind_returns_false_for_blind_character(movable_char_factory):
+    """ROM check_blind must reject AFF_BLIND characters."""
+    from mud.models.constants import AffectFlag
+    from mud.rom_api import check_blind
+    from mud.world.world_state import initialize_world
+
+    initialize_world(use_json=True)
+    char = movable_char_factory("BlindChar", 3001)
+    char.affected_by = int(AffectFlag.BLIND)
+
+    can_see = check_blind(char)
+
+    assert can_see is False
 
 
 def test_mult_argument_parses_quantity():

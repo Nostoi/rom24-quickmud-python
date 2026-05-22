@@ -2,7 +2,7 @@
 
 **Purpose**: Systematic line-by-line audit of ROM 2.4b6 act_info.c (2,944 lines, 60 functions)  
 **Created**: January 5, 2026  
-**Updated**: May 21, 2026 14:35 CST (legacy structural audit complete; trust-rebuild revalidation in progress)  
+**Updated**: May 21, 2026 18:10 CST (legacy structural audit complete; trust-rebuild revalidation in progress)  
 **Status**: ✅ **Structurally complete; ROM-exact trust rebuild in progress**  
 **Priority**: P1 - Core Information Display Commands
 
@@ -47,6 +47,13 @@ Trust-rebuild progress now started:
 - `do_inventory`: exact combined-layout regression added
 - `do_where`: live descriptor-path private-room regression added; ROM room-owner
   / private-room gate restored
+- `do_look`: trust-rebuild now covers:
+  - autoexit-only exits line behavior
+  - raw room contents / occupant line rendering
+  - dark-room visible-occupant formatting
+  - drink-container liquid-color wording
+  - correct `CONT_CLOSED` handling for `look in`
+  - blind-gate message parity via `check_blind()`
 
 See:
 - `/Users/markjedrzejczyk/dev/projects/rom24-quickmud-python/docs/superpowers/plans/2026-05-21-parity-trust-rebuild-reaudit.md`

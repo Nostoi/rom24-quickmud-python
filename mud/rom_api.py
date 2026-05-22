@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from mud.models.board import Board
     from mud.models.character import Character
     from mud.models.note import Note
+    from mud.models.object import Object
 
 
 # =============================================================================
@@ -211,8 +212,9 @@ def show_obj_values(obj) -> str:
     Returns:
         Formatted string showing object values
     """
-    from mud.commands.build import _oedit_show
     from io import StringIO
+
+    from mud.commands.build import _oedit_show
 
     output = StringIO()
     _oedit_show(output, obj.prototype if hasattr(obj, "prototype") else obj)
@@ -273,9 +275,20 @@ def check_blind(char: Character) -> bool:
     Returns:
         True if character can see, False if blind
     """
-    from mud.world.vision import can_see_character
+    from mud.models.constants import AffectFlag
 
-    return can_see_character(char, char)
+    checker = getattr(char, "has_affect", None)
+    if callable(checker):
+        try:
+            return not bool(checker(AffectFlag.BLIND))
+        except Exception:
+            pass
+
+    affected = getattr(char, "affected_by", 0)
+    try:
+        return not bool(int(affected) & int(AffectFlag.BLIND))
+    except Exception:
+        return True
 
 
 def substitute_alias(char: Character, input_text: str) -> str:
@@ -508,7 +521,7 @@ def show_help() -> str:
         Help text for OLC commands
     """
     return """OLC Editor Commands:
-    
+
     show     - Display current object/room/mob
     create   - Create new item
     edit     - Edit existing item
@@ -516,7 +529,7 @@ def show_help() -> str:
     list     - List items
     save     - Save changes to disk
     done     - Exit editor
-    
+
     For specific editor help, use: help aedit, help redit, help oedit, help medit
     """
 

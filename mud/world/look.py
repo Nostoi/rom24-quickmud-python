@@ -4,6 +4,7 @@ from mud.models.character import Character
 from mud.models.constants import Direction, Position
 from mud.world.vision import can_see_character, describe_character
 
+
 def _ed_fields(ed) -> tuple[str | None, str | None]:
     """Return (keyword, description) for an EXTRA_DESCR entry.
 
@@ -38,7 +39,7 @@ def look(char: Character, args: str = "") -> str:
     - look <direction> (peek through exit)
     """
     from mud.world.char_find import get_char_room
-    from mud.world.obj_find import get_obj_here, get_obj_carry
+    from mud.world.obj_find import get_obj_carry, get_obj_here
 
     room = char.room
     if not room:
@@ -55,7 +56,7 @@ def look(char: Character, args: str = "") -> str:
     from mud.rom_api import check_blind
 
     if not check_blind(char):
-        return "You can't see anything!"
+        return "You can't see a thing!"
 
     # Check dark room - ROM src/act_info.c lines 1068-1074
     from mud.world.vision import room_is_dark
@@ -64,20 +65,13 @@ def look(char: Character, args: str = "") -> str:
     # TODO: Add PLR_HOLYLIGHT check when PlayerFlag is accessible
     if not is_npc and room_is_dark(room):
         lines = ["It is pitch black ..."]
-        # Still show characters in dark rooms (infravision equivalent)
-        visible_characters: list[str] = []
         for occupant in room.people:
             if occupant is char:
                 continue
             if not can_see_character(char, occupant):
                 continue
-            visible_characters.append(describe_character(char, occupant))
-        if visible_characters:
-            lines.append("Characters: " + ", ".join(visible_characters))
+            lines.append(describe_character(char, occupant))
         return "\n".join(lines)
-
-    if not check_blind(char):
-        return "You can't see anything!"
 
     # Parse arguments
     args = args.strip()
@@ -165,8 +159,8 @@ def _look_room(char: Character, room) -> str:
 
     # AUTOEXIT integration - ROM src/act_info.c lines 1107-1111
     # Auto-show exits if PLR_AUTOEXIT is set
-    from mud.models.constants import PlayerFlag
     from mud.commands.inspection import do_exits
+    from mud.models.constants import PlayerFlag
 
     if not getattr(char, "is_npc", False) and (act_flags & PlayerFlag.AUTOEXIT):
         # Call do_exits with "auto" to get concise exit display
@@ -294,8 +288,8 @@ def _look_obj(char: Character, obj) -> str:
 
 def _look_in(char: Character, args: str) -> str:
     """Look inside a container - ROM src/act_info.c lines 1070-1130"""
+    from mud.models.constants import LIQUID_TABLE, ContainerFlag, ItemType
     from mud.world.obj_find import get_obj_here
-    from mud.models.constants import ItemType
 
     obj = get_obj_here(char, args)
     if not obj:
@@ -309,7 +303,6 @@ def _look_in(char: Character, args: str) -> str:
             return "It is empty."
         if value[1] <= 0:
             return "It is empty."
-        # Show liquid amount
         if value[0] > 0:
             percent = value[1] * 100 // value[0]
             if percent < 25:
@@ -320,12 +313,16 @@ def _look_in(char: Character, args: str) -> str:
                 amount = "more than half-"
         else:
             amount = ""
-        return f"It's {amount}filled with a liquid."
+        liquid_index = int(value[2]) if len(value) > 2 else 0
+        if 0 <= liquid_index < len(LIQUID_TABLE):
+            liquid_color = LIQUID_TABLE[liquid_index].color
+        else:
+            liquid_color = "clear"
+        return f"It's {amount}filled with  a {liquid_color} liquid."
 
     if item_type in (ItemType.CONTAINER, ItemType.CORPSE_NPC, ItemType.CORPSE_PC):
         value = getattr(obj, "value", [0, 0, 0, 0, 0])
-        # Check if closed (value[1] has CONT_CLOSED flag)
-        if len(value) > 1 and (value[1] & 1):  # CONT_CLOSED = 1
+        if len(value) > 1 and (value[1] & int(ContainerFlag.CLOSED)):
             return "It is closed."
 
         contents = getattr(obj, "contains", None) or getattr(obj, "contained_items", [])
