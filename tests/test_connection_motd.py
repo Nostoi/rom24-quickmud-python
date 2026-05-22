@@ -77,6 +77,14 @@ def test_should_send_newbie_help_checks_state() -> None:
     assert connection._should_send_newbie_help(fresh) is False
 
 
+def test_is_new_player_uses_newbie_help_flag_not_zero_played_only() -> None:
+    candidate = SimpleNamespace(is_npc=False, level=1, played=0, newbie_help_seen=False)
+    assert connection._is_new_player(candidate) is True
+
+    candidate.newbie_help_seen = True
+    assert connection._is_new_player(candidate) is False
+
+
 def test_send_newbie_help_sets_flag_and_persists(monkeypatch) -> None:
     load_help_file("data/help.json")
 

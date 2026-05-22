@@ -31,7 +31,7 @@ Python entry points: `mud/net/connection.py` (login & creation flow), `mud/accou
 | `CON_GEN_GROUPS` | 659-711 | `_run_customization_menu` | `mud/net/connection.py:967` | ✅ AUDITED |
 | `CON_READ_IMOTD` | 713-717 | `_send_login_motd` (immortal branch) | `mud/net/connection.py:597` | ✅ AUDITED |
 | `CON_NOTE_*` | 722-740 | external note handlers | `mud/notes.py` | N/A (delegated) |
-| `CON_READ_MOTD` (level 0 branch) | 742-790 | `_finalize_login` / `give_school_outfit` | `mud/net/connection.py:1554`, `mud/commands/inventory.py:142` | ✅ AUDITED — school outfit, resource initialization, title assignment, and newbie help flow closed by NANNY-005/009/013/014. |
+| `CON_READ_MOTD` (level 0 branch) | 742-790 | `_finalize_login` / `give_school_outfit` | `mud/net/connection.py:1554`, `mud/commands/inventory.py:142` | ✅ AUDITED — school outfit, resource initialization, title assignment, and newbie help flow closed by NANNY-005/009/013/014; May 21 trust-rebuild revalidated the one-time first-login gate so returning level-1 players no longer replay outfit/newbie-only behavior. |
 | `CON_READ_MOTD` (room routing) | 791-802 | login room placement | `mud/account/account_manager.py:119` | ✅ AUDITED — school/chat/temple room routing parity closed by NANNY-006. |
 | `CON_READ_MOTD` (entry broadcast) | 804-815 | `broadcast_entry_to_room` | `mud/net/connection.py` | ✅ AUDITED — player/pet room-entry broadcasts closed by NANNY-007/008. |
 | `check_parse_name` | (called from 188) | `is_valid_account_name` | `mud/account/account_service.py:572` | ✅ AUDITED — reserved-name and minimum-length parity closed by NANNY-012. |

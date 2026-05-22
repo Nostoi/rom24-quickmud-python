@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 
 from mud.account import (
     LoginFailureReason,
-    account_exists,
     character_exists,
     create_account,
     create_character,
@@ -21,7 +20,6 @@ from mud.account import (
     is_account_active,
     is_valid_account_name,
     is_valid_character_name,
-    list_characters,
     load_character,
     login_with_host,
     lookup_creation_class,
@@ -36,23 +34,23 @@ from mud.account import (
 )
 from mud.account.account_service import CreationSelection
 from mud.commands import process_command
-from mud.commands.inventory import give_school_outfit
 from mud.commands.help import do_help
+from mud.commands.inventory import give_school_outfit
 from mud.config import get_qmconfig
-from mud.handler import reset_char
-from mud.utils.act import act_format
-from mud.utils.prompt import bust_a_prompt
 from mud.db.models import Character as DBCharacter
+from mud.handler import reset_char
 from mud.loaders import help_loader
 from mud.logging import log_game_event
-from mud.models.constants import CommFlag, PlayerFlag, Sex, ROOM_VNUM_CHAT, ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
+from mud.models.constants import ROOM_VNUM_CHAT, ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE, CommFlag, PlayerFlag, Sex
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
-from mud.wiznet import WiznetFlag, wiznet
-from mud.skills.groups import get_group, list_groups
 from mud.security import bans
 from mud.security.bans import BanFlag
+from mud.skills.groups import get_group, list_groups
+from mud.utils.act import act_format
+from mud.utils.prompt import bust_a_prompt
+from mud.wiznet import WiznetFlag, wiznet
 
 STAT_LABELS = ("Str", "Int", "Wis", "Dex", "Con")
 
@@ -76,8 +74,8 @@ CON_PLAYING = 1
 
 
 if TYPE_CHECKING:
-    from mud.models.character import Character
     from mud.account.account_service import ClassType, PcRaceType
+    from mud.models.character import Character
 
 
 def _format_three_column_table(entries: Iterable[tuple[str, str]]) -> list[str]:
@@ -98,7 +96,7 @@ def _format_name_columns(names: Iterable[str], *, width: int = 20) -> list[str]:
     return lines
 
 
-def _effective_trust(char: "Character") -> int:
+def _effective_trust(char: Character) -> int:
     """Mirror ROM's ``get_trust`` helper for wiznet broadcasts."""
 
     trust = getattr(char, "trust", 0)
@@ -114,7 +112,7 @@ def _sanitize_host(host: str | None, *, placeholder: str | None = None) -> str |
     return cleaned or placeholder
 
 
-def announce_wiznet_login(char: "Character", host: str | None = None) -> None:
+def announce_wiznet_login(char: Character, host: str | None = None) -> None:
     """Broadcast a WIZ_LOGINS notice when *char* enters the game."""
 
     if not getattr(char, "name", None):
@@ -143,7 +141,7 @@ def announce_wiznet_login(char: "Character", host: str | None = None) -> None:
     )
 
 
-def announce_wiznet_logout(char: "Character") -> None:
+def announce_wiznet_logout(char: Character) -> None:
     """Broadcast a WIZ_LOGINS notice when *char* leaves the game."""
 
     if not getattr(char, "name", None):
@@ -228,7 +226,7 @@ def _register_descriptor(conn: object, host: str | None = None) -> object:
         original=None,
     )
     _descriptor_list().append(descriptor)
-    setattr(conn, "_rom_descriptor", descriptor)
+    conn._rom_descriptor = descriptor
     return descriptor
 
 
@@ -256,7 +254,7 @@ def _set_descriptor_name(conn: object, name: str) -> None:
     descriptor.connected = CON_GET_NAME
 
 
-def _mark_descriptor_playing(conn: object, char: "Character") -> None:
+def _mark_descriptor_playing(conn: object, char: Character) -> None:
     descriptor = _register_descriptor(conn, getattr(conn, "peer_host", None))
     descriptor.character = char
     descriptor.connected = CON_PLAYING
@@ -366,7 +364,7 @@ async def _close_duplicate_reconnect_descriptors(
     return len(duplicates)
 
 
-def _broadcast_reconnect_notifications(char: "Character", host: str | None = None) -> None:
+def _broadcast_reconnect_notifications(char: Character, host: str | None = None) -> None:
     """Notify the room and wiznet listeners about a successful reconnect."""
 
     name = getattr(char, "name", None)
@@ -397,7 +395,7 @@ def _broadcast_reconnect_notifications(char: "Character", host: str | None = Non
     )
 
 
-def _announce_login_or_reconnect(char: "Character", host: str | None, reconnecting: bool) -> bool:
+def _announce_login_or_reconnect(char: Character, host: str | None, reconnecting: bool) -> bool:
     """Dispatch wiznet announcements for fresh logins or reconnects."""
 
     note_reminder = False
@@ -410,7 +408,7 @@ def _announce_login_or_reconnect(char: "Character", host: str | None, reconnecti
     return note_reminder
 
 
-def _stop_idling(char: "Character") -> None:
+def _stop_idling(char: Character) -> None:
     """Mirror ROM's ``stop_idling`` to pull players out of limbo on input."""
 
     if char is None:
@@ -763,22 +761,20 @@ def _apply_colour_preference(char: Character, enabled: bool) -> None:
     char.ansi_enabled = bool(enabled)
 
 
-def _is_new_player(char: "Character") -> bool:
+def _is_new_player(char: Character) -> bool:
     if getattr(char, "is_npc", False):
         return False
     try:
         level = int(getattr(char, "level", 0) or 0)
     except Exception:
         level = 0
-    try:
-        played = int(getattr(char, "played", 0) or 0)
-    except Exception:
-        played = 0
-    return level <= 1 and played == 0
+    if level > 1:
+        return False
+    return not bool(getattr(char, "newbie_help_seen", False))
 
 
 def _apply_qmconfig_telnetga(
-    char: "Character",
+    char: Character,
     session: Session,
     connection: TelnetStream,
     *,
@@ -796,7 +792,7 @@ def _apply_qmconfig_telnetga(
     session.go_ahead_enabled = telnet_enabled
 
 
-def _has_permit_flag(char: "Character") -> bool:
+def _has_permit_flag(char: Character) -> bool:
     """Return ``True`` when *char* has the ROM PLR_PERMIT bit set."""
 
     act_flags = int(getattr(char, "act", 0) or 0)
@@ -816,7 +812,7 @@ async def _send_help_greeting(conn: TelnetStream) -> None:
     await conn.send_text(text, newline=True)
 
 
-def _resolve_help_text(char: "Character", topic: str, *, limit_first: bool = False) -> str | None:
+def _resolve_help_text(char: Character, topic: str, *, limit_first: bool = False) -> str | None:
     try:
         text = do_help(char, topic, limit_results=limit_first)
     except Exception as exc:  # pragma: no cover - defensive guard
@@ -851,7 +847,7 @@ def _extract_motd_from_greeting() -> str | None:
     return motd or None
 
 
-async def _send_login_motd(char: "Character") -> None:
+async def _send_login_motd(char: Character) -> None:
     topics: list[str] = ["motd"]
     is_immortal_attr = getattr(char, "is_immortal", False)
     immortal = False
@@ -882,7 +878,7 @@ async def _send_login_motd(char: "Character") -> None:
             print(f"[ERROR] Failed to send help topic '{topic}' to {getattr(char, 'name', '?')}: {exc}")
 
 
-def _should_send_newbie_help(char: "Character") -> bool:
+def _should_send_newbie_help(char: Character) -> bool:
     if getattr(char, "is_npc", True):
         return False
     try:
@@ -893,7 +889,7 @@ def _should_send_newbie_help(char: "Character") -> bool:
     return not bool(getattr(char, "newbie_help_seen", False))
 
 
-async def _send_newbie_help(char: "Character") -> None:
+async def _send_newbie_help(char: Character) -> None:
     text = _resolve_help_text(char, "newbie info")
     if not text:
         return
@@ -902,7 +898,7 @@ async def _send_newbie_help(char: "Character") -> None:
         await send_to_char(char, text)
         await send_to_char(char, "")
     finally:
-        setattr(char, "newbie_help_seen", True)
+        char.newbie_help_seen = True
         try:
             save_character(char)
         except Exception as exc:  # pragma: no cover - defensive guard
@@ -962,12 +958,12 @@ async def _prompt_yes_no(conn: TelnetStream, prompt: str) -> bool | None:
         await _send_line(conn, "Please answer Y or N.")
 
 
-async def _disconnect_session(session: Session) -> "Character" | None:
+async def _disconnect_session(session: Session) -> Character | None:
     """Disconnect an existing session so a new descriptor can take over."""
 
     old_conn = getattr(session, "connection", None)
     old_char = getattr(session, "character", None)
-    setattr(session, "_forced_disconnect", True)
+    session._forced_disconnect = True
 
     if old_conn is not None:
         try:
@@ -1166,7 +1162,7 @@ async def _run_character_login(
         return None
 
 
-async def _prompt_for_race(conn: TelnetStream, help_character: object | None = None) -> "PcRaceType" | None:
+async def _prompt_for_race(conn: TelnetStream, help_character: object | None = None) -> PcRaceType | None:
     races = get_creation_races()
     await _send_line(conn, "Available races: " + ", ".join(race.name.title() for race in races))
     await _send_line(conn, "What is your race? (help for more information)")
@@ -1208,7 +1204,7 @@ async def _prompt_for_sex(conn: TelnetStream) -> Sex | None:
         await _send_line(conn, "Please enter M or F.")
 
 
-async def _prompt_for_class(conn: TelnetStream) -> "ClassType" | None:
+async def _prompt_for_class(conn: TelnetStream) -> ClassType | None:
     classes = get_creation_classes()
     await _send_line(conn, "Available classes: " + ", ".join(cls.name.title() for cls in classes))
     while True:
@@ -1493,7 +1489,7 @@ async def _run_customization_menu(
         await _send_menu_choice_help(fallback=True)
 
 
-async def _prompt_for_stats(conn: TelnetStream, race: "PcRaceType") -> list[int] | None:
+async def _prompt_for_stats(conn: TelnetStream, race: PcRaceType) -> list[int] | None:
     while True:
         stats = roll_creation_stats(race)
         await _send_line(conn, "Rolled stats: " + _format_stats(stats))
@@ -1538,7 +1534,7 @@ async def _prompt_for_hometown(conn: TelnetStream) -> int | None:
     return None
 
 
-async def _prompt_for_weapon(conn: TelnetStream, class_type: "ClassType") -> int | None:
+async def _prompt_for_weapon(conn: TelnetStream, class_type: ClassType) -> int | None:
     choices = get_weapon_choices(class_type)
     await _send_line(conn, "Starting weapons: " + ", ".join(choice.title() for choice in choices))
     normalized = {choice.lower(): choice for choice in choices}
@@ -1659,7 +1655,7 @@ async def _select_character(
     *,
     permit_banned: bool = False,
     newbie_banned: bool = False,
-) -> tuple["Character", bool] | None:
+) -> tuple[Character, bool] | None:
     """Resolve which character enters the game.
 
     For ROM character-first login the ``account`` object *is* the character
@@ -1681,7 +1677,7 @@ async def _select_character(
         if active_connection is not None:
             decision = await _prompt_yes_no(
                 conn,
-                f"That character is already playing. Reconnect? (Y/N) ",
+                "That character is already playing. Reconnect? (Y/N) ",
             )
             if decision is None:
                 return None

@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.29]
+
+### Fixed
+- **`nanny.c` trust-rebuild: returning level-1 players no longer replay first-login outfit flow**: `mud/net/connection.py` now treats the persisted `newbie_help_seen` flag as the durable first-login marker, so reconnecting or relogging level-1 characters no longer get re-equipped by Mota or reclassified as brand-new.
+
+### Changed
+- **Stricter runtime-path login coverage**: `tests/test_websocket_server.py` now asserts that a real WebSocket reconnect does not replay the one-time school outfit path, and `tests/test_connection_motd.py` now locks the `_is_new_player()` helper contract directly.
+
 ## [2.8.28]
 
 ### Fixed

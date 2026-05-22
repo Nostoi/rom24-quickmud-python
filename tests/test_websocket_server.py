@@ -1,23 +1,25 @@
 from __future__ import annotations
 
+import pytest
 from fastapi.testclient import TestClient
 
 from mud.account.account_service import clear_active_accounts
 from mud.db.models import Base, Character
-from mud.db.session import SessionLocal
-from mud.db.session import engine
+from mud.db.session import SessionLocal, engine
 from mud.network.websocket_server import app
 from mud.registry import room_registry
 from mud.security import bans
 from mud.world.world_state import reset_lockdowns
 
 
-def setup_module(module) -> None:
+@pytest.fixture(autouse=True)
+def _reset_websocket_login_state() -> None:
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()
     clear_active_accounts()
     reset_lockdowns()
+    yield
 
 
 def _receive_until_prompt(websocket, *, limit: int = 20) -> tuple[list[dict], dict]:
@@ -110,3 +112,50 @@ def test_websocket_created_character_persists_and_reconnects_with_password_promp
             websocket.send_json({"type": "input", "text": "Eddol"})
             _, prompt = _receive_until_prompt(websocket)
             assert prompt["text"] == "Password: "
+
+
+def test_websocket_reconnect_does_not_replay_new_character_outfit_flow() -> None:
+    """Returning level-1 characters must not re-run ROM first-login school outfit flow."""
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+
+            for text in (
+                "Replay",
+                "y",
+                "secret1",
+                "secret1",
+                "elf",
+                "m",
+                "mage",
+                "g",
+                "n",
+                "k",
+                "y",
+                "dagger",
+            ):
+                websocket.send_json({"type": "input", "text": text})
+                _, prompt = _receive_until_prompt(websocket)
+
+        with client.websocket_connect("/ws") as websocket:
+            _, prompt = _receive_until_prompt(websocket)
+            if prompt["text"] == "Do you want ANSI? (Y/n) ":
+                websocket.send_json({"type": "input", "text": "y"})
+                _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Name: "
+
+            websocket.send_json({"type": "input", "text": "Replay"})
+            _, prompt = _receive_until_prompt(websocket)
+            assert prompt["text"] == "Password: "
+
+            websocket.send_json({"type": "input", "text": "secret1"})
+            seen, prompt = _receive_until_prompt(websocket)
+            assert prompt["session_state"] == "game"
+
+            texts = [payload.get("text", "") for payload in seen]
+            assert all("equipped by Mota" not in text for text in texts)
+            assert all("Ah! Another mortal trying to find his way" not in text for text in texts)
