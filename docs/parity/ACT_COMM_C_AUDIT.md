@@ -680,7 +680,7 @@ if char.room:
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|
 | `SHOUT-001` | CRITICAL | src/act_comm.c:824 | mud/commands/communication.py:273 | TO_CHAR wording: ROM `"You shout '$T'"` (no comma). Python returned `"You shout, '..'"`. Fix: drop comma in return statement. Legacy assertions in `tests/test_communication.py` (×2) updated. Test: `tests/integration/test_shout_yell_parity.py::test_shout_001_to_char_wording_drops_comma`. | ✅ FIXED (2.8.49) |
-| `SHOUT-002` | CRITICAL | src/act_comm.c:836 | mud/commands/communication.py:265 | TO_VICT wording: ROM `"$n shouts '$t'"` (no comma). Python emits `"{name} shouts, '..'"`. | 🔄 OPEN |
+| `SHOUT-002` | CRITICAL | src/act_comm.c:836 | mud/commands/communication.py:265 | TO_VICT wording: ROM `"$n shouts '$t'"` (no comma). Python emitted `"{name} shouts, '..'"`. Fix: drop comma. Legacy assertions in `tests/test_communication.py` (×2) updated. Test: `tests/integration/test_shout_yell_parity.py::test_shout_002_to_vict_wording_drops_comma`. | ✅ FIXED (2.8.50) |
 | `SHOUT-003` | CRITICAL | src/act_comm.c:836, src/handler.c:2618 | mud/commands/communication.py:265 | TO_VICT `$n` routes through PERS — invisible shouter shows as "someone" to listeners without DETECT_INVIS. Python hardcodes `char.name`. | 🔄 OPEN |
 
 **ROM C Behavior**:

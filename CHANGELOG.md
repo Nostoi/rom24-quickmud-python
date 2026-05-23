@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.50]
+
+### Fixed
+- **`SHOUT-002` — `do_shout` TO_VICT wording drops the comma** (`src/act_comm.c:836`): ROM emits `act("$n shouts '$t'", ...)` — no comma between `shouts` and the open quote. Python broadcast `"{char.name} shouts, '{cleaned}'"` with an extra comma. Fix: drop the comma in the broadcast message string. Legacy assertions in `tests/test_communication.py` (×2) updated. Locked in by `tests/integration/test_shout_yell_parity.py::test_shout_002_to_vict_wording_drops_comma`.
+
+### Notes
+
+- Second of three `do_shout` gaps. SHOUT-003 (PERS for shouter) and YELL-001 (PERS for yeller) remain open.
+- Full suite at `4627 passed, 4 skipped, 2 deselected` (+1 vs 2.8.49; zero regressions).
+
 ## [2.8.49]
 
 ### Fixed

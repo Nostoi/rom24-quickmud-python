@@ -262,7 +262,9 @@ def do_shout(char: Character, args: str) -> str:
         return "You can't shout."
     if _has_comm_flag(char, CommFlag.SHOUTSOFF):
         return "You must turn shouts back on first."
-    message = f"{char.name} shouts, '{cleaned}'"
+    # mirroring ROM src/act_comm.c:836 — `act("$n shouts '$t'", ...)`.
+    # No comma between `shouts` and the open quote (SHOUT-002).
+    message = f"{char.name} shouts '{cleaned}'"
     current_wait = getattr(char, "wait", 0) or 0
     char.wait = max(int(current_wait), 12)
 
