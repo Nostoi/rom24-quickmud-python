@@ -138,7 +138,7 @@ See:
 | `do_brief()` | 877-889 | ✅ `mud/commands/auto_settings.py` | ✅ **100% COMPLETE!** | P2 | Toggle brief mode (0 gaps) - See AUTO_FLAGS_AUDIT.md |
 | `do_compact()` | 891-903 | ✅ `mud/commands/auto_settings.py` | ✅ **100% COMPLETE!** | P2 | Toggle compact mode (0 gaps) - See AUTO_FLAGS_AUDIT.md |
 | `do_show()` | 905-917 | ✅ `mud/commands/player_info.py` | ✅ **100% COMPLETE!** | P2 | Show display settings (0 gaps) - See CONFIG_COMMANDS_AUDIT.md |
-| `do_prompt()` | 919-956 | ✅ `mud/commands/auto_settings.py` | ✅ **100% COMPLETE!** | P2 | Set custom prompt. PROMPT-CMD-001 (trailing whitespace), PROMPT-CMD-002 (success reply), PROMPT-CMD-003 (smash_tilde) all ✅ FIXED. Remaining ROM-divergences: PROMPT-CMD-004 (50-char truncation), PROMPT-CMD-005 (`%c` suffix → append space). |
+| `do_prompt()` | 919-956 | ✅ `mud/commands/auto_settings.py` | ✅ **100% COMPLETE!** | P2 | Set custom prompt. PROMPT-CMD-001 (trailing whitespace), PROMPT-CMD-002 (success reply), PROMPT-CMD-003 (smash_tilde), PROMPT-CMD-004 (50-char truncation), PROMPT-CMD-005 (trailing-space append unless `%c` suffix) all ✅ FIXED. |
 | `do_combine()` | 958-970 | ✅ `mud/commands/auto_settings.py` | ✅ **100% COMPLETE!** | P2 | Toggle object combining (1 cosmetic msg improvement) - See AUTO_FLAGS_AUDIT.md |
 | `do_noloot()` | 972-987 | ✅ `mud/commands/player_config.py` | ✅ **100% COMPLETE!** | P2 | Toggle no-loot flag (0 gaps) - See PLAYER_CONFIG_AUDIT.md |
 | `do_nofollow()` | 989-1005 | ✅ `mud/commands/player_config.py` | ✅ **100% COMPLETE!** | P2 | Toggle no-follow flag (0 gaps) - See PLAYER_CONFIG_AUDIT.md |

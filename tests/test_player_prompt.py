@@ -26,7 +26,9 @@ class TestPromptCommand:
         output = do_prompt(player, "<%h/%H hp>")
 
         assert player.pcdata is not None
-        assert player.prompt == "<%h/%H hp>"
+        # ROM src/act_info.c:946-947 appends a trailing space unless
+        # the template ends in `%c` (PROMPT-CMD-005).
+        assert player.prompt == "<%h/%H hp> "
         assert "set" in output.lower()
 
     def test_prompt_all_sets_default_format(self):
@@ -38,14 +40,17 @@ class TestPromptCommand:
         assert player.prompt == "<%hhp %mm %vmv> "
         assert "set" in output.lower()
 
-    def test_prompt_length_not_enforced_at_input(self):
+    def test_prompt_truncates_to_50_chars(self):
         player = create_test_character("LongPrompt", 3001)
         long_prompt = "a" * 100
 
         do_prompt(player, long_prompt)
 
         assert player.pcdata is not None
-        assert player.prompt == long_prompt
+        # ROM src/act_info.c:943-944 truncates argument to 50 chars
+        # (PROMPT-CMD-004); :946-947 appends a trailing space unless
+        # the truncated template ends in `%c` (PROMPT-CMD-005).
+        assert player.prompt == ("a" * 50) + " "
 
     def test_prompt_toggle_off_from_on(self):
         player = create_test_character("Toggler", 3001)
@@ -70,7 +75,8 @@ class TestPromptCommand:
         do_prompt(player, "This is not a valid prompt format")
 
         assert player.pcdata is not None
-        assert player.prompt == "This is not a valid prompt format"
+        # PROMPT-CMD-005: trailing space appended (template does not end in %c).
+        assert player.prompt == "This is not a valid prompt format "
 
 
 class TestPromptPCDataRequirement:
@@ -82,4 +88,5 @@ class TestPromptPCDataRequirement:
 
         # mirroring ROM src/act_info.c:953-954 — success reply echoes
         # the stored template (PROMPT-CMD-002).
-        assert output == "Prompt set to <%h hp>"
+        # PROMPT-CMD-005: trailing space appended (template does not end in %c).
+        assert output == "Prompt set to <%h hp> "

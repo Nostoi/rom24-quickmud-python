@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.54]
+
+### Fixed
+- **`PROMPT-CMD-004` — `do_prompt` truncates custom template to 50 chars** (`src/act_info.c:943-944`): ROM caps the raw `argument` at 50 chars (`if (strlen(argument) > 50) argument[50] = '\0';`) before `strcpy`/`smash_tilde`/suffix-append. Python previously stored the full untruncated string. Fix: `mud/commands/auto_settings.py:do_prompt` slices `arg = arg[:50]` before smash_tilde. Locked in by `tests/integration/test_prompt_cmd_parity.py::test_prompt_cmd_004_truncates_template_to_50_chars`.
+- **`PROMPT-CMD-005` — `do_prompt` appends trailing space unless template ends in `%c`** (`src/act_info.c:946-947`): ROM appends a literal space to every custom prompt template unless the (already smash_tilded) buf already ends with `%c` — `if (str_suffix("%c", buf)) strcat(buf, " ")`, and `str_suffix` (src/db.c:3784) returns TRUE when `"%c"` is *not* a suffix of buf. So prompts that don't end in a colour-code escape gain a trailing space; prompts that do (e.g. ANSI colour close) are left alone. Python previously skipped this normalization, so `prompt TAG>` stored `"TAG>"` instead of ROM's `"TAG> "`. Fix: `mud/commands/auto_settings.py:do_prompt` now applies `arg = arg + " "` when not `arg.endswith("%c")`, after smash_tilde and the 50-char truncation. Legacy assertions in `tests/test_player_prompt.py` (×4) and `tests/integration/test_prompt_rom_parity.py` (×1) updated to ROM-exact stored values. Locked in by `tests/integration/test_prompt_cmd_parity.py::test_prompt_cmd_005_appends_trailing_space_unless_pct_c_suffix`.
+
+### Notes
+
+- Closes the `do_prompt` warm-up shelf — PROMPT-CMD-001..005 now all ✅ FIXED in `docs/parity/ACT_INFO_C_AUDIT.md`.
+- PROMPT-CMD-004 and PROMPT-CMD-005 committed jointly because the legacy test assertions in `tests/test_player_prompt.py` couple both fixes; separate commits would assert transient half-states.
+
 ## [2.8.53]
 
 ### Changed

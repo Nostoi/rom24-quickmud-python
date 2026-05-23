@@ -425,6 +425,11 @@ def do_prompt(char: Character, args: str) -> str:
         # mirroring ROM src/act_info.c:953-954 — echo the stored template.
         return f"Prompt set to {char.prompt}"
 
+    # mirroring ROM src/act_info.c:943-944 — truncate argument to 50
+    # chars BEFORE strcpy/smash_tilde/suffix-append (PROMPT-CMD-004).
+    if len(arg) > 50:
+        arg = arg[:50]
+
     # mirroring ROM src/act_info.c:945 — smash_tilde on the custom
     # template before storing (PROMPT-CMD-003). ROM uses '~' as the
     # end-of-string marker on disk, so a tilde in ch->prompt would
@@ -432,6 +437,15 @@ def do_prompt(char: Character, args: str) -> str:
     from mud.utils.text import smash_tilde
 
     arg = smash_tilde(arg)
+
+    # mirroring ROM src/act_info.c:946-947 — append a trailing space
+    # unless the template already ends in `%c` (PROMPT-CMD-005). ROM's
+    # `str_suffix("%c", buf)` (src/db.c:3784) returns TRUE when "%c" is
+    # NOT a suffix of buf, so the strcat fires for every template that
+    # doesn't already end with the colour-code escape.
+    if not arg.endswith("%c"):
+        arg = arg + " "
+
     # mirroring ROM src/act_info.c:951-952 — ch->prompt = str_dup(buf)
     char.prompt = arg
     char.comm = getattr(char, "comm", 0) | CommFlag.PROMPT

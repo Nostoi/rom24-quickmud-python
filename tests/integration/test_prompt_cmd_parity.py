@@ -116,6 +116,74 @@ def test_prompt_cmd_001_preserves_trailing_whitespace_on_template() -> None:
             )
 
 
+def test_prompt_cmd_004_truncates_template_to_50_chars() -> None:
+    """PROMPT-CMD-004 — `prompt <template>` truncates to 50 chars before storing.
+
+    ROM C: src/act_info.c:943-944
+        if (strlen (argument) > 50)
+            argument[50] = '\\0';
+        strcpy (buf, argument);
+
+    Python previously stored the full untruncated argument. A 60-char
+    template should store the first 50 chars only.
+
+    Note: ROM's 50-char cap is applied BEFORE smash_tilde and BEFORE
+    the `%c`-suffix space-append. After truncation ROM also appends a
+    trailing space (PROMPT-CMD-005) unless the truncated string ends
+    in `%c`, so the rendered success reply will read
+    `"Prompt set to AAAA...A "` (50 As + space).
+    """
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _create_elf_mage(websocket, "Promwd")
+            template = "A" * 60
+            transcript, _ = _send_command(websocket, f"prompt {template}")
+            expected_stored = "A" * 50
+            assert f"Prompt set to {expected_stored}" in transcript, (
+                f"do_prompt did not truncate to 50 chars; transcript:\n{transcript}"
+            )
+            assert "A" * 51 not in transcript, (
+                "stored prompt template exceeded ROM's 50-char cap"
+            )
+
+
+def test_prompt_cmd_005_appends_trailing_space_unless_pct_c_suffix() -> None:
+    """PROMPT-CMD-005 — `do_prompt` appends `" "` unless buf ends with `%c`.
+
+    ROM C: src/act_info.c:946-947
+        if (str_suffix ("%c", buf))
+            strcat (buf, " ");
+
+    ROM's `str_suffix(a, b)` (src/db.c:3784) returns TRUE when `a` is
+    NOT a suffix of `b`. So this branch appends a trailing space to
+    every prompt template UNLESS the template already ends in `%c`
+    (a colour-code escape that handles its own spacing).
+
+    Two cases covered here:
+      • `prompt TAG>` → stored as `"TAG> "` (trailing space appended).
+      • `prompt TAG%c` → stored as `"TAG%c"` (no append; `%c` suffix).
+    """
+    with TestClient(app) as client:
+        with client.websocket_connect("/ws") as websocket:
+            _create_elf_mage(websocket, "Promwe")
+            transcript, _ = _send_command(websocket, "prompt TAG>")
+            assert "Prompt set to TAG> \n" in transcript or "Prompt set to TAG> \r" in transcript, (
+                f"do_prompt did not append trailing space to non-%c template; "
+                f"transcript:\n{transcript!r}"
+            )
+
+        with client.websocket_connect("/ws") as websocket:
+            _create_elf_mage(websocket, "Promwf")
+            transcript, _ = _send_command(websocket, "prompt TAG%c")
+            assert "Prompt set to TAG%c\n" in transcript or "Prompt set to TAG%c\r" in transcript, (
+                f"do_prompt incorrectly appended space to %c-suffixed template; "
+                f"transcript:\n{transcript!r}"
+            )
+            assert "Prompt set to TAG%c " not in transcript, (
+                "ROM does not append a trailing space when buf ends with %c"
+            )
+
+
 def test_prompt_cmd_003_smash_tilde_on_custom_template() -> None:
     """PROMPT-CMD-003 — `do_prompt` runs smash_tilde on the custom template.
 

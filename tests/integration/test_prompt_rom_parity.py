@@ -168,4 +168,7 @@ def test_do_prompt_stores_string_on_char_not_pcdata_color_triplet(
     """
 
     do_prompt(char_with_stats, "%h hp")
-    assert char_with_stats.prompt == "%h hp"
+    # ROM src/act_info.c:946-947 appends a trailing space unless the
+    # template ends in `%c` (PROMPT-CMD-005), so the stored prompt
+    # gains a single trailing space.
+    assert char_with_stats.prompt == "%h hp "
