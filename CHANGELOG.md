@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.41]
+
+### Added
+- **`mud.world.vision.pers(target, observer)`** mirroring ROM's `PERS()` macro (`src/comm.c` via `#define` and `src/handler.c:2618-2664 can_see`). Returns `"someone"` if `observer` cannot see `target`, otherwise the target's NPC `short_descr` or PC `name`. No aura prefixes (that's `act_info show_char_to_char_0`) and no self-handling (callers route TO_CHAR vs TO_ROOM separately).
+
+### Fixed
+- **`SAY-002` — `do_say` PERS substitution: invisible/hidden speakers appear as `"someone"`** (`src/act_comm.c:776`, `src/handler.c:2618-2664`): ROM's `act()` substitutes `$n` through `PERS(ch, looker)`, which gates on `can_see(looker, ch)`. So when an invisible speaker says something, listeners without `DETECT_INVIS` see `"someone says '<msg>'"`, not the speaker's real name. Python previously built one TO_ROOM message string with `char.name` hardcoded and broadcast it to everyone in the room, leaking invisible/hidden PC identities. Fix: added `pers()` helper in `mud/world/vision.py` (uses existing `can_see_character`), then refactored `do_say` to render the TO_ROOM string per-listener with `pers(speaker, listener)` substituted for `$n`. Closes the four-gap `do_say` re-audit cluster opened on 2026-05-22. Tests: `tests/integration/test_say_parity.py::test_say_002_invisible_speaker_renders_as_someone_to_unaided_listener` and `::test_say_002_invisible_speaker_seen_by_detect_invis_listener`.
+
+### Notes
+
+- Fourth and final SAY-NNN gap from the 2026-05-22 `act_comm.c` re-audit. `do_say` is now ✅ 100% re-audited.
+- Analogous CRITICAL gaps almost certainly exist in `do_tell` / `do_shout` / `do_yell` / `do_emote` / `do_pose` / `do_pmote` — those audits are now unblocked (the helper exists). Tracked as next-session candidates in `docs/sessions/SESSION_STATUS.md`.
+- Full suite at `4616 passed, 4 skipped` (+2 vs 2.8.40 baseline 4614/4; zero regressions despite the per-listener broadcast refactor).
+
 ## [2.8.40]
 
 ### Fixed

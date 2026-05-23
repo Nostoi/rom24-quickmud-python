@@ -152,3 +152,73 @@ def test_say_003_to_room_wraps_rom_color_codes() -> None:
         f"TO_ROOM colour wrapping diverges from ROM; "
         f"expected {expected!r} in {listener.messages!r}"
     )
+
+
+def test_say_002_invisible_speaker_renders_as_someone_to_unaided_listener() -> None:
+    """SAY-002 — invisible speaker's `$n` renders as "someone" via PERS().
+
+    ROM C: src/act_comm.c:776 + src/comm.c `act()` + src/handler.c:2618 `can_see`
+        act ("{6$n says '{7$T{6'{x", ch, NULL, argument, TO_ROOM);
+
+    ROM's `act()` substitutes `$n` through the PERS() macro:
+        #define PERS(ch, looker) (can_see (looker, ch) ? \\
+            (IS_NPC(ch) ? ch->short_descr : ch->name) : "someone")
+
+    So when an invisible speaker says something, listeners without
+    `detect_invis` see `"someone says '<msg>'"`, not the speaker's
+    real name. Python previously hardcoded `char.name` in the
+    broadcast, leaking the invisible speaker's identity.
+
+    NOTE: The TO_CHAR (self) message still references the speaker as
+    "You", which ROM bypasses through act() type=TO_CHAR before PERS
+    even runs — unchanged here.
+    """
+    from mud.models.constants import AffectFlag
+
+    speaker = create_test_character("Sayghost", 3001)
+    listener = create_test_character("Sayobserver", 3001)
+    # Speaker turns invisible; listener has no DETECT_INVIS, so can_see
+    # returns False and PERS() should render "someone".
+    speaker.affected_by |= int(AffectFlag.INVISIBLE)
+    assert not listener.has_affect(AffectFlag.DETECT_INVIS)
+
+    process_command(speaker, "say boo")
+
+    # Listener must see "someone says 'boo'", NOT "Sayghost says 'boo'".
+    delivered = [_strip_rom_colors(m) for m in listener.messages if "says" in m and "boo" in m]
+    assert delivered, f"listener received no say broadcast; messages={listener.messages}"
+    assert any("someone says 'boo'" in m for m in delivered), (
+        f"PERS substitution missing for invisible speaker; got {delivered!r}"
+    )
+    assert not any("Sayghost" in m for m in delivered), (
+        f"invisible speaker's real name leaked through PERS; got {delivered!r}"
+    )
+
+
+def test_say_002_invisible_speaker_seen_by_detect_invis_listener() -> None:
+    """SAY-002 — invisible speaker IS visible to listener with DETECT_INVIS.
+
+    ROM C: src/handler.c:2641-2643 — `IS_AFFECTED(victim, AFF_INVISIBLE)
+    && !IS_AFFECTED(ch, AFF_DETECT_INVIS)` returns FALSE only when the
+    observer LACKS detect-invis. With detect-invis, can_see returns
+    TRUE and PERS renders the real name.
+
+    Pins the both-sides-of-the-branch behaviour.
+    """
+    from mud.models.constants import AffectFlag
+
+    speaker = create_test_character("Sayghost2", 3001)
+    listener = create_test_character("Sayseer", 3001)
+    speaker.affected_by |= int(AffectFlag.INVISIBLE)
+    listener.affected_by |= int(AffectFlag.DETECT_INVIS)
+
+    process_command(speaker, "say boo")
+
+    delivered = [_strip_rom_colors(m) for m in listener.messages if "says" in m and "boo" in m]
+    assert delivered, f"listener received no say broadcast; messages={listener.messages}"
+    assert any("Sayghost2 says 'boo'" in m for m in delivered), (
+        f"detect-invis listener should see real name; got {delivered!r}"
+    )
+    assert not any("someone" in m for m in delivered), (
+        f"detect-invis listener should NOT see 'someone'; got {delivered!r}"
+    )

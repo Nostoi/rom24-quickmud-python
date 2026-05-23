@@ -628,15 +628,15 @@ for gch in list(character_registry):
 
 ---
 
-#### 3. do_say() - RE-AUDIT IN PROGRESS 🔄
+#### 3. do_say() - ✅ RE-AUDITED 100%
 **ROM C**: src/act_comm.c lines 768-791 (24 lines)
-**QuickMUD**: communication.py:127
-**Status**: 🔄 **2026-05-22 re-audit** — previous "100% VERIFIED" claim was incorrect. Four gaps surfaced (see SAY-NNN rows below).
+**QuickMUD**: communication.py:127, mud/world/vision.py:`pers`
+**Status**: ✅ **2026-05-22 re-audit complete** — all four surfaced gaps (SAY-001/002/003/004) ✅ FIXED. Previous "100% VERIFIED" claim was incorrect and has been replaced with the explicit gap-table audit trail below.
 
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|
 | `SAY-001` | CRITICAL | src/act_comm.c:776-777 | mud/commands/communication.py:127 | Wording: ROM emits `"says '$T'"` / `"You say '$T'"` (no comma). Python emitted `"says, '..'"` / `"You say, '..'"`. Test: `tests/integration/test_say_parity.py::test_say_001_*`. | ✅ FIXED (2.8.38) |
-| `SAY-002` | CRITICAL | src/act_comm.c:776 | mud/commands/communication.py:127 | `$n` substitution: ROM routes the speaker name through `PERS()` so invisible/hidden speakers show as `"someone"`. Python hardcodes `char.name`, exposing hidden PCs. | 🔄 OPEN |
+| `SAY-002` | CRITICAL | src/act_comm.c:776, src/handler.c:2618-2664, ROM `PERS` macro | mud/commands/communication.py:127, mud/world/vision.py | `$n` substitution: ROM routes the speaker name through `PERS()` (which gates on `can_see`) so invisible/hidden speakers show as `"someone"` to listeners without `DETECT_INVIS` / `DETECT_HIDDEN`. Python hardcoded `char.name`, exposing hidden PCs. Fix: added `pers(target, observer)` in `mud/world/vision.py` mirroring ROM's `PERS()` macro; refactored `do_say` to render TO_ROOM per-listener with `pers(speaker, listener)` substituted for `$n`. Tests: `tests/integration/test_say_parity.py::test_say_002_invisible_speaker_renders_as_someone_to_unaided_listener` and `::test_say_002_invisible_speaker_seen_by_detect_invis_listener`. | ✅ FIXED (2.8.41) |
 | `SAY-003` | IMPORTANT | src/act_comm.c:776-777 | mud/commands/communication.py:127 | ROM wraps with `{6...{7$T{6'{x` cyan/white colour codes; the ANSI translation layer (`mud/net/ansi.py`) consumes them on websocket send. Python emitted no codes. Fix: wrap TO_CHAR and TO_ROOM strings with the ROM colour sequence. Tests: `tests/integration/test_say_parity.py::test_say_003_to_char_wraps_rom_color_codes` and `::test_say_003_to_room_wraps_rom_color_codes`. | ✅ FIXED (2.8.40) |
 | `SAY-004` | CRITICAL | src/act_comm.c:776-777 | mud/commands/communication.py:127 | Double-delivery: Python called BOTH `room.broadcast` and `broadcast_room`; both do identical websocket-send + `char.messages.append`. Every `say` was delivered twice. INV-001 SINGLE-DELIVERY violation. Fix: dropped the redundant `broadcast_room` call. Test: `tests/integration/test_say_parity.py::test_say_004_listener_receives_broadcast_exactly_once`. | ✅ FIXED (2.8.39) |
 

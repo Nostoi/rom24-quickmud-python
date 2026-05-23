@@ -133,16 +133,25 @@ def do_say(char: Character, args: str) -> str:
     # for the message body, return to {6 for the closing quote, then
     # reset with {x. The ANSI translation layer in mud/net/ansi.py
     # consumes these on websocket send.
-    message = f"{{6{char.name} says '{{7{args}{{6'{{x"
     if char.room:
         # mirroring ROM src/act_comm.c:776 — single `act(..., TO_ROOM)`
         # delivers the message to every target in `ch->in_room->people`
-        # exactly once. Python previously also called `broadcast_room`,
-        # which does the same iterate-and-deliver work as
-        # `room.broadcast`, so every `say` was delivered twice
-        # (SAY-004 / INV-001 SINGLE-DELIVERY violation). Keep
-        # `room.broadcast` only.
-        char.room.broadcast(message, exclude=char)
+        # exactly once (SAY-004 / INV-001). The act() macro renders
+        # `$n` per-listener through PERS(), so an invisible speaker
+        # appears as "someone" to listeners without DETECT_INVIS
+        # (SAY-002). Each recipient gets its own substituted string.
+        from mud.world.vision import pers
+
+        for listener in list(char.room.people):
+            if listener is char:
+                continue
+            speaker_name = pers(char, listener)
+            per_message = f"{{6{speaker_name} says '{{7{args}{{6'{{x"
+            writer = getattr(listener, "connection", None)
+            if writer is not None:
+                asyncio.create_task(send_to_char(listener, per_message))
+            if hasattr(listener, "messages"):
+                listener.messages.append(per_message)
         for mob in list(char.room.people):
             if mob is char or not getattr(mob, "is_npc", False):
                 continue

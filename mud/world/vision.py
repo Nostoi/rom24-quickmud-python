@@ -307,6 +307,37 @@ def can_see_object(observer: Character | None, obj: Any) -> bool:
     return True
 
 
+def pers(target: Character | None, observer: Character | None) -> str:
+    """Mirror ROM ``PERS()`` (src/comm.c via #define) for ``$n``/``$N`` act() subs.
+
+    ROM C:
+        #define PERS(ch, looker) (can_see (looker, ch) ? \\
+            (IS_NPC(ch) ? ch->short_descr : ch->name) : "someone")
+
+    Returns the appropriate name token for an act() substitution:
+    - "someone" if ``observer`` cannot see ``target`` (invisible,
+      hidden, dark room without infrared, blind observer, etc.).
+    - NPC ``short_descr`` if visible and ``target`` is an NPC.
+    - PC ``name`` if visible and ``target`` is a player.
+
+    Unlike :func:`describe_character`, this does NOT inject aura
+    prefixes (those belong to act_info show_char_to_char_0) and does
+    NOT special-case ``observer is target`` ("You") — that handling
+    lives at the act()-level callers because the TO_CHAR vs TO_ROOM
+    branches choose different templates entirely.
+    """
+    if target is None or observer is None:
+        return "someone"
+    if not can_see_character(observer, target):
+        return "someone"
+    if getattr(target, "is_npc", False):
+        name = getattr(target, "short_descr", None) or getattr(target, "name", None)
+    else:
+        name = getattr(target, "name", None)
+    text = str(name).strip() if name else ""
+    return text or "someone"
+
+
 def describe_character(observer: Character, target: Character | None) -> str:
     """Return a ROM-style ``PERS`` description for ``target`` with affect auras.
 
