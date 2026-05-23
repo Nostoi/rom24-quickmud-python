@@ -699,7 +699,14 @@ def do_yell(char: Character, args: str) -> str:
                 continue
 
             # Send yell message to victim (ROM C: act("$n yells '$t'", ch, argument, d->character, TO_VICT))
-            victim_message = f"{char.name} yells '{args}'"
+            # mirroring ROM src/act_comm.c:1059 — `act("$n yells '$t'", ..., TO_VICT)`.
+            # `$n` routes through PERS(ch, victim) per ROM's act() macro,
+            # so an invisible yeller renders as "someone" to listeners
+            # without DETECT_INVIS (YELL-001).
+            from mud.world.vision import pers as _pers
+
+            yeller_name = _pers(char, victim)
+            victim_message = f"{yeller_name} yells '{args}'"
             writer = getattr(victim, "connection", None)
             if writer is not None:
                 asyncio.create_task(send_to_char(victim, victim_message))

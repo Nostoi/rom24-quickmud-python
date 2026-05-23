@@ -473,11 +473,15 @@ return do_emote(char, args)  # Simple alias to emote!
 
 ### ⚠️ Functions Requiring Gap Resolution
 
-#### 3. do_yell() - VERIFIED ✅ (FIXED January 8, 2026)
-**ROM C**: src/act_comm.c lines 1033-1064 (32 lines)  
-**QuickMUD**: communication.py:559  
-**Priority**: P1 (Important)  
-**Status**: ✅ **100% ROM C parity** (area-wide broadcasting implemented)
+#### 3. do_yell() - ✅ RE-AUDITED (2026-05-23)
+**ROM C**: src/act_comm.c lines 1033-1064 (32 lines)
+**QuickMUD**: communication.py:648
+**Priority**: P1 (Important)
+**Status**: ✅ **100% RE-AUDITED** (YELL-001 ✅ FIXED). Prior "100% VERIFIED Jan 2026" claim was incorrect for PERS substitution; wording was correct.
+
+| Gap ID | Severity | ROM C | Python | Description | Status |
+|--------|----------|-------|--------|-------------|--------|
+| `YELL-001` | CRITICAL | src/act_comm.c:1059, src/handler.c:2618 | mud/commands/communication.py:683 | TO_VICT `$n` routes through PERS — invisible yeller shows as "someone" to listeners without DETECT_INVIS. Python hardcoded `char.name`. Fix: `do_yell`'s existing per-listener loop now uses `pers(char, victim)` for the yeller's name. Test: `tests/integration/test_shout_yell_parity.py::test_yell_001_invisible_yeller_renders_as_someone_to_listener`. | ✅ FIXED (2.8.52) |
 
 **ROM C Behavior** (lines 1051-1061):
 ```c
@@ -672,10 +676,10 @@ if char.room:
 
 ---
 
-#### 4. do_shout() - RE-AUDIT IN PROGRESS 🔄
+#### 4. do_shout() - ✅ RE-AUDITED (2026-05-23)
 **ROM C**: src/act_comm.c lines 795-841 (47 lines)
 **QuickMUD**: communication.py:247
-**Status**: 🔄 **2026-05-23 re-audit** — previous "100% VERIFIED" claim incorrect (same audit-doc inflation that hit `do_say` / `do_emote` / `do_tell`). Three gaps surfaced.
+**Status**: ✅ **100% RE-AUDITED** (SHOUT-001/002/003 all ✅ FIXED). Prior "100% VERIFIED" claim incorrect; all three gaps closed this slice.
 
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|

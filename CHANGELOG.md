@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.52]
+
+### Fixed
+- **`YELL-001` — `do_yell` TO_VICT `$n` routes through PERS for invisible-yeller protection** (`src/act_comm.c:1059`, `src/handler.c:2618`): ROM's `act("$n yells '$t'", ..., TO_VICT)` substitutes `$n` per-listener through `PERS(ch, victim)`. So an invisible yeller renders as `"someone"` to listeners without `DETECT_INVIS`. Python's `do_yell` already iterates per-listener (area-wide loop over `character_registry` with area filter) but hardcoded `char.name` into the rendered string. Fix: `mud/commands/communication.py:do_yell` now substitutes `mud.world.vision.pers(char, victim)` for the yeller's name inside its existing per-listener loop. Closes the channel-message arc (say / tell / emote / shout / yell all now route through PERS). Locked in by `tests/integration/test_shout_yell_parity.py::test_yell_001_invisible_yeller_renders_as_someone_to_listener`.
+
+### Notes
+
+- Completes the 2026-05-22/23 act_comm.c channel re-audit arc: `do_say` (SAY-001..004), `do_emote` (EMOTE-001/002), `do_tell` (TELL-001..005), `do_shout` (SHOUT-001..003), `do_yell` (YELL-001). All five channel commands now route `$n` through `pers()` and emit ROM-exact wording / colour codes. PMOTE-001 remains as the only open ROM `do_pmote` greenfield port; TELL-006 deferred (MINOR cosmetic).
+- Full suite at `4629 passed, 4 skipped` (+1 vs 2.8.51; zero regressions).
+
 ## [2.8.51]
 
 ### Fixed
