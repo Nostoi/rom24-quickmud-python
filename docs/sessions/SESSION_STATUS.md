@@ -1,10 +1,11 @@
-# Session Status — 2026-05-23 — channel-message re-audit arc COMPLETE (SHOUT-001..003, YELL-001)
+# Session Status — 2026-05-23 — TELL-006 + PROMPT-CMD-004/005 closed (hygiene pass)
 
 ## Current State
 
-- **Last completed**: **SHOUT-001 → SHOUT-002 → SHOUT-003 → YELL-001** released as 2.8.49 → 2.8.52 across four commits (`21f1b80`, `9e55e1a`, `78ad2cb`, `5e9e7fc`). With this slice the entire 5-command channel-message re-audit arc (`do_say`, `do_emote`, `do_tell`, `do_shout`, `do_yell`) is **COMPLETE** — every `$n` substitution routes through `pers()`, every wording matches ROM-exact, every channel that uses ROM colour codes wraps them.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-23_SHOUT_YELL_CLUSTER.md](SESSION_SUMMARY_2026-05-23_SHOUT_YELL_CLUSTER.md)
+- **Last completed**: **TELL-006 (analyzed-inert)** released as 2.8.53 (`bd21cba`), then **PROMPT-CMD-004 + PROMPT-CMD-005** released jointly as 2.8.54 (`e9f026c`). With these the channel-message arc (`act_comm.c`) and the `do_prompt` warm-up shelf (`act_info.c`) are both fully closed. PMOTE-001 (`do_pmote` greenfield port) is the only open item on the act_comm.c file.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-23_TELL_006_AND_PROMPT_CMD_HYGIENE.md](SESSION_SUMMARY_2026-05-23_TELL_006_AND_PROMPT_CMD_HYGIENE.md)
 - **Earlier summaries this run**:
+  - [SESSION_SUMMARY_2026-05-23_SHOUT_YELL_CLUSTER.md](SESSION_SUMMARY_2026-05-23_SHOUT_YELL_CLUSTER.md) (2.8.49-2.8.52)
   - [SESSION_SUMMARY_2026-05-22_TELL_CLUSTER.md](SESSION_SUMMARY_2026-05-22_TELL_CLUSTER.md) (2.8.44-2.8.48)
   - [SESSION_SUMMARY_2026-05-22_EMOTE_CLUSTER.md](SESSION_SUMMARY_2026-05-22_EMOTE_CLUSTER.md) (2.8.42-2.8.43)
   - [SESSION_SUMMARY_2026-05-22_SAY_002_PERS.md](SESSION_SUMMARY_2026-05-22_SAY_002_PERS.md) (2.8.41)
@@ -19,44 +20,37 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.52 |
-| Tests | **4629 passed, 4 skipped** (full suite, ~6m 15s) |
+| Version | 2.8.54 |
+| Tests | **4631 passed, 4 skipped** (full suite, ~6m 10s) |
 | Cross-file invariants | INV-001..009 (all ✅ ENFORCED) |
 | `nanny.c` audit | 100% gap rows ✅ |
-| `act_info.c::do_prompt` | PROMPT-CMD-001/002/003 ✅; 004/005 stable-IDed (corner cases) |
+| `act_info.c::do_prompt` | ✅ PROMPT-CMD-001/002/003/004/005 all FIXED |
 | `act_comm.c::do_say` | ✅ 100% RE-AUDITED (SAY-001/002/003/004) |
 | `act_comm.c::do_emote` | EMOTE-001/002 ✅; PMOTE-001 ❌ MISSING (stable-IDed) |
-| `act_comm.c::do_tell` | TELL-001/002/003/004/005 ✅; TELL-006 deferred (MINOR cosmetic) |
+| `act_comm.c::do_tell` | ✅ 100% RE-AUDITED (TELL-001..005 FIXED, TELL-006 ANALYZED-INERT) |
 | `act_comm.c::do_shout` | ✅ 100% RE-AUDITED (SHOUT-001/002/003) |
 | `act_comm.c::do_yell` | ✅ 100% RE-AUDITED (YELL-001) |
 | Shared visibility helper | `mud/world/vision.py:pers` used by all 5 channel commands |
 | GitNexus index | stale (last analyze at `de1893f`); re-run with `npx gitnexus analyze --skip-agents-md` before next session that needs it. |
-| Local commits not pushed | 4 (`21f1b80..5e9e7fc`) — waiting on explicit user push approval. |
+| Local commits not pushed | 2 (`bd21cba`, `e9f026c`) + this handoff — waiting on explicit user push approval. |
 
 ## Next Intended Task
 
-The 5-command channel-message re-audit arc (say / tell / emote /
-shout / yell) is **COMPLETE**. Four reasonable continuations:
+Channel-message arc + do_prompt warm-up shelf both complete. Three
+reasonable continuations:
 
-1. **PMOTE-001** — `do_pmote` greenfield port. ROM ~50 lines of C
-   per-recipient second-person name substitution with apostrophe /
-   possessive handling. Larger; its own session.
-2. **TELL-006** — uppercase first char of buffered tells. ~5 min
-   warm-up.
-3. **PROMPT-CMD-004 / PROMPT-CMD-005** — corner-case `do_prompt`
-   warm-ups (50-char truncation, `%c`-suffix → append trailing
-   space).
-4. **New audit target** — outside `act_comm.c`. Tracker priorities:
-   healer / shop / train / practice (`act_obj.c` / `act_wiz.c`
-   transactional commands), or combat death messaging (which
-   likely contains analogous PERS gaps now that `pers()` is
-   broadly used).
-
-Recommendation: a **new audit target** (#4) — the act_comm.c
-channel arc is fully cleaned up; combat-message `$n` PERS bugs
-will be exactly the same pattern as the channel ones and benefit
-from the warm helper. Alternatively close the small warm-ups as a
-hygiene pass first.
+1. **Combat death messaging** (recommended). Same PERS gap pattern
+   the channel arc just normalized; `pers()` helper is warm;
+   integration test fixtures already in-hand. Likely cluster of
+   IDs around `mud/combat/engine.py` and
+   `mud/handler.py:extract_obj/raw_kill` against `src/fight.c`'s
+   `dam_message` / `raw_kill` act() lines.
+2. **PMOTE-001** — `do_pmote` greenfield port (~50 lines of ROM C
+   with per-recipient second-person name substitution +
+   apostrophe/possessive handling). Larger; its own session.
+3. **New audit target outside act_comm.c / act_info.c**. Tracker
+   priorities: healer / shop / train / practice transactional
+   commands (`act_obj.c` / `act_wiz.c`).
 
 ## Operational follow-ups
 
