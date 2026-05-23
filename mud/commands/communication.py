@@ -263,15 +263,30 @@ def do_shout(char: Character, args: str) -> str:
     if _has_comm_flag(char, CommFlag.SHOUTSOFF):
         return "You must turn shouts back on first."
     # mirroring ROM src/act_comm.c:836 — `act("$n shouts '$t'", ...)`.
-    # No comma between `shouts` and the open quote (SHOUT-002).
-    message = f"{char.name} shouts '{cleaned}'"
+    # No comma between `shouts` and the open quote (SHOUT-002). `$n`
+    # routes through PERS(ch, victim) per ROM's act() macro, so an
+    # invisible shouter renders as "someone" to listeners without
+    # DETECT_INVIS (SHOUT-003). Render per-listener instead of
+    # broadcast_global, which only takes one fixed message.
     current_wait = getattr(char, "wait", 0) or 0
     char.wait = max(int(current_wait), 12)
 
-    def _should_receive(target: Character) -> bool:
-        return not (_has_comm_flag(target, CommFlag.SHOUTSOFF) or _has_comm_flag(target, CommFlag.QUIET))
+    from mud.world.vision import pers
 
-    broadcast_global(message, channel="shout", exclude=char, should_send=_should_receive)
+    for victim in list(character_registry):
+        if victim is char:
+            continue
+        if _has_comm_flag(victim, CommFlag.SHOUTSOFF) or _has_comm_flag(victim, CommFlag.QUIET):
+            continue
+        if "shout" in getattr(victim, "muted_channels", set()):
+            continue
+        speaker_name = pers(char, victim)
+        per_message = f"{speaker_name} shouts '{cleaned}'"
+        writer = getattr(victim, "connection", None)
+        if writer:
+            asyncio.create_task(send_to_char(victim, per_message))
+        if hasattr(victim, "messages"):
+            victim.messages.append(per_message)
     # mirroring ROM src/act_comm.c:824 — `act("You shout '$T'", ...)`.
     # No comma between `shout` and the open quote (SHOUT-001).
     return f"You shout '{cleaned}'"

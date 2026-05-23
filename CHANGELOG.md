@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.51]
+
+### Fixed
+- **`SHOUT-003` — `do_shout` TO_VICT `$n` routes through PERS for invisible-shouter protection** (`src/act_comm.c:836`, `src/handler.c:2618`): ROM's `act("$n shouts '$t'", ...)` substitutes `$n` per-listener through `PERS(ch, victim)`. So an invisible shouter renders as `"someone"` to listeners without `DETECT_INVIS`. Python previously broadcast one fixed message string via `broadcast_global(message, channel="shout", exclude=char, should_send=_should_receive)`, leaking the invisible shouter's identity to every recipient. Fix: replaced `broadcast_global` in `mud/commands/communication.py:do_shout` with a per-listener loop over `character_registry` (mirroring ROM's `descriptor_list` iteration at `src/act_comm.c:825-838`) that filters by `SHOUTSOFF` / `QUIET` / muted_channels and renders `mud.world.vision.pers(char, victim)` per recipient. Locked in by `tests/integration/test_shout_yell_parity.py::test_shout_003_invisible_shouter_renders_as_someone_to_listener`.
+
+### Notes
+
+- Third of three `do_shout` gaps from the 2026-05-23 re-audit. `do_shout` is now complete. YELL-001 (same PERS pattern in `do_yell`) remains open and is the last item in the channel-message arc.
+- Full suite at `4628 passed, 4 skipped, 1 deselected` (+1 vs 2.8.50; zero regressions despite the per-listener broadcast refactor).
+
 ## [2.8.50]
 
 ### Fixed
