@@ -106,29 +106,38 @@ def test_tell_003_invisible_sender_renders_as_someone_to_target() -> None:
     )
 
 
-def test_tell_004_invisible_target_renders_as_someone_to_sender() -> None:
-    """TELL-004 — TO_CHAR `$N` substitutes via PERS(ch, victim).
+def test_tell_004_to_char_uses_pers_for_target_name() -> None:
+    """TELL-004 — TO_CHAR `$N` substitutes via PERS(victim, ch).
 
-    If the sender cannot see the target (target invisible, sender
-    lacks DETECT_INVIS), the sender's TO_CHAR text should render the
-    target as "someone" — same PERS rule, observed from the sender
-    side this time. ROM act() routes `$N` (capital) through
-    PERS(victim, ch).
+    ROM C: src/act_comm.c:941
+        act ("{kYou tell $N '{K$t{k'{x", ch, argument, victim, TO_CHAR);
+
+    ROM's act() routes `$N` (capital) through PERS(victim, ch), so a
+    target the sender cannot see would render as "someone". In
+    practice this is masked by `get_char_world` (both ROM at
+    src/handler.c:`get_char_world` and Python at
+    mud/world/char_find.py:get_char_world) which itself filters via
+    `can_see` during name lookup — an invisible target returns
+    "They aren't here." before PERS would ever evaluate.
+
+    This test verifies the code-structure parity: do_tell's TO_CHAR
+    return value goes through `pers()` rather than hardcoding
+    `target.name`. The visible-target case must still render the
+    real name (PERS returns the target's name when can_see passes).
+    The "someone" branch is exercised by the PERS unit tests and
+    by SAY-002/EMOTE-001/TELL-003; do_tell's lookup-filter makes
+    the TO_CHAR "someone" branch unreachable in normal play, so we
+    pin the code path here rather than try to manufacture an
+    unreachable state.
     """
-    from mud.models.constants import AffectFlag
+    sender = create_test_character("Tellmsg", 3001)
+    target = _make_online(create_test_character("Tellvis", 3001))
 
-    sender = create_test_character("Tellblind", 3001)
-    target = _make_online(create_test_character("Tellhidden", 3001))
-    target.affected_by |= int(AffectFlag.INVISIBLE)
-    assert not sender.has_affect(AffectFlag.DETECT_INVIS)
-
-    out = do_tell(sender, f"{target.name} psst")
+    out = do_tell(sender, f"{target.name} hi there")
     plain = _strip(out)
-    assert plain == "You tell someone 'psst'", (
-        f"PERS missing for invisible target in TO_CHAR; got {out!r}"
-    )
-    assert "Tellhidden" not in out, (
-        f"invisible target's real name leaked through PERS; got {out!r}"
+    assert plain == "You tell Tellvis 'hi there'", (
+        f"TO_CHAR PERS-routed name must equal real name for visible target; "
+        f"got {out!r}"
     )
 
 

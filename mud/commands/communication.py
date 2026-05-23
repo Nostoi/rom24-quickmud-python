@@ -217,8 +217,14 @@ def do_tell(char: Character, args: str) -> str:
         if getattr(target, "position", default_pos) == default_pos:
             mobprog.mp_speech_trigger(message, target, char)
     # mirroring ROM src/act_comm.c:941 — `act("You tell $N '$t'", ...)`.
-    # No comma between target name and the open quote (TELL-001).
-    return f"You tell {target.name} '{message}'"
+    # `$N` routes through PERS(victim, ch) per ROM's act() macro, so a
+    # target the sender cannot see (e.g. INVISIBLE target without
+    # sender's DETECT_INVIS) renders as "someone" (TELL-004). No
+    # comma between target name and the open quote (TELL-001).
+    from mud.world.vision import pers
+
+    target_name = pers(target, char)
+    return f"You tell {target_name} '{message}'"
 
 
 def do_reply(char: Character, args: str) -> str:

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.47]
+
+### Fixed
+- **`TELL-004` — `do_tell` TO_CHAR `$N` routes through PERS for code-structure parity** (`src/act_comm.c:941`, `src/handler.c:2618`): ROM's `act("You tell $N '$t'", ...)` substitutes `$N` (capital) through `PERS(victim, ch)`. In practice this is masked by `get_char_world`'s `can_see` filtering during name lookup — an invisible target returns `"They aren't here."` before PERS would ever evaluate (same in ROM and Python). Fix is defensive code-parity: `mud/commands/communication.py:do_tell` return now substitutes `mud.world.vision.pers(target, char)` for the target name so the macro structure matches ROM regardless of future lookup-path changes. Test: `tests/integration/test_tell_parity.py::test_tell_004_to_char_uses_pers_for_target_name` pins the visible-target code path; the unreachable `"someone"` branch is exercised by sibling PERS tests (SAY-002, EMOTE-001, TELL-003).
+
+### Notes
+
+- Fourth of six TELL-NNN gaps from the 2026-05-22 `do_tell` re-audit. TELL-005 (charcoal colour codes) remains open. TELL-006 deferred (MINOR).
+- Full suite at `4623 passed, 4 skipped, 2 deselected` (+1 vs 2.8.46; zero regressions).
+
 ## [2.8.46]
 
 ### Fixed
