@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.53]
+
+### Changed
+- **`TELL-006` — closed as ✅ ANALYZED-INERT** (`src/act_comm.c:893,926,937`): ROM's `buf[0] = UPPER(buf[0])` on the buffered tell strings is provably a no-op in ROM C itself — the formatted string always begins with `'{'` (colour code `{k`), and `UPPER('{') == '{'` since `{` is not lowercase. Unlike TELL-004 (behaviorally masked by a separate code path), this transformation has no reachable behavior to mirror and no failing test can be written. Doc-only close; no code change. `docs/parity/ACT_COMM_C_AUDIT.md` row flipped from 🔄 OPEN to ✅ ANALYZED. With this, the entire `do_tell` gap row (TELL-001..006) is closed.
+
 ## [2.8.52]
 
 ### Fixed
