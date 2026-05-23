@@ -46,7 +46,7 @@ def test_shout_respects_mute_and_ban():
     cara = make_player("Cara", 3001)
     bob.muted_channels.add("shout")
     out = process_command(alice, "shout hello")
-    assert out == "You shout, 'hello'"
+    assert out == "You shout 'hello'"
     assert "Alice shouts, 'hello'" in cara.messages
     assert all("hello" not in m for m in bob.messages)
     alice.banned_channels.add("shout")
@@ -91,7 +91,7 @@ def test_shout_and_tell_respect_comm_flags():
 
     bob.messages.clear()
     out = process_command(alice, "shout hi")
-    assert out == "You shout, 'hi'"
+    assert out == "You shout 'hi'"
     assert alice.wait == 12
     assert "Alice shouts, 'hi'" in bob.messages
 

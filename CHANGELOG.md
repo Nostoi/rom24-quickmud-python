@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.49]
+
+### Fixed
+- **`SHOUT-001` — `do_shout` TO_CHAR wording drops the comma** (`src/act_comm.c:824`): ROM emits `act("You shout '$T'", ...)` — no comma between `shout` and the open quote. Python previously returned `"You shout, '{cleaned}'"` with an extra comma. Fix: drop the comma in `mud/commands/communication.py:do_shout` return. Legacy assertions in `tests/test_communication.py` (×2) were baked to the buggy comma form and have been updated to the ROM-exact wording. Surfaced by a 2026-05-23 `do_shout` re-audit that found the prior "100% VERIFIED" claim incorrect (same audit-doc inflation that hit `do_say` / `do_emote` / `do_tell` this run). Locked in by `tests/integration/test_shout_yell_parity.py::test_shout_001_to_char_wording_drops_comma`.
+
+### Notes
+
+- First of three `do_shout` gaps from the 2026-05-23 re-audit. SHOUT-002 (TO_VICT wording), SHOUT-003 (PERS for shouter), plus YELL-001 (PERS for yeller — `do_yell` already gets wording right) all stable-IDed and queued.
+- Full suite at `4626 passed, 4 skipped, 3 deselected` (+1 vs 2.8.48; zero regressions).
+
 ## [2.8.48]
 
 ### Fixed

@@ -270,7 +270,9 @@ def do_shout(char: Character, args: str) -> str:
         return not (_has_comm_flag(target, CommFlag.SHOUTSOFF) or _has_comm_flag(target, CommFlag.QUIET))
 
     broadcast_global(message, channel="shout", exclude=char, should_send=_should_receive)
-    return f"You shout, '{cleaned}'"
+    # mirroring ROM src/act_comm.c:824 — `act("You shout '$T'", ...)`.
+    # No comma between `shout` and the open quote (SHOUT-001).
+    return f"You shout '{cleaned}'"
 
 
 def _check_channel_blockers(char: Character, toggle_flag: CommFlag) -> str | None:
