@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.46]
+
+### Fixed
+- **`TELL-003` — `do_tell` TO_VICT `$n` routes through PERS for invisible-sender protection** (`src/act_comm.c:942`, `src/handler.c:2618`): ROM's `act_new("$n tells you '$t'", ...)` substitutes `$n` per-target through `PERS(ch, victim)`, so an invisible sender renders as `"someone"` to a target without `DETECT_INVIS`. Python's `_handle_buffered_tell` hardcoded `sender.name`, leaking the invisible sender's identity (same pattern as pre-fix `do_say` / `do_emote`). Fix: substitute `mud.world.vision.pers(sender, target)` for the sender's name in the formatted string. Also applies to the buffered tell paths (linkdead / AFK / note-writing) since ROM's `sprintf(..., PERS(ch, victim), ...)` at `src/act_comm.c:891`/`924`/`935` wraps the same PERS call. Locked in by `tests/integration/test_tell_parity.py::test_tell_003_invisible_sender_renders_as_someone_to_target`.
+
+### Notes
+
+- Third of six TELL-NNN gaps from the 2026-05-22 `do_tell` re-audit. TELL-004 (PERS for target to sender) and TELL-005 (charcoal colour codes) remain open. TELL-006 deferred (MINOR).
+- Full suite at `4622 passed, 4 skipped, 3 deselected` (+1 vs 2.8.45; zero regressions).
+
 ## [2.8.45]
 
 ### Fixed

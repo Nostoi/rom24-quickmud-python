@@ -68,8 +68,16 @@ def _validate_tell_target(sender: Character, target: Character) -> str | None:
 
 def _handle_buffered_tell(sender: Character, target: Character, message: str) -> str | None:
     # mirroring ROM src/act_comm.c:942 — `act_new("$n tells you '$t'", ...)`.
+    # `$n` routes through PERS(ch, victim) per ROM's act() macro, so an
+    # invisible sender renders as "someone" to a target without
+    # DETECT_INVIS (TELL-003). Buffered tells (linkdead/AFK/note-writing
+    # branches below) use the same formatted string per ROM's sprintf
+    # calls at src/act_comm.c:891/924/935 which also wrap PERS(ch, victim).
     # No comma between `you` and the open quote (TELL-002).
-    formatted = f"{sender.name} tells you '{message}'"
+    from mud.world.vision import pers
+
+    sender_name = pers(sender, target)
+    formatted = f"{sender_name} tells you '{message}'"
 
     if _is_player_linkdead(target):
         _queue_personal_message(target, formatted)
