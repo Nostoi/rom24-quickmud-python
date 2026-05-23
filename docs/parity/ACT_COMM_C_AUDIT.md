@@ -723,10 +723,19 @@ return f"You shout, '{cleaned}'"
 
 ---
 
-#### 5. do_tell() - VERIFIED ✅
-**ROM C**: src/act_comm.c lines 845-950 (106 lines)  
-**QuickMUD**: communication.py:144  
-**Status**: ✅ **100% ROM C parity** (FIXED December 2025)
+#### 5. do_tell() - RE-AUDIT IN PROGRESS 🔄
+**ROM C**: src/act_comm.c lines 845-950 (106 lines)
+**QuickMUD**: communication.py:165
+**Status**: 🔄 **2026-05-22 re-audit** — previous December 2025 "100% VERIFIED" claim was incorrect (same audit-doc inflation that hit `do_say` and `do_emote` this session). Six gaps surfaced; closing in sequence.
+
+| Gap ID | Severity | ROM C | Python | Description | Status |
+|--------|----------|-------|--------|-------------|--------|
+| `TELL-001` | CRITICAL | src/act_comm.c:941 | mud/commands/communication.py:209 | TO_CHAR wording: ROM `"You tell $N '$t'"` (no comma between target name and open quote). Python returned `"You tell {target.name}, '{message}'"`. Fix: drop comma. Updates to legacy assertions in `tests/test_communication.py` and `tests/integration/test_communication_enhancement.py`. Test: `tests/integration/test_tell_parity.py::test_tell_001_to_char_wording_drops_comma`. | ✅ FIXED (2.8.44) |
+| `TELL-002` | CRITICAL | src/act_comm.c:942 | mud/commands/communication.py:70 | TO_VICT wording: ROM `"$n tells you '$t'"` (no comma between `you` and open quote). Python emits `"{sender.name} tells you, '{message}'"`. | 🔄 OPEN |
+| `TELL-003` | CRITICAL | src/act_comm.c:942, src/handler.c:2618 | mud/commands/communication.py:70 | TO_VICT `$n` routes through `PERS(ch, victim)` — invisible sender shows as `"someone"` to target without `DETECT_INVIS`. Python hardcodes `sender.name`. | 🔄 OPEN |
+| `TELL-004` | CRITICAL | src/act_comm.c:941, src/handler.c:2618 | mud/commands/communication.py:209 | TO_CHAR `$N` routes through `PERS(ch, ch)` — if sender cannot see target (incog target above sender trust), sender's text should render `"someone"` not `target.name`. Python hardcodes `target.name`. | 🔄 OPEN |
+| `TELL-005` | IMPORTANT | src/act_comm.c:941-942 | mud/commands/communication.py | Both lines wrapped with `{k...{K...{k...{x` charcoal/black colour codes. Python emits no codes. | 🔄 OPEN |
+| `TELL-006` | MINOR | src/act_comm.c:893,926,937 | mud/commands/communication.py:69 | Buffered tells (linkdead / AFK / note-writing) ROM-uppercases first char via `buf[0] = UPPER(buf[0])`. Python does not. Deferred — minor cosmetic. | 🔄 OPEN |
 
 **ROM C Behavior** (comprehensive):
 1. COMM_NOTELL or COMM_DEAF → "Your message didn't get through."

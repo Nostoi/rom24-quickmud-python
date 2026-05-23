@@ -135,7 +135,7 @@ class TestTellCommand:
 
         result = do_tell(alice, "bob Hello there!")
 
-        assert result == "You tell Bob, 'Hello there!'"
+        assert result == "You tell Bob 'Hello there!'"
         assert len(bob.messages) > 0
         assert "alice tells you" in bob.messages[0].lower()
 

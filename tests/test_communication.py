@@ -34,7 +34,7 @@ def test_tell_command():
     alice = make_player("Alice", 3001)
     bob = make_player("Bob", 3001)
     out = process_command(alice, "tell Bob hello")
-    assert out == "You tell Bob, 'hello'"
+    assert out == "You tell Bob 'hello'"
     assert "Alice tells you, 'hello'" in bob.messages
 
 
@@ -490,5 +490,5 @@ def test_reply_and_afk_buffer_match_rom():
     bob.desc = object()
     alice.messages.clear()
     returned = process_command(bob, "reply Hey!")
-    assert returned == "You tell Alice, 'Hey!'"
+    assert returned == "You tell Alice 'Hey!'"
     assert alice.messages[-1] == "Bob tells you, 'Hey!'"

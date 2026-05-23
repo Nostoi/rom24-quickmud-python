@@ -206,7 +206,9 @@ def do_tell(char: Character, args: str) -> str:
         default_pos = getattr(target, "default_pos", getattr(target, "position", Position.STANDING))
         if getattr(target, "position", default_pos) == default_pos:
             mobprog.mp_speech_trigger(message, target, char)
-    return f"You tell {target.name}, '{message}'"
+    # mirroring ROM src/act_comm.c:941 — `act("You tell $N '$t'", ...)`.
+    # No comma between target name and the open quote (TELL-001).
+    return f"You tell {target.name} '{message}'"
 
 
 def do_reply(char: Character, args: str) -> str:

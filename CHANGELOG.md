@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.44]
+
+### Fixed
+- **`TELL-001` — `do_tell` TO_CHAR wording drops the comma** (`src/act_comm.c:941`): ROM emits `act("You tell $N '$t'", ...)` — no comma between target name and the open quote. Python previously returned `"You tell {target.name}, '{message}'"` with an extra comma. Fix: drop the comma in `mud/commands/communication.py:do_tell` return. Legacy assertions in `tests/test_communication.py` (×2) and `tests/integration/test_communication_enhancement.py` were baked to the buggy comma form and have been updated to the ROM-exact wording. Surfaced by a 2026-05-22 `do_tell` re-audit that found the prior "100% VERIFIED" claim incorrect (same audit-doc inflation that hit `do_say` and `do_emote` this session). Locked in by `tests/integration/test_tell_parity.py::test_tell_001_to_char_wording_drops_comma`.
+
+### Notes
+
+- First of six TELL-NNN gaps from the 2026-05-22 `do_tell` re-audit. TELL-002 (TO_VICT wording comma), TELL-003 (PERS for sender to victim), TELL-004 (PERS for target to sender), TELL-005 (charcoal colour codes) remain open and will close in sequence. TELL-006 (uppercase first char of buffered tells — MINOR cosmetic) is intentionally deferred.
+- Full suite at `4620 passed, 4 skipped, 5 deselected` (+1 vs 2.8.43 baseline 4619/4; deselected = the still-open TELL gaps; zero regressions).
+
 ## [2.8.43]
 
 ### Fixed
