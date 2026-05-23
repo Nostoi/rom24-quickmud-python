@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.42]
+
+### Fixed
+- **`EMOTE-001` — `do_emote` PERS substitution: invisible emoter renders as `"someone"`** (`src/act_comm.c:1091`, `src/handler.c:2618-2664`): ROM's `act("$n $T", ..., TO_ROOM)` substitutes `$n` per-listener through `PERS()` so an invisible emoter renders as `"someone"` to listeners without `DETECT_INVIS`. Python previously hardcoded `char.name` into one TO_ROOM message and broadcast it to everyone in the room, leaking the invisible emoter's identity exactly like the pre-fix `do_say` (SAY-002). Fix: refactored `mud/commands/communication.py:do_emote` to render TO_ROOM per-listener using `mud.world.vision.pers(char, listener)` (the helper added in 2.8.41 for SAY-002). Tests: `tests/integration/test_emote_parity.py::test_emote_001_invisible_emoter_renders_as_someone_to_unaided_listener` and `::test_emote_001_visible_emoter_renders_real_name_to_listener`.
+
+### Notes
+
+- First of three gaps from the 2026-05-22 `do_emote` re-audit. EMOTE-002 (TO_CHAR `$n` → "You" instead of actor's own name) and PMOTE-001 (`do_pmote` not implemented in Python) remain open.
+- Full suite at `4618 passed, 4 skipped` (+2 vs 2.8.41 baseline 4616/4; zero regressions despite the per-listener broadcast refactor).
+
 ## [2.8.41]
 
 ### Added

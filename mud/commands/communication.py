@@ -560,12 +560,24 @@ def do_emote(char: Character, args: str) -> str:
     if not first.isalpha() or first.isspace():
         return "Moron!"
 
-    # Broadcast to room ($n $T = "<actor> <argument>")
-    message = f"{char.name} {args}"
+    # mirroring ROM src/act_comm.c:1091 — `act("$n $T", ..., TO_ROOM)`
+    # substitutes `$n` per-listener through PERS() so an invisible
+    # emoter renders as "someone" to listeners without DETECT_INVIS
+    # (EMOTE-001). Build one substituted string per recipient.
     if char.room:
-        broadcast_room(char.room, message, exclude=char)
+        from mud.world.vision import pers
 
-    return message
+        for listener in list(char.room.people):
+            if listener is char:
+                continue
+            per_message = f"{pers(char, listener)} {args}"
+            writer = getattr(listener, "connection", None)
+            if writer is not None:
+                asyncio.create_task(send_to_char(listener, per_message))
+            if hasattr(listener, "messages"):
+                listener.messages.append(per_message)
+
+    return f"{char.name} {args}"
 
 
 def do_pose(char: Character, args: str) -> str:

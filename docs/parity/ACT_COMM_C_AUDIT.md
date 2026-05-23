@@ -888,10 +888,16 @@ return f"You <channel> '<message>'"
 
 ---
 
-#### 16. do_emote() - PARTIAL GAP ⚠️
-**ROM C**: src/act_comm.c lines 1067-1095 (29 lines)  
-**QuickMUD**: communication.py:523  
-**Status**: ⚠️ **95% ROM C parity - Missing validation check**
+#### 16. do_emote() - RE-AUDIT 🔄
+**ROM C**: src/act_comm.c lines 1067-1095 (29 lines)
+**QuickMUD**: communication.py:544
+**Status**: 🔄 **2026-05-22 re-audit** — three gaps surfaced (EMOTE-001 ✅ FIXED, EMOTE-002 🔄 OPEN, PMOTE-001 ❌ MISSING — see rows below).
+
+| Gap ID | Severity | ROM C | Python | Description | Status |
+|--------|----------|-------|--------|-------------|--------|
+| `EMOTE-001` | CRITICAL | src/act_comm.c:1091, src/handler.c:2618 | mud/commands/communication.py:544 | TO_ROOM `$n` substitution must route through PERS() so invisible emoter renders as `"someone"` to listeners without DETECT_INVIS. Python hardcoded `char.name` and broadcast to all. Fix: per-listener render with `pers(char, listener)`. Tests: `tests/integration/test_emote_parity.py::test_emote_001_*`. | ✅ FIXED (2.8.42) |
+| `EMOTE-002` | CRITICAL | src/act_comm.c:1092 | mud/commands/communication.py:544 | TO_CHAR `$n` should substitute to `"You"` (act() handles the self branch). Python returns `f"{char.name} {args}"` so actor sees own name. | 🔄 OPEN |
+| `PMOTE-001` | IMPORTANT | src/act_comm.c:1098-1198 | _(missing)_ | `do_pmote` (per-receiver personalized emote with second-person substitution for matched names) is not implemented in Python. | ❌ MISSING |
 
 **ROM C Behavior**:
 1. PC check: COMM_NOEMOTE → "You can't show your emotions."
