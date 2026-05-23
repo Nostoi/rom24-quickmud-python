@@ -723,10 +723,10 @@ return f"You shout, '{cleaned}'"
 
 ---
 
-#### 5. do_tell() - RE-AUDIT IN PROGRESS 🔄
+#### 5. do_tell() - ✅ RE-AUDITED (5 of 6 closed)
 **ROM C**: src/act_comm.c lines 845-950 (106 lines)
 **QuickMUD**: communication.py:165
-**Status**: 🔄 **2026-05-22 re-audit** — previous December 2025 "100% VERIFIED" claim was incorrect (same audit-doc inflation that hit `do_say` and `do_emote` this session). Six gaps surfaced; closing in sequence.
+**Status**: ✅ **2026-05-22 re-audit** — TELL-001/002/003/004/005 all ✅ FIXED. TELL-006 (uppercase first char of buffered tells, MINOR cosmetic) intentionally deferred — see gap table below.
 
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|
@@ -734,7 +734,7 @@ return f"You shout, '{cleaned}'"
 | `TELL-002` | CRITICAL | src/act_comm.c:942 | mud/commands/communication.py:70 | TO_VICT wording: ROM `"$n tells you '$t'"` (no comma between `you` and open quote). Python emitted `"{sender.name} tells you, '{message}'"`. Fix: drop comma in `_handle_buffered_tell`'s formatted string. Updates to 4 legacy assertions in `tests/test_communication.py`. Test: `tests/integration/test_tell_parity.py::test_tell_002_to_vict_wording_drops_comma`. | ✅ FIXED (2.8.45) |
 | `TELL-003` | CRITICAL | src/act_comm.c:942, src/handler.c:2618 | mud/commands/communication.py:70 | TO_VICT `$n` routes through `PERS(ch, victim)` — invisible sender shows as `"someone"` to target without `DETECT_INVIS`. Python hardcoded `sender.name`. Fix: `_handle_buffered_tell` substitutes `pers(sender, target)` for the sender's name. Same PERS pattern as SAY-002/EMOTE-001. Test: `tests/integration/test_tell_parity.py::test_tell_003_invisible_sender_renders_as_someone_to_target`. | ✅ FIXED (2.8.46) |
 | `TELL-004` | IMPORTANT (code-parity; behaviorally masked) | src/act_comm.c:941, src/handler.c:2618 | mud/commands/communication.py:209 | TO_CHAR `$N` routes through `PERS(victim, ch)` per ROM's act() macro. Behaviorally masked: `get_char_world` (ROM + Python both) filters via `can_see` during name lookup, so an invisible target returns `"They aren't here."` before PERS would ever evaluate. Fix added defensive parity: `do_tell` return now substitutes `pers(target, char)` so the macro structure matches ROM regardless of any future lookup-path changes. Test: `tests/integration/test_tell_parity.py::test_tell_004_to_char_uses_pers_for_target_name` pins the visible-target code path; the unreachable `"someone"` branch is exercised by the PERS unit/use coverage in SAY-002/EMOTE-001/TELL-003. | ✅ FIXED (2.8.47) |
-| `TELL-005` | IMPORTANT | src/act_comm.c:941-942 | mud/commands/communication.py | Both lines wrapped with `{k...{K...{k...{x` charcoal/black colour codes. Python emits no codes. | 🔄 OPEN |
+| `TELL-005` | IMPORTANT | src/act_comm.c:941-942 | mud/commands/communication.py | Both lines wrapped with `{k...{K...{k...{x` charcoal/black colour codes — the ANSI translation layer (`mud/net/ansi.py`) consumes them on websocket send. Python emitted no codes. Fix: wrap TO_CHAR and TO_VICT strings with the ROM colour sequence. Legacy assertions in `tests/test_communication.py` (×5) and `tests/integration/test_communication_enhancement.py` updated to ROM-exact wording. Tests: `tests/integration/test_tell_parity.py::test_tell_005_*`. | ✅ FIXED (2.8.48) |
 | `TELL-006` | MINOR | src/act_comm.c:893,926,937 | mud/commands/communication.py:69 | Buffered tells (linkdead / AFK / note-writing) ROM-uppercases first char via `buf[0] = UPPER(buf[0])`. Python does not. Deferred — minor cosmetic. | 🔄 OPEN |
 
 **ROM C Behavior** (comprehensive):

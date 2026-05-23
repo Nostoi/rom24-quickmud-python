@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.48]
+
+### Fixed
+- **`TELL-005` — `do_tell` wraps both lines with ROM `{k...{K...{k...{x` charcoal colour codes** (`src/act_comm.c:941-942`): ROM frames the tell channel in charcoal/black (`{k`), switches to bright/highlighted-charcoal (`{K`) for the message body, returns to `{k` for the closing quote, and resets with `{x`. The ANSI translation layer at `mud/net/ansi.py` consumes those tokens on websocket send. Python previously emitted no codes, so the tell channel rendered in the player's default terminal colour and the framing-vs-body contrast ROM relies on was lost. Fix: `mud/commands/communication.py:do_tell` return and `_handle_buffered_tell` formatted string now wrap with the ROM colour sequence. Legacy assertions in `tests/test_communication.py` (×5) and `tests/integration/test_communication_enhancement.py` were baked to the codeless plain-text form (per AGENTS.md — tests asserting Python behavior contradicting ROM are bugs in the **test**, not the implementation) and have been updated to the ROM-exact wording. Locked in by `tests/integration/test_tell_parity.py::test_tell_005_to_char_wraps_rom_color_codes` and `::test_tell_005_to_vict_wraps_rom_color_codes`.
+
+### Notes
+
+- Fifth of six TELL-NNN gaps from the 2026-05-22 `do_tell` re-audit. The audit's main cluster (TELL-001/002/003/004/005) is now closed. TELL-006 (uppercase first char of buffered tells — MINOR cosmetic) remains intentionally deferred and stable-IDed in `docs/parity/ACT_COMM_C_AUDIT.md`.
+- Full suite at `4625 passed, 4 skipped` (+2 vs 2.8.47 baseline 4623/4; zero regressions).
+
 ## [2.8.47]
 
 ### Fixed

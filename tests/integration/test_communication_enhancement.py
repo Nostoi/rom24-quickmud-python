@@ -135,7 +135,8 @@ class TestTellCommand:
 
         result = do_tell(alice, "bob Hello there!")
 
-        assert result == "You tell Bob 'Hello there!'"
+        # ROM src/act_comm.c:941 — `act("{kYou tell $N '{K$t{k'{x", ...)`.
+        assert result == "{kYou tell Bob '{KHello there!{k'{x"
         assert len(bob.messages) > 0
         assert "alice tells you" in bob.messages[0].lower()
 

@@ -34,8 +34,10 @@ def test_tell_command():
     alice = make_player("Alice", 3001)
     bob = make_player("Bob", 3001)
     out = process_command(alice, "tell Bob hello")
-    assert out == "You tell Bob 'hello'"
-    assert "Alice tells you 'hello'" in bob.messages
+    # ROM src/act_comm.c:941-942 — `act("{kYou tell $N '{K$t{k'{x", ...)`
+    # and `act_new("{k$n tells you '{K$t{k'{x", ...)`.
+    assert out == "{kYou tell Bob '{Khello{k'{x"
+    assert "{kAlice tells you '{Khello{k'{x" in bob.messages
 
 
 def test_shout_respects_mute_and_ban():
@@ -476,7 +478,7 @@ def test_reply_and_afk_buffer_match_rom():
     bob.set_comm_flag(CommFlag.AFK)
     response = process_command(alice, "tell Bob hello there")
     assert response == "Bob is AFK, but your tell will go through when they return."
-    assert bob.messages[-1] == "Alice tells you 'hello there'"
+    assert bob.messages[-1] == "{kAlice tells you '{Khello there{k'{x"
     assert bob.reply is alice
 
     bob.messages.clear()
@@ -484,11 +486,11 @@ def test_reply_and_afk_buffer_match_rom():
     bob.desc = None
     offline = process_command(alice, "tell Bob you around?")
     assert offline == "Bob seems to have misplaced their link...try again later."
-    assert bob.messages[-1] == "Alice tells you 'you around?'"
+    assert bob.messages[-1] == "{kAlice tells you '{Kyou around?{k'{x"
     assert bob.reply is alice
 
     bob.desc = object()
     alice.messages.clear()
     returned = process_command(bob, "reply Hey!")
-    assert returned == "You tell Alice 'Hey!'"
-    assert alice.messages[-1] == "Bob tells you 'Hey!'"
+    assert returned == "{kYou tell Alice '{KHey!{k'{x"
+    assert alice.messages[-1] == "{kBob tells you '{KHey!{k'{x"

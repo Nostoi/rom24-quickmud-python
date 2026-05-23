@@ -67,17 +67,20 @@ def _validate_tell_target(sender: Character, target: Character) -> str | None:
 
 
 def _handle_buffered_tell(sender: Character, target: Character, message: str) -> str | None:
-    # mirroring ROM src/act_comm.c:942 — `act_new("$n tells you '$t'", ...)`.
+    # mirroring ROM src/act_comm.c:942 — `act_new("{k$n tells you '{K$t{k'{x", ...)`.
     # `$n` routes through PERS(ch, victim) per ROM's act() macro, so an
     # invisible sender renders as "someone" to a target without
     # DETECT_INVIS (TELL-003). Buffered tells (linkdead/AFK/note-writing
     # branches below) use the same formatted string per ROM's sprintf
     # calls at src/act_comm.c:891/924/935 which also wrap PERS(ch, victim).
-    # No comma between `you` and the open quote (TELL-002).
+    # No comma between `you` and the open quote (TELL-002). Wraps with
+    # ROM charcoal/black colour codes ({k frame, {K message body, {x
+    # reset) — the ANSI translation layer in mud/net/ansi.py consumes
+    # them on websocket send (TELL-005).
     from mud.world.vision import pers
 
     sender_name = pers(sender, target)
-    formatted = f"{sender_name} tells you '{message}'"
+    formatted = f"{{k{sender_name} tells you '{{K{message}{{k'{{x"
 
     if _is_player_linkdead(target):
         _queue_personal_message(target, formatted)
@@ -216,15 +219,18 @@ def do_tell(char: Character, args: str) -> str:
         default_pos = getattr(target, "default_pos", getattr(target, "position", Position.STANDING))
         if getattr(target, "position", default_pos) == default_pos:
             mobprog.mp_speech_trigger(message, target, char)
-    # mirroring ROM src/act_comm.c:941 — `act("You tell $N '$t'", ...)`.
+    # mirroring ROM src/act_comm.c:941 — `act("{kYou tell $N '{K$t{k'{x", ...)`.
     # `$N` routes through PERS(victim, ch) per ROM's act() macro, so a
     # target the sender cannot see (e.g. INVISIBLE target without
     # sender's DETECT_INVIS) renders as "someone" (TELL-004). No
-    # comma between target name and the open quote (TELL-001).
+    # comma between target name and the open quote (TELL-001). Wraps
+    # with ROM charcoal/black colour codes ({k frame, {K message body,
+    # {x reset) — the ANSI translation layer in mud/net/ansi.py
+    # consumes them on websocket send (TELL-005).
     from mud.world.vision import pers
 
     target_name = pers(target, char)
-    return f"You tell {target_name} '{message}'"
+    return f"{{kYou tell {target_name} '{{K{message}{{k'{{x"
 
 
 def do_reply(char: Character, args: str) -> str:
