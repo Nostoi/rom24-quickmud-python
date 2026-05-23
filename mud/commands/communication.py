@@ -577,7 +577,10 @@ def do_emote(char: Character, args: str) -> str:
             if hasattr(listener, "messages"):
                 listener.messages.append(per_message)
 
-    return f"{char.name} {args}"
+    # mirroring ROM src/act_comm.c:1092 — `act("$n $T", ..., TO_CHAR)`.
+    # ROM act() substitutes `$n` to "You" on the TO_CHAR branch so the
+    # actor sees `"You <args>"` rather than their own name (EMOTE-002).
+    return f"You {args}"
 
 
 def do_pose(char: Character, args: str) -> str:

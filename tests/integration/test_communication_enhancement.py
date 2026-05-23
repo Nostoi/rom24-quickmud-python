@@ -82,7 +82,9 @@ class TestEmoteCommand:
         """Test emote displays custom action to room."""
         result = do_emote(alice, "smiles happily")
 
-        assert result == "Alice smiles happily"
+        # ROM src/act_comm.c:1092 — `act("$n $T", ..., TO_CHAR)` substitutes
+        # `$n` to "You" on the self branch (EMOTE-002).
+        assert result == "You smiles happily"
 
     def test_emote_requires_argument(self, alice):
         """Test emote without argument shows error."""

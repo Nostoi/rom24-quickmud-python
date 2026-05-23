@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.43]
+
+### Fixed
+- **`EMOTE-002` — `do_emote` TO_CHAR `$n` renders as "You", not the actor's own name** (`src/act_comm.c:1092`): ROM's `act("$n $T", ..., TO_CHAR)` substitutes `$n` to `"You"` on the self branch — the actor reads `"You smiles happily"`, not `"Alice smiles happily"`. Python previously returned `f"{char.name} {args}"` so the actor saw their own name as the emote subject. Fix: `mud/commands/communication.py:do_emote` now returns `f"You {args}"`. Legacy `tests/integration/test_communication_enhancement.py::test_emote_broadcasts_custom_action` was baked to the buggy form (per AGENTS.md — tests asserting Python behavior contradicting ROM are bugs in the **test**, not the implementation) and has been updated to the ROM-exact wording. Locked in by `tests/integration/test_emote_parity.py::test_emote_002_self_message_renders_you_not_actor_name`.
+
+### Notes
+
+- Second of three gaps from the 2026-05-22 `do_emote` re-audit. PMOTE-001 (`do_pmote` not implemented in Python) remains open as a missing-function gap, tracked for a future session.
+- Full suite at `4619 passed, 4 skipped` (+1 vs 2.8.42 baseline 4618/4; zero regressions).
+
 ## [2.8.42]
 
 ### Fixed

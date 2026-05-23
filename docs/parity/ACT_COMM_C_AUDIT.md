@@ -896,7 +896,7 @@ return f"You <channel> '<message>'"
 | Gap ID | Severity | ROM C | Python | Description | Status |
 |--------|----------|-------|--------|-------------|--------|
 | `EMOTE-001` | CRITICAL | src/act_comm.c:1091, src/handler.c:2618 | mud/commands/communication.py:544 | TO_ROOM `$n` substitution must route through PERS() so invisible emoter renders as `"someone"` to listeners without DETECT_INVIS. Python hardcoded `char.name` and broadcast to all. Fix: per-listener render with `pers(char, listener)`. Tests: `tests/integration/test_emote_parity.py::test_emote_001_*`. | ✅ FIXED (2.8.42) |
-| `EMOTE-002` | CRITICAL | src/act_comm.c:1092 | mud/commands/communication.py:544 | TO_CHAR `$n` should substitute to `"You"` (act() handles the self branch). Python returns `f"{char.name} {args}"` so actor sees own name. | 🔄 OPEN |
+| `EMOTE-002` | CRITICAL | src/act_comm.c:1092 | mud/commands/communication.py:544 | TO_CHAR `$n` should substitute to `"You"` (act() handles the self branch). Python returned `f"{char.name} {args}"` so actor saw own name. Fix: return `f"You {args}"` instead. Legacy `test_emote_broadcasts_custom_action` was baked to the buggy form and has been updated to ROM-exact wording. Test: `tests/integration/test_emote_parity.py::test_emote_002_self_message_renders_you_not_actor_name`. | ✅ FIXED (2.8.43) |
 | `PMOTE-001` | IMPORTANT | src/act_comm.c:1098-1198 | _(missing)_ | `do_pmote` (per-receiver personalized emote with second-person substitution for matched names) is not implemented in Python. | ❌ MISSING |
 
 **ROM C Behavior**:
