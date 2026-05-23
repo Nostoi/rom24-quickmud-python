@@ -67,7 +67,9 @@ def _validate_tell_target(sender: Character, target: Character) -> str | None:
 
 
 def _handle_buffered_tell(sender: Character, target: Character, message: str) -> str | None:
-    formatted = f"{sender.name} tells you, '{message}'"
+    # mirroring ROM src/act_comm.c:942 — `act_new("$n tells you '$t'", ...)`.
+    # No comma between `you` and the open quote (TELL-002).
+    formatted = f"{sender.name} tells you '{message}'"
 
     if _is_player_linkdead(target):
         _queue_personal_message(target, formatted)
