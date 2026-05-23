@@ -1,10 +1,11 @@
-# Session Status — 2026-05-22 — `do_tell` re-audit (TELL-001..005 closed; TELL-006 deferred)
+# Session Status — 2026-05-23 — channel-message re-audit arc COMPLETE (SHOUT-001..003, YELL-001)
 
 ## Current State
 
-- **Last completed**: **TELL-001 → TELL-002 → TELL-003 → TELL-004 → TELL-005** released as 2.8.44 → 2.8.48 across five commits (`4ff037a`, `c4cb39b`, `c2f9aa8`, `3aabbe8`, `7f64764`). The 2026-05-22 `do_tell` re-audit demoted another "100% VERIFIED" claim and closed five of six surfaced gaps; TELL-006 (MINOR cosmetic — uppercase first char of buffered tells) deferred.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-22_TELL_CLUSTER.md](SESSION_SUMMARY_2026-05-22_TELL_CLUSTER.md)
+- **Last completed**: **SHOUT-001 → SHOUT-002 → SHOUT-003 → YELL-001** released as 2.8.49 → 2.8.52 across four commits (`21f1b80`, `9e55e1a`, `78ad2cb`, `5e9e7fc`). With this slice the entire 5-command channel-message re-audit arc (`do_say`, `do_emote`, `do_tell`, `do_shout`, `do_yell`) is **COMPLETE** — every `$n` substitution routes through `pers()`, every wording matches ROM-exact, every channel that uses ROM colour codes wraps them.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-23_SHOUT_YELL_CLUSTER.md](SESSION_SUMMARY_2026-05-23_SHOUT_YELL_CLUSTER.md)
 - **Earlier summaries this run**:
+  - [SESSION_SUMMARY_2026-05-22_TELL_CLUSTER.md](SESSION_SUMMARY_2026-05-22_TELL_CLUSTER.md) (2.8.44-2.8.48)
   - [SESSION_SUMMARY_2026-05-22_EMOTE_CLUSTER.md](SESSION_SUMMARY_2026-05-22_EMOTE_CLUSTER.md) (2.8.42-2.8.43)
   - [SESSION_SUMMARY_2026-05-22_SAY_002_PERS.md](SESSION_SUMMARY_2026-05-22_SAY_002_PERS.md) (2.8.41)
   - [SESSION_SUMMARY_2026-05-22_SAY_CLUSTER_AND_PROMPT_TILDE.md](SESSION_SUMMARY_2026-05-22_SAY_CLUSTER_AND_PROMPT_TILDE.md) (2.8.37-2.8.40)
@@ -18,35 +19,44 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.48 |
-| Tests | **4625 passed, 4 skipped** (full suite, ~6m 38s) |
+| Version | 2.8.52 |
+| Tests | **4629 passed, 4 skipped** (full suite, ~6m 15s) |
 | Cross-file invariants | INV-001..009 (all ✅ ENFORCED) |
 | `nanny.c` audit | 100% gap rows ✅ |
 | `act_info.c::do_prompt` | PROMPT-CMD-001/002/003 ✅; 004/005 stable-IDed (corner cases) |
 | `act_comm.c::do_say` | ✅ 100% RE-AUDITED (SAY-001/002/003/004) |
 | `act_comm.c::do_emote` | EMOTE-001/002 ✅; PMOTE-001 ❌ MISSING (stable-IDed) |
 | `act_comm.c::do_tell` | TELL-001/002/003/004/005 ✅; TELL-006 deferred (MINOR cosmetic) |
-| Shared visibility helper | `mud/world/vision.py:pers` now used by 4 commands (do_say, do_emote, do_tell TO_CHAR, do_tell TO_VICT) |
+| `act_comm.c::do_shout` | ✅ 100% RE-AUDITED (SHOUT-001/002/003) |
+| `act_comm.c::do_yell` | ✅ 100% RE-AUDITED (YELL-001) |
+| Shared visibility helper | `mud/world/vision.py:pers` used by all 5 channel commands |
 | GitNexus index | stale (last analyze at `de1893f`); re-run with `npx gitnexus analyze --skip-agents-md` before next session that needs it. |
-| Local commits not pushed | 5 (`4ff037a..7f64764`) — waiting on explicit user push approval. |
+| Local commits not pushed | 4 (`21f1b80..5e9e7fc`) — waiting on explicit user push approval. |
 
 ## Next Intended Task
 
-Four channel-command audits this run: `do_say` ✅, `do_emote` ✅,
-`do_tell` ✅, and the still-open broadcast channels. Four natural
-next directions, in order of recommendation:
+The 5-command channel-message re-audit arc (say / tell / emote /
+shout / yell) is **COMPLETE**. Four reasonable continuations:
 
-1. **`do_shout` / `do_yell` re-audit** — last two channel commands.
-   Likely same audit-doc inflation; expect SHOUT-NNN / YELL-NNN
-   gaps for wording, colour, PERS. Completes the major
-   channel-command quartet (say/tell/emote/shout/yell).
-2. **PMOTE-001** — greenfield port of ROM `do_pmote` (~50 lines C
-   with per-recipient second-person name substitution). Larger;
-   own session.
-3. **TELL-006** — uppercase first char of buffered tells. Quick
+1. **PMOTE-001** — `do_pmote` greenfield port. ROM ~50 lines of C
+   per-recipient second-person name substitution with apostrophe /
+   possessive handling. Larger; its own session.
+2. **TELL-006** — uppercase first char of buffered tells. ~5 min
    warm-up.
-4. **PROMPT-CMD-004 / PROMPT-CMD-005** — corner-case `do_prompt`
-   warm-ups still stable-IDed.
+3. **PROMPT-CMD-004 / PROMPT-CMD-005** — corner-case `do_prompt`
+   warm-ups (50-char truncation, `%c`-suffix → append trailing
+   space).
+4. **New audit target** — outside `act_comm.c`. Tracker priorities:
+   healer / shop / train / practice (`act_obj.c` / `act_wiz.c`
+   transactional commands), or combat death messaging (which
+   likely contains analogous PERS gaps now that `pers()` is
+   broadly used).
+
+Recommendation: a **new audit target** (#4) — the act_comm.c
+channel arc is fully cleaned up; combat-message `$n` PERS bugs
+will be exactly the same pattern as the channel ones and benefit
+from the warm helper. Alternatively close the small warm-ups as a
+hygiene pass first.
 
 ## Operational follow-ups
 
