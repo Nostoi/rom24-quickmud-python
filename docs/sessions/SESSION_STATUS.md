@@ -1,10 +1,11 @@
-# Session Status — 2026-05-22 — `do_say` re-audit complete (SAY-001..004)
+# Session Status — 2026-05-22 — `do_emote` re-audit (EMOTE-001/002 closed; PMOTE-001 stable-IDed)
 
 ## Current State
 
-- **Last completed**: **SAY-002** released as 2.8.41 (`7465ac0`). `do_say` now substitutes `$n` per-listener through a ROM-faithful `PERS()` helper (`mud/world/vision.py:pers`), so invisible/hidden speakers render as `"someone"` to unaided listeners. Closes the four-gap `do_say` re-audit cluster (SAY-001/002/003/004 all ✅).
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-22_SAY_002_PERS.md](SESSION_SUMMARY_2026-05-22_SAY_002_PERS.md)
+- **Last completed**: **EMOTE-001 + EMOTE-002** released as 2.8.42 (`4c61270`) and 2.8.43 (`e10aa0f`). Same PERS substitution + TO_CHAR-"You" pattern as the `do_say` cluster, closed in two TDD commits. PMOTE-001 (`do_pmote` not implemented in Python) stable-IDed as ❌ MISSING for a future session.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-22_EMOTE_CLUSTER.md](SESSION_SUMMARY_2026-05-22_EMOTE_CLUSTER.md)
 - **Earlier summaries this run**:
+  - [SESSION_SUMMARY_2026-05-22_SAY_002_PERS.md](SESSION_SUMMARY_2026-05-22_SAY_002_PERS.md) (2.8.41)
   - [SESSION_SUMMARY_2026-05-22_SAY_CLUSTER_AND_PROMPT_TILDE.md](SESSION_SUMMARY_2026-05-22_SAY_CLUSTER_AND_PROMPT_TILDE.md) (2.8.37-2.8.40)
   - [SESSION_SUMMARY_2026-05-22_PROMPT_CMD_PARITY.md](SESSION_SUMMARY_2026-05-22_PROMPT_CMD_PARITY.md) (2.8.36)
   - [SESSION_SUMMARY_2026-05-22_NANNY_SAVELOAD_RUNTIME_PATH.md](SESSION_SUMMARY_2026-05-22_NANNY_SAVELOAD_RUNTIME_PATH.md) (2.8.35)
@@ -16,35 +17,33 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.41 |
-| Tests | **4616 passed, 4 skipped** (full suite, ~7m 35s) |
-| Cross-file invariants | INV-001..009 (all ✅ ENFORCED; INV-001 SINGLE-DELIVERY enforcement strengthened by `do_say` single-delivery test) |
+| Version | 2.8.43 |
+| Tests | **4619 passed, 4 skipped** (full suite, ~6m 28s) |
+| Cross-file invariants | INV-001..009 (all ✅ ENFORCED) |
 | `nanny.c` audit | 100% gap rows ✅ |
-| `act_info.c::do_prompt` | PROMPT-CMD-001/002/003 ✅ FIXED; PROMPT-CMD-004/005 stable-IDed (corner cases) |
-| `act_comm.c::do_say` | ✅ 100% RE-AUDITED (SAY-001/002/003/004 all ✅ FIXED) |
-| New shared helper | `mud/world/vision.py:pers(target, observer)` mirrors ROM `PERS()`; usable for `do_tell`/`do_emote`/`do_shout`/etc. |
+| `act_info.c::do_prompt` | PROMPT-CMD-001/002/003 ✅; 004/005 stable-IDed (corner cases) |
+| `act_comm.c::do_say` | ✅ 100% RE-AUDITED (SAY-001/002/003/004) |
+| `act_comm.c::do_emote` | EMOTE-001/002 ✅ FIXED; PMOTE-001 ❌ MISSING (stable-IDed) |
+| Shared visibility helpers | `mud/world/vision.py:pers` + `can_see_character` cover SAY-002, EMOTE-001, and any future act()-shaped channel |
 | GitNexus index | stale (last analyze at `de1893f`); re-run with `npx gitnexus analyze --skip-agents-md` before next session that needs it. |
-| Local commits not pushed | 1 (`7465ac0`) — waiting on explicit user push approval. |
+| Local commits not pushed | 2 (`4c61270`, `e10aa0f`) — waiting on explicit user push approval. |
 
 ## Next Intended Task
 
-The `do_say` re-audit cluster is done and the reusable `pers()`
-helper is now in place. Three natural next directions:
+`do_say` ✅ done. `do_emote` ✅ done (modulo PMOTE-001 stub). Three
+natural next directions, listed in increasing complexity:
 
-1. **`do_emote` / `do_pose` / `do_pmote` re-audit** —
-   structurally identical to `do_say` and likely to have the same
-   PERS-divergence + colour-code + wording bugs. Fast cluster to
-   close now that the helper exists.
-2. **`do_tell` re-audit** — high-traffic; PERS impact may be
-   limited (recipient receives by direct lookup) but worth
-   verifying broadcast wording and any sibling `act()` paths.
-3. **`do_shout` / `do_yell` channels** — per-listener PERS cost
-   is higher (global broadcast) but ROM does it. Verify single
-   delivery (INV-001) and PERS substitution.
+1. **`do_tell` re-audit** — verify TO_CHAR / TO_VICT wording and
+   PERS for the `"$N tells you '$t'"` line. High-traffic, well-bounded.
+2. **`do_shout` / `do_yell` channels** — global broadcasts; per-listener
+   PERS cost higher but ROM does it. Verify INV-001 single-delivery.
+3. **PMOTE-001** — greenfield port of ROM `do_pmote` (~50 lines C with
+   per-recipient second-person name substitution). Larger; its own
+   session.
 
-Lower-priority warm-ups still stable-IDed: PROMPT-CMD-004
-(50-char truncation), PROMPT-CMD-005 (`%c`-suffix → append
-trailing space).
+Plus corner-case warm-ups still on the shelf: PROMPT-CMD-004
+(50-char truncation), PROMPT-CMD-005 (`%c`-suffix → append trailing
+space).
 
 ## Operational follow-ups
 
