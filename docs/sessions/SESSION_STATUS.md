@@ -1,9 +1,9 @@
-# Session Status — 2026-05-23 — `fight.c` weapon-proc PERS sweep closed (FIGHT-009..013)
+# Session Status — 2026-05-23 — `fight.c` weapon-proc PERS sweep + autosac (FIGHT-009..014)
 
 ## Current State
 
-- **Last completed**: **FIGHT-009..013** (weapon-proc TO_ROOM broadcasts) released as 2.8.61 → 2.8.65 across five TDD commits. Both PERS surfaces in `mud/combat/engine.py` — position-change broadcasts (FIGHT-004..008) and weapon-proc broadcasts (FIGHT-009..013) — are now ROM-faithful. The `_broadcast_pos_change` helper powers 9 broadcast sites and accepts arbitrary `**extra` template kwargs (used for `{weapon}` substitution on ROM `$p`).
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-23_FIGHT_C_WEAPON_PROC_PERS_SWEEP.md](SESSION_SUMMARY_2026-05-23_FIGHT_C_WEAPON_PROC_PERS_SWEEP.md)
+- **Last completed**: **FIGHT-009..013** (weapon-proc broadcasts) released as 2.8.61 → 2.8.65, plus **FIGHT-014** (`_auto_sacrifice` broadcast PERS) released as 2.8.66 / `e751ba7` as a warm-up. All three PERS surfaces in `mud/combat/engine.py` — position-change broadcasts (FIGHT-004..008), weapon-proc broadcasts (FIGHT-009..013), and autosac broadcast (FIGHT-014) — are now ROM-faithful. The `_broadcast_pos_change` helper powers 10 broadcast sites and accepts arbitrary `**extra` template kwargs.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-23_FIGHT_C_WEAPON_PROC_PERS_SWEEP.md](SESSION_SUMMARY_2026-05-23_FIGHT_C_WEAPON_PROC_PERS_SWEEP.md) (FIGHT-009..013); FIGHT-014 closed in `e751ba7` as a hygiene warm-up after the cluster ship.
 - **Earlier summaries this run**:
   - [SESSION_SUMMARY_2026-05-23_FIGHT_C_PERS_SWEEP.md](SESSION_SUMMARY_2026-05-23_FIGHT_C_PERS_SWEEP.md) (2.8.55-2.8.60)
   - [SESSION_SUMMARY_2026-05-23_TELL_006_AND_PROMPT_CMD_HYGIENE.md](SESSION_SUMMARY_2026-05-23_TELL_006_AND_PROMPT_CMD_HYGIENE.md) (2.8.53-2.8.54)
@@ -22,8 +22,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.65 |
-| Tests | **4637 passed, 4 skipped** (full suite, ~6m 20s) |
+| Version | 2.8.66 |
+| Tests | **4638 passed, 4 skipped** (full suite, ~6m 10s) |
 | Cross-file invariants | INV-001..009 (all ✅ ENFORCED) |
 | `nanny.c` audit | 100% gap rows ✅ |
 | `act_info.c::do_prompt` | ✅ PROMPT-CMD-001..005 all FIXED |
@@ -34,30 +34,33 @@
 | `act_comm.c::do_yell` | ✅ 100% RE-AUDITED (YELL-001) |
 | `fight.c::_position_change_message` | ✅ FIGHT-004..008 all FIXED |
 | `fight.c` weapon procs | ✅ FIGHT-009..013 all FIXED |
-| Shared visibility helper | `mud/world/vision.py:pers` used by all 5 channel commands + `_broadcast_pos_change` helper in `mud/combat/engine.py` (9 broadcast sites) |
+| `fight.c` autosac broadcast | ✅ FIGHT-014 FIXED (FIGHT-015 reserved for parallel `_auto_sacrifice` vs ROM `do_function(do_sacrifice)` structural divergence) |
+| Shared visibility helper | `mud/world/vision.py:pers` used by all 5 channel commands + `_broadcast_pos_change` helper in `mud/combat/engine.py` (10 broadcast sites) |
 | GitNexus index | stale (last analyze at `de1893f`); re-run with `npx gitnexus analyze --skip-agents-md` before next session that needs it. |
-| Local commits not pushed | 5 (`59655b1..d93a88a`) + this handoff — waiting on explicit user push approval. |
+| Local commits not pushed | 1 (`e751ba7` — FIGHT-014) + this STATUS refresh — waiting on explicit user push approval. |
 
 ## Next Intended Task
 
-Both major combat-message PERS surfaces in `mud/combat/engine.py`
-are cleaned up. Three reasonable continuations:
+All non-`dam_message` combat-broadcast PERS surfaces in
+`mud/combat/engine.py` are now ROM-faithful. Two reasonable
+continuations:
 
 1. **`dam_message`** (`mud/combat/messages.py` / `mud/combat/engine.py:252`)
    — ROM `src/fight.c:2035-2233`. Per-hit damage-tier broadcast
    surface (hundreds of `act()` lines). Highest-volume PERS leak
    remaining in combat. **Likely a multi-session arc.** Best
    started fresh.
-2. **FIGHT-014 — `do_sacrifice` PERS** (`mud/combat/engine.py:956`,
-   single `_broadcast_room` call with `expand_placeholders`-rendered
-   `"$n sacrifices $N to Mota."`). 10-minute warm-up; PERS gap on
-   attacker. Could close before opening dam_message.
-3. **PMOTE-001** — `do_pmote` greenfield port (~50 lines of C on
+2. **PMOTE-001** — `do_pmote` greenfield port (~50 lines of C on
    the `act_comm.c` shelf, per-recipient second-person substitution
    with apostrophe/possessive handling).
 
-Recommendation: **FIGHT-014** as a warm-up, then open `dam_message`
-as a fresh session.
+Also note: **FIGHT-015 reserved** for the structural divergence
+where Python's `_auto_sacrifice` re-implements sacrifice logic
+inline rather than dispatching to `do_sacrifice` like ROM does at
+`src/fight.c:970`. Not blocking; a refactor for a quieter session.
+
+Recommendation: stop and push the FIGHT-014 commit, then open
+`dam_message` as a fresh session.
 
 ## Operational follow-ups
 
