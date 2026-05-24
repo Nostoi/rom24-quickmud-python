@@ -1,10 +1,11 @@
-# Session Status — 2026-05-23 — `fight.c` PERS sweep closed (FIGHT-004..008)
+# Session Status — 2026-05-23 — `fight.c` weapon-proc PERS sweep closed (FIGHT-009..013)
 
 ## Current State
 
-- **Last completed**: **FIGHT-004..008** (position-change broadcast surface in `_position_change_message`) released as 2.8.55 → 2.8.59 across five TDD commits, plus a small PROMPT-CMD-005 legacy-test mop-up at 2.8.60. With this slice the entire position-change-broadcast surface in `mud/combat/engine.py` routes `$n` through `pers()` and emits ROM-exact wording / colour codes. The same channel-arc PERS pattern now covers say / tell / emote / shout / yell / position-change.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-23_FIGHT_C_PERS_SWEEP.md](SESSION_SUMMARY_2026-05-23_FIGHT_C_PERS_SWEEP.md)
+- **Last completed**: **FIGHT-009..013** (weapon-proc TO_ROOM broadcasts) released as 2.8.61 → 2.8.65 across five TDD commits. Both PERS surfaces in `mud/combat/engine.py` — position-change broadcasts (FIGHT-004..008) and weapon-proc broadcasts (FIGHT-009..013) — are now ROM-faithful. The `_broadcast_pos_change` helper powers 9 broadcast sites and accepts arbitrary `**extra` template kwargs (used for `{weapon}` substitution on ROM `$p`).
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-23_FIGHT_C_WEAPON_PROC_PERS_SWEEP.md](SESSION_SUMMARY_2026-05-23_FIGHT_C_WEAPON_PROC_PERS_SWEEP.md)
 - **Earlier summaries this run**:
+  - [SESSION_SUMMARY_2026-05-23_FIGHT_C_PERS_SWEEP.md](SESSION_SUMMARY_2026-05-23_FIGHT_C_PERS_SWEEP.md) (2.8.55-2.8.60)
   - [SESSION_SUMMARY_2026-05-23_TELL_006_AND_PROMPT_CMD_HYGIENE.md](SESSION_SUMMARY_2026-05-23_TELL_006_AND_PROMPT_CMD_HYGIENE.md) (2.8.53-2.8.54)
   - [SESSION_SUMMARY_2026-05-23_SHOUT_YELL_CLUSTER.md](SESSION_SUMMARY_2026-05-23_SHOUT_YELL_CLUSTER.md) (2.8.49-2.8.52)
   - [SESSION_SUMMARY_2026-05-22_TELL_CLUSTER.md](SESSION_SUMMARY_2026-05-22_TELL_CLUSTER.md) (2.8.44-2.8.48)
@@ -21,8 +22,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.60 |
-| Tests | **4632 passed, 4 skipped** (full suite, ~7m 30s) |
+| Version | 2.8.65 |
+| Tests | **4637 passed, 4 skipped** (full suite, ~6m 20s) |
 | Cross-file invariants | INV-001..009 (all ✅ ENFORCED) |
 | `nanny.c` audit | 100% gap rows ✅ |
 | `act_info.c::do_prompt` | ✅ PROMPT-CMD-001..005 all FIXED |
@@ -31,32 +32,32 @@
 | `act_comm.c::do_tell` | ✅ 100% RE-AUDITED (TELL-001..005 FIXED, TELL-006 ANALYZED-INERT) |
 | `act_comm.c::do_shout` | ✅ 100% RE-AUDITED (SHOUT-001..003) |
 | `act_comm.c::do_yell` | ✅ 100% RE-AUDITED (YELL-001) |
-| `fight.c::_position_change_message` | ✅ FIGHT-004..008 all FIXED; FIGHT-009..013 reserved for weapon-proc PERS follow-up |
-| Shared visibility helper | `mud/world/vision.py:pers` used by all 5 channel commands + `_broadcast_pos_change` helper in `mud/combat/engine.py` |
+| `fight.c::_position_change_message` | ✅ FIGHT-004..008 all FIXED |
+| `fight.c` weapon procs | ✅ FIGHT-009..013 all FIXED |
+| Shared visibility helper | `mud/world/vision.py:pers` used by all 5 channel commands + `_broadcast_pos_change` helper in `mud/combat/engine.py` (9 broadcast sites) |
 | GitNexus index | stale (last analyze at `de1893f`); re-run with `npx gitnexus analyze --skip-agents-md` before next session that needs it. |
-| Local commits not pushed | 6 (`40c0879..895c6d8`) + this handoff — waiting on explicit user push approval. |
+| Local commits not pushed | 5 (`59655b1..d93a88a`) + this handoff — waiting on explicit user push approval. |
 
 ## Next Intended Task
 
-Position-change broadcast surface fully cleaned up. Three reasonable
-continuations:
+Both major combat-message PERS surfaces in `mud/combat/engine.py`
+are cleaned up. Three reasonable continuations:
 
-1. **FIGHT-009..013 weapon-proc PERS sweep** (recommended). Same
-   pattern, same helper (`_broadcast_pos_change` can be renamed
-   `_broadcast_act_n` if generalized, or a thin sibling helper
-   added). `mud/combat/engine.py` lines 1496 (poison), 1510
-   (vampiric), 1531 (flaming), 1541 (frost), 1551 (shocking). Some
-   also have wording divergences vs ROM `src/fight.c:614-675`.
-2. **`dam_message`** — ROM `src/fight.c:2035-2233` is the per-hit
-   damage broadcast surface (hundreds of damage-tier messages,
-   each with `act()` lines needing PERS). Larger surface, but the
-   highest-volume PERS leak in combat by far.
-3. **PMOTE-001** — `do_pmote` greenfield port. Still on the
-   `act_comm.c` shelf, ~50 lines of C with per-recipient
-   second-person substitution.
+1. **`dam_message`** (`mud/combat/messages.py` / `mud/combat/engine.py:252`)
+   — ROM `src/fight.c:2035-2233`. Per-hit damage-tier broadcast
+   surface (hundreds of `act()` lines). Highest-volume PERS leak
+   remaining in combat. **Likely a multi-session arc.** Best
+   started fresh.
+2. **FIGHT-014 — `do_sacrifice` PERS** (`mud/combat/engine.py:956`,
+   single `_broadcast_room` call with `expand_placeholders`-rendered
+   `"$n sacrifices $N to Mota."`). 10-minute warm-up; PERS gap on
+   attacker. Could close before opening dam_message.
+3. **PMOTE-001** — `do_pmote` greenfield port (~50 lines of C on
+   the `act_comm.c` shelf, per-recipient second-person substitution
+   with apostrophe/possessive handling).
 
-Recommendation: **FIGHT-009..013** as the natural continuation —
-same helper, same test class, hands-off pattern.
+Recommendation: **FIGHT-014** as a warm-up, then open `dam_message`
+as a fresh session.
 
 ## Operational follow-ups
 
