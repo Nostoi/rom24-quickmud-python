@@ -137,3 +137,39 @@ class TestWeaponProcBroadcastPers:
         finally:
             room_registry.pop(2002, None)
             character_registry.clear()
+
+    def test_fight_012_frost_broadcast_uses_pers_and_rom_wording(self):
+        """FIGHT-012 — WEAPON_FROST TO_ROOM `$p freezes $n.` (PERS + wording).
+
+        ROM C: src/fight.c:663
+            act ("$p freezes $n.", victim, wield, NULL, TO_ROOM);
+
+        Two divergences from Python's previous broadcast:
+          (a) PERS gap on $n.
+          (b) Wording swap — ROM is `"$p freezes $n."` (e.g. `"the
+              sword freezes Alice."`); Python emitted
+              `f"{victim.name} is frozen by {weapon_name}."`
+              (`"Alice is frozen by the sword."`).
+        """
+        try:
+            _, attacker, victim, observer = _setup_room_and_chars(2003, WEAPON_FROST)
+            process_weapon_special_attacks(attacker, victim)
+
+            joined = "\n".join(observer.messages).lower()
+            # ROM wording — "the sword freezes Alice/someone."
+            assert "the sword freezes" in joined, (
+                f"ROM wording '$p freezes $n' missing: {observer.messages!r}"
+            )
+            assert "the sword freezes someone" in joined, (
+                f"PERS render missing for invisible victim: {observer.messages!r}"
+            )
+            # Old Python wording must be gone.
+            assert "is frozen by" not in joined, (
+                f"old Python wording 'X is frozen by Y' still present: {observer.messages!r}"
+            )
+            assert "aliceee" not in joined, (
+                f"invisible victim name leaked: {observer.messages!r}"
+            )
+        finally:
+            room_registry.pop(2003, None)
+            character_registry.clear()

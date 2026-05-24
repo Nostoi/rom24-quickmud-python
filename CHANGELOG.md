@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.64]
+
+### Fixed
+- **`FIGHT-012` — WEAPON_FROST TO_ROOM broadcast PERS + ROM-true wording** (`src/fight.c:663`): Two divergences. (a) PERS gap on `$n` — invisible victim leaks identity. (b) Wording — ROM `act("$p freezes $n.", ...)` puts the weapon first (e.g. `"the sword freezes Alice."`) but Python previously emitted `f"{victim.name} is frozen by {weapon_name}."` (subject/object inverted). Fix: `_broadcast_pos_change(victim, "{weapon} freezes {name}.", weapon=weapon_name)` — single change closes both sub-gaps. Locked in by `tests/integration/test_weapon_proc_pers.py::TestWeaponProcBroadcastPers::test_fight_012_frost_broadcast_uses_pers_and_rom_wording`.
+
 ## [2.8.63]
 
 ### Fixed

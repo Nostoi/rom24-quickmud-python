@@ -1612,7 +1612,17 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
         dam = rng_mm.number_range(1, weapon_level // 6 + 2)
         _push_message(victim, "The cold touch surrounds you with ice.")
         if room is not None:
-            _broadcast_room(room, f"{victim.name} is frozen by {weapon_name}.", exclude=victim)
+            # mirroring ROM src/fight.c:663 — `act("$p freezes $n.",
+            # victim, wield, NULL, TO_ROOM)`. ROM places the weapon
+            # ($p) first and the victim ($n) as the object of
+            # "freezes" — Python previously emitted "X is frozen by Y"
+            # which inverts the subject/object (FIGHT-012). Fix both
+            # the PERS gap and the wording in one pass.
+            _broadcast_pos_change(
+                victim,
+                "{weapon} freezes {name}.",
+                weapon=weapon_name,
+            )
         cold_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.COLD, show=False)
         messages.append("The cold touch surrounds you with ice.")
