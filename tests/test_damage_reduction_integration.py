@@ -5,7 +5,13 @@ import pytest
 from mud.combat.engine import attack_round
 from mud.models.character import Character, PCData
 from mud.models.constants import AffectFlag, Position
+from mud.models.room import Room
 from mud.utils import rng_mm
+
+# Shared dummy room so visibility checks (`can_see`) succeed in
+# `pers()` rendering — without it the renamed `dam_message` template
+# path renders attacker/victim as "someone" (DAMMSG-001..003).
+_DUMMY_ROOM = Room(vnum=99998, name="X", description="", room_flags=0, sector_type=0)
 
 
 def assert_attack_message(message: str, target: str) -> None:
@@ -35,6 +41,8 @@ def setup_combat_with_damage_reduction():
         pcdata=PCData(),
     )
 
+    attacker.room = _DUMMY_ROOM
+    victim.room = _DUMMY_ROOM
     return attacker, victim
 
 

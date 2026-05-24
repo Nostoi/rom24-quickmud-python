@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from mud.math.c_compat import c_div
 from mud.models.constants import ATTACK_TABLE, DamageType, Sex
+from mud.world.vision import pers
 
 TYPE_HIT = 1000
 MAX_DAMAGE_MESSAGE = len(ATTACK_TABLE)
@@ -13,12 +14,46 @@ MAX_DAMAGE_MESSAGE = len(ATTACK_TABLE)
 
 @dataclass(frozen=True)
 class DamageMessages:
-    """Container for ROM-style attacker/victim/room combat strings."""
+    """Container for ROM-style attacker/victim/room combat templates.
+
+    Each field is a `.format()`-ready template containing `{attacker}`
+    and/or `{victim}` placeholders. Use `render_for(template,
+    attacker, victim, observer)` to substitute ROM `PERS()`-rendered
+    names per recipient — mirrors ROM's `act()` macro which evaluates
+    `PERS(ch, looker)` and `PERS(victim, looker)` independently for
+    each observer (DAMMSG-001/002/003).
+
+    ROM colour codes `{3...{x` / `{2...{x` / `{4...{x` are escaped as
+    `{{3}}` etc. in the template literals so `str.format()` leaves
+    them intact for the ANSI translation layer.
+    """
 
     attacker: str | None
     victim: str | None
     room: str | None
     self_inflicted: bool = False
+
+
+def render_for(
+    template: str | None,
+    attacker: object,
+    victim: object,
+    observer: object | None,
+) -> str | None:
+    """Substitute `{attacker}` / `{victim}` placeholders through PERS.
+
+    Mirrors ROM's `act()` macro — `$n` resolves through `PERS(ch,
+    looker)` and `$N` through `PERS(victim, looker)`. The observer
+    is the recipient of the message; for TO_NOTVICT this is iterated
+    per room occupant, for TO_CHAR this is the attacker, for TO_VICT
+    this is the victim.
+    """
+    if template is None:
+        return None
+    return template.format(
+        attacker=pers(attacker, observer),
+        victim=pers(victim, observer),
+    )
 
 
 # Severity tiers mirror src/fight.c:dam_message percent thresholds.
@@ -43,13 +78,6 @@ _DAMAGE_TIERS: tuple[tuple[int, str, str], ...] = (
     (90, ">>> ANNIHILATE <<<", ">>> ANNIHILATES <<<"),
     (95, "<<< ERADICATE >>>", "<<< ERADICATES >>>"),
 )
-
-
-def _safe_name(character: object) -> str:
-    name = getattr(character, "name", None)
-    if not name:
-        return "Someone"
-    return str(name)
 
 
 def _reflexive_pronoun(character: object) -> str:
@@ -127,56 +155,64 @@ def dam_message(
     vs, vp, percent = _severity_terms(max(0, int(damage)), victim)
     punct = "." if percent <= 45 else "!"
 
-    attacker_name = _safe_name(attacker)
-    victim_name = _safe_name(victim)
     attack = _resolve_attack_noun(dt)
     self_inflicted = attacker is victim
 
     if attack is None and immune:
         attack = "attack"
 
+    # Templates use `{{attacker}}` / `{{victim}}` placeholders that
+    # `render_for()` substitutes per-recipient through ROM PERS().
+    # ROM colour codes (`{3...{x` etc.) are doubled so str.format()
+    # leaves them intact (DAMMSG-001/002/003).
     if int(percent) <= 0 and not immune:
         # Mirror ROM miss output
         if self_inflicted:
-            room_msg = f"{{3{attacker_name} {vp} {_reflexive_pronoun(attacker)}{punct}{{x"
-            attacker_msg = f"{{2You {vs} yourself{punct}{{x"
+            room_msg = "{{3{attacker} " + vp + " " + _reflexive_pronoun(attacker) + punct + "{{x"
+            attacker_msg = "{{2You " + vs + " yourself" + punct + "{{x"
             return DamageMessages(attacker_msg, None, room_msg, True)
-        room_msg = f"{{3{attacker_name} {vp} {victim_name}{punct}{{x"
-        attacker_msg = f"{{2You {vs} {victim_name}{punct}{{x"
-        victim_msg = f"{{4{attacker_name} {vp} you{punct}{{x"
+        room_msg = "{{3{attacker} " + vp + " {victim}" + punct + "{{x"
+        attacker_msg = "{{2You " + vs + " {victim}" + punct + "{{x"
+        victim_msg = "{{4{attacker} " + vp + " you" + punct + "{{x"
         return DamageMessages(attacker_msg, victim_msg, room_msg, False)
 
     if immune:
         if self_inflicted:
             poss = _possessive_pronoun(attacker)
-            room_msg = f"{{3{attacker_name} is unaffected by {poss} own {attack}.{{x"
-            attacker_msg = "{2Luckily, you are immune to that.{x"
+            room_msg = "{{3{attacker} is unaffected by " + poss + " own " + attack + ".{{x"
+            attacker_msg = "{{2Luckily, you are immune to that.{{x"
             return DamageMessages(attacker_msg, None, room_msg, True)
-        room_msg = f"{{3{victim_name} is unaffected by {attacker_name}'s {attack}!{{x"
-        attacker_msg = f"{{2{victim_name} is unaffected by your {attack}!{{x"
-        victim_msg = f"{{4{attacker_name}'s {attack} is powerless against you.{{x"
+        room_msg = "{{3{victim} is unaffected by {attacker}'s " + attack + "!{{x"
+        attacker_msg = "{{2{victim} is unaffected by your " + attack + "!{{x"
+        victim_msg = "{{4{attacker}'s " + attack + " is powerless against you.{{x"
         return DamageMessages(attacker_msg, victim_msg, room_msg, False)
 
     if attack is None:
         if self_inflicted:
-            room_msg = f"{{3{attacker_name} {vp} {_reflexive_pronoun(attacker)}{punct}{{x"
-            attacker_msg = f"{{2You {vs} yourself{punct}{{x"
+            room_msg = "{{3{attacker} " + vp + " " + _reflexive_pronoun(attacker) + punct + "{{x"
+            attacker_msg = "{{2You " + vs + " yourself" + punct + "{{x"
             return DamageMessages(attacker_msg, None, room_msg, True)
-        room_msg = f"{{3{attacker_name} {vp} {victim_name}{punct}{{x"
-        attacker_msg = f"{{2You {vs} {victim_name}{punct}{{x"
-        victim_msg = f"{{4{attacker_name} {vp} you{punct}{{x"
+        room_msg = "{{3{attacker} " + vp + " {victim}" + punct + "{{x"
+        attacker_msg = "{{2You " + vs + " {victim}" + punct + "{{x"
+        victim_msg = "{{4{attacker} " + vp + " you" + punct + "{{x"
         return DamageMessages(attacker_msg, victim_msg, room_msg, False)
 
     if self_inflicted:
         poss = _possessive_pronoun(attacker)
-        room_msg = f"{{3{attacker_name}'s {attack} {vp} {_reflexive_pronoun(attacker)}{punct}{{x"
-        attacker_msg = f"{{2Your {attack} {vp} you{punct}{{x"
+        room_msg = "{{3{attacker}'s " + attack + " " + vp + " " + _reflexive_pronoun(attacker) + punct + "{{x"
+        attacker_msg = "{{2Your " + attack + " " + vp + " you" + punct + "{{x"
         return DamageMessages(attacker_msg, None, room_msg, True)
 
-    room_msg = f"{{3{attacker_name}'s {attack} {vp} {victim_name}{punct}{{x"
-    attacker_msg = f"{{2Your {attack} {vp} {victim_name}{punct}{{x"
-    victim_msg = f"{{4{attacker_name}'s {attack} {vp} you{punct}{{x"
+    room_msg = "{{3{attacker}'s " + attack + " " + vp + " {victim}" + punct + "{{x"
+    attacker_msg = "{{2Your " + attack + " " + vp + " {victim}" + punct + "{{x"
+    victim_msg = "{{4{attacker}'s " + attack + " " + vp + " you" + punct + "{{x"
     return DamageMessages(attacker_msg, victim_msg, room_msg, False)
 
 
-__all__: tuple[str, ...] = ("DamageMessages", "TYPE_HIT", "MAX_DAMAGE_MESSAGE", "dam_message")
+__all__: tuple[str, ...] = (
+    "DamageMessages",
+    "TYPE_HIT",
+    "MAX_DAMAGE_MESSAGE",
+    "dam_message",
+    "render_for",
+)

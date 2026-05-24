@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.67]
+
+### Fixed
+- **`DAMMSG-001/002/003` — `dam_message` per-hit broadcasts route `$n` / `$N` through PERS per recipient** (`src/fight.c:2218-2228`): ROM's `dam_message` ends with three `act()` calls — `TO_NOTVICT`, `TO_CHAR`, `TO_VICT` — each evaluating `PERS(ch, looker)` and `PERS(victim, looker)` independently for every observer. Python's `dam_message` in `mud/combat/messages.py` previously returned `DamageMessages` containing three pre-rendered strings baked with `attacker.name` / `victim.name`, then the engine shipped them via `_broadcast_room` / `_push_message` without per-recipient PERS substitution — leaking both identities to every observer regardless of `can_see`. This is the highest-volume PERS leak in combat (fires on every melee swing and spell hit). Fix: (a) `dam_message` now returns templates with `{attacker}` / `{victim}` placeholders (ROM colour codes `{3...{x` doubled to survive `str.format()`); (b) new `render_for(template, attacker, victim, observer)` helper in `mud/combat/messages.py` substitutes both names through `pers()` per recipient; (c) `_dispatch_damage_messages` renamed to `_broadcast_damage_messages` (back-compat alias kept) and now iterates `room.people` for TO_NOTVICT, calling `render_for` per occupant — TO_CHAR uses `observer=attacker`, TO_VICT uses `observer=victim`. The `damage()` return value (consumed by `multi_hit`'s `attack_message` results) is also rendered for the attacker's view so scripted/test callers receive PERS-correct strings. Locked in by three new failing-first tests in `tests/integration/test_dam_message_pers.py` (one per direction); `tests/test_combat_messages.py` updated to call `render_for` on the returned templates.
+
 ## [2.8.66]
 
 ### Fixed

@@ -39,7 +39,6 @@ from mud.models.constants import (
 )
 from mud.models.social import expand_placeholders
 from mud.models.weapon_table import weapon_skill_name_for_type
-from mud.net.protocol import broadcast_room as _broadcast_room
 from mud.skills import check_improve
 from mud.utils import rng_mm
 from mud.wiznet import WiznetFlag, wiznet
@@ -226,19 +225,35 @@ def _push_message(character: Character | None, message: str) -> None:
         mailbox.append(message)
 
 
-def _dispatch_damage_messages(
+def _broadcast_damage_messages(
     attacker: Character,
     victim: Character,
     messages: DamageMessages | None,
 ) -> None:
+    """Render `dam_message` templates per-recipient through ROM PERS.
+
+    Mirrors ROM `src/fight.c:2218-2228` — three `act()` calls
+    (TO_NOTVICT/TO_CHAR/TO_VICT) each evaluate `PERS(ch, looker)`
+    and `PERS(victim, looker)` independently for each observer.
+    Python previously emitted pre-rendered strings keyed on
+    `attacker.name`/`victim.name`, leaking identities to every
+    recipient regardless of `can_see` (DAMMSG-001/002/003).
+    """
+    from mud.combat.messages import render_for as _render
+
     if messages is None:
         return
 
     if messages.attacker:
-        _push_message(attacker, messages.attacker)
+        # TO_CHAR — render with observer=attacker (attacker sees own
+        # actor as "You" in template; $N renders victim through
+        # PERS(victim, attacker)).
+        _push_message(attacker, _render(messages.attacker, attacker, victim, attacker) or "")
 
     if not messages.self_inflicted and messages.victim:
-        _push_message(victim, messages.victim)
+        # TO_VICT — render with observer=victim (victim sees $n
+        # attacker through PERS(attacker, victim)).
+        _push_message(victim, _render(messages.victim, attacker, victim, victim) or "")
 
     if not messages.room:
         return
@@ -247,14 +262,17 @@ def _dispatch_damage_messages(
     if room is None:
         return
 
-    if messages.self_inflicted:
-        _broadcast_room(room, messages.room, exclude=victim)
-        return
-
-    for occupant in getattr(room, "people", []):
+    # TO_NOTVICT — iterate room.people and PERS-render per recipient
+    # so each observer sees attacker/victim per their own visibility.
+    for occupant in list(getattr(room, "people", [])):
         if occupant is attacker or occupant is victim:
             continue
-        _push_message(occupant, messages.room)
+        _push_message(occupant, _render(messages.room, attacker, victim, occupant) or "")
+
+
+# Back-compat alias — the old name is referenced in older session
+# notes and some test files. Both names invoke the same logic.
+_dispatch_damage_messages = _broadcast_damage_messages
 
 
 def get_weapon_skill(attacker: Character, weapon_sn: str | None) -> int:
@@ -581,7 +599,8 @@ def apply_damage(
 
     if damage <= 0:
         if message_bundle and message_bundle.attacker:
-            return message_bundle.attacker
+            from mud.combat.messages import render_for as _render
+            return _render(message_bundle.attacker, attacker, victim, attacker) or ""
         return "Your attack has no effect."
 
     # Apply damage
@@ -623,7 +642,8 @@ def apply_damage(
         return message
 
     if message_bundle and message_bundle.attacker:
-        return message_bundle.attacker
+        from mud.combat.messages import render_for as _render
+        return _render(message_bundle.attacker, attacker, victim, attacker) or ""
     return ""
 
 

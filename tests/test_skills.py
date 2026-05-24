@@ -648,6 +648,10 @@ def test_kick_success(monkeypatch: pytest.MonkeyPatch) -> None:
         skills={"kick": 75},
     )
     victim = Character(name="Orc", level=10, is_npc=True, max_hit=100, hit=100)
+    # PERS rendering (DAMMSG-001..003) needs both parties in a room.
+    shared_room = Room(vnum=99997, name="X", description="", room_flags=0, sector_type=0)
+    attacker.room = shared_room
+    victim.room = shared_room
 
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 10)
     monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 12)
@@ -670,6 +674,10 @@ def test_kick_failure(monkeypatch: pytest.MonkeyPatch) -> None:
         skills={"kick": 10},
     )
     victim = Character(name="Orc", level=10, is_npc=True, max_hit=100, hit=100)
+    # PERS rendering (DAMMSG-001..003) needs both parties in a room.
+    shared_room = Room(vnum=99996, name="X", description="", room_flags=0, sector_type=0)
+    attacker.room = shared_room
+    victim.room = shared_room
 
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 90)
     monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 5)
