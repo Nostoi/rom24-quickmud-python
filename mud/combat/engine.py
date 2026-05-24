@@ -698,8 +698,8 @@ def is_awake(character: Character) -> bool:
     return character.position > Position.SLEEPING
 
 
-def _broadcast_pos_change(victim: Character, template: str) -> None:
-    """Render `$n`-style position-change broadcasts per-listener.
+def _broadcast_pos_change(victim: Character, template: str, **extra: object) -> None:
+    """Render `$n`-style room broadcasts per-listener via ROM PERS.
 
     Mirrors ROM's `act(..., TO_ROOM)` macro, which evaluates
     ``PERS(victim, looker)`` once per recipient (see src/comm.c:act_new
@@ -708,10 +708,10 @@ def _broadcast_pos_change(victim: Character, template: str) -> None:
     without DETECT_INVIS — matches the channel-arc fix pattern
     (mud/world/vision.py:pers).
 
-    `template` must contain a single `{name}` placeholder for the
-    PERS-rendered victim name; this function fills it per listener
-    and dispatches through the same fire-and-forget websocket path
-    as `mud/net/protocol.py:broadcast_room`.
+    `template` must contain a `{name}` placeholder for the
+    PERS-rendered victim name; any additional substitutions (e.g.
+    `{weapon}` for ROM `$p`) come from `**extra`. Weapons are not
+    `can_see`-gated, so they pass through verbatim.
     """
     from mud.net.protocol import send_to_char as _send
     from mud.world.vision import pers
@@ -722,7 +722,7 @@ def _broadcast_pos_change(victim: Character, template: str) -> None:
     for listener in list(getattr(room, "people", [])):
         if listener is victim:
             continue
-        message = template.format(name=pers(victim, listener))
+        message = template.format(name=pers(victim, listener), **extra)
         writer = getattr(listener, "connection", None)
         if writer is not None:
             asyncio.create_task(_send(listener, message))
@@ -1548,10 +1548,15 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
         if not saves_spell(level // 2, victim, DamageType.POISON):
             _push_message(victim, "You feel poison coursing through your veins.")
             if room is not None:
-                _broadcast_room(
-                    room,
-                    f"{victim.name} is poisoned by the venom on {weapon_name}.",
-                    exclude=victim,
+                # mirroring ROM src/fight.c:614-615 — `act("$n is
+                # poisoned by the venom on $p.", victim, wield, NULL,
+                # TO_ROOM)`. PERS substitution on $n per-listener
+                # (FIGHT-009). Weapon name passes verbatim ($p is not
+                # can_see-gated).
+                _broadcast_pos_change(
+                    victim,
+                    "{name} is poisoned by the venom on {weapon}.",
+                    weapon=weapon_name,
                 )
             if hasattr(victim, "add_affect"):
                 victim.add_affect(AffectFlag.POISON)

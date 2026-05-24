@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.61]
+
+### Fixed
+- **`FIGHT-009` — WEAPON_POISON TO_ROOM broadcast routes `$n` through PERS** (`src/fight.c:614-615`): ROM's `act("$n is poisoned by the venom on $p.", victim, wield, NULL, TO_ROOM)` substitutes `$n` per-listener through PERS. Python previously baked `victim.name` into a fixed `_broadcast_room` string. Fix: route through `_broadcast_pos_change`, now extended to accept `**extra` template kwargs (`{weapon}` for ROM `$p`). First commit in the FIGHT-009..013 weapon-proc PERS sweep. Locked in by `tests/integration/test_weapon_proc_pers.py::TestWeaponProcBroadcastPers::test_fight_009_poison_broadcast_uses_pers_for_invisible_victim`.
+
 ## [2.8.60]
 
 ### Fixed
