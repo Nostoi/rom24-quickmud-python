@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.56]
+
+### Fixed
+- **`FIGHT-005` — POS_INCAP TO_ROOM broadcast routes `$n` through PERS** (`src/fight.c:845-846`): ROM's `act("$n is incapacitated and will slowly die, if not aided.", victim, NULL, NULL, TO_ROOM)` substitutes `$n` per-listener through PERS. Python's INCAP branch in `mud/combat/engine.py:_position_change_message` previously baked `victim.name` into a fixed `_broadcast_room` string. Fix: route through the `_broadcast_pos_change` helper introduced in 2.8.55. Locked in by `tests/integration/test_invisibility_combat.py::TestPositionChangeBroadcastPers::test_fight_005_pos_incap_broadcast_uses_pers_for_invisible_victim`.
+
 ## [2.8.55]
 
 ### Fixed

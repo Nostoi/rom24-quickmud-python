@@ -748,11 +748,13 @@ def _position_change_message(victim: Character, old_pos: Position) -> str:
             )
         return "You are mortally wounded, and will die soon, if not aided."
     elif victim.position == Position.INCAP:
+        # mirroring ROM src/fight.c:845-846 — `act("$n is incapacitated
+        # and will slowly die, if not aided.", victim, NULL, NULL,
+        # TO_ROOM)`. PERS substitution per-listener (FIGHT-005).
         if hasattr(victim, "room") and victim.room is not None:
-            _broadcast_room(
-                victim.room,
-                f"{victim.name} is incapacitated and will slowly die, if not aided.",
-                exclude=victim,
+            _broadcast_pos_change(
+                victim,
+                "{name} is incapacitated and will slowly die, if not aided.",
             )
         return "You are incapacitated and will slowly die, if not aided."
     elif victim.position == Position.STUNNED:

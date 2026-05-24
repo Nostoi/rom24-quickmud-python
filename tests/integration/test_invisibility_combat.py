@@ -240,3 +240,42 @@ class TestPositionChangeBroadcastPers:
         finally:
             room_registry.pop(1000, None)
             character_registry.clear()
+
+    def test_fight_005_pos_incap_broadcast_uses_pers_for_invisible_victim(self):
+        """FIGHT-005 — POS_INCAP TO_ROOM `$n` routes through PERS.
+
+        ROM C: src/fight.c:845-846
+            act ("$n is incapacitated and will slowly die, if not aided.",
+                 victim, NULL, NULL, TO_ROOM);
+        """
+        test_room = Room(vnum=1001, name="Test Room", description="A test room.", room_flags=0, sector_type=0)
+        test_room.people = []
+        test_room.contents = []
+        room_registry[1001] = test_room
+
+        try:
+            victim = create_test_character("Aliceee", 1001)
+            victim.level = 5
+            victim.add_affect(AffectFlag.INVISIBLE)
+            victim.position = Position.INCAP
+
+            observer = create_test_character("Bobbb", 1001)
+            observer.level = 5
+            observer.messages = []
+
+            _position_change_message(victim, Position.STANDING)
+
+            joined = "\n".join(observer.messages).lower()
+            assert "is incapacitated" in joined, (
+                f"POS_INCAP broadcast not delivered: {observer.messages!r}"
+            )
+            assert "someone is incapacitated" in joined, (
+                f"PERS render missing for invisible victim: {observer.messages!r}"
+            )
+            assert "aliceee" not in joined, (
+                f"invisible victim name leaked: {observer.messages!r}"
+            )
+
+        finally:
+            room_registry.pop(1001, None)
+            character_registry.clear()
