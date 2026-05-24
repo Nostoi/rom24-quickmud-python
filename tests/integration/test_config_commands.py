@@ -175,8 +175,10 @@ def test_prompt_custom(test_char):
 
     output = do_prompt(test_char, "<%h hp>")
     assert "Prompt set" in output
-    # mirroring ROM src/act_info.c:951-952 — stored on ch->prompt, not pcdata->prompt
-    assert test_char.prompt == "<%h hp>", "Custom prompt should be stored"
+    # mirroring ROM src/act_info.c:951-952 — stored on ch->prompt, not pcdata->prompt.
+    # ROM src/act_info.c:946-947 appends a trailing space unless the
+    # template ends in `%c` (PROMPT-CMD-005).
+    assert test_char.prompt == "<%h hp> ", "Custom prompt should be stored with ROM trailing space"
     assert test_char.comm & CommFlag.PROMPT, "COMM_PROMPT should be set"
 
 

@@ -421,8 +421,10 @@ class TestPrompt:
         output = do_prompt(player, "<%hhp %mm %vmv>")
 
         assert player.comm & COMM_PROMPT
-        # mirroring ROM src/act_info.c:951-952 — stored on ch->prompt
-        assert player.prompt == "<%hhp %mm %vmv>"
+        # mirroring ROM src/act_info.c:951-952 — stored on ch->prompt.
+        # ROM src/act_info.c:946-947 appends a trailing space unless
+        # the template ends in `%c` (PROMPT-CMD-005).
+        assert player.prompt == "<%hhp %mm %vmv> "
         assert "set" in output.lower()
 
     @pytest.mark.p0

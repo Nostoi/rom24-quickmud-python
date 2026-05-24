@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.60]
+
+### Fixed
+- **`PROMPT-CMD-005` legacy-test hygiene**: two pre-existing legacy assertions missed in 2.8.54's PROMPT-CMD-005 rollout were asserting the pre-fix stored value (no trailing space). Updated `tests/integration/test_config_commands.py::test_prompt_custom` and `tests/test_player_auto_settings.py::TestPrompt::test_prompt_set_custom` to ROM-true stored values with trailing space, per AGENTS.md "ROM is the source of truth" rule. No production code change.
+
 ## [2.8.59]
 
 ### Fixed
