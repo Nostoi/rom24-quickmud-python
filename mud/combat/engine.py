@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-from types import SimpleNamespace
 
 from mud import mobprog
 from mud.account.account_manager import save_character
@@ -953,10 +952,18 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
         _push_message(attacker, f"Mota gives you {silver_reward} silver coins for your sacrifice.")
 
     corpse_name = getattr(corpse, "short_descr", None) or getattr(corpse, "name", "") or "corpse"
-    _broadcast_room(
-        room,
-        expand_placeholders("$n sacrifices $N to Mota.", attacker, SimpleNamespace(name=corpse_name)),
-        exclude=attacker,
+    # mirroring ROM src/act_obj.c:1856 dispatched from
+    # src/fight.c:961-970 — `act("$n sacrifices $p to Mota.", ch,
+    # obj, NULL, TO_ROOM)`. PERS substitution on $n (attacker)
+    # per-listener (FIGHT-014). The helper's first arg is named
+    # `victim` for historical reasons but the function just
+    # PERS-renders that character for each room observer — works
+    # equally for an attacker. Corpse name passes through verbatim
+    # ($p is not can_see-gated).
+    _broadcast_pos_change(
+        attacker,
+        "{name} sacrifices {corpse} to Mota.",
+        corpse=corpse_name,
     )
     wiznet(
         "$N sends up $p as a burnt offering.",

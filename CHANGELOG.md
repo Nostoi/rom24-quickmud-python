@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.66]
+
+### Fixed
+- **`FIGHT-014` — `_auto_sacrifice` TO_ROOM broadcast routes `$n` through PERS** (`src/act_obj.c:1856`, dispatched from `src/fight.c:961-970`): ROM's `act("$n sacrifices $p to Mota.", ch, obj, NULL, TO_ROOM)` substitutes `$n` per-listener through PERS so an invisible attacker renders as `"someone"` to room observers without `DETECT_INVIS`. Python's `_auto_sacrifice` in `mud/combat/engine.py` previously pre-rendered the broadcast via `expand_placeholders(...)` baked into a single `_broadcast_room` string keyed on `attacker.name`, leaking the attacker's identity. Fix: route through `_broadcast_pos_change(attacker, "{name} sacrifices {corpse} to Mota.", corpse=corpse_name)`. Orphan `SimpleNamespace` import removed as a side effect (the only callsite was the broadcast we just rewrote). Locked in by `tests/integration/test_auto_sacrifice_pers.py::test_fight_014_auto_sacrifice_broadcast_uses_pers_for_invisible_attacker`.
+
+### Notes
+
+- Python's `_auto_sacrifice` re-implements sacrifice logic inline rather than dispatching to `do_sacrifice` like ROM does at `src/fight.c:970`. That structural divergence (parallel implementation vs ROM dispatch) is tracked as FIGHT-015 (reserved) for a future session.
+
 ## [2.8.65]
 
 ### Fixed
