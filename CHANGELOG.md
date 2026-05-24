@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.70]
+
+### Fixed
+- **`PMOTE-003` — `do_pmote` and `do_smote` skip NPC viewers with `desc == NULL`** (`src/act_comm.c:1130`, `src/act_wiz.c:392-393`): ROM's pmote/smote viewer loops immediately `continue` when `vch->desc == NULL || vch == ch`, which excludes all NPC observers. Python's `mud/commands/imm_emote.py` had weakened that guard to `desc is None and not is_npc`, so NPCs incorrectly received both personalized pmote output and smote broadcasts. Fix: restore the ROM rule in both loops by skipping any non-self viewer whose `desc` is `None`. Locked in by `tests/integration/test_act_comm_gaps.py::TestPmoteGaps::test_pmote_003_npc_viewers_do_not_receive_pmote_or_smote`.
+
 ## [2.8.69]
 
 ### Fixed

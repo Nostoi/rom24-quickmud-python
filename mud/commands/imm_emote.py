@@ -46,7 +46,7 @@ def do_smote(char: Character, args: str) -> str:
         # mirrors ROM src/act_wiz.c:392-393 — skip self and no-descriptor
         if viewer is char:
             continue
-        if getattr(viewer, "desc", None) is None and not getattr(viewer, "is_npc", False):
+        if getattr(viewer, "desc", None) is None:
             continue
 
         message = args
@@ -192,7 +192,9 @@ def do_pmote(char: Character, args: str) -> str:
         for viewer in getattr(room, "people", []):
             if viewer is char:
                 continue
-            if getattr(viewer, "desc", None) is None and not getattr(viewer, "is_npc", False):
+            # mirroring ROM src/act_comm.c:1130 — skip any viewer with
+            # desc == NULL, which excludes NPCs as well as linkdead PCs.
+            if getattr(viewer, "desc", None) is None:
                 continue
             viewer_name = getattr(viewer, "name", "") or ""
             substituted = _pmote_substitute(args, viewer_name) if viewer_name else args

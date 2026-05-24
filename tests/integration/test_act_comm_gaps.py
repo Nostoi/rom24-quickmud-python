@@ -10,7 +10,7 @@ import pytest
 from mud.commands.auto_settings import do_colour
 from mud.commands.communication import do_emote, do_pose
 from mud.commands.group_commands import do_split
-from mud.commands.imm_emote import do_pmote
+from mud.commands.imm_emote import do_pmote, do_smote
 from mud.models.character import Character, character_registry
 from mud.models.constants import AffectFlag, CommFlag, PlayerFlag, Position
 from mud.registry import room_registry
@@ -134,6 +134,32 @@ class TestPmoteGaps:
         do_pmote(alice, "smiles at Bob.")
 
         assert any("someone smiles at you." in msg for msg in bob.output_buffer), bob.output_buffer
+
+    def test_pmote_003_npc_viewers_do_not_receive_pmote_or_smote(self, alice, room):
+        # mirrors ROM src/act_comm.c:1130 and src/act_wiz.c:392-393 —
+        # viewers with desc == NULL are skipped, which excludes NPCs.
+        npc = Character(
+            name="Guard",
+            short_descr="a cityguard",
+            is_npc=True,
+            level=10,
+            position=Position.STANDING,
+            room=room,
+            comm=0,
+        )
+        npc.output_buffer = []
+        room.add_character(npc)
+        character_registry.append(npc)
+
+        try:
+            do_pmote(alice, "waves at Guard.")
+            do_smote(alice, "Alice waves at Guard.")
+            assert npc.output_buffer == []
+        finally:
+            if npc in room.people:
+                room.people.remove(npc)
+            if npc in character_registry:
+                character_registry.remove(npc)
 
 
 # -----------------------------------------------------------------------------
