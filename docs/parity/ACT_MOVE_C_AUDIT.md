@@ -59,7 +59,13 @@ act_move.c contains all ROM 2.4b6 movement, door, position, and skill-related co
 2. ✅ **do_pick() - Guard/Wait/Improve**: FIXED WAIT_STATE, guard detection, check_improve, immortal bypass (all 18 gaps resolved)
 3. ✅ **Position Commands - Furniture Support**: COMPLETE (April 27, 2026) — do_stand/do_rest/do_sit/do_sleep/do_wake all rewritten with full ROM furniture support (REST_AT/REST_ON/REST_IN, SIT_AT/SIT_ON/SIT_IN, SLEEP_AT/SLEEP_ON/SLEEP_IN, STAND_AT/STAND_ON/STAND_IN); capacity checks via `count_users` (handler.py:613, fixed to use `room.people` instead of nonexistent `characters`); `ch.on` field tracking; ROM-faithful messages incl. ROM bug-faithful TO_ROOM "stands on" in SIT_IN-stand branch and "sits at" in SIT_ON-wake branch; do_wake target-wake via `get_char_room` with sleep-affect blocking. Test: `tests/integration/test_position_commands.py` 40/40 passing.
 4. ✅ **do_recall()**: COMPLETE - Combat recall, pet recursion, all ROM C features implemented
-5. ✅ **do_train()**: COMPLETE - Stat training, prime stat costs, all ROM C features implemented
+5. ✅ **do_train()**: COMPLETE - Stat training, prime stat costs, all ROM C features implemented (TRAIN-001 crash regression fixed 2.8.77 — see Gap Table below)
+
+## Gap Table
+
+| Gap ID | Severity | ROM C | Python | Description | Status |
+|--------|----------|-------|--------|-------------|--------|
+| `TRAIN-001` | CRITICAL | src/act_move.c:1713-1745 | mud/commands/advancement.py:315-324 | `do_train` listing branch crashed with `AttributeError: 'Character' object has no attribute 'perm_str'`. ROM reads `ch->perm_stat[STAT_STR]` etc.; QuickMUD stores stats on `char.perm_stat: list[int]` — there are no `perm_str` / `perm_int` / `perm_wis` / `perm_dex` / `perm_con` attributes. Any unrecognized arg (e.g. typos like `train magic`, `train magic missile`) routed to the listing branch and crashed. Fix: read `char.perm_stat[idx]` indexed by STAT_STR..STAT_CON (0..4). Tests: `tests/test_advancement.py::test_train_lists_available_stats_without_crash`, `::test_train_lists_only_unmaxed_stats`. | ✅ FIXED (2.8.77) |
 
 **Overall ROM C Parity**: ~85% (all core gameplay features complete, furniture system deferred to P2)
 

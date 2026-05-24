@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.77]
+
+### Fixed
+- **`TRAIN-001` — `do_train` listing branch crashed on unrecognized args** (`mud/commands/advancement.py:315-324`, ROM `src/act_move.c:1713-1745`): any `train <typo>` (e.g. `train magic`, `train magic missile`) routed through the listing branch and raised `AttributeError: 'Character' object has no attribute 'perm_str'`. ROM reads `ch->perm_stat[STAT_*]`; QuickMUD stores the same data on `char.perm_stat: list[int]` — there are no `perm_str`/`perm_int`/`perm_wis`/`perm_dex`/`perm_con` attributes on `Character`. Fix: index `char.perm_stat` by STAT_STR..STAT_CON (0..4) for the max-stat comparison. Tests: `tests/test_advancement.py::test_train_lists_available_stats_without_crash`, `::test_train_lists_only_unmaxed_stats`.
+
 ## [2.8.76]
 
 ### Fixed

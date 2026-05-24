@@ -307,20 +307,26 @@ def do_train(char: Character, args: str) -> str:
         # Show available training options (ROM C lines 1713-1745)
         options = ["You can train:"]
 
-        # Check which stats can be trained (ROM C lines 1716-1725)
-        # get_max_train returns race_max + 4 (ROM C src/handler.c:3027)
-        # For now, use 18 + 4 = 22 as max (ROM standard)
+        # Check which stats can be trained (ROM C src/act_move.c:1716-1725).
+        # ROM reads `ch->perm_stat[STAT_*]`; QuickMUD stores the same list at
+        # `char.perm_stat`. There are no `perm_str`/`perm_int`/… attributes.
+        # get_max_train returns race_max + 4 (ROM src/handler.c:3027);
+        # the ROM standard is 18 base + 4 = 22.
         max_stat = 22
+        perm_stat = getattr(char, "perm_stat", []) or []
 
-        if char.perm_str < max_stat:
+        def _stat(idx: int) -> int:
+            return perm_stat[idx] if idx < len(perm_stat) else 0
+
+        if _stat(0) < max_stat:  # STAT_STR
             options.append(" str")
-        if char.perm_int < max_stat:
+        if _stat(1) < max_stat:  # STAT_INT
             options.append(" int")
-        if char.perm_wis < max_stat:
+        if _stat(2) < max_stat:  # STAT_WIS
             options.append(" wis")
-        if char.perm_dex < max_stat:
+        if _stat(3) < max_stat:  # STAT_DEX
             options.append(" dex")
-        if char.perm_con < max_stat:
+        if _stat(4) < max_stat:  # STAT_CON
             options.append(" con")
         options.append(" hp mana")
 

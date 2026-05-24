@@ -505,3 +505,35 @@ def test_train_command_increases_stats():
     assert char.train == 0
     assert char.max_hit > 0
     assert "durability" in msg.lower()
+
+
+def test_train_lists_available_stats_without_crash():
+    """ROM `do_train` with an unrecognized arg (or typo like ``train magic``)
+    falls into the listing branch (src/act_move.c:1713-1745). Regression:
+    Python read `char.perm_str` / `perm_int` / … which don't exist on
+    ``Character`` (stats live in ``char.perm_stat[STAT_*]``), so the
+    command crashed with ``AttributeError: 'Character' object has no
+    attribute 'perm_str'``. The listing must succeed and include the
+    trainable stat tokens."""
+
+    char = Character(practice=0, train=5, is_npc=False, perm_stat=[15, 15, 15, 15, 15])
+
+    msg = do_train(char, "magic")  # unrecognized → listing branch
+
+    assert "perm_str" not in msg  # not a crash trace
+    assert "You can train:" in msg
+    for token in (" str", " int", " wis", " dex", " con", " hp", " mana"):
+        assert token in msg, f"missing {token!r} in {msg!r}"
+
+
+def test_train_lists_only_unmaxed_stats():
+    """ROM src/act_move.c:1716-1725 skips stats already at
+    ``get_max_train`` (race_max + 4 = 22). Listing must omit maxed stats."""
+
+    # STR = 22 (maxed), others below max
+    char = Character(practice=0, train=5, is_npc=False, perm_stat=[22, 15, 15, 15, 15])
+
+    msg = do_train(char, "magic")
+
+    assert " str" not in msg
+    assert " int" in msg
