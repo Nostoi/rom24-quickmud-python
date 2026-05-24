@@ -770,9 +770,9 @@ def do_cast(char: Character, args: str) -> str:
     target = char
     if target_name:
         room = getattr(char, "room", None)
-        if room:
+        if room is not None:
             target_lower = target_name.lower()
-            for candidate in getattr(room, "characters", []):
+            for candidate in getattr(room, "people", []) or []:
                 candidate_name = (getattr(candidate, "name", None) or "").lower()
                 if target_lower in candidate_name:
                     target = candidate
@@ -788,17 +788,17 @@ def do_cast(char: Character, args: str) -> str:
         char.mana = max(0, char.mana - c_div(mana_cost, 2))
         return "You lost your concentration."
 
-    spell_func = getattr(skill, "handler", None)
-    if not (spell_func and callable(spell_func)):
+    spell_func = skill_registry.handlers.get(skill.name)
+    if not callable(spell_func):
         return f"The spell '{skill.name}' is not fully implemented yet."
 
     try:
-        result = spell_func(char, target, spell_level)
+        spell_func(char, target)
     except Exception as exc:
         return f"Spell cast failed: {exc}"
 
     skill_registry._check_improve(char, skill, skill.name, success)
-    return result if result else f"You cast {skill.name}."
+    return f"You cast {skill.name}."
 
 
 def do_dirt(char: Character, args: str) -> str:

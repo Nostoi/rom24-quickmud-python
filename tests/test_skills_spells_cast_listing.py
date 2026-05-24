@@ -154,3 +154,35 @@ def test_do_cast_prefix_matches_single_token_name():
 
     assert result != "You don't know any spells of that name."
     assert result == "You don't have enough mana."
+
+
+def test_do_cast_magic_missile_dispatches_handler_and_damages_target():
+    """End-to-end regression: handler lookup uses `skill_registry.handlers`
+    (not `getattr(skill, "handler", None)`), handlers are invoked with the
+    (caster, target) signature, and the target is resolved via `room.people`
+    (not the non-existent `room.characters`). With learned=100 and the RNG
+    seeded so the percent roll succeeds, the spell must execute and the
+    target must take damage."""
+
+    from mud.models.room import Room
+    from mud.utils import rng_mm
+
+    room = Room(vnum=99000, name="Arena", description="A clean test room")
+    caster = _make_mage(level=20, mana=200, skills={"magic missile": 100})
+    victim = Character(name="Fido", level=20, ch_class=0, is_npc=True, hit=200, max_hit=200)
+    caster.room = room
+    victim.room = room
+    room.people.extend([caster, victim])
+
+    rng_mm.seed_mm(42)
+    initial_hp = int(victim.hit)
+
+    result = do_cast(caster, "'magic missile' Fido")
+
+    assert result != "You don't know any spells of that name."
+    assert "is not fully implemented yet" not in result
+    assert "Spell cast failed" not in result
+    # ROM intent: a successful cast either damages or, on save-for-half, at
+    # least lands a hit. Either way HP should not be unchanged.
+    assert victim.hit < initial_hp, f"victim hp unchanged: {victim.hit} (was {initial_hp})"
+    assert caster.mana < 200, "mana should be consumed on cast"

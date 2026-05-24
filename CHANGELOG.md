@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.75]
+
+### Fixed
+- **`do_cast` failed to dispatch handlers and resolve targets** (`mud/commands/combat.py:704-805`, ROM `src/magic.c:299-360`): three latent bugs the `2.8.74` `find_spell` fix exposed —
+  - Handler lookup used `getattr(skill, "handler", None)`, which is always `None` because `SkillRegistry` stores handlers in `skill_registry.handlers[name]` rather than on the `Skill` object. Every cast therefore returned `"The spell '<name>' is not fully implemented yet."` Fixed to read from `skill_registry.handlers.get(skill.name)`.
+  - Handler call passed three arguments (`spell_func(char, target, spell_level)`) but every entry in `mud/skills/handlers.py` is `(caster, target=None)`. The `TypeError` was swallowed by the broad `except` and returned as `"Spell cast failed: …"`. Fixed by matching the canonical `(caster, target)` signature used by `skill_registry.use()`.
+  - Target lookup iterated `getattr(room, "characters", [])`, but the `Room` model stores occupants on `room.people`. Result: `cast magic missile fido` silently self-targeted. Fixed by iterating `room.people`.
+  - `do_cast` also passed the handler's raw return value through to the dispatcher, which expects a `str`. Damage-spell handlers return an `int`; the dispatcher choked on `if "…" not in result`. Spells emit their flavour text via `char.messages` (the `apply_damage` / `_send_to_char` path), so `do_cast` now always returns a `"You cast <name>."` acknowledgment string.
+
+### Added
+- `tests/test_skills_spells_cast_listing.py::test_do_cast_magic_missile_dispatches_handler_and_damages_target` — end-to-end regression that places a caster + target in a `Room`, casts `'magic missile' Fido` through `do_cast`, and asserts the handler ran (HP dropped, mana consumed, no `"is not fully implemented yet"` / `"Spell cast failed"` string). This locks down all three latent paths above.
+
 ## [2.8.74]
 
 ### Fixed
