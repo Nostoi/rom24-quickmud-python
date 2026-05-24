@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.59]
+
+### Fixed
+- **`FIGHT-008` — POS_DEAD TO_CHAR self-message red colour + blank-line spacing** (`src/fight.c:861`): ROM's `send_to_char("{RYou have been KILLED!!{x\n\r\n\r", victim)` wraps the death notice in red colour codes and appends two `\n\r` pairs so a blank line follows the message. Python's `mud/combat/engine.py:_position_change_message` previously returned the bare `"You have been KILLED!!"` — no colour, no extra spacing. Fix: return `"{RYou have been KILLED!!{x\n"`. The protocol layer in `mud/net/protocol.py:send_to_char` auto-appends one `\r\n` to every message, so the embedded trailing `\n` plus the auto-append produces the same visual blank-line spacing ROM gets from its two `\n\r` pairs. Closes the FIGHT-004..008 position-change-broadcast sweep. Locked in by `tests/integration/test_invisibility_combat.py::TestPositionChangeBroadcastPers::test_fight_008_pos_dead_self_message_wraps_red_and_appends_blank_line`.
+
+### Notes
+
+- Closes the 2026-05-23 `fight.c` PERS sweep on the position-change broadcast surface (FIGHT-004..008 all ✅ FIXED in `docs/parity/FIGHT_C_AUDIT.md`).
+- Weapon-proc broadcasts at `mud/combat/engine.py:1496/1510/1531/1541/1551` have analogous PERS gaps but are deferred to a follow-up cluster (FIGHT-009..013 reserved).
+
 ## [2.8.58]
 
 ### Fixed

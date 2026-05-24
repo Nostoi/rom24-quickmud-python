@@ -374,3 +374,56 @@ class TestPositionChangeBroadcastPers:
         finally:
             room_registry.pop(1003, None)
             character_registry.clear()
+
+    def test_fight_008_pos_dead_self_message_wraps_red_and_appends_blank_line(self):
+        """FIGHT-008 — POS_DEAD TO_CHAR self-message colour + spacing.
+
+        ROM C: src/fight.c:861
+            send_to_char ("{RYou have been KILLED!!{x\\n\\r\\n\\r", victim);
+
+        Two divergences from Python's previous
+        `return "You have been KILLED!!"`:
+          (a) Missing ROM red colour codes `{R...{x` — the ANSI
+              translation layer in `mud/net/ansi.py` consumes them.
+          (b) Missing trailing blank-line newline. ROM appends two
+              `\\n\\r` pairs, the second of which renders as a visual
+              blank line after the death notice. Python's protocol
+              layer auto-appends one `\\r\\n` to every message, so
+              the Python return needs exactly one embedded trailing
+              `\\n` for the auto-append to produce the blank line.
+        """
+        test_room = Room(vnum=1004, name="Test Room", description="A test room.", room_flags=0, sector_type=0)
+        test_room.people = []
+        test_room.contents = []
+        room_registry[1004] = test_room
+
+        try:
+            victim = create_test_character("Aliceee", 1004)
+            victim.level = 5
+            victim.position = Position.DEAD
+            victim.messages = []
+
+            _push_msg = _position_change_message(victim, Position.STANDING)
+
+            # Test path: function returns the self-message string;
+            # caller in apply_damage delivers via _push_message.
+            assert _push_msg, "POS_DEAD self-message should not be empty"
+            assert _push_msg.startswith("{R"), (
+                f"missing ROM red colour open code {{R: {_push_msg!r}"
+            )
+            assert "You have been KILLED!!" in _push_msg, (
+                f"ROM-exact wording missing: {_push_msg!r}"
+            )
+            assert "{x" in _push_msg, (
+                f"missing ROM red colour close code {{x: {_push_msg!r}"
+            )
+            # Trailing blank-line newline (the second of ROM's two
+            # \\n\\r pairs — Python's protocol layer auto-appends the
+            # first one as \\r\\n).
+            assert _push_msg.endswith("\n"), (
+                f"missing trailing \\n for ROM's blank-line spacing: {_push_msg!r}"
+            )
+
+        finally:
+            room_registry.pop(1004, None)
+            character_registry.clear()

@@ -775,7 +775,14 @@ def _position_change_message(victim: Character, old_pos: Position) -> str:
         # uses exactly two exclamation marks (not three).
         if hasattr(victim, "room") and victim.room is not None:
             _broadcast_pos_change(victim, "{{R{name} is DEAD!!{{x")
-        return "You have been KILLED!!"
+        # mirroring ROM src/fight.c:861 — `send_to_char("{RYou have
+        # been KILLED!!{x\n\r\n\r", victim)`. ROM's two trailing
+        # \n\r pairs render as the death notice + one blank line.
+        # Python's protocol layer auto-appends one \r\n to every
+        # message, so the embedded trailing \n here gives the blank
+        # line on the wire (FIGHT-008). Red colour wrap {R...{x is
+        # consumed by mud/net/ansi.py on websocket send.
+        return "{RYou have been KILLED!!{x\n"
     return ""
 
 
