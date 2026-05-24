@@ -38,8 +38,8 @@ from mud.models.constants import (
     WearFlag,
     attack_damage_type,
 )
-from mud.models.weapon_table import weapon_skill_name_for_type
 from mud.models.social import expand_placeholders
+from mud.models.weapon_table import weapon_skill_name_for_type
 from mud.net.protocol import broadcast_room as _broadcast_room
 from mud.skills import check_improve
 from mud.utils import rng_mm
@@ -698,14 +698,53 @@ def is_awake(character: Character) -> bool:
     return character.position > Position.SLEEPING
 
 
+def _broadcast_pos_change(victim: Character, template: str) -> None:
+    """Render `$n`-style position-change broadcasts per-listener.
+
+    Mirrors ROM's `act(..., TO_ROOM)` macro, which evaluates
+    ``PERS(victim, looker)`` once per recipient (see src/comm.c:act_new
+    around the `$n` case). Each room observer gets its own substituted
+    message, so an invisible victim renders as "someone" to anyone
+    without DETECT_INVIS — matches the channel-arc fix pattern
+    (mud/world/vision.py:pers).
+
+    `template` must contain a single `{name}` placeholder for the
+    PERS-rendered victim name; this function fills it per listener
+    and dispatches through the same fire-and-forget websocket path
+    as `mud/net/protocol.py:broadcast_room`.
+    """
+    from mud.net.protocol import send_to_char as _send
+    from mud.world.vision import pers
+
+    room = getattr(victim, "room", None)
+    if room is None:
+        return
+    for listener in list(getattr(room, "people", [])):
+        if listener is victim:
+            continue
+        message = template.format(name=pers(victim, listener))
+        writer = getattr(listener, "connection", None)
+        if writer is not None:
+            asyncio.create_task(_send(listener, message))
+        if hasattr(listener, "messages"):
+            listener.messages.append(message)
+
+
 def _position_change_message(victim: Character, old_pos: Position) -> str:
     """Generate position change message following ROM logic."""
     if victim.position == Position.MORTAL:
+        # mirroring ROM src/fight.c:837-838 — `act("$n is mortally
+        # wounded, and will die soon, if not aided.", victim, NULL,
+        # NULL, TO_ROOM)`. The act() macro renders `$n` per-listener
+        # through PERS(victim, looker), so an invisible victim
+        # appears as "someone" to room observers without
+        # DETECT_INVIS (FIGHT-004). Each recipient gets its own
+        # substituted string — `_broadcast_room` with a baked
+        # f-string would leak the victim's name.
         if hasattr(victim, "room") and victim.room is not None:
-            _broadcast_room(
-                victim.room,
-                f"{victim.name} is mortally wounded, and will die soon, if not aided.",
-                exclude=victim,
+            _broadcast_pos_change(
+                victim,
+                "{name} is mortally wounded, and will die soon, if not aided.",
             )
         return "You are mortally wounded, and will die soon, if not aided."
     elif victim.position == Position.INCAP:

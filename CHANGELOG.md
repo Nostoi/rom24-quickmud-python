@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.55]
+
+### Fixed
+- **`FIGHT-004` — POS_MORTAL TO_ROOM broadcast routes `$n` through PERS** (`src/fight.c:837-838`, `src/handler.c:2618`): ROM's `act("$n is mortally wounded, and will die soon, if not aided.", victim, NULL, NULL, TO_ROOM)` renders `$n` per-listener through `PERS(victim, looker)`, so an invisible victim shows as `"someone"` to room observers without `DETECT_INVIS`. Python previously baked `victim.name` into a single fixed broadcast string via `_broadcast_room`, leaking the victim's identity to every recipient. Fix: new `_broadcast_pos_change` helper in `mud/combat/engine.py` iterates `room.people`, calls `mud.world.vision.pers(victim, listener)` per recipient, and dispatches through the same fire-and-forget websocket path as `broadcast_room`. Same channel-arc PERS fix pattern (SAY-002/EMOTE-001/TELL-003/SHOUT-003/YELL-001) applied to combat death messaging. Locked in by `tests/integration/test_invisibility_combat.py::TestPositionChangeBroadcastPers::test_fight_004_pos_mortal_broadcast_uses_pers_for_invisible_victim`.
+
+### Notes
+
+- First gap closed in the 2026-05-23 `fight.c` PERS sweep. FIGHT-005..008 (POS_INCAP / POS_STUNNED / POS_DEAD TO_ROOM and POS_DEAD TO_CHAR) stable-IDed in `docs/parity/FIGHT_C_AUDIT.md` and will land in follow-up commits using the new `_broadcast_pos_change` helper.
+
 ## [2.8.54]
 
 ### Fixed

@@ -6,10 +6,10 @@ Tests verify that combat targeting respects AFF_INVISIBLE and AFF_DETECT_INVIS.
 
 from __future__ import annotations
 
-import pytest
+from mud.combat.engine import _position_change_message
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character, character_registry
-from mud.models.constants import AffectFlag
+from mud.models.constants import AffectFlag, Position
 from mud.models.room import Room
 from mud.registry import room_registry
 from mud.world.world_state import create_test_character
@@ -180,6 +180,62 @@ class TestCombatInvisibility:
 
             result = process_command(rescuer, "rescue ally")
             assert "aren't here" not in result.lower(), f"Should see with detect_invis: {result}"
+
+        finally:
+            room_registry.pop(1000, None)
+            character_registry.clear()
+
+
+class TestPositionChangeBroadcastPers:
+    """FIGHT-004..008 — position-change TO_ROOM broadcasts must route
+    `$n` through ROM PERS() so an invisible victim renders as
+    "someone" to room observers without DETECT_INVIS. Mirrors the
+    channel-arc fix pattern (SAY-002 / EMOTE-001 / TELL-003 /
+    SHOUT-003 / YELL-001).
+    """
+
+    def test_fight_004_pos_mortal_broadcast_uses_pers_for_invisible_victim(self):
+        """FIGHT-004 — POS_MORTAL TO_ROOM `$n` routes through PERS.
+
+        ROM C: src/fight.c:837-838
+            act ("$n is mortally wounded, and will die soon, if not aided.",
+                 victim, NULL, NULL, TO_ROOM);
+
+        ROM's act() macro substitutes `$n` per-listener through
+        PERS(victim, looker), so an invisible victim renders as
+        "someone" to room observers without DETECT_INVIS. Python
+        previously baked `victim.name` into a single fixed broadcast
+        string via `_broadcast_room`, leaking the victim's name to
+        every recipient.
+        """
+        test_room = Room(vnum=1000, name="Test Room", description="A test room.", room_flags=0, sector_type=0)
+        test_room.people = []
+        test_room.contents = []
+        room_registry[1000] = test_room
+
+        try:
+            victim = create_test_character("Aliceee", 1000)
+            victim.level = 5
+            victim.add_affect(AffectFlag.INVISIBLE)
+            victim.position = Position.MORTAL
+
+            observer = create_test_character("Bobbb", 1000)
+            observer.level = 5
+            # No DETECT_INVIS — must not see Aliceee.
+            observer.messages = []
+
+            _position_change_message(victim, Position.STANDING)
+
+            joined = "\n".join(observer.messages)
+            assert "is mortally wounded" in joined.lower(), (
+                f"POS_MORTAL broadcast not delivered to observer: {observer.messages!r}"
+            )
+            assert "someone is mortally wounded" in joined.lower(), (
+                f"PERS render missing — expected 'someone' for invisible victim; got: {observer.messages!r}"
+            )
+            assert "aliceee" not in joined.lower(), (
+                f"invisible victim's name leaked through TO_ROOM broadcast: {observer.messages!r}"
+            )
 
         finally:
             room_registry.pop(1000, None)
