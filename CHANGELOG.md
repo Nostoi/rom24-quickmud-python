@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.68]
+
+### Changed
+- Untrack `log/orphaned_helps.txt` (test artifact that drifted on every run) and add it to `log/.gitignore`. No code change.
+
 ## [2.8.67]
 
 ### Fixed
