@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.69]
+
+### Fixed
+- **`PMOTE-002` — `do_pmote` viewer broadcast routes actor `$N` through PERS** (`src/act_comm.c:1136,1188`): ROM sends pmote output to each eligible viewer via `act("$N $t", vch, ..., ch, TO_CHAR)`, which evaluates `PERS(ch, vch)` per recipient so an invisible actor renders as `"someone"` to viewers without `DETECT_INVIS`. Python's `mud/commands/imm_emote.py:do_pmote` previously hardcoded `f"{char_name} {substituted}"`, leaking the invisible actor's identity on both the matched-name and no-match branches. Fix: route the actor prefix through `mud.world.vision.pers(char, viewer)` per viewer. Locked in by `tests/integration/test_act_comm_gaps.py::TestPmoteGaps::test_pmote_002_invisible_actor_renders_as_someone_to_unaided_viewer`.
+
 ## [2.8.68]
 
 ### Changed

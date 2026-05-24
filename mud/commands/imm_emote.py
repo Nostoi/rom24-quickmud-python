@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.character import Character
+from mud.world.vision import pers
 
 if TYPE_CHECKING:
     pass
@@ -195,7 +196,9 @@ def do_pmote(char: Character, args: str) -> str:
                 continue
             viewer_name = getattr(viewer, "name", "") or ""
             substituted = _pmote_substitute(args, viewer_name) if viewer_name else args
-            _send_to_char(viewer, f"{char_name} {substituted}\n\r")
+            # mirroring ROM src/act_comm.c:1136,1188 — act("$N $t", ...)
+            # routes the actor through PERS(ch, vch) per recipient.
+            _send_to_char(viewer, f"{pers(char, viewer)} {substituted}\n\r")
 
     return ""
 

@@ -123,6 +123,18 @@ class TestPmoteGaps:
         # ROM: name + 's' (plural) drops the s; "Bobs" -> "you".
         assert any("Alice looks at you over there." in msg for msg in bob.output_buffer)
 
+    def test_pmote_002_invisible_actor_renders_as_someone_to_unaided_viewer(self, alice, bob):
+        # mirrors ROM src/act_comm.c:1136,1188 — act("$N $t", ...) routes
+        # the actor through PERS(ch, vch), so invisible actors render as
+        # "someone" to viewers without DETECT_INVIS.
+        alice.affected_by |= int(AffectFlag.INVISIBLE)
+        assert not bob.has_affect(AffectFlag.DETECT_INVIS)
+
+        bob.output_buffer = []
+        do_pmote(alice, "smiles at Bob.")
+
+        assert any("someone smiles at you." in msg for msg in bob.output_buffer), bob.output_buffer
+
 
 # -----------------------------------------------------------------------------
 # COLOUR-001..004: ROM colour menu/toggle/default/all/per-field
