@@ -90,173 +90,182 @@ def do_socials(char: Character, args: str) -> str:
     return "\n".join(lines)
 
 
+LEVEL_HERO = 51
+
+
+def _parse_skills_args(args: str) -> tuple[bool, int, int, str | None]:
+    """ROM `do_skills`/`do_spells` arg parser (src/skills.c:269-318).
+
+    Returns (fAll, min_lev, max_lev, error). When `error` is non-None the caller
+    should return it verbatim. ROM accepts `[all] [max [min]]`: with no args
+    only currently-reachable entries show; with `all`, the full table; with one
+    numeric arg, entries at exactly that level (1..max); with two, the closed
+    range [min..max].
+    """
+
+    fAll = False
+    min_lev = 1
+    max_lev = LEVEL_HERO
+
+    remaining = (args or "").strip()
+    if not remaining:
+        return fAll, min_lev, max_lev, None
+
+    fAll = True
+
+    # ROM `str_prefix(argument, "all")` returns 0 (match) when argument is a
+    # prefix of "all". If matched we consume it; the remainder may then carry
+    # numeric range arguments. If the arg isn't "all"-prefixed, ROM falls
+    # straight into the numeric branch with the original argument.
+    if "all".startswith(remaining.lower().split(None, 1)[0]):
+        parts = remaining.split(None, 1)
+        remaining = parts[1] if len(parts) > 1 else ""
+
+    if not remaining:
+        return fAll, min_lev, max_lev, None
+
+    tokens = remaining.split()
+    if not tokens[0].lstrip("-").isdigit():
+        return fAll, min_lev, max_lev, "Arguments must be numerical or all."
+    max_lev = int(tokens[0])
+    if max_lev < 1 or max_lev > LEVEL_HERO:
+        return fAll, min_lev, max_lev, f"Levels must be between 1 and {LEVEL_HERO}."
+
+    if len(tokens) > 1:
+        if not tokens[1].lstrip("-").isdigit():
+            return fAll, min_lev, max_lev, "Arguments must be numerical or all."
+        min_lev = max_lev
+        max_lev = int(tokens[1])
+        if max_lev < 1 or max_lev > LEVEL_HERO:
+            return fAll, min_lev, max_lev, f"Levels must be between 1 and {LEVEL_HERO}."
+        if min_lev > max_lev:
+            return fAll, min_lev, max_lev, "That would be silly."
+
+    return fAll, min_lev, max_lev, None
+
+
+def _class_level_for_skill(skill, class_idx: int) -> int:
+    """Return `skill_table[sn].skill_level[ch->class]` equivalent."""
+
+    levels = getattr(skill, "levels", None)
+    if isinstance(levels, list | tuple) and len(levels) > class_idx:
+        try:
+            return int(levels[class_idx])
+        except (TypeError, ValueError):
+            return LEVEL_HERO + 1
+    return LEVEL_HERO + 1
+
+
+def _render_skill_list(rows_by_level: dict[int, list[str]]) -> str:
+    """ROM page layout: 2-column rows under a `Level NN:` header per group."""
+
+    lines: list[str] = []
+    for lvl in sorted(rows_by_level.keys()):
+        entries = rows_by_level[lvl]
+        header = f"Level {lvl:2d}: {entries[0]}"
+        lines.append(header)
+        for index in range(1, len(entries), 2):
+            chunk = entries[index : index + 2]
+            lines.append("          " + "".join(chunk))
+    return "\n".join(lines)
+
+
 def do_skills(char: Character, args: str) -> str:
+    """List character's known non-spell skills.
+
+    ROM parity: ``do_skills`` in ``src/skills.c:381-485``.
     """
-    List character's available skills.
-    
-    ROM Reference: src/skills.c do_skills (lines 381-480)
-    
-    Shows skills (non-spell abilities) the character knows or can learn.
-    """
+
     if getattr(char, "is_npc", False):
         return ""
-    
+
+    fAll, min_lev, max_lev, error = _parse_skills_args(args)
+    if error:
+        return error
+
+    from mud.skills.registry import skill_registry
+
+    level = int(getattr(char, "level", 1) or 1)
     try:
-        from mud import registry
-        skill_table = getattr(registry, "skill_table", {})
-    except (ImportError, AttributeError):
-        return "Skills not available."
-    
-    level = getattr(char, "level", 1)
-    char_class = getattr(char, "char_class", None)
-    class_idx = 0
-    if char_class:
-        class_idx = getattr(char_class, "index", 0)
-    
-    pcdata = getattr(char, "pcdata", None)
-    learned = {}
-    if pcdata:
-        learned = getattr(pcdata, "learned", {})
-    
-    # Collect skills by level
-    skill_by_level = {}
-    
-    for skill_name, skill_data in skill_table.items():
-        # Skip spells (only show skills)
-        if hasattr(skill_data, "spell_fun") and skill_data.spell_fun:
+        class_idx = int(getattr(char, "ch_class", 0) or 0)
+    except (TypeError, ValueError):
+        class_idx = 0
+
+    learned: dict[str, int] = getattr(char, "skills", {}) or {}
+
+    rows_by_level: dict[int, list[str]] = {}
+    for name, skill in skill_registry.skills.items():
+        if getattr(skill, "type", "skill") != "skill":
             continue
-        
-        # Get level requirement for this class
-        skill_levels = getattr(skill_data, "skill_level", {})
-        if isinstance(skill_levels, dict):
-            skill_level = skill_levels.get(class_idx, 52)
-        elif isinstance(skill_levels, (list, tuple)) and len(skill_levels) > class_idx:
-            skill_level = skill_levels[class_idx]
-        else:
-            skill_level = 52
-        
-        if skill_level > 51:  # Not available to this class
+        skill_lvl = _class_level_for_skill(skill, class_idx)
+        if skill_lvl >= LEVEL_HERO + 1:
             continue
-        
-        # Check if learned
-        pct = learned.get(skill_name, 0)
-        if pct <= 0 and skill_level > level:
-            continue  # Not learned and not available yet
-        
-        if skill_level not in skill_by_level:
-            skill_by_level[skill_level] = []
-        
+        if not fAll and skill_lvl > level:
+            continue
+        if skill_lvl < min_lev or skill_lvl > max_lev:
+            continue
+        pct = int(learned.get(name, 0) or 0)
         if pct <= 0:
-            skill_by_level[skill_level].append(f"{skill_name:<18} n/a")
+            continue
+        if level < skill_lvl:
+            entry = f"{name:<18} n/a      "
         else:
-            skill_by_level[skill_level].append(f"{skill_name:<18} {pct:3d}%")
-    
-    if not skill_by_level:
+            entry = f"{name:<18} {pct:3d}%      "
+        rows_by_level.setdefault(skill_lvl, []).append(entry)
+
+    if not rows_by_level:
         return "No skills found."
-    
-    lines = []
-    for lvl in sorted(skill_by_level.keys()):
-        skills = skill_by_level[lvl]
-        lines.append(f"\nLevel {lvl:2d}:")
-        
-        # Format in 2 columns
-        row = []
-        for skill in skills:
-            row.append(skill)
-            if len(row) == 2:
-                lines.append("  " + "  ".join(row))
-                row = []
-        if row:
-            lines.append("  " + "  ".join(row))
-    
-    return "\n".join(lines)
+    return _render_skill_list(rows_by_level)
 
 
 def do_spells(char: Character, args: str) -> str:
+    """List character's known spells with mana cost.
+
+    ROM parity: ``do_spells`` in ``src/skills.c:256-378``.
     """
-    List character's available spells.
-    
-    ROM Reference: src/skills.c do_spells (lines 256-380)
-    
-    Shows spells the character knows or can learn, with mana costs.
-    """
+
     if getattr(char, "is_npc", False):
         return ""
-    
+
+    fAll, min_lev, max_lev, error = _parse_skills_args(args)
+    if error:
+        return error
+
+    from mud.skills.registry import skill_registry
+
+    level = int(getattr(char, "level", 1) or 1)
     try:
-        from mud import registry
-        skill_table = getattr(registry, "skill_table", {})
-    except (ImportError, AttributeError):
-        return "Spells not available."
-    
-    level = getattr(char, "level", 1)
-    char_class = getattr(char, "char_class", None)
-    class_idx = 0
-    if char_class:
-        class_idx = getattr(char_class, "index", 0)
-    
-    pcdata = getattr(char, "pcdata", None)
-    learned = {}
-    if pcdata:
-        learned = getattr(pcdata, "learned", {})
-    
-    # Collect spells by level
-    spell_by_level = {}
-    
-    for spell_name, spell_data in skill_table.items():
-        # Only show spells (has spell_fun)
-        if not hasattr(spell_data, "spell_fun") or not spell_data.spell_fun:
+        class_idx = int(getattr(char, "ch_class", 0) or 0)
+    except (TypeError, ValueError):
+        class_idx = 0
+
+    learned: dict[str, int] = getattr(char, "skills", {}) or {}
+
+    rows_by_level: dict[int, list[str]] = {}
+    for name, skill in skill_registry.skills.items():
+        if getattr(skill, "type", "skill") != "spell":
             continue
-        
-        # Get level requirement for this class
-        spell_levels = getattr(spell_data, "skill_level", {})
-        if isinstance(spell_levels, dict):
-            spell_level = spell_levels.get(class_idx, 52)
-        elif isinstance(spell_levels, (list, tuple)) and len(spell_levels) > class_idx:
-            spell_level = spell_levels[class_idx]
-        else:
-            spell_level = 52
-        
-        if spell_level > 51:  # Not available to this class
+        spell_lvl = _class_level_for_skill(skill, class_idx)
+        if spell_lvl >= LEVEL_HERO + 1:
             continue
-        
-        # Check if learned
-        pct = learned.get(spell_name, 0)
-        if pct <= 0 and spell_level > level:
-            continue  # Not learned and not available yet
-        
-        if spell_level not in spell_by_level:
-            spell_by_level[spell_level] = []
-        
-        # Calculate mana cost
-        min_mana = getattr(spell_data, "min_mana", 20)
-        if level < spell_level:
-            mana_str = "n/a"
+        if not fAll and spell_lvl > level:
+            continue
+        if spell_lvl < min_lev or spell_lvl > max_lev:
+            continue
+        pct = int(learned.get(name, 0) or 0)
+        if pct <= 0:
+            continue
+        if level < spell_lvl:
+            entry = f"{name:<18} n/a      "
         else:
-            mana = max(min_mana, 100 // (2 + level - spell_level))
-            mana_str = f"{mana:3d} mana"
-        
-        spell_by_level[spell_level].append(f"{spell_name:<18} {mana_str}")
-    
-    if not spell_by_level:
+            min_mana = int(getattr(skill, "min_mana", 0) or 0)
+            mana = max(min_mana, 100 // (2 + level - spell_lvl))
+            entry = f"{name:<18}  {mana:3d} mana  "
+        rows_by_level.setdefault(spell_lvl, []).append(entry)
+
+    if not rows_by_level:
         return "No spells found."
-    
-    lines = []
-    for lvl in sorted(spell_by_level.keys()):
-        spells = spell_by_level[lvl]
-        lines.append(f"\nLevel {lvl:2d}:")
-        
-        # Format in 2 columns
-        row = []
-        for spell in spells:
-            row.append(spell)
-            if len(row) == 2:
-                lines.append("  " + "  ".join(row))
-                row = []
-        if row:
-            lines.append("  " + "  ".join(row))
-    
-    return "\n".join(lines)
+    return _render_skill_list(rows_by_level)
 
 
 def do_rent(char: Character, args: str) -> str:

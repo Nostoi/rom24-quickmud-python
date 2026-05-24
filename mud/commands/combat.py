@@ -702,59 +702,73 @@ def do_flee(char: Character, args: str) -> str:
 
 
 def do_cast(char: Character, args: str) -> str:
-    """
-    Cast a spell.
+    """Cast a spell.
 
-    ROM Reference: src/magic.c lines 50-150 (do_cast)
+    ROM parity: ``do_cast`` in ``src/magic.c:299-360``. Uses ROM's quote-aware
+    ``one_argument`` parsing so multi-word spell names like ``cast 'magic
+    missile' fido`` resolve correctly, and ``find_spell`` for prefix matching
+    against the learned spell table.
     """
-    args = args.strip()
 
-    if not args:
+    from mud.skills import skill_registry
+    from mud.utils.string_editor import first_arg
+
+    if not (args or "").strip():
         return "Cast which what where?"
 
-    # Parse spell name and target
-    parts = args.split(None, 1)
-    spell_name = parts[0].lower()
-    target_name = parts[1] if len(parts) > 1 else ""
+    rest, arg1 = first_arg(args, lower=True)
+    rest, arg2 = first_arg(rest, lower=False)
+    target_name = arg2
 
-    # Check if character knows the spell
-    skills = getattr(char, "skills", {})
-    if spell_name not in skills:
+    skill = skill_registry.find_spell(char, arg1)
+
+    learned: dict[str, int] = getattr(char, "skills", {}) or {}
+    spell_level = 0
+    if skill is not None:
+        spell_level = int(learned.get(skill.name, learned.get(skill.name.lower(), 0)) or 0)
+
+    try:
+        class_idx = int(getattr(char, "ch_class", 0) or 0)
+    except (TypeError, ValueError):
+        class_idx = 0
+    char_level = int(getattr(char, "level", 1) or 1)
+
+    required_level: int | None = None
+    if skill is not None:
+        levels = getattr(skill, "levels", None)
+        if isinstance(levels, list | tuple) and len(levels) > class_idx:
+            try:
+                required_level = int(levels[class_idx])
+            except (TypeError, ValueError, IndexError):
+                required_level = None
+
+    if (
+        skill is None
+        or spell_level <= 0
+        or (required_level is not None and char_level < required_level)
+    ):
         return "You don't know any spells of that name."
 
-    spell_level = skills.get(spell_name, 0)
-    if spell_level <= 0:
-        return "You don't know that spell well enough."
-
-    # Check position
     if char.position < Position.FIGHTING:
         return "You can't concentrate enough."
 
-    # Check mana
-    # Spell mana cost is typically level-based
-    char_level = int(getattr(char, "level", 1) or 1)
-    mana_cost = max(5, char_level)  # Simple cost formula
+    min_mana = int(getattr(skill, "min_mana", 0) or 0)
+    if required_level is not None and char_level + 2 == required_level:
+        mana_cost = 50
+    elif required_level is not None:
+        mana_cost = max(min_mana, 100 // max(1, 2 + char_level - required_level))
+    else:
+        mana_cost = max(min_mana, 5)
 
     if getattr(char, "mana", 0) < mana_cost:
         return "You don't have enough mana."
 
-    # Check wait state
     if int(getattr(char, "wait", 0) or 0) > 0:
         char.messages.append("You are still recovering.")
         return "You are still recovering."
 
-    # Try to cast
-    try:
-        from mud.skills import skill_registry
-
-        skill = skill_registry.get(spell_name)
-    except (ImportError, KeyError):
-        return f"The spell '{spell_name}' is not implemented yet."
-
-    # Determine target
-    target = char  # Default to self
+    target = char
     if target_name:
-        # Try to find target in room
         room = getattr(char, "room", None)
         if room:
             target_lower = target_name.lower()
@@ -764,31 +778,27 @@ def do_cast(char: Character, args: str) -> str:
                     target = candidate
                     break
 
-    # Deduct mana
     char.mana -= mana_cost
-
-    # Set lag
     skill_registry._apply_wait_state(char, get_pulse_violence())
 
-    # Try to cast the spell
     roll = rng_mm.number_percent()
     success = roll <= spell_level
 
     if not success:
-        char.mana = max(0, char.mana - c_div(mana_cost, 2))  # Lose half mana on failure
+        char.mana = max(0, char.mana - c_div(mana_cost, 2))
         return "You lost your concentration."
 
-    # Execute spell
+    spell_func = getattr(skill, "handler", None)
+    if not (spell_func and callable(spell_func)):
+        return f"The spell '{skill.name}' is not fully implemented yet."
+
     try:
-        spell_func = getattr(skill, "handler", None)
-        if spell_func and callable(spell_func):
-            result = spell_func(char, target, spell_level)
-            skill_registry._check_improve(char, skill, spell_name, success)
-            return result if result else f"You cast {spell_name}."
-        else:
-            return f"The spell '{spell_name}' is not fully implemented yet."
-    except Exception as e:
-        return f"Spell cast failed: {e}"
+        result = spell_func(char, target, spell_level)
+    except Exception as exc:
+        return f"Spell cast failed: {exc}"
+
+    skill_registry._check_improve(char, skill, skill.name, success)
+    return result if result else f"You cast {skill.name}."
 
 
 def do_dirt(char: Character, args: str) -> str:

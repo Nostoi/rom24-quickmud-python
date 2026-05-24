@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.74]
+
+### Fixed
+- **`do_skills` / `do_spells` listing always returned "No skills found." / "No spells found."** (`mud/commands/misc_info.py:93-260`, ROM `src/skills.c:256-485`): both handlers iterated `getattr(mud.registry, "skill_table", {})`, a non-existent attribute that silently fell back to an empty dict. They also read the wrong skill fields (`spell_fun`, `skill_level`) and the wrong learned-percent source (`char.pcdata.learned` rather than `char.skills`). Rewritten to iterate `mud.skills.skill_registry.skills`, discriminate spells via `skill.type == "spell"`, look up class-level requirements via `skill.levels[ch_class]`, and read learned percentages from `char.skills` — matching the data source `do_practice` already uses successfully. Added ROM-faithful `[all] [max [min]]` argument parsing.
+- **`do_cast <name>` reported "You don't know any spells of that name."** (`mud/commands/combat.py:704-791`, ROM `src/magic.c:299-360`): exact-match lookup against `char.skills` rejected ROM prefix abbreviations, and single-token argument parsing broke multi-word spells like `magic missile`. Rewritten to use `mud.utils.string_editor.first_arg` (ROM `one_argument` parity, single-quote aware) and `skill_registry.find_spell(...)` for prefix matching. Mana cost now follows ROM's `UMAX(skill.min_mana, 100 / (2 + level - skill.skill_level[class]))` formula, with the level+2 == required → 50 mana edge case.
+
+### Added
+- `tests/test_skills_spells_cast_listing.py` — 10 regression tests covering the three listing/cast paths against the canonical `data/skills.json` table, including NPC short-circuit, ROM "Arguments must be numerical or all." error, `cast 'magic missile' …` quoted multi-word parsing, and `cast magic …` prefix matching.
+
 ## [2.8.73]
 
 ### Added
