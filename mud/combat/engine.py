@@ -1567,7 +1567,14 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
         dam = rng_mm.number_range(1, weapon_level // 5 + 1)
         _push_message(victim, f"You feel {weapon_name} drawing your life away.")
         if room is not None:
-            _broadcast_room(room, f"{weapon_name} draws life from {victim.name}.", exclude=victim)
+            # mirroring ROM src/fight.c:643 — `act("$p draws life
+            # from $n.", victim, wield, NULL, TO_ROOM)`. PERS on $n
+            # per-listener (FIGHT-010).
+            _broadcast_pos_change(
+                victim,
+                "{weapon} draws life from {name}.",
+                weapon=weapon_name,
+            )
 
         # Apply vampiric damage (additional negative damage) without extra messages
         apply_damage(attacker, victim, dam, DamageType.NEGATIVE, show=False)

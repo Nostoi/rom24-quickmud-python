@@ -89,3 +89,27 @@ class TestWeaponProcBroadcastPers:
         finally:
             room_registry.pop(2000, None)
             character_registry.clear()
+
+    def test_fight_010_vampiric_broadcast_uses_pers_for_invisible_victim(self):
+        """FIGHT-010 — WEAPON_VAMPIRIC TO_ROOM `$p draws life from $n.`
+
+        ROM C: src/fight.c:643
+            act ("$p draws life from $n.", victim, wield, NULL, TO_ROOM);
+        """
+        try:
+            _, attacker, victim, observer = _setup_room_and_chars(2001, WEAPON_VAMPIRIC)
+            process_weapon_special_attacks(attacker, victim)
+
+            joined = "\n".join(observer.messages).lower()
+            assert "draws life from" in joined, (
+                f"vampiric broadcast not delivered: {observer.messages!r}"
+            )
+            assert "the sword draws life from someone" in joined, (
+                f"PERS render missing for invisible victim: {observer.messages!r}"
+            )
+            assert "aliceee" not in joined, (
+                f"invisible victim name leaked: {observer.messages!r}"
+            )
+        finally:
+            room_registry.pop(2001, None)
+            character_registry.clear()

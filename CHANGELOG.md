@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.62]
+
+### Fixed
+- **`FIGHT-010` — WEAPON_VAMPIRIC TO_ROOM broadcast routes `$n` through PERS** (`src/fight.c:643`): ROM's `act("$p draws life from $n.", victim, wield, NULL, TO_ROOM)` substitutes `$n` per-listener through PERS. Python's vampiric branch in `process_weapon_special_attacks` previously baked `victim.name` into a fixed `_broadcast_room` string. Fix: route through `_broadcast_pos_change`. Locked in by `tests/integration/test_weapon_proc_pers.py::TestWeaponProcBroadcastPers::test_fight_010_vampiric_broadcast_uses_pers_for_invisible_victim`.
+
 ## [2.8.61]
 
 ### Fixed
