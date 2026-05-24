@@ -768,8 +768,13 @@ def _position_change_message(victim: Character, old_pos: Position) -> str:
             )
         return "You are stunned, but will probably recover."
     elif victim.position == Position.DEAD:
+        # mirroring ROM src/fight.c:860 — `act("{R$n is DEAD!!{x",
+        # victim, 0, 0, TO_ROOM)`. PERS substitution per-listener
+        # (FIGHT-007), wrapped in ROM red colour codes ({R...{x) the
+        # ANSI translation layer consumes on websocket send, and ROM
+        # uses exactly two exclamation marks (not three).
         if hasattr(victim, "room") and victim.room is not None:
-            _broadcast_room(victim.room, f"{victim.name} is DEAD!!!", exclude=victim)
+            _broadcast_pos_change(victim, "{{R{name} is DEAD!!{{x")
         return "You have been KILLED!!"
     return ""
 

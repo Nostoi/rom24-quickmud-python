@@ -318,3 +318,59 @@ class TestPositionChangeBroadcastPers:
         finally:
             room_registry.pop(1002, None)
             character_registry.clear()
+
+    def test_fight_007_pos_dead_broadcast_uses_pers_and_red_colour_and_two_bangs(self):
+        """FIGHT-007 — POS_DEAD TO_ROOM `{R$n is DEAD!!{x` (3 sub-gaps).
+
+        ROM C: src/fight.c:860
+            act ("{R$n is DEAD!!{x", victim, 0, 0, TO_ROOM);
+
+        Three divergences from Python's previous
+        `f"{victim.name} is DEAD!!!"` baked broadcast:
+          (a) `$n` must route through PERS — invisible victim renders
+              as "someone" to observers without DETECT_INVIS.
+          (b) Message must be wrapped with ROM red colour codes
+              `{R...{x` — the ANSI translation layer consumes them.
+          (c) ROM uses two exclamation marks (`DEAD!!`), Python
+              previously emitted three.
+        """
+        test_room = Room(vnum=1003, name="Test Room", description="A test room.", room_flags=0, sector_type=0)
+        test_room.people = []
+        test_room.contents = []
+        room_registry[1003] = test_room
+
+        try:
+            victim = create_test_character("Aliceee", 1003)
+            victim.level = 5
+            victim.add_affect(AffectFlag.INVISIBLE)
+            victim.position = Position.DEAD
+
+            observer = create_test_character("Bobbb", 1003)
+            observer.level = 5
+            observer.messages = []
+
+            _position_change_message(victim, Position.STANDING)
+
+            assert observer.messages, (
+                f"POS_DEAD broadcast not delivered: {observer.messages!r}"
+            )
+            msg = observer.messages[-1]
+            # (a) PERS render — invisible victim → "someone".
+            assert "someone is DEAD!!" in msg, (
+                f"PERS render missing for invisible victim: {msg!r}"
+            )
+            assert "Aliceee" not in msg, (
+                f"invisible victim name leaked: {msg!r}"
+            )
+            # (b) ROM red colour wrap.
+            assert msg.startswith("{R") and msg.endswith("{x"), (
+                f"missing ROM red colour codes {{R...{{x: {msg!r}"
+            )
+            # (c) Two exclamation marks, not three.
+            assert "DEAD!!{x" in msg and "DEAD!!!" not in msg, (
+                f"ROM wording is 'DEAD!!' (two bangs), Python emitted: {msg!r}"
+            )
+
+        finally:
+            room_registry.pop(1003, None)
+            character_registry.clear()

@@ -236,7 +236,9 @@ def test_attack_kills_target(monkeypatch: pytest.MonkeyPatch) -> None:
     assert attacker.position == Position.STANDING
     assert victim.position == Position.DEAD
     assert victim not in attacker.room.people
-    assert "Victim is DEAD!!!" in attacker.messages
+    # ROM src/fight.c:860 — `act("{R$n is DEAD!!{x", victim, 0, 0, TO_ROOM)`.
+    # Two exclamation marks, wrapped in red colour codes (FIGHT-007).
+    assert "{RVictim is DEAD!!{x" in attacker.messages
 
 
 def test_attack_misses_target(monkeypatch):

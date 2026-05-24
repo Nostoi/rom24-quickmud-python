@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.58]
+
+### Fixed
+- **`FIGHT-007` — POS_DEAD TO_ROOM broadcast (PERS + red colour + two-bang wording)** (`src/fight.c:860`): ROM's `act("{R$n is DEAD!!{x", victim, 0, 0, TO_ROOM)` had three divergences vs Python's previous `f"{victim.name} is DEAD!!!"` baked broadcast: (a) `$n` must route through PERS per-listener so invisible victims render as `"someone"` for observers without `DETECT_INVIS`; (b) missing ROM red colour codes `{R...{x` that the ANSI translation layer consumes on websocket send; (c) wording typo — three exclamation marks instead of ROM's two. Fix: `mud/combat/engine.py:_position_change_message` DEAD branch now uses `_broadcast_pos_change(victim, "{{R{name} is DEAD!!{{x")`. Legacy assertion in `tests/test_combat.py` (×1) updated to ROM-exact form. Locked in by `tests/integration/test_invisibility_combat.py::TestPositionChangeBroadcastPers::test_fight_007_pos_dead_broadcast_uses_pers_and_red_colour_and_two_bangs`.
+
 ## [2.8.57]
 
 ### Fixed
