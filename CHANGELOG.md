@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.76]
+
+### Fixed
+- **`CAST-001` — `do_cast` target resolution honors ROM `TAR_*` dispatch** (`mud/commands/combat.py:704`, ROM `src/magic.c:301-536`): `do_cast` previously defaulted `target = char` whenever no target arg was given, regardless of the spell's target type. Casting `'magic missile'` mid-combat (offensive spell, `ch->fighting != NULL`, no explicit victim) hit the caster instead of the fighting victim (`Your magic missile scratches you.`). Fix: dispatch on `skill.target` against the ROM `TAR_*` matrix — `"victim"` / `"character_or_object"` (TAR_CHAR_OFFENSIVE / TAR_OBJ_CHAR_OFF) default to `char.fighting` and error `"Cast the spell on whom?"` if not fighting; `"friendly"` (TAR_CHAR_DEFENSIVE) defaults to self; `"self"` / `"ignore"` (TAR_CHAR_SELF / TAR_IGNORE) bind to the caster. Object-only and PK-gate paths are noted as scope-deferred in `docs/parity/MAGIC_C_AUDIT.md`. Tests: `tests/test_skills_spells_cast_listing.py::test_do_cast_offensive_no_target_defaults_to_fighting_victim`, `::test_do_cast_offensive_no_target_no_fight_errors`.
+
+### Docs
+- Added `docs/parity/MAGIC_C_AUDIT.md` as a stub for the eventual full `magic.c` audit; currently tracks only `CAST-001 ✅ FIXED` plus scope notes for object-targeted spells and PK gates.
+
 ## [2.8.75]
 
 ### Fixed

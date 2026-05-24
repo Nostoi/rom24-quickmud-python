@@ -767,16 +767,51 @@ def do_cast(char: Character, args: str) -> str:
         char.messages.append("You are still recovering.")
         return "You are still recovering."
 
-    target = char
-    if target_name:
-        room = getattr(char, "room", None)
-        if room is not None:
-            target_lower = target_name.lower()
-            for candidate in getattr(room, "people", []) or []:
-                candidate_name = (getattr(candidate, "name", None) or "").lower()
-                if target_lower in candidate_name:
-                    target = candidate
-                    break
+    # ROM src/magic.c:362-536 target dispatch on skill_table[sn].target.
+    # JSON skill `target` strings map to ROM TAR_* constants:
+    #   "ignore"              -> TAR_IGNORE
+    #   "self"                -> TAR_CHAR_SELF
+    #   "friendly"            -> TAR_CHAR_DEFENSIVE
+    #   "victim"              -> TAR_CHAR_OFFENSIVE
+    #   "character_or_object" -> TAR_OBJ_CHAR_OFF / TAR_OBJ_CHAR_DEF
+    #   "object"              -> TAR_OBJ_INV
+    def _find_in_room(seeker, name: str):
+        room = getattr(seeker, "room", None)
+        if room is None:
+            return None
+        needle = name.lower()
+        for candidate in getattr(room, "people", []) or []:
+            cname = (getattr(candidate, "name", None) or "").lower()
+            if needle in cname:
+                return candidate
+        return None
+
+    skill_target_type = (getattr(skill, "target", "ignore") or "ignore").lower()
+
+    if skill_target_type in {"victim", "character_or_object"}:
+        # ROM src/magic.c:371-387 — TAR_CHAR_OFFENSIVE defaults to ch->fighting.
+        if target_name:
+            target = _find_in_room(char, target_name)
+            if target is None:
+                return "They aren't here."
+        else:
+            fighting = getattr(char, "fighting", None)
+            if fighting is None:
+                return "Cast the spell on whom?"
+            target = fighting
+    elif skill_target_type == "friendly":
+        # ROM src/magic.c:419-435 — TAR_CHAR_DEFENSIVE defaults to ch (self).
+        if target_name:
+            target = _find_in_room(char, target_name)
+            if target is None:
+                return "They aren't here."
+        else:
+            target = char
+    else:
+        # TAR_CHAR_SELF / TAR_IGNORE / TAR_OBJ_INV — caster is the operand.
+        # Object-targeted spells are not yet routed through this command surface
+        # (TODO: object targeting); fall back to self as the default operand.
+        target = char
 
     char.mana -= mana_cost
     skill_registry._apply_wait_state(char, get_pulse_violence())

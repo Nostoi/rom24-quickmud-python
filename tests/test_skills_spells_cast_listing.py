@@ -186,3 +186,51 @@ def test_do_cast_magic_missile_dispatches_handler_and_damages_target():
     # least lands a hit. Either way HP should not be unchanged.
     assert victim.hit < initial_hp, f"victim hp unchanged: {victim.hit} (was {initial_hp})"
     assert caster.mana < 200, "mana should be consumed on cast"
+
+
+def test_do_cast_offensive_no_target_defaults_to_fighting_victim():
+    """ROM src/magic.c:371-387 — TAR_CHAR_OFFENSIVE with empty arg2
+    defaults victim to ``ch->fighting`` (errors if not fighting).
+    Regression: previous Python defaulted ``target = char`` so an
+    offensive spell cast mid-combat without a named target hit the
+    caster (`Your magic missile scratches you.`)."""
+
+    from mud.models.room import Room
+    from mud.utils import rng_mm
+
+    room = Room(vnum=99001, name="Arena", description="A clean test room")
+    caster = _make_mage(level=20, mana=200, skills={"magic missile": 100})
+    victim = Character(
+        name="wimpy monster", level=10, ch_class=0, is_npc=True,
+        hit=200, max_hit=200,
+    )
+    caster.room = room
+    victim.room = room
+    room.people.extend([caster, victim])
+    caster.fighting = victim  # mirrors ROM ch->fighting set by attack_round
+
+    rng_mm.seed_mm(42)
+    caster_initial_hp = int(caster.hit)
+    victim_initial_hp = int(victim.hit)
+
+    result = do_cast(caster, "'magic missile'")  # no target arg
+
+    assert result == "You cast magic missile.", result
+    assert victim.hit < victim_initial_hp, (
+        f"fighting victim should take damage; got victim.hit={victim.hit}"
+    )
+    assert caster.hit == caster_initial_hp, (
+        f"caster must not damage self when fighting; got caster.hit={caster.hit}"
+    )
+
+
+def test_do_cast_offensive_no_target_no_fight_errors():
+    """ROM src/magic.c:374-378 — TAR_CHAR_OFFENSIVE with empty arg2 and
+    no ``ch->fighting`` returns 'Cast the spell on whom?'."""
+
+    caster = _make_mage(level=20, mana=200, skills={"magic missile": 100})
+    # No room/fighting set — emulate idle caster
+
+    result = do_cast(caster, "'magic missile'")
+
+    assert result == "Cast the spell on whom?", result
