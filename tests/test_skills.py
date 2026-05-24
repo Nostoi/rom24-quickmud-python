@@ -620,6 +620,7 @@ def test_wait_state_recovery_matches_pulses() -> None:
     reg = load_registry()
     skill = reg.get("fireball")
     caster = Character(mana=30, is_npc=False, skills={"fireball": 100})
+    caster.desc = object()
     target = Character()
 
     original_lag = skill.lag

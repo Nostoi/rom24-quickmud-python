@@ -327,13 +327,6 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
     """
     results: list[str] = []
 
-    # ROM src/fight.c:192-196 decrements wait/daze for descriptor-less characters
-    # PULSE_VIOLENCE is typically 3 in ROM
-    PULSE_VIOLENCE = 3
-    if not hasattr(attacker, "desc") or attacker.desc is None:
-        attacker.wait = max(0, getattr(attacker, "wait", 0) - PULSE_VIOLENCE)
-        attacker.daze = max(0, getattr(attacker, "daze", 0) - PULSE_VIOLENCE)
-
     # Position check - no attacks if position too low
     if attacker.position < Position.RESTING:
         return results

@@ -6,15 +6,14 @@ from unittest.mock import patch
 
 import pytest
 
-from mud.combat.messages import TYPE_HIT
 from mud.combat.engine import (
     apply_damage,
     attack_round,
     check_dodge,
     check_parry,
     check_shield_block,
-    multi_hit,
 )
+from mud.combat.messages import TYPE_HIT
 from mud.models.character import Character
 from mud.models.constants import DamageType, Position
 from mud.world import create_test_character, initialize_world
@@ -165,7 +164,10 @@ def test_visibility_affects_defense():
 
 
 def test_wait_daze_timer_handling():
-    """Test wait/daze timer decrements in multi_hit for NPCs"""
+    """Test wait/daze timer decrements on violence pulses for descriptor-less actors."""
+    from mud.game_loop import violence_tick
+    from mud.models.character import character_registry
+
     attacker, victim = setup_combat()
 
     # Make attacker an NPC without descriptor
@@ -173,12 +175,15 @@ def test_wait_daze_timer_handling():
     attacker.wait = 10
     attacker.daze = 8
 
-    # Call multi_hit which should decrement timers
-    multi_hit(attacker, victim)
+    character_registry.append(attacker)
+    try:
+        violence_tick(do_combat=True)
+    finally:
+        character_registry.remove(attacker)
 
-    # Timers should be decremented by PULSE_VIOLENCE (3)
-    assert attacker.wait == 7  # 10 - 3
-    assert attacker.daze == 5  # 8 - 3
+    # Timers should be decremented by the configured PULSE_VIOLENCE (12).
+    assert attacker.wait == 0
+    assert attacker.daze == 0
 
 
 def test_npc_unarmed_parry_half_chance():

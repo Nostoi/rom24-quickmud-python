@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.71]
+
+### Fixed
+- **`skills.c` game-loop integration parity** (`src/fight.c:192-196`, `src/fight.c:2952`, `src/update.c:update_handler`): descriptor-less actors no longer burn `wait`/`daze` every Python tick. `mud/game_loop.py:violence_tick` now mirrors ROM's split semantics — connected characters recover one pulse at a time, while descriptor-less actors recover in `PULSE_VIOLENCE` chunks on the combat cadence. The stale hardcoded timer burn was removed from `mud/combat/engine.py:multi_hit`.
+
+### Added
+- **`skills.c` runtime-path integration coverage**: `tests/integration/test_skills_integration.py` now proves a skill command (`bash`) enters combat and advances through `game_tick()` on the violence boundary, and locks wait-state recovery to ROM cadence. Companion unit expectations were updated to match the restored timer model.
+
 ## [2.8.70]
 
 ### Fixed

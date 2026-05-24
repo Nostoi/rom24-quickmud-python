@@ -133,7 +133,7 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 | Equipment System | P1 | ✅ Complete | `test_equipment_system.py` | 93.75% | 15/16 tests passing, 1 P2 skipped |
 | Inventory Management | P1 | ✅ Complete | `test_architectural_parity.py` | 75% | Encumbrance verified |
 | **Combat Features** | | | | | |
-| Skills System | P1 | ✅ Complete | `test_skills_integration.py` | 92.3% | 12/13 tests passing, 1 historical duplicate skip |
+| Skills System | P1 | ✅ Complete | `test_skills_integration.py` | 92.9% | 13/14 tests passing, 1 historical duplicate skip |
 | Spell Affects Persistence | P1 | ✅ Complete | `test_spell_affects_persistence.py` | 100% | 21/21 passing; plague spread fixed, stale skips removed ✅ |
 | Combat Specials | P1 | ✅ Complete | `test_skills_integration_combat_specials.py` | 100% | 10/10 tests passing ✨ |
 | Group Combat | P1 | ✅ Complete | `test_group_combat.py` | 93.75% | 15/16 passing, 1 ROM-correct skip ✅ |
@@ -386,11 +386,12 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 
 ### ✅ P1-5: Skills System Integration (COMPLETE)
 
-**Status**: ✅ `tests/integration/test_skills_integration.py` currently passes at `12 passed, 1 skipped`.
+**Status**: ✅ `tests/integration/test_skills_integration.py` currently passes at `13 passed, 1 skipped`.
 
 **Status Note**:
 - The earlier “unit tests only” note is obsolete.
-- Passive/combat-loop skill behavior is already covered in the existing integration slice.
+- Passive/combat-loop skill behavior is covered in the existing integration slice.
+- `bash` now has explicit command → `game_tick()` cadence coverage, and descriptor-less wait-state recovery is pinned to ROM `PULSE_VIOLENCE` timing.
 - `check_improve()` is now deterministically enforced via combat integration, including the ROM rule that post-use learning can continue above class adept up to 100.
 - The one remaining skip in this file is a duplicate historical practice slice; canonical practice coverage lives in `tests/integration/test_do_practice_command.py`.
 

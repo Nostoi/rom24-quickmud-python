@@ -154,11 +154,11 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 **Missing Functions**: None
 
-**Integration Tests**: ⚠️ Partial (need game loop integration)
+**Integration Tests**: ✅ Complete (`tests/integration/test_skills_integration.py`, `tests/integration/test_skills_integration_combat_specials.py`)
 
-**Next Steps**:
-- [ ] Create `tests/integration/test_skills_integration.py`
-- [ ] Verify skills work via game_tick()
+**Notes**:
+- `tests/integration/test_skills_integration.py` now covers skill command → `game_tick()` combat progression and ROM wait-state recovery on `PULSE_VIOLENCE` cadence.
+- `tests/integration/test_skills_integration_combat_specials.py` covers the remaining combat-skill command surfaces (`disarm`, `trip`, `kick`, `dirt`, `berserk`).
 
 ---
 

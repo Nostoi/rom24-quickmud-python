@@ -72,7 +72,8 @@ def skilled_character(movable_char_factory, object_factory):
 
     if not hasattr(char, "equipment") or char.equipment is None:
         char.equipment = {}
-    char.equipment["wield"] = dagger
+    char.equipment[WearLocation.WIELD] = dagger
+    char.wielded_weapon = dagger
 
     return char
 
@@ -371,32 +372,89 @@ class TestSkillWaitStateIntegration:
             f"Second bash should be blocked by wait state, got: {result2}"
         )
 
-    def test_wait_state_decrements_per_tick(self, skilled_character, movable_mob_factory):
+    def test_wait_state_decrements_on_violence_pulses(self, skilled_character, movable_mob_factory):
         """
-        Test: Wait state decrements each game tick.
+        Test: Descriptor-less runtime wait state burns on combat cadence.
 
-        ROM Parity: Mirrors ROM src/update.c:violence_update() wait decrement
+        ROM Parity: Mirrors ROM src/fight.c:multi_hit() wait decrement for
+        descriptor-less actors. Wait should not decay on non-violence ticks.
 
         Given: A character with wait state set
         When: Game ticks occur
-        Then: Wait state decrements to zero
+        Then: Wait state only decrements on PULSE_VIOLENCE boundaries
         """
         char = skilled_character
         mob = movable_mob_factory(3000, 3001)
         char.fighting = mob
         char.position = Position.FIGHTING
+        mob.fighting = char
+        mob.position = Position.FIGHTING
 
-        # Set initial wait state
-        char.wait = 24  # ROM WAIT_STATE(ch, skill_table[gsn_bash].beats)
+        # mirrors ROM src/fight.c:193 — descriptor-less combatants burn wait
+        # in PULSE_VIOLENCE chunks during combat rounds, not every game tick.
+        char.wait = 24
 
-        # Run game ticks
-        for _ in range(30):
+        import mud.game_loop as gl
+
+        gl._violence_counter = get_pulse_violence()
+
+        for _ in range(get_pulse_violence() - 1):
             game_tick()
-            if getattr(char, "wait", 0) <= 0:
-                break
 
-        # Wait should have decremented to zero
-        assert getattr(char, "wait", 0) <= 0, "Wait state should decrement to zero"
+        assert char.wait == 24
+
+        game_tick()
+        assert char.wait == 12
+
+        for _ in range(get_pulse_violence()):
+            game_tick()
+
+        assert char.wait == 0
+
+    def test_bash_started_combat_advances_via_game_tick(self, monkeypatch, skilled_character, movable_mob_factory):
+        """
+        Test: A skill-started fight advances through the real combat pulse.
+
+        ROM Parity: Mirrors ROM src/fight.c:do_bash() +
+        src/fight.c:violence_update().
+        """
+        char = skilled_character
+        char.skills["bash"] = 95
+        char.hitroll = 20
+        char.damroll = 15
+        mob = movable_mob_factory(3000, 3001)
+        mob.max_hit = 100
+        mob.hit = 100
+        mob.level = 1
+
+        import mud.game_loop as gl
+
+        rounds: list[str | int | None] = []
+        original_attack_round = __import__("mud.combat.engine", fromlist=["attack_round"]).attack_round
+
+        def tracking_attack_round(attacker, victim, dt=None):
+            rounds.append(dt)
+            return original_attack_round(attacker, victim, dt=dt)
+
+        monkeypatch.setattr("mud.combat.engine.attack_round", tracking_attack_round)
+        monkeypatch.setattr("mud.commands.combat.rng_mm.number_percent", lambda: 1)
+        gl._violence_counter = get_pulse_violence()
+
+        result = process_command(char, f"bash {mob.name}")
+
+        assert "Huh?" not in result
+        assert char.fighting == mob
+        assert rounds == []
+
+        for _ in range(get_pulse_violence() - 1):
+            game_tick()
+
+        assert rounds == []
+
+        game_tick()
+
+        assert len(rounds) >= 1
+        assert rounds[0] is None
 
 
 # ============================================================================

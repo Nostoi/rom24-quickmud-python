@@ -1273,27 +1273,42 @@ _violence_counter = 0  # Will be initialized on first tick
 
 
 def violence_tick(*, do_combat: bool = False) -> None:
-    """Process wait/daze counters every pulse, and combat rounds on PULSE_VIOLENCE cadence.
+    """Process wait/daze counters and combat rounds on the ROM violence cadence.
 
-    Mirrors ROM src/fight.c:violence_update — wait/daze decay happens every
-    pulse, but multi_hit() (actual combat rounds) only fires when do_combat=True,
-    which game_tick() sets on PULSE_VIOLENCE intervals.
-    # mirroring ROM src/update.c:update_handler (pulse_violence gate)
+    Mirrors ROM src/update.c:update_handler + src/fight.c:violence_update.
+    Connected players burn wait/daze one pulse at a time via the descriptor
+    loop; descriptor-less actors burn by `PULSE_VIOLENCE` chunks when the
+    violence pulse fires. Combat rounds (`multi_hit`) only fire when
+    ``do_combat=True``.
     """
     from mud.combat.engine import multi_hit, stop_fighting
 
     for ch in list(character_registry):
-        # Consume wait/daze timers every pulse (ROM behavior)
+        # mirroring ROM src/comm.c:616-620 — connected players burn wait/daze
+        # one pulse at a time in the descriptor input loop.
+        # mirroring ROM src/fight.c:192-196 — descriptor-less actors burn
+        # wait/daze in PULSE_VIOLENCE-sized chunks on combat cadence.
+        has_descriptor = getattr(ch, "desc", None) is not None
         wait = int(getattr(ch, "wait", 0) or 0)
-        if wait > 0:
-            ch.wait = wait - 1
+        if has_descriptor:
+            if wait > 0:
+                ch.wait = wait - 1
+            else:
+                ch.wait = 0
+        elif do_combat and wait > 0:
+            ch.wait = max(0, wait - get_pulse_violence())
         else:
-            ch.wait = 0
+            ch.wait = max(0, wait)
 
         if hasattr(ch, "daze"):
             daze = int(getattr(ch, "daze", 0) or 0)
-            if daze > 0:
-                ch.daze = daze - 1
+            if has_descriptor:
+                if daze > 0:
+                    ch.daze = daze - 1
+                else:
+                    ch.daze = 0
+            elif do_combat and daze > 0:
+                ch.daze = max(0, daze - get_pulse_violence())
             else:
                 ch.daze = max(0, daze)
 
