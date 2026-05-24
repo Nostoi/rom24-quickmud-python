@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Untrack `log/orphaned_helps.txt` (test artifact that drifted on every run) and add it to `log/.gitignore`. No code change.
 
+### Docs
+- **`PMOTE-001` — closed as ✅ FIXED in `docs/parity/ACT_COMM_C_AUDIT.md`** (`src/act_comm.c:1098-1192`): audit row was stale. `do_pmote` is fully implemented at `mud/commands/imm_emote.py:170` with NOEMOTE block, Moron guard, the letter-by-letter substitution loop mirroring ROM C `src/act_comm.c:1131-1175`, apostrophe/possessive handling (`"Bob's"` → `"your"`), and trailing-`s` absorption (`"Bobs"` → `"yous"`). Covered by 5 tests in `tests/integration/test_act_comm_gaps.py::TestPmoteGaps`. Two new sub-gaps filed during the re-check for follow-up: `PMOTE-002` (TO_CHAR `$N` prefix should route through PERS — invisible-actor leak parallel to EMOTE-001) and `PMOTE-003` (NPC viewers should be skipped via `desc is None`, not gated on `not is_npc` — same divergence in `do_smote`).
+
 ## [2.8.67]
 
 ### Fixed
