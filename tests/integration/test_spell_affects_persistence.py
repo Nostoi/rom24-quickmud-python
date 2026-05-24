@@ -21,6 +21,7 @@ from mud.models.character import AffectData, SpellEffect, character_registry
 from mud.models.constants import AffectFlag, ExtraFlag, ItemType, WearFlag, WearLocation
 from mud.models.room import Room
 from mud.registry import room_registry
+from mud.utils import rng_mm
 
 
 @pytest.fixture(autouse=True)
@@ -133,6 +134,77 @@ class TestSpellAffectPersistence:
 class TestSpellAffectDuration:
     """Test spell affect duration countdown mechanics."""
 
+    def test_real_spell_affect_persists_until_point_pulse(self, movable_char_factory):
+        """
+        Test: Real spell affects do not decay before ROM's point-pulse boundary.
+
+        ROM Parity: Mirrors ROM src/update.c:1190 and src/update.c:765-768 —
+        affect decay only happens inside char_update(), which runs on PULSE_TICK.
+
+        Given: giant strength active on a character
+        When: game_tick() runs for fewer than PULSE_TICK pulses
+        Then: duration and level remain unchanged
+        """
+        from mud.skills.handlers import giant_strength
+
+        char = movable_char_factory("Warrior", 3001, points=200)
+        char.level = 20
+        char.perm_stat = [13, 13, 13, 13, 13]
+
+        assert giant_strength(char, char) is True
+        effect = char.spell_effects["giant strength"]
+        initial_duration = effect.duration
+        initial_level = effect.level
+
+        for _ in range(get_pulse_tick() - 1):
+            game_tick()
+
+        effect_after = char.spell_effects["giant strength"]
+        assert effect_after.duration == initial_duration
+        assert effect_after.level == initial_level
+
+    def test_real_spell_affect_level_can_fade_on_point_pulse(self, movable_char_factory, monkeypatch):
+        """
+        Test: Spell affect level can fade by 1 on a point pulse.
+
+        ROM Parity: Mirrors ROM src/update.c:765-768 — after duration--,
+        `number_range(0, 4) == 0` causes `paf->level--`.
+
+        Given: giant strength active at level 20
+        When: the first ROM fade roll returns 0 on the point pulse
+        Then: the affect duration drops by 1 and affect level drops by 1
+        """
+        from mud.skills.handlers import giant_strength
+
+        char = movable_char_factory("Champion", 3001, points=200)
+        char.level = 20
+        char.perm_stat = [13, 13, 13, 13, 13]
+
+        assert giant_strength(char, char) is True
+
+        original_number_range = rng_mm.number_range
+        fade_roll_used = False
+
+        def _force_first_fade_roll(from_val: int, to_val: int) -> int:
+            nonlocal fade_roll_used
+            if not fade_roll_used and from_val == 0 and to_val == 4:
+                fade_roll_used = True
+                return 0
+            return original_number_range(from_val, to_val)
+
+        monkeypatch.setattr(rng_mm, "number_range", _force_first_fade_roll)
+
+        run_point_pulses(1)
+
+        effect = char.spell_effects["giant strength"]
+        assert effect.duration == 19
+        assert effect.level == 19
+
+        giant_strength_affects = [affect for affect in char.affected if affect.type == "giant strength"]
+        assert len(giant_strength_affects) == 1
+        assert giant_strength_affects[0].duration == 19
+        assert giant_strength_affects[0].level == 19
+
     def test_affect_duration_decreases_per_tick(self, movable_char_factory):
         """
         Test: Spell affect duration decreases by 1 per game tick.
@@ -194,6 +266,43 @@ class TestSpellAffectDuration:
 
 class TestSpellAffectStacking:
     """Test spell stacking and merging mechanics."""
+
+    def test_multi_entry_spell_wears_off_once_through_game_tick(self, movable_char_factory):
+        """
+        Test: Multi-entry spell emits one wear-off message and removes all entries.
+
+        ROM Parity: Mirrors ROM src/update.c:773-784 — when consecutive
+        AFFECT_DATA nodes share the same spell type, only the final expired node
+        emits `msg_off` before all matching entries are removed.
+
+        Given: frenzy active on a character
+        When: point pulses advance until the spell expires
+        Then: all frenzy affects are removed and exactly one wear-off message is sent
+        """
+        from mud.skills.handlers import frenzy
+
+        char = movable_char_factory("Templar", 3001, points=200)
+        char.level = 12
+        char.alignment = 0
+
+        initial_hitroll = char.hitroll
+        initial_damroll = char.damroll
+        initial_armor = list(char.armor)
+
+        assert frenzy(char, char) is True
+        assert len([affect for affect in char.affected if affect.type == "frenzy"]) == 3
+
+        char.messages.clear()
+
+        run_point_pulses(5)
+
+        assert not char.has_spell_effect("frenzy")
+        assert [affect for affect in char.affected if affect.type == "frenzy"] == []
+        assert char.hitroll == initial_hitroll
+        assert char.damroll == initial_damroll
+        assert char.armor == initial_armor
+        wear_off_messages = [message for message in char.messages if message == "Your rage ebbs.\n\r"]
+        assert wear_off_messages == ["Your rage ebbs.\n\r"]
 
     def test_same_spell_stacks_duration_and_averages_level(self, movable_char_factory):
         """
@@ -825,3 +934,64 @@ class TestAffectInteractions:
             assert any("feel hot and feverish" in message.lower() for message in getattr(bystander, "messages", []))
         finally:
             room_registry.pop(room_vnum, None)
+
+
+class TestSpellPassDoorIntegration:
+    """Runtime-path coverage for spell_pass_door (ROM src/magic.c:3864)."""
+
+    def test_pass_door_persists_and_wears_off_through_point_pulses(self, movable_char_factory):
+        """
+        ROM Parity: src/magic.c:3864 (spell_pass_door) + src/update.c:765-784 (affect_update).
+
+        Given: pass door cast on a character (duration = number_fuzzy(level/4))
+        When: enough point pulses elapse to drain the duration
+        Then: AffectFlag.PASS_DOOR clears and the ROM wear-off message fires once.
+        """
+        from mud.skills.handlers import pass_door
+
+        rng_mm.seed_mm(42)
+
+        char = movable_char_factory("Translucent", 3001, points=200)
+        char.level = 40
+
+        assert pass_door(char, char) is True
+        assert char.has_affect(AffectFlag.PASS_DOOR)
+        assert char.has_spell_effect("pass door")
+
+        effect = char.spell_effects["pass door"]
+        initial_duration = effect.duration
+        assert initial_duration > 0
+
+        char.messages.clear()
+
+        run_point_pulses(initial_duration + 1)
+
+        assert not char.has_spell_effect("pass door")
+        assert not char.has_affect(AffectFlag.PASS_DOOR)
+        assert [affect for affect in char.affected if affect.type == "pass door"] == []
+        wear_off_messages = [
+            message for message in char.messages if "You feel solid again." in message
+        ]
+        assert wear_off_messages == ["You feel solid again.\n\r"]
+
+    def test_pass_door_duplicate_cast_during_active_affect_is_rejected(self, movable_char_factory):
+        """
+        ROM Parity: src/magic.c:3869-3877 — re-casting on an already-affected target
+        sends the "already out of phase" message and applies no new affect.
+        """
+        from mud.skills.handlers import pass_door
+
+        rng_mm.seed_mm(42)
+
+        char = movable_char_factory("Phaser", 3001, points=200)
+        char.level = 40
+
+        assert pass_door(char, char) is True
+        effect = char.spell_effects["pass door"]
+        original_duration = effect.duration
+
+        char.messages.clear()
+        assert pass_door(char, char) is False
+
+        assert char.spell_effects["pass door"].duration == original_duration
+        assert any("already out of phase" in message.lower() for message in char.messages)

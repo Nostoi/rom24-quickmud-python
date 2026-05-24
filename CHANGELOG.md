@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.73]
+
+### Added
+- **`magic.c + magic2.c` subsystem closed at 100%**: `spell_pass_door()` parity (`mud/skills/handlers.py:5884` mirroring `src/magic.c:3864`) verified by new runtime-path integration coverage in `tests/integration/test_spell_affects_persistence.py::TestSpellPassDoorIntegration` — the affect persists through `game_tick()`, drops `AffectFlag.PASS_DOOR` on expiry, emits the ROM "You feel solid again." wear-off message exactly once, and a duplicate cast on an already-affected target is rejected with the ROM "already out of phase" message.
+
+### Changed
+- `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` P0-3 row updated from 98% → 100% (no remaining missing functions).
+
+## [2.8.72]
+
+### Fixed
+- **`magic.c + magic2.c` affect persistence runtime parity** (`src/update.c:765-768`): `mud/affects/engine.py:tick_spell_effects` now mirrors ROM `char_update()` by applying the 20% per-point-pulse spell-strength fade (`level--` on `number_range(0, 4) == 0`) while durations decay through the real `game_tick()` path.
+
+### Added
+- **`magic.c + magic2.c` affect-persistence integration coverage**: `tests/integration/test_spell_affects_persistence.py` now proves three ROM runtime contracts through `game_tick()` — affects do not decay before `PULSE_TICK`, affect `level` can fade on the point pulse, and multi-entry spell affects emit exactly one wear-off message when they expire.
+
 ## [2.8.71]
 
 ### Fixed

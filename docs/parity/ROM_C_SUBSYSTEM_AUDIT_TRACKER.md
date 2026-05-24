@@ -162,27 +162,25 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ---
 
-### ✅ P0-3: magic.c + magic2.c (AUDITED - 98%)
+### ✅ P0-3: magic.c + magic2.c (AUDITED - 100%)
 
-**Status**: ✅ **Audited December 2025**
+**Status**: ✅ **Audited December 2025 — closed May 2026**
 
 **ROM Functions**: 97 spells
-**QuickMUD Module**: `mud/spells/`
+**QuickMUD Module**: `mud/skills/handlers.py`
 
 **Audit Results**:
 - ✅ All 97 ROM spells implemented
-- ✅ 375 spell parity tests created
+- ✅ 378 spell parity tests created
 - ✅ Spell formulas match ROM C exactly
 - ✅ Spell affects verified
+- ✅ `spell_pass_door()` parity confirmed (`mud/skills/handlers.py:5884`, mirrors `src/magic.c:3864`)
 
-**Missing Functions**:
-- [ ] `spell_pass_door()` - Minor utility spell (2%)
+**Missing Functions**: None
 
-**Integration Tests**: ⚠️ Partial (need affect persistence tests)
+**Integration Tests**: ✅ Complete (`tests/integration/test_spell_affects_persistence.py` — includes `TestSpellPassDoorIntegration`)
 
-**Next Steps**:
-- [ ] Create `tests/integration/test_spells_integration.py`
-- [ ] Verify spell affects persist through game_tick()
+**Next Steps**: None — subsystem closed.
 
 ---
 

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from mud.models.character import Character
+from mud.utils import rng_mm
 
 ROM_NEWLINE = "\n\r"
 
@@ -24,6 +25,9 @@ def tick_spell_effects(character: Character) -> list[str]:
             duration = int(getattr(affect, "duration", 0) or 0)
             if duration > 0:
                 affect.duration = duration - 1
+                level = int(getattr(affect, "level", 0) or 0)
+                if level > 0 and rng_mm.number_range(0, 4) == 0:
+                    affect.level = level - 1  # mirroring ROM src/update.c:765-768
                 spell_name = getattr(affect, "type", None)
                 if isinstance(spell_name, str) and spell_name in effects:
                     touched_names.add(spell_name)
