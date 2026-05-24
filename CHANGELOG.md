@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.65]
+
+### Fixed
+- **`FIGHT-013` — WEAPON_SHOCKING TO_ROOM broadcast routes `$n` through PERS** (`src/fight.c:673-674`): ROM's `act("$n is struck by lightning from $p.", victim, wield, NULL, TO_ROOM)` substitutes `$n` per-listener through PERS. Python's shocking branch in `process_weapon_special_attacks` previously baked `victim.name` into a fixed `_broadcast_room` string. Fix: route through `_broadcast_pos_change`. Closes the FIGHT-009..013 weapon-proc PERS sweep — all five weapon special-attack TO_ROOM broadcasts now ROM-faithful. Locked in by `tests/integration/test_weapon_proc_pers.py::TestWeaponProcBroadcastPers::test_fight_013_shocking_broadcast_uses_pers_for_invisible_victim`.
+
+### Notes
+
+- With FIGHT-009..013 closed the `mud/combat/engine.py` PERS surface is fully normalized for both position-change broadcasts (FIGHT-004..008) and weapon-proc broadcasts (FIGHT-009..013). Remaining PERS surfaces in combat: `dam_message` (ROM `src/fight.c:2035-2233`, the per-hit damage-tier broadcast surface — hundreds of `act()` lines), and `do_sacrifice` in `mud/combat/engine.py:956` (single `_broadcast_room` call with `expand_placeholders`-rendered fixed string).
+
 ## [2.8.64]
 
 ### Fixed

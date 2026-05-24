@@ -1632,10 +1632,13 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
         dam = rng_mm.number_range(1, weapon_level // 5 + 2)
         _push_message(victim, "You are shocked by the weapon.")
         if room is not None:
-            _broadcast_room(
-                room,
-                f"{victim.name} is struck by lightning from {weapon_name}.",
-                exclude=victim,
+            # mirroring ROM src/fight.c:673-674 — `act("$n is struck
+            # by lightning from $p.", victim, wield, NULL, TO_ROOM)`.
+            # PERS on $n per-listener (FIGHT-013).
+            _broadcast_pos_change(
+                victim,
+                "{name} is struck by lightning from {weapon}.",
+                weapon=weapon_name,
             )
         shock_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.LIGHTNING, show=False)
