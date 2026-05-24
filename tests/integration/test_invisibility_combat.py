@@ -279,3 +279,42 @@ class TestPositionChangeBroadcastPers:
         finally:
             room_registry.pop(1001, None)
             character_registry.clear()
+
+    def test_fight_006_pos_stunned_broadcast_uses_pers_for_invisible_victim(self):
+        """FIGHT-006 — POS_STUNNED TO_ROOM `$n` routes through PERS.
+
+        ROM C: src/fight.c:853-854
+            act ("$n is stunned, but will probably recover.",
+                 victim, NULL, NULL, TO_ROOM);
+        """
+        test_room = Room(vnum=1002, name="Test Room", description="A test room.", room_flags=0, sector_type=0)
+        test_room.people = []
+        test_room.contents = []
+        room_registry[1002] = test_room
+
+        try:
+            victim = create_test_character("Aliceee", 1002)
+            victim.level = 5
+            victim.add_affect(AffectFlag.INVISIBLE)
+            victim.position = Position.STUNNED
+
+            observer = create_test_character("Bobbb", 1002)
+            observer.level = 5
+            observer.messages = []
+
+            _position_change_message(victim, Position.STANDING)
+
+            joined = "\n".join(observer.messages).lower()
+            assert "is stunned" in joined, (
+                f"POS_STUNNED broadcast not delivered: {observer.messages!r}"
+            )
+            assert "someone is stunned" in joined, (
+                f"PERS render missing for invisible victim: {observer.messages!r}"
+            )
+            assert "aliceee" not in joined, (
+                f"invisible victim name leaked: {observer.messages!r}"
+            )
+
+        finally:
+            room_registry.pop(1002, None)
+            character_registry.clear()

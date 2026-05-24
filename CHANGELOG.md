@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.57]
+
+### Fixed
+- **`FIGHT-006` — POS_STUNNED TO_ROOM broadcast routes `$n` through PERS** (`src/fight.c:853-854`): ROM's `act("$n is stunned, but will probably recover.", victim, NULL, NULL, TO_ROOM)` substitutes `$n` per-listener through PERS. Python's STUNNED branch in `mud/combat/engine.py:_position_change_message` previously baked `victim.name` into a fixed `_broadcast_room` string. Fix: route through the `_broadcast_pos_change` helper. Locked in by `tests/integration/test_invisibility_combat.py::TestPositionChangeBroadcastPers::test_fight_006_pos_stunned_broadcast_uses_pers_for_invisible_victim`.
+
 ## [2.8.56]
 
 ### Fixed
