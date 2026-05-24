@@ -1595,7 +1595,14 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
         dam = rng_mm.number_range(1, weapon_level // 4 + 1)
         _push_message(victim, f"{weapon_name} sears your flesh.")
         if room is not None:
-            _broadcast_room(room, f"{victim.name} is burned by {weapon_name}.", exclude=victim)
+            # mirroring ROM src/fight.c:654 — `act("$n is burned by
+            # $p.", victim, wield, NULL, TO_ROOM)`. PERS on $n
+            # per-listener (FIGHT-011).
+            _broadcast_pos_change(
+                victim,
+                "{name} is burned by {weapon}.",
+                weapon=weapon_name,
+            )
         fire_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.FIRE, show=False)
         messages.append(f"{weapon_name} sears your flesh.")

@@ -113,3 +113,27 @@ class TestWeaponProcBroadcastPers:
         finally:
             room_registry.pop(2001, None)
             character_registry.clear()
+
+    def test_fight_011_flaming_broadcast_uses_pers_for_invisible_victim(self):
+        """FIGHT-011 — WEAPON_FLAMING TO_ROOM `$n is burned by $p.`
+
+        ROM C: src/fight.c:654
+            act ("$n is burned by $p.", victim, wield, NULL, TO_ROOM);
+        """
+        try:
+            _, attacker, victim, observer = _setup_room_and_chars(2002, WEAPON_FLAMING)
+            process_weapon_special_attacks(attacker, victim)
+
+            joined = "\n".join(observer.messages).lower()
+            assert "is burned by" in joined, (
+                f"flaming broadcast not delivered: {observer.messages!r}"
+            )
+            assert "someone is burned by the sword" in joined, (
+                f"PERS render missing for invisible victim: {observer.messages!r}"
+            )
+            assert "aliceee" not in joined, (
+                f"invisible victim name leaked: {observer.messages!r}"
+            )
+        finally:
+            room_registry.pop(2002, None)
+            character_registry.clear()

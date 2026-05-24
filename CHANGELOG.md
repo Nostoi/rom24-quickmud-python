@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.63]
+
+### Fixed
+- **`FIGHT-011` — WEAPON_FLAMING TO_ROOM broadcast routes `$n` through PERS** (`src/fight.c:654`): ROM's `act("$n is burned by $p.", victim, wield, NULL, TO_ROOM)` substitutes `$n` per-listener through PERS. Python's flaming branch in `process_weapon_special_attacks` previously baked `victim.name` into a fixed `_broadcast_room` string. Fix: route through `_broadcast_pos_change`. Locked in by `tests/integration/test_weapon_proc_pers.py::TestWeaponProcBroadcastPers::test_fight_011_flaming_broadcast_uses_pers_for_invisible_victim`.
+
 ## [2.8.62]
 
 ### Fixed
