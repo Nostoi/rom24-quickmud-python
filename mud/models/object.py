@@ -102,3 +102,9 @@ class Object:
     @pIndexData.setter
     def pIndexData(self, value: ObjIndex) -> None:
         self.prototype = value
+
+    # ROM-faithful contents accessor (INV-012). Same backing list as
+    # `contained_items`; no setter — callers mutate the list in place.
+    @property
+    def contains(self) -> list[Object]:
+        return self.contained_items

@@ -42,3 +42,17 @@ def test_pindexdata_aliases_prototype():
     new_proto = ObjIndex(vnum=93002, short_descr="replacement")
     obj.pIndexData = new_proto
     assert obj.prototype is new_proto
+
+
+def test_contains_aliases_contained_items():
+    """Task 1c — contains is a property returning contained_items."""
+    proto = ObjIndex(vnum=93003, short_descr="a container")
+    obj = Object(instance_id=None, prototype=proto)
+    assert obj.contains is obj.contained_items
+    assert obj.contains == []
+
+    # Mutations through the underlying list are visible via the alias.
+    child_proto = ObjIndex(vnum=93004, short_descr="a coin")
+    child = Object(instance_id=None, prototype=child_proto)
+    obj.contained_items.append(child)
+    assert obj.contains == [child]
