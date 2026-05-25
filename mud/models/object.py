@@ -92,3 +92,13 @@ class Object:
     @description.setter
     def description(self, value: str | None) -> None:
         self._description_override = value
+
+    # ROM-faithful prototype accessor (INV-012). Same backing field as
+    # `prototype`; no duplicate storage.
+    @property
+    def pIndexData(self) -> ObjIndex:
+        return self.prototype
+
+    @pIndexData.setter
+    def pIndexData(self, value: ObjIndex) -> None:
+        self.prototype = value

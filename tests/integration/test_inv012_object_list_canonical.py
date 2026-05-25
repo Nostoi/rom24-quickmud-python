@@ -29,3 +29,16 @@ def test_object_has_rom_named_fields_with_none_defaults():
     assert obj.in_room is None
     assert obj.in_obj is None
     assert obj.carried_by is None
+
+
+def test_pindexdata_aliases_prototype():
+    """Task 1b — pIndexData is a property aliased to prototype."""
+    proto = ObjIndex(vnum=93001, short_descr="another object")
+    obj = Object(instance_id=None, prototype=proto)
+    assert obj.pIndexData is obj.prototype
+    assert obj.pIndexData is proto
+
+    # Setter round-trips through prototype.
+    new_proto = ObjIndex(vnum=93002, short_descr="replacement")
+    obj.pIndexData = new_proto
+    assert obj.prototype is new_proto
