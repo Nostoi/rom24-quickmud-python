@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from mud.handler import affect_remove
 from mud.models.character import Character
 from mud.utils import rng_mm
 
@@ -43,8 +44,28 @@ def tick_spell_effects(character: Character) -> list[str]:
                 or int(getattr(next_affect, "duration", 0) or 0) > 0
             )
 
+            # ROM src/handler.c:1317 affect_remove — affect_modify(FALSE)
+            # subtracts the stat mod and clears the bitvector; affect_check
+            # re-sets the bit only if another affect still provides it.
+            # INV-015 fix (2.9.7): was a bare `affected.remove(affect)`,
+            # which leaked stat mods and bitvectors for any AffectData
+            # whose `type` is an integer SN (the ROM-canonical form).
+            #
+            # Python has a parallel apply path: `Character.apply_spell_effect`
+            # already calls `_apply_stat_modifier(+mod)`, mirrors a shadow
+            # AffectData into `ch.affected`, and on expiry the
+            # `remove_spell_effect` branch below unwinds via
+            # `_apply_stat_modifier(-mod)`. For those entries the shadow
+            # AffectData's modifier was NEVER applied via `affect_modify(True)`,
+            # so calling `affect_modify(False)` on it would double-unwind.
+            # Split: spell_effects-managed entries get bare list removal;
+            # raw ROM-canonical AffectData routes through affect_remove.
+            spell_effects_managed = isinstance(spell_name, str) and spell_name in effects
             if affect in affected:
-                affected.remove(affect)
+                if spell_effects_managed:
+                    affected.remove(affect)
+                else:
+                    affect_remove(character, affect)
 
             if isinstance(spell_name, str) and spell_name in effects:
                 touched_names.add(spell_name)

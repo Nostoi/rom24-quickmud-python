@@ -442,6 +442,36 @@ def affect_check(ch: Character, where: int, vector: int) -> None:
                             return
 
 
+def affect_remove(ch: Character, paf: Affect) -> None:
+    """Remove an affect from a character — ROM ``src/handler.c:1317``.
+
+    Mirrors ROM exactly: ``affect_modify(ch, paf, FALSE)`` (subtracts
+    the stat modifier and clears the bitvector in
+    ``affected_by``/``imm_flags``/``res_flags``/``vuln_flags``),
+    unlinks ``paf`` from ``ch.affected``, then calls
+    ``affect_check(ch, where, vector)`` which re-sets the bitvector
+    only if another affect on the char or equipped objects still
+    provides it. INV-015 enforcement point for the affect-tick
+    lifecycle contract.
+    """
+
+    affected = getattr(ch, "affected", None)
+    if not isinstance(affected, list) or not affected:
+        return
+
+    where = getattr(paf, "where", 0)
+    vector = getattr(paf, "bitvector", 0)
+
+    affect_modify(ch, paf, False)
+
+    try:
+        affected.remove(paf)
+    except ValueError:
+        pass
+
+    affect_check(ch, where, vector)
+
+
 def affect_to_obj(obj: Object, paf: Affect) -> None:
     """
     Add an affect to an object.

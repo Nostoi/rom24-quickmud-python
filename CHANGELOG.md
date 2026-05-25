@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.7]
+
+### Fixed
+- **INV-015 AFFECT-TICK-LIFECYCLE — expired ROM-canonical affects leaked stat modifiers and bitvectors** (`mud/affects/engine.py:tick_spell_effects`, `mud/handler.py:affect_remove`): ROM `src/update.c:762-786 affect_update` calls `src/handler.c:1317 affect_remove` on expiry, which `affect_modify(FALSE)` (subtracts the stat mod, clears the bitvector) → unlinks from `ch->affected` → calls `affect_check` (re-sets the bit only if another affect still provides it). The Python tick path was a bare `affected.remove(affect)` — no stat unwind, no bitvector clear. Symptom for any `AffectData` whose `type` is the ROM-canonical integer spell SN (the `isinstance(spell_name, str)` guard at engine.py:32 skipped the `spell_effects` cleanup branch for these): permanent stat boosts and phantom `affected_by` bits after every expiry. Fix: new module-level `mud/handler.py:affect_remove(ch, paf)` mirrors `src/handler.c:1317` exactly. `tick_spell_effects` routes raw ROM-canonical entries through it. **Spell-effects-managed entries (the `apply_spell_effect` shadow-mirror path used by frenzy/bless/weaken/etc.) keep bare list removal** — `remove_spell_effect` already handles their stat unwind; double-routing would double-unwind (caught by `tests/integration/test_spell_affects_persistence.py` + `tests/test_affects.py` regressions during implementation, hence the split).
+- INV-015 row added to `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`, ✅ ENFORCED. Two enforcement tests in `tests/integration/test_inv015_affect_tick_lifecycle.py` — stat-modifier unwind, and bitvector preservation when a second affect provides the same bit (mirrors ROM `affect_check`).
+
 ## [2.9.6]
 
 ### Added
