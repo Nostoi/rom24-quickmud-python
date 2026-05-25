@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.1]
+
+### Fixed
+- **`test_wait_and_daze_decrement_on_violence_pulse` — long-standing red test was asserting non-ROM behavior** (`tests/test_game_loop_wait_daze.py:27`, ROM `src/comm.c:616-621` + `src/fight.c:191-196`): the test created a `Character` without a descriptor and expected wait/daze to decrement by 1 per `game_tick`. ROM's descriptor input loop (`comm.c:616-621`) decrements only for characters with a `d->character` descriptor; descriptor-less actors decrement in `PULSE_VIOLENCE`-sized chunks via `violence_update` (`fight.c:191-196`). Fix: add `ch.desc = object()` to the test fixture so it exercises the descriptor path it was clearly written for. Renamed to `test_wait_and_daze_decrement_per_pulse_for_connected_character` to match its actual contract. Per AGENTS.md "a test asserting non-ROM behavior is a bug in the test, not the implementation."
+
 ## [2.9.0]
 
 ### Added

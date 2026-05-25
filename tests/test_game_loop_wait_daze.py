@@ -24,8 +24,16 @@ def teardown_function(_):
     gl._area_counter = 0
 
 
-def test_wait_and_daze_decrement_on_violence_pulse():
+def test_wait_and_daze_decrement_per_pulse_for_connected_character():
+    """ROM src/comm.c:616-621 — the descriptor input loop burns wait and
+    daze by 1 each pulse for characters with a descriptor (`d->character`).
+    Descriptor-less characters do NOT decrement per pulse; they're handled
+    in PULSE_VIOLENCE chunks by violence_update (src/fight.c:191-196), and
+    that path is exercised by the test below
+    (`test_wait_and_daze_decrement_each_pulse_before_violence_combat`).
+    """
     ch = Character(name="Fighter", wait=2, daze=2)
+    ch.desc = object()  # mirror ROM connected-player descriptor
     character_registry.append(ch)
     game_tick()
     assert ch.wait == 1 and ch.daze == 1
