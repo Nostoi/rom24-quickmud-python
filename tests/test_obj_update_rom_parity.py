@@ -14,7 +14,8 @@ import pytest
 import mud.game_loop as game_loop
 from mud.game_loop import _object_decay_message, _spill_contents, _tick_object_affects, obj_update
 from mud.models.constants import ItemType, WearFlag, WearLocation
-from mud.models.obj import Affect, ObjectData, ObjIndex, object_registry
+from mud.models.obj import Affect, ObjIndex, object_registry
+from mud.models.object import Object
 
 
 @pytest.fixture(autouse=True)
@@ -25,16 +26,10 @@ def cleanup_object_registry():
     object_registry.clear()
 
 
-def create_test_object(item_type: ItemType, timer: int = 0, **kwargs) -> ObjectData:
+def create_test_object(item_type: ItemType, timer: int = 0, **kwargs) -> Object:
     """Create a test object with specified item type and timer."""
-    proto = ObjIndex(vnum=1000, short_descr="a test object")
-    obj = ObjectData(
-        item_type=int(item_type),
-        timer=timer,
-        short_descr=kwargs.get("short_descr", "a test object"),
-        pIndexData=proto,
-        **kwargs,
-    )
+    proto = ObjIndex(vnum=1000, short_descr="a test object", item_type=int(item_type))
+    obj = Object(instance_id=None, prototype=proto, timer=timer)
     object_registry.append(obj)
     return obj
 
@@ -251,19 +246,13 @@ class TestDecayMessages:
                     if (obj->contains)
                         message = "$p flickers and vanishes, spilling its contents on the floor.";
         """
-        proto = ObjIndex(vnum=1001, short_descr="a bag")
-        obj = ObjectData(
-            item_type=int(ItemType.CONTAINER),
-            timer=1,
-            short_descr="a bag",
-            wear_flags=int(WearFlag.WEAR_FLOAT),
-            pIndexData=proto,
-        )
+        proto = ObjIndex(vnum=1001, short_descr="a bag", item_type=int(ItemType.CONTAINER))
+        obj = Object(instance_id=None, prototype=proto, timer=1, wear_flags=int(WearFlag.WEAR_FLOAT))
 
         # Add contained item
-        inner_proto = ObjIndex(vnum=1002, short_descr="a coin")
-        inner_obj = ObjectData(item_type=int(ItemType.TREASURE), timer=0, short_descr="a coin", pIndexData=inner_proto)
-        obj.contains = [inner_obj]
+        inner_proto = ObjIndex(vnum=1002, short_descr="a coin", item_type=int(ItemType.TREASURE))
+        inner_obj = Object(instance_id=None, prototype=inner_proto, timer=0)
+        obj.contained_items = [inner_obj]
 
         msg = _object_decay_message(obj)
         assert msg == "$p flickers and vanishes, spilling its contents on the floor."
@@ -274,15 +263,9 @@ class TestDecayMessages:
             else
                 message = "$p flickers and vanishes.";
         """
-        proto = ObjIndex(vnum=1001, short_descr="a bag")
-        obj = ObjectData(
-            item_type=int(ItemType.CONTAINER),
-            timer=1,
-            short_descr="a bag",
-            wear_flags=int(WearFlag.WEAR_FLOAT),
-            pIndexData=proto,
-        )
-        obj.contains = []
+        proto = ObjIndex(vnum=1001, short_descr="a bag", item_type=int(ItemType.CONTAINER))
+        obj = Object(instance_id=None, prototype=proto, timer=1, wear_flags=int(WearFlag.WEAR_FLOAT))
+        obj.contained_items = []
 
         msg = _object_decay_message(obj)
         assert msg == "$p flickers and vanishes."
@@ -315,14 +298,14 @@ class TestContentSpilling:
 
         room = Room(vnum=3001, name="Test Room", description="A test.")
 
-        proto = ObjIndex(vnum=1001, short_descr="a corpse")
-        corpse = ObjectData(item_type=int(ItemType.CORPSE_PC), timer=1, short_descr="a corpse", pIndexData=proto)
+        proto = ObjIndex(vnum=1001, short_descr="a corpse", item_type=int(ItemType.CORPSE_PC))
+        corpse = Object(instance_id=None, prototype=proto, timer=1)
         corpse.in_room = room
 
         # Add contained item
-        inner_proto = ObjIndex(vnum=1002, short_descr="a sword")
-        sword = ObjectData(item_type=int(ItemType.WEAPON), timer=0, short_descr="a sword", pIndexData=inner_proto)
-        corpse.contains = [sword]
+        inner_proto = ObjIndex(vnum=1002, short_descr="a sword", item_type=int(ItemType.WEAPON))
+        sword = Object(instance_id=None, prototype=inner_proto, timer=0)
+        corpse.contained_items = [sword]
         sword.in_obj = corpse
 
         initial_contains = len(corpse.contains)
@@ -339,19 +322,13 @@ class TestContentSpilling:
 
         Objects worn as WEAR_FLOAT should spill contents.
         """
-        proto = ObjIndex(vnum=1001, short_descr="a disc")
-        disc = ObjectData(
-            item_type=int(ItemType.CONTAINER),
-            timer=1,
-            short_descr="a disc",
-            wear_loc=int(WearLocation.FLOAT),
-            pIndexData=proto,
-        )
+        proto = ObjIndex(vnum=1001, short_descr="a disc", item_type=int(ItemType.CONTAINER))
+        disc = Object(instance_id=None, prototype=proto, timer=1, wear_loc=int(WearLocation.FLOAT))
 
         # Add contained item
-        inner_proto = ObjIndex(vnum=1002, short_descr="a gem")
-        gem = ObjectData(item_type=int(ItemType.TREASURE), timer=0, short_descr="a gem", pIndexData=inner_proto)
-        disc.contains = [gem]
+        inner_proto = ObjIndex(vnum=1002, short_descr="a gem", item_type=int(ItemType.TREASURE))
+        gem = Object(instance_id=None, prototype=inner_proto, timer=0)
+        disc.contained_items = [gem]
         gem.in_obj = disc
 
         initial_contains = len(disc.contains)
