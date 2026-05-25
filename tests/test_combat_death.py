@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import pytest
 
+from mud.advancement import exp_per_level
+from mud.characters.follow import add_follower
 from mud.combat.death import death_cry, raw_kill
 from mud.combat.engine import attack_round
 from mud.combat.kill_table import get_kill_data, reset_kill_table
-from mud.advancement import exp_per_level
-from mud.characters.follow import add_follower
 from mud.groups import xp as xp_module
 from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
+    MAX_LEVEL,
+    OBJ_VNUM_CORPSE_NPC,
+    OBJ_VNUM_GUTS,
+    ROOM_VNUM_ALTAR,
     AffectFlag,
     ExtraFlag,
     FormFlag,
@@ -17,14 +21,10 @@ from mud.models.constants import (
     PartFlag,
     PlayerFlag,
     Position,
-    MAX_LEVEL,
-    ROOM_VNUM_ALTAR,
-    OBJ_VNUM_CORPSE_NPC,
     RoomFlag,
     Stat,
-    WearLocation,
     WearFlag,
-    OBJ_VNUM_GUTS,
+    WearLocation,
 )
 from mud.models.mob import MobIndex
 from mud.models.obj import ObjIndex, object_registry
@@ -730,16 +730,14 @@ def test_player_kill_resets_state(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_corpse_looting_owner_can_loot_own_corpse(movable_char_factory) -> None:
     """Test that owner can loot their own corpse (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
-    from mud.models.obj import ObjectData, ObjIndex
+    pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
     ch = movable_char_factory("Owner", 3001)
     room = ch.room
 
-    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
-    corpse = ObjectData(
-        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=ch.name, short_descr="corpse of Owner"
-    )
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner", item_type=int(ItemType.CORPSE_PC))
+    corpse = Object(instance_id=None, prototype=proto, owner=ch.name)
     room.add_object(corpse)
 
     result = do_get(ch, "corpse")
@@ -749,7 +747,7 @@ def test_corpse_looting_owner_can_loot_own_corpse(movable_char_factory) -> None:
 def test_corpse_looting_non_owner_cannot_loot(movable_char_factory) -> None:
     """Test that non-owner cannot loot someone else's corpse (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
-    from mud.models.obj import ObjectData, ObjIndex
+    pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
     owner = movable_char_factory("Owner", 3001)
@@ -759,10 +757,8 @@ def test_corpse_looting_non_owner_cannot_loot(movable_char_factory) -> None:
     owner.group = None
     thief.group = None
 
-    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
-    corpse = ObjectData(
-        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=owner.name, short_descr="corpse of Owner"
-    )
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner", item_type=int(ItemType.CORPSE_PC))
+    corpse = Object(instance_id=None, prototype=proto, owner=owner.name)
     room.add_object(corpse)
 
     result = do_get(thief, "corpse")
@@ -773,7 +769,7 @@ def test_corpse_looting_non_owner_cannot_loot(movable_char_factory) -> None:
 def test_corpse_looting_group_member_can_loot(movable_char_factory) -> None:
     """Test that group members can loot each other's corpses (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
-    from mud.models.obj import ObjectData, ObjIndex
+    pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
     owner = movable_char_factory("Owner", 3001)
@@ -783,10 +779,8 @@ def test_corpse_looting_group_member_can_loot(movable_char_factory) -> None:
     owner.group = 1
     friend.group = 1
 
-    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
-    corpse = ObjectData(
-        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=owner.name, short_descr="corpse of Owner"
-    )
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner", item_type=int(ItemType.CORPSE_PC))
+    corpse = Object(instance_id=None, prototype=proto, owner=owner.name)
     room.add_object(corpse)
 
     result = do_get(friend, "corpse")
@@ -796,7 +790,7 @@ def test_corpse_looting_group_member_can_loot(movable_char_factory) -> None:
 def test_corpse_looting_canloot_flag_allows_looting(movable_char_factory) -> None:
     """Test that PLR_CANLOOT flag allows anyone to loot (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
-    from mud.models.obj import ObjectData, ObjIndex
+    pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
     owner = movable_char_factory("Owner", 3001)
@@ -805,10 +799,8 @@ def test_corpse_looting_canloot_flag_allows_looting(movable_char_factory) -> Non
 
     owner.act |= int(PlayerFlag.CANLOOT)
 
-    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
-    corpse = ObjectData(
-        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=owner.name, short_descr="corpse of Owner"
-    )
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner", item_type=int(ItemType.CORPSE_PC))
+    corpse = Object(instance_id=None, prototype=proto, owner=owner.name)
     room.add_object(corpse)
 
     result = do_get(thief, "corpse")
@@ -818,16 +810,14 @@ def test_corpse_looting_canloot_flag_allows_looting(movable_char_factory) -> Non
 def test_corpse_looting_no_owner_allows_looting(movable_char_factory) -> None:
     """Test that corpses without owner can be looted by anyone (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
-    from mud.models.obj import ObjectData, ObjIndex
+    pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
     ch = movable_char_factory("Anyone", 3001)
     room = ch.room
 
-    proto = ObjIndex(vnum=11, short_descr="corpse of Someone")
-    corpse = ObjectData(
-        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=None, short_descr="corpse of Someone"
-    )
+    proto = ObjIndex(vnum=11, short_descr="corpse of Someone", item_type=int(ItemType.CORPSE_PC))
+    corpse = Object(instance_id=None, prototype=proto, owner=None)
     room.add_object(corpse)
 
     result = do_get(ch, "corpse")
@@ -837,16 +827,14 @@ def test_corpse_looting_no_owner_allows_looting(movable_char_factory) -> None:
 def test_corpse_looting_npc_corpse_always_lootable(movable_char_factory) -> None:
     """Test that NPC corpses are always lootable (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
-    from mud.models.obj import ObjectData, ObjIndex
+    pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
     ch = movable_char_factory("Player", 3001)
     room = ch.room
 
-    proto = ObjIndex(vnum=10, short_descr="corpse of an orc")
-    corpse = ObjectData(
-        item_type=int(ItemType.CORPSE_NPC), pIndexData=proto, owner="Someone", short_descr="corpse of an orc"
-    )
+    proto = ObjIndex(vnum=10, short_descr="corpse of an orc", item_type=int(ItemType.CORPSE_NPC))
+    corpse = Object(instance_id=None, prototype=proto, owner="Someone")
     room.add_object(corpse)
 
     result = do_get(ch, "corpse")
@@ -856,7 +844,7 @@ def test_corpse_looting_npc_corpse_always_lootable(movable_char_factory) -> None
 def test_corpse_looting_immortal_can_loot_anything(movable_char_factory) -> None:
     """Test that immortals can loot any corpse (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
-    from mud.models.obj import ObjectData, ObjIndex
+    pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
     owner = movable_char_factory("Owner", 3001)
@@ -865,10 +853,8 @@ def test_corpse_looting_immortal_can_loot_anything(movable_char_factory) -> None
 
     immortal.is_immortal = lambda: True
 
-    proto = ObjIndex(vnum=11, short_descr="corpse of Owner")
-    corpse = ObjectData(
-        item_type=int(ItemType.CORPSE_PC), pIndexData=proto, owner=owner.name, short_descr="corpse of Owner"
-    )
+    proto = ObjIndex(vnum=11, short_descr="corpse of Owner", item_type=int(ItemType.CORPSE_PC))
+    corpse = Object(instance_id=None, prototype=proto, owner=owner.name)
     room.add_object(corpse)
 
     result = do_get(immortal, "corpse")
