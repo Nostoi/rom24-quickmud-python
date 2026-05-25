@@ -1,0 +1,31 @@
+"""INV-012 OBJECT-LIST-CANONICAL enforcement.
+
+ROM ref: src/handler.c:1626 obj_to_char, 1642 obj_from_char,
+1904 obj_from_room, 1953 obj_to_room, 1968 obj_to_obj, 1996 obj_from_obj,
+2051 extract_obj. ROM keeps a single global linked list (`object_list`)
+of every OBJ_DATA instance; create_object appends, extract_obj removes
+(recursively for contents).
+
+Python contract (INV-012):
+
+    Every Object returned by `spawn_object` appears in `object_registry`.
+    `_extract_obj` removes it (recursively for nested contents).
+    Container chains stay coherent with the registry.
+
+See docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md INV-012.
+"""
+
+from __future__ import annotations
+
+from mud.models.obj import ObjIndex
+from mud.models.object import Object
+
+
+def test_object_has_rom_named_fields_with_none_defaults():
+    """Task 1a — Object exposes the ROM-named container fields."""
+    proto = ObjIndex(vnum=93000, short_descr="a test object")
+    obj = Object(instance_id=None, prototype=proto)
+    # New dataclass fields (Commit 1a):
+    assert obj.in_room is None
+    assert obj.in_obj is None
+    assert obj.carried_by is None

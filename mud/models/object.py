@@ -4,10 +4,11 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from .character import Character
     from .room import Room
 
-from .obj import Affect, ObjIndex
 from .constants import WearLocation
+from .obj import Affect, ObjIndex
 
 
 @dataclass
@@ -30,6 +31,12 @@ class Object:
     item_type: str | None = None
     owner: str | None = None
     affected: list[Affect] = field(default_factory=list)
+    # ROM-faithful container fields (INV-012). Initially None; populated by
+    # spawn / obj_to_room / obj_to_char / obj_to_obj at runtime.
+    # compare=False prevents __eq__ recursion through Room/Object/Character graphs.
+    in_room: Room | None = field(default=None, compare=False)  # ROM: ROOM_INDEX_DATA *in_room
+    in_obj: Object | None = field(default=None, compare=False)  # ROM: OBJ_DATA *in_obj (container)
+    carried_by: Character | None = field(default=None, compare=False)  # ROM: CHAR_DATA *carried_by
     _short_descr_override: str | None = field(default=None, repr=False)
     _description_override: str | None = field(default=None, repr=False)
 
