@@ -8,7 +8,8 @@ import pytest
 
 from mud.models.character import AffectData, Character, SpellEffect, character_registry
 from mud.models.constants import AffectFlag, Position
-from mud.models.obj import Affect, ObjectData, ObjIndex, object_registry
+from mud.models.obj import Affect, ObjIndex, object_registry
+from mud.models.object import Object
 from mud.models.room import Room
 from mud.registry import room_registry
 from mud.utils import rng_mm
@@ -298,11 +299,10 @@ class TestAffectWearOffSuppression:
         watcher.messages = []
 
         proto = ObjIndex(vnum=1000, short_descr="a glowing blade")
-        obj = ObjectData(
-            item_type=5,
+        obj = Object(
+            instance_id=None,
+            prototype=proto,
             timer=10,
-            short_descr="a glowing blade",
-            pIndexData=proto,
             in_room=room,
         )
         first = Affect(where=0, type=1, duration=0, modifier=10, location=1, bitvector=0, level=10)
