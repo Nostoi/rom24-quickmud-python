@@ -27,7 +27,8 @@ from mud.models.constants import (
     WearLocation,
 )
 from mud.models.mob import MobIndex
-from mud.models.obj import ObjectData, ObjIndex, object_registry
+from mud.models.obj import ObjIndex, object_registry
+from mud.models.object import Object
 from mud.models.room import Room, room_registry
 from mud.models.shop import Shop
 from mud.time import time_info
@@ -307,17 +308,17 @@ def test_mobile_update_scavenges_room_loot(monkeypatch):
     room.add_character(scavenger)
     character_registry.append(scavenger)
 
-    cheap = ObjectData(
-        item_type=int(ItemType.TRASH),
+    cheap = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.TRASH), short_descr="tin can"),
         wear_flags=int(WearFlag.TAKE),
         cost=5,
-        short_descr="tin can",
     )
-    pricey = ObjectData(
-        item_type=int(ItemType.TRASH),
+    pricey = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.TRASH), short_descr="bright gem"),
         wear_flags=int(WearFlag.TAKE),
         cost=25,
-        short_descr="bright gem",
     )
     room.add_object(cheap)
     room.add_object(pricey)
@@ -549,11 +550,11 @@ def test_light_decay_extinguishes_worn_torch():
     room.add_character(watcher)
     character_registry.append(watcher)
 
-    torch = ObjectData(
-        item_type=int(ItemType.LIGHT),
-        value=[0, 0, 1],
-        short_descr="bronze torch",
+    torch = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.LIGHT), short_descr="bronze torch"),
     )
+    torch.value = [0, 0, 1]
     torch.wear_loc = int(WearLocation.LIGHT)
     torch.carried_by = hero
     object_registry.append(torch)
@@ -618,8 +619,8 @@ def test_obj_update_decays_corpse():
     room.add_character(observer)
     character_registry.append(observer)
 
-    proto = ObjIndex(vnum=1, short_descr="orc corpse")
-    corpse = ObjectData(item_type=int(ItemType.CORPSE_NPC), timer=1, short_descr="orc corpse", pIndexData=proto)
+    proto = ObjIndex(vnum=1, short_descr="orc corpse", item_type=int(ItemType.CORPSE_NPC))
+    corpse = Object(instance_id=None, prototype=proto, timer=1)
     corpse.in_room = room
     room.contents.append(corpse)
     object_registry.extend([corpse])
@@ -640,14 +641,18 @@ def test_obj_update_spills_floating_container():
     room.add_character(observer)
     character_registry.append(observer)
 
-    chest = ObjectData(
-        item_type=int(ItemType.CONTAINER),
+    chest = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.CONTAINER), short_descr="drifting chest"),
         wear_flags=int(WearFlag.WEAR_FLOAT),
         timer=1,
-        short_descr="drifting chest",
     )
-    gem = ObjectData(item_type=int(ItemType.GEM), timer=0, short_descr="shiny gem")
-    chest.contains.append(gem)
+    gem = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.GEM), short_descr="shiny gem"),
+        timer=0,
+    )
+    chest.contained_items.append(gem)
     gem.in_obj = chest
 
     room.contents.append(chest)

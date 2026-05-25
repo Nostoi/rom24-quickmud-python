@@ -29,7 +29,8 @@ from mud.models.constants import (
     WearFlag,
     WearLocation,
 )
-from mud.models.obj import ObjectData, object_registry
+from mud.models.obj import object_registry
+from mud.models.object import Object
 from mud.models.room import room_registry
 from mud.music import song_update
 from mud.net.protocol import broadcast_global
@@ -771,7 +772,7 @@ def char_update() -> None:
         _auto_quit_character(candidate)
 
 
-def _render_obj_message(obj: ObjectData, template: str) -> str:
+def _render_obj_message(obj: Object, template: str) -> str:
     short_descr = (
         getattr(obj, "short_descr", None)
         or getattr(obj, "name", None)
@@ -781,7 +782,7 @@ def _render_obj_message(obj: ObjectData, template: str) -> str:
     return template.replace("$p", str(short_descr))
 
 
-def _remove_from_character(obj: ObjectData, character: Character) -> None:
+def _remove_from_character(obj: Object, character: Character) -> None:
     """ROM src/handler.c:1642 obj_from_char — subtracts obj weight/number
     from the carrier and unlinks. INV-011 (CARRY-WEIGHT-COHERENCE) requires
     the cached counters stay in sync with inventory + equipment after every
@@ -817,7 +818,7 @@ def _remove_from_character(obj: ObjectData, character: Character) -> None:
             recalc()
 
 
-def _obj_to_room(obj: ObjectData, room) -> None:
+def _obj_to_room(obj: Object, room) -> None:
     if hasattr(room, "add_object"):
         room.add_object(obj)
     else:
@@ -829,7 +830,7 @@ def _obj_to_room(obj: ObjectData, room) -> None:
     obj.in_obj = None
 
 
-def _obj_to_char(obj: ObjectData, character: Character) -> None:
+def _obj_to_char(obj: Object, character: Character) -> None:
     inventory = getattr(character, "inventory", None)
     if isinstance(inventory, list) and obj not in inventory:
         inventory.append(obj)
@@ -838,7 +839,7 @@ def _obj_to_char(obj: ObjectData, character: Character) -> None:
     obj.in_obj = None
 
 
-def _get_weight_mult(obj: ObjectData) -> int:
+def _get_weight_mult(obj: Object) -> int:
     """Get container weight multiplier (WEIGHT_MULT macro from ROM C handler.c).
 
     Returns value[4] for containers (weight reduction percentage), 100 otherwise.
@@ -883,7 +884,7 @@ def _get_weight_mult(obj: ObjectData) -> int:
         return 100
 
 
-def _get_obj_number_recursive(obj: ObjectData) -> int:
+def _get_obj_number_recursive(obj: Object) -> int:
     """Count how many items recursively (ROM C get_obj_number).
 
     ROM C Reference: handler.c:2488-2503
@@ -903,15 +904,15 @@ def _get_obj_number_recursive(obj: ObjectData) -> int:
     else:
         number = 1
 
-    # Add contents recursively (support both Object.contained_items and ObjectData.contains)
-    contains = getattr(obj, "contained_items", None) or getattr(obj, "contains", [])
+    # INV-012: contained_items is the single canonical field on Object.
+    contains = getattr(obj, "contained_items", [])
     for contained in contains:
         number += _get_obj_number_recursive(contained)
 
     return number
 
 
-def _get_obj_weight_recursive(obj: ObjectData) -> int:
+def _get_obj_weight_recursive(obj: Object) -> int:
     """Get object weight including contents with WEIGHT_MULT applied.
 
     ROM C Reference: handler.c:2509-2519 get_obj_weight
@@ -923,21 +924,21 @@ def _get_obj_weight_recursive(obj: ObjectData) -> int:
         if proto:
             weight = getattr(proto, "weight", 0)
 
-    # Add contents weight with multiplier (support both Object.contained_items and ObjectData.contains)
-    contains = getattr(obj, "contained_items", None) or getattr(obj, "contains", [])
+    # INV-012: contained_items is the single canonical field on Object.
+    contains = getattr(obj, "contained_items", [])
     for contained in contains:
         weight += _get_obj_weight_recursive(contained) * _get_weight_mult(obj) // 100
 
     return weight
 
 
-def _obj_to_obj(obj: ObjectData, container: ObjectData) -> None:
+def _obj_to_obj(obj: Object, container: Object) -> None:
     """Add object to container and update carrier weights.
 
     ROM C Reference: handler.c:1968-1989 obj_to_obj
     """
-    # Support both Object.contained_items and ObjectData.contains
-    contents = getattr(container, "contained_items", None) or getattr(container, "contains", None)
+    # INV-012: contained_items is the single canonical field on Object.
+    contents = getattr(container, "contained_items", None)
     if isinstance(contents, list):
         contents.append(obj)
     obj.in_obj = container
@@ -963,7 +964,7 @@ def _obj_to_obj(obj: ObjectData, container: ObjectData) -> None:
         current_container = getattr(current_container, "in_obj", None)
 
 
-def _obj_from_obj(obj: ObjectData) -> None:
+def _obj_from_obj(obj: Object) -> None:
     """Remove object from container and update carrier weights.
 
     ROM C Reference: handler.c:1996-2044 obj_from_obj
@@ -972,8 +973,8 @@ def _obj_from_obj(obj: ObjectData) -> None:
     if container is None:
         return
 
-    # Support both Object.contained_items and ObjectData.contains
-    contents = getattr(container, "contained_items", None) or getattr(container, "contains", None)
+    # INV-012: contained_items is the single canonical field on Object.
+    contents = getattr(container, "contained_items", None)
     if isinstance(contents, list) and obj in contents:
         contents.remove(obj)
     obj.in_obj = None
@@ -997,7 +998,7 @@ def _obj_from_obj(obj: ObjectData) -> None:
         current_container = getattr(current_container, "in_obj", None)
 
 
-def _extract_obj(obj: ObjectData) -> None:
+def _extract_obj(obj: Object) -> None:
     for child in list(getattr(obj, "contains", [])):
         _extract_obj(child)
 
@@ -1023,7 +1024,7 @@ def _extract_obj(obj: ObjectData) -> None:
         object_registry.remove(obj)
 
 
-def _object_decay_message(obj: ObjectData) -> str:
+def _object_decay_message(obj: Object) -> str:
     item_type = getattr(obj, "item_type", None)
     if item_type == ItemType.FOUNTAIN:
         return "$p dries up."
@@ -1044,7 +1045,7 @@ def _object_decay_message(obj: ObjectData) -> str:
     return "$p crumbles into dust."
 
 
-def _broadcast_decay(obj: ObjectData, message: str) -> None:
+def _broadcast_decay(obj: Object, message: str) -> None:
     carrier = getattr(obj, "carried_by", None)
     if carrier is not None:
         if (
@@ -1072,7 +1073,7 @@ def _broadcast_decay(obj: ObjectData, message: str) -> None:
         _message_room(room, message)
 
 
-def _spill_contents(obj: ObjectData) -> None:
+def _spill_contents(obj: Object) -> None:
     for item in list(getattr(obj, "contains", [])):
         _obj_from_obj(item)
         if getattr(obj, "in_obj", None) is not None:
@@ -1093,14 +1094,14 @@ def _spill_contents(obj: ObjectData) -> None:
             _extract_obj(item)
 
 
-def _resolve_object_room(obj: ObjectData) -> object | None:
+def _resolve_object_room(obj: Object) -> object | None:
     room = getattr(obj, "in_room", None)
     if room is not None:
         return room
     return getattr(obj, "location", None)
 
 
-def _clear_object_affect(obj: ObjectData, affect) -> None:
+def _clear_object_affect(obj: Object, affect) -> None:
     affects = getattr(obj, "affected", None)
     if isinstance(affects, list) and affect in affects:
         affects.remove(affect)
@@ -1117,7 +1118,7 @@ def _clear_object_affect(obj: ObjectData, affect) -> None:
                 values[4] = int(values[4]) & ~bitvector
 
 
-def _broadcast_object_wear_off(obj: ObjectData, affect) -> None:
+def _broadcast_object_wear_off(obj: Object, affect) -> None:
     message: str | None = getattr(affect, "wear_off_message", None)
     if not message:
         spell_name = getattr(affect, "spell_name", None)
@@ -1143,7 +1144,7 @@ def _broadcast_object_wear_off(obj: ObjectData, affect) -> None:
     _message_room(room, rendered)
 
 
-def _tick_object_affects(obj: ObjectData) -> None:
+def _tick_object_affects(obj: Object) -> None:
     affects = getattr(obj, "affected", None)
     if not affects:
         return

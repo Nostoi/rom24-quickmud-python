@@ -1106,15 +1106,9 @@ def do_mpjunk(ch: Character, argument: str) -> None:
             recalc()
 
     def _extract_runtime_object(obj: Object) -> None:
-        if any(hasattr(obj, attr) for attr in ("contains", "carried_by", "in_room", "in_obj")):
-            try:
-                from mud.game_loop import _extract_obj as _legacy_extract_obj
-            except ImportError:  # pragma: no cover - defensive
-                _legacy_extract_obj = None
-            if _legacy_extract_obj is not None:
-                _legacy_extract_obj(obj)  # type: ignore[arg-type]
-            return
-
+        # INV-012: only Object instances reach this path now; the local cleanup
+        # below is the single canonical implementation. The legacy
+        # _legacy_extract_obj dispatch (for ObjectData) was deleted in INV-012/5.
         for attr in ("contained_items", "contains"):
             contents = list(getattr(obj, attr, []) or [])
             for item in contents:

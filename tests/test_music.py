@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, ItemType
-from mud.models.obj import ObjectData, object_registry
+from mud.models.obj import ObjIndex, object_registry
+from mud.models.object import Object
 from mud.models.room import Room
 from mud.music import Song, channel_songs, song_table, song_update
 
@@ -63,11 +64,11 @@ def test_jukebox_cycles_queue() -> None:
         room.add_character(listener)
         character_registry.append(listener)
 
-        jukebox = ObjectData(
-            item_type=int(ItemType.JUKEBOX),
-            short_descr="The jukebox",
-            value=[-1, 0, 1, -1, -1],
+        jukebox = Object(
+            instance_id=None,
+            prototype=ObjIndex(vnum=0, item_type=int(ItemType.JUKEBOX), short_descr="The jukebox"),
         )
+        jukebox.value = [-1, 0, 1, -1, -1]
         jukebox.in_room = room
         room.contents.append(jukebox)
         object_registry.append(jukebox)

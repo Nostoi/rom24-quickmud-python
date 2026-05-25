@@ -13,8 +13,8 @@ from mud.utils.fix_sex import fix_sex
 
 if TYPE_CHECKING:
     from mud.models.character import Character
+    from mud.models.obj import Affect
     from mud.models.object import Object
-    from mud.models.obj import Affect, ObjectData
 
 
 def apply_ac(obj: Object, wear_loc: int, ac_type: int) -> int:
@@ -313,7 +313,7 @@ def unequip_char(ch: Character, obj: Object) -> None:
 # Object Affect Functions (ROM C handler.c:989-1412)
 
 
-def affect_enchant(obj: ObjectData) -> None:
+def affect_enchant(obj: Object) -> None:
     """
     Copy prototype affects to object when it becomes enchanted.
 
@@ -442,7 +442,7 @@ def affect_check(ch: Character, where: int, vector: int) -> None:
                             return
 
 
-def affect_to_obj(obj: ObjectData, paf: Affect) -> None:
+def affect_to_obj(obj: Object, paf: Affect) -> None:
     """
     Add an affect to an object.
 
@@ -477,7 +477,7 @@ def affect_to_obj(obj: ObjectData, paf: Affect) -> None:
                     obj.value[4] |= paf.bitvector
 
 
-def affect_remove_obj(obj: ObjectData, paf: Affect) -> None:
+def affect_remove_obj(obj: Object, paf: Affect) -> None:
     """
     Remove an affect from an object.
 
@@ -611,7 +611,7 @@ def is_friend(ch: Character, victim: Character) -> bool:
 # ==============================================================================
 
 
-def count_users(obj: "Object") -> int:
+def count_users(obj: Object) -> int:
     """
     Count number of characters sitting/standing on furniture object.
 
@@ -633,7 +633,7 @@ def count_users(obj: "Object") -> int:
     from typing import TYPE_CHECKING
 
     if TYPE_CHECKING:
-        from mud.models.object import Object
+        pass
 
     in_room = getattr(obj, "in_room", None) or getattr(obj, "location", None)
     if in_room is None:
@@ -724,7 +724,7 @@ def weapon_name(weapon_type: int) -> str:
 # ==============================================================================
 
 
-def get_age(ch: "Character") -> int:
+def get_age(ch: Character) -> int:
     """
     Calculate character age in years.
 
@@ -756,7 +756,7 @@ def get_age(ch: "Character") -> int:
     return 17 + c_div(int(played + (current_time - logon)), 72000)
 
 
-def get_max_train(ch: "Character", stat: int) -> int:
+def get_max_train(ch: Character, stat: int) -> int:
     """
     Get maximum trainable value for a stat.
 
@@ -818,7 +818,7 @@ def get_max_train(ch: "Character", stat: int) -> int:
 # ==============================================================================
 
 
-def deduct_cost(ch: "Character", cost: int) -> None:
+def deduct_cost(ch: Character, cost: int) -> None:
     """
     Deduct cost from character's gold and silver.
 
@@ -859,7 +859,7 @@ def deduct_cost(ch: "Character", cost: int) -> None:
         ch.silver = 0
 
 
-def create_money(gold: int, silver: int) -> "Object":
+def create_money(gold: int, silver: int) -> Object:
     """
     Create a money object with specified gold/silver.
 
@@ -884,12 +884,12 @@ def create_money(gold: int, silver: int) -> "Object":
         - Money object vnums (1-5) are special ROM objects not loaded from areas
     """
     from mud.models.constants import (
-        ItemType,
         OBJ_VNUM_COINS,
         OBJ_VNUM_GOLD_ONE,
         OBJ_VNUM_GOLD_SOME,
         OBJ_VNUM_SILVER_ONE,
         OBJ_VNUM_SILVER_SOME,
+        ItemType,
     )
     from mud.models.obj import ObjIndex
     from mud.models.object import Object
@@ -971,7 +971,7 @@ def create_money(gold: int, silver: int) -> "Object":
 # ==============================================================================
 
 
-def check_immune(ch: "Character", dam_type: int) -> int:
+def check_immune(ch: Character, dam_type: int) -> int:
     """
     Check character's immunity/resistance/vulnerability to damage type.
 
@@ -1045,7 +1045,7 @@ def check_immune(ch: "Character", dam_type: int) -> int:
 # ==============================================================================
 
 
-def reset_char(ch: "Character") -> None:
+def reset_char(ch: Character) -> None:
     """
     Reset character to clean state (de-screw corrupted characters).
 
@@ -1489,7 +1489,9 @@ def imm_bit_name(imm_flags: int) -> str:
     Returns:
         Space-separated flag names, or "none" if 0
     """
-    from mud.models.constants import ImmFlag as IF, ResFlag as RF, VulnFlag as VF
+    from mud.models.constants import ImmFlag as IF
+    from mud.models.constants import ResFlag as RF
+    from mud.models.constants import VulnFlag as VF
 
     if imm_flags == 0:
         return "none"

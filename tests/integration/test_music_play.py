@@ -20,7 +20,8 @@ import pytest
 from mud.commands.player_info import do_play
 from mud.models.character import Character, character_registry
 from mud.models.constants import AffectFlag, ExtraFlag, ItemType
-from mud.models.obj import ObjectData, object_registry
+from mud.models.obj import ObjIndex, object_registry
+from mud.models.object import Object
 from mud.models.room import Room
 from mud.music import MAX_GLOBAL, Song, channel_songs, song_table, song_update
 
@@ -48,15 +49,15 @@ def music_world():
     object_registry[:] = saved_objects
 
 
-def _build_room_with_jukebox(jukebox_values: list[int] | None = None) -> tuple[Character, ObjectData]:
+def _build_room_with_jukebox(jukebox_values: list[int] | None = None) -> tuple[Character, Object]:
     room = Room(vnum=4242, name="Music Hall")
     char = Character(name="Patron", is_npc=False)
     room.add_character(char)
-    juke = ObjectData(
-        item_type=int(ItemType.JUKEBOX),
-        short_descr="The jukebox",
-        value=list(jukebox_values) if jukebox_values is not None else [-1, -1, -1, -1, -1],
+    juke = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.JUKEBOX), short_descr="The jukebox"),
     )
+    juke.value = list(jukebox_values) if jukebox_values is not None else [-1, -1, -1, -1, -1]
     juke.in_room = room
     room.contents.append(juke)
     object_registry.append(juke)
@@ -260,12 +261,12 @@ def test_song_update_jukebox_visibility_uses_per_viewer_object_rendering(music_w
         char.messages.clear()
         room.add_character(char)
 
-    jukebox = ObjectData(
-        item_type=int(ItemType.JUKEBOX),
-        short_descr="the jukebox",
+    jukebox = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.JUKEBOX), short_descr="the jukebox"),
         extra_flags=int(ExtraFlag.INVIS),
-        value=[-1, 0, -1, -1, -1],
     )
+    jukebox.value = [-1, 0, -1, -1, -1]
     jukebox.in_room = room
     room.contents.append(jukebox)
     object_registry.append(jukebox)

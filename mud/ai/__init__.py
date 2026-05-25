@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+import mud.mobprog as mobprog
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
+    EX_CLOSED,
     ActFlag,
     AffectFlag,
     Direction,
@@ -13,17 +15,13 @@ from mud.models.constants import (
     Position,
     RoomFlag,
     WearFlag,
-    EX_CLOSED,
 )
-from mud.models.obj import ObjectData
+from mud.models.object import Object
 from mud.models.room import Exit, Room
-from mud.registry import room_registry
 from mud.utils import rng_mm
 from mud.world.movement import move_character
 
 from .aggressive import aggressive_update
-
-import mud.mobprog as mobprog
 
 __all__ = ["aggressive_update", "mobile_update"]
 
@@ -114,7 +112,7 @@ def _broadcast_room(room: Room, message: str, exclude: object | None = None) -> 
             messages.append(message)
 
 
-def _can_loot(mob: Character, obj: ObjectData) -> bool:
+def _can_loot(mob: Character, obj: Object) -> bool:
     if getattr(mob, "is_admin", False):
         return True
     is_immortal = getattr(mob, "is_immortal", None)
@@ -150,7 +148,7 @@ def _can_loot(mob: Character, obj: ObjectData) -> bool:
     return False
 
 
-def _room_contents(room: Room | None) -> Iterable[ObjectData]:
+def _room_contents(room: Room | None) -> Iterable[Object]:
     if room is None:
         return []
     contents = getattr(room, "contents", None)
@@ -159,7 +157,7 @@ def _room_contents(room: Room | None) -> Iterable[ObjectData]:
     return []
 
 
-def _take_object(mob: Character, obj: ObjectData) -> None:
+def _take_object(mob: Character, obj: Object) -> None:
     room = getattr(obj, "in_room", None) or getattr(obj, "location", None) or getattr(mob, "room", None)
     if room is not None:
         contents = getattr(room, "contents", None)
@@ -201,7 +199,7 @@ def _maybe_scavenge(mob: Character, room: Room) -> None:
     if rng_mm.number_bits(6) != 0:
         return
 
-    best_obj: ObjectData | None = None
+    best_obj: Object | None = None
     best_cost = 1
     for obj in contents:
         wear_flags = int(getattr(obj, "wear_flags", 0) or 0)
@@ -300,8 +298,8 @@ def mobile_update() -> None:
             if gold * 100 + silver < wealth:
                 gold += wealth * rng_mm.number_range(1, 20) // 5_000_000
                 silver += wealth * rng_mm.number_range(1, 20) // 50_000
-                setattr(mob, "gold", gold)
-                setattr(mob, "silver", silver)
+                mob.gold = gold
+                mob.silver = silver
 
         default_pos_raw = getattr(mob, "default_pos", getattr(mob, "position", Position.STANDING))
         try:

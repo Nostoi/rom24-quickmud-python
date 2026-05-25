@@ -60,6 +60,7 @@ stable IDs (INV-NNN), and points each at an enforcement test.
 | INV-009 | REGISTRY-DISCONNECT-CLEANUP | `src/comm.c:close_socket` + `src/nanny.c:do_quit` ensure char_list has at most one entry per player name at any time; reconnects rebind via `check_reconnect` rather than appending duplicates | (a) `mud/account/account_manager.py:load_character` dedupes by `name` before appending — drops any prior `character_registry` entry with the same name (e.g. the level=0 bare-row Character loaded during the nanny name/password phase) before adding the freshly-loaded one. (b) `mud/net/connection.py` disconnect cleanup (websocket + telnet `finally` blocks) removes the Character from `character_registry` on non-forced disconnect, matching the `save + char_from_room + release_account` quit semantics already in place. Forced disconnects (descriptor takeover via `_disconnect_session`) skip removal — the Character transfers to the new descriptor. | `tests/integration/test_inv009_registry_disconnect_cleanup.py` | ✅ ENFORCED |
 | INV-010 | ROOM-PEOPLE-COHERENCE | `src/handler.c:1497-1573 char_from_room / char_to_room` are the only mutation paths; bidirectional contract — every `ch->in_room == R` lives in `R->people`, every entry in `R->people` has `ch->in_room == R`. ROM also relies on a single canonical `room_index_hash` lookup table (`src/db.c:get_room_index`). | (a) `mud/models/room.py:Room.add_character` / `Room.remove_character` keep the bidirectional state synchronized and own area.nplayer + light-source accounting. (b) `mud/models/room.py:char_to_room` wraps `add_character` with a NULL → temple fallback. (c) `mud/models/room.py` no longer declares a second `room_registry` dict; it re-imports the canonical `mud.registry.room_registry`, so the temple fallback and `mud/game_loop.py:525` limbo lookup read from the world-loaded registry rather than a perpetually empty one (fixed in 2.8.78). Touched by: `mud/spec_funs.py` (mayor patrol), `mud/spawning/templates.py:MobInstance.move_to_room`, `mud/commands/session.py:do_recall`, `mud/commands/imm_load.py`, `mud/commands/imm_search.py`, `mud/commands/imm_commands.py:_char_from_room/_char_to_room`. | `tests/integration/test_inv010_room_people_coherence.py` | ✅ ENFORCED |
 | INV-011 | CARRY-WEIGHT-COHERENCE | `src/handler.c:1626 obj_to_char` / `1642 obj_from_char` keep `ch->carry_weight` and `ch->carry_number` in lockstep with `ch->carrying`. `extract_obj` (`src/handler.c:2051,2058-2059`) routes through `obj_from_char` so the counters never drift. | (a) `Character.add_object` / `Character.equip_object` / `Character.remove_object` (mud/models/character.py:542-566) call `_recalculate_carry_weight` and adjust `carry_number`. (b) `mud/game_loop.py:_remove_from_character` (used by `_extract_obj` → carrier branch and by corpse decay) also re-derives `carry_weight` via `_recalculate_carry_weight` and decrements `carry_number` by the obj's slot cost (fixed in 2.8.79 — previously dropped the obj from inventory/equipment without touching the cached counters, so every extract on a carried object skewed encumbrance upward). Touched by: `mud/game_loop.py:_extract_obj` and `_decay_carried_light`, `mud/mob_cmds.py:1095-1110` (mpoload-style cleanup), `mud/combat/engine.py:991` (corpse extract). | `tests/integration/test_inv011_carry_weight_coherence.py` | ✅ ENFORCED |
+| INV-012 | OBJECT-LIST-CANONICAL | `src/db.c:create_object` appends every new `OBJ_DATA` to the global `object_list`; `src/handler.c:2051 extract_obj` removes (recursively for contents via lines 2063-2067). ROM has ONE struct, ONE list, four exclusive containers (`in_room`, `carried_by`, `in_obj`, equipped via `wear_loc`). | (a) `mud/models/object.py:Object` is the only runtime class. `mud/models/obj.py:ObjectData` deleted in 2.9.0; the dual-class divergence (parallel to INV-008) is closed. (b) ROM-named container fields `in_room`, `in_obj`, `carried_by` live on `Object` as real dataclass fields (compare=False to avoid graph-walking `__eq__`). `pIndexData` and `contains` are read+write/read-only `@property` aliases of `prototype` and `contained_items`. (c) `mud/spawning/obj_spawner.py:spawn_object` appends every new instance to `mud.models.obj.object_registry: list[Object]` before returning. `mud/game_loop.py:_extract_obj` removes (recursively via `obj.contained_items`). `tests/conftest.py` autouse fixture snapshots-clears-restores the registry around every test to prevent cross-test leakage. Touched by: `mud/skills/handlers.py` (3 single-arm + 9 tuple-filter isinstance collapses), `mud/game_loop.py` (17 helper retypings + 4 dual-shape fallback deletions), `mud/handler.py` (3 affect-helper retypings), `mud/music/__init__.py`, `mud/ai/__init__.py`, `mud/mob_cmds.py`, 9 test files (35 fixture migrations). | `tests/integration/test_inv012_object_list_canonical.py` | ✅ ENFORCED |
 
 ## Action items
 
@@ -110,22 +111,17 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**Open as of 2026-05-24 (INV-011 session):**
+**Open: none right now.**
 
-- **Dual `Object` / `ObjectData` classes** (`mud/models/object.py:Object`
-  vs `mud/models/obj.py:ObjectData`): two distinct runtime classes with
-  divergent field names (`location`/`contained_items` vs
-  `in_room`/`in_obj`/`contains`/`carried_by`). `spawn_object` and
-  production paths construct `Object`; `object_registry:
-  list[ObjectData]` (mud/models/obj.py:107) is the canonical "ROM
-  object_list" but **nothing ever appends to it**. As a result, every
-  iteration over `object_registry` is a no-op in production:
-  `mud/mobprog.py` oload triggers, `mud/world/obj_find.py:get_obj_world`,
-  `mud/skills/handlers.py` global object scans, `mud/music/__init__.py`
-  decay, `mud/game_loop.py:object_update` (decay tick). Parallel shape
-  to INV-008 (dual `load_character`). Promote to INV-NNN once the
-  consolidation strategy is chosen — this is a multi-session refactor,
-  not a single gap closure. Tracked but not enforced yet.
+- ~~**Dual `Object` / `ObjectData` classes**~~ **Closed as INV-012 in
+  2.9.0.** Spec at `docs/superpowers/specs/2026-05-24-object-objectdata-consolidation-design.md`;
+  plan at `docs/superpowers/plans/2026-05-24-object-objectdata-consolidation.md`.
+  17 commits across 5 phases: extend Object with ROM-named fields,
+  populate object_registry at spawn (this is where the production
+  no-op bugs flipped to working code — locate-object, mobprog oload,
+  decay tick), retype game_loop/handler/skills/music/ai helpers,
+  collapse 12 isinstance(ObjectData) branches, migrate 35 test
+  fixtures across 9 files, then delete ObjectData entirely.
 
 **Surfaced 2026-05-24 while closing INV-010; CARRY-WEIGHT entry now
 closed as INV-011 below — kept here for the audit trail.**

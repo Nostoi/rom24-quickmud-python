@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 from mud.models.constants import ExtraFlag, WearLocation, convert_flags_from_letters
-from mud.models.object import Object
 from mud.models.obj import Affect
+from mud.models.object import Object
 from mud.registry import obj_registry
 
 
@@ -70,4 +70,9 @@ def spawn_object(vnum: int) -> Object | None:
             proto.count = int(getattr(proto, "count", 0)) + 1
         except Exception:
             proto.count = 1
+    # INV-012: canonical instance list — ROM src/db.c:create_object adds the
+    # new obj to object_list before returning. Python mirror.
+    from mud.models.obj import object_registry
+
+    object_registry.append(inst)
     return inst

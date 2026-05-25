@@ -7,7 +7,8 @@ from mud.math.c_compat import c_div
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
 from mud.models.constants import AffectFlag, DamageType, ItemType
-from mud.models.obj import ObjectData
+from mud.models.obj import ObjIndex
+from mud.models.object import Object
 from mud.models.room import Room
 from mud.skills import handlers as skill_handlers
 from mud.utils import rng_mm
@@ -150,11 +151,11 @@ def test_recharge_restores_charges(monkeypatch: pytest.MonkeyPatch) -> None:
 
     character_registry.append(caster)
     try:
-        wand = ObjectData(
-            item_type=int(ItemType.WAND),
-            value=[0, 3, 1, 15, 0],
-            short_descr="oak wand",
+        wand = Object(
+            instance_id=None,
+            prototype=ObjIndex(vnum=0, item_type=int(ItemType.WAND), short_descr="oak wand"),
         )
+        wand.value = [0, 3, 1, 15, 0]
 
         monkeypatch.setattr(rng_mm, "number_percent", lambda: 30)
         success = skill_handlers.recharge(caster, wand)
@@ -166,11 +167,11 @@ def test_recharge_restores_charges(monkeypatch: pytest.MonkeyPatch) -> None:
 
         caster.messages.clear()
 
-        partial = ObjectData(
-            item_type=int(ItemType.WAND),
-            value=[0, 4, 1, 12, 0],
-            short_descr="ash wand",
+        partial = Object(
+            instance_id=None,
+            prototype=ObjIndex(vnum=0, item_type=int(ItemType.WAND), short_descr="ash wand"),
         )
+        partial.value = [0, 4, 1, 12, 0]
 
         monkeypatch.setattr(rng_mm, "number_percent", lambda: 80)
         partial_success = skill_handlers.recharge(caster, partial)
@@ -192,33 +193,33 @@ def test_recharge_failure_paths(monkeypatch: pytest.MonkeyPatch) -> None:
 
     character_registry.append(caster)
     try:
-        scroll = ObjectData(
-            item_type=int(ItemType.SCROLL),
-            value=[0, 0, 0, 0, 0],
-            short_descr="tattered scroll",
+        scroll = Object(
+            instance_id=None,
+            prototype=ObjIndex(vnum=0, item_type=int(ItemType.SCROLL), short_descr="tattered scroll"),
         )
+        scroll.value = [0, 0, 0, 0, 0]
 
         assert skill_handlers.recharge(caster, scroll) is False
         assert caster.messages[-1] == "That item does not carry charges."
 
         caster.messages.clear()
 
-        spent = ObjectData(
-            item_type=int(ItemType.WAND),
-            value=[0, 0, 0, 10, 0],
-            short_descr="spent wand",
+        spent = Object(
+            instance_id=None,
+            prototype=ObjIndex(vnum=0, item_type=int(ItemType.WAND), short_descr="spent wand"),
         )
+        spent.value = [0, 0, 0, 10, 0]
 
         assert skill_handlers.recharge(caster, spent) is False
         assert caster.messages[-1] == "That item has already been recharged once."
 
         caster.messages.clear()
 
-        fizz = ObjectData(
-            item_type=int(ItemType.WAND),
-            value=[0, 5, 3, 10, 0],
-            short_descr="copper wand",
+        fizz = Object(
+            instance_id=None,
+            prototype=ObjIndex(vnum=0, item_type=int(ItemType.WAND), short_descr="copper wand"),
         )
+        fizz.value = [0, 5, 3, 10, 0]
 
         monkeypatch.setattr(rng_mm, "number_percent", lambda: 92)
         fizzled = skill_handlers.recharge(caster, fizz)
@@ -230,11 +231,11 @@ def test_recharge_failure_paths(monkeypatch: pytest.MonkeyPatch) -> None:
 
         caster.messages.clear()
 
-        boom = ObjectData(
-            item_type=int(ItemType.WAND),
-            value=[0, 5, 2, 10, 0],
-            short_descr="glass wand",
+        boom = Object(
+            instance_id=None,
+            prototype=ObjIndex(vnum=0, item_type=int(ItemType.WAND), short_descr="glass wand"),
         )
+        boom.value = [0, 5, 2, 10, 0]
         boom.carried_by = caster
         caster.inventory.append(boom)
 
