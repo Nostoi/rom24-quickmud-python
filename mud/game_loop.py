@@ -904,8 +904,8 @@ def _get_obj_number_recursive(obj: Object) -> int:
     else:
         number = 1
 
-    # Add contents recursively (support both Object.contained_items and ObjectData.contains)
-    contains = getattr(obj, "contained_items", None) or getattr(obj, "contains", [])
+    # INV-012: contained_items is the single canonical field on Object.
+    contains = getattr(obj, "contained_items", [])
     for contained in contains:
         number += _get_obj_number_recursive(contained)
 
@@ -924,8 +924,8 @@ def _get_obj_weight_recursive(obj: Object) -> int:
         if proto:
             weight = getattr(proto, "weight", 0)
 
-    # Add contents weight with multiplier (support both Object.contained_items and ObjectData.contains)
-    contains = getattr(obj, "contained_items", None) or getattr(obj, "contains", [])
+    # INV-012: contained_items is the single canonical field on Object.
+    contains = getattr(obj, "contained_items", [])
     for contained in contains:
         weight += _get_obj_weight_recursive(contained) * _get_weight_mult(obj) // 100
 
@@ -937,8 +937,8 @@ def _obj_to_obj(obj: Object, container: Object) -> None:
 
     ROM C Reference: handler.c:1968-1989 obj_to_obj
     """
-    # Support both Object.contained_items and ObjectData.contains
-    contents = getattr(container, "contained_items", None) or getattr(container, "contains", None)
+    # INV-012: contained_items is the single canonical field on Object.
+    contents = getattr(container, "contained_items", None)
     if isinstance(contents, list):
         contents.append(obj)
     obj.in_obj = container
@@ -973,8 +973,8 @@ def _obj_from_obj(obj: Object) -> None:
     if container is None:
         return
 
-    # Support both Object.contained_items and ObjectData.contains
-    contents = getattr(container, "contained_items", None) or getattr(container, "contains", None)
+    # INV-012: contained_items is the single canonical field on Object.
+    contents = getattr(container, "contained_items", None)
     if isinstance(contents, list) and obj in contents:
         contents.remove(obj)
     obj.in_obj = None
