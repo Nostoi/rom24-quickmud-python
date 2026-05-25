@@ -114,6 +114,21 @@ with stable IDs (INV-NNN) and one enforcement test each.
    if it grows past ~20 entries, the per-file methodology itself
    needs revisiting.
 
+**When the cross-file invariants pass is the active mode**: when
+`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` has no ⚠️ Partial /
+❌ Not Audited rows (current state — all P0/P1/P2 at 100%, P3 at 75%
++ 3 N/A), the per-file audit default is exhausted and **cross-file
+invariants becomes the primary pass**. Method: pick a candidate area
+not yet covered by an INV row (affect ticks, position transitions,
+mob script triggers, group/follower chain are current candidates),
+run a 5-minute probe (read ROM C contract → read Python equivalent →
+write one failing test for the contract), then either close as a
+gap (single commit) or file as the next free INV-NNN. The probe-
+then-scope pattern is faster than full audit phases when you're
+hunting for divergences vs cataloguing them — the 2.9.3–2.9.6
+session (INV-014 + INV-013 carrier-field sweep + decay-loop
+coverage) is the worked example.
+
 The point is not to re-audit every file under the new lens; it's to
 enumerate the contracts once, lock each one with a test, and
 reference those tests from the per-file rows. The

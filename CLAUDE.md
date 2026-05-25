@@ -10,6 +10,12 @@ Use them; do not re-derive the workflow each session.
 | Starting a file-level audit (e.g. "audit `scan.c`", a P0/P1 file is Partial/Not Audited in `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`) | `/rom-parity-audit` | New/updated `docs/parity/<FILE>_C_AUDIT.md` with stable gap IDs |
 | Closing one gap by ID (e.g. "fix `DROP-001`", working through a gap list from an audit doc) | `/rom-gap-closer` | One failing-test-first commit with `feat(parity)` / `fix(parity)` prefix; audit row flipped to ✅ FIXED |
 | Wrapping up the session (multiple gaps closed, file just hit 100%, "write the session summary") | `/rom-session-handoff` | New `docs/sessions/SESSION_SUMMARY_<date>_<topic>.md`, refreshed `SESSION_STATUS.md`, CHANGELOG entries, version bump if pushing |
+| Per-file audit tracker exhausted; surfacing the next cross-file contract gap (e.g. "scan affect-tick contracts for divergences", "audit position-transition edges") | (no skill — manual probe-then-scope; file as INV-NNN row in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`) | New ✅ ENFORCED INV row + enforcement test, or single gap-closer commit |
+
+When the per-file audit tracker has no ⚠️ Partial / ❌ Not Audited
+rows (current state), **cross-file invariants is the active pass**.
+See the "Cross-File Invariants" section in AGENTS.md for the
+probe-then-scope method and current candidate areas.
 
 Decision tree:
 
