@@ -1106,23 +1106,9 @@ def do_mpjunk(ch: Character, argument: str) -> None:
             recalc()
 
     def _extract_runtime_object(obj: Object) -> None:
-        # INV-012: dispatch ObjectData (legacy) to the more thorough _extract_obj;
-        # plain Object instances use the local cleanup below. Was previously a
-        # hasattr-based heuristic on ("contains", "carried_by", "in_room", "in_obj")
-        # which silently routed every Object through _legacy_extract_obj once those
-        # fields became real on Object (INV-012/1a). After ObjectData is deleted in
-        # INV-012/5, this entire branch becomes dead code.
-        from mud.models.obj import ObjectData
-
-        if isinstance(obj, ObjectData):
-            try:
-                from mud.game_loop import _extract_obj as _legacy_extract_obj
-            except ImportError:  # pragma: no cover - defensive
-                _legacy_extract_obj = None
-            if _legacy_extract_obj is not None:
-                _legacy_extract_obj(obj)  # type: ignore[arg-type]
-            return
-
+        # INV-012: only Object instances reach this path now; the local cleanup
+        # below is the single canonical implementation. The legacy
+        # _legacy_extract_obj dispatch (for ObjectData) was deleted in INV-012/5.
         for attr in ("contained_items", "contains"):
             contents = list(getattr(obj, attr, []) or [])
             for item in contents:

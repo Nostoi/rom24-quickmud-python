@@ -9,7 +9,8 @@ from pathlib import Path
 
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, ItemType
-from mud.models.obj import ObjectData, object_registry
+from mud.models.obj import object_registry
+from mud.models.object import Object
 from mud.models.room import Room
 from mud.net.protocol import send_to_char
 from mud.utils.act import act_format
@@ -137,7 +138,7 @@ def _scroll_jukebox_queue(values: list[int]) -> None:
     values[4] = -1
 
 
-def _resolve_room(obj: ObjectData) -> Room | None:
+def _resolve_room(obj: Object) -> Room | None:
     room = getattr(obj, "in_room", None)
     if room is not None:
         return room
@@ -200,7 +201,7 @@ def _broadcast_global_music(message: str) -> None:
         _push_music_message(char, message)
 
 
-def _broadcast_jukebox_message(room: Room, obj: ObjectData, suffix: str) -> None:
+def _broadcast_jukebox_message(room: Room, obj: Object, suffix: str) -> None:
     for occupant in list(getattr(room, "people", [])):
         prefix = act_format("$p", recipient=occupant, arg1=obj)
         _push_music_message(occupant, f"{prefix} {suffix}")
@@ -214,7 +215,7 @@ def _can_hear_music(character: Character) -> bool:
     return not bool(flags & (CommFlag.NOMUSIC | CommFlag.QUIET))
 
 
-def _object_display_name(obj: ObjectData) -> str:
+def _object_display_name(obj: Object) -> str:
     return obj.short_descr or obj.name or "the jukebox"
 
 
