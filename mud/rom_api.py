@@ -658,7 +658,7 @@ def recursive_clone(obj: Object, clone_to: Object | None = None) -> Object:
         Cloned object with all contents
     """
     from mud.models.obj import ObjIndex
-    from mud.models.object import Object
+    from mud.models.object import Object, create_object
 
     if not obj.prototype:
         proto = ObjIndex(
@@ -678,7 +678,7 @@ def recursive_clone(obj: Object, clone_to: Object | None = None) -> Object:
     else:
         proto = obj.prototype
 
-    new_obj = Object(instance_id=None, prototype=proto)
+    new_obj = create_object(proto)
 
     for content in obj.contained_items:
         recursive_clone(content, new_obj)

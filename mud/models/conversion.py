@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from mud.db.models import Character as DBCharacter
 from mud.db.models import ObjectInstance as DBObjectInstance
-from mud.models.object import Object
+from mud.models.object import Object, create_object
 from mud.registry import obj_registry
 
 
@@ -14,7 +14,7 @@ def load_objects_for_character(db_char: DBCharacter) -> tuple[list[Object], dict
         proto = obj_registry.get(inst.prototype_vnum)
         if not proto:
             continue
-        obj = Object(instance_id=inst.id, prototype=proto)
+        obj = create_object(proto, instance_id=inst.id)
         if inst.location and inst.location.startswith("equipment:"):
             slot = inst.location.split(":", 1)[1]
             equipment[slot] = obj

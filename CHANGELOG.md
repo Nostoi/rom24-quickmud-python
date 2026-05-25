@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.3]
+
+### Added
+- **`INV-014` — OBJECT-REGISTRY-MEMBERSHIP locked in** (`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`, `tests/integration/test_inv014_object_registry_membership.py`): ROM `src/db.c:create_object` appends every freshly built `OBJ_DATA` to the global `object_list` unconditionally — every world-scan consumer (`src/magic.c:3737 spell_locate_object`, decay sweep, save) walks that list. Previously only `mud/spawning/obj_spawner.py:spawn_object` appended to `mud.models.obj.object_registry`; six other production sites built `Object` instances without registering, leaving freshly-created corpses, gore objects, money piles, shop clones, and DB-restored inventory invisible to `locate object`. Added `mud.models.object.create_object(prototype, *, instance_id=None)` as the canonical factory (appends and returns); routed every production construction site through it. `mud/skills/handlers.py:_iterate_world_objects` now walks `object_registry` first, computing the holder per ROM `src/magic.c:3747` (outermost `in_obj` chain → `carried_by` → `in_room` → `None` rendered as "somewhere"); a legacy room/character walk remains as a compat backstop for unit tests. Eight enforcement tests cover every construction path plus the homeless-object locate symptom.
+
+### Fixed
+- **`spell_locate_object` could not find homeless objects** (`mud/skills/handlers.py:_iterate_world_objects`): an object spawned but not yet placed (`in_room=None, carried_by=None, in_obj=None`) was skipped entirely, while ROM `src/magic.c:3756-3762` reports it as "one is in somewhere" (the `in_room == NULL` branch). Iterator now walks `object_registry` so registered-but-unplaced objects surface at parity with ROM.
+- **Six production sites built `Object` instances without registering** (handler.py, combat/death.py ×2, rom_api.py, commands/shop.py fallback, models/conversion.py): `create_money`, `_fallback_gore`, `_fallback_corpse`, `recursive_clone`, `_clone_inventory_object` (when `spawn_object` returned `None`), and `load_objects_for_character` all bypassed `object_registry`. ROM `create_object` always appends. All six now route through `create_object` (or `spawn_object` where applicable).
+
 ## [2.9.2]
 
 ### Added

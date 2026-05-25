@@ -146,3 +146,23 @@ class Object:
             self.in_room = value  # type: ignore[assignment]
             self.carried_by = None
             self.in_obj = None
+
+
+def create_object(prototype: ObjIndex, *, instance_id: int | None = None) -> Object:
+    """Build a new ``Object`` and register it on ``object_registry``.
+
+    INV-014 OBJECT-REGISTRY-MEMBERSHIP: ROM ``src/db.c:create_object``
+    appends every freshly built ``OBJ_DATA`` to the global
+    ``object_list``. ``mud.models.obj.object_registry`` is the canonical
+    Python equivalent; world-scan consumers (``spell_locate_object`` and
+    any future iteration over every live object) rely on it being
+    complete. Every Python ``Object(...)`` construction site that does
+    not already go through ``mud.spawning.obj_spawner.spawn_object``
+    must call this helper.
+    """
+
+    from mud.models.obj import object_registry
+
+    obj = Object(instance_id=instance_id, prototype=prototype)
+    object_registry.append(obj)
+    return obj

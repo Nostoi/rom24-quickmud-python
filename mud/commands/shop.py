@@ -20,7 +20,7 @@ from mud.models.constants import (
     ITEM_SELL_EXTRACT,
     ITEM_VIS_DEATH,
 )
-from mud.models.object import Object
+from mud.models.object import Object, create_object
 from mud.registry import room_registry, shop_registry
 from mud.skills import check_improve
 from mud.spawning.obj_spawner import spawn_object
@@ -354,7 +354,7 @@ def _clone_inventory_object(template: Object) -> Object | None:
 
     clone = spawn_object(getattr(proto, "vnum", 0))
     if clone is None:
-        clone = Object(instance_id=None, prototype=proto)
+        clone = create_object(proto)
 
     # Mirror runtime overrides from the template copy so shop customisations persist.
     clone.value = list(getattr(template, "value", clone.value))

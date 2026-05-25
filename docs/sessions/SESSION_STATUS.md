@@ -1,52 +1,51 @@
-# Session Status — 2026-05-25 — INV-013 OBJECT-LOCATION-COHERENCE locked in
+# Session Status — 2026-05-25 — INV-014 OBJECT-REGISTRY-MEMBERSHIP locked in
 
 ## Current State
 
 - **Active pass**: cross-file invariants — backstop for per-file audits.
-- **Last completed**: INV-013 OBJECT-LOCATION-COHERENCE added to
-  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` with a 7-test
-  enforcement suite. `Object.location` is no longer a stored field —
-  it's a property dispatching to the three canonical ROM container
-  fields (`in_room`, `carried_by`, `in_obj`) per `src/handler.c:1626
-  obj_to_char` / `1953 obj_to_room` / `1968 obj_to_obj`. Two latent
-  bugs surfaced and fixed in the conversion (`MobInstance.add_to_inventory`
-  cleared carried_by; `make_corpse` left money's `in_obj` unset).
-  Version bumped 2.9.1 → 2.9.2.
-- **Same-day prior passes**:
-  - `test_wait_and_daze_decrement_on_violence_pulse` fix — match ROM
-    descriptor path (2.9.1)
-  - End-to-end INV-012 ostat-finds-remote-object coverage (no version
-    bump)
-- **Prior-day arc (2026-05-24)**:
-  - INV-010 ROOM-PEOPLE-COHERENCE + dual-`room_registry` fix (2.8.78)
-  - INV-011 CARRY-WEIGHT-COHERENCE + `_extract_obj` counter sync (2.8.79)
-  - INV-012 OBJECT-LIST-CANONICAL — dual `Object`/`ObjectData`
-    consolidation (2.9.0)
-- **Pointer to latest summary**: see latest `docs/sessions/SESSION_SUMMARY_*.md`
-  (a dedicated 2.9.2 summary has not been written — the changelog
-  entries and tracker rows are the durable record).
+- **Last completed**: INV-014 OBJECT-REGISTRY-MEMBERSHIP added to
+  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` with an 8-test
+  enforcement suite. ROM `src/db.c:create_object` appends every fresh
+  `OBJ_DATA` to the global `object_list` unconditionally; previously
+  only `mud/spawning/obj_spawner.py:spawn_object` did so in Python.
+  Six production sites built `Object` instances without registering,
+  leaving freshly-created corpses, gore objects, money piles, shop
+  clones, and DB-restored inventory invisible to `locate object`.
+  Added `mud.models.object.create_object(prototype, *, instance_id=None)`
+  as the canonical factory; routed every production site through it.
+  `mud/skills/handlers.py:_iterate_world_objects` now walks
+  `object_registry` first (computing the holder per ROM
+  `src/magic.c:3747`) and falls back to a room/character walk as a
+  compat backstop for legacy unit tests. Surfaced symptom that opened
+  this thread: an object spawned but not yet placed
+  (`in_room=None, carried_by=None, in_obj=None`) was skipped by locate;
+  ROM reports it as "one is in somewhere". Version bumped 2.9.2 → 2.9.3.
+- **Pointer to latest summary**: see CHANGELOG entry [2.9.3] and
+  tracker row INV-014 for the durable record (no separate
+  `SESSION_SUMMARY_*.md` written for this single-cluster session).
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.2 |
-| Tests | 4695 passed, 4 skipped, 0 failed |
-| Cross-file invariants | 13 of ~20 budget; INV-001 … INV-013 all ✅ ENFORCED |
-| Branch | `master` (up to date with origin/master); `inv-013-object-location-coherence` retained for reference |
+| Version | 2.9.3 |
+| Tests | 4703 passed, 4 skipped, 0 failed |
+| Cross-file invariants | 14 of ~20 budget; INV-001 … INV-014 all ✅ ENFORCED |
+| Branch | `master` (local — not yet pushed) |
 | Watch list | Empty. |
 
 ## Next Intended Task
 
 Watch list is empty. Plausible next directions (user's call):
 
-1. **Pick the next ⚠️ Partial / ❌ Not Audited row from
-   `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`** and run
-   `/rom-parity-audit` on it. This is the default mode when there's
-   no specific cross-file thread to pull.
-2. **End-to-end coverage for newly-live systems from INV-012** —
-   locate-object spell, mobprog oload triggers, full decay loop. Each
-   is *new* coverage, not regression closure.
+1. **End-to-end coverage for INV-012 newly-live systems** — still on
+   the table: mobprog `oload` triggers, full decay loop. (The
+   `locate object` slice was completed as INV-014 above.) Each is
+   *new* coverage, not regression closure.
+2. **Pick the next ⚠️ Partial / ❌ Not Audited row from
+   `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`** — note the tracker
+   shows 0 Partial / 0 Not Audited in P0/P1/P2 and only ✅ entries in
+   P3; default audit path is exhausted for now.
 3. **Optional Phase 2 cosmetic sweep** — `prototype` → `pIndexData`
    (~291 refs) and `contained_items` → `contains` (~182 refs). Backlog
    note at `docs/parity/PHASE_2_ROM_NAME_SWEEP_OPTIONAL.md` explains
@@ -56,7 +55,5 @@ Watch list is empty. Plausible next directions (user's call):
 
 ## Push gate
 
-Nothing local pending push. Master and `v2.9.2` tag both at
-`origin/master`. The branch `inv-013-object-location-coherence` is
-retained locally — safe to delete once you confirm the merge looks
-right (`git branch -d inv-013-object-location-coherence`).
+Local v2.9.3 commit pending push. CHANGELOG and tracker rows updated.
+Awaiting per-cluster push approval per AGENTS.md.

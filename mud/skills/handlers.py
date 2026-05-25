@@ -857,16 +857,52 @@ def _object_name_matches(obj: Object, search: str) -> bool:
 
 
 def _iterate_world_objects():
-    """Yield (object, holder) pairs mirroring ROM ``object_list`` traversal."""
+    """Yield ``(object, holder)`` pairs mirroring ROM ``object_list``.
+
+    INV-014 OBJECT-REGISTRY-MEMBERSHIP: ``object_registry`` is the
+    canonical Python equivalent of ROM ``object_list``. The primary
+    iteration walks it directly so that registered-but-unplaced objects
+    (e.g. transiently between ``extract`` and re-placement, or freshly
+    spawned before being put in a room) are surfaced exactly as ROM
+    ``spell_locate_object`` (src/magic.c:3737) sees them.
+
+    For each registered obj the holder is computed per ROM
+    src/magic.c:3747: walk the ``in_obj`` chain to the outermost
+    container, then prefer ``carried_by`` over ``in_room`` (``None``
+    if neither is set, rendered as "somewhere").
+
+    A secondary walk of ``room_registry`` / ``character_registry``
+    backstops legacy unit tests that build ``Object`` instances directly
+    without going through ``create_object`` / ``spawn_object``; the seen
+    set dedupes by identity so registered objects are not yielded twice.
+    """
+
+    from mud.models.obj import object_registry
 
     seen: set[int] = set()
 
-    def _walk(obj: Object, holder: object):
+    def _yield(obj: Object, holder: object):
         ident = id(obj)
         if ident in seen:
             return
         seen.add(ident)
         yield obj, holder
+
+    for obj in list(object_registry):
+        outer = obj
+        while getattr(outer, "in_obj", None) is not None:
+            outer = outer.in_obj
+        carried_by = getattr(outer, "carried_by", None)
+        if carried_by is not None:
+            yield from _yield(obj, carried_by)
+            continue
+        in_room = getattr(outer, "in_room", None)
+        yield from _yield(obj, in_room)
+
+    def _walk(obj: Object, holder: object):
+        if id(obj) in seen:
+            return
+        yield from _yield(obj, holder)
         children: list[Object] = []
         contained = getattr(obj, "contained_items", None)
         if isinstance(contained, list):

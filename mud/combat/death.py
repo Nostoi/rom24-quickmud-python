@@ -29,7 +29,7 @@ from mud.characters.follow import stop_follower
 from mud.models.clans import get_clan_hall_vnum
 from mud.models.races import get_race_by_index
 from mud.models.obj import ObjIndex
-from mud.models.object import Object
+from mud.models.object import Object, create_object
 from mud.models.social import expand_placeholders
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
@@ -74,7 +74,7 @@ def _fallback_gore(
         description=description_template,
     )
     proto.item_type = int(item_type)
-    obj = Object(instance_id=None, prototype=proto)
+    obj = create_object(proto)
     obj.item_type = int(item_type)
     return obj
 
@@ -341,7 +341,7 @@ def _fallback_corpse(vnum: int, *, item_type: ItemType) -> Object:
 
     proto = ObjIndex(vnum=vnum, short_descr="the corpse of %s", description="The corpse of %s is lying here.")
     proto.item_type = int(item_type)
-    corpse = Object(instance_id=None, prototype=proto)
+    corpse = create_object(proto)
     corpse.item_type = int(item_type)
     return corpse
 
