@@ -20,9 +20,9 @@ from mud.commands.character import do_description
 from mud.commands.compare import do_compare
 from mud.models.character import Character, PCData
 from mud.models.constants import ItemType
-from mud.models.obj import ObjIndex, ObjectData
+from mud.models.obj import ObjIndex
+from mud.models.object import Object
 from mud.models.room import Room
-
 
 # ============================================================================
 # FIXTURES
@@ -64,7 +64,7 @@ def test_char(test_room):
         test_room.people.remove(char)
 
 
-def create_weapon(name: str, dice_num: int, dice_type: int, new_format: bool = True) -> ObjectData:
+def create_weapon(name: str, dice_num: int, dice_type: int, new_format: bool = True) -> Object:
     """Helper to create a weapon object."""
     proto = ObjIndex(
         vnum=1000,
@@ -76,29 +76,23 @@ def create_weapon(name: str, dice_num: int, dice_type: int, new_format: bool = T
     )
     proto.new_format = new_format
 
-    obj = ObjectData(item_type=int(ItemType.WEAPON))
-    obj.name = name.lower()
-    obj.short_descr = name
+    obj = Object(instance_id=None, prototype=proto)
     obj.value = [0, dice_num, dice_type, 0, 0]
-    obj.pIndexData = proto
     return obj
 
 
-def create_armor(name: str, ac_pierce: int, ac_bash: int, ac_slash: int) -> ObjectData:
+def create_armor(name: str, ac_pierce: int, ac_bash: int, ac_slash: int) -> Object:
     """Helper to create armor object."""
-    obj = ObjectData(item_type=int(ItemType.ARMOR))
-    obj.name = name.lower()
-    obj.short_descr = name
+    proto = ObjIndex(vnum=0, name=name.lower(), short_descr=name, item_type=int(ItemType.ARMOR))
+    obj = Object(instance_id=None, prototype=proto)
     obj.value = [ac_pierce, ac_bash, ac_slash, 0, 0]  # ARMOR: [ac_pierce, ac_bash, ac_slash, ac_magic, flags]
     return obj
 
 
-def create_misc_item(name: str, item_type: ItemType) -> ObjectData:
+def create_misc_item(name: str, item_type: ItemType) -> Object:
     """Helper to create misc items (food, light, etc)."""
-    obj = ObjectData(item_type=int(item_type))
-    obj.name = name.lower()
-    obj.short_descr = name
-    return obj
+    proto = ObjIndex(vnum=0, name=name.lower(), short_descr=name, item_type=int(item_type))
+    return Object(instance_id=None, prototype=proto)
 
 
 # ============================================================================
