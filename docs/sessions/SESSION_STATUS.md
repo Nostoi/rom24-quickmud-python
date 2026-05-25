@@ -1,20 +1,41 @@
-# Session Status — 2026-05-24 — `magic.c` closed (spell_pass_door)
+# Session Status — 2026-05-24 — INV-010 ROOM-PEOPLE-COHERENCE locked in
 
 ## Current State
 
-- **Active audit**: `magic.c + magic2.c` — **closed at 100%**
-- **Last completed**: `spell_pass_door()` parity confirmed and locked in with runtime-path integration coverage; tracker row updated 98% → 100% in `2.8.73`
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-24_SPELL_PASS_DOOR.md](SESSION_SUMMARY_2026-05-24_SPELL_PASS_DOOR.md)
+- **Active pass**: cross-file invariants — backstop for per-file audits.
+- **Last completed**: INV-010 ROOM-PEOPLE-COHERENCE added to
+  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` with a 6-test
+  enforcement suite. A dual `room_registry` divergence was discovered
+  and closed (`mud/models/room.py` now re-exports the canonical
+  `mud.registry.room_registry`). Version bumped 2.8.77 → 2.8.78.
+- **Pointer to latest summary**:
+  [SESSION_SUMMARY_2026-05-24_INV010_ROOM_PEOPLE_COHERENCE.md](SESSION_SUMMARY_2026-05-24_INV010_ROOM_PEOPLE_COHERENCE.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.8.73 |
-| Tests | `pytest tests/integration/ -v` → `2113 passed, 3 skipped` |
-| ROM C files audited | `magic.c + magic2.c` row closed at 100% — no remaining missing functions |
-| Active focus | Next tracker-selected partial/not-audited subsystem after `magic.c` |
+| Version | 2.8.78 |
+| Tests | 4673 passed, 1 pre-existing failure (`test_wait_and_daze_decrement_on_violence_pulse`, present on master) |
+| Cross-file invariants | 10 of ~20 budget; INV-001 … INV-010 all ✅ ENFORCED |
+| Active focus | Next cross-file invariant — either INV-011 (object_list / extract_obj cleanup) or INV-012 (`carry_weight` coherence), per tracker watch list |
 
 ## Next Intended Task
 
-Move to the next partial/not-audited subsystem on `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` now that `magic.c + magic2.c` is closed. Continue treating `src/*.c` ROM 2.4b6 sources as the source of truth.
+Pick the next watch-list candidate from
+`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` and lock it in with an
+enforcement test. The object-list / `extract_obj` analogue of INV-003
+is the higher-value one — large cross-module surface, no current
+coverage. Alternatively, if a per-file audit surfaces a contract that
+crosses modules, document and close it under the same flow.
+
+Also worth triaging (separately, out of cross-file scope): the
+pre-existing `test_wait_and_daze_decrement_on_violence_pulse` failure
+in `tests/test_game_loop_wait_daze.py`.
+
+## Push gate
+
+No `origin/master` push without explicit user approval. Local commits
+ready: one (`feat(parity)`) for INV-010 + dual-registry fix +
+CHANGELOG + version bump. Session handoff (`docs(session)`) covers
+this summary and the `SESSION_STATUS.md` refresh.

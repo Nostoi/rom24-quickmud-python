@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.78]
+
+### Added
+- **`INV-010` — ROOM-PEOPLE-COHERENCE locked in** (`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`, `tests/integration/test_inv010_room_people_coherence.py`): new cross-file invariant codifies the bidirectional contract between `char.room` and `room.people`. Six enforcement tests exercise the canonical helpers (`Room.add_character` / `Room.remove_character`), the `char_to_room` NULL → temple fallback, the imm_commands `_char_from_room` / `_char_to_room` duplicates, `MobInstance.move_to_room`, the raw `room.people.remove/append` pattern from `do_recall`, and a global registry sweep.
+
+### Fixed
+- **Dual `room_registry` divergence** (`mud/models/room.py:204`, ROM `src/db.c:get_room_index`): `mud.models.room` declared a second `room_registry` dict that the world loader never populated. `char_to_room`'s temple fallback (`mud/models/room.py:67`) and `mud/game_loop.py:525`'s limbo lookup read from this empty dict and silently no-oped — a NULL-room redirect dropped the character on the floor with `ch.room = None` instead of routing to `ROOM_VNUM_TEMPLE`. Fix: re-export the canonical `mud.registry.room_registry` from `mud/models/room.py` so both readers see the world-loaded table. Surfaced and closed under INV-010.
+
 ## [2.8.77]
 
 ### Fixed

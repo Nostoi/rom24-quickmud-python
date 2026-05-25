@@ -10,6 +10,8 @@ if TYPE_CHECKING:
     from mud.models.object import Object
     from mud.spawning.templates import MobInstance
 
+from mud.registry import room_registry
+
 from .constants import ROOM_VNUM_TEMPLE, Direction, ItemType, WearLocation
 from .room_json import ResetJson
 
@@ -201,4 +203,15 @@ class Room:
                 char.messages.append(message)
 
 
-room_registry: dict[int, Room] = {}
+# `room_registry` is re-exported from `mud.registry` at the top of this file.
+# Historically a second dict was declared here, which left the temple-fallback
+# in char_to_room() and the limbo lookup in game_loop reading from a perpetually
+# empty registry while world load populated only mud.registry.room_registry.
+# See INV-010 (cross-file invariants tracker).
+__all__ = [
+    "ExtraDescr",
+    "Exit",
+    "Room",
+    "char_to_room",
+    "room_registry",
+]
