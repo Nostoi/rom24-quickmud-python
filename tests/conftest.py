@@ -2,6 +2,21 @@ import pytest
 from helpers import ensure_can_move as _ensure_can_move_helper
 
 
+@pytest.fixture(autouse=True)
+def _reset_object_registry():
+    """INV-012: object_registry is global mutable state populated by
+    spawn_object. Without this fixture, tests that call spawn_object would
+    leak instances across the whole suite.
+    """
+    from mud.models.obj import object_registry
+
+    snapshot = list(object_registry)
+    object_registry.clear()
+    yield
+    object_registry.clear()
+    object_registry.extend(snapshot)
+
+
 @pytest.fixture
 def ensure_can_move():
     """Callable fixture to provision movement points on a character-like entity.

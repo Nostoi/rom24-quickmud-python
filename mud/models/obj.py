@@ -65,7 +65,7 @@ class ObjectData:
     item_type: int
     valid: bool = True  # ROM: bool valid (object validity flag)
     enchanted: bool = False  # ROM: bool enchanted (magical enhancement flag)
-    
+
     # Flags and attributes
     extra_flags: int = 0
     wear_flags: int = 0
@@ -76,14 +76,14 @@ class ObjectData:
     condition: int = 0
     timer: int = 0
     value: list[int] = field(default_factory=lambda: [0] * 5)
-    
+
     # Descriptive fields
     owner: str | None = None
     name: str | None = None
     short_descr: str | None = None
     description: str | None = None
     material: str | None = None
-    
+
     # Relationships and containment
     carried_by: Character | None = None  # ROM: CHAR_DATA *carried_by
     in_obj: ObjectData | None = None  # ROM: OBJ_DATA *in_obj (container)
@@ -91,11 +91,11 @@ class ObjectData:
     contains: list[ObjectData] = field(default_factory=list)  # ROM: OBJ_DATA *contains
     extra_descr: list[ExtraDescr] = field(default_factory=list)  # ROM: EXTRA_DESCR_DATA *extra_descr
     affected: list[Affect] = field(default_factory=list)  # ROM: AFFECT_DATA *affected
-    
+
     # Index and location
     pIndexData: ObjIndex | None = None  # ROM: OBJ_INDEX_DATA *pIndexData
     in_room: Room | None = None  # ROM: ROOM_INDEX_DATA *in_room
-    
+
     # Linked list pointers (Python uses lists but we keep for compatibility)
     next_content: ObjectData | None = None  # ROM: OBJ_DATA *next_content
     next: ObjectData | None = None  # ROM: OBJ_DATA *next
@@ -104,4 +104,8 @@ class ObjectData:
         return f"<ObjectData type={self.item_type} name={self.short_descr!r}>"
 
 
-object_registry: list[ObjectData] = []
+# INV-012: canonical instance list (parallels ROM `object_list` in src/db.c).
+# Populated by mud.spawning.obj_spawner.spawn_object and drained by
+# mud.game_loop._extract_obj. The forward-string reference avoids a circular
+# import (mud.models.object imports Affect, ObjIndex from this file).
+object_registry: list[Object] = []  # noqa: F821 — Object lives in mud.models.object
