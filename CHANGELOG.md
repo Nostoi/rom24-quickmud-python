@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.8]
+
+### Removed
+- **Dead `Character.affect_remove` method** (`mud/models/character.py:862-880` pre-removal): zero callers and a dormant variant of the INV-015 bug — it cleared the bitvector with a "still-has" sweep but never called `affect_modify(False)`, so any future caller would have leaked stat modifiers identically to the pre-2.9.7 tick path. Use the module-level `mud/handler.py:affect_remove(ch, paf)` instead — it mirrors `src/handler.c:1317` exactly. Sibling sweep on the INV-015 surface; no production behavior change (zero call sites at the time of removal, verified via `grep -rn "\.affect_remove("`).
+
 ## [2.9.7]
 
 ### Fixed

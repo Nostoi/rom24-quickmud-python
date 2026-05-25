@@ -859,27 +859,6 @@ class Character:
         # Add to affected list (ROM C linked list)
         self.affected.append(affect)
 
-    def affect_remove(self, affect: AffectData) -> None:
-        """
-        Remove a ROM C AFFECT_DATA from the character's affected list.
-
-        ROM Reference: src/handler.c affect_remove (lines 2625-2653)
-
-        Args:
-            affect: AffectData structure to remove
-        """
-        try:
-            self.affected.remove(affect)
-        except ValueError:
-            pass  # Affect not in list
-
-        # Remove bitvector if no other affects use it
-        if affect.bitvector:
-            still_has_bitvector = any(paf.bitvector & affect.bitvector for paf in self.affected)
-            if not still_has_bitvector:
-                self.affected_by = getattr(self, "affected_by", 0) & ~affect.bitvector
-
-
 # END affects_saves
 
 
