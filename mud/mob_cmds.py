@@ -648,11 +648,19 @@ def do_mpoload(ch: Character, argument: str) -> None:
     if mode.startswith("r"):
         room.add_object(obj)
         return
+    # mirroring ROM src/mob_cmds.c:603-607 → src/handler.c:1626 obj_to_char.
+    # Route through Character.add_object so the INV-013 carrier field
+    # and INV-011 carry counters stay in lockstep with inventory.
+    add = getattr(ch, "add_object", None)
+    if callable(add):
+        add(obj)
+        return
     inventory = getattr(ch, "inventory", None)
     if inventory is None:
         inventory = []
         ch.inventory = inventory
     inventory.append(obj)
+    obj.location = ch
 
 
 def _resolve_transfer_location(ch: Character, token: str) -> Room | None:

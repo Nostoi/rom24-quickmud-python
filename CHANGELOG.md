@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.4]
+
+### Fixed
+- **`Character.add_object` did not set `obj.carried_by`** (`mud/models/character.py:542`): ROM `src/handler.c:1626 obj_to_char` sets `obj->carried_by = ch` atomically with the inventory append. The Python helper updated `inventory` + carry counters but left the canonical INV-013 carrier field as `None`, so every direct `add_object` caller silently produced an inventory item with no back-pointer to its carrier. Fix: `add_object` now sets `obj.location = self` (INV-013 property dispatch sets `carried_by` and clears `in_room` / `in_obj`).
+- **`do_mpoload` bypassed `Character.add_object` entirely** (`mud/mob_cmds.py:651-655`, ROM `src/mob_cmds.c:603-607 → src/handler.c:1626 obj_to_char`): the inventory-mode branch did `inventory.append(obj)`, missing both the INV-013 `carried_by` field AND the INV-011 carry counters. Every MOBprog `mob oload <vnum>` left the script-mob's `carry_weight` and `carry_number` unchanged, so encumbrance skewed every time a mob scripted an item load. Fix: route through `ch.add_object(obj)`.
+- Surfaced via the INV-012 follow-up scan of `do_mpoload`; existing `test_mob_cmds_oload.py` only checked `obj.level` and inventory membership, never asserting `carried_by` or carry counters. New `tests/integration/test_inv013_add_object_carrier.py` pins both behaviors (3 tests).
+
 ## [2.9.3]
 
 ### Added
