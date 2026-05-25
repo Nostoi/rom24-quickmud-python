@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.6]
+
+### Added
+- **End-to-end decay-loop coverage for INV-012 / INV-013 / INV-014** (`tests/integration/test_decay_loop_inv012.py`): three new integration tests pin the registry/carrier/carry-counter contracts as they cross the `obj_update` → `_extract_obj` boundary. (1) A carried potion whose timer expires must be removed from `object_registry` (INV-014), removed from the carrier's inventory, and the `carry_weight` / `carry_number` counters must drop (INV-011). (2) ROM `src/handler.c:2063-2067 extract_obj` recurses through container contents — verified with an NPC corpse containing a pouch containing a ruby; all three leave the registry on the corpse's decay tick. (3) Downstream INV-014 consequence — a decayed obj is no longer findable via `locate object` (it walked the registry). Fills coverage gaps the pre-existing `test_obj_update_decays_corpse` and `test_obj_update_spills_floating_container` did not exercise.
+
 ## [2.9.5]
 
 ### Fixed
