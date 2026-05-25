@@ -438,7 +438,9 @@ def make_corpse(victim: Character) -> Object | None:
         money_obj = create_money(gold, silver)
         if money_obj:
             corpse.contained_items.append(money_obj)
-            money_obj.location = None  # Inside corpse, not in room
+            # ROM src/handler.c:1968 obj_to_obj — money lives inside corpse,
+            # so in_obj=corpse, in_room=None, carried_by=None.
+            money_obj.location = corpse
 
     victim.gold = 0
     victim.silver = 0

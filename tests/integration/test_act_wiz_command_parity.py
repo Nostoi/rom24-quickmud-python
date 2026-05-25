@@ -395,7 +395,7 @@ def test_ostat_shows_object_info() -> None:
     admin = _imm("Admin", room.vnum, trust=60)
 
     proto = ObjIndex(vnum=92200, name="stat sword test", short_descr="a stat test sword", description="A test sword lies here.", item_type=5, level=10, wear_flags=0, extra_flags=0, value=[0, 2, 8, 0, 0], weight=50, cost=100, condition=100)
-    obj = Object(instance_id=77001, prototype=proto, location=-1, contained_items=[], level=10, value=[0, 2, 8, 0, 0], timer=0, wear_loc=-1, cost=100, extra_flags=0, wear_flags=0, condition=100, enchanted=False, item_type=5, owner=None, affected=[], _short_descr_override=None, _description_override=None)
+    obj = Object(instance_id=77001, prototype=proto, contained_items=[], level=10, value=[0, 2, 8, 0, 0], timer=0, wear_loc=-1, cost=100, extra_flags=0, wear_flags=0, condition=100, enchanted=False, item_type=5, owner=None, affected=[], _short_descr_override=None, _description_override=None)
     obj.in_room = room
     room.contents.append(obj)
     object_registry.append(obj)
@@ -579,7 +579,7 @@ def test_ostat_number_and_weight_uses_helpers() -> None:
     admin = _imm("Admin", room.vnum, trust=60)
 
     proto = ObjIndex(vnum=92440, name="weight test sword", short_descr="a weighty sword", description="A heavy sword lies here.", item_type=5, level=10, wear_flags=0, extra_flags=0, value=[0, 2, 8, 0, 0], weight=50, cost=100, condition=100)
-    obj = Object(instance_id=77002, prototype=proto, location=-1, contained_items=[], level=10, value=[0, 2, 8, 0, 0], timer=0, wear_loc=-1, cost=100, extra_flags=0, wear_flags=0, condition=100, enchanted=False, item_type=5, owner=None, affected=[], _short_descr_override=None, _description_override=None)
+    obj = Object(instance_id=77002, prototype=proto, contained_items=[], level=10, value=[0, 2, 8, 0, 0], timer=0, wear_loc=-1, cost=100, extra_flags=0, wear_flags=0, condition=100, enchanted=False, item_type=5, owner=None, affected=[], _short_descr_override=None, _description_override=None)
     obj.in_room = room
     room.contents.append(obj)
     object_registry.append(obj)
