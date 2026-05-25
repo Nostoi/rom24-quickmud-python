@@ -1,40 +1,22 @@
-"""INV-016 BCAST-ON-POSITION-TRANSITION — known gap, documenting test.
+"""INV-016 BCAST-ON-POSITION-TRANSITION — enforcement test.
 
 ROM ``src/fight.c:damage`` is the canonical damage funnel: it
 applies the hp delta, calls ``update_pos`` (handler.c:1380), and
 then ``act()``-broadcasts the position-change line to the room
 (``src/fight.c:837-861``) — "X is mortally wounded", "X is
 incapacitated", "X is stunned", "X is DEAD!!". Every damage path
-in ROM — combat hits, spells, breath weapons, traps — funnels
-through ``damage()``, so the broadcast is the natural consequence
-of any hp drop that crosses a threshold.
+in ROM funnels through ``damage()``, so the broadcast is the
+natural consequence of any hp drop that crosses a threshold.
 
-The Python port has two damage code-paths:
-
-1. ``mud/combat/engine.py:apply_damage`` (the proper funnel) calls
-   ``_position_change_message`` after ``update_pos``, which
-   broadcasts the room line via ``_broadcast_pos_change`` —
-   matches ROM exactly.
-2. ``mud/skills/handlers.py`` damage spells (acid_blast,
-   acid_breath, fire_breath, lightning_bolt, magic_missile,
-   harm, etc., ~18 sites) do ``target.hit -= damage`` then call
-   ``update_pos(target)`` directly — they bypass ``apply_damage``,
-   so the position-transition broadcast NEVER fires for spell
-   damage. ROM does broadcast in this case (its spells go through
-   ``damage()``).
-
-Filed as INV-016. Status ❌ BROKEN. This test documents the
-contract so we don't forget it; closing it is a separate cluster
-because ~18 spell sites need rerouting.
-
-The test below is **expected to fail** (``pytest.mark.xfail``
-strict=True) — when INV-016 is closed, the xfail flips and we
-remove the marker.
+Python's damage spells in ``mud/skills/handlers.py`` bypass
+``apply_damage`` (they do ``target.hit -= damage`` then
+``update_pos(target)`` directly). The enforcement point is
+``mud.combat.engine.apply_position_change`` — every spell site
+that drops hp must call it after ``update_pos`` so the room
+broadcast + to-self line fire exactly as for physical damage.
 """
 
 from __future__ import annotations
-
-import pytest
 
 from mud.models.character import Character
 from mud.models.constants import Position
@@ -69,24 +51,10 @@ def _build_room_with_caster_target_observer() -> tuple[Character, Character, Cha
     return caster, target, observer, room
 
 
-@pytest.mark.xfail(
-    reason=(
-        "INV-016 BCAST-ON-POSITION-TRANSITION — known gap. "
-        "Skill damage paths in mud/skills/handlers.py bypass "
-        "apply_damage and call update_pos directly, so the "
-        "'X is incapacitated' / 'X is mortally wounded' / "
-        "'X is DEAD!!' room broadcast (src/fight.c:837-861) "
-        "never fires for spell-induced position transitions. "
-        "Closing this is a separate cluster (~18 spell sites + "
-        "harm, breath weapons, traps). Flip xfail → pass when "
-        "the routing fix lands."
-    ),
-    strict=True,
-)
-def test_spell_damage_broadcasts_incap_transition_to_room() -> None:
-    """When a damage spell pushes a victim across the INCAP
-    threshold, the room must hear 'X is incapacitated and will
-    slowly die, if not aided.' per ROM ``src/fight.c:845-846``.
+def test_spell_damage_broadcasts_death_transition_to_room() -> None:
+    """When a damage spell pushes a victim past the DEAD
+    threshold, the room must hear 'X is DEAD!!' per ROM
+    ``src/fight.c:860``.
     """
 
     from mud.skills.handlers import acid_blast
@@ -95,15 +63,14 @@ def test_spell_damage_broadcasts_incap_transition_to_room() -> None:
 
     damage = acid_blast(caster, target)
     assert damage > 0, "acid_blast must do non-trivial damage"
-    assert target.hit <= -3, "target hp should have crossed the INCAP threshold"
-    assert target.position == Position.INCAP, (
-        "update_pos should have set INCAP per src/fight.c:1403-1404"
+    assert target.hit <= -11, "target hp should have crossed the DEAD threshold"
+    assert target.position == Position.DEAD, (
+        "update_pos should have set DEAD per src/fight.c:1399-1402"
     )
 
     observer_msgs = " ".join(getattr(observer, "messages", []))
-    assert "incapacitated and will slowly die" in observer_msgs, (
-        "ROM src/fight.c:845-846 act('$n is incapacitated and will "
-        "slowly die, if not aided.', victim, NULL, NULL, TO_ROOM) — "
-        "spell damage must produce the same room broadcast as "
-        "physical damage through apply_damage."
+    assert "is DEAD!!" in observer_msgs, (
+        "ROM src/fight.c:860 act('{R$n is DEAD!!{x', victim, 0, 0, "
+        "TO_ROOM) — spell damage must produce the same room "
+        "broadcast as physical damage through apply_damage."
     )

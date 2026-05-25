@@ -613,10 +613,7 @@ def apply_damage(
     update_pos(victim)
 
     # Handle position change messages
-    if victim.position != old_pos:
-        change_message = _position_change_message(victim, old_pos)
-        if change_message:
-            _push_message(victim, change_message)
+    apply_position_change(victim, old_pos)
 
     # Stop fighting if unconscious
     if not is_awake(victim):
@@ -740,6 +737,27 @@ def _broadcast_pos_change(victim: Character, template: str, **extra: object) -> 
             asyncio.create_task(_send(listener, message))
         if hasattr(listener, "messages"):
             listener.messages.append(message)
+
+
+def apply_position_change(victim: Character, old_pos: Position) -> None:
+    """Emit ROM position-transition messages after ``update_pos``.
+
+    Mirrors ``src/fight.c:837-861`` — when ``damage()`` updates a
+    victim's position, it broadcasts an ``act(... TO_ROOM)`` line
+    and sends the to-self line via ``send_to_char``. ROM funnels
+    every damage path through ``damage()``, so the broadcast is the
+    natural consequence of any hp drop that crosses a threshold.
+
+    Python's spell handlers in ``mud/skills/handlers.py`` bypass
+    :func:`apply_damage` and call :func:`update_pos` directly — they
+    must call this helper after ``update_pos`` to deliver the same
+    room + self lines (INV-016 BCAST-ON-POSITION-TRANSITION).
+    """
+    if victim.position == old_pos:
+        return
+    message = _position_change_message(victim, old_pos)
+    if message:
+        _push_message(victim, message)
 
 
 def _position_change_message(victim: Character, old_pos: Position) -> str:

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.10]
+
+### Fixed
+- **INV-016 BCAST-ON-POSITION-TRANSITION — spell-induced position transitions silent to the room** (`mud/combat/engine.py:apply_position_change`, every damage-spell site in `mud/skills/handlers.py`): ROM `src/fight.c:damage` funnels every damage path through `update_pos` then `act()`-broadcasts the "X is incapacitated" / "X is mortally wounded" / "X is DEAD!!" line per `src/fight.c:837-861`. `mud/combat/engine.py:apply_damage` does this correctly, but 16 damage-spell handlers in `mud/skills/handlers.py` did `target.hit -= damage; update_pos(target)` directly — bypassing the broadcast. Extracted `mud/combat/engine.py:apply_position_change(victim, old_pos)` as the shared enforcement point (delegates the room broadcast via `_position_change_message` and the to-self line via `_push_message` when `victim.position != old_pos`); `_apply_damage` now calls it. Each damage spell that bypasses `apply_damage` (acid_blast, acid_breath, burning_hands, call_lightning, chill_touch, colour_spray, demonfire, dispel_evil, dispel_good, fire_breath, frost_breath, gas_breath, harm, heat_metal, lightning_breath, shocking_grasp) now captures `old_pos = target.position` before the `hit -=` and calls `apply_position_change(target, old_pos)` after `update_pos`. Heal sites (`cure_*`, `heal`) intentionally skip the helper — ROM's broadcast block lives in `damage()`, not on upward STUNNED → STANDING transitions. `cause_*` already routes through `apply_damage` and inherits the broadcast there. INV-016 row in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` flipped ❌ BROKEN → ✅ ENFORCED; xfail in `tests/integration/test_inv016_position_transition_broadcast.py` removed, test now passes strict.
+
 ## [2.9.9]
 
 ### Added

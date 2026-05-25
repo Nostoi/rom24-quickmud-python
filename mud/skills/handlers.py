@@ -13,6 +13,7 @@ from mud.characters import is_clan_member, is_same_clan, is_same_group
 from mud.characters.follow import add_follower, stop_follower
 from mud.combat.engine import (
     apply_damage,
+    apply_position_change,
     attack_round,
     get_weapon_skill,
     get_weapon_sn,
@@ -1265,8 +1266,10 @@ def acid_blast(caster: Character, target: Character | None = None) -> int:
     if saves_spell(level, target, DamageType.ACID):
         damage = c_div(damage, 2)
 
+    old_pos = target.position
     target.hit -= damage
     update_pos(target)
+    apply_position_change(target, old_pos)
     return damage
 
 
@@ -1293,8 +1296,10 @@ def acid_breath(caster: Character, target: Character | None = None) -> int:
         acid_effect(target, level, dam, SpellTarget.CHAR)
         damage = dam
 
+    old_pos = target.position
     target.hit -= damage
     update_pos(target)
+    apply_position_change(target, old_pos)
     return damage
 
 
@@ -1525,8 +1530,10 @@ def burning_hands(caster: Character, target: Character | None = None) -> int:
     if saves_spell(level, target, DamageType.FIRE):
         damage = c_div(damage, 2)
 
+    old_pos = target.position
     target.hit -= damage
     update_pos(target)
+    apply_position_change(target, old_pos)
     return damage
 
 
@@ -1561,8 +1568,10 @@ def call_lightning(caster: Character, target: Character | None = None) -> int:
     if saves_spell(level, target, DamageType.LIGHTNING):
         damage = c_div(damage, 2)
 
+    old_pos = target.position
     target.hit -= damage
     update_pos(target)
+    apply_position_change(target, old_pos)
     return damage
 
 
@@ -2166,8 +2175,10 @@ def chill_touch(caster: Character, target: Character | None = None) -> int:
         )
         target.apply_spell_effect(effect)
 
+    old_pos = target.position
     target.hit -= damage
     update_pos(target)
+    apply_position_change(target, old_pos)
     return damage
 
 
@@ -2266,8 +2277,10 @@ def colour_spray(caster: Character, target: Character | None = None) -> int:
         finally:
             caster.level = original_level
 
+    old_pos = target.position
     target.hit -= damage
     update_pos(target)
+    apply_position_change(target, old_pos)
     return damage
 
 
@@ -2727,8 +2740,10 @@ def demonfire(caster: Character, target: Character | None = None) -> int:
     if saves_spell(level, victim, DamageType.NEGATIVE):
         damage = c_div(damage, 2)
 
+    old_pos = victim.position
     victim.hit -= damage
     update_pos(victim)
+    apply_position_change(victim, old_pos)
 
     curse_level = max(0, c_div(3 * level, 4))
     if (
@@ -3193,8 +3208,10 @@ def dispel_evil(caster: Character, target: Character | None = None) -> int:
     if saves_spell(level, victim, DamageType.HOLY):
         damage = c_div(damage, 2)
 
+    old_pos = victim.position
     victim.hit -= damage
     update_pos(victim)
+    apply_position_change(victim, old_pos)
     return damage
 
 
@@ -3236,8 +3253,10 @@ def dispel_good(caster: Character, target: Character | None = None) -> int:
     if saves_spell(level, victim, DamageType.NEGATIVE):
         damage = c_div(damage, 2)
 
+    old_pos = victim.position
     victim.hit -= damage
     update_pos(victim)
+    apply_position_change(victim, old_pos)
     return damage
 
 
@@ -4043,8 +4062,10 @@ def fire_breath(caster: Character, target: Character | None = None) -> int:
                 fire_effect(person, c_div(level, 2), c_div(dam, 4), SpellTarget.CHAR)
                 actual = c_div(dam, 2)
 
+        old_pos = person.position
         person.hit -= actual
         update_pos(person)
+        apply_position_change(person, old_pos)
 
     return primary_damage
 
@@ -4431,8 +4452,10 @@ def frost_breath(caster: Character, target: Character | None = None) -> int:
                 cold_effect(person, c_div(level, 2), c_div(dam, 4), SpellTarget.CHAR)
                 actual = c_div(dam, 2)
 
+        old_pos = person.position
         person.hit -= actual
         update_pos(person)
+        apply_position_change(person, old_pos)
 
     return primary_damage
 
@@ -4481,8 +4504,10 @@ def gas_breath(caster: Character, target: Character | None = None) -> int:
             poison_effect(person, level, dam, SpellTarget.CHAR)
             actual = dam
 
+        old_pos = person.position
         person.hit -= actual
         update_pos(person)
+        apply_position_change(person, old_pos)
 
         if primary_damage == 0 and ((target is None) or person is target):
             primary_damage = actual
@@ -4812,8 +4837,10 @@ def harm(caster: Character, target: Character | None = None) -> int:
     dam = min(100, dam)
 
     # ROM L3057: damage(ch, victim, dam, sn, DAM_HARM, TRUE)
+    old_pos = target.position
     target.hit -= dam
     update_pos(target)
+    apply_position_change(target, old_pos)
     return dam
 
 
@@ -5021,8 +5048,10 @@ def heat_metal(
             dam = c_div(2 * dam, 3)
 
         # Apply damage
+        old_pos = target.position
         target.hit -= dam
         update_pos(target)
+        apply_position_change(target, old_pos)
         return dam
 
 
@@ -5559,8 +5588,10 @@ def lightning_breath(caster: Character, target: Character | None = None) -> int:
         shock_effect(target, level, dam, SpellTarget.CHAR)
         damage = dam
 
+    old_pos = target.position
     target.hit -= damage
     update_pos(target)
+    apply_position_change(target, old_pos)
     return damage
 
 
@@ -7088,8 +7119,10 @@ def shocking_grasp(caster: Character, target: Character | None = None) -> int:
 
     # ROM L4352: damage(ch, victim, dam, sn, DAM_LIGHTNING, TRUE)
     # Simplified: directly apply damage
+    old_pos = target.position
     target.hit -= damage
     update_pos(target)
+    apply_position_change(target, old_pos)
     return damage
 
 
