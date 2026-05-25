@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.9]
+
+### Added
+- **INV-016 BCAST-ON-POSITION-TRANSITION** filed in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` with status ❌ BROKEN. ROM `src/fight.c:damage` broadcasts the per-position room line ("X is incapacitated", "X is mortally wounded", "X is DEAD!!" per `src/fight.c:837-861`) after every hp drop that crosses a threshold. The Python port has two damage code-paths: `mud/combat/engine.py:apply_damage` does broadcast correctly (combat hits, traps), but ~18 damage-spell handlers in `mud/skills/handlers.py` (acid_blast, fire_breath, harm, energy_drain, cause_*, etc.) do `target.hit -= damage; update_pos(target)` directly — bypassing `apply_damage`, so spell-induced INCAP/MORTAL/DEAD transitions are silent to the room. Sibling of INV-001 SINGLE-DELIVERY but inverted (*zero-delivery*). Documenting test at `tests/integration/test_inv016_position_transition_broadcast.py` is marked `xfail(strict=True)` — flip to passing when the routing fix lands. Closing this is a separate cluster (~18 spell sites + breath weapons + harm).
+
 ## [2.9.8]
 
 ### Removed
