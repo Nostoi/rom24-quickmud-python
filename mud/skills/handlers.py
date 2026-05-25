@@ -68,7 +68,7 @@ from mud.models.constants import (
     WeaponType,
     WearLocation,
 )
-from mud.models.obj import Affect, ObjectData
+from mud.models.obj import Affect
 from mud.models.object import Object
 from mud.net.protocol import broadcast_room
 from mud.registry import room_registry
@@ -184,7 +184,7 @@ def _skill_beats(name: str) -> int:
     return beats if beats > 0 else 12
 
 
-def _resolve_weight(obj: Object | ObjectData | object) -> int:
+def _resolve_weight(obj: object) -> int:
     raw_weight = getattr(obj, "weight", 0)
     if not raw_weight:
         proto = getattr(obj, "prototype", None)
@@ -192,7 +192,7 @@ def _resolve_weight(obj: Object | ObjectData | object) -> int:
     return c_div(_coerce_int(raw_weight), 10)
 
 
-def _resolve_cost(obj: Object | ObjectData | object) -> int:
+def _resolve_cost(obj: object) -> int:
     cost = getattr(obj, "cost", None)
     if cost is None or (isinstance(cost, int) and cost == 0):
         proto = getattr(obj, "prototype", None)
@@ -200,7 +200,7 @@ def _resolve_cost(obj: Object | ObjectData | object) -> int:
     return _coerce_int(cost)
 
 
-def _resolve_level(obj: Object | ObjectData | object) -> int:
+def _resolve_level(obj: object) -> int:
     level = getattr(obj, "level", None)
     if level is None or (isinstance(level, int) and level == 0):
         proto = getattr(obj, "prototype", None)
@@ -208,7 +208,7 @@ def _resolve_level(obj: Object | ObjectData | object) -> int:
     return _coerce_int(level)
 
 
-def _iter_prototype_affects(obj: Object | ObjectData | object):
+def _iter_prototype_affects(obj: object):
     prototype = getattr(obj, "prototype", None)
     if prototype is None:
         return
@@ -242,14 +242,14 @@ def _coerce_affect(entry: object) -> SimpleNamespace | Affect:
     )
 
 
-def _iter_all_affects(obj: Object | ObjectData | object):
+def _iter_all_affects(obj: object):
     for entry in _iter_prototype_affects(obj) or []:
         yield _coerce_affect(entry)
     for entry in getattr(obj, "affected", []) or []:
         yield _coerce_affect(entry)
 
 
-def _emit_affect_descriptions(caster: Character, obj: Object | ObjectData | object) -> None:
+def _emit_affect_descriptions(caster: Character, obj: object) -> None:
     for affect in _iter_all_affects(obj):
         location_name = _affect_loc_name(int(getattr(affect, "location", _APPLY_NONE)))
         modifier = _coerce_int(getattr(affect, "modifier", 0))
@@ -624,7 +624,7 @@ def _collect_affects(source: Any, *, clone: bool) -> list[Affect]:
     return affects
 
 
-def _copy_base_affects_if_needed(obj: Object | ObjectData, proto: Any) -> None:
+def _copy_base_affects_if_needed(obj: Object, proto: Any) -> None:
     """Copy prototype affects onto an object the first time it is enchanted."""
 
     if getattr(obj, "enchanted", False):
@@ -641,7 +641,7 @@ def _copy_base_affects_if_needed(obj: Object | ObjectData, proto: Any) -> None:
     obj.enchanted = True
 
 
-def _object_effective_extra_flags(obj: Object | ObjectData, proto: Any) -> int:
+def _object_effective_extra_flags(obj: Object, proto: Any) -> int:
     """Return combined extra flags from instance and prototype."""
 
     base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
@@ -651,14 +651,13 @@ def _object_effective_extra_flags(obj: Object | ObjectData, proto: Any) -> int:
     return base_flags | proto_flags
 
 
-def _extract_runtime_object(obj: Object | ObjectData) -> None:
-    """Remove an object from the world, handling both modern and legacy models."""
+def _extract_runtime_object(obj: Object) -> None:
+    """Remove an object from the world.
 
-    if isinstance(obj, ObjectData):
-        from mud.game_loop import _extract_obj as _legacy_extract_obj  # late import to avoid cycles
-
-        _legacy_extract_obj(obj)
-        return
+    INV-012: previously dispatched ObjectData to the legacy game_loop._extract_obj.
+    With ObjectData deleted in INV-012/5, only Object instances reach this path; the
+    local cleanup below is the single canonical implementation.
+    """
 
     def _prune_from_container(container: Any) -> None:
         contents = getattr(container, "contained_items", None)
@@ -741,7 +740,7 @@ def _resolve_item_type(value: object) -> ItemType | None:
     return None
 
 
-def _object_short_descr(obj: Object | ObjectData) -> str:
+def _object_short_descr(obj: Object) -> str:
     """Return a user-facing short description for messaging."""
 
     short_descr = getattr(obj, "short_descr", None)
@@ -785,7 +784,7 @@ def _character_has_affect(character: Character | None, flag: AffectFlag) -> bool
         return False
 
 
-def _effective_extra_flags(obj: Object | ObjectData | None) -> int:
+def _effective_extra_flags(obj: Object | None) -> int:
     """Return runtime extra flags including prototype fallbacks."""
 
     if obj is None:
@@ -799,7 +798,7 @@ def _effective_extra_flags(obj: Object | ObjectData | None) -> int:
     return flags
 
 
-def _object_level(obj: Object | ObjectData | None) -> int:
+def _object_level(obj: Object | None) -> int:
     """Return the object's effective level mirroring ROM lookups."""
 
     if obj is None:
@@ -840,7 +839,7 @@ def _is_name_match(search: str, candidate: str | None) -> bool:
     return True
 
 
-def _object_name_matches(obj: Object | ObjectData, search: str) -> bool:
+def _object_name_matches(obj: Object, search: str) -> bool:
     """Return True when any runtime or prototype keyword matches ``search``."""
 
     candidates: list[str] = []
@@ -862,13 +861,13 @@ def _iterate_world_objects():
 
     seen: set[int] = set()
 
-    def _walk(obj: Object | ObjectData, holder: object):
+    def _walk(obj: Object, holder: object):
         ident = id(obj)
         if ident in seen:
             return
         seen.add(ident)
         yield obj, holder
-        children: list[Object | ObjectData] = []
+        children: list[Object] = []
         contained = getattr(obj, "contained_items", None)
         if isinstance(contained, list):
             children.extend(contained)
@@ -897,7 +896,7 @@ def _iterate_world_objects():
                     yield from _walk(obj, character)
 
 
-def _can_see_object(observer: Character, obj: Object | ObjectData) -> bool:
+def _can_see_object(observer: Character, obj: Object) -> bool:
     """Delegate to shared ROM-style object visibility helper."""
 
     return can_see_object(observer, obj)
@@ -2238,7 +2237,7 @@ def colour_spray(caster: Character, target: Character | None = None) -> int:
 
 def continual_light(
     caster: Character,
-    target: Object | ObjectData | None = None,
+    target: Object | None = None,
 ) -> Object | bool | None:
     """ROM ``spell_continual_light`` glow toggle and light ball conjuration."""
 
@@ -2246,8 +2245,8 @@ def continual_light(
         raise ValueError("continual_light requires a caster")
 
     if target is not None:
-        if not isinstance(target, (Object, ObjectData)):
-            raise TypeError("continual_light target must be an Object or ObjectData")
+        if not isinstance(target, Object):
+            raise TypeError("continual_light target must be an Object")
 
         extra_flags = _coerce_int(getattr(target, "extra_flags", 0))
         if extra_flags & int(ExtraFlag.GLOW):
@@ -3267,16 +3266,16 @@ def earthquake(caster: Character, target=None) -> bool:  # noqa: ARG001 - parity
     return True
 
 
-def enchant_armor(caster: Character, target: Object | ObjectData | None = None) -> bool:
+def enchant_armor(caster: Character, target: Object | None = None) -> bool:
     """ROM ``spell_enchant_armor``: enhance armor AC with ROM failure bands."""
 
     if caster is None or target is None:
         raise ValueError("enchant_armor requires a caster and armor target")
 
-    if not isinstance(target, (Object, ObjectData)):
-        raise TypeError("enchant_armor target must be an Object or ObjectData")
+    if not isinstance(target, Object):
+        raise TypeError("enchant_armor target must be an Object")
 
-    obj: Object | ObjectData = target
+    obj: Object = target
     proto = getattr(obj, "prototype", None) or getattr(obj, "pIndexData", None)
 
     item_type = _resolve_item_type(getattr(obj, "item_type", None))
@@ -3408,16 +3407,16 @@ def enchant_armor(caster: Character, target: Object | ObjectData | None = None) 
     return True
 
 
-def enchant_weapon(caster: Character, target: Object | ObjectData | None = None) -> bool:
+def enchant_weapon(caster: Character, target: Object | None = None) -> bool:
     """ROM ``spell_enchant_weapon``: enhance weapon hit/damage modifiers."""
 
     if caster is None or target is None:
         raise ValueError("enchant_weapon requires a caster and weapon target")
 
-    if not isinstance(target, (Object, ObjectData)):
-        raise TypeError("enchant_weapon target must be an Object or ObjectData")
+    if not isinstance(target, Object):
+        raise TypeError("enchant_weapon target must be an Object")
 
-    obj: Object | ObjectData = target
+    obj: Object = target
     proto = getattr(obj, "prototype", None) or getattr(obj, "pIndexData", None)
 
     item_type = _resolve_item_type(getattr(obj, "item_type", None))
@@ -4087,18 +4086,15 @@ def fireball(caster: Character, target: Character | None = None) -> int:
     return max(0, before - int(getattr(target, "hit", 0) or 0))
 
 
-def fireproof(caster: Character, target: Object | ObjectData | None = None) -> bool:
+def fireproof(caster: Character, target: Object | None = None) -> bool:
     """ROM ``spell_fireproof`` object protection."""
 
     if caster is None or target is None:
         raise ValueError("fireproof requires a caster and object")
 
-    if isinstance(target, ObjectData):
-        obj: Object | ObjectData = target
-    elif isinstance(target, Object):
-        obj = target
-    else:
-        raise TypeError("fireproof target must be an Object or ObjectData")
+    if not isinstance(target, Object):
+        raise TypeError("fireproof target must be an Object")
+    obj: Object = target
 
     extra_flags = _coerce_int(getattr(obj, "extra_flags", 0))
     if extra_flags & int(ExtraFlag.BURN_PROOF):
@@ -5148,7 +5144,7 @@ def holy_word(caster: Character, target=None):  # noqa: ARG001 - parity signatur
     return any_effect
 
 
-def identify(caster: Character, target: Object | ObjectData | None = None) -> bool:
+def identify(caster: Character, target: Object | None = None) -> bool:
     """Appraise an object mirroring ROM ``spell_identify`` output."""
 
     if caster is None:
@@ -5291,9 +5287,7 @@ def invis(caster: Character, target: Character | Object | None = None) -> bool:
 
     target = target or caster
 
-    if isinstance(target, ObjectData):
-        obj = target
-    elif isinstance(target, Object):
+    if isinstance(target, Object):
         obj = target
     else:
         obj = None
@@ -5583,14 +5577,14 @@ def locate_object(caster: Character, target: str | None = None) -> bool:
     return True
 
 
-def lore(caster: Character, target: Object | ObjectData | None = None) -> bool:
+def lore(caster: Character, target: Object | None = None) -> bool:
     """ROM ``do_lore`` skill: chance-based appraisal using identify output."""
 
     if caster is None:
         raise ValueError("lore requires a caster")
     if target is None:
         raise ValueError("lore requires an object target")
-    if not isinstance(target, (Object, ObjectData)):
+    if not isinstance(target, Object):
         raise TypeError("lore target must be an object")
 
     beats = _skill_beats("lore")
@@ -6162,14 +6156,14 @@ def plague(caster: Character, target: Character | None = None) -> bool:
 
 def poison(
     caster: Character,
-    target: Character | Object | ObjectData | None = None,
+    target: Character | Object | None = None,
 ) -> bool:
     """ROM ``spell_poison`` for objects and characters."""
 
     if caster is None or target is None:
         raise ValueError("poison requires a caster and target")
 
-    if isinstance(target, (Object, ObjectData)):
+    if isinstance(target, Object):
         obj = target
         item_type = _resolve_item_type(getattr(obj, "item_type", None))
         if item_type is None:
@@ -6627,13 +6621,13 @@ def recall(caster: Character, target: Character | None = None) -> str:
 
 def recharge(
     caster: Character,
-    target: Object | ObjectData | None = None,
+    target: Object | None = None,
 ) -> bool:
     """ROM ``spell_recharge``: restore wand/staff charges with chance rolls."""
 
     if caster is None or target is None:
         raise ValueError("recharge requires a caster and target object")
-    if not isinstance(target, (Object, ObjectData)):
+    if not isinstance(target, Object):
         raise TypeError("recharge target must be an object instance")
 
     obj = target
@@ -6743,7 +6737,7 @@ def refresh(caster: Character, target: Character | None = None) -> bool:
 
 def remove_curse(
     caster: Character,
-    target: Character | Object | ObjectData | None = None,
+    target: Character | Object | None = None,
 ) -> bool:
     """ROM ``spell_remove_curse`` for objects and characters."""
 
@@ -6759,7 +6753,7 @@ def remove_curse(
     nodrop = int(ExtraFlag.NODROP)
     noremove = int(ExtraFlag.NOREMOVE)
 
-    def _clear_object_flags(obj: Object | ObjectData) -> bool:
+    def _clear_object_flags(obj: Object) -> bool:
         flags = _effective_extra_flags(obj)
         if not (flags & (nodrop | noremove)):
             _send_to_char(caster, f"There doesn't seem to be a curse on {_object_short_descr(obj)}.")
@@ -6785,7 +6779,7 @@ def remove_curse(
             broadcast_room(room, message, exclude=caster)
         return True
 
-    if isinstance(target, (Object, ObjectData)):
+    if isinstance(target, Object):
         return _clear_object_flags(target)
 
     if not isinstance(target, Character):
@@ -6802,13 +6796,13 @@ def remove_curse(
         removed_any = True
 
     seen: set[int] = set()
-    objects: list[Object | ObjectData] = []
+    objects: list[Object] = []
     inventory = getattr(victim, "inventory", None)
     if isinstance(inventory, list):
-        objects.extend(obj for obj in inventory if isinstance(obj, (Object, ObjectData)))
+        objects.extend(obj for obj in inventory if isinstance(obj, Object))
     equipment = getattr(victim, "equipment", None)
     if isinstance(equipment, dict):
-        objects.extend(obj for obj in equipment.values() if isinstance(obj, (Object, ObjectData)))
+        objects.extend(obj for obj in equipment.values() if isinstance(obj, Object))
 
     for obj in objects:
         obj_id = id(obj)
