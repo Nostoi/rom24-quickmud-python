@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.5]
+
+### Fixed
+- **`Character.equip_object` did not set `obj.carried_by`** (`mud/models/character.py:547`): ROM `src/handler.c equip_char` leaves the carrier field set — equipped objs stay owned by the carrier, only `wear_loc` changes. The Python helper updated the equipment dict but never touched `carried_by`, so an obj equipped directly (e.g. via `caster.equip_object(disc, "float")` in `floating_disc`) ended up in the slot with `carried_by=None`, violating INV-013.
+- **`Character.remove_object` did not clear `obj.carried_by`** (`mud/models/character.py:556`): ROM `src/handler.c:1642 obj_from_char` clears the carrier back-pointer atomically with the extraction. The Python helper removed from inventory/equipment and updated counters but left `carried_by` pointing at the (now-former) carrier — stale back-pointer that would surface as a wrong-carrier report in `locate object`, save serialization, or any INV-013-aware code. Defensive `getattr` guard handles the small number of legacy tests that pass `SimpleNamespace` stand-ins instead of real `Object` instances.
+- INV-013 row "Touched by" trail extended to record the equip / remove enforcement points. 3 new enforcement tests in `tests/integration/test_inv013_add_object_carrier.py` (now 6 total covering the full add / equip / remove cycle).
+
 ## [2.9.4]
 
 ### Fixed

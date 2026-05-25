@@ -119,6 +119,67 @@ def test_mpoload_inventory_sets_carried_by(carrier: Character) -> None:
     )
 
 
+def test_equip_object_sets_carried_by(carrier: Character) -> None:
+    """ROM ``equip_char`` (``src/handler.c``) leaves ``carried_by``
+    set — equipped items are still owned by the carrier, only
+    ``wear_loc`` changes. The Python ``Character.equip_object`` must
+    not leave ``carried_by`` as ``None`` when the obj was equipped
+    directly (without first going through ``add_object``).
+    """
+
+    obj = spawn_object(_TEST_VNUM)
+    assert obj is not None
+
+    carrier.equip_object(obj, "wield")
+
+    assert carrier.equipment.get("wield") is obj
+    assert obj.carried_by is carrier, (
+        "Character.equip_object did not set obj.carried_by; ROM keeps "
+        "equipped objs owned by the carrier (only wear_loc changes), "
+        "and INV-013 makes carried_by the canonical carrier field."
+    )
+
+
+def test_remove_object_clears_carried_by(carrier: Character) -> None:
+    """ROM ``obj_from_char`` (``src/handler.c:1642``) clears
+    ``obj->carried_by`` and ``obj->wear_loc``. The Python
+    ``Character.remove_object`` must mirror that — leaving the back-
+    pointer set after extraction is an INV-013 contract violation.
+    """
+
+    obj = spawn_object(_TEST_VNUM)
+    assert obj is not None
+    carrier.add_object(obj)
+    assert obj.carried_by is carrier
+
+    carrier.remove_object(obj)
+
+    assert obj not in carrier.inventory
+    assert obj.carried_by is None, (
+        "Character.remove_object did not clear obj.carried_by; ROM "
+        "src/handler.c:1642 obj_from_char clears it atomically."
+    )
+
+
+def test_remove_object_clears_carried_by_when_equipped(
+    carrier: Character,
+) -> None:
+    """Symmetry: removing an *equipped* obj must also clear
+    ``carried_by`` (ROM ``obj_from_char`` does not branch on
+    ``wear_loc``).
+    """
+
+    obj = spawn_object(_TEST_VNUM)
+    assert obj is not None
+    carrier.equip_object(obj, "wield")
+    assert obj.carried_by is carrier
+
+    carrier.remove_object(obj)
+
+    assert carrier.equipment.get("wield") is None
+    assert obj.carried_by is None
+
+
 def test_mpoload_inventory_updates_carry_counters(carrier: Character) -> None:
     """``do_mpoload`` (inventory mode) must update ``carry_weight``
     and ``carry_number`` per ROM ``obj_to_char`` (INV-011).

@@ -556,6 +556,10 @@ class Character:
         else:
             self.carry_number += carry_delta
         self.equipment[slot] = obj
+        # mirroring ROM src/handler.c equip_char — equipped objs stay
+        # owned by the carrier (only wear_loc changes); INV-013 makes
+        # carried_by the canonical carrier field.
+        obj.carried_by = self
         self._recalculate_carry_weight()
 
     def remove_object(self, obj: Object) -> None:
@@ -568,6 +572,10 @@ class Character:
                     del self.equipment[slot]
                     break
         self.carry_number = max(0, self.carry_number - carry_delta)
+        # mirroring ROM src/handler.c:1642 obj_from_char — extraction
+        # clears the carrier back-pointer atomically. INV-013.
+        if getattr(obj, "carried_by", None) is self:
+            obj.carried_by = None
         self._recalculate_carry_weight()
 
     # START affects_saves
