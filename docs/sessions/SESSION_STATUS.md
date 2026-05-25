@@ -1,46 +1,51 @@
-# Session Status — 2026-05-25 — INV-014 + INV-013 carrier-field sweep (2.9.6)
+# Session Status — 2026-05-25 — INV-015 affect-tick lifecycle (2.9.7)
 
 ## Current State
 
-- **Active pass**: cross-file invariants — INV-012's downstream
-  coverage cycle (locate, mpoload, equip/remove symmetry, decay
-  loop) sealed. Natural stopping point.
-- **Last completed**: four sequential clusters across 2.9.3 → 2.9.6:
-  - **2.9.6** — end-to-end decay-loop coverage for INV-012/13/14.
-  - **2.9.5** — `Character.equip_object` / `remove_object` carrier-
-    field symmetry (INV-013).
-  - **2.9.4** — `Character.add_object` + `do_mpoload` reinforcement
-    (INV-013 + INV-011).
-  - **2.9.3** — new invariant INV-014 OBJECT-REGISTRY-MEMBERSHIP
-    locked in; every Python `Object(...)` construction routed through
-    `mud.models.object.create_object`.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-25_INV014_AND_INV013_OBJECT_REGISTRY_SWEEP.md](SESSION_SUMMARY_2026-05-25_INV014_AND_INV013_OBJECT_REGISTRY_SWEEP.md)
+- **Active pass**: cross-file invariants — INV-015 AFFECT-TICK-LIFECYCLE
+  closed. Probe-then-scope worked end-to-end again: 5-minute read of
+  `src/update.c:affect_update` + `src/handler.c:affect_remove` plus
+  the Python equivalents surfaced a real stat-leak + phantom-bit
+  divergence in `mud/affects/engine.py:tick_spell_effects`. Filed as
+  INV-015, closed in one commit with two enforcement tests.
+- **Last completed**: `v2.9.7` (commit `266056c`) — `affect_remove`
+  added at module level in `mud/handler.py`; `tick_spell_effects`
+  expiry branch split between ROM-canonical entries (route through
+  `affect_remove`) and spell-effects-managed shadow mirrors (bare
+  list removal, `remove_spell_effect` handles their stat unwind).
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-25_INV015_AFFECT_TICK_LIFECYCLE.md](SESSION_SUMMARY_2026-05-25_INV015_AFFECT_TICK_LIFECYCLE.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.6 |
-| Tests | 4712 passed, 4 skipped, 0 failed |
-| Cross-file invariants | 14 of ~20 budget; INV-001 … INV-014 all ✅ ENFORCED |
-| Branch | `master` (synced with `origin/master`; `v2.9.3` – `v2.9.6` tags published) |
+| Version | 2.9.7 |
+| Tests | 4714 passed, 4 skipped, 0 failed |
+| Cross-file invariants | 15 of ~20 budget; INV-001 … INV-015 all ✅ ENFORCED |
+| Branch | `master` (commit `266056c` ready for `v2.9.7` tag + push) |
 | Watch list | Empty. |
 
 ## Next Intended Task
 
-The default audit path is exhausted (zero Partial / Not Audited rows
-in `docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`) and the cross-
-file invariants watch list is empty. Options for the next session:
+The default per-file audit path remains exhausted; the cross-file
+invariants pass is the active mode. INV-015 closed cleanly without
+spilling sibling gaps into the same commit. Two candidates for the
+next probe (ordered):
 
-1. **Phase 2 cosmetic sweep** — `prototype` → `pIndexData`
-   (~291 refs) and `contained_items` → `contains` (~182 refs).
-   Backlog note at `docs/parity/PHASE_2_ROM_NAME_SWEEP_OPTIONAL.md`
-   explains why this is deferred (low gameplay value); the dataclass
-   `@property` aliases are already in place to make it mechanical.
-2. **Wait for an organic cross-module bug to file as INV-015.** The
-   probe-then-scope pattern has been productive — wait for the next
-   real divergence to surface, then file as the next free INV row.
-3. **Revisit a 95%-audited file with known user-visible drift** if
-   one comes up during normal gameplay testing.
-
-No specific gap currently calling for attention.
+1. **Sibling affect-removal sweep** (option #2 from the 2.9.7 menu):
+   `Character.affect_remove` (`mud/models/character.py:862`) and
+   `Character.remove_spell_effect` both touch the affect list
+   without going through the new module-level `affect_remove`. The
+   former has zero callers today; the latter is integrated into the
+   tick-path split, so the path is correct but the helper itself
+   isn't a single canonical removal point. One targeted gap-closer
+   each — belt-and-suspenders before the helper gets new callers.
+2. **Position transitions** (option #3): POS_DEAD ↔ POS_INCAP ↔
+   POS_STUNNED ↔ POS_SLEEPING ↔ POS_STANDING. Partial coverage via
+   INV-002 (death/prompt) and INV-004 (PC death/connection); the
+   full transition table per `src/fight.c:update_pos`,
+   `src/act_info.c:do_wake/do_sleep`, `src/handler.c:position_lookup`
+   isn't pinned.
+3. **Mob script triggers** (option #4 from the cluster-end menu):
+   ENTRY / GIVE / KILL / RANDOM / HPCNT firing across `mob_cmds`,
+   `game_loop`, `handler`, command dispatcher — not yet probed.
