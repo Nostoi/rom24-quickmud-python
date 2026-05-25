@@ -29,7 +29,7 @@ from .json_io import (
 from .mob import MobIndex, MobProgram
 from .note import Note
 from .note_json import NoteJson
-from .obj import Affect, ObjectData, ObjIndex
+from .obj import Affect, ObjIndex
 from .object import Object
 from .object_json import (
     AffectJson as ObjectAffectJson,
@@ -67,7 +67,6 @@ __all__ = [
     "MobIndex",
     "MobProgram",
     "ObjIndex",
-    "ObjectData",
     "Object",
     "Affect",
     "Character",

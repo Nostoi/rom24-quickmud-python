@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.0]
+
+### Added
+- **`INV-012` — OBJECT-LIST-CANONICAL locked in** (`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`, `tests/integration/test_inv012_object_list_canonical.py`): single canonical `Object` runtime class. `mud.models.obj.ObjectData` deleted. `object_registry` is now populated at spawn (`mud/spawning/obj_spawner.py:spawn_object`) and drained at extract (`mud/game_loop.py:_extract_obj`, including recursive contents per ROM `src/handler.c:2063-2067`). New ROM-named fields on `Object`: `in_room`, `in_obj`, `carried_by` (dataclass fields with `compare=False` to avoid `__eq__` graph recursion), `pIndexData` (read+write `@property` aliased to `prototype`), `contains` (read-only `@property` aliased to `contained_items`). Eight enforcement tests + smoke tests for `get_obj_world` and `obj_update`.
+
+### Fixed
+- **`object_registry` was never populated in production** (now-live behavior): every iteration over the global instance list was a no-op before this consolidation, silently disabling locate-object spells (`mud/world/obj_find.py:get_obj_world`, `mud/magic/effects.py`), mobprog oload triggers (`mud/mobprog.py`), global object scans (`mud/skills/handlers.py`), music decay (`mud/music/__init__.py`), and object decay tick (`mud/game_loop.py:obj_update`). Surfaced and closed under INV-012 — six smoke + correctness tests gate the behavior; per-system end-to-end coverage deferred to follow-up sessions.
+
+### Changed
+- ~12 `isinstance(target, ObjectData)` / `isinstance(target, (Object, ObjectData))` branches across `mud/skills/handlers.py` and `mud/game_loop.py` collapsed to `Object`-only.
+- 17 helper signatures in `mud/game_loop.py` and 3 in `mud/handler.py` re-typed from `ObjectData` to `Object`. 4 dual-shape `getattr(obj, "contained_items", None) or getattr(obj, "contains", [])` fallbacks in `mud/game_loop.py` collapsed.
+- `mud/mob_cmds.py:_extract_runtime_object` dead `isinstance(obj, ObjectData)` dispatch branch removed; local cleanup is the single canonical path.
+- 35 test fixtures across 9 test files migrated from `ObjectData(item_type=X, ...)` to `Object(instance_id=None, prototype=ObjIndex(...))`.
+- `tests/conftest.py` adds an autouse fixture that snapshots/clears/restores `object_registry` between tests, preventing leakage from the 10 test files that use `spawn_object`.
+
+### Removed
+- `mud.models.obj.ObjectData` (the dual-class runtime). Re-export dropped from `mud.models.__init__`.
+
 ## [2.8.79]
 
 ### Added
