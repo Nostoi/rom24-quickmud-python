@@ -1,10 +1,10 @@
 import pytest
 
+from mud.game_loop import obj_update
 from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
 from mud.models.constants import AffectFlag, ExtraFlag, Sex, Stat
-from mud.game_loop import obj_update
-from mud.models.obj import ObjIndex, ObjectData, object_registry
+from mud.models.obj import ObjIndex, object_registry
 from mud.models.object import Object
 from mud.models.room import Room
 from mud.skills import handlers as skill_handlers
@@ -603,7 +603,7 @@ def test_invis_object_wears_off() -> None:
         room.add_character(character)
         character.messages.clear()
 
-    obj = ObjectData(item_type=int(0), short_descr="mysterious gem")
+    obj = Object(instance_id=None, prototype=ObjIndex(vnum=0, item_type=0, short_descr="mysterious gem"))
     obj.in_room = room
     room.contents.append(obj)
     object_registry.append(obj)
@@ -656,8 +656,8 @@ def test_fireproof_applies_burn_proof_and_messages(monkeypatch: pytest.MonkeyPat
     assert effect.level == caster.level
     assert effect.duration == 7
     assert effect.bitvector == int(ExtraFlag.BURN_PROOF)
-    assert getattr(effect, "spell_name") == "fireproof"
-    assert getattr(effect, "wear_off_message") == "$p's protective aura fades."
+    assert effect.spell_name == "fireproof"
+    assert effect.wear_off_message == "$p's protective aura fades."
 
     assert caster.messages[-1] == "You protect ancient scroll from fire."
     assert witness.messages[-1] == "ancient scroll is surrounded by a protective aura."
