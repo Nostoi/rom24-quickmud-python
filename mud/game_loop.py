@@ -782,17 +782,39 @@ def _render_obj_message(obj: ObjectData, template: str) -> str:
 
 
 def _remove_from_character(obj: ObjectData, character: Character) -> None:
+    """ROM src/handler.c:1642 obj_from_char — subtracts obj weight/number
+    from the carrier and unlinks. INV-011 (CARRY-WEIGHT-COHERENCE) requires
+    the cached counters stay in sync with inventory + equipment after every
+    extract path, not just the Character.add_object/remove_object helpers.
+    """
+    removed = False
     inventory = getattr(character, "inventory", None)
     if isinstance(inventory, list) and obj in inventory:
         inventory.remove(obj)
+        removed = True
 
     equipment = getattr(character, "equipment", None)
     if isinstance(equipment, dict):
         for slot, equipped in list(equipment.items()):
             if equipped is obj:
                 del equipment[slot]
+                removed = True
 
     obj.carried_by = None
+
+    if removed:
+        from mud.models.character import _object_carry_number as _carry_num
+
+        try:
+            slot_cost = _carry_num(obj)
+        except Exception:  # pragma: no cover - defensive guard
+            slot_cost = 1
+        current_number = int(getattr(character, "carry_number", 0) or 0)
+        character.carry_number = max(0, current_number - int(slot_cost))
+
+        recalc = getattr(character, "_recalculate_carry_weight", None)
+        if callable(recalc):
+            recalc()
 
 
 def _obj_to_room(obj: ObjectData, room) -> None:

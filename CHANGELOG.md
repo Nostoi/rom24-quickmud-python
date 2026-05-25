@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.8.79]
+
+### Added
+- **`INV-011` — CARRY-WEIGHT-COHERENCE locked in** (`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`, `tests/integration/test_inv011_carry_weight_coherence.py`): new cross-file invariant codifies that `ch.carry_weight` / `ch.carry_number` stay in lockstep with `ch.inventory + ch.equipment.values()` after every mutation path. ROM mirrors via `src/handler.c:1626 obj_to_char` / `1642 obj_from_char`. Five enforcement tests cover the canonical helpers (`Character.add_object` / `equip_object` / `remove_object`) and the runtime extract paths.
+
+### Fixed
+- **`_extract_obj` left stale carry counters on the carrier** (`mud/game_loop.py:784 _remove_from_character`, ROM `src/handler.c:2051 → 1642 obj_from_char`): the runtime extract path used by `_extract_obj`, corpse decay, and light-source decay removed the obj from `character.inventory` / `character.equipment` but never re-derived `carry_weight` or decremented `carry_number`. Every extract on a carried object skewed encumbrance upward; over a long-running session a player could become permanently over-encumbered with zero visible items. Fix: after the inventory/equipment removal, call `_recalculate_carry_weight()` and subtract the obj's `_object_carry_number` slot cost. Surfaced and closed under INV-011.
+
+### Watch list
+- New cross-file watch item: dual `Object` (`mud/models/object.py`) vs `ObjectData` (`mud/models/obj.py`) runtime classes — `object_registry: list[ObjectData]` is never populated because `spawn_object` constructs `Object`. Every iteration over `object_registry` (mobprog oload triggers, `get_obj_world`, locate-object spells, object decay) is a no-op in production. Parallel shape to INV-008. Tracked in `CROSS_FILE_INVARIANTS_TRACKER.md` watch list pending a multi-session consolidation strategy.
+
 ## [2.8.78]
 
 ### Added

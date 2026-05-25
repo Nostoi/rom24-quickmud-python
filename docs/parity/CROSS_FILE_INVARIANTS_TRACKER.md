@@ -58,7 +58,8 @@ stable IDs (INV-NNN), and points each at an enforcement test.
 | INV-007 | RNG-DETERMINISM | `src/db.c init_mm` Mitchell-Moore RNG is the only source of combat/affect rolls | All `mud/combat/`, `mud/skills/`, `mud/spells/` use `mud.math.rng_mm.number_*`; never `random.*` | `tests/test_rng_determinism.py` | ✅ ENFORCED |
 | INV-008 | DUAL-LOAD-CHARACTER-COHERENCE | (Python-only) Single canonical store for player state; no dual JSON-pfile / DB-row split | `mud/db/models.py:Character` is canonical (39 + base columns); `mud/account/account_manager.py:save_character` calls `save_character_to_db` (UPDATE), `load_character` queries the DB and runs `Character.from_orm`; serialization helpers live in `mud/db/serializers.py`; time-info persistence in `mud/world/time_persistence.py`; `mud/persistence.py` deleted (2.8.3) | `tests/integration/test_inv008_persistence_coherence.py` + `tests/integration/test_db_canonical_round_trip.py` | ✅ ENFORCED |
 | INV-009 | REGISTRY-DISCONNECT-CLEANUP | `src/comm.c:close_socket` + `src/nanny.c:do_quit` ensure char_list has at most one entry per player name at any time; reconnects rebind via `check_reconnect` rather than appending duplicates | (a) `mud/account/account_manager.py:load_character` dedupes by `name` before appending — drops any prior `character_registry` entry with the same name (e.g. the level=0 bare-row Character loaded during the nanny name/password phase) before adding the freshly-loaded one. (b) `mud/net/connection.py` disconnect cleanup (websocket + telnet `finally` blocks) removes the Character from `character_registry` on non-forced disconnect, matching the `save + char_from_room + release_account` quit semantics already in place. Forced disconnects (descriptor takeover via `_disconnect_session`) skip removal — the Character transfers to the new descriptor. | `tests/integration/test_inv009_registry_disconnect_cleanup.py` | ✅ ENFORCED |
-| INV-010 | ROOM-PEOPLE-COHERENCE | `src/handler.c:1497-1573 char_from_room / char_to_room` are the only mutation paths; bidirectional contract — every `ch->in_room == R` lives in `R->people`, every entry in `R->people` has `ch->in_room == R`. ROM also relies on a single canonical `room_index_hash` lookup table (`src/db.c:get_room_index`). | (a) `mud/models/room.py:Room.add_character` / `Room.remove_character` keep the bidirectional state synchronized and own area.nplayer + light-source accounting. (b) `mud/models/room.py:char_to_room` wraps `add_character` with a NULL → temple fallback. (c) `mud/models/room.py` no longer declares a second `room_registry` dict; it re-imports the canonical `mud.registry.room_registry`, so the temple fallback and `mud/game_loop.py:525` limbo lookup read from the world-loaded registry rather than a perpetually empty one (fixed in 2.8.74). Touched by: `mud/spec_funs.py` (mayor patrol), `mud/spawning/templates.py:MobInstance.move_to_room`, `mud/commands/session.py:do_recall`, `mud/commands/imm_load.py`, `mud/commands/imm_search.py`, `mud/commands/imm_commands.py:_char_from_room/_char_to_room`. | `tests/integration/test_inv010_room_people_coherence.py` | ✅ ENFORCED |
+| INV-010 | ROOM-PEOPLE-COHERENCE | `src/handler.c:1497-1573 char_from_room / char_to_room` are the only mutation paths; bidirectional contract — every `ch->in_room == R` lives in `R->people`, every entry in `R->people` has `ch->in_room == R`. ROM also relies on a single canonical `room_index_hash` lookup table (`src/db.c:get_room_index`). | (a) `mud/models/room.py:Room.add_character` / `Room.remove_character` keep the bidirectional state synchronized and own area.nplayer + light-source accounting. (b) `mud/models/room.py:char_to_room` wraps `add_character` with a NULL → temple fallback. (c) `mud/models/room.py` no longer declares a second `room_registry` dict; it re-imports the canonical `mud.registry.room_registry`, so the temple fallback and `mud/game_loop.py:525` limbo lookup read from the world-loaded registry rather than a perpetually empty one (fixed in 2.8.78). Touched by: `mud/spec_funs.py` (mayor patrol), `mud/spawning/templates.py:MobInstance.move_to_room`, `mud/commands/session.py:do_recall`, `mud/commands/imm_load.py`, `mud/commands/imm_search.py`, `mud/commands/imm_commands.py:_char_from_room/_char_to_room`. | `tests/integration/test_inv010_room_people_coherence.py` | ✅ ENFORCED |
+| INV-011 | CARRY-WEIGHT-COHERENCE | `src/handler.c:1626 obj_to_char` / `1642 obj_from_char` keep `ch->carry_weight` and `ch->carry_number` in lockstep with `ch->carrying`. `extract_obj` (`src/handler.c:2051,2058-2059`) routes through `obj_from_char` so the counters never drift. | (a) `Character.add_object` / `Character.equip_object` / `Character.remove_object` (mud/models/character.py:542-566) call `_recalculate_carry_weight` and adjust `carry_number`. (b) `mud/game_loop.py:_remove_from_character` (used by `_extract_obj` → carrier branch and by corpse decay) also re-derives `carry_weight` via `_recalculate_carry_weight` and decrements `carry_number` by the obj's slot cost (fixed in 2.8.79 — previously dropped the obj from inventory/equipment without touching the cached counters, so every extract on a carried object skewed encumbrance upward). Touched by: `mud/game_loop.py:_extract_obj` and `_decay_carried_light`, `mud/mob_cmds.py:1095-1110` (mpoload-style cleanup), `mud/combat/engine.py:991` (corpse extract). | `tests/integration/test_inv011_carry_weight_coherence.py` | ✅ ENFORCED |
 
 ## Action items
 
@@ -109,18 +110,34 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**Surfaced 2026-05-24 while closing INV-010:**
+**Open as of 2026-05-24 (INV-011 session):**
 
-- An object-side analogue of INV-003: every `Object` creation path should
-  append to a canonical `object_list` and `extract_obj` should remove it from
-  every container (room contents, char inventory, container contents, list).
-  No evidence of a current violation, but the cross-module surface is large
-  and uncovered by tests today. Promote to INV-011 when a regression appears
-  or as a proactive enforcement test in a future session.
-- `carry_weight` / `carry_number` coherence with `char.inventory` across
-  every get/drop/give/equip/unequip path. Similar shape to INV-010 — a
-  bidirectional accounting invariant that lives in the spaces between
-  modules.
+- **Dual `Object` / `ObjectData` classes** (`mud/models/object.py:Object`
+  vs `mud/models/obj.py:ObjectData`): two distinct runtime classes with
+  divergent field names (`location`/`contained_items` vs
+  `in_room`/`in_obj`/`contains`/`carried_by`). `spawn_object` and
+  production paths construct `Object`; `object_registry:
+  list[ObjectData]` (mud/models/obj.py:107) is the canonical "ROM
+  object_list" but **nothing ever appends to it**. As a result, every
+  iteration over `object_registry` is a no-op in production:
+  `mud/mobprog.py` oload triggers, `mud/world/obj_find.py:get_obj_world`,
+  `mud/skills/handlers.py` global object scans, `mud/music/__init__.py`
+  decay, `mud/game_loop.py:object_update` (decay tick). Parallel shape
+  to INV-008 (dual `load_character`). Promote to INV-NNN once the
+  consolidation strategy is chosen — this is a multi-session refactor,
+  not a single gap closure. Tracked but not enforced yet.
+
+**Surfaced 2026-05-24 while closing INV-010; CARRY-WEIGHT entry now
+closed as INV-011 below — kept here for the audit trail.**
+
+- ~~An object-side analogue of INV-003: every `Object` creation path
+  should append to a canonical `object_list` and `extract_obj` should
+  remove it from every container.~~ Subsumed by the **Dual `Object` /
+  `ObjectData`** entry above — the deeper root cause is the dual-class
+  divergence, not the registry hygiene.
+- ~~`carry_weight` / `carry_number` coherence with `char.inventory`
+  across every get/drop/give/equip/unequip path.~~ **Closed as INV-011
+  in 2.8.79.**
 
 ## Maintenance
 
