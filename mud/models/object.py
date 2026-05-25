@@ -17,7 +17,6 @@ class Object:
 
     instance_id: int | None
     prototype: ObjIndex
-    location: Room | None = None
     contained_items: list[Object] = field(default_factory=list)
     level: int = 0
     value: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
@@ -108,3 +107,42 @@ class Object:
     @property
     def contains(self) -> list[Object]:
         return self.contained_items
+
+    # INV-013 OBJECT-LOCATION-COHERENCE. `location` is a polymorphic
+    # accessor dispatching to the three ROM-faithful container fields
+    # (`in_room`, `carried_by`, `in_obj`). ROM keeps these mutually
+    # exclusive — see src/handler.c obj_to_room/obj_to_char/obj_to_obj
+    # (each sets one and clears the other two).
+    @property
+    def location(self) -> Room | Character | Object | None:
+        return self.in_room or self.carried_by or self.in_obj
+
+    @location.setter
+    def location(self, value: Room | Character | Object | None) -> None:
+        from .character import Character as _Character
+        from .room import Room as _Room
+
+        if value is None:
+            self.in_room = None
+            self.carried_by = None
+            self.in_obj = None
+        elif isinstance(value, _Room):
+            self.in_room = value
+            self.carried_by = None
+            self.in_obj = None
+        elif isinstance(value, _Character):
+            self.carried_by = value
+            self.in_room = None
+            self.in_obj = None
+        elif isinstance(value, Object):
+            self.in_obj = value
+            self.in_room = None
+            self.carried_by = None
+        else:
+            # Unknown type — preserve legacy permissive write to in_room
+            # so callers that pass exotic placeholders (e.g. -1) still
+            # mutate something rather than silently failing. Surface as
+            # in_room since that was the legacy field's nominal type.
+            self.in_room = value  # type: ignore[assignment]
+            self.carried_by = None
+            self.in_obj = None

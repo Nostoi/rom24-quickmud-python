@@ -443,7 +443,6 @@ class MobInstance:
         if not any(existing is obj for existing in self.inventory):
             self.inventory.append(obj)
         obj.carried_by = self
-        obj.location = None
 
     def remove_object(self, obj: Object) -> None:
         # ROM src/handler.c obj_from_char: unequip first if worn, then strip

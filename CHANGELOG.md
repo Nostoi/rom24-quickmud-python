@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.2]
+
+### Added
+- **`INV-013` — OBJECT-LOCATION-COHERENCE locked in** (`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`, `tests/integration/test_inv013_object_location_coherence.py`): `Object.location` is no longer a stored field — it is now a property dispatching to the three canonical ROM container fields (`in_room`, `carried_by`, `in_obj`) per `src/handler.c:1626 obj_to_char` / `1953 obj_to_room` / `1968 obj_to_obj`. Setting `location` to a Room/Character/Object sets the matching ROM field and clears the other two; setting it to None clears all three; reads return whichever ROM field is non-None. Eliminates the latent divergence where callers had to remember to update both `obj.location` and `obj.in_room`. Seven enforcement tests.
+
+### Fixed
+- **`MobInstance.add_to_inventory` cleared `carried_by` right after setting it** (`mud/spawning/templates.py:445-446`): the method did `obj.carried_by = self; obj.location = None`. Pre-INV-013 the second line was a redundant legacy-field reset; under the new dispatch it cleared the carried_by we just set. Deleted the redundant `obj.location = None` line. Surfaced as a P-reset regression (`tests/test_spawning.py::test_reset_P_fills_mob_carried_container`) when the reset_handler could no longer find the mob-carried container.
+- **`make_corpse` left money objects with no container linkage** (`mud/combat/death.py:441`): money was appended to `corpse.contained_items` but `money_obj.location` was set to None, leaving `money_obj.in_obj` unset. Per ROM `src/handler.c:1968 obj_to_obj`, money inside a corpse must have `in_obj = corpse`. Changed to `money_obj.location = corpse`.
+- **Two `act_wiz` parity tests passed `location=-1` to the `Object` constructor** (`tests/integration/test_act_wiz_command_parity.py:398,582`): a Room or None was expected; `-1` was a stale placeholder from earlier refactors. Removed the kwarg — the tests already set `obj.in_room = room` on the next line.
+
 ## [2.9.1]
 
 ### Fixed
