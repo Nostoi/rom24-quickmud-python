@@ -7,6 +7,7 @@ ROM Reference: src/act_obj.c do_give (lines 678-855)
 from __future__ import annotations
 
 from mud.commands.obj_manipulation import _can_drop_obj, _obj_from_char
+from mud.mobprog import disable_mobtrigger, mp_act_trigger_room
 from mud.models.character import Character, _object_carry_number, _object_carry_weight
 from mud.models.constants import ActFlag
 from mud.net.protocol import send_to_char
@@ -83,9 +84,14 @@ def do_give(char: Character, args: str) -> str:
     victim_message = act_format("$n gives you $p.", recipient=victim, actor=char, arg1=obj, arg2=victim)
     char_message = act_format("You give $p to $N.", recipient=char, actor=char, arg1=obj, arg2=victim)
 
-    _broadcast_to_room_observers(room, room_message, actor=char, victim=victim)
-    if hasattr(victim, "messages"):
-        victim.messages.append(victim_message)
+    # ROM src/act_obj.c:832-836 wraps the give act() lines in
+    # MOBtrigger=FALSE/TRUE so TRIG_ACT does not fire on the broadcast;
+    # the explicit mp_give_trigger below covers the give event.
+    with disable_mobtrigger():
+        _broadcast_to_room_observers(room, room_message, actor=char, victim=victim)
+        mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=victim, exclude=victim)
+        if hasattr(victim, "messages"):
+            victim.messages.append(victim_message)
 
     if getattr(victim, "is_npc", False):
         from mud.mobprog import mp_give_trigger
