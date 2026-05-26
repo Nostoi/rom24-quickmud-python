@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.44]
+
+### Fixed
+- **`check_assist` misplacement closed — assist-on-multi_hit lifted to `violence_tick`.** ROM `src/fight.c:90` calls `check_assist(ch, victim)` from `violence_update` after `multi_hit` returns, not from inside `multi_hit`. Python had it embedded in `mud/combat/engine.py:multi_hit` at line 317, so every direct caller of `multi_hit` provoked an additional assist round: `mud/combat/assist.py` (the recursive assist itself), `mud/spec_funs.py` (spec_cast paths), and `mud/mob_cmds.py` (mob `kill` directive). Lifted the call to `mud/game_loop.py:violence_tick` before the NPC trigger dispatch, mirroring ROM's `check_assist` → IS_NPC → TRIG_FIGHT/TRIG_HPCNT ordering. The violence_tick now re-reads `attacker.fighting is victim` twice — once after `multi_hit` (victim-died guard), once after `check_assist` (helper-landed-killing-blow guard). Same misplacement shape as INV-026; folded under INV-026 in the tracker since both contracts derive from `src/fight.c:60-99 violence_update`. New regression: `tests/integration/test_check_assist_dispatch_scope.py` (3 tests — multi_hit-direct silence, violence_tick dispatch, victim-died guard). `tests/test_combat_assist.py::test_assist_triggered_during_combat` rewritten to drive `violence_tick` instead of `multi_hit` directly (the old assertion contradicted ROM; per AGENTS.md a test asserting non-ROM behavior is a bug in the test).
+
 ## [2.9.43]
 
 ### Fixed

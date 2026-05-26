@@ -311,10 +311,11 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
     if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
         return results
 
-    # ROM src/fight.c:90 - Check for assist after first attack
-    from mud.combat.assist import check_assist
-
-    check_assist(attacker, victim)
+    # check_assist dispatch moved to mud.game_loop.violence_tick (ROM
+    # src/fight.c:90 — check_assist is called from violence_update after
+    # multi_hit returns, NOT inside multi_hit). Same shape as INV-026 —
+    # non-violence callers (assist itself, spec_funs, mob_cmds) must not
+    # provoke another assist round.
 
     # ROM allows only a single strike for backstab.
     if _normalize_dt(dt) == "backstab":

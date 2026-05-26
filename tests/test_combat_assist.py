@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from mud.combat.assist import check_assist
-from mud.combat.engine import multi_hit, is_good, is_evil, is_neutral
+from mud.combat.engine import is_good, is_evil, is_neutral
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, OffFlag, PlayerFlag, Position
 from mud.models.room import Room
@@ -322,22 +322,38 @@ class TestAssistConditions:
 
 
 class TestAssistIntegration:
-    """Test check_assist integration with multi_hit"""
+    """Test check_assist integration with violence_tick.
 
-    def test_assist_triggered_during_combat(self, test_room, create_char):
-        """check_assist is called during multi_hit."""
+    ROM src/fight.c:90 calls check_assist from violence_update after
+    multi_hit returns, NOT from inside multi_hit. Direct multi_hit
+    callers (assist itself, spec_funs, mob_cmds) must not provoke
+    another assist round — only the violence tick does.
+    """
+
+    def test_assist_triggered_during_violence_tick(self, test_room, create_char, monkeypatch):
+        """check_assist runs from violence_tick after multi_hit (ROM src/fight.c:90)."""
+        from mud import game_loop
+        from mud.models.character import character_registry
+
         attacker = create_char("Player", is_npc=False, level=10, group="party")
         helper = create_char("Ally", is_npc=False, level=10, group="party", act=PlayerFlag.AUTOASSIST)
         victim = create_char("Orc", is_npc=True, level=10)
 
-        # Give attacker minimal stats to avoid death
         attacker.hit = 100
         attacker.max_hit = 100
         victim.hit = 100
         victim.max_hit = 100
 
-        # Initiate combat with multi_hit
-        multi_hit(attacker, victim)
+        attacker.fighting = victim
+        victim.fighting = attacker
 
-        # Helper should have assisted
-        assert helper.fighting is not None, "Ally should assist after combat starts"
+        snapshot = list(character_registry)
+        character_registry.clear()
+        character_registry.extend([attacker, helper, victim])
+        try:
+            game_loop.violence_tick(do_combat=True)
+        finally:
+            character_registry.clear()
+            character_registry.extend(snapshot)
+
+        assert helper.fighting is not None, "Ally should assist after violence_tick"

@@ -1333,13 +1333,31 @@ def violence_tick(*, do_combat: bool = False) -> None:
             stop_fighting(ch, both=False)
             continue
 
-        # INV-026: ROM src/fight.c:84-98 — after multi_hit returns,
-        # if victim still fighting and attacker is NPC, fire TRIG_FIGHT
-        # then TRIG_HPCNT. Skipped when the round killed the victim
-        # (`(victim = ch->fighting) == NULL`). This dispatch lives ONLY
-        # here, not inside multi_hit, so non-violence callers (assist,
-        # spec_funs, mob_cmds) do not provoke the triggers.
-        if getattr(ch, "is_npc", False) and getattr(ch, "fighting", None) is victim:
+        # ROM src/fight.c:84-90 — after multi_hit returns, re-read
+        # attacker.fighting (`(victim = ch->fighting) == NULL`). If the
+        # round killed the victim, skip the rest of the iteration.
+        if getattr(ch, "fighting", None) is not victim:
+            continue
+
+        # ROM src/fight.c:90 — check_assist runs from violence_update
+        # after multi_hit returns, before the NPC trigger dispatch.
+        # Non-violence callers (assist itself, spec_funs, mob_cmds)
+        # must not provoke another assist round.
+        from mud.combat.assist import check_assist
+
+        check_assist(ch, victim)
+
+        # ROM src/fight.c:84-90 — re-read attacker.fighting again after
+        # check_assist may have ended combat (e.g. the helper landed a
+        # killing blow). Skip triggers if so.
+        if getattr(ch, "fighting", None) is not victim:
+            continue
+
+        # INV-026: ROM src/fight.c:92-98 — if attacker is NPC, fire
+        # TRIG_FIGHT then TRIG_HPCNT. This dispatch lives ONLY here,
+        # not inside multi_hit, so non-violence callers do not provoke
+        # the triggers.
+        if getattr(ch, "is_npc", False):
             from mud import mobprog
 
             mobprog.mp_fight_trigger(ch, victim)
