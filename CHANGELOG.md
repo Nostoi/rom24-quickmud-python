@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.41]
+
+### Changed
+- **Cross-file invariants tracker consolidated.** Three dual pairs merged in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` to bring the budget from 25/~20 back to 22/~20 (each merge freed one slot without losing a contract — both halves' tests still run under the merged row). INV-014 (OBJECT-REGISTRY-MEMBERSHIP) + INV-021 (OBJECT-EXTRACT-RECURSIVE) → INV-014 OBJECT-REGISTRY-LIFECYCLE (creation + extract on the same `object_registry`). INV-015 (AFFECT-TICK-LIFECYCLE) + INV-018 (WEAR-OFF-MESSAGE-FOR-RAW-AFFECT) → INV-015 AFFECT-EXPIRY-LIFECYCLE (stat-mod un-apply + wear-off message on the same `tick_spell_effects` expiry loop). INV-010 (ROOM-PEOPLE-COHERENCE) + INV-023 (AREA-NPLAYER-COHERENCE) → INV-010 ROOM-PEOPLE-COHERENCE (bidirectional coherence + area.nplayer accounting on `char_from_room`/`char_to_room`). INV-001 + INV-002 were *not* merged — the 2.9.39 footer mis-described them as "message-delivery duals" but INV-001 is SINGLE-DELIVERY (broadcast routing) while INV-002 is PROMPT-CLAMP (display formatting). They share no enforcement point. Retired IDs (INV-018, INV-021, INV-023) kept as forward-pointer stubs in a new "Retired IDs" section so historical CHANGELOG entries and commit messages resolve. Underlying enforcement tests are unchanged.
+
 ## [2.9.40]
 
 ### Added
