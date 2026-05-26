@@ -368,6 +368,8 @@ def _perform_remove(char: Character, obj) -> str:
             arg1=obj,
         )
         broadcast_room(room, room_message, exclude=char)
+        # ROM src/handler.c:remove_obj — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+        mp_act_trigger_room(room_message, room, char, arg1=obj)
 
     # ROM TO_CHAR: "You stop using $p."
     return f"You stop using {obj_name}."

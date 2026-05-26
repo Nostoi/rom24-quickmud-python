@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.handler import equip_char, unequip_char
+from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import ExtraFlag, ItemType, Position, WearFlag, WearLocation
 from mud.net.protocol import broadcast_room
 from mud.utils.act import act_format
@@ -75,7 +76,10 @@ def _unequip_to_inventory(ch: Character, obj: Object) -> bool:
     room_msg = f"{getattr(ch, 'name', 'Someone')} stops using {obj_name}."
     char_msg = f"You stop using {obj_name}."
 
-    broadcast_room(getattr(ch, "room", None), room_msg, exclude=ch)
+    room = getattr(ch, "room", None)
+    broadcast_room(room, room_msg, exclude=ch)
+    # ROM src/handler.c:remove_obj — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+    mp_act_trigger_room(room_msg, room, ch, arg1=obj)
     if hasattr(ch, "send_to_char"):
         ch.send_to_char(char_msg)
 
@@ -200,19 +204,18 @@ def do_wear(ch: Character, args: str) -> str:
         ch_name = getattr(ch, "name", "Someone")
 
         # ROM act_obj.c:1415-1423 (LIGHT branch) vs 1670-1677 (HOLD branch).
+        room = getattr(ch, "room", None)
         if item_type == ItemType.LIGHT:
-            broadcast_room(
-                getattr(ch, "room", None),
-                f"{ch_name} lights {obj_name} and holds it.",
-                exclude=ch,
-            )
+            room_message = f"{ch_name} lights {obj_name} and holds it."
+            broadcast_room(room, room_message, exclude=ch)
+            # ROM src/act_obj.c:1419 — no MOBtrigger wrap.
+            mp_act_trigger_room(room_message, room, ch, arg1=obj)
             return f"You light {obj_name} and hold it."
 
-        broadcast_room(
-            getattr(ch, "room", None),
-            f"{ch_name} holds {obj_name} in their hand.",
-            exclude=ch,
-        )
+        room_message = f"{ch_name} holds {obj_name} in their hand."
+        broadcast_room(room, room_message, exclude=ch)
+        # ROM src/act_obj.c:1674 — no MOBtrigger wrap.
+        mp_act_trigger_room(room_message, room, ch, arg1=obj)
         return f"You hold {obj_name} in your hand."
 
     # Find appropriate wear location
@@ -275,7 +278,10 @@ def do_wear(ch: Character, args: str) -> str:
     obj_name = getattr(obj, "short_descr", "something")
     room_template, char_template = _wear_location_messages(wear_loc)
     room_message = act_format(room_template, recipient=None, actor=ch, arg1=obj, arg2=None)
-    broadcast_room(getattr(ch, "room", None), room_message, exclude=ch)
+    room = getattr(ch, "room", None)
+    broadcast_room(room, room_message, exclude=ch)
+    # ROM src/act_obj.c:1435-1612 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+    mp_act_trigger_room(room_message, room, ch, arg1=obj)
     return char_template.format(obj_name=obj_name)
 
 
@@ -347,7 +353,11 @@ def _dispatch_wield(ch: Character, obj: Object) -> str:
     obj_name = getattr(obj, "short_descr", "something")
     ch_name = getattr(ch, "name", "Someone")
     # ROM act_obj.c:1639 — TO_ROOM "$n wields $p."
-    broadcast_room(getattr(ch, "room", None), f"{ch_name} wields {obj_name}.", exclude=ch)
+    room = getattr(ch, "room", None)
+    room_message = f"{ch_name} wields {obj_name}."
+    broadcast_room(room, room_message, exclude=ch)
+    # ROM src/act_obj.c:1639 — no MOBtrigger wrap.
+    mp_act_trigger_room(room_message, room, ch, arg1=obj)
 
     # ROM act_obj.c:1643-1665 — weapon-skill flavor (skip for hand-to-hand).
     flavor = _weapon_skill_flavor(ch, obj)
@@ -443,7 +453,10 @@ def _wear_all(ch: Character) -> str:
         obj_name = getattr(obj, "short_descr", "something")
         room_template, char_template = _wear_location_messages(int(wear_loc))
         room_message = act_format(room_template, recipient=None, actor=ch, arg1=obj, arg2=None)
-        broadcast_room(getattr(ch, "room", None), room_message, exclude=ch)
+        room = getattr(ch, "room", None)
+        broadcast_room(room, room_message, exclude=ch)
+        # ROM src/act_obj.c:1435-1612 — no MOBtrigger wrap.
+        mp_act_trigger_room(room_message, room, ch, arg1=obj)
         messages.append(char_template.format(obj_name=obj_name))
 
     if not messages:
