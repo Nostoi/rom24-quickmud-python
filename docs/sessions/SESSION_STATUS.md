@@ -1,52 +1,50 @@
-# Session Status — 2026-05-25 — INV-016 → group XP NPC-level floor (2.9.10 → 2.9.15)
+# Session Status — 2026-05-25 — INV-016 → INV-019 position-promotion (2.9.10 → 2.9.16)
 
 ## Current State
 
 - **Active pass**: cross-file invariants + opportunistic gap closures.
-  Six clusters landed today: INV-016 (2.9.10), HPCNT-001 (2.9.11),
+  Seven clusters landed today: INV-016 (2.9.10), HPCNT-001 (2.9.11),
   die_follower (2.9.12), INV-017 (2.9.13), INV-018 (2.9.14),
-  group XP NPC level-1 floor (2.9.15).
-- **2.9.15** — Group XP gap closer. `mud/groups/xp.py:group_gain`
-  was flooring NPC level contributions at 1 (`max(1, level // 2)`)
-  instead of ROM's raw `level / 2`. At NPC level 1 this inflated
-  `total_levels` by 1, and the share-formula denominator
-  `max(1, total_levels - 1)` by 1, reducing the PC's XP award by
-  ~10% on charmed-pet groups. Single-file fix; not cross-module,
-  no INV row. Two enforcement tests in
-  `tests/integration/test_group_xp_npc_level_floor.py`.
+  group XP NPC level-1 floor (2.9.15), INV-019 (2.9.16).
+- **2.9.16** — INV-019 POSITION-PROMOTION-ON-HEAL filed as ✅ ENFORCED.
+  Probe found the contract already correct by construction across three
+  modules (`update_pos`, heal handlers, regen tick); pinned with a
+  3-test regression suite in the spirit of INV-017.
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.15 |
-| Tests | 4718+ baseline + 2 new (group XP enforcement) |
-| Cross-file invariants | 18 of ~20 budget; INV-001 … INV-018 ✅ ENFORCED |
-| Branch | `master` (2.9.10–2.9.14 on origin; 2.9.15 staged) |
-| Watch list | wear-off probe ✅, group XP probe ✅, position-promotion remains |
+| Version | 2.9.16 |
+| Tests | 4724 passed + 3 new (INV-019 pins) |
+| Cross-file invariants | 19 of ~20 budget; INV-001 … INV-019 ✅ ENFORCED |
+| Branch | `master` (2.9.10–2.9.15 on origin; 2.9.16 staged) |
+| Watch list | wear-off ✅, group XP ✅, position-promotion ✅ |
 
 ## Next Intended Task
 
-The group XP probe is complete with one fix landed; remaining
-candidate from the queue:
+The position-promotion probe is complete. With 19 of ~20 INV budget
+spent and all named candidate areas covered (affect ticks, position
+transitions both directions, tick iteration safety, message wear-off
+hybrid, follower/leader chains), the next session needs to decide:
 
-- **Position promotion (upward)** — `update_pos` promotes from
-  STUNNED → STANDING when hp > 0; verify Python's symmetric
-  promotion path matches ROM. INV-016 covered the downward
-  broadcast direction (which goes through `damage()`); the upward
-  promotion happens from heal paths and natural HP regen. The
-  question is whether Python promotes symmetrically (no broadcast,
-  just position update) and whether the auto-stand from
-  STUNNED → RESTING/STANDING fires at the right HP threshold.
-
-Per AGENTS.md cross-file invariants budget note: tracker is at
-18 of ~20. If the position-promotion probe surfaces a contract
-that crosses modules, file as INV-019 — one slot before discussing
-budget restructuring before INV-021.
+1. **Hunt a 20th INV** — last remaining candidate from earlier
+   queues: mob script triggers (TRIG_GREET / TRIG_GIVE / TRIG_BRIBE
+   cross-file edges), or shop transaction atomicity
+   (shop_keeper → obj_to_char → cost deduction). Both probes are
+   5-minute scope.
+2. **Restructure the budget** — at 19/~20, AGENTS.md notes a
+   restructuring discussion is due if more contracts surface. Worth
+   re-skimming the per-file audit tracker for any rows touching
+   cross-module surfaces that should be lifted to INVs.
+3. **Switch passes** — if cross-file invariants are functionally
+   exhausted, the next mode is either P3 cleanup
+   (`ROM_C_SUBSYSTEM_AUDIT_TRACKER.md` P3 at 75%) or integration
+   test coverage (`INTEGRATION_TEST_COVERAGE_TRACKER.md`).
 
 Probe method (5-minute scope): read ROM C contract → read Python
 equivalent → write one failing test. Then close as a single
 gap-closer commit or file as the next free INV-NNN.
 
 No push to origin without explicit per-cluster user approval.
-Pending push: 2.9.15.
+Pending push: 2.9.16.

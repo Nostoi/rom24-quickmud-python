@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.16]
+
+### Added
+- **INV-019 POSITION-PROMOTION-ON-HEAL** filed as ✅ ENFORCED in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`. ROM `src/fight.c:1380-1387 update_pos` — when `victim->hit > 0`, if `position <= POS_STUNNED` the victim is **silently** promoted to `POS_STANDING` (no `act()` call, no self-line). This is the upward counterpart of INV-016 BCAST-ON-POSITION-TRANSITION (which fires only on the downward damage path). The contract spans three modules: heal handlers (`mud/skills/handlers.py` — `cure_light`, `cure_critical`, `cure_serious`, `heal`), the regen pipeline (`mud/game_loop.py:char_update` lines 713-716 — `_apply_regeneration` then `update_pos` only when STUNNED), and `update_pos` itself (`mud/combat/engine.py:677-697`, byte-for-byte ROM). All three currently agree by construction; the test pins three load-bearing properties: (1) cure_light on a STUNNED PC promotes to STANDING with no broadcast, (2) the regen tick promotes a STUNNED char whose hp lifts above 0, (3) `update_pos` does not promote positions above STUNNED (RESTING stays RESTING). `tests/integration/test_inv019_position_promotion_on_heal.py`. Tracker now at 19 of ~20 budget.
+
 ## [2.9.15]
 
 ### Fixed
