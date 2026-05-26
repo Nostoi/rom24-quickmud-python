@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.48]
+
+### Fixed
+- **`SLAY-001` — `do_slay` now routes through `raw_kill`** (ROM `src/fight.c:3285`). Python's immortal `slay` command was calling a stripped-down local `_extract_char` stub (stops fighting + unlinks from room.people + removes from `registry.char_list`) that bypassed the entire death pipeline: no corpse, no `death_cry`, no gold/silver drop, no INV-020 cleanup chain (charmed pets and group followers leaked with dangling `master`/`leader` pointers). Surfaced during the TRIG_KILL/TRIG_DEATH dispatch probe — slay turned out not to be a trigger-dispatch bug (ROM `do_slay` deliberately skips TRIG_DEATH; it calls `raw_kill` directly), but the routing-through-stub itself was a real divergence. Replaced the `_extract_char(victim)` call with `raw_kill(victim)`; the slain NPC now produces a corpse, drops gold, and runs the cleanup chain. The missing TO_VICT/TO_NOTVICT room broadcasts (ROM lines 3282-3284) are filed as a separate follow-up gap. The same stripped `_extract_char` stub is also used by `do_purge` (3 call sites in `mud/commands/imm_load.py`) — that's an adjacent INV-020-touching gap to close next. New regression: `tests/integration/test_slay_routes_through_raw_kill.py` (`test_slay_produces_corpse_for_npc` — pins the corpse-spawn contract; the pet/follower legs come along for free via the shared `raw_kill` helper).
+
 ## [2.9.47]
 
 ### Fixed

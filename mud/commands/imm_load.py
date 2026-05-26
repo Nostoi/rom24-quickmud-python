@@ -314,10 +314,17 @@ def do_slay(char: Character, args: str) -> str:
     
     # Slay the victim
     victim_name = getattr(victim, "name", "someone")
-    
-    # Extract/kill the victim
-    _extract_char(victim)
-    
+
+    # SLAY-001: route through raw_kill so the slain victim gets the
+    # full death pipeline — corpse, death_cry, gold/silver drop, and
+    # INV-020 cleanup chain (nuke_pets + die_follower). Mirrors ROM
+    # src/fight.c:3285 raw_kill(victim). The previous local
+    # _extract_char stub only stopped fighting and unlinked from the
+    # room, leaking pets/followers and producing no corpse.
+    from mud.combat.death import raw_kill
+
+    raw_kill(victim)
+
     return f"You slay {victim_name} in cold blood!"
 
 
