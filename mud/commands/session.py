@@ -390,14 +390,13 @@ def do_recall(ch: Character, args: str) -> str:
         ch.room.broadcast(f"{ch.name} disappears.", exclude=ch)
 
     # Move character (ROM C lines 1619-1620).
-    # Room model exposes the canonical occupant list as `people`
-    # (mud/models/room.py — mirrors ROM ROOM_INDEX_DATA::people).
+    # Route through Room.remove_character / Room.add_character so that
+    # area.nplayer, area.empty, area.age, and room.light stay in sync —
+    # mirrors ROM char_from_room/char_to_room (src/handler.c:1491-1568).
     old_room = ch.room
-    if old_room and ch in old_room.people:
-        old_room.people.remove(ch)
-    ch.room = recall_room
-    if ch not in recall_room.people:
-        recall_room.people.append(ch)
+    if old_room is not None:
+        old_room.remove_character(ch)
+    recall_room.add_character(ch)
 
     # Arrival message (ROM C line 1621)
     recall_room.broadcast(f"{ch.name} appears in the room.", exclude=ch)

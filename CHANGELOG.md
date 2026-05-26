@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.37]
+
+### Fixed
+- **`do_recall` no longer bypasses `area.nplayer` accounting.** Previously `mud/commands/session.py:do_recall` mutated `room.people` directly via `.remove`/`.append`, skipping `Room.remove_character`/`Room.add_character` and therefore skipping the ROM `char_from_room`/`char_to_room` side-effects: `area.nplayer` decrement on departure, increment on arrival, `area.empty=False`/`area.age=0` reset on first PC arrival, and lit-light-source room counter updates. Cross-area recall left the source area permanently overcounted (gating its resets/empty/age logic incorrectly per `src/db.c:1617-1808`) and the temple area undercounted. Fixed to route through the canonical helpers; matches ROM `src/handler.c:1491-1568`.
+
+### Added
+- **INV-023 — AREA-NPLAYER-COHERENCE pinned.** Three-module contract: every PC room transition must funnel through `Room.add_character`/`Room.remove_character`, which own `area.nplayer` + `area.empty` + `area.age` + room.light side-effects; the helpers must gate the counter on `not is_npc`; and area-reset code (`mud/spawning/reset_handler.py`) must consult `area.nplayer` rather than counting `room.people` directly. Regression test `tests/integration/test_inv023_area_nplayer_coherence.py` (2 cases: cross-area recall decrement/increment, and first-PC-arrival empty/age reset) surfaces any future PC-movement site that open-codes `room.people.append`/`remove`. NPC-only direct manipulators in `mud/mob_cmds.py`, `mud/spec_funs.py`, and `mud/spawning/templates.py:MobInstance.move_to_room` are intentional — the ROM counter excludes NPCs. INV tracker: 22 → 23 of ~20 budget.
+
 ## [2.9.36]
 
 ### Added
