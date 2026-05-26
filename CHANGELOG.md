@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.34]
+
+### Added
+- **INV-020 — GROUP-LEADER-COHERENCE-ON-RAW-KILL pinned with regression test.** Contract: `mud/combat/death.py:raw_kill` must call `die_follower(victim)` before `character_registry.remove(victim)`; `mud/characters/follow.py:die_follower` must walk the registry and reset every `fch.leader is char` to `fch.leader = fch` (NOT to None — `is_same_group` would otherwise still equate two former members via the dangling pointer at the corpse, per `src/handler.c:2018`). Currently enforced by construction; this row pins the three-module contract (death funnel + follower-chain cleanup + `is_same_group` consult) with `tests/integration/test_inv020_group_leader_coherence_on_raw_kill.py` so a future refactor that re-orders raw_kill or extracts a victim outside the cleanup path fails loudly. Tracker `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` budget now sits at 20 of ~20 INV-NNN rows ✅ ENFORCED.
+
 ## [2.9.33]
 
 ### Fixed
