@@ -123,7 +123,32 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**Open: none right now.**
+**Open: INV-025 candidate — MOBPROG-ACT-TRIGGER-DISPATCH (audit, not gap-closer).**
+
+- **INV-025 candidate (NOT YET ENFORCED)**: ROM `src/comm.c:2384-2385` fires
+  `mp_act_trigger(buf, to, ch, arg1, arg2, TRIG_ACT)` inside `act()` itself
+  for every NPC recipient that has `HAS_TRIGGER(to, TRIG_ACT)` — every
+  TO_ROOM / TO_NOTVICT / TO_CHAR / TO_VICT broadcast feeds into mobprog
+  dispatch. Python's `act_format` + `broadcast_room` (and the `_push_message`
+  surface tracked by INV-001/002/015) does **not** fire `mp_act_trigger`;
+  only `do_say` / `do_yell` route to `mp_speech_trigger`. Every TRIG_ACT
+  mobprog in the world file silently no-ops in Python. Prerequisite for
+  closing: ROM uses the global `MOBtrigger` flag (`src/comm.c:311`, toggled
+  FALSE inside `do_mob` and across recursive paths in `src/act_obj.c:832-836`
+  and `src/mob_cmds.c:333-335`) as the only recursion guard. `mud/mobprog.py`
+  has **no** recursion guard — confirmed by grep (no `MOBtrigger`, depth
+  counter, or in-progress set). Wiring TRIG_ACT into `broadcast_room`
+  without porting the guard would let a TRIG_ACT response that itself calls
+  `act()` re-enter on the same mob. Scope: audit-then-implement, not
+  probe-then-close. Surfaced during the 2.9.39 cross-file probe pass while
+  closing INV-023/INV-024; documented here to stop the per-session
+  budget creep until a dedicated session can port MOBtrigger semantics
+  alongside the dispatch.
+- ~~PORTAL-TRAVEL-OBJ-DECAY (probed 2.9.39)~~: charge depletion in
+  `mud/world/movement.py:580-584` reads/writes `portal.value[0]` on the
+  instance (not the prototype); timer-decay in `mud/game_loop.py:1157-1188`
+  honours `timer <= 0` as "no decay armed" and routes through `_extract_obj`
+  (covered by INV-013/INV-021). No gap surfaced. Not filed.
 
 - ~~**Dual `Object` / `ObjectData` classes**~~ **Closed as INV-012 in
   2.9.0.** Spec at `docs/superpowers/specs/2026-05-24-object-objectdata-consolidation-design.md`;
@@ -149,7 +174,7 @@ closed as INV-011 below — kept here for the audit trail.**
 
 ## Maintenance
 
-**24 of ~20 budget — over-budget by four. INV-001 … INV-024 ✅ ENFORCED.** Two recent rows each surfaced a real production bug: INV-023 caught `do_recall` bypassing `area.nplayer` (every cross-area recall left the source area falsely occupied), and INV-024 caught `do_get` reading `CONT_CLOSED` off the prototype instead of the instance (every closed-container `get all` succeeded against fresh-spawned instances). Probe-then-scope is still load-bearing — not chasing diminishing returns. If/when count crosses ~25 without finding a bug, that's the signal to start consolidating sub-contracts under broader rows (INV-014/021 creation/extract duals; INV-015/018 affect-lifecycle/wear-off duals; INV-023/010 PC-movement under a single ROOM-PEOPLE-COHERENCE umbrella). Per AGENTS.md: if the list grows past ~20 entries, the per-file methodology itself needs revisiting. At 22 we're 2 over budget; each row still pins a distinct cross-module contract with its own regression test. INV-020 (group-leader-on-raw-kill), INV-021 (object-extract-recursive), and INV-022 (equip-applies-object-affects) added in 2.9.34-2.9.36 all surfaced from active probe-then-scope passes, not retroactive cataloguing. No two rows could be merged without losing a distinct contract. If the count crosses ~25, audit whether some rows are sub-contracts of broader ones (e.g., INV-014/021 are creation/extract duals; INV-015/018 are affect-tick lifecycle/wear-off duals) and consider grouping.
+**24 of ~20 budget — over-budget by four. INV-001 … INV-024 ✅ ENFORCED. INV-025 candidate documented in Watch list (not yet enforced — needs MOBtrigger recursion-guard port alongside the dispatch fix, scope is audit-then-implement).** Two recent rows each surfaced a real production bug: INV-023 caught `do_recall` bypassing `area.nplayer` (every cross-area recall left the source area falsely occupied), and INV-024 caught `do_get` reading `CONT_CLOSED` off the prototype instead of the instance (every closed-container `get all` succeeded against fresh-spawned instances). Probe-then-scope is still load-bearing — not chasing diminishing returns. If/when count crosses ~25 without finding a bug, that's the signal to start consolidating sub-contracts under broader rows (INV-014/021 creation/extract duals; INV-015/018 affect-lifecycle/wear-off duals; INV-023/010 PC-movement under a single ROOM-PEOPLE-COHERENCE umbrella). Per AGENTS.md: if the list grows past ~20 entries, the per-file methodology itself needs revisiting. At 22 we're 2 over budget; each row still pins a distinct cross-module contract with its own regression test. INV-020 (group-leader-on-raw-kill), INV-021 (object-extract-recursive), and INV-022 (equip-applies-object-affects) added in 2.9.34-2.9.36 all surfaced from active probe-then-scope passes, not retroactive cataloguing. No two rows could be merged without losing a distinct contract. If the count crosses ~25, audit whether some rows are sub-contracts of broader ones (e.g., INV-014/021 are creation/extract duals; INV-015/018 are affect-tick lifecycle/wear-off duals) and consider grouping.
 
 This tracker is small on purpose. If it grows past ~20 invariants,
 something has gone wrong with the per-file audit methodology and the
