@@ -7,6 +7,7 @@ from mud.ai import _can_loot
 from mud.commands.group_commands import do_split, is_same_group
 from mud.commands.obj_manipulation import CONT_CLOSED, _can_drop_obj, _obj_from_char, get_obj_list
 from mud.handler import create_money
+from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import (
     OBJ_VNUM_COINS,
@@ -646,6 +647,8 @@ def do_drop(char: Character, args: str) -> str:
 
         room_message = act_format("$n drops some coins.", recipient=None, actor=char, arg1=None, arg2=None)
         broadcast_room(room, room_message, exclude=char)
+        # ROM src/act_obj.c:586 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+        mp_act_trigger_room(room_message, room, char)
         return "OK."
 
     if arg != "all" and not arg.startswith("all."):
@@ -660,6 +663,8 @@ def do_drop(char: Character, args: str) -> str:
 
         room_message = act_format("$n drops $p.", recipient=None, actor=char, arg1=obj, arg2=None)
         broadcast_room(room, room_message, exclude=char)
+        # ROM src/act_obj.c:608 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+        mp_act_trigger_room(room_message, room, char, arg1=obj)
         obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "something")
         extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
         if extra_flags & int(ExtraFlag.MELT_DROP):
@@ -667,6 +672,7 @@ def do_drop(char: Character, args: str) -> str:
                 room.contents.remove(obj)
             smoke_message = act_format("$p dissolves into smoke.", recipient=None, actor=char, arg1=obj, arg2=None)
             broadcast_room(room, smoke_message, exclude=char)
+            mp_act_trigger_room(smoke_message, room, char, arg1=obj)
             return f"You drop {obj_name}.\n{obj_name} dissolves into smoke."
         return f"You drop {obj_name}."
 
@@ -691,6 +697,8 @@ def do_drop(char: Character, args: str) -> str:
 
         room_message = act_format("$n drops $p.", recipient=None, actor=char, arg1=obj, arg2=None)
         broadcast_room(room, room_message, exclude=char)
+        # ROM src/act_obj.c:632 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+        mp_act_trigger_room(room_message, room, char, arg1=obj)
         obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "something")
         extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
         if extra_flags & int(ExtraFlag.MELT_DROP):
@@ -698,6 +706,7 @@ def do_drop(char: Character, args: str) -> str:
                 room.contents.remove(obj)
             smoke_message = act_format("$p dissolves into smoke.", recipient=None, actor=char, arg1=obj, arg2=None)
             broadcast_room(room, smoke_message, exclude=char)
+            mp_act_trigger_room(smoke_message, room, char, arg1=obj)
             dropped_messages.append(f"You drop {obj_name}.\n{obj_name} dissolves into smoke.")
         else:
             dropped_messages.append(f"You drop {obj_name}.")
