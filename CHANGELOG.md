@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.26]
+
+### Fixed
+- **DUPL-001b — `combat/assist.py` and `skills/handlers.py` `_send_to_char` duplicate-delivered** to both async socket and `char.messages`. The connection read loop drains `char.messages` after the next command, so every assist message (combat group auto-assist emotes via `_broadcast_room`) and every skill-handler message (spell/skill outcome text) replayed once per prompt for connected PCs — the same single-delivery contract violation already fixed for DUPL-002 (`_push_message`) and DUPL-001 (conditions). Both stubs consolidated onto canonical `mud/utils/messaging.py:send_to_char_buffered`. `combat/assist.py:_broadcast_room` now appends `"\n"` at the call site to preserve the previous line-terminator behavior. Regression test: `tests/integration/test_dupl_001b_no_duplicate_delivery.py`. Surfaced by DUPL-001b in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
+
 ## [2.9.25]
 
 ### Fixed

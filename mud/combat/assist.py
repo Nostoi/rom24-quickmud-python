@@ -6,7 +6,6 @@ ROM Reference: src/fight.c check_assist (lines 105-181)
 
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING
 
 from mud.characters import is_same_group
@@ -190,22 +189,8 @@ def _emote(char: Character, message: str) -> None:
     people = getattr(room, "people", [])
     for person in people:
         if person != char:
-            _send_to_char(person, full_message)
+            _send_to_char(person, full_message + "\n")
 
 
-def _send_to_char(char: Character, message: str) -> None:
-    """Send a message to a character, mirroring ROM C write_to_buffer."""
-    # Direct delivery for connected characters
-    writer = getattr(char, "connection", None)
-    if writer is not None:
-        from mud.net.protocol import send_to_char as _send
-
-        asyncio.create_task(_send(char, message + "\n"))
-    # Queue fallback for tests
-    send = getattr(char, "send", None)
-    if callable(send):
-        send(message + "\n")
-    else:
-        messages = getattr(char, "messages", None)
-        if isinstance(messages, list):
-            messages.append(message + "\n")
+# DUPL-001b — canonical at mud/utils/messaging.py:send_to_char_buffered.
+from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: E402

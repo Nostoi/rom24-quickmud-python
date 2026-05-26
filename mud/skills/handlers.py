@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import asyncio
-
 # Auto-generated skill handlers
 # TODO: Replace stubs with actual ROM spell/skill implementations
 from types import SimpleNamespace
@@ -460,23 +458,8 @@ _WEAPON_FLAG_LABELS: tuple[tuple[int, str], ...] = (
 )
 
 
-def _send_to_char(character: Character, message: str) -> None:
-    """Append a message to the character similar to ROM send_to_char."""
-
-    # Direct delivery for connected characters
-    writer = getattr(character, "connection", None)
-    if writer is not None:
-        from mud.net.protocol import send_to_char as _send
-
-        asyncio.create_task(_send(character, message))
-    if hasattr(character, "send_to_char"):
-        try:
-            character.send_to_char(message)
-            return
-        except Exception:  # pragma: no cover - defensive parity guard
-            pass
-    if hasattr(character, "messages"):
-        character.messages.append(message)
+# DUPL-001b — canonical at mud/utils/messaging.py:send_to_char_buffered.
+from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: E402
 
 
 def _is_outside(character: Character) -> bool:
