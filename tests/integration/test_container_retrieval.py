@@ -100,7 +100,12 @@ def create_container(vnum: int | None = None, name: str = "a wooden chest", clos
         value=[100, 0x04 if closed else 0, 0, 0, 0],
     )
     obj_registry[vnum] = proto
-    return Object(instance_id=vnum, prototype=proto)
+    obj = Object(instance_id=vnum, prototype=proto)
+    # ROM stores container flags on the OBJ_DATA instance (open/close mutates
+    # ch->value[1]). AGENTS.md test-fixture note: Object.__post_init__ does
+    # not auto-sync value from the prototype — copy it explicitly.
+    obj.value = list(proto.value)
+    return obj
 
 
 def create_corpse_npc(vnum: int | None = None) -> Object:

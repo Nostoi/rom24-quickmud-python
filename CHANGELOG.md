@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.38]
+
+### Fixed
+- **`do_get` CONT_CLOSED check now reads from the OBJ_DATA instance, not the prototype.** Previously `mud/commands/inventory.py:do_get` (line 513-514) consulted `container.prototype.value[1]` for the closed-container gate; ROM's `src/act_obj.c:291` reads `container->value[1]` off the OBJ_DATA instance, where open/close actually writes. Production container prototypes default to open, so every freshly-spawned container with the closed flag set on its instance had its lid effectively transparent to `get all <container>` and `get <obj> <container>` — players could pull contents out without ever opening the container. `do_put` and `look in <container>` were already reading the instance correctly. Test fixture in `tests/integration/test_container_retrieval.py:create_container` updated to copy `proto.value` onto the instance per the AGENTS.md "Object.__post_init__ does not auto-sync value" rule; the old test passed only because the broken `do_get` happened to mirror the fixture's broken value-sync.
+
+### Added
+- **INV-024 — CONTAINER-CLOSED-VISIBILITY pinned.** Four-surface contract: `do_get` (`mud/commands/inventory.py:do_get`), `do_put` (`mud/commands/obj_manipulation.py:do_put`), `look in <container>` (`mud/world/look.py:_look_at_object`), and `do_examine` (`mud/commands/info_extended.py:do_examine`, which delegates to `do_look "in <name>"`) must all refuse to act on a container with `CONT_CLOSED` set on its instance `value[1]`. Regression test `tests/integration/test_inv024_container_closed_visibility.py` (4 cases: get-all blocked, put blocked, look-in hides contents, open-control allows transfer) catches any future surface that reads from prototype or skips the gate. ROM `src/act_obj.c:291-295`, `:384-388`; `src/act_info.c:1160-1162`, `:1320-1386`.
+
 ## [2.9.37]
 
 ### Fixed

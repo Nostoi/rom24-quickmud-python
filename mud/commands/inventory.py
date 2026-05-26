@@ -509,9 +509,12 @@ def do_get(char: Character, args: str) -> str:
             if not _can_loot(char, container):
                 return "You can't do that."
 
-        # ROM C lines 291-295: Container closed check
-        container_proto = getattr(container, "prototype", container)
-        container_value = getattr(container_proto, "value", [0, 0, 0, 0, 0])
+        # ROM C lines 291-295: Container closed check.
+        # ROM reads container->value[1] off the OBJ_DATA instance, not the
+        # prototype — open/close mutates the per-instance value array. Reading
+        # from prototype.value would let a player `get all` through a closed
+        # lid whenever the prototype default differs from the instance state.
+        container_value = getattr(container, "value", [0, 0, 0, 0, 0])
         if len(container_value) > 1 and (container_value[1] & CONT_CLOSED):
             container_name = getattr(container, "name", "container")
             return f"The {container_name.split()[0]} is closed."
