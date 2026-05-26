@@ -515,6 +515,21 @@ def _auto_quit_character(character: Character) -> None:
     except Exception:  # pragma: no cover - defensive safeguard
         pass
 
+    # INV-020 (extract leg): mirror ROM src/handler.c:2117-2122 — every
+    # PC extract must call nuke_pets + die_follower before unlinking
+    # from char_list, otherwise charmed pets stay in the world with a
+    # dangling master pointer and group followers keep a dangling
+    # leader pointer at the extracted Character. INV-020 originally
+    # locked only the raw_kill leg; the quit/void-quit legs were
+    # leaking both cleanups pre-2.9.46.
+    from mud.characters.follow import die_follower
+    from mud.combat.death import _nuke_pets
+
+    _nuke_pets(character, room=getattr(character, "room", None))
+    if hasattr(character, "pet"):
+        character.pet = None
+    die_follower(character)
+
     room = getattr(character, "room", None)
     if room is not None:
         remover = getattr(room, "remove_character", None)

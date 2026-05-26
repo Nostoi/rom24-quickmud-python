@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.46]
+
+### Fixed
+- **INV-020 expanded — `_auto_quit_character` (void-quit auto-pull) now calls `_nuke_pets` + `die_follower`** (ROM `src/handler.c:2117-2122 extract_char`). The original INV-020 row locked only the raw_kill leg; the void-quit path bypassed both cleanups, leaving charmed pets in the world with a dangling `master` pointer (and `AFF_CHARM` still set) and every other character's `master`/`leader` pointer at the quit-er dangling at the extracted Character. `is_same_group` would then false-positive matches via the stale leader pointer — the same dangling-pointer hazard INV-020 closed at raw_kill. Renamed the row to `INV-020 EXTRACT-CHAR-CLEANUP-CHAIN` and added the void-quit leg to the contract. The `mud/commands/session.py:do_quit` → `mud/net/connection.py` disconnect-cleanup leg is **still open** — that fix requires a small refactor to extract a `_disconnect_cleanup(char)` helper from the anonymous `finally` blocks (telnet line 1989+, websocket line 2263+); filed as the next follow-up gap-closer. New regression: `tests/integration/test_inv020_extract_quit_cleanup.py` (2 tests — `test_void_quit_nukes_pets` for the pet-cleanup leg, `test_void_quit_calls_die_follower` for the follower-cleanup leg; each pins one sub-contract so a future regression on either is visible).
+
 ## [2.9.45]
 
 ### Fixed
