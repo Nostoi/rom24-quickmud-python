@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.35]
+
+### Added
+- **INV-021 — OBJECT-EXTRACT-RECURSIVE pinned with regression test.** Dual of INV-014: where INV-014 enforces "every new Object lands in `object_registry`", INV-021 enforces "every `_extract_obj` call drains the registry, all the way down through `obj.contains`". ROM `src/handler.c:2052-2086 extract_obj` recurses into `obj->contains` before removing the outer object from `object_list`; Python's `mud/game_loop.py:_extract_obj` (lines 982-1005) mirrors this with an unbounded recursive call at line 983-984. Without recursion, nested items in extracted containers would survive in the world-scan registry — visible to `spell_locate_object`, counted by save sweeps. Currently enforced by construction; test `tests/integration/test_inv021_object_extract_recursive.py` (2 cases: depth-1 sack-with-items, depth-N nested-container chain) surfaces any future refactor that skips the recursion. INV tracker now at 21 of ~20 budget — over by one; documented as deliberate per-contract entry, re-evaluate consolidation when next row is proposed.
+
 ## [2.9.34]
 
 ### Added
