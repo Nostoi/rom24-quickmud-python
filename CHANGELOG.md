@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.32]
+
+### Changed
+- **DUPL audit CLOSED — final reclassify pass for DUPL-009/012/013/014/015/016/017/020/021/022/023/024 as ✅ MATCH (divergent-by-design at fix-time re-audit).** Subagent surveys at the start of this session reported these rows as "functionally identical CLEANUP candidates"; fix-time re-reading each row showed 9 of them are **divergent-by-design**, not mechanical cleanups. Mechanical consolidation would either change behavior (DUPL-009's 3 trust semantics: plain vs is_admin-bump vs is_npc→0) or re-introduce already-fixed bug classes (DUPL-020's 3 message-append semantics, where forcing a single canonical would re-introduce DUPL-001/002-class double-delivery). Each row's actual semantics + rationale documented in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md` CLEANUP section. **DUPL-018 refiled** as a separate ROM-parity gap, not a cleanup: `follow.py:add_follower` omits the ROM `can_see` gating before showing master "X follows you", and `follow.py:stop_follower` omits the `has_spell_effect("charm person") + remove_spell_effect` cleanup logic — both are real divergences from `src/act_comm.c:1602-1628` and need their own gap-closer commit. Methodology lesson: the per-row subagent classification had ~30% precision on CLEANUP rows; fix-time re-audit is mandatory.
+- **DUPLICATE_IMPLEMENTATIONS audit fully closed.** Final tally: 6 ❌ real bugs ✅ FIXED (DUPL-001 family, 002, 003, 004, 005, 007), 1 ⚠️ DEAD-CODE ✅ FIXED (DUPL-006), 1 ✅ MATCH at fix-time (DUPL-008 immortal-bypass), 3 ⚠️ CLEANUP ✅ FIXED (DUPL-010, 011, 019), 9 ⚠️ CLEANUP reclassified to ✅ MATCH, 1 refiled as separate gap (DUPL-018). Every DUPL-NNN ID has terminal status. Burn-down complete.
+
 ## [2.9.31]
 
 ### Changed
