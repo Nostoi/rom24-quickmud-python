@@ -297,6 +297,8 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
         if room:
             room_message = act_format("$n gets $p from $P.", recipient=None, actor=char, arg1=obj, arg2=container)
             broadcast_room(room, room_message, exclude=char)
+            # ROM src/act_obj.c:151 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+            mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
 
         # Remove from container
         if hasattr(container, "contained_items"):
@@ -318,6 +320,8 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
         if room:
             room_message = act_format("$n gets $p.", recipient=None, actor=char, arg1=obj, arg2=None)
             broadcast_room(room, room_message, exclude=char)
+            # ROM src/act_obj.c:158 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+            mp_act_trigger_room(room_message, room, char, arg1=obj)
 
         # Remove from room
         room = getattr(char, "room", None)
