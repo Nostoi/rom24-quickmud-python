@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.42]
+
+### Fixed
+- **INV-025 follow-up sweep — ROM act() callsites now dispatch TRIG_ACT.** With INV-025 (`MOBPROG-ACT-TRIGGER-DISPATCH`) enforced at the emote site in 2.9.40, this release wires `mp_act_trigger_room` into the remaining ROM act() producers so TRIG_ACT mobprogs respond to the full vocabulary of room events:
+  - `do_give` (`mud/commands/give.py`) wraps its broadcast in `disable_mobtrigger()` to mirror ROM's `MOBtrigger = FALSE` recursion guard (`src/act_obj.c:832-836`); the explicit `mp_give_trigger` still covers the give event.
+  - `do_drop` (`mud/commands/inventory.py`) dispatches at all three drop sites (coins, single-obj, drop-all) plus the `MELT_DROP` "dissolves into smoke" follow-up (`src/act_obj.c:586, 608, 632`).
+  - `do_get` (`mud/commands/inventory.py`) dispatches on get-from-container and get-from-floor (`src/act_obj.c:151, 158`).
+  - `do_put` (`mud/commands/obj_manipulation.py`) dispatches at all four broadcast sites (single/all × on/in) (`src/act_obj.c:440-446, 479-485`). Also fixed a latent bug — `do_put` read `char.location` (an `Affect` attribute, not a `Character` attribute) instead of `char.room`, so the broadcast never reached room observers; switched to `char.room` consistent with ROM's `ch->in_room`.
+  - `do_sacrifice` (`mud/commands/obj_manipulation.py`) dispatches on the "$n sacrifices $p to Mota." broadcast (`src/act_obj.c:1856`).
+  - Equipment commands — `do_wear`, `do_wield`, `do_hold`/light, `_wear_all` in `mud/commands/equipment.py`, plus the shared `_unequip_to_inventory` "stops using" path and the canonical `_perform_remove` in `mud/commands/obj_manipulation.py` (`src/act_obj.c:1419, 1435-1612, 1639, 1674`; `src/handler.c:remove_obj`).
+  - Position-transition broadcasts — `_broadcast_pos_change` in `mud/combat/engine.py`, the central helper used by `apply_position_change`, `holy_word`, `decay_corpse`, and every spell that calls `update_pos` directly (`src/fight.c:837-861`).
+  - Regression tests: `tests/integration/test_inv025_do_give_act_trigger_suppression.py`, `test_inv025_do_drop_act_trigger_dispatch.py`, `test_inv025_do_get_act_trigger_dispatch.py`, `test_inv025_do_put_act_trigger_dispatch.py`, `test_inv025_do_sacrifice_act_trigger_dispatch.py`, `test_inv025_equipment_act_trigger_dispatch.py`, `test_inv025_position_transition_act_trigger_dispatch.py` (8 tests total). Each test asserts that an NPC with a `TRIG_ACT` mobprog matching the canonical trigger phrase fires `mp_act_trigger` when a PC performs the action.
+  - The INV-025 contract itself is unchanged — still locked at `do_emote` by the 2.9.40 enforcement test. The sweep widens coverage; it cannot regress what is already enforced. No new INV row.
+
 ## [2.9.41]
 
 ### Changed
