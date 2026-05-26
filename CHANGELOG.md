@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.13]
+
+### Added
+- **INV-017 TICK-ITERATION-SAFETY** filed as ✅ ENFORCED in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`. ROM `src/update.c:char_update` (lines 661-872) pre-caches `ch_next = ch->next` (line 680) so the outer loop survives any lethal damage applied inside the per-char tick — plague/poison/incap/mortal branches all call `damage(ch, ch, ...)` which routes to `raw_kill` and frees `ch`. The explicit comment at lines 788-792 ("MUST NOT refer to ch after damage taken, as it may be lethal damage (on NPC)") plus the post-loop `IS_VALID(ch)` guard at line 884 form the load-bearing contract. Python's `mud/game_loop.py:char_update` already enforces this by iterating `for character in list(character_registry):` (line 690) — the `list(...)` snapshot decouples iteration from `character_registry.remove()` calls made by `mud/combat/death.py:raw_kill`. Regression test pins it: a poisoned NPC at 1 hp dies during its poison tick; the subsequent NPC in the snapshot must still receive its tick (proves the loop did not break or skip after the registry mutation). `tests/integration/test_char_update_lethal_tick_iteration.py::test_lethal_poison_tick_does_not_skip_subsequent_npc`. Tracker now at 17 of ~20 budget.
+
 ## [2.9.12]
 
 ### Fixed
