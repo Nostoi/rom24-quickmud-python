@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.29]
+
+### Removed
+- **`mud/loaders/json_area_loader.py` (244 lines) deleted as dead code (DUPL-005).** The DUPLICATE_IMPLEMENTATIONS audit flagged two parallel JSON area loaders (`json_loader.py` and `json_area_loader.py`) with the same `load_area_from_json` / `load_all_areas_from_json` function names but different schemas and return types — a silent-divergence risk where import order would determine which loader fired. Investigation confirmed zero importers in `mud/` or `tests/` for `json_area_loader.py` (only mention was in `archive/specs/`). The live `json_loader.py` (re-exported via `mud/loaders/__init__.py` as the FULL loader with resets) already handles both on-disk JSON shapes (root-level `vnum_range.min/max` AND nested `{"area": {...}}` wrapper), so `json_area_loader.py` was a strict-subset dead duplicate. Same Trojan-horse pattern as the 2.9.21 `rom_api.py` deletion — dead module sitting next to canonical code, eligible for accidental activation. 33 area-loader tests remain green after deletion. Surfaced by DUPL-005 in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`. With this row closed, all 5 real-bug rows in the duplicate-implementations audit are now ✅ FIXED.
+
 ## [2.9.28]
 
 ### Fixed
