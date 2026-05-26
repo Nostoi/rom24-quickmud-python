@@ -1,59 +1,57 @@
-# Session Status — 2026-05-26 — INV-026 violence-trigger dispatch scope (2.9.43)
+# Session Status — 2026-05-26 — `check_assist` dispatch scope (2.9.44)
 
 ## Current State
 
-- **INV-026 VIOLENCE-TRIGGER-DISPATCH-SCOPE enforced** (`c48224af`).
-  ROM `src/fight.c:60-99 violence_update` is the only site that
-  fires TRIG_FIGHT / TRIG_HPCNT. Python now dispatches from
-  `mud/game_loop.py:violence_tick` after `multi_hit` returns,
-  guarded by `attacker.fighting is victim` (mirroring ROM's
-  `(victim = ch->fighting) == NULL` re-fetch). Pre-INV-026 every
-  caller of `multi_hit` (assist mobs, spec_funs, mob_cmds) wrongly
-  fired both triggers — this was inherited from HPCNT-001's
-  deliberately-shallow scoping decision. INV-026 completes that
-  contract at the deeper ROM-correct layer.
-- **`char.location` audit sweep closed** (`476084d5`). One real bug
-  fixed (`do_eat`/EAT-004 broadcast had the same Affect-attribute
-  typo cluster as `do_put`); five dead-code fallback sites
-  stripped. The Character-typed `.location` typo cluster is now
-  fully purged.
-- **Tests**: 8 new INV-026 sweep tests, 2 rewritten HPCNT-001
-  tests, 1 updated mobprog-triggers test. Full suite: **4760
-  passed, 4 skipped** in 664s.
-- **INV budget at 23/~20 enforced** — over by three after INV-026
-  filed. INV-026 is its own contract (own ROM mechanism, own
-  enforcement point), so no merge candidate. Future consolidation
-  candidates: INV-016/019 (position transitions), INV-006/009
-  (fighting-pointer + registry cleanup).
+- **`check_assist` misplacement closed** (`cf126f0`). ROM
+  `src/fight.c:90` calls `check_assist` from `violence_update` after
+  `multi_hit` returns; Python had it embedded inside `multi_hit`, so
+  every direct caller (`mud/combat/assist.py` recursive round,
+  `mud/spec_funs.py` spec_cast paths, `mud/mob_cmds.py` mob `kill`)
+  provoked another assist round. Lifted to
+  `mud/game_loop.py:violence_tick` before the NPC trigger dispatch,
+  mirroring ROM's `check_assist → IS_NPC → TRIG_FIGHT/TRIG_HPCNT`
+  ordering. Two re-reads of `attacker.fighting is victim` guard the
+  dispatch — once after `multi_hit` (victim-died), once after
+  `check_assist` (helper-landed-killing-blow). Folded under INV-026 in
+  the tracker (no new INV-NNN — both contracts share `src/fight.c:60-99
+  violence_update`). The combat-trigger contract is now fully
+  ROM-correct.
+- **Tests**: 3 new (`tests/integration/test_check_assist_dispatch_scope.py`),
+  1 rewritten (`tests/test_combat_assist.py::TestAssistIntegration` —
+  was asserting ROM-contradicting `multi_hit`-direct behavior). Full
+  suite: **4767 passed, 4 skipped** in 666s.
+- **INV budget at 23/~20** — unchanged. The `check_assist` close
+  folded into INV-026 rather than spawning a new row.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-26_INV026_VIOLENCE_TRIGGER_SCOPE.md](SESSION_SUMMARY_2026-05-26_INV026_VIOLENCE_TRIGGER_SCOPE.md)
+  [SESSION_SUMMARY_2026-05-26_CHECK_ASSIST_DISPATCH_SCOPE.md](SESSION_SUMMARY_2026-05-26_CHECK_ASSIST_DISPATCH_SCOPE.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.43 |
-| Tests | **4760 passed, 4 skipped** (full suite, 664s) |
+| Version | 2.9.44 |
+| Tests | **4767 passed, 4 skipped** (full suite, 666s) |
 | ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75% (unchanged) |
 | Cross-file invariants | **23 of ~20 enforced** — over by three, within margin per AGENTS.md soft cap |
 | Meta-audit progress | DUPLICATE_IMPLEMENTATIONS ✅ CLOSED; 7 meta classes remain |
-| Branch | `master` — local 2.9.43 (2 commits pending push approval) |
+| Branch | `master` — local 2.9.44 (1 commit pending push approval: `cf126f0`) |
 
 ## Next Intended Task
 
-1. **Close the `check_assist` misplacement** as a follow-up
-   gap-closer. ROM `src/fight.c:90` calls `check_assist` from
-   `violence_update` after `multi_hit` returns, not inside
-   `multi_hit` (currently at `mud/combat/engine.py:317`). Same
-   misplacement shape as INV-026; intentionally split for commit
-   hygiene. Single-file move; no new INV row needed.
-2. **GitNexus refresh** — index stale at `6b21fa9` (3 commits
-   behind). Run `npx gitnexus analyze --skip-agents-md` before the
-   next probe so impact-analysis numbers are accurate.
-3. **Continue probe-then-scope at 23/~20**. Candidate areas not
-   yet covered by an INV: affect ticks, mob script triggers
-   beyond TRIG_FIGHT/HPCNT (TRIG_KILL/DEATH guards already wired
-   correctly per the engine.py audit), group/follower chain.
-   Methodology is still earning its keep — INV-026 was found by
-   the same probe pattern that produced INV-014/INV-013 and the
-   INV-025 sweep.
+1. **GitNexus refresh** — index stale at `5d3ce9d` (one commit behind
+   after `cf126f0`). Run `npx gitnexus analyze --skip-agents-md` before
+   the next probe so impact numbers reflect the new state.
+2. **Continue probe-then-scope at 23/~20 INV budget**. Combat-trigger
+   contract is now fully ROM-correct (no more deferred items in this
+   area). Candidate probe areas not yet covered by an INV:
+   - **Affect ticks** — `mud/handler.py:affect_update` /
+     `Character.affect_remove` cross-module contracts beyond INV-015
+     (wear-off message ordering, follower-charm-expiry race).
+   - **PC-quit follower/pet cleanup** — INV-020 covers raw_kill;
+     adjacent `nuke_pets` / `stop_follower(pet)` chain on quit may
+     have a gap.
+   - **TRIG_KILL / TRIG_DEATH dispatch** — engine.py audit notes
+     they're correctly wired but no INV row pins it.
+3. **Push approval required** before `2.9.44` reaches origin/master.
+   Per standing rule: do NOT push without explicit per-cluster
+   approval ("yes push v2.9.44 to origin/master").
