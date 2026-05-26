@@ -129,16 +129,6 @@ def _get_class_entry(character: Character) -> dict[str, int | bool]:
     return _CLASS_TABLE.get(index, {"hp_max": 10, "f_mana": False})
 
 
-def _has_affect(character: Character, flag: AffectFlag) -> bool:
-    if hasattr(character, "has_affect"):
-        try:
-            return bool(character.has_affect(flag))
-        except Exception:
-            return False
-    affected = int(getattr(character, "affected_by", 0) or 0)
-    return bool(affected & int(flag))
-
-
 def _get_skill_percent(character: Character, skill_name: str) -> int:
     skills = getattr(character, "skills", {}) or {}
     if not isinstance(skills, dict):
@@ -164,7 +154,7 @@ def hit_gain(character: Character) -> int:
 
     if getattr(character, "is_npc", False):
         gain = 5 + level
-        if _has_affect(character, AffectFlag.REGENERATION):
+        if character.has_affect(AffectFlag.REGENERATION):
             gain *= 2
         position = Position(int(getattr(character, "position", Position.STANDING)))
         if position == Position.SLEEPING:
@@ -211,11 +201,11 @@ def hit_gain(character: Character) -> int:
             if len(values) > 3:
                 gain = gain * int(values[3]) // 100
 
-    if _has_affect(character, AffectFlag.POISON):
+    if character.has_affect(AffectFlag.POISON):
         gain //= 4
-    if _has_affect(character, AffectFlag.PLAGUE):
+    if character.has_affect(AffectFlag.PLAGUE):
         gain //= 8
-    if _has_affect(character, AffectFlag.HASTE) or _has_affect(character, AffectFlag.SLOW):
+    if character.has_affect(AffectFlag.HASTE) or character.has_affect(AffectFlag.SLOW):
         gain //= 2
 
     deficit = max(0, int(getattr(character, "max_hit", 0)) - int(getattr(character, "hit", 0)))
@@ -282,11 +272,11 @@ def mana_gain(character: Character) -> int:
             if len(values) > 4:
                 gain = gain * int(values[4]) // 100
 
-    if _has_affect(character, AffectFlag.POISON):
+    if character.has_affect(AffectFlag.POISON):
         gain //= 4
-    if _has_affect(character, AffectFlag.PLAGUE):
+    if character.has_affect(AffectFlag.PLAGUE):
         gain //= 8
-    if _has_affect(character, AffectFlag.HASTE) or _has_affect(character, AffectFlag.SLOW):
+    if character.has_affect(AffectFlag.HASTE) or character.has_affect(AffectFlag.SLOW):
         gain //= 2
 
     deficit = max(0, int(getattr(character, "max_mana", 0)) - int(getattr(character, "mana", 0)))
@@ -326,11 +316,11 @@ def move_gain(character: Character) -> int:
             if len(values) > 3:
                 gain = gain * int(values[3]) // 100
 
-    if _has_affect(character, AffectFlag.POISON):
+    if character.has_affect(AffectFlag.POISON):
         gain //= 4
-    if _has_affect(character, AffectFlag.PLAGUE):
+    if character.has_affect(AffectFlag.PLAGUE):
         gain //= 8
-    if _has_affect(character, AffectFlag.HASTE) or _has_affect(character, AffectFlag.SLOW):
+    if character.has_affect(AffectFlag.HASTE) or character.has_affect(AffectFlag.SLOW):
         gain //= 2
 
     deficit = max(0, int(getattr(character, "max_move", 0)) - int(getattr(character, "move", 0)))
@@ -557,7 +547,7 @@ def _char_update_tick_effects(character: Character) -> bool:
     from mud.models.constants import DamageType
 
     # Plague tick — ROM src/update.c:794-846
-    if _has_affect(character, AffectFlag.PLAGUE):
+    if character.has_affect(AffectFlag.PLAGUE):
         room = getattr(character, "room", None)
         if room is None:
             return False
@@ -586,7 +576,7 @@ def _char_update_tick_effects(character: Character) -> bool:
                 for vch in list(getattr(room, "people", [])):
                     if vch is character:
                         continue
-                    if _has_affect(vch, AffectFlag.PLAGUE):
+                    if vch.has_affect(AffectFlag.PLAGUE):
                         continue
                     if int(getattr(vch, "level", 0) or 0) >= LEVEL_IMMORTAL:
                         continue
@@ -627,7 +617,7 @@ def _char_update_tick_effects(character: Character) -> bool:
         return False
 
     # Poison tick — ROM src/update.c:848-862
-    if _has_affect(character, AffectFlag.POISON) and not _has_affect(character, AffectFlag.SLOW):
+    if character.has_affect(AffectFlag.POISON) and not character.has_affect(AffectFlag.SLOW):
         affects = getattr(character, "affected", None) or []
         poison_af = None
         for af in affects:
@@ -692,7 +682,7 @@ def char_update() -> None:
                     and getattr(room, "area", None) is not ch_zone
                     and getattr(character, "desc", None) is None
                     and getattr(character, "fighting", None) is None
-                    and not _has_affect(character, AffectFlag.CHARM)
+                    and not character.has_affect(AffectFlag.CHARM)
                     and rng_mm.number_percent() < 5
                 ):
                     from mud.mob_cmds import _extract_character

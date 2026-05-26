@@ -227,20 +227,12 @@ def _format_coin_message(coins: int) -> str:
     return f"{silver} silver"
 
 
-def _has_affect(entity, flag: AffectFlag) -> bool:
-    checker = getattr(entity, "has_affect", None)
-    if callable(checker):
-        return checker(flag)
-    affected_by = getattr(entity, "affected_by", 0)
-    return bool(affected_by & int(flag))
-
-
 def _keeper_can_see_customer(keeper: Character, customer: Character) -> bool:
-    if _has_affect(keeper, AffectFlag.BLIND):
+    if keeper.has_affect(AffectFlag.BLIND):
         return False
-    if _has_affect(customer, AffectFlag.INVISIBLE) and not _has_affect(keeper, AffectFlag.DETECT_INVIS):
+    if customer.has_affect(AffectFlag.INVISIBLE) and not keeper.has_affect(AffectFlag.DETECT_INVIS):
         return False
-    if _has_affect(customer, AffectFlag.HIDE) and not _has_affect(keeper, AffectFlag.DETECT_HIDDEN):
+    if customer.has_affect(AffectFlag.HIDE) and not keeper.has_affect(AffectFlag.DETECT_HIDDEN):
         return False
     return True
 
@@ -272,7 +264,7 @@ def _keeper_can_see_object(keeper: Character, obj: Object) -> bool:
     if flags & int(ITEM_VIS_DEATH):
         return False
 
-    if _has_affect(keeper, AffectFlag.BLIND):
+    if keeper.has_affect(AffectFlag.BLIND):
         try:
             item_type = int(getattr(obj, "item_type", 0) or 0)
         except (TypeError, ValueError):
@@ -297,14 +289,14 @@ def _keeper_can_see_object(keeper: Character, obj: Object) -> bool:
         if light_timer != 0:
             return True
 
-    if flags & int(ITEM_INVIS) and not _has_affect(keeper, AffectFlag.DETECT_INVIS):
+    if flags & int(ITEM_INVIS) and not keeper.has_affect(AffectFlag.DETECT_INVIS):
         return False
 
     if flags & int(ITEM_GLOW):
         return True
 
     room = getattr(keeper, "room", None)
-    if room is not None and room_is_dark(room) and not _has_affect(keeper, AffectFlag.DARK_VISION):
+    if room is not None and room_is_dark(room) and not keeper.has_affect(AffectFlag.DARK_VISION):
         return False
 
     return True

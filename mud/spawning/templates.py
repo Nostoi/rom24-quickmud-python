@@ -511,6 +511,10 @@ class MobInstance:
             return False
         return bool(getattr(self, "affected_by", 0) & bit)
 
+    def is_awake(self) -> bool:
+        """Mirror Character.is_awake (DUPL-010 consolidation)."""
+        return self.position > Position.SLEEPING
+
     def add_affect(self, flag, **kwargs) -> None:
         """Apply an affect flag (simplified version for MobInstance)."""
         try:

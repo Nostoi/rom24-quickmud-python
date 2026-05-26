@@ -77,22 +77,6 @@ def _get_trust(char: Character) -> int:
     return trust if trust > 0 else level
 
 
-def _has_affect(char: Character, flag: AffectFlag) -> bool:
-    """Gracefully probe ``char`` for an active affect flag."""
-
-    checker = getattr(char, "has_affect", None)
-    if callable(checker):
-        try:
-            return bool(checker(flag))
-        except Exception:
-            pass
-    affected = getattr(char, "affected_by", 0)
-    try:
-        return bool(int(affected) & int(flag))
-    except Exception:
-        return False
-
-
 def _has_holylight(char: Character | None) -> bool:
     if char is None:
         return False
@@ -191,28 +175,28 @@ def can_see_character(observer: Character, target: Character | None) -> bool:
     if _has_holylight(observer):
         return True
 
-    if _has_affect(observer, AffectFlag.BLIND):
+    if observer.has_affect(AffectFlag.BLIND):
         return False
 
     if observer_room is target_room and room_is_dark(observer_room):
         if not (
             _has_holylight(observer)
-            or _has_affect(observer, AffectFlag.INFRARED)
-            or _has_affect(observer, AffectFlag.DARK_VISION)
+            or observer.has_affect(AffectFlag.INFRARED)
+            or observer.has_affect(AffectFlag.DARK_VISION)
         ):
             return False
 
-    if _has_affect(target, AffectFlag.INVISIBLE) and not _has_affect(observer, AffectFlag.DETECT_INVIS):
+    if target.has_affect(AffectFlag.INVISIBLE) and not observer.has_affect(AffectFlag.DETECT_INVIS):
         return False
 
-    if _has_affect(target, AffectFlag.SNEAK) and getattr(target, "fighting", None) is None:
-        if not _has_affect(observer, AffectFlag.DETECT_HIDDEN):
+    if target.has_affect(AffectFlag.SNEAK) and getattr(target, "fighting", None) is None:
+        if not observer.has_affect(AffectFlag.DETECT_HIDDEN):
             chance = _sneak_success_chance(observer, target)
             if rng_mm.number_percent() < chance:
                 return False
 
-    if _has_affect(target, AffectFlag.HIDE) and getattr(target, "fighting", None) is None:
-        if not _has_affect(observer, AffectFlag.DETECT_HIDDEN):
+    if target.has_affect(AffectFlag.HIDE) and getattr(target, "fighting", None) is None:
+        if not observer.has_affect(AffectFlag.DETECT_HIDDEN):
             return False
 
     return True
@@ -285,7 +269,7 @@ def can_see_object(observer: Character | None, obj: Any) -> bool:
     if extra_flags & int(ExtraFlag.VIS_DEATH):
         return False
 
-    if _has_affect(observer, AffectFlag.BLIND):
+    if observer.has_affect(AffectFlag.BLIND):
         item_type = _object_item_type(obj)
         if item_type != ItemType.POTION:
             return False
@@ -294,14 +278,14 @@ def can_see_object(observer: Character | None, obj: Any) -> bool:
     if item_type == ItemType.LIGHT and _object_light_timer(obj) != 0:
         return True
 
-    if extra_flags & int(ExtraFlag.INVIS) and not _has_affect(observer, AffectFlag.DETECT_INVIS):
+    if extra_flags & int(ExtraFlag.INVIS) and not observer.has_affect(AffectFlag.DETECT_INVIS):
         return False
 
     if extra_flags & int(ExtraFlag.GLOW):
         return True
 
     room = getattr(observer, "room", None)
-    if room is not None and room_is_dark(room) and not _has_affect(observer, AffectFlag.DARK_VISION):
+    if room is not None and room_is_dark(room) and not observer.has_affect(AffectFlag.DARK_VISION):
         return False
 
     return True

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import LEVEL_IMMORTAL, ActFlag, Position, convert_flags_from_letters
+from mud.models.constants import LEVEL_IMMORTAL, ActFlag, convert_flags_from_letters
 from mud.skills.registry import skill_registry
 
 
@@ -32,17 +32,6 @@ def _has_practice_flag(entity) -> bool:
     return False
 
 
-def _is_awake(entity) -> bool:
-    """Mirror ROM Position gating for practice trainers."""
-
-    position = getattr(entity, "position", Position.STANDING)
-    try:
-        pos_value = Position(position)
-    except ValueError:
-        pos_value = Position.STANDING
-    return pos_value > Position.SLEEPING
-
-
 def _find_practice_trainer(char: Character):
     """Locate an awake practice trainer in the character's room."""
 
@@ -55,7 +44,7 @@ def _find_practice_trainer(char: Character):
             continue
         if not _has_practice_flag(occupant):
             continue
-        if not _is_awake(occupant):
+        if not occupant.is_awake():
             continue
         return occupant
     return None

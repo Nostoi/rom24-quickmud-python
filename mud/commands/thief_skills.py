@@ -132,7 +132,7 @@ def do_steal(char: Character, args: str) -> str:
     percent = number_percent()
 
     # ROM L2204-2209: visibility / awake modifiers
-    if not _is_awake(victim):
+    if not victim.is_awake():
         percent -= 10
     elif not _can_see_char(victim, char):
         percent += 25
@@ -207,9 +207,9 @@ def _steal_failure(char: Character, victim: Character) -> str:
         yell_buf = f"Keep your hands out of there, {char_name}!"
 
     # ROM L2241-2245: wake victim if sleeping, then yell.
-    if not _is_awake(victim):
+    if not victim.is_awake():
         victim.position = Position.STANDING
-    if _is_awake(victim):
+    if victim.is_awake():
         yell_text = f"{getattr(victim, 'name', 'Someone')} yells '{yell_buf}'\n"
         if room is not None:
             for occupant in list(getattr(room, "people", []) or []):
@@ -358,14 +358,6 @@ def _apply_sneak_affect(char: Character) -> None:
     char.affected_by = getattr(char, "affected_by", 0) | AffectFlag.SNEAK
 
 
-def _is_awake(victim: Character) -> bool:
-    """Mirror ROM IS_AWAKE macro: position > SLEEPING."""
-
-    pos = getattr(victim, "position", Position.STANDING)
-    try:
-        return int(pos) > int(Position.SLEEPING)
-    except (TypeError, ValueError):
-        return True
 
 
 def _can_see_char(observer: Character, target: Character) -> bool:
@@ -390,13 +382,8 @@ def _is_clan(char: Character) -> bool:
         return False
 
 
-def _apply_wait_state(char: Character, beats: int) -> None:
-    """ROM WAIT_STATE: char.wait = max(char.wait, beats)."""
-
-    if beats <= 0 or not hasattr(char, "wait"):
-        return
-    current = int(getattr(char, "wait", 0) or 0)
-    char.wait = max(current, int(beats))
+# DUPL-019 — canonical at mud/utils/timing.py:apply_wait_state.
+from mud.utils.timing import apply_wait_state as _apply_wait_state  # noqa: E402
 
 
 def _get_obj_carry_visible(victim: Character, name: str, observer: Character):

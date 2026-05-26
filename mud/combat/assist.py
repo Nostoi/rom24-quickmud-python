@@ -55,7 +55,7 @@ def check_assist(ch: Character, victim: Character) -> None:
     # ROM uses rch_next pattern to handle this
     for rch in list(people_in_room):  # Create a copy to avoid modification issues
         # Skip if not awake or already fighting
-        if not _is_awake(rch):
+        if not rch.is_awake():
             continue
 
         if getattr(rch, "fighting", None) is not None:
@@ -148,14 +148,6 @@ def check_assist(ch: Character, victim: Character) -> None:
                 if target is not None:
                     _emote(rch, "screams and attacks!")
                     multi_hit(rch, target, None)
-
-
-def _is_awake(char: Character) -> bool:
-    """Check if character is awake (ROM IS_AWAKE macro)."""
-    from mud.models.constants import Position
-
-    position = getattr(char, "position", Position.STANDING)
-    return position > Position.SLEEPING
 
 
 def _is_npc(char: Character) -> bool:

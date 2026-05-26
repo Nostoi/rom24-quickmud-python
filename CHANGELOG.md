@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.31]
+
+### Changed
+- **DUPL-010 — consolidated 6 duplicate `_is_awake` helpers onto `Character.is_awake()`** (canonical at `mud/models/character.py:452`, returns `self.position > Position.SLEEPING`). Deletions in: `mud/combat/assist.py`, `mud/math/stat_apps.py`, `mud/ai/aggressive.py`, `mud/commands/advancement.py`, `mud/commands/thief_skills.py`. Call sites converted to `char.is_awake()`. `mud/spec_funs.py` retains a thin defensive `_is_awake` wrapper because spec-fun unit tests pass `SimpleNamespace` mocks that can't bind methods — wrapper checks `getattr(ch, "is_awake", None)` and falls back to direct `position` attribute. Also added `MobInstance.is_awake()` method (alongside the existing `MobInstance.has_affect()`) since `_is_awake(mob)` call sites previously relied on defensive `getattr` and now resolve to the bound method.
+- **DUPL-011 — consolidated 5 duplicate `_has_affect` helpers onto `Character.has_affect(flag)`** (canonical at `mud/models/character.py:625`, returns `bool(self.affected_by & flag)`). Deletions in: `mud/game_loop.py`, `mud/spec_funs.py`, `mud/world/vision.py`, `mud/ai/aggressive.py`, `mud/commands/shop.py`. 44 call sites converted to `entity.has_affect(flag)`. `MobInstance.has_affect()` already existed; no MobInstance gap.
+- **DUPL-019 — consolidated 2 duplicate `_apply_wait_state` helpers onto new `mud/utils/timing.py:apply_wait_state(char, beats)`** (ROM WAIT_STATE: `ch->wait = max(ch->wait, beats)` from `src/skills.c`). `mud/commands/thief_skills.py` and `mud/commands/healer.py` now re-import the canonical helper.
+
 ## [2.9.30]
 
 ### Fixed

@@ -108,21 +108,16 @@ def _get_position(ch: Any) -> Position:
 
 
 def _is_awake(ch: Any) -> bool:
-    return _get_position(ch) > Position.SLEEPING
+    """DUPL-010 — defensive delegate.
 
-
-def _has_affect(ch: Any, flag: AffectFlag) -> bool:
-    checker = getattr(ch, "has_affect", None)
-    if callable(checker):
-        try:
-            return bool(checker(flag))
-        except Exception:
-            return False
-    affected = getattr(ch, "affected_by", 0)
-    try:
-        return bool(int(affected) & int(flag))
-    except Exception:
-        return False
+    Spec-fun tests pass SimpleNamespace mocks (no bound methods); fall
+    back to the position attribute when Character/MobInstance.is_awake()
+    isn't available.
+    """
+    method = getattr(ch, "is_awake", None)
+    if callable(method):
+        return bool(method())
+    return getattr(ch, "position", 0) > Position.SLEEPING
 
 
 def _append_message(target: Any, message: str) -> None:
@@ -1046,7 +1041,7 @@ def spec_thief(mob: Any) -> bool:
         if not can_see_character(mob, victim):
             continue
 
-        if _is_awake(victim):
+        if victim.is_awake():
             if rng_mm.number_range(0, mob_level) == 0:
                 victim_message = act_format(
                     "You discover $n's hands in your wallet!",
@@ -1099,7 +1094,7 @@ def spec_thief(mob: Any) -> bool:
 
 
 def spec_cast_adept(mob: Any) -> bool:
-    if not _is_awake(mob):
+    if not mob.is_awake():
         return False
 
     room = getattr(mob, "room", None)
@@ -1174,7 +1169,7 @@ register_spec_fun("spec_cast_adept", spec_cast_adept)
 def spec_executioner(mob: Any) -> bool:
     # mirroring ROM src/special.c:857-896 spec_executioner
     room = getattr(mob, "room", None)
-    if room is None or not _is_awake(mob) or getattr(mob, "fighting", None) is not None:
+    if room is None or not mob.is_awake() or getattr(mob, "fighting", None) is not None:
         return False
 
     target = None
@@ -1209,7 +1204,7 @@ def spec_executioner(mob: Any) -> bool:
 def spec_guard(mob: Any) -> bool:
     # mirroring ROM src/special.c:932-993 spec_guard
     room = getattr(mob, "room", None)
-    if room is None or not _is_awake(mob) or getattr(mob, "fighting", None) is not None:
+    if room is None or not mob.is_awake() or getattr(mob, "fighting", None) is not None:
         return False
 
     target = None
@@ -1291,9 +1286,9 @@ def spec_troll_member(mob: Any) -> bool:
     room = getattr(mob, "room", None)
     if (
         room is None
-        or not _is_awake(mob)
-        or _has_affect(mob, AffectFlag.CALM)
-        or _has_affect(mob, AffectFlag.CHARM)
+        or not mob.is_awake()
+        or mob.has_affect(AffectFlag.CALM)
+        or mob.has_affect(AffectFlag.CHARM)
         or getattr(mob, "fighting", None) is not None
     ):
         return False
@@ -1332,9 +1327,9 @@ def spec_ogre_member(mob: Any) -> bool:
     room = getattr(mob, "room", None)
     if (
         room is None
-        or not _is_awake(mob)
-        or _has_affect(mob, AffectFlag.CALM)
-        or _has_affect(mob, AffectFlag.CHARM)
+        or not mob.is_awake()
+        or mob.has_affect(AffectFlag.CALM)
+        or mob.has_affect(AffectFlag.CHARM)
         or getattr(mob, "fighting", None) is not None
     ):
         return False
@@ -1372,10 +1367,10 @@ def spec_patrolman(mob: Any) -> bool:
     room = getattr(mob, "room", None)
     if (
         room is None
-        or not _is_awake(mob)
+        or not mob.is_awake()
         or getattr(mob, "fighting", None) is not None
-        or _has_affect(mob, AffectFlag.CALM)
-        or _has_affect(mob, AffectFlag.CHARM)
+        or mob.has_affect(AffectFlag.CALM)
+        or mob.has_affect(AffectFlag.CHARM)
     ):
         return False
 

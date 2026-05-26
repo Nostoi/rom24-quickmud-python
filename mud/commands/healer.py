@@ -169,11 +169,8 @@ def _match_service(argument: str) -> _HealerService | None:
     return None
 
 
-def _apply_wait_state(char: Character, beats: int) -> None:
-    if beats <= 0 or not hasattr(char, "wait"):
-        return
-    current = int(getattr(char, "wait", 0) or 0)
-    char.wait = max(current, beats)
+# DUPL-019 — canonical at mud/utils/timing.py:apply_wait_state.
+from mud.utils.timing import apply_wait_state as _apply_wait_state  # noqa: E402
 
 
 def _healer_name(healer: object) -> str:

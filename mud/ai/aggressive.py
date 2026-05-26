@@ -6,7 +6,7 @@ from collections.abc import Iterable
 
 from mud.combat import multi_hit
 from mud.models.character import Character, character_registry
-from mud.models.constants import ActFlag, AffectFlag, LEVEL_IMMORTAL, Position, RoomFlag
+from mud.models.constants import ActFlag, AffectFlag, LEVEL_IMMORTAL, RoomFlag
 from mud.utils import rng_mm
 
 
@@ -15,24 +15,6 @@ def _has_flag(value: int, flag: ActFlag) -> bool:
         return bool(int(value) & int(flag))
     except Exception:
         return False
-
-
-def _has_affect(ch: Character, flag: AffectFlag) -> bool:
-    checker = getattr(ch, "has_affect", None)
-    if callable(checker):
-        return bool(checker(flag))
-    affected = getattr(ch, "affected_by", 0)
-    try:
-        return bool(int(affected) & int(flag))
-    except Exception:
-        return False
-
-
-def _is_awake(ch: Character) -> bool:
-    checker = getattr(ch, "is_awake", None)
-    if callable(checker):
-        return bool(checker())
-    return int(getattr(ch, "position", 0)) > int(Position.SLEEPING)
 
 
 def _can_see(attacker: Character, target: Character | None) -> bool:
@@ -62,7 +44,7 @@ def _eligible_victims(ch: Character, occupants: Iterable[Character]) -> Iterable
             continue
         if int(getattr(ch, "level", 0)) < int(getattr(candidate, "level", 0)) - 5:
             continue
-        if _has_flag(getattr(ch, "act", 0), ActFlag.WIMPY) and _is_awake(candidate):
+        if _has_flag(getattr(ch, "act", 0), ActFlag.WIMPY) and candidate.is_awake():
             continue
         if not _can_see(ch, candidate):
             continue
@@ -91,15 +73,15 @@ def aggressive_update() -> None:
                 continue
             if int(getattr(room, "room_flags", 0)) & int(RoomFlag.ROOM_SAFE):
                 continue
-            if _has_affect(mob, AffectFlag.CALM):
+            if mob.has_affect(AffectFlag.CALM):
                 continue
             if getattr(mob, "fighting", None) is not None:
                 continue
-            if _has_affect(mob, AffectFlag.CHARM):
+            if mob.has_affect(AffectFlag.CHARM):
                 continue
-            if not _is_awake(mob):
+            if not mob.is_awake():
                 continue
-            if _has_flag(getattr(mob, "act", 0), ActFlag.WIMPY) and _is_awake(watcher):
+            if _has_flag(getattr(mob, "act", 0), ActFlag.WIMPY) and watcher.is_awake():
                 continue
             if not _can_see(mob, watcher):
                 continue

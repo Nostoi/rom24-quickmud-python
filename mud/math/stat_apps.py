@@ -221,16 +221,6 @@ def _curr_wis(ch) -> int:
     return _curr_stat(ch, Stat.WIS)
 
 
-def _is_awake(ch) -> bool:
-    """ROM IS_AWAKE: position > POS_SLEEPING (4). See src/merc.h:2103."""
-
-    pos = getattr(ch, "position", 8)
-    try:
-        return int(pos) > 4
-    except (TypeError, ValueError):
-        return True
-
-
 def get_hitroll(ch) -> int:
     """Return ROM ``GET_HITROLL(ch)``: ch.hitroll + str_app[STR].tohit.
 
@@ -269,7 +259,7 @@ def get_ac(ch, ac_type: int) -> int:
         base = 0
     else:
         base = int(armor[ac_type])
-    if not _is_awake(ch):
+    if not ch.is_awake():
         return base
     return base + DEX_APP[_curr_dex(ch)].defensive
 

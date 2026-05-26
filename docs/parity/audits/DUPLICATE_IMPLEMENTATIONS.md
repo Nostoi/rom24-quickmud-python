@@ -46,8 +46,8 @@ Spot-checked candidates that turned out to be functionally identical (drift risk
 | # | Primitive | Copies | Canonical-target proposal | Gap ID |
 |---|-----------|--------|---------------------------|--------|
 | 9 | `_get_trust` | 9 | `mud/world/trust.py:get_trust` (new file) or fold into `mud/utils/perms.py` | DUPL-009 |
-| 10 | `_is_awake` | 6 | `mud/models/character.py:Character.is_awake` (property) | DUPL-010 |
-| 11 | `_has_affect` | 5 | `mud/models/character.py:Character.has_affect_flag` | DUPL-011 |
+| 10 | `_is_awake` | ✅ **FIXED** (2.9.31) — 6 dupes consolidated onto `Character.is_awake()`; `mud/spec_funs.py` retains defensive wrapper for SimpleNamespace test mocks; added `MobInstance.is_awake()` to close a related gap. | DUPL-010 |
+| 11 | `_has_affect` | ✅ **FIXED** (2.9.31) — 5 dupes consolidated onto `Character.has_affect(flag)`; 44 call sites converted. `MobInstance.has_affect` already existed. | DUPL-011 |
 | 12 | `_possessive_pronoun` | 4 | `mud/utils/act.py` (canonical site already exists) | DUPL-012 |
 | 13 | `_reflexive_pronoun` | 2 | same as DUPL-012 | DUPL-013 |
 | 14 | `_coerce_int` | 4 | `mud/math/c_compat.py:coerce_int` | DUPL-014 |
@@ -55,7 +55,7 @@ Spot-checked candidates that turned out to be functionally identical (drift risk
 | 16 | `_get_skill_percent` | 3 | `mud/skills/registry.py` | DUPL-016 |
 | 17 | `_get_skill` | 3 | `mud/skills/registry.py` | DUPL-017 |
 | 18 | `add_follower` / `stop_follower` / `is_same_group` | 2 each | `mud/characters/follow.py` (canonical, has broadcasts after 2.9.19/20) | DUPL-018 |
-| 19 | `_apply_wait_state` | 2 | `mud/utils/timing.py:apply_wait_state` | DUPL-019 |
+| 19 | `_apply_wait_state` | ✅ **FIXED** (2.9.31) — new canonical `mud/utils/timing.py:apply_wait_state(char, beats)`; both copies re-import. | DUPL-019 |
 | 20 | `_append_message` | 3 | `mud/utils/messaging.py` (alongside DUPL-001 target) | DUPL-020 |
 | 21 | `_broadcast` / `_broadcast_room` | 3+2 | use `mud/net/protocol.py:broadcast_room` / `mud/models/room.py:Room.broadcast` instead | DUPL-021 |
 | 22 | `_object_item_type` / `_resolve_item_type` / `_resolve_item_type_code` | 3+2+2 | `mud/models/object.py:Object.item_type` (already exists) | DUPL-022 |
