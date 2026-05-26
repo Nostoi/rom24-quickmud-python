@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.18]
+
+### Fixed
+- **`do_buy` missing `$n buys $p.` TO_ROOM broadcast** (`mud/commands/shop.py:836-846`): ROM `src/act_obj.c:2734-2745 do_buy` emits `$n buys $p[N].` (multi) or `$n buys $p.` (single) to the room before deducting cost, so onlookers see the purchase. Python's `do_buy` had zero room broadcasts — the buyer received their TO_CHAR confirmation but no witness in the room saw the transaction. ROM-divergent. (Sibling `do_sell` at `mud/commands/shop.py:938-942` already had the matching `$n sells $p.` broadcast.) Fix: emit the broadcast via `room.broadcast(..., exclude=char)` before `deduct_cost`, mirroring ROM ordering and `do_sell`'s established pattern. Two enforcement tests in `tests/integration/test_shop_room_broadcasts.py`: (1) witness in same room sees `$n buys $p.` after buy, buyer excluded; (2) regression-pin for the pre-existing `do_sell` broadcast so it can't silently regress.
+
 ## [2.9.17]
 
 ### Fixed

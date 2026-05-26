@@ -833,6 +833,17 @@ def do_buy(char: Character, args: str) -> str:
                 char.messages.append("You haggle with the shopkeeper.")
             check_improve(char, "haggle", True, 4)
 
+    # ROM src/act_obj.c:2734-2745 — broadcast `$n buys $p[N].` or `$n buys $p.`
+    # to the room before deducting cost so onlookers see the transaction.
+    room = getattr(char, "room", None)
+    if room is not None:
+        buyer_name = char.short_descr or char.name or "Someone"
+        item_name = selected_obj.short_descr or selected_obj.name or "something"
+        if quantity > 1:
+            room.broadcast(f"{buyer_name} buys {item_name}[{quantity}].", exclude=char)
+        else:
+            room.broadcast(f"{buyer_name} buys {item_name}.", exclude=char)
+
     deduct_cost(char, total_cost)
     _set_keeper_total_wealth(keeper, _keeper_total_wealth(keeper) + total_cost)
 
