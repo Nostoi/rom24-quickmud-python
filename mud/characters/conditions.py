@@ -2,17 +2,10 @@ from __future__ import annotations
 
 from mud.models.character import Character
 from mud.models.constants import Condition, LEVEL_IMMORTAL
+from mud.utils.messaging import send_to_char_buffered as _send_to_char
 
 
 __all__ = ["gain_condition"]
-
-
-def _send_to_char(character: Character, message: str) -> None:
-    """Append a message to the character if a buffer is available."""
-
-    messages = getattr(character, "messages", None)
-    if isinstance(messages, list):
-        messages.append(message)
 
 
 def gain_condition(character: Character, condition: Condition, delta: int) -> None:

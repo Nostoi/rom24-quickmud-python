@@ -45,3 +45,19 @@ def push_message(character: Character | None, message: str) -> None:
     mailbox = getattr(character, "messages", None)
     if isinstance(mailbox, list):
         mailbox.append(str(message))
+
+
+def send_to_char_buffered(character: "Character | None", message: str) -> None:
+    """Buffered ROM send_to_char — async send for connected PCs, mailbox fallback.
+
+    Used by code paths (gain_condition, immortal commands, etc.) that in ROM
+    call ``send_to_char(buf, ch)`` to write to the descriptor.  Same
+    single-delivery contract as ``push_message`` — a connected PC receives
+    via the async send only, never also via ``char.messages`` (the
+    connection read loop would replay the message).
+
+    The DUPL-001 audit row consolidates the 13 divergent local
+    ``_send_to_char`` copies onto this canonical entry point — see
+    ``docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md``.
+    """
+    push_message(character, message)

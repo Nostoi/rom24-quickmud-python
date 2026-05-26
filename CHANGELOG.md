@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.24]
+
+### Fixed
+- **DUPL-001 (conditions.py) — hunger/thirst/sober messages never reached connected players** (`mud/characters/conditions.py`): the local `_send_to_char` stub appended ONLY to `char.messages`. The connection delivery path uses `asyncio.create_task(send_to_char(...))`, so the mailbox-only branch never reaches a connected PC's socket — players never saw "You are hungry." / "You are thirsty." / "You are sober." from the gain_condition tick. Audited and replaced with new canonical `mud.utils.messaging.send_to_char_buffered`, which mirrors ROM `src/comm.c:send_to_char` (async socket for connected, mailbox fallback for disconnected/tests — single delivery, no replay). Regression test: `tests/integration/test_gain_condition_delivers_to_connected_pc.py`. Surfaced by DUPL-001 in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
+
+### Changed
+- **DUPL-001 audit re-read surfaced a fresh bug class.** Re-reading the 13 `_send_to_char` bodies revealed **9 sites** (`imm_load.py`, `imm_emote.py`, `imm_admin.py`, `imm_commands.py`, `imm_display.py`, `imm_punish.py`, `imm_server.py`, `admin_commands.py`, `remaining_rom.py`) write to `char.output_buffer` — an attribute the production connection read loop never drains. Every immortal/admin message via those stubs vanishes. Plus `combat/assist.py` and `skills/handlers.py` carry the DUPL-002-class duplicate-delivery bug (write to BOTH async socket AND `char.messages`). Tracked as follow-up DUPL-001a (output_buffer black-hole, 9 sites), DUPL-001b (duplicate-delivery, 2 sites), DUPL-001c (game_loop canonical-equivalent, 1 site).
+
 ## [2.9.23]
 
 ### Fixed
