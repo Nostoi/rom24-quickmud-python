@@ -16,10 +16,10 @@ from mud.commands.imm_commands import (
     get_char_world,
     get_trust,
 )
+from mud.commands.affects import affect_loc_name
 from mud.handler import (
     act_bit_name,
     affect_bit_name,
-    affect_loc_name,
     comm_bit_name,
     cont_bit_name,
     extra_bit_name,

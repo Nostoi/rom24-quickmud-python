@@ -86,21 +86,3 @@ def is_safe_spell(char: "Character", victim: "Character", area: bool = False) ->
     return is_safe(char, victim)
 
 
-def check_killer(char: "Character", victim: "Character") -> None:
-    """
-    Mark character as a killer if they attack an innocent.
-    
-    ROM Reference: src/fight.c check_killer
-    """
-    from mud.models.constants import PlayerFlag
-    
-    # Only applies to players
-    if getattr(char, "is_npc", True):
-        return
-    
-    # NPCs don't make you a killer
-    if getattr(victim, "is_npc", True):
-        return
-    
-    # Set KILLER flag
-    char.act = getattr(char, "act", 0) | PlayerFlag.KILLER

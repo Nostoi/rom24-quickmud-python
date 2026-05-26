@@ -3,7 +3,7 @@
 > **Parent**: `docs/parity/META_AUDIT_TAXONOMY.md` § Class 6.
 > **Plan**: `docs/parity/plans/2026-05-26-audit-duplicate-implementations.md`.
 
-**Status**: complete as of 2026-05-26. 67 candidates discovered, 5 closed by [2.9.21 `rom_api.py` deletion](#closed-by-rom_apipy-deletion), **5 ❌ real bugs**, **3 ⚠️ DEAD-CODE** rows, **~20 ⚠️ CLEANUP** rows, **4 ✅ intentional** rows.
+**Status**: complete as of 2026-05-26. 67 candidates discovered, 5 closed by [2.9.21 `rom_api.py` deletion](#closed-by-rom_apipy-deletion), **6 ❌ real bugs** (DUPL-001×4 + DUPL-002 + DUPL-003 + DUPL-004 + DUPL-005 + DUPL-007 reclassified at fix-time), **2 ⚠️ DEAD-CODE** rows (DUPL-006 dead-stub deletion; DUPL-008 reclassified to ✅ MATCH at fix-time as intentional immortal-bypass), **~20 ⚠️ CLEANUP** rows, **5 ✅ intentional** rows.
 
 ## Rubric
 
@@ -35,9 +35,9 @@ These rows have one correct implementation reached by production, and one wrong/
 
 | # | Primitive | Sites | Wired copy | Dead/stub copy | Gap ID | Consolidation plan |
 |---|-----------|-------|------------|----------------|--------|--------------------|
-| 6 | `check_killer` | `mud/combat/engine.py:1112`, `mud/combat/safety.py:89` | `engine.py` (full ROM logic: charm chain, victim KILLER/THIEF gates) | `safety.py` is a 5-line stub setting `PlayerFlag.KILLER` with no ROM-faithful logic. No production import found. | DUPL-006 | Delete `safety.py:check_killer`. Re-run import audit to confirm no callers. |
-| 7 | `affect_loc_name` | `mud/handler.py:1302`, `mud/commands/affects.py:47` | likely `handler.py` (canonical) | unverified — likely `commands/affects.py` is a stale clone | DUPL-007 | Verify import sites. Delete the unreached copy. |
-| 8 | `get_char_room` / `get_char_world` | `mud/world/char_find.py:15`+`:76`, `mud/commands/imm_commands.py:55`+`:89` | `world/char_find.py` (canonical, applies `can_see` visibility) | `commands/imm_commands.py` likely intentional (immortals should bypass `can_see`). | DUPL-008 | Verify intent. If immortal-side bypass is real, keep both with comments tying to ROM `get_char_room_imm`-equivalent. Otherwise consolidate. |
+| 6 | `check_killer` | ✅ **FIXED** (2.9.30) — `mud/combat/safety.py:89` deleted | `engine.py` retained (full ROM logic) | `safety.py:check_killer` was a 5-line stub with no callers (`gitnexus_impact` returned 0 callers; grep confirmed only `is_safe` was imported from `safety.py`). | DUPL-006 | ✅ Stub deleted; no callers needed updating. |
+| 7 | `affect_loc_name` | ✅ **FIXED** (2.9.30). **Fix-time re-audit reclassified this as a real ❌ bug, not DEAD-CODE.** The audit doc speculated `handler.py` was canonical and `commands/affects.py` was stale — actually the reverse: `handler.py:1302` mapped `APPLY_SPELL_AFFECT (25)` → `"spell affect"` (divergent from ROM), while `commands/affects.py:47` mapped it to `"none"` (ROM-faithful per `src/handler.c:2718-2775`). **`mud/commands/imm_search.py:22` was importing the divergent `handler.py` copy**, so `oset`/`sset`/`show` immortal output showed wrong labels for any affect with location 25. Redirected `imm_search.py` to import from `commands/affects.py`; deleted `handler.py:1302` def. Same Trojan-horse pattern as DUPL-001c. | DUPL-007 | ✅ Canonical now exclusively at `commands/affects.py:47`. |
+| 8 | `get_char_room` / `get_char_world` | ✅ **FIXED** (2.9.30) — reclassified as ✅ MATCH | both wired | The two copies are **intentionally distinct**: `world/char_find.py` applies `can_see_character` visibility (used by 11+ gameplay command paths — give, look, group_commands, consider, murder, etc.); `commands/imm_commands.py:55,89` skip visibility (used by 4 immortal paths — imm_punish, imm_search, imm_display, communication for `tell`-with-immortal-target) so immortals can reach hidden/invis characters. | DUPL-008 | ✅ Moved to MATCH section below with rationale. |
 
 ## ⚠️ CLEANUP — functionally identical, no current bug
 
@@ -75,6 +75,7 @@ CLEANUP rows are batchable — one consolidation commit per target file is accep
 | `_act_room` (2 copies) | `mud/commands/imm_display.py`, `mud/commands/imm_commands.py` | Different signatures by design |
 | `_can_see` (2 copies) | `mud/mobprog.py`, `mud/ai/aggressive.py` | Different visibility semantics for mob scripts vs aggression checks |
 | `migrate` (2 copies) | `mud/__main__.py`, `mud/db/migrate_from_files.py` | Unrelated concerns; name collision only |
+| `get_char_room` / `get_char_world` (2 copies each) | `mud/world/char_find.py:15,76` / `mud/commands/imm_commands.py:55,89` | Immortal-bypass copies skip `can_see_character` so immortals can target hidden/invis/wizinvis characters. Closed as DUPL-008 in 2.9.30 after fix-time re-audit. |
 
 ## Closed by `rom_api.py` deletion
 

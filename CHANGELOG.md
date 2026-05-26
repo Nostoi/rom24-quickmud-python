@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.30]
+
+### Fixed
+- **DUPL-007 — `mud/commands/imm_search.py` was importing the divergent `affect_loc_name` copy from `mud/handler.py`.** Fix-time re-audit invalidated the prior session's DEAD-CODE classification: `mud/handler.py:1302` mapped `APPLY_SPELL_AFFECT (25) → "spell affect"`, but ROM `src/handler.c:2718-2775` returns `"none"` for that location. The canonical (and ROM-faithful) copy lives at `mud/commands/affects.py:47`. Immortal `show`/`oset`/`sset` output (lines 807, 845, 1135 of `imm_search.py`) was printing the wrong location label for any affect with `APPLY_SPELL_AFFECT`. Redirected `imm_search.py` to import from `mud/commands/affects`; deleted the divergent `mud/handler.py:1302` def. Same Trojan-horse pattern as DUPL-001c. Surfaced by DUPL-007 in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
+
+### Removed
+- **DUPL-006 — deleted unused `mud/combat/safety.py:check_killer` stub.** 5-line stub that set `PlayerFlag.KILLER` with no ROM-faithful logic; `gitnexus_impact` returned 0 callers and grep confirmed only `is_safe` was imported from `safety.py`. The canonical `check_killer` (full ROM logic: charm chain, KILLER/THIEF gates) lives at `mud/combat/engine.py:1084` and is what all 4 production callers reach.
+
+### Changed
+- **DUPL-008 — reclassified as ✅ MATCH (intentional immortal-bypass).** `mud/world/char_find.py` versions (`get_char_room`/`get_char_world`) apply `can_see_character` visibility gating (used by 11+ gameplay paths). `mud/commands/imm_commands.py:55,89` versions skip visibility (used by 4 immortal paths: `imm_punish`, `imm_search`, `imm_display`, `communication`'s `tell`-with-immortal-target) so immortals can target hidden/invis/wizinvis characters. Documented in the audit doc's MATCH section.
+
 ## [2.9.29]
 
 ### Removed

@@ -1299,78 +1299,10 @@ def reset_char(ch: Character) -> None:
 # ==============================================================================
 
 
-def affect_loc_name(location: int) -> str:
-    """
-    Convert affect location number to name.
-
-    ROM C: handler.c:2718-2779 (affect_loc_name)
-
-    Returns string name of affect location (APPLY_STR, APPLY_HIT, etc.).
-    Used for debugging and OLC display.
-
-    Args:
-        location: Affect location number
-
-    Returns:
-        Location name string, or "unknown" if not found
-    """
-    APPLY_NONE = 0
-    APPLY_STR = 1
-    APPLY_DEX = 2
-    APPLY_INT = 3
-    APPLY_WIS = 4
-    APPLY_CON = 5
-    APPLY_SEX = 6
-    APPLY_CLASS = 7
-    APPLY_LEVEL = 8
-    APPLY_AGE = 9
-    APPLY_HEIGHT = 10
-    APPLY_WEIGHT = 11
-    APPLY_MANA = 12
-    APPLY_HIT = 13
-    APPLY_MOVE = 14
-    APPLY_GOLD = 15
-    APPLY_EXP = 16
-    APPLY_AC = 17
-    APPLY_HITROLL = 18
-    APPLY_DAMROLL = 19
-    APPLY_SAVES = 20
-    APPLY_SAVING_ROD = 21
-    APPLY_SAVING_PETRI = 22
-    APPLY_SAVING_BREATH = 23
-    APPLY_SAVING_SPELL = 24
-    APPLY_SPELL_AFFECT = 25
-
-    location_names = {
-        APPLY_NONE: "none",
-        APPLY_STR: "strength",
-        APPLY_DEX: "dexterity",
-        APPLY_INT: "intelligence",
-        APPLY_WIS: "wisdom",
-        APPLY_CON: "constitution",
-        APPLY_SEX: "sex",
-        APPLY_CLASS: "class",
-        APPLY_LEVEL: "level",
-        APPLY_AGE: "age",
-        APPLY_HEIGHT: "height",
-        APPLY_WEIGHT: "weight",
-        APPLY_MANA: "mana",
-        APPLY_HIT: "hp",
-        APPLY_MOVE: "moves",
-        APPLY_GOLD: "gold",
-        APPLY_EXP: "experience",
-        APPLY_AC: "armor class",
-        APPLY_HITROLL: "hit roll",
-        APPLY_DAMROLL: "damage roll",
-        APPLY_SAVES: "saves",
-        APPLY_SAVING_ROD: "save vs rod",
-        APPLY_SAVING_PETRI: "save vs petrification",
-        APPLY_SAVING_BREATH: "save vs breath",
-        APPLY_SAVING_SPELL: "save vs spell",
-        APPLY_SPELL_AFFECT: "spell affect",
-    }
-
-    return location_names.get(location, f"unknown({location})")
+# DUPL-007 — canonical affect_loc_name lives at mud/commands/affects.py:affect_loc_name
+# (ROM-faithful: APPLY_SPELL_AFFECT → "none" per src/handler.c:2718-2775). The
+# divergent copy formerly here (mapped APPLY_SPELL_AFFECT → "spell affect") was
+# unused; removed in 2.9.30.
 
 
 def affect_bit_name(bitvector: int) -> str:
