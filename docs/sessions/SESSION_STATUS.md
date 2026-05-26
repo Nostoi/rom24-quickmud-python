@@ -1,63 +1,60 @@
-# Session Status — 2026-05-26 — META_AUDIT_TAXONOMY + DUPLICATE_IMPLEMENTATIONS audit complete (2.9.21)
+# Session Status — 2026-05-26 — DUPLICATE_IMPLEMENTATIONS burn-down complete (2.9.29)
 
 ## Current State
 
-- **Parity-strategy layer in place**:
-  `docs/parity/META_AUDIT_TAXONOMY.md` filed (8-class umbrella).
-  First per-class plan filed:
-  `docs/parity/plans/2026-05-26-audit-duplicate-implementations.md`.
-- **First audit complete**: `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
-  67 candidates verified. Final classification:
-  - 5 ❌ real parity bugs (DUPL-001 through DUPL-005)
-  - 3 ⚠️ DEAD-CODE rows (DUPL-006 through DUPL-008)
-  - ~20 ⚠️ CLEANUP rows (DUPL-009 through DUPL-024)
-  - 4 ✅ intentional rows
-  - 5 closed for free by the 2.9.21 rom_api.py deletion
-- **2.9.21** — `mud/rom_api.py` deleted as the audit's headline
-  meta-finding. 690 lines, 30 functions, used by 16 tests only. Two
-  real imports migrated (`check_blind` → `mud/world/vision.py`,
-  `recursive_clone` → `mud/models/object.py`).
+- **All 5 ❌ real-bug rows closed** in
+  `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md` across 8 commits
+  (2.9.22 → 2.9.29). Pushed to `origin/master`.
+- **DUPL-001 split into 4 sub-rows at fix-time** when the original
+  audit row's single "messages-only fallback" claim turned out to
+  compress three bug classes: messages-only black hole (conditions),
+  output_buffer black hole (9 imm_*/admin sites — DUPL-001a),
+  duplicate-delivery (3 sites — DUPL-001b + DUPL-001c).
+- **DUPL-001c reclassified at fix-time** — prior session's
+  "canonical-equivalent tidying only" call was wrong; copy was a
+  real duplicate-delivery bug for every tick-driven message.
+- **Pointer to latest summary**:
+  [SESSION_SUMMARY_2026-05-26_DUPLICATE_IMPLEMENTATIONS_BURNDOWN.md](SESSION_SUMMARY_2026-05-26_DUPLICATE_IMPLEMENTATIONS_BURNDOWN.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.21 |
-| Tests | 4716 passed, 4 skipped (full suite, 7m10s) |
+| Version | 2.9.29 |
+| Tests | 4730 passed, 4 skipped (full suite, 7m17s) |
 | Cross-file invariants | 19 of ~20 budget; INV-001 … INV-019 ✅ ENFORCED |
-| Meta-audit progress | 1 of 8 classes audited (DUPLICATE_IMPLEMENTATIONS ✅) |
-| Open burn-down rows | 5 ❌ + 3 ⚠️ DEAD + ~20 ⚠️ CLEANUP |
-| Branch | `master` (2.9.21 on origin; audit doc commit staged) |
+| Meta-audit progress | 1 of 8 classes audited; DUPLICATE_IMPLEMENTATIONS ❌ rows 5/5 ✅ FIXED |
+| Open burn-down rows | 0 ❌ + 3 ⚠️ DEAD-CODE + ~20 ⚠️ CLEANUP (all in DUPLICATE_IMPLEMENTATIONS) |
+| Branch | `master` (up to date with origin) |
 
 ## Next Intended Task
 
-Two paths, your call:
+Three paths, your call:
 
-1. **Burn down the DUPLICATE_IMPLEMENTATIONS ❌ rows.** Per the
-   audit's recommended order: DUPL-002 (`_push_message`) first
-   (narrowest fix), then DUPL-004 (`_check_improve` triple-stub
-   blocks skill improvement — likely the biggest player-visible
-   bug), then DUPL-001 / DUPL-003 / DUPL-005.
+1. **Finish DUPLICATE_IMPLEMENTATIONS** by burning the 3 ⚠️ DEAD-CODE
+   rows (DUPL-006 to DUPL-008) and ~20 ⚠️ CLEANUP rows (DUPL-009 to
+   DUPL-024). Individually low-risk, but DUPL-001a / DUPL-001c showed
+   the audit can under-count: re-read each row at fix-time. One
+   short session.
 
-2. **Run the next audit class.** Per the META_AUDIT_TAXONOMY queue,
-   row #1 is BROADCAST_COVERAGE (~130 commands, expected M ❌/⚠️
-   gaps) — though after the DUPL audit shifted estimates by 5×, the
-   broadcast estimate may also be wrong. Worth running before
-   committing to a burn-down strategy.
+2. **Next META_AUDIT class.** Per the META_AUDIT_TAXONOMY queue:
+   - **BROADCAST_COVERAGE** (~130 commands, expected M ❌/⚠️ gaps).
+     Highest-cardinality remaining audit; likely to surface the next
+     big bug cluster. After DUPL's 5× estimate shift, re-estimate at
+     audit-time.
+   - **ARITHMETIC_BOUNDARY** — defensive `max(1, ...)` floors ROM
+     doesn't have. Half-session, grep-driven.
+   - **TRIGGER_CALL_SITE_MIGRATION** — HPCNT-001-shaped findings.
 
-   Row #2 is ARITHMETIC_BOUNDARY (defensive `max(1, ...)` floors
-   ROM doesn't have — half-session, grep-driven).
+3. **Cross-file invariants pass.** Per AGENTS.md, this is the active
+   mode when per-file audit tracker is exhausted. Current candidates:
+   mob script triggers (ENTRY / GIVE / KILL / RANDOM / HPCNT firing),
+   group / follower chain (leader/master pointers, group XP split,
+   follow propagation, disband-on-death).
 
-   Row #4 TRIGGER_CALL_SITE_MIGRATION is also unblocked and may
-   surface real bugs (HPCNT-001-shaped findings).
-
-Recommendation: **burn down DUPL ❌ first** (option 1). The 5 ❌
-rows are confirmed real parity bugs with clear fixes; closing them
-ships visible improvements (skill improvement actually works, no
-duplicate magic messages, container extraction recurses). Running
-another audit before burning down what we already found stockpiles
-unfixed gaps.
+Recommendation: **option 1 (close DUPLICATE_IMPLEMENTATIONS fully)**
+for one short session — avoid leaving a partly-burned-down tracker
+rotting — then move to **option 2 BROADCAST_COVERAGE** for the
+next big audit.
 
 No push to origin without explicit per-cluster user approval.
-Pending push: audit doc commit (no version bump — docs-only on top
-of 2.9.21).
