@@ -470,6 +470,8 @@ def do_sacrifice(char: Character, args: str) -> str:
     if room is not None:
         room_msg = act_format("$n sacrifices $p to Mota.", recipient=None, actor=char, arg1=obj)
         broadcast_room(room, room_msg, exclude=char)
+        # ROM src/act_obj.c:1856 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+        mp_act_trigger_room(room_msg, room, char, arg1=obj)
 
     _extract_obj(char, obj)
 
