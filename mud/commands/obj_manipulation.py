@@ -7,6 +7,7 @@ ROM Reference: src/act_obj.c
 from __future__ import annotations
 
 from mud.handler import unequip_char
+from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import ExtraFlag, ItemType, PlayerFlag, Position, OBJ_VNUM_PIT, WearFlag
 from mud.net.protocol import broadcast_room
@@ -157,17 +158,21 @@ def do_put(char: Character, args: str) -> str:
 
         # PUT-001: TO_ROOM messages (ROM C lines 440-441, 445-446)
         # Broadcast to room observers
-        room = getattr(char, "location", None)
+        room = getattr(char, "room", None)
         if room:
             if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
                 # "on" message
                 room_message = act_format("$n puts $p on $P.", recipient=None, actor=char, arg1=obj, arg2=container)
                 broadcast_room(room, room_message, exclude=char)
+                # ROM src/act_obj.c:440 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+                mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
                 return f"You put {obj_name} on {container_short}."
             else:
                 # "in" message
                 room_message = act_format("$n puts $p in $P.", recipient=None, actor=char, arg1=obj, arg2=container)
                 broadcast_room(room, room_message, exclude=char)
+                # ROM src/act_obj.c:445 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+                mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
                 return f"You put {obj_name} in {container_short}."
 
         # Fallback if no room
@@ -243,17 +248,21 @@ def do_put(char: Character, args: str) -> str:
 
             # PUT-001: TO_ROOM messages (ROM C lines 479-480, 484-485)
             # Broadcast to room observers
-            room = getattr(char, "location", None)
+            room = getattr(char, "room", None)
             if room:
                 if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
                     # "on" message
                     room_message = act_format("$n puts $p on $P.", recipient=None, actor=char, arg1=obj, arg2=container)
                     broadcast_room(room, room_message, exclude=char)
+                    # ROM src/act_obj.c:479 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+                    mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
                     messages.append(f"You put {obj_short} on {container_short}.")
                 else:
                     # "in" message
                     room_message = act_format("$n puts $p in $P.", recipient=None, actor=char, arg1=obj, arg2=container)
                     broadcast_room(room, room_message, exclude=char)
+                    # ROM src/act_obj.c:484 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+                    mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
                     messages.append(f"You put {obj_short} in {container_short}.")
             else:
                 # Fallback if no room
