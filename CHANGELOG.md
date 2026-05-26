@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.39]
+
+### Added
+- **INV-025 candidate filed (NOT YET ENFORCED) — MOBPROG-ACT-TRIGGER-DISPATCH.** Probe surfaced a real systemic gap: ROM `src/comm.c:2384-2385` fires `mp_act_trigger(buf, to, ch, arg1, arg2, TRIG_ACT)` inside `act()` itself for every NPC recipient with `HAS_TRIGGER(TRIG_ACT)` — every TO_ROOM / TO_NOTVICT / TO_CHAR / TO_VICT broadcast feeds into mobprog dispatch. Python's `act_format` + `broadcast_room` does not dispatch at all; only `do_say` / `do_yell` route to `mp_speech_trigger`, so every TRIG_ACT mobprog in the world file silently no-ops. Not closed in 2.9.39: ROM uses the `MOBtrigger` global (`src/comm.c:311`, toggled FALSE in `do_mob` and recursive paths) as the only recursion guard. `mud/mobprog.py` has no equivalent guard (confirmed by grep). Wiring TRIG_ACT into `broadcast_room` without porting MOBtrigger semantics would cause re-entry on any TRIG_ACT response that itself calls `act()`. Scope: audit-then-implement, not probe-then-close — deferred to a dedicated session. Filed in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` Watch list with prerequisite documented.
+
+### Documented
+- **PORTAL-TRAVEL-OBJ-DECAY probed clean.** Portal charge depletion (`mud/world/movement.py:580-584`) reads/writes `portal.value[0]` on the instance (not the prototype), and timer decay (`mud/game_loop.py:1157-1188`) honours `timer <= 0` as "no decay armed" and routes extraction through `_extract_obj` (covered by INV-013/INV-021). No gap surfaced; no INV row filed (would dilute the "each INV pins a real divergence" precedent).
+
 ## [2.9.38]
 
 ### Fixed
