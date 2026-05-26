@@ -19,7 +19,7 @@ Numbers are *probes* until an audit replaces them with *measurements*.
 | 3 | GATE_CONSISTENCY | ~5–8 ROM guards × multi-site each *(probe)* | session (4–6h) | hybrid | `audits/GATE_CONSISTENCY.md` (~30–50 rows) |
 | 4 | TRIGGER_CALL_SITE_MIGRATION | ~10–15 trigger types × call sites *(probe)* | half-session (2–3h) | manual | `audits/TRIGGER_CALL_SITES.md` (~15–25 rows) |
 | 5 | LIFECYCLE_STAGING | uncertain; coordination invariants *(probe)* | session+ | manual | `audits/LIFECYCLE_STAGING.md` (count unknown) |
-| 6 | DUPLICATE_IMPLEMENTATIONS | ~5–15 duplicates *(probe)* | 1–2h | grep-scan | `audits/DUPLICATE_IMPLEMENTATIONS.md` (5–15 rows) |
+| 6 | DUPLICATE_IMPLEMENTATIONS | **67 candidates → 5 ❌ + 3 ⚠️ DEAD + ~20 ⚠️ CLEANUP + 4 ✅ + 5 closed by 2.9.21 rom_api deletion** *(measured)* | done (audit) — burn-down ~5-8 commits | grep-scan | ✅ `audits/DUPLICATE_IMPLEMENTATIONS.md` |
 | 7 | PARALLEL_REPRESENTATIONS | mostly closed by INV-012/13/14 *(probe)* | 1h | manual | `audits/PARALLEL_REPRESENTATIONS.md` (small, closed-row record) |
 | 8 | MATH_AND_RNG_CHANNEL | low density, mostly enforced *(probe)* | 1h | lint-candidate | `audits/MATH_RNG.md` + ruff rule sketch |
 
@@ -286,6 +286,8 @@ is manual but bounded (<20 candidates expected).
 **Deliverable**: `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
 Schema: `# | Primitive | File A | File B | Dispatcher-wired? |
 Divergence summary | Status | Gap ID | Consolidation plan`.
+
+**Status**: ✅ AUDITED 2026-05-26 — see `audits/DUPLICATE_IMPLEMENTATIONS.md`. Headline finding (`mud/rom_api.py` shadow API) closed independently in 2.9.21. 5 ❌ + 3 ⚠️ DEAD + ~20 ⚠️ CLEANUP queued for burn-down.
 
 **Risks**: mass consolidation can break dispatcher wiring silently.
 Each ❌ row's fix should be its own commit with a regression test.

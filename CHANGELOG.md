@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md` — first per-class audit under the META_AUDIT_TAXONOMY plan. 67 same-name same-primitive duplicate defs in `mud/` enumerated; classified as 5 ❌ real parity bugs (`_send_to_char` messages-only fallback, `_push_message` double-delivery, `_extract_obj` non-recursive + wrong attribute, `_check_improve` triple-stub blocking skill improvement, `load_area_from_json` divergent JSON schemas), 3 ⚠️ DEAD-CODE rows, ~20 ⚠️ CLEANUP rows, 4 ✅ intentional, 5 closed by 2.9.21 rom_api.py deletion. Burn-down order documented; DUPL-002 (`_push_message`) recommended as the narrowest first fix.
+
 ## [2.9.21]
 
 ### Removed
