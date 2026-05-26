@@ -358,12 +358,6 @@ def _apply_sneak_affect(char: Character) -> None:
     char.affected_by = getattr(char, "affected_by", 0) | AffectFlag.SNEAK
 
 
-def _check_improve(char: Character, skill_name: str, success: bool) -> None:
-    """Check for skill improvement (placeholder)."""
-
-    pass
-
-
 def _is_awake(victim: Character) -> bool:
     """Mirror ROM IS_AWAKE macro: position > SLEEPING."""
 

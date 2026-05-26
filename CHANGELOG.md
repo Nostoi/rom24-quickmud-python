@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.23]
+
+### Fixed
+- **DUPL-004 — `do_peek` skipped skill improvement + crashed on success** (`mud/commands/misc_player.py:do_peek`): ROM `src/act_info.c:505` calls `check_improve(ch, gsn_peek, TRUE, 4)` after a successful peek roll. Python had a local `pass`-body `_check_improve` stub silently skipping improvement, and a function-level `from mud.core.dice import number_percent` referencing a non-existent module — any successful peek attempt would have raised `ModuleNotFoundError`. Rewrote the call site to use canonical `mud.skills.registry.check_improve` with `multiplier=4` per ROM, and `mud.utils.rng_mm.number_percent` per ROM Parity Rules. Two other dead `_check_improve` stubs (in `mud/commands/thief_skills.py` and `mud/commands/remaining_rom.py`) deleted — re-verification of the audit row showed `do_sneak`/`do_hide` already delegate to `mud/skills/handlers.py` (canonical), and `remaining_rom.py` had no internal call at all. Regression test: `tests/integration/test_do_peek_check_improve.py` (success + failure branches assert call/no-call of canonical `check_improve`). Surfaced by DUPL-004 in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
+
 ## [2.9.22]
 
 ### Fixed

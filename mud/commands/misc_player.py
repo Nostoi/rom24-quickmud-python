@@ -8,6 +8,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.character import Character
+from mud.skills.registry import check_improve
+from mud.utils.rng_mm import number_percent
 
 if TYPE_CHECKING:
     pass
@@ -190,13 +192,12 @@ def do_peek(char: Character, args: str) -> str:
     if peek_skill < 1:
         return "You don't know how to peek."
     
-    # Skill check
-    from mud.core.dice import number_percent
+    # Skill check — ROM src/act_info.c:502 (number_percent() < get_skill(...)).
     if number_percent() > peek_skill:
         return "You fail to get a good look."
-    
-    # Improve skill
-    _check_improve(char, "peek", True)
+
+    # ROM src/act_info.c:505 — check_improve(ch, gsn_peek, TRUE, 4).
+    check_improve(char, "peek", True, multiplier=4)
     
     # Show inventory
     victim_name = getattr(victim, "name", "Someone")
@@ -268,7 +269,3 @@ def _get_skill(char: Character, skill_name: str) -> int:
     return 0
 
 
-def _check_improve(char: Character, skill_name: str, success: bool) -> None:
-    """Check for skill improvement."""
-    # Simplified - real implementation would have chance to improve
-    pass

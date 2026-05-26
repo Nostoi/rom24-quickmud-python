@@ -571,11 +571,6 @@ def _get_skill(char: Character, skill_name: str) -> int:
     return 0
 
 
-def _check_improve(char: Character, skill_name: str, success: bool) -> None:
-    """Check for skill improvement."""
-    pass
-
-
 def _send_to_char(char: Character, message: str) -> None:
     """Send message to character."""
     if not hasattr(char, "output_buffer"):
