@@ -11,11 +11,23 @@ from mud.models.constants import AffectFlag, PlayerFlag, Position
 from mud.world.char_find import get_char_room
 
 
+def _display_name(character: Character | None) -> str:
+    if character is None:
+        return "Someone"
+    name = getattr(character, "name", None)
+    if isinstance(name, str) and name:
+        return name
+    short_descr = getattr(character, "short_descr", None)
+    if isinstance(short_descr, str) and short_descr:
+        return short_descr
+    return "Someone"
+
+
 def add_follower(char: Character, master: Character) -> None:
     """
     Add char as a follower of master.
 
-    ROM Reference: src/act_comm.c add_follower (lines 1600-1620)
+    ROM Reference: src/act_comm.c add_follower (lines 1591-1607)
     """
     if char.master is not None:
         return  # Already following someone
@@ -27,6 +39,19 @@ def add_follower(char: Character, master: Character) -> None:
     if hasattr(master, "followers"):
         if char not in master.followers:
             master.followers.append(char)
+
+    # ROM lines 1602-1605: act("$n now follows you.", ch, NULL, master, TO_VICT)
+    # gated on can_see(master, ch); act("You now follow $N.", ch, NULL, master, TO_CHAR).
+    from mud.world.vision import can_see_character
+
+    if can_see_character(master, char):
+        master_messages = getattr(master, "messages", None)
+        if isinstance(master_messages, list):
+            master_messages.append(f"{_display_name(char)} now follows you.")
+
+    char_messages = getattr(char, "messages", None)
+    if isinstance(char_messages, list):
+        char_messages.append(f"You now follow {_display_name(master)}.")
 
 
 def stop_follower(char: Character) -> None:
@@ -47,6 +72,19 @@ def stop_follower(char: Character) -> None:
     # Remove from master's follower list
     if hasattr(master, "followers") and char in master.followers:
         master.followers.remove(char)
+
+    # ROM lines 1626-1630: act("$n stops following you.", ch, NULL, ch->master, TO_VICT);
+    # act("You stop following $N.", ch, NULL, ch->master, TO_CHAR); gated on
+    # can_see(ch->master, ch) && ch->in_room != NULL.
+    from mud.world.vision import can_see_character
+
+    if can_see_character(master, char) and getattr(char, "room", None) is not None:
+        master_messages = getattr(master, "messages", None)
+        if isinstance(master_messages, list):
+            master_messages.append(f"{_display_name(char)} stops following you.")
+        char_messages = getattr(char, "messages", None)
+        if isinstance(char_messages, list):
+            char_messages.append(f"You stop following {_display_name(master)}.")
 
     char.master = None
     char.leader = None

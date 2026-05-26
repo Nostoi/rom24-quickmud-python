@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.19]
+
+### Fixed
+- **`do_follow` missing master/follower notification broadcasts** (`mud/commands/group_commands.py:add_follower / stop_follower`): ROM `src/act_comm.c:1602-1605 add_follower` emits `$n now follows you.` to the master (gated on `can_see`) and `You now follow $N.` to the follower; `src/act_comm.c:1626-1630 stop_follower` emits the symmetric `$n stops following you.` / `You stop following $N.` (gated on `can_see && in_room != NULL`). Python's `add_follower` / `stop_follower` in `mud/commands/group_commands.py` — the variants the command dispatcher actually uses (`mud/commands/dispatcher.py:114,320`) — were silent on both sides, so masters never learned when someone began or stopped following them. (A second canonical copy in `mud/characters/follow.py` already had the broadcasts, but it's not the one wired to `do_follow`.) Fix: add ROM-shaped messages to both `add_follower` and `stop_follower` in `group_commands.py`, gated by `can_see_character` to match ROM's `can_see (master, ch)` conjunction. One enforcement test in `tests/integration/test_do_follow_master_notification.py` covering both sides of the follow handshake. Duplicate-implementations sweep (consolidating onto the canonical `mud/characters/follow.py`) deferred — out of scope for this single-gap fix.
+
 ## [2.9.18]
 
 ### Fixed
