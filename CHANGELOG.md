@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.33]
+
+### Fixed
+- **FOLLOW-001 — `add_follower` master-side message now gated on `can_see(master, follower)`** (ROM `src/act_comm.c:1602-1603`). The `mud/characters/follow.py:add_follower` copy (wired into combat death, shop hires, skill handlers, `mob_cmds`) emitted `"$n now follows you."` unconditionally, leaking an invisible follower's identity to a master without DETECT_INVIS. The `mud/commands/group_commands.py:add_follower` copy used by `do_follow` was already ROM-faithful. Fix imports `can_see_character` from `mud.world.vision` and wraps the TO_VICT branch. The TO_CHAR `"You now follow $N."` stays unconditional per ROM line 1605. Test: `tests/integration/test_follow_can_see_gating.py::test_follow_001_add_follower_gates_master_message_on_can_see`.
+- **FOLLOW-002 — `stop_follower` messages now gated on `can_see(master, follower) and follower.room is not None`** (ROM `src/act_comm.c:1625-1629`). Both TO_VICT and TO_CHAR branches were unconditional in `mud/characters/follow.py:stop_follower`; ROM gates both. Detach state (`follower.master = None`, `leader = None`, `master.pet` clear) stays unconditional per ROM lines 1631-1635. Tests: `tests/integration/test_follow_can_see_gating.py::test_follow_002_stop_follower_gates_both_messages_on_can_see_and_in_room` and `::test_follow_002_stop_follower_skips_messages_when_in_room_is_none`.
+- **DUPL-018 closed via FOLLOW-001/002 gap-closer.** Audit row in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md` flipped from ⚠️ NEEDS NEW GAP (refile from 2.9.31) to ✅ FIXED. Audit row also added to `docs/parity/ACT_COMM_C_AUDIT.md` under `#### 17b. add_follower() / stop_follower() helpers`. Burn-down of the DUPLICATE_IMPLEMENTATIONS audit is now genuinely closed — no refiled rows outstanding.
+
 ## [2.9.32]
 
 ### Changed

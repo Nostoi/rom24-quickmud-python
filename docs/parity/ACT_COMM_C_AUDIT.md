@@ -234,6 +234,21 @@ return "You must type the full command to delete yourself."
 
 ---
 
+#### 17b. add_follower() / stop_follower() helpers — ✅ FIXED (2.9.33, 2026-05-26)
+**ROM C**: src/act_comm.c lines 1591-1636 (add_follower 1591-1607, stop_follower 1612-1636)
+**QuickMUD**: `mud/characters/follow.py:add_follower`, `:stop_follower`
+**Priority**: P0 (parity drift — used by death, combat, shop hires, skill handlers, mob_cmds)
+**Status**: ✅ **FIXED**. Re-audited from DUPL-018 cleanup-row refile (see `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md` row 18). The `mud/commands/group_commands.py` copy was already ROM-faithful; `mud/characters/follow.py` was the divergent copy and is what's wired into non-command call sites.
+
+| Gap ID | Severity | ROM C | Python | Description | Status |
+|--------|----------|-------|--------|-------------|--------|
+| `FOLLOW-001` | IMPORTANT | src/act_comm.c:1602-1603 | mud/characters/follow.py:23 | `add_follower` TO_VICT `"$n now follows you."` must be gated on `can_see(master, ch)` (ROM act() macro evaluates PERS visibility). Python emitted it unconditionally, leaking an invisible follower's identity to a master without DETECT_INVIS. Fix: wrap the master-side message in `can_see_character(master, follower)`. TO_CHAR `"You now follow $N."` stays unconditional (ROM line 1605). Test: `tests/integration/test_follow_can_see_gating.py::test_follow_001_add_follower_gates_master_message_on_can_see`. | ✅ FIXED (2.9.33) |
+| `FOLLOW-002` | IMPORTANT | src/act_comm.c:1625-1629 | mud/characters/follow.py:43 | `stop_follower` both TO_VICT and TO_CHAR messages are gated on `can_see(ch->master, ch) && ch->in_room != NULL` in ROM. Python emitted both unconditionally. Fix: wrap both messages in `can_see_character(master, follower) and follower.room is not None`. Detach state (`follower.master = None`, `leader = None`, `master.pet` clear) is unconditional per ROM lines 1631-1635. Tests: `tests/integration/test_follow_can_see_gating.py::test_follow_002_stop_follower_gates_both_messages_on_can_see_and_in_room` and `::test_follow_002_stop_follower_skips_messages_when_in_room_is_none`. | ✅ FIXED (2.9.33) |
+
+**Parity Check**: ✅ PERFECT (post-fix)
+
+---
+
 #### 18. do_group() - VERIFIED ✅
 **ROM C**: src/act_comm.c lines 1770-1856 (87 lines)  
 **QuickMUD**: group_commands.py:126  

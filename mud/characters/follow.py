@@ -22,6 +22,8 @@ def _display_name(character: "Character" | None) -> str:
 
 def add_follower(follower: "Character", master: "Character") -> None:
     """Attach ``follower`` to ``master`` mirroring ROM ``add_follower``."""
+    # mirroring ROM src/act_comm.c:1591-1607
+    from mud.world.vision import can_see_character
 
     if getattr(follower, "master", None) is master:
         return
@@ -31,10 +33,13 @@ def add_follower(follower: "Character", master: "Character") -> None:
     follower.master = master
     follower.leader = None
 
-    master_messages = getattr(master, "messages", None)
-    if isinstance(master_messages, list):
-        master_messages.append(f"{_display_name(follower)} now follows you.")
+    # ROM lines 1602-1603: TO_VICT gated on can_see(master, ch).
+    if can_see_character(master, follower):
+        master_messages = getattr(master, "messages", None)
+        if isinstance(master_messages, list):
+            master_messages.append(f"{_display_name(follower)} now follows you.")
 
+    # ROM line 1605: TO_CHAR is unconditional.
     follower_messages = getattr(follower, "messages", None)
     if isinstance(follower_messages, list):
         follower_messages.append(f"You now follow {_display_name(master)}.")
@@ -42,6 +47,8 @@ def add_follower(follower: "Character", master: "Character") -> None:
 
 def stop_follower(follower: "Character") -> None:
     """Detach ``follower`` from its master and clear charm effects."""
+    # mirroring ROM src/act_comm.c:1612-1636
+    from mud.world.vision import can_see_character
 
     master = getattr(follower, "master", None)
     if master is None:
@@ -52,13 +59,16 @@ def stop_follower(follower: "Character") -> None:
     elif follower.has_affect(AffectFlag.CHARM):
         follower.remove_affect(AffectFlag.CHARM)
 
-    master_messages = getattr(master, "messages", None)
-    if isinstance(master_messages, list):
-        master_messages.append(f"{_display_name(follower)} stops following you.")
+    # ROM lines 1625-1629: both messages gated on
+    # can_see(ch->master, ch) && ch->in_room != NULL.
+    if can_see_character(master, follower) and getattr(follower, "room", None) is not None:
+        master_messages = getattr(master, "messages", None)
+        if isinstance(master_messages, list):
+            master_messages.append(f"{_display_name(follower)} stops following you.")
 
-    follower_messages = getattr(follower, "messages", None)
-    if isinstance(follower_messages, list):
-        follower_messages.append(f"You stop following {_display_name(master)}.")
+        follower_messages = getattr(follower, "messages", None)
+        if isinstance(follower_messages, list):
+            follower_messages.append(f"You stop following {_display_name(master)}.")
 
     if getattr(master, "pet", None) is follower:
         master.pet = None
