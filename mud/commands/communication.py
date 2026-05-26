@@ -165,13 +165,18 @@ def do_say(char: Character, args: str) -> str:
                 asyncio.create_task(send_to_char(listener, per_message))
             if hasattr(listener, "messages"):
                 listener.messages.append(per_message)
-        for mob in list(char.room.people):
-            if mob is char or not getattr(mob, "is_npc", False):
-                continue
-            default_pos = getattr(mob, "default_pos", getattr(mob, "position", Position.STANDING))
-            if getattr(mob, "position", default_pos) != default_pos:
-                continue
-            mobprog.mp_speech_trigger(args, mob, char)
+        # mirroring ROM src/act_comm.c:779 — `if (!IS_NPC (ch))` gate.
+        # Only PC speakers enter the SPEECH listener loop; this prevents
+        # mob-to-mob speech-trigger cascades (mob A says "X" → mob B's
+        # SPEECH trigger fires → triggers another say → infinite loop).
+        if not getattr(char, "is_npc", False):
+            for mob in list(char.room.people):
+                if mob is char or not getattr(mob, "is_npc", False):
+                    continue
+                default_pos = getattr(mob, "default_pos", getattr(mob, "position", Position.STANDING))
+                if getattr(mob, "position", default_pos) != default_pos:
+                    continue
+                mobprog.mp_speech_trigger(args, mob, char)
     return f"{{6You say '{{7{args}{{6'{{x"
 
 
@@ -215,7 +220,10 @@ def do_tell(char: Character, args: str) -> str:
     if buffered_response:
         return buffered_response
 
-    if getattr(target, "is_npc", False):
+    # mirroring ROM src/act_comm.c:946 — `if (!IS_NPC (ch) && IS_NPC (victim)
+    # && HAS_TRIGGER (victim, TRIG_SPEECH))`. NPC tellers do not fire SPEECH
+    # triggers on NPC targets; same anti-cascade gate as do_say.
+    if not getattr(char, "is_npc", False) and getattr(target, "is_npc", False):
         default_pos = getattr(target, "default_pos", getattr(target, "position", Position.STANDING))
         if getattr(target, "position", default_pos) == default_pos:
             mobprog.mp_speech_trigger(message, target, char)

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.17]
+
+### Fixed
+- **`do_say` / `do_tell` missing `!IS_NPC(ch)` gate on SPEECH trigger loop** (`mud/commands/communication.py:140-175`, `:178-241`): ROM `src/act_comm.c:779` (`do_say`) and `:946` (`do_tell`) only enter the SPEECH listener loop when the speaker is a PC: `if (!IS_NPC (ch)) { ... }` and `if (!IS_NPC (ch) && IS_NPC (victim) && HAS_TRIGGER (victim, TRIG_SPEECH))`. The gate is load-bearing: it prevents mob-to-mob speech-trigger cascades (mob A says "X" → mob B's SPEECH trigger fires `mob say "Y"` → mob A's trigger fires → infinite loop). Python's listener loop was unconditional — any NPC who called `do_say` or `do_tell` (e.g. via `mud/agent/character_agent.py`, or any future agent-driven mob path) would fire SPEECH triggers on other NPCs. Fix: gate both listener loops on `not getattr(char, "is_npc", False)` (and `do_tell`'s also requires `getattr(target, "is_npc", False)`, matching ROM's compound conjunction). Two enforcement tests in `tests/integration/test_npc_speaker_does_not_trigger_speech.py`: (1) NPC speaker via `do_say` does not fire SPEECH on listening NPC; (2) NPC teller via `do_tell` does not fire SPEECH on NPC target.
+
 ## [2.9.16]
 
 ### Added
