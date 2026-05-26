@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.11]
+
+### Fixed
+- **HPCNT-001 — `TRIG_HPCNT` over-fired inside `_apply_damage`** (`mud/combat/engine.py:603-606` pre-removal): ROM's only `mp_hprct_trigger` call site is `src/fight.c:97` inside `violence_update`, which fires it once per pulse per NPC after `multi_hit` on the NPC attacker. ROM `damage()` (`src/fight.c:825-870`) does NOT fire HPCNT on the victim. The Python `_apply_damage` carried a `if victim_is_npc and victim.hit > 0: mp_hprct_trigger(victim, attacker)` block with a misattributed `ROM Reference: src/fight.c:1094-1136` comment — that range is `is_safe_spell`, not HPCNT. Symptom: HP-percent mob scripts that gate on `hpcnt N` fired N+1 times per `multi_hit` (once per landed hit plus once at multi_hit's end), and also fired on spell-damage paths where ROM doesn't fire HPCNT at all. Deleted the `_apply_damage` block; the canonical site at `mud/combat/engine.py:388-390` (end of `multi_hit`, NPC attacker only) remains and continues to mirror ROM `src/fight.c:91-98`. Two enforcement tests in `tests/integration/test_hpcnt_once_per_pulse.py`: (1) PC attacker on NPC victim runs `attack_round` and HPCNT must fire 0 times; (2) NPC attacker on PC victim runs `multi_hit` with 2nd/3rd-attack skills at 100% and HPCNT must fire exactly once.
+
 ## [2.9.10]
 
 ### Fixed
