@@ -138,14 +138,14 @@ def _gather_object_state() -> tuple[dict[int, int], dict[int, list[object]]]:
         for carried in getattr(char, "inventory", []) or []:
             if carried is not None:
                 setattr(carried, "carried_by", char)
-                setattr(carried, "location", getattr(char, "room", getattr(char, "location", None)))
+                setattr(carried, "location", getattr(char, "room", None))
                 tally(carried)
         equipment = getattr(char, "equipment", None)
         if isinstance(equipment, dict):
             for equipped in equipment.values():
                 if equipped is not None:
                     setattr(equipped, "carried_by", char)
-                    setattr(equipped, "location", getattr(char, "room", getattr(char, "location", None)))
+                    setattr(equipped, "location", getattr(char, "room", None))
                     tally(equipped)
 
     for room in room_registry.values():
@@ -213,13 +213,13 @@ def _count_existing_objects() -> dict[int, int]:
         for occupant in getattr(room, "people", []) or []:
             for item in getattr(occupant, "inventory", []) or []:
                 setattr(item, "carried_by", occupant)
-                setattr(item, "location", getattr(occupant, "room", getattr(occupant, "location", None)))
+                setattr(item, "location", getattr(occupant, "room", None))
                 _record_object_counts(item, counts)
             equipment = getattr(occupant, "equipment", None)
             if isinstance(equipment, dict):
                 for item in equipment.values():
                     setattr(item, "carried_by", occupant)
-                    setattr(item, "location", getattr(occupant, "room", getattr(occupant, "location", None)))
+                    setattr(item, "location", getattr(occupant, "room", None))
                     _record_object_counts(item, counts)
 
     for vnum, proto in obj_registry.items():

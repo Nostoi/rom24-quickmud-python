@@ -63,7 +63,7 @@ def do_eat(ch: Character, args: str) -> str:
 
     # EAT-004: TO_ROOM broadcast fires before TO_CHAR
     # ROM src/act_obj.c:1317
-    room = getattr(ch, "room", None) or getattr(ch, "location", None)
+    room = getattr(ch, "room", None)
     if room is not None:
         room_message = act_format("$n eats $p.", recipient=None, actor=ch, arg1=obj)
         broadcast_room(room, room_message, exclude=ch)

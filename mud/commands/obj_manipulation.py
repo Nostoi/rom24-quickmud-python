@@ -359,7 +359,7 @@ def _perform_remove(char: Character, obj) -> str:
     obj_name = getattr(obj, "short_descr", "something") or "something"
 
     # ROM TO_ROOM broadcast: "$n stops using $p."
-    room = getattr(char, "room", None) or getattr(char, "location", None)
+    room = getattr(char, "room", None)
     if room is not None:
         room_message = act_format(
             "$n stops using $p.",
@@ -513,7 +513,7 @@ def do_quaff(char: Character, args: str) -> str:
     obj_name = getattr(obj, "short_descr", "something")
 
     # ROM act() pair fires BEFORE spells (src/act_obj.c:1897-1898)
-    room = getattr(char, "room", None) or getattr(char, "location", None)
+    room = getattr(char, "room", None)
     if room is not None:
         room_message = act_format("$n quaffs $p.", recipient=None, actor=char, arg1=obj)
         broadcast_room(room, room_message, exclude=char)
