@@ -1,60 +1,59 @@
-# Session Status — 2026-05-26 — INV-025 follow-up sweep complete (2.9.42)
+# Session Status — 2026-05-26 — INV-026 violence-trigger dispatch scope (2.9.43)
 
 ## Current State
 
-- **INV-025 follow-up sweep landed** across seven commits
-  (`e86d55aa`..`9cbbc6b6`). ROM act() callsites now dispatch
-  TRIG_ACT via `mp_act_trigger_room`: do_give (with
-  `disable_mobtrigger()` wrap to mirror ROM's `MOBtrigger=FALSE`
-  recursion guard), do_drop, do_get, do_put (also fixed latent
-  `char.location` → `char.room` bug), do_sacrifice, equipment
-  commands (wear/wield/hold/wear-all/remove), and the central
-  `_broadcast_pos_change` helper used by every position transition.
-- **8 new regression tests** under `tests/integration/test_inv025_*`,
-  one per callsite cluster. Each test pre-installs a TRIG_ACT
-  mobprog with a trigger phrase keyed to the canonical ROM message
-  and asserts `mp_act_trigger` fires (or, for do_give, that
-  `mp_act_trigger_room` is called but `mp_act_trigger` is suppressed
-  by the wrapper).
-- **INV-025 contract unchanged** — still locked at the emote site
-  by the 2.9.40 enforcement test. The sweep widens coverage; it
-  cannot regress what is already enforced. No new INV row.
-- **INV budget unchanged at 22/~20 enforced** — sweep landed seven
-  commits without filing any new INV rows.
+- **INV-026 VIOLENCE-TRIGGER-DISPATCH-SCOPE enforced** (`c48224af`).
+  ROM `src/fight.c:60-99 violence_update` is the only site that
+  fires TRIG_FIGHT / TRIG_HPCNT. Python now dispatches from
+  `mud/game_loop.py:violence_tick` after `multi_hit` returns,
+  guarded by `attacker.fighting is victim` (mirroring ROM's
+  `(victim = ch->fighting) == NULL` re-fetch). Pre-INV-026 every
+  caller of `multi_hit` (assist mobs, spec_funs, mob_cmds) wrongly
+  fired both triggers — this was inherited from HPCNT-001's
+  deliberately-shallow scoping decision. INV-026 completes that
+  contract at the deeper ROM-correct layer.
+- **`char.location` audit sweep closed** (`476084d5`). One real bug
+  fixed (`do_eat`/EAT-004 broadcast had the same Affect-attribute
+  typo cluster as `do_put`); five dead-code fallback sites
+  stripped. The Character-typed `.location` typo cluster is now
+  fully purged.
+- **Tests**: 8 new INV-026 sweep tests, 2 rewritten HPCNT-001
+  tests, 1 updated mobprog-triggers test. Full suite: **4760
+  passed, 4 skipped** in 664s.
+- **INV budget at 23/~20 enforced** — over by three after INV-026
+  filed. INV-026 is its own contract (own ROM mechanism, own
+  enforcement point), so no merge candidate. Future consolidation
+  candidates: INV-016/019 (position transitions), INV-006/009
+  (fighting-pointer + registry cleanup).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-26_INV025_SWEEP.md](SESSION_SUMMARY_2026-05-26_INV025_SWEEP.md)
+  [SESSION_SUMMARY_2026-05-26_INV026_VIOLENCE_TRIGGER_SCOPE.md](SESSION_SUMMARY_2026-05-26_INV026_VIOLENCE_TRIGGER_SCOPE.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.42 |
-| Tests | 8/8 ✅ on new INV-025 sweep tests; broad spot-checks (give, drop, get, put, container, wear, wield, remove, equipment, hold, fight, combat, position, pos_change) all green |
+| Version | 2.9.43 |
+| Tests | **4760 passed, 4 skipped** (full suite, 664s) |
 | ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75% (unchanged) |
-| Cross-file invariants | **22 of ~20 enforced** — over by two, within margin per AGENTS.md soft cap |
+| Cross-file invariants | **23 of ~20 enforced** — over by three, within margin per AGENTS.md soft cap |
 | Meta-audit progress | DUPLICATE_IMPLEMENTATIONS ✅ CLOSED; 7 meta classes remain |
-| Branch | `master` — local 2.9.42 commit pending push approval |
+| Branch | `master` — local 2.9.43 (2 commits pending push approval) |
 
 ## Next Intended Task
 
-1. **Continue probe-then-scope** at the 22/~20 budget. Methodology
-   is still earning its keep — recent passes have closed real
-   contracts without inflating the count.
-2. **Latent `char.location` audit** (low priority follow-up): grep
-   for other `getattr(char, "location", ...)` callsites — `do_put`
-   was reading the wrong attribute and silently dropping its
-   TO_ROOM broadcasts. One spot in `do_quaff` uses
-   `char.room or char.location` (harmless because `char.room`
-   wins); one in `_perform_remove` was a similar harmless fallback.
-   Worth a 10-minute sweep to make sure no other call silently
-   no-ops.
-3. **Future consolidation candidates** (don't merge yet):
-   INV-016 / INV-019 (position-transition broadcast / silent
-   promotion-on-heal duals on `update_pos`); INV-006 / INV-009
-   (fighting-pointer coherence after death / registry-disconnect
-   cleanup on `character_registry` membership transitions). Either
-   would free one slot if the budget creeps back above 25.
-
-GitNexus index is stale at `c75f898` (seven sweep commits postdate
-it). Refresh with `npx gitnexus analyze --skip-agents-md` before the
-next probe so impact-analysis numbers are accurate.
+1. **Close the `check_assist` misplacement** as a follow-up
+   gap-closer. ROM `src/fight.c:90` calls `check_assist` from
+   `violence_update` after `multi_hit` returns, not inside
+   `multi_hit` (currently at `mud/combat/engine.py:317`). Same
+   misplacement shape as INV-026; intentionally split for commit
+   hygiene. Single-file move; no new INV row needed.
+2. **GitNexus refresh** — index stale at `6b21fa9` (3 commits
+   behind). Run `npx gitnexus analyze --skip-agents-md` before the
+   next probe so impact-analysis numbers are accurate.
+3. **Continue probe-then-scope at 23/~20**. Candidate areas not
+   yet covered by an INV: affect ticks, mob script triggers
+   beyond TRIG_FIGHT/HPCNT (TRIG_KILL/DEATH guards already wired
+   correctly per the engine.py audit), group/follower chain.
+   Methodology is still earning its keep — INV-026 was found by
+   the same probe pattern that produced INV-014/INV-013 and the
+   INV-025 sweep.
