@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.20]
+
+### Fixed
+- **`do_group` missing TO_VICT / TO_NOTVICT broadcasts on add/remove** (`mud/commands/group_commands.py:do_group`): ROM `src/act_obj.c... src/act_comm.c:1850-1854` (add) emits three messages — `$N joins $n's group.` (TO_NOTVICT, onlookers), `You join $n's group.` (TO_VICT, the joined victim), `$N joins your group.` (TO_CHAR, the leader). The remove path at `:1841-1846` is symmetric: `$n removes $N from $s group.` / `$n removes you from $s group.` / `You remove $N from your group.`. Python returned only the TO_CHAR string, so victims never learned they had been added to (or removed from) a group, and onlookers never saw membership changes. Fix: emit ROM-shaped messages on both branches via `messages.append(...)`, iterating room occupants for TO_NOTVICT. One enforcement test in `tests/integration/test_do_group_notification.py` covering the add path (victim TO_VICT + onlooker TO_NOTVICT + leader/follower state).
+
 ## [2.9.19]
 
 ### Fixed

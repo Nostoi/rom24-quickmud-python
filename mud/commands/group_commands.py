@@ -259,16 +259,45 @@ def do_group(char: Character, args: str) -> str:
     if char_affected & AffectFlag.CHARM:
         return "You like your master too much to leave!"
 
-    # Already in group - remove
+    leader_name = _display_name(char)
+    victim_name_str = _display_name(victim)
+
+    # Already in group - remove (ROM src/act_comm.c:1838-1847)
     if is_same_group(victim, char) and char is not victim:
         victim.leader = None
-        victim_name = getattr(victim, "short_descr", None) or getattr(victim, "name", "them")
-        return f"You remove {victim_name} from your group."
+        # TO_VICT: "$n removes you from $s group."
+        victim_messages = getattr(victim, "messages", None)
+        if isinstance(victim_messages, list):
+            victim_messages.append(f"{leader_name} removes you from {leader_name}'s group.")
+        # TO_NOTVICT: "$n removes $N from $s group."
+        room = getattr(char, "room", None)
+        if room is not None:
+            notvict_msg = f"{leader_name} removes {victim_name_str} from {leader_name}'s group."
+            for occupant in list(getattr(room, "people", []) or []):
+                if occupant is char or occupant is victim:
+                    continue
+                occ_messages = getattr(occupant, "messages", None)
+                if isinstance(occ_messages, list):
+                    occ_messages.append(notvict_msg)
+        return f"You remove {victim_name_str} from your group."
 
-    # Add to group
+    # Add to group (ROM src/act_comm.c:1850-1854)
     victim.leader = char
-    victim_name = getattr(victim, "short_descr", None) or getattr(victim, "name", "someone")
-    return f"{victim_name} joins your group."
+    # TO_VICT: "You join $n's group."
+    victim_messages = getattr(victim, "messages", None)
+    if isinstance(victim_messages, list):
+        victim_messages.append(f"You join {leader_name}'s group.")
+    # TO_NOTVICT: "$N joins $n's group."
+    room = getattr(char, "room", None)
+    if room is not None:
+        notvict_msg = f"{victim_name_str} joins {leader_name}'s group."
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is char or occupant is victim:
+                continue
+            occ_messages = getattr(occupant, "messages", None)
+            if isinstance(occ_messages, list):
+                occ_messages.append(notvict_msg)
+    return f"{victim_name_str} joins your group."
 
 
 def do_gtell(char: Character, args: str) -> str:
