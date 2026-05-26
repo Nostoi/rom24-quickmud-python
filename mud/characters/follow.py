@@ -68,17 +68,34 @@ def stop_follower(follower: "Character") -> None:
 
 
 def die_follower(char: "Character") -> None:
-    """Stop all followers when character dies.
+    """Detach a dying character from its group and followers.
 
-    ROM Reference: src/handler.c die_follower
-    Mirrors ROM behavior: when character dies, all their followers stop following.
+    Mirrors ROM ``src/act_comm.c:1658-1680``:
+
+    1. If ``ch`` is following someone, detach ``ch`` from its master
+       (releasing ``master->pet`` if it pointed at ``ch``).
+    2. Clear ``ch->leader``.
+    3. For every other character, if it follows ``ch`` (``master == ch``)
+       stop the follow; if it groups under ``ch`` (``leader == ch``), reset
+       its leader to itself so it becomes its own independent group leader
+       — NOT NULL, otherwise ``is_same_group`` would still equate two
+       former members via their dangling pointer at the extracted corpse.
     """
     from mud.models.character import character_registry
 
-    for follower in list(character_registry):
-        master = getattr(follower, "master", None)
-        if master is char:
-            stop_follower(follower)
+    if getattr(char, "master", None) is not None:
+        master = char.master
+        if getattr(master, "pet", None) is char:
+            master.pet = None
+        stop_follower(char)
+
+    char.leader = None
+
+    for fch in list(character_registry):
+        if getattr(fch, "master", None) is char:
+            stop_follower(fch)
+        if getattr(fch, "leader", None) is char:
+            fch.leader = fch
 
 
 __all__ = ["add_follower", "stop_follower", "die_follower"]

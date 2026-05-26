@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.12]
+
+### Fixed
+- **`die_follower` left dangling leader pointers + skipped self-cleanup** (`mud/characters/follow.py:die_follower`): ROM `src/act_comm.c:1658-1680` does three things on a character's death — (1) detaches the dying ch from its own master (releasing `master->pet` if it pointed at ch), (2) clears `ch->leader`, (3) walks `char_list` and for every `fch` whose `master == ch` stops the follow AND for every `fch` whose `leader == ch` resets `fch->leader = fch` (becomes its own group leader, NOT NULL). The Python port previously only did step 3's first half (`master == ch` → `stop_follower`). Symptom: after a group leader died, `is_same_group` (`src/handler.c:2018-2027`, walks `leader` pointers) still equated two unrelated survivors because both still pointed at the extracted corpse — breaking group XP routing, autoassist target filtering, and `do_group` membership checks. Also, a dying ch retained its own master/leader pointers, leaving the corpse "still in" a group from the surviving leader's perspective. Fix mirrors ROM exactly. Two enforcement tests in `tests/integration/test_die_follower_leader_chain.py`: (1) leader dies → ex-members become own leaders and are no longer `is_same_group` with each other; (2) follower dies → `ch.master`, `ch.leader`, and `master.pet` all cleared.
+
 ## [2.9.11]
 
 ### Fixed
