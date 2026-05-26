@@ -661,22 +661,14 @@ def _remove_obj(char: Character, obj) -> None:
         inventory.append(obj)
 
 
+# DUPL-003 — canonical at mud/game_loop.py:_extract_obj.
+# Adapter preserves the (char, obj) call signature used here; canonical
+# extract takes only obj, mirroring ROM src/handler.c:2051 extract_obj.
 def _extract_obj(char: Character, obj) -> None:
-    """Remove object from the game."""
-    room = getattr(char, "room", None)
-    if room:
-        contents = getattr(room, "contents", [])
-        if obj in contents:
-            contents.remove(obj)
+    """Remove object from the game; delegates to canonical recursive extract."""
+    from mud.game_loop import _extract_obj as _canonical_extract_obj
 
-    carrying = getattr(char, "carrying", [])
-    if obj in carrying:
-        carrying.remove(obj)
-
-    # Clear references
-    obj.in_room = None
-    obj.carried_by = None
-    obj.in_obj = None
+    _canonical_extract_obj(obj)
 
 
 def _count_group_members(char: Character) -> int:

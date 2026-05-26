@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.28]
+
+### Fixed
+- **DUPL-003 — `do_quaff` (and the immortal-load extract path) never removed potions/objects from inventory.** The local `_extract_obj` copies in `mud/commands/obj_manipulation.py` and `mud/commands/imm_load.py` were (a) non-recursive over container contents and (b) read `char.carrying` / `carrier.carrying` — a non-existent attribute on `Character` (canonical per AGENTS.md ROM Parity Rules is `char.inventory`). Result: every `do_quaff` printed the flavor text and cast the potion's spells, but the potion stayed in inventory — players could quaff the same potion infinitely. The non-recursive bug also leaked container contents: extracting a chest left its items dangling with `in_obj` still pointing at the (extracted) parent. Both copies now route through canonical `mud/game_loop.py:_extract_obj(obj)` which mirrors ROM `src/handler.c:2051 extract_obj` (recurse over `contains`, unlink from `in_room`/`carried_by`/`in_obj`, remove from `object_registry`). `obj_manipulation.py` retains a thin `(char, obj)` adapter that delegates to the canonical `(obj)`-only entry. Regression tests: `tests/integration/test_dupl_003_extract_obj.py` — `do_quaff` inventory removal + recursive container-contents extraction. Surfaced by DUPL-003 in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
+
 ## [2.9.27]
 
 ### Fixed

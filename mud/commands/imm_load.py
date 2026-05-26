@@ -370,29 +370,8 @@ def _extract_char(char: Character) -> None:
     char.room = None
 
 
-def _extract_obj(obj) -> None:
-    """Remove object from the game."""
-    room = getattr(obj, "in_room", None)
-    if room:
-        contents = getattr(room, "contents", [])
-        if obj in contents:
-            contents.remove(obj)
-    
-    carrier = getattr(obj, "carried_by", None)
-    if carrier:
-        carrying = getattr(carrier, "carrying", [])
-        if obj in carrying:
-            carrying.remove(obj)
-    
-    container = getattr(obj, "in_obj", None)
-    if container:
-        contains = getattr(container, "contains", [])
-        if obj in contains:
-            contains.remove(obj)
-    
-    obj.in_room = None
-    obj.carried_by = None
-    obj.in_obj = None
+# DUPL-003 — canonical at mud/game_loop.py:_extract_obj.
+from mud.game_loop import _extract_obj  # noqa: E402
 
 
 # DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.
