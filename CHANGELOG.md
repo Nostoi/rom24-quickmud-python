@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.14]
+
+### Fixed
+- **INV-018 WEAR-OFF-MESSAGE-FOR-RAW-AFFECT — raw `AffectData` expiries silent in Python** (`mud/affects/engine.py:tick_spell_effects`, new helper `_lookup_raw_affect_wear_off`): ROM `src/update.c:777-781` emits `skill_table[paf->type].msg_off` to the character whenever any positive-typed affect's duration reaches 0 — keyed off the spell SN against the skill_table, not off the `AFFECT_DATA` struct itself. Python's `tick_spell_effects` only emitted a wear-off message when the expiring affect's name appeared in the `spell_effects` dict (the `apply_spell_effect` shadow-mirror path). Raw `AffectData` entries — written straight to `character.affected` via `affect_to_char` without a parallel `apply_spell_effect` call — wore off silently. The production trigger is plague spread at `mud/game_loop.py:614-624`, which builds an `AffectData(type="plague", …)` from constants and calls `vch.affect_to_char(new_af)`; the victim's plague tick then expires silently instead of emitting the skill_table msg_off line (`"Your sores vanish."` per `data/skills.json`). Same applies to any future call path that bypasses `apply_spell_effect`. Fix mirrors the precedent at `mud/game_loop.py:1121-1131 _broadcast_object_wear_off` (object affects use the same hybrid pattern): prefer an explicit `wear_off_message` attribute on the affect, then fall back to `skill_registry.get(affect.type).messages["wear_off"]`. Two enforcement tests in `tests/integration/test_inv018_wear_off_message_for_raw_affect.py`: (1) dynamic `wear_off_message` attribute on the affect must surface; (2) absent that attribute, the registry fallback must fire with the ROM-canonical msg_off string from `data/skills.json`. Tracker now at 18 of ~20 budget; INV-001 … INV-018 all ✅ ENFORCED.
+
 ## [2.9.13]
 
 ### Added

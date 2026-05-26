@@ -2,11 +2,41 @@ from __future__ import annotations
 
 from mud.handler import affect_remove
 from mud.models.character import Character
+from mud.skills.registry import skill_registry
 from mud.utils import rng_mm
 
 ROM_NEWLINE = "\n\r"
 
 __all__ = ["tick_spell_effects"]
+
+
+def _lookup_raw_affect_wear_off(affect) -> str | None:
+    """Mirror ROM ``src/update.c:777-781`` — emit ``skill_table[paf->type].msg_off``
+    on raw AffectData expiry.
+
+    Prefer an explicit ``wear_off_message`` attribute on the affect itself
+    (matches the precedent at ``mud/game_loop.py:1121-1131`` for object
+    affects), then fall back to ``skill_registry`` keyed by ``affect.type``
+    (the spell SN / name). Returns ``None`` if no message can be resolved —
+    a silent expiry is then identical to ROM's behavior when the skill has
+    no ``msg_off`` defined.
+    """
+    explicit = getattr(affect, "wear_off_message", None)
+    if isinstance(explicit, str) and explicit:
+        return explicit
+
+    spell_name = getattr(affect, "type", None)
+    if not isinstance(spell_name, str) or not spell_name:
+        return None
+    try:
+        skill = skill_registry.get(spell_name)
+    except KeyError:
+        return None
+    messages = getattr(skill, "messages", None) or {}
+    candidate = messages.get("wear_off")
+    if isinstance(candidate, str) and candidate:
+        return candidate
+    return None
 
 
 def tick_spell_effects(character: Character) -> list[str]:
@@ -67,11 +97,20 @@ def tick_spell_effects(character: Character) -> list[str]:
                 else:
                     affect_remove(character, affect)
 
-            if isinstance(spell_name, str) and spell_name in effects:
+            if spell_effects_managed:
                 touched_names.add(spell_name)
                 wear_off = getattr(effects[spell_name], "wear_off_message", None)
                 if should_emit and wear_off:
                     messages.append(f"{wear_off}{ROM_NEWLINE}")
+            else:
+                # ROM src/update.c:777-781 — emit skill_table[paf->type].msg_off
+                # for any raw AffectData expiry (e.g. plague-by-spread from
+                # mud/game_loop.py:614-624, food-borne poison transfers).
+                # INV-018 enforcement point.
+                if should_emit:
+                    raw_wear_off = _lookup_raw_affect_wear_off(affect)
+                    if raw_wear_off:
+                        messages.append(f"{raw_wear_off}{ROM_NEWLINE}")
 
         for spell_name in touched_names:
             remaining = [
