@@ -689,6 +689,7 @@ def _broadcast_pos_change(victim: Character, template: str, **extra: object) -> 
     `{weapon}` for ROM `$p`) come from `**extra`. Weapons are not
     `can_see`-gated, so they pass through verbatim.
     """
+    from mud.mobprog import mp_act_trigger_room
     from mud.net.protocol import send_to_char as _send
     from mud.world.vision import pers
 
@@ -704,6 +705,10 @@ def _broadcast_pos_change(victim: Character, template: str, **extra: object) -> 
             asyncio.create_task(_send(listener, message))
         if hasattr(listener, "messages"):
             listener.messages.append(message)
+    # ROM src/fight.c:837-861 / src/comm.c:2384 — position-transition act()
+    # calls have no MOBtrigger wrap; TRIG_ACT dispatches per recipient.
+    canonical = template.format(name=getattr(victim, "name", "Someone"), **extra)
+    mp_act_trigger_room(canonical, room, victim, exclude=victim)
 
 
 def apply_position_change(victim: Character, old_pos: Position) -> None:
