@@ -194,35 +194,7 @@ def _get_skill_percent(attacker: Character, skill_name: str, fallback_attr: str 
     return max(0, min(100, percent))
 
 
-def _push_message(character: Character | None, message: str) -> None:
-    """Deliver a message to a character, mirroring ROM C write_to_buffer.
-
-    ROM C calls write_to_buffer(desc, buf, 0) directly from dam_message/act —
-    inline, synchronous, to the socket output buffer.  We mirror that by
-    scheduling an asyncio send for connected characters.  The queue fallback
-    exists only for test compatibility (test chars have no connection).
-
-    See docs/divergences/MESSAGE_DELIVERY.md for the design rationale.
-    """
-    if character is None:
-        return
-    # Direct delivery — mirroring ROM C write_to_buffer(desc, buf, 0).
-    # Connected PCs receive messages exclusively via the async send; the
-    # mailbox is a fallback for tests and disconnected characters only.
-    # Appending to both caused duplicate delivery: the connection read
-    # loop in mud/net/connection.py also drains char.messages after every
-    # command, so any combat message would replay on the next prompt.
-    # See docs/divergences/MESSAGE_DELIVERY.md.
-    writer = getattr(character, "connection", None)
-    if writer is not None:
-        from mud.net.protocol import send_to_char as _send
-
-        asyncio.create_task(_send(character, message))
-        return
-    # Queue fallback for tests and disconnected characters.
-    mailbox = getattr(character, "messages", None)
-    if isinstance(mailbox, list):
-        mailbox.append(message)
+from mud.utils.messaging import push_message as _push_message  # noqa: E402
 
 
 def _broadcast_damage_messages(

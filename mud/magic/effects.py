@@ -15,7 +15,6 @@ All functions follow ROM probability formula with diminishing returns.
 
 from __future__ import annotations
 
-import asyncio
 from enum import IntEnum
 from typing import TYPE_CHECKING, Any
 
@@ -141,17 +140,9 @@ def _send_effect_message(obj: Object, message: str) -> None:
         _push_message(carrier, str(message))
 
 
-def _push_message(character, message: str) -> None:
-    """Deliver a message to a character, mirroring ROM C write_to_buffer."""
-    if character is None:
-        return
-    writer = getattr(character, "connection", None)
-    if writer is not None:
-        from mud.net.protocol import send_to_char as _send
-
-        asyncio.create_task(_send(character, str(message)))
-    if hasattr(character, "messages") and isinstance(character.messages, list):
-        character.messages.append(str(message))
+# Canonical single-delivery push lives in mud/utils/messaging.py — see
+# docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md (DUPL-002).
+from mud.utils.messaging import push_message as _push_message  # noqa: E402
 
 
 def _dump_container_contents(obj: Object, level: int, damage: int, effect_func: Any) -> None:

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.22]
+
+### Fixed
+- **DUPL-002 — `_push_message` duplicate-delivery in magic effects** (`mud/magic/effects.py`): the magic-effects copy of `_push_message` appended to BOTH the async socket send and `char.messages`. For connected PCs the connection read loop drains `char.messages` after the next command, so every magic effect message (poison ticks, plague chills, paralyze, etc.) replayed once per prompt — the same duplicate-delivery class that `mud/combat/engine.py:_push_message` already fixed. Consolidated to a single canonical implementation at `mud/utils/messaging.py:push_message`; both `combat/engine.py` and `magic/effects.py` now re-export it. Existing `from mud.combat.engine import _push_message` callers continue to work. Regression test: `tests/integration/test_magic_effect_message_no_duplicate.py`. Surfaced by the DUPLICATE_IMPLEMENTATIONS audit (DUPL-002 row in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`).
+
 ### Added
 - `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md` — first per-class audit under the META_AUDIT_TAXONOMY plan. 67 same-name same-primitive duplicate defs in `mud/` enumerated; classified as 5 ❌ real parity bugs (`_send_to_char` messages-only fallback, `_push_message` double-delivery, `_extract_obj` non-recursive + wrong attribute, `_check_improve` triple-stub blocking skill improvement, `load_area_from_json` divergent JSON schemas), 3 ⚠️ DEAD-CODE rows, ~20 ⚠️ CLEANUP rows, 4 ✅ intentional, 5 closed by 2.9.21 rom_api.py deletion. Burn-down order documented; DUPL-002 (`_push_message`) recommended as the narrowest first fix.
 

@@ -1,0 +1,47 @@
+"""Canonical single-delivery message push, mirroring ROM ``write_to_buffer``.
+
+ROM C ``src/comm.c:write_to_buffer`` writes one message to the descriptor's
+output buffer — a single delivery channel.  Python cannot do synchronous
+socket writes inside the synchronous game tick, so connected characters
+receive messages via ``asyncio.create_task(send_to_char(...))``.  The
+``char.messages`` mailbox is a fallback for tests and disconnected
+characters only.
+
+Appending to BOTH the async send and the mailbox causes duplicate
+delivery: the connection read loop in ``mud/net/connection.py`` drains
+``char.messages`` after every command, so any combat/magic message would
+replay on the next prompt for connected PCs.
+
+See ``docs/divergences/MESSAGE_DELIVERY.md`` for the full design rationale
+and ``docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`` (DUPL-002) for the
+audit row that consolidated the divergent copies into this module.
+"""
+
+from __future__ import annotations
+
+import asyncio
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from mud.models.character import Character
+
+
+def push_message(character: Character | None, message: str) -> None:
+    """Deliver a message to a character, mirroring ROM C write_to_buffer.
+
+    Connected PCs receive via the async socket send exclusively.  Tests and
+    disconnected characters fall back to the ``messages`` mailbox.  Never
+    both — see module docstring.
+    """
+    if character is None:
+        return
+    writer = getattr(character, "connection", None)
+    if writer is not None:
+        # mirroring ROM src/comm.c:write_to_buffer — single delivery channel.
+        from mud.net.protocol import send_to_char as _send
+
+        asyncio.create_task(_send(character, str(message)))
+        return
+    mailbox = getattr(character, "messages", None)
+    if isinstance(mailbox, list):
+        mailbox.append(str(message))
