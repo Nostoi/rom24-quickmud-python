@@ -17,17 +17,19 @@ that gate on ``hpcnt N`` would fire N+1 times per ``multi_hit``
 (once per landed hit plus once at multi_hit's end), and would also
 fire on spell-damage paths where ROM doesn't fire HPCNT at all.
 
-The enforcement point is ``mud/combat/engine.py:multi_hit`` —
-HPCNT fires exactly once there, on the NPC attacker, mirroring
-ROM ``src/fight.c:91-98``. The ``_apply_damage`` site was
-deleted.
+The enforcement point is ``mud/game_loop.py:violence_tick`` (INV-026,
+2.9.43) — HPCNT fires exactly once per violence pulse, on the NPC
+attacker, AFTER ``multi_hit`` returns and only when the victim is
+still fighting. Mirrors ROM ``src/fight.c:84-98``. The ``_apply_damage``
+site was deleted in HPCNT-001 (2.9.x), and the shallow
+``multi_hit``-end site was lifted to ``violence_tick`` in INV-026.
 """
 
 from __future__ import annotations
 
 from mud import mobprog
-from mud.combat.engine import attack_round, multi_hit
-from mud.models.character import Character
+from mud.combat.engine import attack_round
+from mud.models.character import Character, character_registry
 from mud.models.constants import Position
 from mud.models.room import Room
 
@@ -77,18 +79,22 @@ def test_hpcnt_does_not_fire_inside_apply_damage(monkeypatch) -> None:
     )
 
 
-def test_hpcnt_fires_exactly_once_per_multi_hit(monkeypatch) -> None:
-    """When an NPC attacker runs through ``multi_hit`` (the ROM
-    violence_update path), HPCNT fires exactly once at the end —
-    not once per landed hit. Mirrors ROM ``src/fight.c:91-98``.
+def test_hpcnt_fires_exactly_once_per_violence_tick(monkeypatch) -> None:
+    """When an NPC attacker runs through ``violence_tick`` (the ROM
+    ``violence_update`` analog), HPCNT fires exactly once per pulse on
+    the attacker after ``multi_hit`` returns — not once per landed hit,
+    and not from non-violence callers of ``multi_hit``. Mirrors ROM
+    ``src/fight.c:84-98`` and INV-026.
     """
+    from mud import game_loop
+
     calls = _record_hpcnt(monkeypatch)
     monkeypatch.setattr(
         "mud.combat.engine.calculate_weapon_damage",
         lambda attacker, victim, dam_type, **kwargs: 5,
     )
 
-    room = Room(vnum=99918, name="hpcnt multi_hit room")
+    room = Room(vnum=99918, name="hpcnt violence_tick room")
     attacker = Character(name="AttackerMob", is_npc=True, position=Position.STANDING)
     attacker.level = 30
     attacker.hit = 100
@@ -102,12 +108,20 @@ def test_hpcnt_fires_exactly_once_per_multi_hit(monkeypatch) -> None:
     victim.max_hit = 100
     room.add_character(attacker)
     room.add_character(victim)
+    character_registry.append(attacker)
+    character_registry.append(victim)
 
-    multi_hit(attacker, victim)
+    attacker.fighting = victim
+    victim.fighting = attacker
+    try:
+        game_loop.violence_tick(do_combat=True)
+    finally:
+        character_registry.remove(attacker)
+        character_registry.remove(victim)
 
     assert len(calls) == 1, (
-        "ROM src/fight.c:97 fires mp_hprct_trigger exactly once at the "
-        f"end of multi_hit on the NPC attacker; got {len(calls)} call(s): "
+        "ROM src/fight.c:97 fires mp_hprct_trigger exactly once per "
+        f"violence pulse on the NPC attacker; got {len(calls)} call(s): "
         f"{calls}"
     )
     assert calls[0] == ("AttackerMob", "VictimPC"), (

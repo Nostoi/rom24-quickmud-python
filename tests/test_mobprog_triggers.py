@@ -273,6 +273,20 @@ def test_event_hooks_fire_rom_triggers(monkeypatch) -> None:
     gl._mobile_counter = 1
     game_tick()
 
+    # INV-026: TRIG_FIGHT / TRIG_HPCNT fire from violence_tick (ROM's
+    # violence_update), not multi_hit. Drive violence_tick directly with
+    # do_combat=True so mobile_update's interleaving doesn't clear the
+    # fighting pointer before the trigger dispatch checks it.
+    guard.fighting = player
+    player.fighting = guard
+    guard.position = Position.STANDING
+    player.position = Position.STANDING
+    player.hit = 10_000
+    player.max_hit = 10_000
+    guard.hit = 10_000
+    guard.max_hit = 10_000
+    gl.violence_tick(do_combat=True)
+
     for required in [
         "exit",
         "greet",

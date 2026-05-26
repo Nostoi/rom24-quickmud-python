@@ -1331,6 +1331,19 @@ def violence_tick(*, do_combat: bool = False) -> None:
             multi_hit(ch, victim, dt=None)
         else:
             stop_fighting(ch, both=False)
+            continue
+
+        # INV-026: ROM src/fight.c:84-98 — after multi_hit returns,
+        # if victim still fighting and attacker is NPC, fire TRIG_FIGHT
+        # then TRIG_HPCNT. Skipped when the round killed the victim
+        # (`(victim = ch->fighting) == NULL`). This dispatch lives ONLY
+        # here, not inside multi_hit, so non-violence callers (assist,
+        # spec_funs, mob_cmds) do not provoke the triggers.
+        if getattr(ch, "is_npc", False) and getattr(ch, "fighting", None) is victim:
+            from mud import mobprog
+
+            mobprog.mp_fight_trigger(ch, victim)
+            mobprog.mp_hprct_trigger(ch, victim)
 
 
 def game_tick() -> None:

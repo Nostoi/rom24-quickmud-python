@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.43]
+
+### Fixed
+- **INV-026 enforced — TRIG_FIGHT / TRIG_HPCNT now fire only from `violence_tick`, never from `multi_hit`.** ROM `src/fight.c:60-99 violence_update` is the only site that fires these two triggers, after `multi_hit` returns and only when the victim is still fighting (`(victim = ch->fighting) == NULL` guard). Pre-2.9.43 Python dispatched both triggers at the end of `mud/combat/engine.py:multi_hit` (the shallow HPCNT-001 enforcement point), so every caller of `multi_hit` — assist mobs joining combat (`mud/combat/assist.py`), special-function attacks (`mud/spec_funs.py`), and `mob kill` directives (`mud/mob_cmds.py`) — wrongly fired TRIG_FIGHT and TRIG_HPCNT on the attacker. The dispatch is now lifted to `mud/game_loop.py:violence_tick` after the `multi_hit` call, guarded by `attacker.fighting is victim` (re-read post-multi_hit, mirroring ROM's `(victim = ch->fighting) == NULL`). HPCNT-001's previous test (`test_hpcnt_fires_exactly_once_per_multi_hit`) is renamed to `test_hpcnt_fires_exactly_once_per_violence_tick` and asserts at the deeper layer; `tests/test_mobprog_triggers.py::test_event_hooks_fire_rom_triggers` now drives `violence_tick(do_combat=True)` directly. New regression: `tests/integration/test_inv026_violence_trigger_dispatch.py` (3 tests — multi_hit-direct silence, violence_tick dispatch, victim-died guard). Tracker row: INV-026 VIOLENCE-TRIGGER-DISPATCH-SCOPE in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`. Adjacent misplacement of `check_assist` inside `multi_hit` (ROM has it in `violence_update`) is documented in the tracker but intentionally deferred to a separate gap-closer.
+- **Dead `char.location` fallbacks stripped.** Following the 2.9.42 INV-025 sweep that surfaced a real bug in `do_put` reading the non-existent `Character.location` (an `Affect` attribute, not `Character`), this strips the misleading `or getattr(char, "location", ...)` fallbacks from five callsites where they were dead code: `_perform_remove` and `do_quaff` (`mud/commands/obj_manipulation.py`), `do_eat`/EAT-004 broadcast (`mud/commands/consumption.py`), and three audit-tally `setattr` sites (`mud/spawning/reset_handler.py`). No behavior change — `char.room` always wins in normal operation; the inner `getattr` never resolved. Removing the dead alternative prevents the typo cluster from spreading further. Per AGENTS.md "no backwards-compatibility hacks like unused fallbacks".
+
 ## [2.9.42]
 
 ### Fixed

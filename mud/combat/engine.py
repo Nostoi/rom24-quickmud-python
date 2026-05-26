@@ -357,9 +357,11 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
             results.append(result)
             check_improve(attacker, "third attack", True, 6)
 
-    if getattr(attacker, "is_npc", False):
-        mobprog.mp_fight_trigger(attacker, victim)
-        mobprog.mp_hprct_trigger(attacker, victim)
+    # INV-026: TRIG_FIGHT / TRIG_HPCNT dispatch moved to
+    # mud.game_loop.violence_tick (the ROM violence_update analog) so
+    # non-violence callers (assist, spec_funs, mob_cmds) do not provoke
+    # the triggers and a victim killed during the round is skipped.
+    # Mirrors ROM src/fight.c:84-98.
 
     return results
 
