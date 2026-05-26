@@ -424,22 +424,56 @@ def affect_check(ch: Character, where: int, vector: int) -> None:
                     ch.vuln_flags |= vector
                 return
 
-    # Also check equipment affects
+    # ROM src/handler.c:1211-1265 — per-instance affects, then (when
+    # the obj is not enchanted) the prototype's affects. The prototype
+    # walk is load-bearing: `.are` files put `A` entries on prototypes,
+    # not on every spawned instance, so a `+sanc` ring whose grant lives
+    # on `obj->pIndexData->affected` would otherwise be invisible here.
+    # equip_char / unequip_char already walk the prototype affects on
+    # equip / remove (mud/handler.py:179, 240); affect_check must match
+    # so a temporary spell expiry doesn't strip a flag the equipment
+    # still grants.
     if hasattr(ch, "equipment"):
         for obj in ch.equipment.values():
-            if obj and hasattr(obj, "affected"):
-                for paf in obj.affected:
-                    if hasattr(paf, "where") and hasattr(paf, "bitvector"):
-                        if paf.where == where and paf.bitvector == vector:
-                            if where == TO_AFFECTS:
-                                ch.affected_by |= vector
-                            elif where == TO_IMMUNE:
-                                ch.imm_flags |= vector
-                            elif where == TO_RESIST:
-                                ch.res_flags |= vector
-                            elif where == TO_VULN:
-                                ch.vuln_flags |= vector
-                            return
+            if obj is None:
+                continue
+            obj_affected = getattr(obj, "affected", None) or []
+            for paf in obj_affected:
+                if not (hasattr(paf, "where") and hasattr(paf, "bitvector")):
+                    continue
+                if paf.where == where and paf.bitvector == vector:
+                    if where == TO_AFFECTS:
+                        ch.affected_by |= vector
+                    elif where == TO_IMMUNE:
+                        ch.imm_flags |= vector
+                    elif where == TO_RESIST:
+                        ch.res_flags |= vector
+                    elif where == TO_VULN:
+                        ch.vuln_flags |= vector
+                    return
+
+            if getattr(obj, "enchanted", False):
+                continue
+
+            prototype = getattr(obj, "prototype", None)
+            proto_affected = getattr(prototype, "affected", None) or []
+            for paf in proto_affected:
+                if isinstance(paf, dict):
+                    paf_where = paf.get("where", 0)
+                    paf_vector = paf.get("bitvector", 0)
+                else:
+                    paf_where = getattr(paf, "where", 0)
+                    paf_vector = getattr(paf, "bitvector", 0)
+                if paf_where == where and paf_vector == vector:
+                    if where == TO_AFFECTS:
+                        ch.affected_by |= vector
+                    elif where == TO_IMMUNE:
+                        ch.imm_flags |= vector
+                    elif where == TO_RESIST:
+                        ch.res_flags |= vector
+                    elif where == TO_VULN:
+                        ch.vuln_flags |= vector
+                    return
 
 
 def affect_remove(ch: Character, paf: Affect) -> None:

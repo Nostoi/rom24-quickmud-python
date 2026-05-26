@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.45]
+
+### Fixed
+- **`affect_check` now walks equipped objects' prototype affects** (ROM `src/handler.c:1240-1257`). Previously Python only walked per-instance `obj.affected` on equipment, missing the prototype fallback that ROM uses. Symptom: a player wearing a `+sanc` ring whose AFF_SANCTUARY grant lives on the prototype (`A` entries in `.are` files — the normal ROM pattern) and a temporary `sanctuary` spell would lose the AFF_SANCTUARY bit when the spell expired. `affect_modify(ch, paf, FALSE)` cleared the bit; `affect_check` then failed to find the prototype-level grant and didn't re-set it, leaving the wearer without sanctuary even though the ring was still on. `equip_char` / `unequip_char` (`mud/handler.py:179, 240`) were already walking the prototype correctly — only `affect_check` had the asymmetry. The new prototype walk is gated on `obj.enchanted == False` (ROM `src/handler.c:1237-1238`); enchanted instances are authoritative via their per-instance `affected` list. Affects on prototypes may be stored as `Affect` dataclasses or plain `dict` entries depending on the loader path, so the walk handles both. New regression: `tests/integration/test_affect_check_prototype_fallback.py` (2 tests — unenchanted prototype walk; enchanted skip). Single-function fix, no new INV-NNN row (the contract is intra-module).
+
 ## [2.9.44]
 
 ### Fixed
