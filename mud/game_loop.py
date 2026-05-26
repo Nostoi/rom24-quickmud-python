@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
@@ -338,16 +337,8 @@ def move_gain(character: Character) -> int:
     return max(0, min(gain, deficit))
 
 
-def _send_to_char(character: Character, message: str) -> None:
-    """Deliver a message to a character, mirroring ROM C write_to_buffer."""
-    writer = getattr(character, "connection", None)
-    if writer is not None:
-        from mud.net.protocol import send_to_char as _send
-
-        asyncio.create_task(_send(character, message))
-    messages = getattr(character, "messages", None)
-    if isinstance(messages, list):
-        messages.append(message)
+# DUPL-001c — canonical at mud/utils/messaging.py:send_to_char_buffered.
+from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: E402
 
 
 def _message_room(room, message: str, exclude: Character | None = None) -> None:

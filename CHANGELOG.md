@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.27]
+
+### Fixed
+- **DUPL-001c — `mud/game_loop.py:_send_to_char` duplicate-delivered tick-driven messages to connected PCs.** Fix-time re-audit invalidated the prior session's "canonical-equivalent tidying only" classification: the copy did `asyncio.create_task(send_to_char(...))` AND `messages.append(...)` unconditionally (no early return after the async branch), so the canonical `push_message`-style single-delivery contract was broken. Every tick-driven message routed through this stub — plague/poison agony (`mud/game_loop.py:575`), light flicker/burnout (`:475,:477,:480`), decay-timer void teleport (`:523`), fever spread (`:609`), cold suffering (`:651`), and decay-broadcast messages (`:720,:1057,:1139`) — was delivered twice for connected players (async socket fires once, connection read loop's `char.messages` drain fires it again on the next command). Consolidated onto canonical `mud/utils/messaging.py:send_to_char_buffered`. With this fix, all 13 sites of DUPL-001 (`_send_to_char`) now route through the canonical implementation and the audit row flips to ✅ FIXED. Regression test: `tests/integration/test_dupl_001c_game_loop_no_duplicate.py` (single-delivery for connected PC + mailbox fallback for disconnected). Surfaced by DUPL-001c in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
+
 ## [2.9.26]
 
 ### Fixed

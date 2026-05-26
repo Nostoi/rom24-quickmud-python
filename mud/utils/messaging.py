@@ -47,7 +47,7 @@ def push_message(character: Character | None, message: str) -> None:
         mailbox.append(str(message))
 
 
-def send_to_char_buffered(character: "Character | None", message: str) -> None:
+def send_to_char_buffered(character: Character | None, message: str) -> None:
     """Buffered ROM send_to_char — async send for connected PCs, mailbox fallback.
 
     Used by code paths (gain_condition, immortal commands, etc.) that in ROM
