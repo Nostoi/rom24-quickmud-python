@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.25]
+
+### Fixed
+- **DUPL-001a — 9 immortal/admin command modules wrote to `char.output_buffer` black hole** (`mud/commands/imm_load.py`, `imm_emote.py`, `imm_admin.py`, `imm_commands.py`, `imm_display.py`, `imm_punish.py`, `imm_server.py`, `admin_commands.py`, `remaining_rom.py`): each carried a byte-identical local `_send_to_char` stub that appended to `char.output_buffer` — an attribute the production connection read loop never drains. Every staff/admin message routed through those stubs (do_protect "You are now immune to snooping.", do_pmote emote text, do_guild clan changes, do_violate, etc.) vanished for connected staff and existed only in tests that read `output_buffer` directly. All 9 stubs consolidated onto canonical `mud/utils/messaging.py:send_to_char_buffered`. Two test files (`tests/integration/test_act_wiz_command_parity.py`, `tests/integration/test_act_comm_gaps.py`) had been reading `output_buffer` to assert delivery — same Trojan-horse pattern as the rom_api.py deletion (tests validating divergent behavior). Migrated all 11 such asserts to read `messages` (the canonical fallback). Regression test: `tests/integration/test_imm_command_delivery_dupl_001a.py` pins that `output_buffer` is never created. Surfaced by DUPL-001a in `docs/parity/audits/DUPLICATE_IMPLEMENTATIONS.md`.
+
 ## [2.9.24]
 
 ### Fixed

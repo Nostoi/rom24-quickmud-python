@@ -480,10 +480,5 @@ def _act_room(room, char: Character, message: str) -> None:
             _send_to_char(person, formatted)
 
 
-def _send_to_char(char: Character, message: str) -> None:
-    """Send message to character."""
-    # In a real implementation, this would use the session
-    # For now, store in a buffer attribute
-    if not hasattr(char, "output_buffer"):
-        char.output_buffer = []
-    char.output_buffer.append(message)
+# DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.
+from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: E402

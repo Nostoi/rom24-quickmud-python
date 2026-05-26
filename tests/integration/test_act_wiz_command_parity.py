@@ -112,7 +112,7 @@ def test_protect_sets_rom_snoop_proof_flag_and_message() -> None:
 
     assert result == "Victim is now snoop-proof.\n\r"
     assert victim.has_comm_flag(CommFlag.SNOOP_PROOF)
-    assert "You are now immune to snooping.\n\r" in getattr(victim, "output_buffer", [])
+    assert "You are now immune to snooping.\n\r" in victim.messages
 
 
 def test_snoop_honors_comm_snoop_proof_enum() -> None:
@@ -1258,7 +1258,7 @@ def test_guild_none_makes_clanless() -> None:
     assert victim.clan == 0
     assert "clanless" in result.lower()
     assert result.endswith("\n\r")
-    victim_msgs = getattr(victim, "output_buffer", [])
+    victim_msgs = victim.messages
     assert any("no clan" in m.lower() for m in victim_msgs)
 
 

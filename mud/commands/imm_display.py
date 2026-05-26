@@ -293,11 +293,8 @@ def do_pecho(char: Character, args: str) -> str:
 # Helper function
 
 
-def _send_to_char(char: Character, message: str) -> None:
-    """Send message to character."""
-    if not hasattr(char, "output_buffer"):
-        char.output_buffer = []
-    char.output_buffer.append(message)
+# DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.
+from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: E402
 
 
 def _act_room(char: Character, message: str, *, do_not_see_char: bool = False) -> None:

@@ -106,22 +106,22 @@ class TestPmoteGaps:
         assert "Moron" in do_pmote(alice, ",broken")
 
     def test_pmote_substitutes_viewer_name_with_you(self, alice, bob):
-        bob.output_buffer = []
+        bob.messages = []
         do_pmote(alice, "smiles at Bob.")
         # Bob (the viewer) should see "Bob" rewritten to "you".
-        assert any("Alice smiles at you." in msg for msg in bob.output_buffer)
+        assert any("Alice smiles at you." in msg for msg in bob.messages)
 
     def test_pmote_handles_possessive_apostrophe(self, alice, bob):
-        bob.output_buffer = []
+        bob.messages = []
         do_pmote(alice, "grabs Bob's cloak.")
         # ROM rewrites "Bob's" -> "your" (you + 'r).
-        assert any("Alice grabs your cloak." in msg for msg in bob.output_buffer)
+        assert any("Alice grabs your cloak." in msg for msg in bob.messages)
 
     def test_pmote_absorbs_trailing_plural_s(self, alice, bob):
-        bob.output_buffer = []
+        bob.messages = []
         do_pmote(alice, "looks at Bobs over there.")
         # ROM: name + 's' (plural) drops the s; "Bobs" -> "you".
-        assert any("Alice looks at you over there." in msg for msg in bob.output_buffer)
+        assert any("Alice looks at you over there." in msg for msg in bob.messages)
 
     def test_pmote_002_invisible_actor_renders_as_someone_to_unaided_viewer(self, alice, bob):
         # mirrors ROM src/act_comm.c:1136,1188 — act("$N $t", ...) routes
@@ -130,10 +130,10 @@ class TestPmoteGaps:
         alice.affected_by |= int(AffectFlag.INVISIBLE)
         assert not bob.has_affect(AffectFlag.DETECT_INVIS)
 
-        bob.output_buffer = []
+        bob.messages = []
         do_pmote(alice, "smiles at Bob.")
 
-        assert any("someone smiles at you." in msg for msg in bob.output_buffer), bob.output_buffer
+        assert any("someone smiles at you." in msg for msg in bob.messages), bob.messages
 
     def test_pmote_003_npc_viewers_do_not_receive_pmote_or_smote(self, alice, room):
         # mirrors ROM src/act_comm.c:1130 and src/act_wiz.c:392-393 —
@@ -147,14 +147,14 @@ class TestPmoteGaps:
             room=room,
             comm=0,
         )
-        npc.output_buffer = []
+        npc.messages = []
         room.add_character(npc)
         character_registry.append(npc)
 
         try:
             do_pmote(alice, "waves at Guard.")
             do_smote(alice, "Alice waves at Guard.")
-            assert npc.output_buffer == []
+            assert npc.messages == []
         finally:
             if npc in room.people:
                 room.people.remove(npc)

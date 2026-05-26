@@ -571,11 +571,8 @@ def _get_skill(char: Character, skill_name: str) -> int:
     return 0
 
 
-def _send_to_char(char: Character, message: str) -> None:
-    """Send message to character."""
-    if not hasattr(char, "output_buffer"):
-        char.output_buffer = []
-    char.output_buffer.append(message)
+# DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.
+from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: E402
 
 
 def do_qmread(char: Character, args: str) -> str:
