@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.40]
+
+### Added
+- **INV-025 — MOBPROG-ACT-TRIGGER-DISPATCH enforced.** Ports ROM's `bool MOBtrigger` global (`src/comm.c:311`) and the per-recipient `mp_act_trigger` dispatch inside `act()` (`src/comm.c:2384-2385`). New module-level `MOBtrigger: bool = True` flag in `mud/mobprog.py`, paired with a `disable_mobtrigger()` context manager that mirrors ROM's `MOBtrigger = FALSE; act(...); MOBtrigger = TRUE;` recursion-guard pattern (`src/act_obj.c:832-836 do_give`, `src/mob_cmds.c:333-335 do_at`). Nesting is safe — the previous value is restored on exit. New `mp_act_trigger_room(message, room, ch, *, arg1, arg2, exclude)` helper iterates `room.people`, skips PCs / `ch` / `exclude`, and fires `mp_act_trigger` per NPC when `MOBtrigger` is True. First wired callsite is `mud/commands/communication.py:do_emote` — the canonical ROM TRIG_ACT producer (`act("$n $T", ch, NULL, argument, TO_ROOM)` at `src/act_comm.c:1091`). Pre-INV-025, every TRIG_ACT mobprog responding to PC emotes silently no-opped because Python only routed speech to mobprog. Regression test `tests/integration/test_inv025_mobprog_act_trigger_dispatch.py` (3 cases: PC emote fires TRIG_ACT on listening NPC, `disable_mobtrigger()` context suppresses dispatch, NPC emoter does not self-fire). Follow-up wiring sweep (broader act() callsites — do_give, drop, get, put, sacrifice, equipment, position-transition broadcasts) tracked as ad-hoc commits, not a new INV row. Budget: 25 of ~20 enforced — trips the AGENTS.md consolidation threshold; pre-documented merge candidates in tracker footer.
+
 ## [2.9.39]
 
 ### Added

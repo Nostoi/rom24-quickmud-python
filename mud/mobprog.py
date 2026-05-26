@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from enum import IntFlag
 from typing import TYPE_CHECKING
@@ -14,6 +15,35 @@ from mud.utils import rng_mm
 
 if TYPE_CHECKING:
     from mud.models.character import Character
+
+
+# INV-025: ROM ``bool MOBtrigger = TRUE`` global (src/comm.c:311) — the
+# recursion guard for act()-driven TRIG_ACT dispatch.  Toggled FALSE around
+# nested act() calls in src/act_obj.c:832-836 (do_give) and
+# src/mob_cmds.c:333-335 (do_at) so a TRIG_ACT response that itself calls
+# act() does not re-fire on the same mob.  Python uses a module-level flag
+# + ``disable_mobtrigger`` context manager for the same purpose; callers
+# that mirror ROM's MOBtrigger=FALSE pattern wrap their act() emissions in
+# ``with disable_mobtrigger(): ...``.
+MOBtrigger: bool = True
+
+
+@contextmanager
+def disable_mobtrigger() -> Iterator[None]:
+    """Suppress ``mp_act_trigger_room`` dispatch within the ``with`` block.
+
+    Mirrors ROM ``MOBtrigger = FALSE; act(...); MOBtrigger = TRUE;`` blocks
+    at ``src/act_obj.c:832-836`` and ``src/mob_cmds.c:333-335``.  Nesting
+    is safe — the prior value is restored on exit, not unconditionally
+    set TRUE.
+    """
+    global MOBtrigger
+    previous = MOBtrigger
+    MOBtrigger = False
+    try:
+        yield
+    finally:
+        MOBtrigger = previous
 
 
 class Trigger(IntFlag):
@@ -1374,6 +1404,45 @@ def call_prog(
         None,
     )
     return exec_context.results
+
+
+def mp_act_trigger_room(
+    message: str,
+    room: object | None,
+    ch: object | None,
+    *,
+    arg1: object | None = None,
+    arg2: object | None = None,
+    exclude: object | None = None,
+) -> int:
+    """Dispatch TRIG_ACT to every NPC recipient in ``room``.
+
+    Mirrors ROM ``src/comm.c:2384-2385`` — inside ``act()``, after the
+    per-recipient buffer is formatted, every NPC ``to`` whose descriptor
+    is not CON_PLAYING receives ``mp_act_trigger(buf, to, ch, arg1, arg2,
+    TRIG_ACT)`` provided the ``MOBtrigger`` global is TRUE.
+
+    Returns the number of NPCs the trigger fired on (callers may ignore).
+    Skips ``ch`` and ``exclude`` (ROM's loop hands act() the full
+    room.people list but the formatted line itself is recipient-keyed —
+    here we drop the speaker so emote-by-NPC does not self-fire).
+    """
+    if not MOBtrigger:
+        return 0
+    if room is None:
+        return 0
+    people = getattr(room, "people", None)
+    if not people:
+        return 0
+    fired = 0
+    for recipient in list(people):
+        if recipient is ch or recipient is exclude:
+            continue
+        if not getattr(recipient, "is_npc", False):
+            continue
+        if mp_act_trigger(message, recipient, ch, arg1, arg2, Trigger.ACT):
+            fired += 1
+    return fired
 
 
 def mp_act_trigger(

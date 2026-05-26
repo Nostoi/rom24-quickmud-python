@@ -616,6 +616,7 @@ def do_emote(char: Character, args: str) -> str:
     # emoter renders as "someone" to listeners without DETECT_INVIS
     # (EMOTE-001). Build one substituted string per recipient.
     if char.room:
+        from mud.mobprog import mp_act_trigger_room
         from mud.world.vision import pers
 
         for listener in list(char.room.people):
@@ -627,6 +628,15 @@ def do_emote(char: Character, args: str) -> str:
                 asyncio.create_task(send_to_char(listener, per_message))
             if hasattr(listener, "messages"):
                 listener.messages.append(per_message)
+
+        # INV-025 — ROM src/comm.c:2384 dispatches mp_act_trigger to every
+        # NPC recipient of an act() broadcast.  do_emote is the canonical
+        # ROM TRIG_ACT producer (`act("$n $T", ch, NULL, argument, TO_ROOM)`
+        # at src/act_comm.c:1091).  Pass the unformatted argument as the
+        # trigger phrase to match ROM's substring-on-formatted-buffer
+        # semantics — the verb the player typed is what mobprog phrases
+        # key on.
+        mp_act_trigger_room(args, char.room, char)
 
     # mirroring ROM src/act_comm.c:1092 — `act("$n $T", ..., TO_CHAR)`.
     # ROM act() substitutes `$n` to "You" on the TO_CHAR branch so the
