@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.47]
+
+### Fixed
+- **INV-020 disconnect-cleanup leg closed — `_disconnect_extract_cleanup` helper extracted from `mud/net/connection.py` `finally` blocks.** ROM `src/handler.c:2117-2122 extract_char` requires every PC-extract trigger to call `nuke_pets` + `die_follower`; the socket-close path (treated as `do_quit` semantics per INV-009) was the last leg still bypassing both cleanups. Extracted a module-level `_disconnect_extract_cleanup(char)` helper (calls `_nuke_pets + char.pet = None + die_follower`) and wired it into both telnet and websocket disconnect `finally` blocks, gated on `not forced_disconnect` because `_disconnect_session` transfers the live Character to a new descriptor (the Character is not being extracted there). With this fix, all four PC-extract triggers — `raw_kill`, void-quit auto-pull (`_auto_quit_character`), `do_pull`-derived `_extract_character`, and socket disconnect — funnel through the same cleanup chain. New regression: `tests/integration/test_inv020_extract_quit_cleanup.py` extended with `test_disconnect_nukes_pets` + `test_disconnect_calls_die_follower` (calls the helper directly so the cleanup chain is verifiable without standing up a real socket).
+
 ## [2.9.46]
 
 ### Fixed

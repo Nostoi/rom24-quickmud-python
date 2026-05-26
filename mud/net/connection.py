@@ -41,7 +41,15 @@ from mud.db.models import Character as DBCharacter
 from mud.handler import reset_char
 from mud.loaders import help_loader
 from mud.logging import log_game_event
-from mud.models.constants import ROOM_VNUM_CHAT, ROOM_VNUM_LIMBO, ROOM_VNUM_SCHOOL, ROOM_VNUM_TEMPLE, CommFlag, PlayerFlag, Sex
+from mud.models.constants import (
+    ROOM_VNUM_CHAT,
+    ROOM_VNUM_LIMBO,
+    ROOM_VNUM_SCHOOL,
+    ROOM_VNUM_TEMPLE,
+    CommFlag,
+    PlayerFlag,
+    Sex,
+)
 from mud.net.ansi import render_ansi
 from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
@@ -157,6 +165,26 @@ def announce_wiznet_logout(char: Character) -> None:
         None,
         _effective_trust(char),
     )
+
+
+def _disconnect_extract_cleanup(char: Character) -> None:
+    """INV-020 EXTRACT-CHAR-CLEANUP-CHAIN — disconnect leg.
+
+    ROM ``src/handler.c:2117-2122 extract_char`` requires every
+    PC-extract trigger to call ``nuke_pets`` + ``die_follower``. The
+    socket-disconnect path in this module already treats the close as
+    ``do_quit`` semantics (save + char_from_room + release account +
+    drop from registry); add the pet/follower cleanup so charmed pets
+    do not survive past their master and group followers do not keep
+    dangling ``leader``/``master`` pointers at the extracted Character.
+    """
+    from mud.characters.follow import die_follower
+    from mud.combat.death import _nuke_pets
+
+    _nuke_pets(char, room=getattr(char, "room", None))
+    if hasattr(char, "pet"):
+        char.pet = None
+    die_follower(char)
 
 
 def announce_wiznet_new_player(
@@ -2000,6 +2028,19 @@ async def handle_connection_with_stream(
         except Exception as exc:
             print(f"[ERROR] Failed to save character: {exc}")
 
+        # INV-020 EXTRACT-CHAR-CLEANUP-CHAIN — disconnect leg.
+        # Mirrors ROM src/handler.c:2117-2122 extract_char: every
+        # PC-extract path must call nuke_pets + die_follower before
+        # unlinking the Character from the world. Skipped on forced
+        # disconnect because _disconnect_session transfers the live
+        # Character to a new descriptor (the Character is not being
+        # extracted).
+        try:
+            if char and not forced_disconnect:
+                _disconnect_extract_cleanup(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to run extract-char cleanup chain: {exc}")
+
         try:
             if char and char.room and not forced_disconnect:
                 char.room.remove_character(char)
@@ -2273,6 +2314,19 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
                 save_character(char)
         except Exception as exc:
             print(f"[ERROR] Failed to save character: {exc}")
+
+        # INV-020 EXTRACT-CHAR-CLEANUP-CHAIN — disconnect leg.
+        # Mirrors ROM src/handler.c:2117-2122 extract_char: every
+        # PC-extract path must call nuke_pets + die_follower before
+        # unlinking the Character from the world. Skipped on forced
+        # disconnect because _disconnect_session transfers the live
+        # Character to a new descriptor (the Character is not being
+        # extracted).
+        try:
+            if char and not forced_disconnect:
+                _disconnect_extract_cleanup(char)
+        except Exception as exc:
+            print(f"[ERROR] Failed to run extract-char cleanup chain: {exc}")
 
         try:
             if char and char.room and not forced_disconnect:

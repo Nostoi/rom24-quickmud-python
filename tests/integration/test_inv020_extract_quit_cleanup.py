@@ -36,8 +36,8 @@ finally-block) is intentionally split into a separate gap-closer so
 the helper-extraction refactor lands cleanly.
 
 Two sub-contracts tested independently per quit path:
-- ``test_void_quit_nukes_pets`` — pet-cleanup leg
-- ``test_void_quit_calls_die_follower`` — follower-cleanup leg
+- ``test_void_quit_nukes_pets`` / ``test_disconnect_nukes_pets`` — pet-cleanup leg
+- ``test_void_quit_calls_die_follower`` / ``test_disconnect_calls_die_follower`` — follower-cleanup leg
 """
 
 from __future__ import annotations
@@ -48,6 +48,7 @@ from mud.game_loop import _auto_quit_character
 from mud.models.character import Character, character_registry
 from mud.models.constants import AffectFlag, Position
 from mud.models.room import Room
+from mud.net.connection import _disconnect_extract_cleanup
 
 
 @pytest.fixture(autouse=True)
@@ -120,4 +121,63 @@ def test_void_quit_calls_die_follower() -> None:
         "ROM src/act_comm.c:1673-1674 — die_follower calls stop_follower "
         "for every fch.master == ch, clearing the master pointer. "
         f"Got master={follower.master!r}"
+    )
+
+
+def test_disconnect_nukes_pets() -> None:
+    """``_disconnect_extract_cleanup`` (called from the telnet+websocket
+    connection ``finally`` blocks on clean disconnect) must call
+    ``_nuke_pets``. Same contract as void-quit; different trigger
+    (socket close vs ``do_quit`` command).
+    """
+    room = Room(vnum=99952, name="Disconnect pet probe")
+    master = Character(name="DiscoMaster", is_npc=False, position=Position.STANDING)
+    pet = Character(name="DiscoImp", is_npc=True, position=Position.STANDING)
+    pet.affected_by = int(AffectFlag.CHARM)
+    master.pet = pet
+    pet.master = master
+    room.add_character(master)
+    room.add_character(pet)
+    character_registry.extend([master, pet])
+
+    _disconnect_extract_cleanup(master)
+
+    assert pet not in character_registry, (
+        "ROM src/handler.c:2117 nuke_pets → extract_char(pet, TRUE). "
+        "Disconnect path must do the same; pet remained in registry."
+    )
+    assert master.pet is None, (
+        "ROM src/handler.c:2118 sets ch->pet = NULL after nuke_pets."
+    )
+
+
+def test_disconnect_calls_die_follower() -> None:
+    """``_disconnect_extract_cleanup`` must call ``die_follower`` so a
+    grouped follower's ``leader`` does not dangle at the disconnected
+    Character (which gets dropped from ``character_registry`` in the
+    same ``finally`` block).
+    """
+    room = Room(vnum=99953, name="Disconnect follower probe")
+    leader = Character(name="DiscoLeader", is_npc=False, position=Position.STANDING)
+    grouped = Character(name="DiscoGrouped", is_npc=False, position=Position.STANDING)
+    follower = Character(name="DiscoFollower", is_npc=False, position=Position.STANDING)
+
+    grouped.leader = leader
+    follower.master = leader
+
+    room.add_character(leader)
+    room.add_character(grouped)
+    room.add_character(follower)
+    character_registry.extend([leader, grouped, follower])
+
+    _disconnect_extract_cleanup(leader)
+
+    assert grouped.leader is grouped, (
+        "ROM src/act_comm.c:1675-1676 — die_follower resets leader to fch "
+        "(NOT None). Disconnect path must invoke this. "
+        f"Got leader={grouped.leader!r}"
+    )
+    assert follower.master is None, (
+        "ROM src/act_comm.c:1673-1674 — die_follower calls stop_follower "
+        f"for every fch.master == ch. Got master={follower.master!r}"
     )
