@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.36]
+
+### Added
+- **INV-022 — EQUIP-APPLIES-OBJECT-AFFECTS pinned with regression test.** Three-module contract: `mud/commands/equipment.py` (do_wear/do_remove/do_wield/do_hold) must route through `mud/handler.py:equip_char`/`unequip_char`, which walk `obj.affected` and call `affect_modify(ch, paf, True/False)` per ROM `src/handler.c:1754-1797`/`1804-1877`. The lower-level `Character.equip_object`/`Character.remove_object` only move the obj between inventory and equipment dict — they do NOT propagate affects. Two `Character.equip_object` direct call sites exist in `mud/commands/inventory.py:159,172` (inside `give_school_outfit`) operating on items whose `obj.affected` is empty by design (vanilla starter gear); a future school-outfit item with affects would need to route through `equip_char`. Currently enforced by construction; test `tests/integration/test_inv022_equip_applies_object_affects.py` (7 cases including HITROLL/DAMROLL apply, strip, round-trip zero-delta, and parametrized positive/negative modifiers) catches any regression in the production wear/wield path. INV tracker: 21 → 22 of ~20 budget, with re-evaluation criteria for consolidation now documented at the bottom of the tracker.
+
 ## [2.9.35]
 
 ### Added
