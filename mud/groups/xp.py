@@ -102,7 +102,9 @@ def group_gain(ch: Character, victim: Character) -> None:
         if level <= 0:
             continue
         if getattr(gch, "is_npc", False):
-            total_levels += max(1, level // 2)
+            # mirroring ROM src/fight.c:1751 — `gch->level / 2` is raw C
+            # integer division, so a level-1 NPC contributes 0, not 1.
+            total_levels += level // 2
         else:
             total_levels += level
 

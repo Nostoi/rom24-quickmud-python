@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.15]
+
+### Fixed
+- **`group_gain` over-counted level-1 NPC contributions to `total_levels`** (`mud/groups/xp.py:104-105`): ROM `src/fight.c:1751` accumulates `group_levels += IS_NPC(gch) ? gch->level / 2 : gch->level;` — raw C integer division, so a level-1 NPC group member (e.g. a charmed pet) contributes 0, not 1. Python had `total_levels += max(1, level // 2)`, flooring NPC contributions at 1. Symptom: a level-10 PC grouped with a level-1 charmed pet killed a victim and received ~10% less XP than ROM would award, because the share-formula denominator (`max(1, total_levels - 1)`, `mud/groups/xp.py:253-254`) was inflated by 1. Fix: drop the `max(1, ...)` floor. Two enforcement tests in `tests/integration/test_group_xp_npc_level_floor.py`: (1) level-1 NPC pet contributes 0; (2) level-3 NPC pet contributes 1 (sanity check that the original behavior at level ≥ 2 is preserved).
+
 ## [2.9.14]
 
 ### Fixed
