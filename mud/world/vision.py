@@ -371,3 +371,22 @@ def describe_character(observer: Character, target: Character | None) -> str:
         return " ".join(prefixes) + " " + base_name
 
     return base_name
+
+
+def check_blind(char: Character) -> bool:
+    """Return True when *char* is not blinded, False otherwise.
+
+    ROM parity: src/act_info.c:check_blind (line 542).
+    """
+    checker = getattr(char, "has_affect", None)
+    if callable(checker):
+        try:
+            return not bool(checker(AffectFlag.BLIND))
+        except Exception:
+            pass
+
+    affected = getattr(char, "affected_by", 0)
+    try:
+        return not bool(int(affected) & int(AffectFlag.BLIND))
+    except Exception:
+        return True

@@ -1,58 +1,55 @@
-# Session Status — 2026-05-25 → 26 — INV-016 → do_group notify (2.9.10 → 2.9.20)
+# Session Status — 2026-05-26 — META_AUDIT_TAXONOMY + rom_api.py deletion (2.9.21)
 
 ## Current State
 
-- **Active pass**: cross-file invariants + opportunistic gap closures.
-  Eleven clusters landed this session: INV-016 (2.9.10), HPCNT-001
-  (2.9.11), die_follower (2.9.12), INV-017 (2.9.13), INV-018 (2.9.14),
-  group XP NPC level-1 floor (2.9.15), INV-019 (2.9.16),
-  do_say/do_tell SPEECH gate (2.9.17), do_buy TO_ROOM (2.9.18),
-  do_follow add/stop notify (2.9.19), do_group add/remove notify (2.9.20).
-- **2.9.20** — `do_group` was returning only the TO_CHAR string.
-  ROM `src/act_comm.c:1841-1846, 1850-1854` emits three messages on
-  each path (TO_VICT, TO_NOTVICT, TO_CHAR). Victims never learned
-  they had been added/removed; onlookers never saw membership
-  changes. Same architectural pattern as 2.9.19 do_follow gap.
+- **New parity-strategy layer**: `docs/parity/META_AUDIT_TAXONOMY.md`
+  filed (8-class umbrella covering BROADCAST_COVERAGE,
+  ARITHMETIC_BOUNDARY, GATE_CONSISTENCY, TRIGGER_CALL_SITE_MIGRATION,
+  LIFECYCLE_STAGING, DUPLICATE_IMPLEMENTATIONS, PARALLEL_REPRESENTATIONS,
+  MATH_AND_RNG_CHANNEL). First per-class plan filed:
+  `docs/parity/plans/2026-05-26-audit-duplicate-implementations.md`.
+- **First audit ran**: DUPLICATE_IMPLEMENTATIONS scan surfaced 67
+  same-name same-primitive defs in `mud/` — 5× the spec's probe.
+  After verification, the actionable ❌ list is ~5 real parity bugs +
+  ~16 drift-risk cleanup rows. Audit doc (Task 4) still pending.
+- **2.9.21** — `mud/rom_api.py` deleted. The audit surfaced it as
+  its own meta-bug: a 690-line shadow API surface used only by
+  `tests/test_rom_api.py` (16 tests) and one production import. Of
+  its 30 functions, several were wrong stubs whose tests validated
+  divergent behavior as if it were correct (`get_max_train` returned
+  `min(21, 25)` while production used `handler.py:get_max_train`).
+  Five months of CI passing while validating wrong code. Migrated
+  the two real imports (`check_blind` → `mud/world/vision.py`,
+  `recursive_clone` → `mud/models/object.py`) and deleted the file
+  + its test suite.
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.20 |
-| Tests | 4733 passed, 4 skipped (full suite, 9m02s) |
+| Version | 2.9.21 |
+| Tests | 4716 passed, 4 skipped (full suite, 7m10s; lost 16 from deleted test_rom_api.py) |
 | Cross-file invariants | 19 of ~20 budget; INV-001 … INV-019 ✅ ENFORCED |
-| Branch | `master` (2.9.10–2.9.19 on origin; 2.9.20 staged) |
-| Watch list | do_group probe ✅ (gap closed, not INV) |
+| Meta-audit | 1 of 8 classes audited (DUPLICATE_IMPLEMENTATIONS; doc pending) |
+| Branch | `master` (2.9.21 staged) |
 
 ## Next Intended Task
 
-The 2.9.19 + 2.9.20 cluster both close TO_VICT/TO_NOTVICT broadcast
-gaps in `mud/commands/group_commands.py`. The duplicate
-`add_follower`/`stop_follower`/`is_same_group` between
-`mud/characters/follow.py` and `mud/commands/group_commands.py` is
-now an active hazard — these will drift. Best next session: a
-consolidation that removes the group_commands duplicates and routes
-`do_follow` through `mud/characters/follow.py`.
+Finish the DUPLICATE_IMPLEMENTATIONS audit doc using the verified
+classifications. The doc is now smaller and more actionable than the
+plan anticipated:
 
-Candidate areas for next probe (19/~20 INV budget):
+- **5 real ❌** to burn down: `_send_to_char` (network-delivery skip),
+  `_push_message` (double delivery), `_extract_obj` (wrong attribute +
+  no recursion), `_check_improve` (triple-stub blocks skill
+  improvement), `load_area_from_json` (divergent JSON schemas).
+- **~16 ⚠️ cleanup** rows: functionally-identical duplicates needing
+  consolidation, no current bug.
+- **~7 ⚠️ DEAD-CODE** rows closed for free by the rom_api.py deletion.
 
-1. **Duplicate-follow-impl consolidation** — merge group_commands
-   `add_follower`/`stop_follower`/`is_same_group` into the
-   `mud/characters/` canonical module; route `do_follow` and
-   `do_group` through it. Multi-test, multi-file — likely its own
-   session or small audit.
-2. **INV-budget restructuring discussion** — at 19/~20, AGENTS.md
-   notes reviewing the invariant taxonomy. Skim the per-file audit
-   tracker for rows that should be lifted to INV.
-3. **`do_value` price reporting voice gates** — ROM
-   `src/act_obj.c:2965+` — probe TO_VICT vs TO_CHAR correctness.
-4. **Group-membership-on-follow** — ROM `do_follow` does NOT auto-
-   group; `is_same_group` only follows `leader`, not `master`. Probe
-   `mud/groups/xp.py` and AoE targeting to verify they distinguish
-   followers (master chain) from group (leader chain) per ROM.
-
-Probe method: read ROM C contract → read Python equivalent → write
-one failing test. Then close as single gap-closer or file INV-020.
+After the audit doc commits, next move is either (a) burn-down session
+for the 5 ❌ rows or (b) move on to the next audit class
+(BROADCAST_COVERAGE or ARITHMETIC_BOUNDARY).
 
 No push to origin without explicit per-cluster user approval.
-Pending push: 2.9.20.
+2.9.21 push: AUTHORIZED for this commit.

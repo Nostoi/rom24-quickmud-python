@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.21]
+
+### Removed
+- **`mud/rom_api.py` (690 lines, 30 functions) and `tests/test_rom_api.py` (16 tests) deleted.** The module was created on 2025-12-23 as "public wrapper functions for ROM C compatibility… for external tools and documentation," but the external-tools use case never materialized in the five months since. Of its 30 functions, the audit found three categories: (1) thin wrappers delegating to canonical implementations (harmless), (2) dead-signature commands that couldn't reach the dispatcher (`do_imotd`/`do_rules`/`do_story` had `(char) -> str` while dispatcher requires `(char, args) -> str`), and (3) wrong stubs whose tests validated divergent behavior as if it were correct (`get_max_train` returned `min(21, 25)` ignoring race/class while `mud/handler.py:get_max_train` correctly walks `PC_RACE_TABLE`). Category (3) was the worst case — every CI run for five months was confirming wrong behavior in a dead module while the right code ran in production, creating false parity signal. Surfaced as the headline finding of the DUPLICATE_IMPLEMENTATIONS audit (Class 6 of `docs/parity/META_AUDIT_TAXONOMY.md`).
+
+### Changed
+- `check_blind` (only `rom_api.py` function with a production import — `mud/world/look.py:56`) relocated to `mud/world/vision.py` next to the rest of visibility logic.
+- `recursive_clone` (used by the INV-014 integration test) relocated to `mud/models/object.py` next to `create_object`. Behavior unchanged.
+
 ## [2.9.20]
 
 ### Fixed

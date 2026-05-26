@@ -166,3 +166,41 @@ def create_object(prototype: ObjIndex, *, instance_id: int | None = None) -> Obj
     obj = Object(instance_id=instance_id, prototype=prototype)
     object_registry.append(obj)
     return obj
+
+
+def recursive_clone(obj: Object, clone_to: Object | None = None) -> Object:
+    """Deep-clone *obj* including container contents.
+
+    ROM parity: src/act_wiz.c:recursive_clone (line 2320). Used by the
+    immortal ``clone`` command and OLC paths.
+    """
+    from mud.models.obj import ObjIndex
+
+    if not obj.prototype:
+        proto = ObjIndex(
+            vnum=obj.vnum,
+            name=obj.name,
+            short_descr=obj.short_descr,
+            long_descr=obj.long_descr,
+            description=obj.description,
+            item_type=obj.item_type,
+            extra_flags=obj.extra_flags,
+            wear_flags=obj.wear_flags,
+            value=obj.value.copy() if obj.value else [0, 0, 0, 0, 0],
+            weight=obj.weight,
+            cost=obj.cost,
+            level=obj.level,
+        )
+    else:
+        proto = obj.prototype
+
+    new_obj = create_object(proto)
+
+    for content in obj.contained_items:
+        recursive_clone(content, new_obj)
+
+    if clone_to:
+        clone_to.contained_items.append(new_obj)
+        new_obj.location = None
+
+    return new_obj

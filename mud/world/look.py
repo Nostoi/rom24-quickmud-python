@@ -53,7 +53,7 @@ def look(char: Character, args: str = "") -> str:
         return "You can't see anything, you're sleeping!"
 
     # Check blind - ROM src/act_info.c lines 1065-1066
-    from mud.rom_api import check_blind
+    from mud.world.vision import check_blind
 
     if not check_blind(char):
         return "You can't see a thing!"

@@ -32,7 +32,7 @@ from mud.models.obj import ObjIndex, object_registry
 from mud.models.object import Object
 from mud.models.conversion import load_objects_for_character
 from mud.registry import obj_registry, room_registry
-from mud.rom_api import recursive_clone
+from mud.models.object import recursive_clone
 from mud.skills.handlers import locate_object
 from mud.spawning.obj_spawner import spawn_object
 
