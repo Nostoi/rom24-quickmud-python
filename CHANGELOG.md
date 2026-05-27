@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.58]
+
+### Fixed
+- **`BCAST-025` — `do_surrender` now emits TO_VICT and TO_NOTVICT broadcasts** (ROM `src/fight.c:3230-3232`). Pre-fix `mud/commands/combat.py:do_surrender` only returned the TO_CHAR text; the opponent and bystanders saw nothing. Added `send_to_char_buffered` delivery of "$n surrenders to you!\n\r" to the opponent and "$n tries to surrender to $N!\n\r" to every other room.people member before `stop_fighting`. New regression: `tests/integration/test_surrender_broadcasts.py`.
+- **`BCAST-012` — `do_invis` now emits all three ROM TO_ROOM broadcasts** (ROM `src/act_wiz.c:4329-4372`). Three issues compounded: (a) toggle-off wording was "fades **back** into existence" — ROM is canonical and uses "fades into existence" (no "back"); (b) the toggle-on and level-set branches set `invis_level` BEFORE calling `_act_room`, but `_act_room` enforces `can_see_character` — once `invis_level` was committed, witnesses below trust never saw the fade-out, so the audit's R=3 vs Py=0 count was empirically correct (the broadcasts were silently dropped); (c) the level-set-with-arg branch had no `_act_room` call at all. Fixed all three: re-ordered broadcast-before-commit on fade-out, added the level-set broadcast, fixed the wording. New regression: `tests/integration/test_invis_broadcasts.py` (3/3).
+- **`BCAST-011` — `do_incognito` now emits all three ROM TO_ROOM broadcasts** (ROM `src/act_wiz.c:4375-4418`). Pre-fix the toggle-off (uncloak) and level-set branches had no `_act_room` call. Toggle-on was already correct (incognito does not block in-room `can_see_character` so a post-`incog_level` broadcast still reaches witnesses, unlike the do_invis fade-out case). Added the two missing broadcasts. New regression: `tests/integration/test_incognito_broadcasts.py` (3/3).
+
+### Changed
+- **`BCAST-001` / `BCAST-008` — `@goto` / `do_goto` audit rows reclassified to ✅ COVERED** (no code change). The audit's body-only static scan flagged R=4 ROM acts vs Py=0 broadcast hits, but `do_goto` at `mud/commands/imm_commands.py:164` already broadcasts via the `_act_room(old_room, ...)` (bamfout) and `_act_room(location, ...)` (bamfin) helpers at lines 196, 198, 208, 210. The audit missed `_act_room` because it doesn't match the searched literal helpers — helper-transitivity caveat. ROM's 4 acts collapse to 2 effective broadcasts per direction (default + pcdata-bamf variants, only one delivered per direction); Python emits exactly one per direction, equivalent contract.
+
+### Notes
+- Class 1 BROADCAST_COVERAGE burn-down is now active. 4 of 29 ❌ rows resolved this session (3 fixed, 1 pair collapsed as false positive). Next ranked candidates: BCAST-004/005/026 (`do_dirt`/`do_disarm`/`do_trip`) — need a helper-transitivity probe vs `damage()` / `one_hit()` before promoting to gap-closers, per the audit's "Combat-skill commands" note.
+
 ## [2.9.57]
 
 ### Fixed
