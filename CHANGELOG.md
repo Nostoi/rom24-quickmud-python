@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Class A BCAST burn-down probe — 13 rows reclassified to ✅ COVERED, 3 narrowed to ⚠️ Partial with new gap IDs** (no code change). Per-row probe pass over the 16 remaining Class 1 BCAST rows (`docs/parity/audits/BROADCAST_COVERAGE.md`). Verified-COVERED via helper-transitivity (same pattern as BCAST-001/004/005/007/008/019/020/026/029 collapses):
+  - BCAST-006 (`enter` → `move_character_through_portal`), BCAST-010 (`gtell` → `send_to_char` group-member loop), BCAST-021/022/023/024 (position commands `rest`/`sit`/`sleep`/`stand` → local `_broadcast` → `broadcast_room`), BCAST-028 (`value` — ROM has no TO_ROOM), BCAST-031 (`buy` → `room.broadcast`), BCAST-032 (`force` → `_send_to_char` per branch — ROM has no TO_ROOM), BCAST-033 (`give` → `_broadcast_to_room_observers` + `send_to_char` task), BCAST-036 (`recall` → 3× `room.broadcast`), BCAST-037 (`sell` → `room.broadcast`), BCAST-039 (`transfer` → 2× `_act_room` + `_send_to_char`).
+- **Three narrowed Partials surface real divergences** filed durably as new gap IDs in `BROADCAST_COVERAGE.md` Blocked rows:
+  - **`GROUP-001`** — `do_group` TO_VICT/TO_NOTVICT delivered via `.messages` list only (test fallback, not real-time `send_to_char`/`broadcast_room`); blocks BCAST-009.
+  - **`ORDER-001`** — `do_order` bypasses `act()` visibility gating (manual `f"{char.name} orders…"`) and checks the wrong word position for the "mob" guard; blocks BCAST-017 (broadcast delivery itself is correct).
+  - **`STEAL-001`** — `_steal_failure` TO_VICT/TO_NOTVICT delivered via `.messages` list only; blocks BCAST-038.
+
 ### Added
 - **`BCAST-002` (mob branch) — `do_clone` mob branch now emits the ROM TO_ROOM broadcast** (ROM `src/act_wiz.c:2450`). Pre-fix the mob branch placed the clone silently after the CLONE-001 trust-gate fix landed. Added TO_ROOM `$n has created $N.` after the clone is placed in `char.room`, using a `clone.short_descr` → `prototype.short_descr` → `name` fallback chain (same pattern as BCAST-014/015 since spawned MobInstances populate `name` from the prototype's `short_descr`). Regression: `tests/integration/test_clone_broadcasts.py::test_clone_mob_emits_to_room_broadcast`. **Completes BCAST-002** — both branches now ✅ FIXED.
 
