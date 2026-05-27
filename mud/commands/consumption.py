@@ -308,12 +308,9 @@ def _find_obj_inventory(ch: Character, name: str) -> Object | None:
 
     ROM Reference: src/handler.c get_obj_carry — searches `ch->carrying`.
     QuickMUD stores the carrying list on `Character.inventory` (see
-    `mud/models/character.py:396`). Previous code read `ch.carrying` which
-    does not exist, so every `do_eat`/`do_drink` lookup failed.
+    `mud/models/character.py:396`).
     """
-    inventory = getattr(ch, "inventory", None)
-    if inventory is None:
-        inventory = getattr(ch, "carrying", [])
+    inventory = ch.inventory
     if not inventory or not name:
         return None
 

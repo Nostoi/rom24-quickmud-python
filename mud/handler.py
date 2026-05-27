@@ -691,7 +691,7 @@ def count_users(obj: Object) -> int:
         Number of characters on the object
 
     QuickMUD Notes:
-        - Uses obj.in_room.characters instead of linked list
+        - Uses room.people (canonical attribute) instead of linked list
         - Returns 0 if object not in a room
     """
     from typing import TYPE_CHECKING

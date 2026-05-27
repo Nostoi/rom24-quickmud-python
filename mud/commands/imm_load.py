@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 from mud.commands.imm_commands import MAX_LEVEL, get_char_room, get_char_world, get_trust
 from mud.mob_cmds import _extract_character
 from mud.models.character import Character
+from mud.models.constants import ActFlag, ExtraFlag
 
 if TYPE_CHECKING:
     pass
@@ -173,9 +174,6 @@ def do_purge(char: Character, args: str) -> str:
 
     if not args or not args.strip():
         # mirrors ROM src/act_wiz.c:2584-2607 — purge room
-        ACT_NOPURGE = 0x00002000
-        ITEM_NOPURGE = 0x00000040
-
         people = list(getattr(room, "people", []))
         for victim in people:
             if victim is char:
@@ -183,7 +181,7 @@ def do_purge(char: Character, args: str) -> str:
             if not getattr(victim, "is_npc", False):
                 continue
             act_flags = getattr(victim, "act", 0)
-            if act_flags & ACT_NOPURGE:
+            if act_flags & int(ActFlag.NOPURGE):
                 continue
             # PURGE-001: route through the canonical extract_char
             # chokepoint so nuke_pets + die_follower run (INV-020).
@@ -193,7 +191,7 @@ def do_purge(char: Character, args: str) -> str:
         contents = list(getattr(room, "contents", []))
         for obj in contents:
             extra_flags = getattr(obj, "extra_flags", 0)
-            if extra_flags & ITEM_NOPURGE:
+            if extra_flags & int(ExtraFlag.NOPURGE):
                 continue
             _extract_obj(obj)
 

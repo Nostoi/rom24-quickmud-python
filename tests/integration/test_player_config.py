@@ -15,11 +15,10 @@ from __future__ import annotations
 
 import pytest
 
-from mud.commands.player_config import do_noloot, do_nofollow, do_nosummon
+from mud.commands.player_config import do_nofollow, do_noloot, do_nosummon
 from mud.models.character import Character
-from mud.models.constants import PlayerFlag
+from mud.models.constants import DefenseBit, PlayerFlag
 from mud.models.room import Room
-
 
 # ============================================================================
 # FIXTURES
@@ -235,7 +234,7 @@ def test_nosummon_npc_toggle(test_npc):
     - NPCs use IMM_SUMMON flag in ch->imm_flags
     - Toggle works same as players but uses different flag field
     """
-    IMM_SUMMON = 0x00000010  # bit 4
+    IMM_SUMMON = int(DefenseBit.SUMMON)  # canonical bit 0 (A = 1<<0)
 
     # Initially summonable (IMM_SUMMON not set)
     assert not (test_npc.imm_flags & IMM_SUMMON), "NPC should start without IMM_SUMMON flag"

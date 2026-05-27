@@ -6,7 +6,7 @@ ROM Reference: src/act_info.c, src/act_comm.c
 from __future__ import annotations
 
 from mud.models.character import Character
-
+from mud.models.constants import AffectFlag, DefenseBit
 
 # Player act flags (PLR_*)
 PLR_CANLOOT = 0x00008000
@@ -73,8 +73,8 @@ def do_nosummon(char: Character, args: str) -> str:
     if is_npc:
         # NPCs use imm_flags
         imm_flags = getattr(char, "imm_flags", 0)
-        IMM_SUMMON = 0x00000010
-        
+        IMM_SUMMON = int(DefenseBit.SUMMON)  # mirroring ROM src/merc.h IMM_SUMMON (A = 1<<0)
+
         if imm_flags & IMM_SUMMON:
             char.imm_flags = imm_flags & ~IMM_SUMMON
             return "You are no longer immune to summon."
@@ -204,7 +204,6 @@ def _stop_follower(char: Character) -> None:
     
     # Remove charm affect
     affected_by = getattr(char, "affected_by", 0)
-    from mud.models.constants import AffectFlag
     if affected_by & AffectFlag.CHARM:
         char.affected_by = affected_by & ~AffectFlag.CHARM
     
