@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.62]
+
 ### Changed
 - **Class A BCAST burn-down probe — 13 rows reclassified to ✅ COVERED, 3 narrowed to ⚠️ Partial with new gap IDs** (no code change). Per-row probe pass over the 16 remaining Class 1 BCAST rows (`docs/parity/audits/BROADCAST_COVERAGE.md`). Verified-COVERED via helper-transitivity (same pattern as BCAST-001/004/005/007/008/019/020/026/029 collapses):
   - BCAST-006 (`enter` → `move_character_through_portal`), BCAST-010 (`gtell` → `send_to_char` group-member loop), BCAST-021/022/023/024 (position commands `rest`/`sit`/`sleep`/`stand` → local `_broadcast` → `broadcast_room`), BCAST-028 (`value` — ROM has no TO_ROOM), BCAST-031 (`buy` → `room.broadcast`), BCAST-032 (`force` → `_send_to_char` per branch — ROM has no TO_ROOM), BCAST-033 (`give` → `_broadcast_to_room_observers` + `send_to_char` task), BCAST-036 (`recall` → 3× `room.broadcast`), BCAST-037 (`sell` → `room.broadcast`), BCAST-039 (`transfer` → 2× `_act_room` + `_send_to_char`).
