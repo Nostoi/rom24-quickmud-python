@@ -20,12 +20,12 @@ Counts shown as `ROM` (TO_ROOM / TO_VICT / TO_NOTVICT / TO_ALL) vs `Py total` (s
 | # | Command | Python entry | ROM C ref | TO_ROOM | TO_VICT | TO_NOTVICT | TO_ALL | Py total | Status | Notes |
 |---|---------|--------------|-----------|---------|---------|------------|--------|----------|--------|-------|
 | 1 | `@goto` | `mud/commands/build.py:3930` | `src/act_wiz.c:905` | 0 | 4 | 0 | 0 | 0 | ✅ COVERED | **BCAST-001** — FALSE POSITIVE. Same handler as `do_goto` (admin alias). `do_goto` in `imm_commands.py:164` already broadcasts via `_act_room(old_room, ...)` (bamfout) and `_act_room(location, ...)` (bamfin) at lines 196, 198, 208, 210. The audit's body-only static scan missed `_act_room` as a broadcast helper. Helper-transitivity caveat applies. |
-| 2 | `clone` | `mud/commands/imm_search.py:375` | `src/act_wiz.c:2296` | 2 | 0 | 0 | 0 | 0 | ❌ | **BCAST-002** — ROM has 2 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
+| 2 | `clone` | `mud/commands/imm_search.py:375` | `src/act_wiz.c:2296` | 2 | 0 | 0 | 0 | 0 | ⚠️ BLOCKED by WIZLOAD-001 (obj path) | **BCAST-002** — ROM has 2 non-TO_CHAR act(). Object path: blocked — `do_clone` imports `spawn_obj` from `mud.spawning.obj_spawner` which doesn't exist (canonical: `spawn_object`); ImportError on every clone-object call. Mob path is functionally reachable (uses `spawn_mob` which exists) but the TO_ROOM `$n has created $N.` broadcast still needs adding; could be closed in isolation but the BCAST row stays ⚠️ until WIZLOAD-001 unblocks the object path. Adjacent (out of scope for BCAST): return strings `"You clone $p."` / `"You clone $N."` are unsubstituted ROM template literals — `$p`/`$N` are not expanded to the clone's short_descr. |
 | 3 | `close` | `mud/commands/doors.py:181` | `src/act_move.c:425` | 3 | 0 | 0 | 0 | 3 | ✅ FIXED (2.9.59) | **BCAST-003** — Pre-fix `do_close` returned only the actor "Ok." / "You close $p." string with zero `broadcast_room` calls. Added portal/container TO_ROOM `$n closes $p.` (act_move.c:492, 515), door TO_ROOM `$n closes the $d.` (act_move.c:534), and linked-room per-person `The $d closes.` (act_move.c:545-547). Symmetric to BCAST-016. Regression: `tests/integration/test_close_broadcasts.py` (4/4). |
 | 4 | `dirt` | `mud/commands/combat.py:839` | `src/fight.c:2349` | 1 | 1 | 0 | 0 | 2 | ✅ COVERED (2.9.59) | **BCAST-004** — FALSE POSITIVE. Probe (2.9.59) confirmed `mud/skills/handlers.py:3018-3026` already emits TO_ROOM `"$n is blinded by the dirt in their eyes!"` via `broadcast_room` and TO_VICT `"$n kicks dirt in your eyes!"` via `_send_to_char`. The audit's static scan inspected `combat.py:do_dirt` (the dispatcher entry point) but the broadcasts live in the skill handler. Helper-transitivity caveat (audit looked at the wrong file). |
 | 5 | `disarm` | `mud/commands/combat.py:963` | `src/fight.c:2995` | 0 | 1 | 1 | 0 | 2 | ✅ COVERED (2.9.59) | **BCAST-005** — FALSE POSITIVE. Probe (2.9.59) confirmed `mud/skills/handlers.py:3108-3134` already emits TO_VICT + TO_NOTVICT on all three ROM branches (success, failure, NOREMOVE). The audit's static scan inspected `combat.py:do_disarm` but the broadcasts live in the skill handler. Helper-transitivity caveat. |
 | 6 | `enter` | `mud/commands/movement.py:47` | `src/act_enter.c:43` | 5 | 0 | 0 | 0 | 0 | ❌ | **BCAST-006** — ROM has 5 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
-| 7 | `envenom` | `mud/commands/remaining_rom.py:177` | `src/act_obj.c:820` | 2 | 0 | 0 | 0 | 0 | ❌ | **BCAST-007** — ROM has 2 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
+| 7 | `envenom` | `mud/commands/remaining_rom.py:177` | `src/act_obj.c:820` | 2 | 0 | 0 | 0 | 2 | ✅ COVERED (2.9.60) | **BCAST-007** — FALSE POSITIVE. `mud/commands/remaining_rom.py:do_envenom` dispatches to `mud/skills/handlers.py:envenom`, which emits both ROM TO_ROOM acts: food/drink path `"$n treats $p with deadly poison."` (handlers.py:3742, ROM act_obj.c:887) and weapon path `"$n coats $p with deadly venom."` (handlers.py:3847, ROM act_obj.c:946). Audit's static scan inspected the dispatcher, not the handler. Same helper-transitivity caveat as BCAST-004/005/026. |
 | 8 | `goto` | `mud/commands/imm_commands.py:164` | `src/act_wiz.c:905` | 0 | 4 | 0 | 0 | 0 | ✅ COVERED | **BCAST-008** — FALSE POSITIVE (verified 2.9.58). `do_goto` calls `_act_room(old_room, char, bamfout)` and `_act_room(location, char, bamfin)` — the helper at `imm_commands.py:473-481` iterates `room.people` and delivers via `_send_to_char`. ROM emits both default and pcdata-bamf variants per direction; Python emits exactly one per direction depending on whether bamfin/bamfout is set, which is the equivalent contract. |
 | 9 | `group` | `mud/commands/group_commands.py:165` | `src/act_comm.c:1736` | 0 | 3 | 2 | 0 | 0 | ❌ | **BCAST-009** — ROM has 5 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
 | 10 | `gtell` | `mud/commands/group_commands.py:303` | `src/act_comm.c:1948` | 0 | 1 | 0 | 0 | 0 | ❌ | **BCAST-010** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
@@ -38,7 +38,7 @@ Counts shown as `ROM` (TO_ROOM / TO_VICT / TO_NOTVICT / TO_ALL) vs `Py total` (s
 | 17 | `order` | `mud/commands/group_commands.py:473` | `src/act_comm.c:1650` | 0 | 1 | 0 | 0 | 0 | ❌ | **BCAST-017** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
 | 18 | `quit` | `mud/commands/session.py:36` | `src/act_comm.c:1430` | 1 | 0 | 0 | 0 | 1 | ✅ FIXED (2.9.60) | **BCAST-018** — Pre-fix `do_quit` returned "May your travels be safe." and set `_quit_requested`; the room saw nothing. Added TO_ROOM `$n has left the game.` (act_comm.c:1482) via `broadcast_room(room, ..., exclude=ch)` after save but before the disconnect flag. The fight/below-STUNNED guards still short-circuit before the broadcast (matches ROM). Regression: `tests/integration/test_quit_broadcasts.py` (3/3, including 2 negative-pin tests for the blocked-quit paths). |
 | 19 | `reply` | `mud/commands/communication.py:244` | `src/act_comm.c:928` | 0 | 1 | 0 | 0 | 0 | ❌ | **BCAST-019** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
-| 20 | `report` | `mud/commands/info.py:557` | `src/act_info.c:2588` | 1 | 0 | 0 | 0 | 0 | ❌ | **BCAST-020** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
+| 20 | `report` | `mud/commands/info.py:557` | `src/act_info.c:2588` | 1 | 0 | 0 | 0 | 1 | ✅ COVERED (2.9.60) | **BCAST-020** — FALSE POSITIVE. `mud/commands/info.py:do_report` at lines 583-595 manually iterates `room.people` and `desc.send(room_msg)` to every non-self character with `"$n says 'I have %d/%d hp ...xp.'"` — direct inline TO_ROOM broadcast (no named helper). Equivalent to `broadcast_room(room, msg, exclude=ch)` for the audit's coverage check. |
 | 21 | `rest` | `mud/commands/position.py:209` | `src/act_move.c:1078` | 12 | 0 | 0 | 0 | 0 | ❌ | **BCAST-021** — ROM has 12 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
 | 22 | `sit` | `mud/commands/position.py:290` | `src/act_move.c:1217` | 10 | 0 | 0 | 0 | 0 | ❌ | **BCAST-022** — ROM has 10 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
 | 23 | `sleep` | `mud/commands/position.py:371` | `src/act_move.c:1343` | 4 | 0 | 0 | 0 | 0 | ❌ | **BCAST-023** — ROM has 4 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
@@ -47,7 +47,7 @@ Counts shown as `ROM` (TO_ROOM / TO_VICT / TO_NOTVICT / TO_ALL) vs `Py total` (s
 | 26 | `trip` | `mud/commands/combat.py:880` | `src/fight.c:2501` | 1 | 1 | 1 | 0 | 2 | ✅ COVERED (2.9.59) | **BCAST-026** — FALSE POSITIVE. Probe (2.9.59) confirmed `mud/skills/handlers.py:7691-7701` already emits TO_VICT `"$n trips you..."` via `_send_to_char` and TO_NOTVICT via a manual `room.people` loop. The audit's static scan inspected `combat.py:do_trip` but the broadcasts live in the skill handler. Helper-transitivity caveat. |
 | 27 | `unlock` | `mud/commands/doors.py:373` | `src/act_move.c:674` | 3 | 0 | 0 | 0 | 3 | ✅ FIXED (2.9.59) | **BCAST-027** — Pre-fix `do_unlock` returned only "*Click*" with zero `broadcast_room` calls. Added portal/container TO_ROOM `$n unlocks $p.` (act_move.c:757, 790) and door TO_ROOM `$n unlocks the $d.` (act_move.c:825). ROM does NOT broadcast to the linked room on unlock (line 832); Python pins this asymmetry. Symmetric to BCAST-013. Regression: `tests/integration/test_unlock_broadcasts.py` (3/3). |
 | 28 | `value` | `mud/commands/shop.py:1018` | `src/act_obj.c:2904` | 0 | 4 | 0 | 0 | 0 | ❌ | **BCAST-028** — ROM has 4 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
-| 29 | `violate` | `mud/commands/imm_server.py:163` | `src/act_wiz.c:968` | 0 | 4 | 0 | 0 | 0 | ❌ | **BCAST-029** — ROM has 4 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
+| 29 | `violate` | `mud/commands/imm_server.py:163` | `src/act_wiz.c:968` | 0 | 4 | 0 | 0 | 4 | ✅ COVERED (2.9.60) | **BCAST-029** — FALSE POSITIVE on the *act-emission* axis. `mud/commands/imm_server.py:do_violate` (lines 193-205) calls `_act_room(old_room, char, bamfout_or_default)` and `_act_room(location, char, bamfin_or_default)` — the helper at `imm_commands.py:473-481` iterates `room.people` and delivers to each non-self member. ROM emits 4 per-person TO_VICT acts (bamfout/default × 2 rooms); Python covers the structural equivalent. **Separate fidelity bug noted**: ROM's per-person loop is `get_trust(rch) >= ch->invis_level` gated; Python's `_act_room` has no trust gate, so wiz-invis actors appear in every broadcast regardless of witness trust. Filed as **INV-027 candidate ACT-INVIS-TRUST-GATE** (Watch list, `CROSS_FILE_INVARIANTS_TRACKER.md`). |
 | 30 | `bash` | `mud/commands/combat.py:345` | `src/fight.c:2223` | 0 | 2 | 2 | 0 | 1 | ⚠️ | **BCAST-030** — Python broadcast hits (1) < ROM non-TO_CHAR (4). Py indicators: messages.append=1 |
 | 31 | `buy` | `mud/commands/shop.py:719` | `src/act_obj.c:2470` | 3 | 6 | 0 | 0 | 3 | ⚠️ | **BCAST-031** — Python broadcast hits (3) < ROM non-TO_CHAR (9). Py indicators: room.broadcast=2 messages.append=1 |
 | 32 | `force` | `mud/commands/imm_commands.py:293` | `src/act_wiz.c:4111` | 0 | 4 | 0 | 0 | 1 | ⚠️ | **BCAST-032** — Python broadcast hits (1) < ROM non-TO_CHAR (4). Py indicators: send_to_char_victim=1 |
@@ -341,17 +341,70 @@ Ranked by user-visible impact and likelihood the ❌/⚠️ is a real gap (not a
 
 Pre-existing parity bugs that prevent the listed BCAST rows from being closed via the normal `rom-gap-closer` path. Surface these in the next-session SUMMARY's "Outstanding" so they get picked up.
 
-### WIZLOAD-001 — `do_mload` / `do_oload` registry-lookup name mismatch (surfaced 2026-05-27)
+### WIZLOAD-001 — wiz-load/clone surface registry+import name mismatches (surfaced 2026-05-27, expanded same day)
 
-- **Symptom**: `do_mload(char, "<any vnum>")` and `do_oload(char, "<any vnum>", ...)` always return `"No mob has that vnum."` / `"No object has that vnum."` regardless of vnum.
-- **Root cause**:
-  - `mud/commands/imm_load.py:68` reads `getattr(registry, "mob_prototypes", {}).get(vnum)`.
-  - `mud/commands/imm_load.py:121` reads `getattr(registry, "obj_prototypes", {}).get(vnum)`.
-  - Neither attribute exists on `mud/registry.py` — the canonical names are `mob_registry` and `obj_registry`. The `getattr(..., {})` default makes the bug silent: lookup returns `None`, early-return fires before reaching `spawn_mob` / `spawn_obj` (which use the correct registries). The function is wholly broken on real prototypes.
-- **ROM C reference**: `src/act_wiz.c:2510 do_mload`, `src/act_wiz.c:2553 do_oload` — both look up via `get_mob_index(atoi(arg))` / `get_obj_index(atoi(arg))`.
-- **Blocks**: BCAST-014 (`do_mload`), BCAST-015 (`do_oload`). The broadcast point can't be reached for a regression test until the lookup is fixed.
-- **Fix shape**: replace lines 68 and 121 with `from mud.registry import mob_registry, obj_registry; ... mob_registry.get(vnum)` / `obj_registry.get(vnum)`. Drop the `getattr(..., {})` defensive wrapper since the symbols are unconditional. Add a regression test that loads a known prototype and asserts the function returns `"Ok.\\n\\r"`, then layer the BCAST-014/015 broadcast tests on top.
-- **Effort**: ~10 lines + 1 test for the lookup fix, then a standard `rom-gap-closer` pass on each of BCAST-014/015 (~1 broadcast each).
+Three layered name bugs in the wiz-load/clone command cluster, all surfaced
+during the Class 1 BCAST burn-down. Each is silent: either an empty
+`getattr` default short-circuits before the broken line, or the inline
+import sits in a never-reached branch in test coverage.
+
+**Bug 1 — `do_mload` registry-lookup name typo** (`mud/commands/imm_load.py:68`):
+- Reads `getattr(registry, "mob_prototypes", {}).get(vnum)`. Attribute
+  doesn't exist on `mud/registry.py` (canonical: `mob_registry`).
+- `do_mload(char, "<any vnum>")` always returns `"No mob has that vnum."`.
+
+**Bug 2 — `do_oload` registry-lookup name typo + double-broken import**
+(`mud/commands/imm_load.py:121, 126-127`):
+- Line 121: reads `getattr(registry, "obj_prototypes", {}).get(vnum)`.
+  Attribute doesn't exist (canonical: `obj_registry`).
+- Lines 126-127: imports `spawn_obj` from `mud.spawning.obj_spawner` and
+  calls `spawn_obj(vnum, level)`. The function is named `spawn_object`,
+  takes only `vnum` (no `level` arg). `do_oload` would `ImportError`
+  even if the registry lookup were fixed.
+
+**Bug 3 — `do_clone` object-branch broken import**
+(`mud/commands/imm_search.py:417, 424`):
+- Same `spawn_obj` ImportError as Bug 2. Mob branch (line 472, `spawn_mob`)
+  is fine — `spawn_mob` exists.
+
+**ROM C references**: `src/act_wiz.c:2510 do_mload`,
+`src/act_wiz.c:2553 do_oload`, `src/act_wiz.c:2397 do_clone` (obj branch).
+
+**Blocks**: BCAST-014 (do_mload), BCAST-015 (do_oload), BCAST-002
+(do_clone object branch — mob branch unblocked but still ⚠️ until both
+paths can be closed in one row flip).
+
+**Fix shape** (one commit per bug, or one bundle since they all live in
+two adjacent files):
+1. `imm_load.py:65` → `from mud.registry import mob_registry`; line 68 →
+   `mob_index = mob_registry.get(vnum)`. Drop the `getattr` defensive
+   wrapper.
+2. `imm_load.py:118` → `from mud.registry import obj_registry`; line 121
+   → `obj_index = obj_registry.get(vnum)`; line 126 → `from
+   mud.spawning.obj_spawner import spawn_object`; line 127 → `obj =
+   spawn_object(vnum)`. Drop the unused `level` arg from the call;
+   `spawn_object` doesn't accept it. The `level` variable computed
+   upstream becomes dead code (`do_oload` ROM behavior re-applies
+   level post-spawn via separate code — verify against ROM
+   `src/act_wiz.c:2553-2570` before deciding whether to keep the
+   level computation or strip it).
+3. `imm_search.py:417` → `from mud.spawning.obj_spawner import
+   spawn_object`; line 424 → `clone = spawn_object(vnum)`. Same fix
+   shape as Bug 2 (no `level` arg).
+4. Add 3 regression tests (one per command): register a known
+   prototype in `mob_registry`/`obj_registry`, assert the command
+   returns `"Ok.\\n\\r"` / `"You clone $p."` (and surface the
+   adjacent BCAST-002 row note about the unsubstituted `$p`/`$N`
+   template literals — likely worth a separate FORMAT-001-style ID).
+5. After WIZLOAD-001 lands, the standard `rom-gap-closer` pass on
+   BCAST-002/014/015 closes the broadcast gaps on top (~1-2
+   broadcasts each).
+
+**Effort**: ~25 lines + 3 lookup-fix tests for WIZLOAD-001, then 3
+standard BCAST gap-closers. Could be a single bundled commit if all
+three commands are validated together, but the new bug-handling
+discipline prefers one stable ID per root cause — bundling is fine
+here because they're three instances of one mechanical typo pattern.
 
 ## Methodology limits & follow-up
 
