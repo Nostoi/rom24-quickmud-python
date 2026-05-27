@@ -25,12 +25,18 @@ def do_invis(char: Character, args: str) -> str:
 
     if not args or not args.strip():
         if invis_level:
+            # ROM src/act_wiz.c:4342-4344 — clear invis FIRST so the room
+            # can_see the actor when the fade-in broadcast fires.
             char.invis_level = 0
-            _act_room(char, "$n slowly fades back into existence.", do_not_see_char=True)
+            _act_room(char, "$n slowly fades into existence.", do_not_see_char=True)
             return "You slowly fade back into existence.\n\r"
 
-        char.invis_level = get_trust(char)
+        # BCAST-012: ROM src/act_wiz.c:4348-4350 sets invis_level then
+        # broadcasts. Python's _act_room enforces can_see_character, so
+        # broadcasting after invis_level is set drops the message for
+        # witnesses below trust. Emit the broadcast first, then commit.
         _act_room(char, "$n slowly fades into thin air.", do_not_see_char=True)
+        char.invis_level = get_trust(char)
         return "You slowly vanish into thin air.\n\r"
 
     arg = args.strip().split()[0]
@@ -41,6 +47,10 @@ def do_invis(char: Character, args: str) -> str:
     if level < 2 or level > get_trust(char):
         return "Invis level must be between 2 and your level.\n\r"
 
+    # BCAST-012: ROM src/act_wiz.c:4364-4366 — level-set branch also
+    # broadcasts TO_ROOM. Emit before the invis_level change so the
+    # room sees it.
+    _act_room(char, "$n slowly fades into thin air.", do_not_see_char=True)
     char.invis_level = level
     char.reply = None
     return "You slowly vanish into thin air.\n\r"
