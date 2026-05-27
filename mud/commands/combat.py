@@ -662,7 +662,9 @@ def do_flee(char: Character, args: str) -> str:
     messages.append(f"You flee from combat!")
 
     # Notify others in room
-    for other in getattr(room, "characters", []):
+    # PARALLEL-010: iterate the canonical `room.people` set, not the
+    # nonexistent `room.characters` attribute.
+    for other in getattr(room, "people", []):
         if other != char:
             try:
                 desc = getattr(other, "desc", None)
@@ -674,26 +676,29 @@ def do_flee(char: Character, args: str) -> str:
     # Stop fighting
     stop_fighting(char, True)
 
-    # Move to new room
-    try:
-        from mud.registry import room_registry
+    # Move to new room via the canonical Room helpers — they update
+    # `room.people` (the only occupant set Python tracks).
+    # PARALLEL-010: pre-fix used `room.characters` which doesn't exist.
+    from mud.models.room import Room
+    from mud.registry import room_registry
 
+    if isinstance(to_room, Room):
+        new_room = to_room
+    elif isinstance(to_room, int):
         new_room = room_registry.get(to_room)
+    else:
+        new_room = None
 
-        if new_room:
-            if room and hasattr(room, "characters") and char in room.characters:
-                room.characters.remove(char)
+    if new_room is not None:
+        if room is not None:
+            room.remove_character(char)
+        new_room.add_character(char)
 
-            char.room = new_room
-            new_room.characters.append(char)
+        # Show new room
+        from mud.commands.inspection import do_look
 
-            # Show new room
-            from mud.commands.inspection import do_look
-
-            room_desc = do_look(char, "")
-            messages.append(room_desc)
-    except Exception as e:
-        messages.append(f"Flee failed: {e}")
+        room_desc = do_look(char, "")
+        messages.append(room_desc)
 
     # Lose some movement
     char.move = max(0, char.move - c_div(char.max_move, 10))

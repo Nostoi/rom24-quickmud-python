@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.54]
+
+### Fixed
+- **`PARALLEL-010` — `do_flee` now actually moves the character** (ROM `src/fight.c:2970-3028` `do_flee`). Pre-fix `mud/commands/combat.py:683-688` wrote to `room.characters` / `new_room.characters` — neither attribute exists; `Room` defines `people`. The `hasattr(room, "characters")` gate silently hid the source-room remove (always False → no remove); `new_room.characters.append(char)` raised `AttributeError` caught by a broad `try/except` at lines 695-696 that surfaced a misleading "Flee failed: 'Room' object has no attribute 'characters'" while `char.move` was still decremented at line 699. Net pre-fix effect: character paid the move cost but did not actually move — `char.room` was reassigned but `room.people` was never updated, leaving the character invisible to anyone looking at the destination room and incorrectly present in the source room's `people` list. Replaced with canonical `room.remove_character(char)` / `new_room.add_character(char)` (defined at `mud/models/room.py:140, 157`) — these update `room.people` correctly and run the ROM `handler.c:1504-1573` light-source / nplayer / furniture bookkeeping. Also fixed the same parallel-rep bug at line 665 (room-broadcast loop iterated `room.characters` → silently empty broadcast; now iterates `room.people`). Surfaced by parallel META audit Class 7 (`docs/parity/audits/PARALLEL_REPRESENTATIONS.md`). New regression: `tests/integration/test_flee_moves_character.py` (`test_flee_moves_character_to_new_room`).
+
 ## [2.9.53]
 
 ### Fixed
