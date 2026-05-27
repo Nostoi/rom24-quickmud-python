@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.56]
+
+### Fixed
+- **`PARALLEL-005` — `_can_drop_obj` checked the wrong bit** (`mud/commands/obj_manipulation.py:614-621`). Pre-fix the function declared an inline `ITEM_NODROP = 0x0010` which is **`ExtraFlag.EVIL` (bit 4)**, not `ExtraFlag.NODROP` (ROM `merc.h:1111` `H = 1<<7 = 0x80`). `_can_drop_obj` is the gate for `do_drop`, `do_put`, `do_give`, and `inventory.py:do_drop_all`, so pre-fix: cursed/NODROP gear could be dropped freely (the canonical use case for the flag — preventing players from disarming the cursed-weapon penalty), and items flagged `ExtraFlag.EVIL` (a different bit, used to mark items only good-aligned characters should wield) were spuriously blocked from being dropped by a NODROP-shaped rejection. Replaced with `int(ExtraFlag.NODROP)`. Existing test `tests/integration/test_drop_command.py::test_drop_nodrop_item_is_rejected` also encoded the wrong hex (`extra_flags = 0x0010`) — per AGENTS.md "ROM is source of truth, a test asserting behavior contradicting ROM C is a bug in the test", the test now uses `int(ExtraFlag.NODROP)`. New regression: `tests/integration/test_can_drop_obj_nodrop_bit.py` (3/3 — NODROP rejected, EVIL allowed, unflagged allowed).
+
 ## [2.9.55]
 
 ### Fixed

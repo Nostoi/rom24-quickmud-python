@@ -179,7 +179,12 @@ def test_drop_nodrop_item_is_rejected(movable_char_factory, object_factory, test
             "short_descr": "a cursed ring",
         }
     )
-    cursed_ring.extra_flags = 0x0010
+    # ROM ITEM_NODROP = H = 1<<7 (0x80); pre-PARALLEL-005 this test
+    # used 0x0010 which is ExtraFlag.EVIL (bit 4) — same bug as the
+    # one in production code.
+    from mud.models.constants import ExtraFlag
+
+    cursed_ring.extra_flags = int(ExtraFlag.NODROP)
     player.add_object(cursed_ring)
 
     result = process_command(player, "drop ring")

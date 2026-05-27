@@ -612,10 +612,16 @@ def _get_weight_mult(obj) -> int:
 
 
 def _can_drop_obj(char: Character, obj) -> bool:
-    """Check if character can drop/put an object."""
+    """Check if character can drop/put an object.
+
+    ROM Reference: src/handler.c can_drop_obj — `ITEM_NODROP (H = 1<<7)`.
+    PARALLEL-005: prior inline literal `0x0010` aliased ExtraFlag.EVIL,
+    not ExtraFlag.NODROP. Use the canonical IntEnum.
+    """
+    from mud.models.constants import ExtraFlag
+
     extra_flags = getattr(obj, "extra_flags", 0)
-    ITEM_NODROP = 0x0010
-    if extra_flags & ITEM_NODROP:
+    if extra_flags & int(ExtraFlag.NODROP):
         return False
     return True
 
