@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`BCAST-014` — `do_mload` now emits the ROM TO_ROOM broadcast** (ROM `src/act_wiz.c:2512`). Pre-fix `mud/commands/imm_load.py:do_mload` returned "Ok." and ran the wiznet log without informing the room that a mob had appeared. Added `broadcast_room(room, f"{actor_name} has created {victim_short}!", exclude=char)` after the spawn/placement, with a `victim.short_descr` → `prototype.short_descr` → `victim.name` fallback chain since spawned MobInstances populate `name` from the prototype's `short_descr` and don't separately carry `short_descr`. Regression: `tests/integration/test_mload_oload_broadcasts.py::test_mload_emits_to_room_broadcast_with_victim_short_descr`.
+
 ### Fixed
 - **`WIZLOAD-001` — wiz-load/clone command surface now functional** (four layered pre-existing typos that left `do_mload`, `do_oload`, and `do_clone` object branch wholly unreachable on real prototypes). `mud/commands/imm_load.py` now reads `registry.mob_registry`/`obj_registry` (was: non-existent `*_prototypes`) and calls `spawn_object(vnum)` then sets `obj.level = level` post-spawn (was: non-existent `spawn_obj(vnum, level)`). `mud/commands/imm_search.py:do_clone` object branch uses `spawn_object` and skips the read-only `name` property in its attribute-copy loop (a fourth layered bug that surfaced once the ImportError was lifted — folded into the same commit). Three success-path regression tests in `tests/integration/test_act_wiz_command_parity.py` pin each entry point. **Unblocks BCAST-002 / 014 / 015** (broadcasts still need wiring; rows reverted from ⚠️ BLOCKED to ❌).
 

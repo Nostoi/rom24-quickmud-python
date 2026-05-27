@@ -87,10 +87,24 @@ def do_mload(char: Character, vnum_arg: str) -> str:
             room.people = []
         room.people.append(victim)
 
+    # BCAST-014: TO_ROOM broadcast mirroring ROM
+    # src/act_wiz.c:2512 act("$n has created $N!", ch, NULL, victim, TO_ROOM).
+    # $n -> ch->name, $N -> victim->short_descr.
+    from mud.net.protocol import broadcast_room
+    proto_short = getattr(getattr(victim, "prototype", None), "short_descr", None)
+    victim_short = (
+        getattr(victim, "short_descr", None)
+        or proto_short
+        or getattr(victim, "name", None)
+        or "something"
+    )
+    actor_name = getattr(char, "name", None) or "Someone"
+    if room is not None:
+        broadcast_room(room, f"{actor_name} has created {victim_short}!", exclude=char)
+
     # mirrors ROM src/act_wiz.c:2512-2515
     _send_to_char(char, "Ok.\n\r")
     from mud.wiznet import wiznet, WiznetFlag
-    victim_short = getattr(victim, "short_descr", "something")
     wiznet(f"$N loads {victim_short}.", char, None, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))
     return "Ok.\n\r"
 
