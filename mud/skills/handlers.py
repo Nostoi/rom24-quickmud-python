@@ -1065,6 +1065,52 @@ def _possessive_pronoun(character: Character | None) -> str:
     }.get(sex, "their")
 
 
+def _objective_pronoun(character: Character | None) -> str:
+    """Return an objective pronoun (him/her/it/them) for $m substitution."""
+
+    try:
+        sex = Sex(int(getattr(character, "sex", 0) or 0))
+    except (TypeError, ValueError):
+        return "them"
+
+    return {
+        Sex.MALE: "him",
+        Sex.FEMALE: "her",
+        Sex.NONE: "it",
+    }.get(sex, "them")
+
+
+def _notvict_broadcast(room, actor, victim, message: str) -> None:
+    """Deliver a ROM TO_NOTVICT message — excludes both actor and victim."""
+
+    import asyncio as _asyncio
+
+    from mud.net.protocol import send_to_char as _send_to_char_async
+
+    for bystander in list(getattr(room, "people", [])):
+        if bystander is actor or bystander is victim:
+            continue
+        writer = getattr(bystander, "connection", None)
+        if writer:
+            _asyncio.create_task(_send_to_char_async(bystander, message))
+        if hasattr(bystander, "messages"):
+            bystander.messages.append(message)
+
+
+def _to_vict_send(victim, message: str) -> None:
+    """Deliver a ROM TO_VICT message — single recipient."""
+
+    import asyncio as _asyncio
+
+    from mud.net.protocol import send_to_char as _send_to_char_async
+
+    writer = getattr(victim, "connection", None)
+    if writer:
+        _asyncio.create_task(_send_to_char_async(victim, message))
+    if hasattr(victim, "messages"):
+        victim.messages.append(message)
+
+
 def _get_room_flags(room) -> int:
     try:
         return int(getattr(room, "room_flags", 0) or 0)
@@ -1331,13 +1377,44 @@ def bash(
         raise ValueError("bash requires both caster and target")
 
     bash_type = int(DamageType.BASH)
+    caster_name = _character_name(caster)
+    target_name = _character_name(target)
+    room = getattr(caster, "room", None)
+
     if not success:
+        # mirroring ROM src/fight.c:2478-2481 — failure broadcasts
+        if room is not None:
+            caster_his = _possessive_pronoun(caster)
+            caster_him = _objective_pronoun(caster)
+            _notvict_broadcast(
+                room,
+                caster,
+                target,
+                f"{caster_name} falls flat on {caster_his} face.",
+            )
+            _to_vict_send(
+                target,
+                f"You evade {caster_name}'s bash, causing {caster_him} to fall flat on {caster_his} face.",
+            )
         return apply_damage(caster, target, 0, bash_type, dt="bash")
 
     chance = int(chance or 0)
     size = max(0, int(getattr(caster, "size", 0) or 0))
     upper = 2 + 2 * size + c_div(chance, 20)
     damage = rng_mm.number_range(2, max(2, upper))
+
+    # mirroring ROM src/fight.c:2459-2465 — success broadcasts
+    if room is not None:
+        _to_vict_send(
+            target,
+            f"{caster_name} sends you sprawling with a powerful bash!",
+        )
+        _notvict_broadcast(
+            room,
+            caster,
+            target,
+            f"{caster_name} sends {target_name} sprawling with a powerful bash.",
+        )
 
     # DAZE_STATE in ROM applies 3 * PULSE_VIOLENCE to the victim.
     from mud.config import get_pulse_violence
