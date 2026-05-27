@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.64]
+
+### Added
+- **META Class 2 ARITHMETIC_BOUNDARY — triage complete.** New audit doc `docs/parity/audits/ARITHMETIC_BOUNDARY.md` covering 215 candidate sites (defensive floors and caps in `mud/`: `max(1,...)`, `max(0,...)`, `min(N,...)`). Triaged via 3 parallel sonnet subagents (combat/skills/groups area = 134 sites; handler/world/models/equipment area = 31 sites; loop/loaders/spawning/rng area = 50 sites). Tally: **56 ✅ MATCH, 45 ❌ MISSING (gap candidates), 114 N/A**. Each ❌ row received a stable gap ID for future close-out: ARITH-001..023 (batch A), ARITH-101..113 (batch B), ARITH-201..209 (batch C). Prioritised list in the doc covers high-impact (ARITH-010 practice-increment floor, ARITH-013 mana-cost divisor, ARITH-015/016 berserk/charm 0-duration, ARITH-009 negative-XP swallow, ARITH-105 `get_curr_stat` floor of 0 vs ROM 3, ARITH-101/102/103 coin-weight inflation), medium-impact (level-0 spell edges; plague-tick mana/move floors; shop haggle floors), low-impact UB-protection (max_hit=0 / total_levels=0 div-by-zero shields), and carry-accounting underflow floors. **6 of 8 META classes are now complete or triaged** (Class 1 BROADCAST_COVERAGE complete, Class 2 ARITHMETIC_BOUNDARY triaged this session, Class 7 PARALLEL_REPRESENTATIONS complete, Class 8 MATH_AND_RNG MATH-001 closed; Classes 3/4/5/6 untriaged).
+
 ## [2.9.63]
 
 ### Fixed
