@@ -1639,6 +1639,37 @@ def test_oload_success_places_obj_in_inventory_or_room() -> None:
         obj_registry.pop(88250, None)
 
 
+def test_clone_mob_success_no_import_error_and_places_clone() -> None:
+    # CLONE-001 — do_clone mob branch must not ImportError on the trust
+    # gate. Pre-fix the gate imported non-existent LEVEL_AVATAR / LEVEL_DEMI
+    # / LEVEL_GOD from mud.models.constants, so any `clone <mob>` call
+    # ImportError'd before reaching the spawn or broadcast. Mirrors ROM
+    # src/act_wiz.c:2411-2454. Also pins the ROM-correct trust ladder
+    # (GOD/IMMORTAL_TIER/DEMI/ANGEL/AVATAR per merc.h:162-170).
+    from mud.commands.imm_search import do_clone
+    from mud.models.mob import MobIndex
+    from mud.registry import mob_registry
+
+    room = _room(11650)
+    admin = _imm("Admin", 11650, trust=60)
+    proto = MobIndex(vnum=88650, short_descr="a clonable rat", level=1)
+    mob_registry[88650] = proto
+    # spawn an instance for do_clone to find via get_char_world.
+    from mud.spawning.mob_spawner import spawn_mob
+
+    target = spawn_mob(88650)
+    target.room = room
+    room.people.append(target)
+    try:
+        result = do_clone(admin, "rat")
+        # ROM returns "You clone $N.\n\r" — substitution not expanded.
+        assert "clone" in result.lower(), f"unexpected result: {result!r}"
+        clones = [p for p in (getattr(room, "people", []) or []) if p is not target and getattr(p, "prototype", None) is proto]
+        assert clones, "clone mob not produced"
+    finally:
+        mob_registry.pop(88650, None)
+
+
 def test_clone_object_success_places_clone() -> None:
     # WIZLOAD-001 — do_clone object branch must import spawn_object
     # (not spawn_obj). Mirrors ROM src/act_wiz.c:2386-2402.

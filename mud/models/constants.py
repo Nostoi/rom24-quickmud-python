@@ -270,8 +270,20 @@ CLASS_SKILL_ADEPT = {
 # --- Level Constants (merc.h) ---
 MAX_LEVEL = 60
 LEVEL_HERO = MAX_LEVEL - 9  # 51
-LEVEL_IMMORTAL = MAX_LEVEL - 8  # 52
+LEVEL_IMMORTAL = MAX_LEVEL - 8  # 52 — ROM "any immortal" threshold (IS_IMMORTAL macro)
 LEVEL_ANGEL = MAX_LEVEL - 7  # 53
+# ROM trust tiers from merc.h:162-170. NOTE: ROM defines two semantically
+# distinct constants — `LEVEL_IMMORTAL = MAX_LEVEL - 8 = 52` is the
+# "any immortal" threshold used by IS_IMMORTAL, while `IMMORTAL =
+# MAX_LEVEL - 5 = 55` is a specific trust tier used by IS_TRUSTED gates
+# (do_clone, do_load, obj_check). The Python `LEVEL_IMMORTAL` above
+# matches the former. The constants below are the tier names used by
+# IS_TRUSTED checks — `LEVEL_IMMORTAL_TIER` keeps the distinction explicit
+# rather than shadowing the existing threshold constant.
+LEVEL_AVATAR = MAX_LEVEL - 8  # 52 (alias of LEVEL_IMMORTAL threshold)
+LEVEL_DEMI = MAX_LEVEL - 6  # 54
+LEVEL_IMMORTAL_TIER = MAX_LEVEL - 5  # 55 — ROM IMMORTAL tier (distinct from LEVEL_IMMORTAL threshold)
+LEVEL_GOD = MAX_LEVEL - 4  # 56
 
 # Class guild entry rooms (ROM const.c: class_table)
 CLASS_GUILD_ROOMS: dict[int, tuple[int, int]] = {

@@ -483,13 +483,22 @@ def do_clone(char: Character, args: str) -> str:
 
         # mirrors ROM src/act_wiz.c:2423-2432 — trust check
         mob_level = getattr(mob, "level", 0)
-        from mud.models.constants import LEVEL_AVATAR, LEVEL_DEMI, LEVEL_GOD, LEVEL_IMMORTAL
+        from mud.models.constants import (
+            LEVEL_ANGEL,
+            LEVEL_AVATAR,
+            LEVEL_DEMI,
+            LEVEL_GOD,
+            LEVEL_IMMORTAL_TIER,
+        )
 
+        # ROM uses tier IMMORTAL=55 (not the LEVEL_IMMORTAL=52 threshold) and
+        # also requires IS_TRUSTED(AVATAR) unconditionally as the floor.
         if (
             (mob_level > 20 and get_trust(char) < LEVEL_GOD)
-            or (mob_level > 10 and get_trust(char) < LEVEL_IMMORTAL)
+            or (mob_level > 10 and get_trust(char) < LEVEL_IMMORTAL_TIER)
             or (mob_level > 5 and get_trust(char) < LEVEL_DEMI)
-            or (mob_level > 0 and get_trust(char) < LEVEL_AVATAR)
+            or (mob_level > 0 and get_trust(char) < LEVEL_ANGEL)
+            or get_trust(char) < LEVEL_AVATAR
         ):
             return "Your powers are not great enough for such a task.\n\r"
 
