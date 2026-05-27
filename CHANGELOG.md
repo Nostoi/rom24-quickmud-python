@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.76]
+
+### Changed
+- **`ARITH-020`/`ARITH-021`/`ARITH-022`/`ARITH-023` reclassified to ⛔ N/A** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md` — level-0 spell/skill dice cluster, all dead defensive code:
+  - **ARITH-020** — `mud/skills/handlers.py:3744` `rng_mm.dice(1, max(1, level))` in `spell_energy_drain`. ROM `src/magic.c:2727` does `dice(1, level)` raw. The Python floor protects against `level == 0`, but spell dispatch is always `do_cast → spell_fun(sn, ch->level, ...)` with a level/class gate, so a level-0 caster is structurally impossible. (Side note: ROM `dice(1, 0)` returns 0 via `size == 0` short-circuit in src/db.c, which differs from Python's `dice(1, 1) = 1` — divergence exists but the input is unreachable.)
+  - **ARITH-021** — `mud/skills/handlers.py:4127` `max(0, level - 2)` in `spell_fire_breath`. ROM `src/magic.c:4701` passes `level - 2` raw to `saves_spell`. fire_breath is dispatched only via the `spec_breath_fire` spec_fun, attached exclusively to high-level dragon mobs; level < 2 is structurally unreachable. `saves_spell` handles negative level arithmetically without crashing.
+  - **ARITH-022** — `mud/skills/handlers.py:4517` `max(0, level - 2)` in `spell_frost_breath`. ROM `src/magic.c:4759`. Same reasoning as ARITH-021 — `spec_breath_frost` on dragon mobs only.
+  - **ARITH-023** — `mud/skills/handlers.py:5518` `max(1, int(...level))` in `do_kick`. ROM `src/fight.c:3129` does `number_range(1, ch->level)` raw. `do_kick` requires `ch->fighting != NULL` plus a `gsn_kick` skill check — level-0 characters cannot reach the site. Additionally, ROM `number_range(1, 0)` returns `from = 1` via the `to < from` branch in src/db.c, identical to the Python floor even if reached.
+
+  ROM-cite comments added at all four sites documenting unreachability. No production behavior change — comments-only edits + audit reclass. Tally adjusted: cumulative **15 FIXED / 17 N/A / 14 ❌ MISSING** open in the ARITH triage.
+
 ## [2.9.75]
 
 ### Fixed

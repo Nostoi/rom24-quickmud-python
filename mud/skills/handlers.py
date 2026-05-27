@@ -3741,6 +3741,14 @@ def energy_drain(caster: Character, target: Character | None = None) -> int:
         victim.mana = c_div(int(getattr(victim, "mana", 0) or 0), 2)
         victim.move = c_div(int(getattr(victim, "move", 0) or 0), 2)
 
+        # ROM src/magic.c:2727 spell_energy_drain — `dice(1, level)` raw.
+        # `max(1, level)` is dead defensive code: spell dispatch goes
+        # through do_cast which passes `level = ch->level`, and a
+        # level-0 character cannot cast (do_cast level/class gate).
+        # ROM `dice(1, 0)` returns 0 by the `size == 0` short-circuit
+        # in src/db.c, which differs from Python's `dice(1, 1) = 1` —
+        # but the unreachable input means the divergence cannot fire.
+        # Reclassified N/A — ARITH-020.
         damage = rng_mm.dice(1, max(1, level))
         caster.hit = int(getattr(caster, "hit", 0) or 0) + damage
 
@@ -4124,6 +4132,12 @@ def fire_breath(caster: Character, target: Character | None = None) -> int:
                 actual = dam
             primary_damage = actual
         else:
+            # ROM src/magic.c:4701 spell_fire_breath — `saves_spell(level - 2, ...)`
+            # raw, allowing negative save_level. Dead defensive code:
+            # fire_breath is dispatched only via the `spec_breath_fire`
+            # spec_fun, attached exclusively to high-level dragon mobs;
+            # `level - 2 < 0` is structurally unreachable. Reclassified
+            # N/A — ARITH-021.
             save_level = max(0, level - 2)
             if saves_spell(save_level, person, DamageType.FIRE):
                 fire_effect(person, c_div(level, 4), c_div(dam, 8), SpellTarget.CHAR)
@@ -4514,6 +4528,12 @@ def frost_breath(caster: Character, target: Character | None = None) -> int:
                 actual = dam
             primary_damage = actual
         else:
+            # ROM src/magic.c:4759 spell_frost_breath — `saves_spell(level - 2, ...)`
+            # raw, allowing negative save_level. Dead defensive code:
+            # frost_breath is dispatched only via the `spec_breath_frost`
+            # spec_fun, attached exclusively to high-level dragon mobs;
+            # `level - 2 < 0` is structurally unreachable. Reclassified
+            # N/A — ARITH-022.
             save_level = max(0, level - 2)
             if saves_spell(save_level, person, DamageType.COLD):
                 cold_effect(person, c_div(level, 4), c_div(dam, 8), SpellTarget.CHAR)
@@ -5515,6 +5535,13 @@ def kick(
         success = chance > roll
 
     if success:
+        # ROM src/fight.c:3129 do_kick — `number_range(1, ch->level)` raw,
+        # no floor. `max(1, ...)` here is dead defensive code: do_kick
+        # requires `ch->fighting != NULL` and a successful skill check, so
+        # a level-0 character cannot reach this site. Even if it did,
+        # ROM `number_range(1, 0)` returns `from = 1` (see src/db.c
+        # number_range when `to < from`), identical to the Python floor.
+        # Reclassified N/A — ARITH-023.
         level = max(1, int(getattr(caster, "level", 1) or 1))
         damage = rng_mm.number_range(1, level)
     else:
