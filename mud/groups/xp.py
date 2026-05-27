@@ -127,7 +127,11 @@ def group_gain(ch: Character, victim: Character) -> None:
 def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
     """Compute XP awarded for *victim* mirroring ROM ``xp_compute``."""
 
-    gch_level = max(1, _resolve_level(getattr(gch, "level", 0)))
+    # ARITH-005: mirroring ROM src/fight.c:1818-1819 — `gch->level` is used
+    # raw, no floor.  ROM relies on the final `xp = xp * gch->level / divisor`
+    # to naturally return 0 for a level-0 gch.  Flooring to 1 here would
+    # give a level-0 PC non-zero XP and shift the base_exp table lookup.
+    gch_level = _resolve_level(getattr(gch, "level", 0))
     victim_level = _resolve_level(getattr(victim, "level", 0))
     level_range = victim_level - gch_level
 

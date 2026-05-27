@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.70]
+
+### Fixed
+- **`ARITH-005` — `xp_compute` no longer floors `gch_level` to 1** (ROM `src/fight.c:1818-1819`). Pre-fix `mud/groups/xp.py:130` used `max(1, _resolve_level(getattr(gch, "level", 0)))`. ROM uses `gch->level` raw and relies on the final `xp = xp * gch->level / UMAX(1, total_levels - 1)` to return 0 naturally for a level-0 PC. The floor masked that path: a level-0 PC reaching `xp_compute` was treated as level-1, getting non-zero XP and consuming a shifted row of the `base_exp` table (`level_range = victim_level - 1` vs ROM's `victim_level - 0`). Reachability is real: `Character` dataclass defaults `level: int = 0` (`mud/models/character.py:229`), `create_character_record(level=0)` persists rows with level 0, and the second loop in `group_gain` only skips NPCs, so a level-0 PC in the kill room reaches `xp_compute`. Regression: `tests/integration/test_xp_compute_level_zero_pc.py::test_level_zero_pc_receives_zero_xp_in_xp_compute` (pinned to 0 XP) and `::test_level_one_pc_unchanged_after_fix` (sanity guard for the level-1 boundary). Tally adjusted: 57 ✅ / **37 ❌** / **121 N/A**. Effective open ❌ MISSING in the ARITH triage drops to **27**.
+
 ## [2.9.69]
 
 ### Changed
