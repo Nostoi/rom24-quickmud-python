@@ -341,10 +341,11 @@ def _destroy_object(ch: Character, obj: Object) -> None:
     if obj in inventory:
         inventory.remove(obj)
 
-    # Update carry weight and count
+    # ARITH-112/113: ROM src/handler.c:1678-1679 obj_from_char does
+    # bare subtraction with no floor; surface double-extract underflow.
     if hasattr(ch, "carry_weight"):
         obj_weight = getattr(obj, "weight", 0)
-        ch.carry_weight = max(0, ch.carry_weight - obj_weight)
+        ch.carry_weight = ch.carry_weight - obj_weight
 
     if hasattr(ch, "carry_number"):
-        ch.carry_number = max(0, ch.carry_number - 1)
+        ch.carry_number = ch.carry_number - 1

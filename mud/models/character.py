@@ -577,7 +577,9 @@ class Character:
                 if eq is obj:
                     del self.equipment[slot]
                     break
-        self.carry_number = max(0, self.carry_number - carry_delta)
+        # ARITH-106: ROM src/handler.c:1678 obj_from_char does bare
+        # subtraction with no floor; surface double-extract underflow.
+        self.carry_number -= carry_delta
         # mirroring ROM src/handler.c:1642 obj_from_char — extraction
         # clears the carrier back-pointer atomically. INV-013.
         if getattr(obj, "carried_by", None) is self:

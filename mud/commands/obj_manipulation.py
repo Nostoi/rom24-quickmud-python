@@ -633,10 +633,11 @@ def _obj_from_char(char: Character, obj) -> None:
         inventory.remove(obj)
     obj.carried_by = None
 
-    # Update carry weight/number
+    # ARITH-108/109: ROM src/handler.c:1678-1679 obj_from_char does
+    # bare subtraction with no floor; surface double-extract underflow.
     weight = _get_obj_weight(obj)
-    char.carry_weight = max(0, getattr(char, "carry_weight", 0) - weight)
-    char.carry_number = max(0, getattr(char, "carry_number", 0) - 1)
+    char.carry_weight = getattr(char, "carry_weight", 0) - weight
+    char.carry_number = getattr(char, "carry_number", 0) - 1
 
 
 def _obj_to_obj(obj, container) -> None:

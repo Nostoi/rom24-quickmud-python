@@ -1,42 +1,31 @@
-# Session Status — 2026-05-27 — ARITH-105 fix + ARITH-110 reclass (2.9.72 + 2.9.73)
+# Session Status — 2026-05-27 — ARITH carry-counter cluster (2.9.74)
 
 ## Current State
 
 - **Active audit**: META Class 2 ARITHMETIC_BOUNDARY — **CLOSE-OUT in progress**.
   Triage doc (`docs/parity/audits/ARITHMETIC_BOUNDARY.md`) filed in
-  2.9.64; cumulative close-out through 2.9.73 has now closed
-  **9 FIXED** and **13 N/A** of the 46 triaged ARITH-NNN candidates
-  (45 original + 1 follow-on ARITH-114). All UB-divisor-cluster
-  reachability probes resolved earlier in the day. **24 ❌ MISSING
-  remain**.
-- **Last completed** (2 commits this session):
-  - **`ARITH-105`** — ✅ FIXED (`7b6bc45`, 2.9.72). `Character.
-    get_curr_stat` now floors at 3 (`max(3, min(25, total))`),
-    matching ROM `URANGE(3, perm+mod, max)` at `src/handler.c:872`.
-    Pre-fix `max(0, ...)` allowed stacked debuffs to feed wrong-row
-    reads of str_app / dex_app / con_app / int_app / wis_app.
-    Side-effect: `test_advancement_con_app::
-    test_advance_level_hp_minimum_floor_is_two` rewritten to verify
-    the `UMAX(2, add_hp)` floor via `monkeypatch(con_hitp_bonus, -4)`
-    instead of the now-impossible CON-0 path. Regression:
-    `tests/integration/test_get_curr_stat_floor_three.py` (17/17).
-    Full integration suite **2334 passed, 3 skipped**. Ceiling
-    divergence at the same line filed as the new **ARITH-114**
-    (Python flat 25 vs ROM per-race/class max).
-  - **`ARITH-110`** — ⛔ N/A (`bf51a43`, 2.9.73). Pet-shop haggle
-    floor at `mud/commands/shop.py:586` is mathematically
-    unreachable. ROM `cost -= cost/2 * roll/100` with `roll ∈ [0, 99]`
-    gives `discount < c_div(cost, 2)`, so `cost - discount > 0` for
-    all `cost ≥ 0`. Same shape as ARITH-006/007/008/013/014. ROM-cite
-    comment added at `mud/commands/shop.py:582-590`. **ARITH-111**
-    (item-shop sibling) **NOT** reclassed — it is genuinely reachable
-    when `profit_buy < 50` because the discount is derived from
-    `obj->cost` but applied to the marked-up `unit_price`. Held back
-    with documented reachability conditions for a future session that
-    can analyze `deduct_cost` semantics under negative cost.
+  2.9.64; cumulative close-out through 2.9.74 has now closed
+  **14 FIXED** and **13 N/A** of the 46 triaged ARITH-NNN candidates
+  (45 original + 1 follow-on ARITH-114). **19 ❌ MISSING remain**.
+- **Last completed** (1 commit this session, 5 gap IDs):
+  - **`ARITH-106` / `ARITH-108` / `ARITH-109` / `ARITH-112` / `ARITH-113`**
+    — ✅ FIXED (2.9.74). All five `obj_from_char` carry-counter floors
+    removed in one commit:
+    - `mud/models/character.py:580` — `Character.remove_object`
+      carry_number floor (ARITH-106). `_recalculate_carry_weight()` still
+      runs after, so the weight side stays coherent via fresh sum.
+    - `mud/commands/obj_manipulation.py:638-640` — `_obj_from_char`
+      carry_weight + carry_number floors (ARITH-108/109).
+    - `mud/commands/consumption.py:347-351` — `_destroy_object`
+      carry_weight + carry_number floors (ARITH-112/113).
+
+    Now matches ROM `src/handler.c:1678-1679` bare subtraction.
+    Regression: `tests/integration/test_obj_from_char_no_floor.py` (3/3).
+    Full integration suite: **2337 passed, 3 skipped** in 85.66s.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-27_ARITH_105_AND_110.md](SESSION_SUMMARY_2026-05-27_ARITH_105_AND_110.md)
+  [SESSION_SUMMARY_2026-05-27_ARITH_CARRY_COUNTER_CLUSTER.md](SESSION_SUMMARY_2026-05-27_ARITH_CARRY_COUNTER_CLUSTER.md)
   (predecessors:
+  [SESSION_SUMMARY_2026-05-27_ARITH_105_AND_110.md](SESSION_SUMMARY_2026-05-27_ARITH_105_AND_110.md),
   [SESSION_SUMMARY_2026-05-27_ARITH_005_AND_209.md](SESSION_SUMMARY_2026-05-27_ARITH_005_AND_209.md),
   [SESSION_SUMMARY_2026-05-27_ARITH_001_002_003_RECLASS.md](SESSION_SUMMARY_2026-05-27_ARITH_001_002_003_RECLASS.md),
   [SESSION_SUMMARY_2026-05-27_ARITH_UB_DIVISOR_CLOSEOUT.md](SESSION_SUMMARY_2026-05-27_ARITH_UB_DIVISOR_CLOSEOUT.md),
@@ -49,26 +38,22 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.73 |
-| Tests | Full integration suite **2334 passed, 3 skipped** in 75.52s (run post-ARITH-105). Shop suite re-verified after ARITH-110 comment-only edit: 66 passed. |
+| Version | 2.9.74 |
+| Tests | Full integration suite **2337 passed, 3 skipped** in 85.66s. Cluster regression `test_obj_from_char_no_floor.py` 3/3. |
 | ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75% (unchanged). |
 | Cross-file invariants | 23 ENFORCED + 1 candidate (INV-027 ACT-INVIS-TRUST-GATE) — unchanged. |
-| Meta-audit progress | 6 of 8 META classes complete or triaged. Class 2 ARITHMETIC_BOUNDARY close-out: **9 FIXED cumulative (ARITH-005/010/015/016/024/101/102/103/105), 13 N/A (ARITH-001/002/003/006/007/008/009/011/012/013/014/110/209), 24 ❌ MISSING remaining** (was 26 at session start; net change: −1 ARITH-105 fixed, −1 ARITH-110 reclassed N/A, +1 ARITH-114 new = 24). |
-| Branch | `master` — local 2.9.73 ahead of `origin/master` by **5 commits** (ARITH-005 fix + ARITH-209 reclass + prior session handoff + ARITH-105 fix + ARITH-110 reclass). |
+| Meta-audit progress | 6 of 8 META classes complete or triaged. Class 2 ARITHMETIC_BOUNDARY close-out: **14 FIXED cumulative (ARITH-005/010/015/016/024/101/102/103/105/106/108/109/112/113), 13 N/A (ARITH-001/002/003/006/007/008/009/011/012/013/014/110/209), 19 ❌ MISSING remaining** (net change: −5 fixed). |
+| Branch | `master` — local 2.9.74 ahead of `origin/master` by **7 commits** (ARITH-005 fix + ARITH-209 reclass + prior handoff + ARITH-105 fix + ARITH-110 reclass + prior handoff + **carry-counter cluster fix**). |
 
 ## Next Intended Task
 
-1. **Push approval needed** — 5 commits ahead for 2.9.70 / 2.9.71 /
-   2.9.72 / 2.9.73 (verify with `git log origin/master..HEAD`).
-2. **Carry-weight/number cluster** —
-   ARITH-106/108/109/112/113 are **five sites of the same
-   `obj_from_char` divergence** (`max(0, carry_weight - delta)` and
-   `max(0, carry_number - 1)` floors that ROM does not have at
-   `src/handler.c:1678-1679`). Likely closeable as one commit pattern
-   like ARITH-101/102/103 did for `create_money`. Strategy: probe
-   ROM `obj_from_char` for any hidden upstream guard, write one
-   parametrized test exercising double-extract / over-subtract paths
-   at all five sites, drop the five floors in one commit.
+1. **Push approval needed** — 7 commits ahead for 2.9.70 / 2.9.71 /
+   2.9.72 / 2.9.73 / 2.9.74 (verify with `git log origin/master..HEAD`).
+2. **ARITH-107** — `area.nplayer` floor at `mud/models/room.py:171` in
+   `char_from_room` (`max(0, current - 1)` where ROM does raw
+   `--ch->in_room->area->nplayer` at `src/handler.c:1502`). Same shape
+   as today's cluster — likely one-commit closure if no upstream guard
+   exists. Probe ROM `char_from_room` for any defensive guard first.
 3. **Level-0 spell/skill dice cluster** — ARITH-020/021/022/023.
    Reachable via mob-program or scripted dispatch per the audit doc;
    probe ROM source first to see whether each is a real divergence
@@ -78,19 +63,19 @@
    the audit doc row 26 (when `profit_buy < 50`, max discount
    `≈ proto.cost / 2` can exceed `unit_price = proto.cost *
    profit_buy / 100`).
-5. **ARITH-114** — the new PC-ceiling divergence on `get_curr_stat`
+5. **ARITH-114** — the PC-ceiling divergence on `get_curr_stat`
    (Python flat 25 vs ROM per-race/class `max_stat` for PCs at
    `src/handler.c:861-869`). Lower priority than the level-0 /
-   carry-tracking clusters because it only matters above stat-22.
+   nplayer clusters because it only matters above stat-22.
 6. **Pre-existing lint** still parked: `mud/handler.py:566-567` (F841),
    `mud/handler.py:960` (F401), `tests/integration/test_do_practice_command.py:255`
-   (F841), `mud/commands/combat.py:685` (F541). Pre-existing pyright
-   diagnostics in `mud/commands/shop.py` (lines 81/86/212/216/261/220/328)
-   confirmed unchanged by this session's edits.
-7. **GitNexus**: stop-and-reindex rule fired twice this session
-   (after `7b6bc45` and `bf51a43`); both reindexes completed in
-   background. FTS DB remains read-only at the MCP layer (documented
-   upstream issue); node/edge graph is current.
+   (F841), `mud/commands/combat.py:685` (F541), plus
+   `mud/commands/consumption.py:11` (Position unused) and `:164-166`
+   (I001) seen this session — all pre-existing, untouched.
+7. **GitNexus**: FTS index read-only warnings fired repeatedly this
+   session (documented upstream issue); node/edge graph remains
+   current. No reindex required — the warning is about FTS-table
+   writes, not graph staleness.
 8. **Pre-existing flake** at `tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs`.
 9. **Worktree hygiene** — locked worktrees still present in
    `.claude/worktrees/`.

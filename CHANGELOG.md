@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.74]
+
+### Fixed
+- **`ARITH-106`/`ARITH-108`/`ARITH-109`/`ARITH-112`/`ARITH-113` — `obj_from_char` no longer floors `carry_weight`/`carry_number` at 0** (ROM `src/handler.c:1678-1679`). ROM does `ch->carry_number -= get_obj_number(obj)` and `ch->carry_weight -= get_obj_weight(obj)` raw with no floor and no upstream guard. Pre-fix Python wrapped both subtractions in `max(0, ...)` at five sites, silently absorbing double-extract / over-subtract corruption that ROM would surface as a negative carry counter. All five floors removed:
+  - `mud/models/character.py:580` (ARITH-106 — `Character.remove_object` carry_number; `_recalculate_carry_weight` continues to handle the weight side via fresh sum)
+  - `mud/commands/obj_manipulation.py:638-639` (ARITH-108/109 — `_obj_from_char` carry_weight + carry_number)
+  - `mud/commands/consumption.py:347,350` (ARITH-112/113 — `_destroy_object` carry_weight + carry_number)
+  Regression: `tests/integration/test_obj_from_char_no_floor.py` (3 cases). Full integration suite: **2337 passed, 3 skipped**. Tally adjusted: cumulative 14 FIXED / 13 N/A / **19 ❌ MISSING** open in the ARITH triage.
+
 ## [2.9.73]
 
 ### Changed
