@@ -80,8 +80,27 @@ def test_clone_object_emits_to_room_broadcast() -> None:
         obj_registry.pop(88560, None)
 
 
-# NOTE: Mob-branch test (`act("$n has created $N.", ch, NULL, clone, TO_ROOM)`
-# at ROM src/act_wiz.c:2450) deferred — blocked by CLONE-001 (do_clone mob
-# branch imports non-existent LEVEL_AVATAR / LEVEL_DEMI / LEVEL_GOD constants
-# from mud.models.constants; the trust gate ImportErrors before reaching the
-# broadcast point). See BROADCAST_COVERAGE.md Blocked rows for fix shape.
+def test_clone_mob_emits_to_room_broadcast() -> None:
+    # mirrors ROM src/act_wiz.c:2450 — act("$n has created $N.", ch, NULL, clone, TO_ROOM)
+    # Unblocked by CLONE-001 fix in 2.9.62.
+    from mud.commands.imm_search import do_clone
+
+    room = _room(40650)
+    admin = _imm("Admin", 40650)
+    bystander = _witness("Watcher", 40650)
+    proto = MobIndex(vnum=88660, short_descr="a clonable rat", level=1)
+    mob_registry[88660] = proto
+    target = spawn_mob(88660)
+    target.room = room
+    room.people.append(target)
+    try:
+        result = do_clone(admin, "rat")
+        assert "clone" in result.lower()
+        msgs = "\n".join(bystander.messages)
+        assert "Admin has created a clonable rat" in msgs, (
+            f"missing TO_ROOM mob-branch broadcast; got: {bystander.messages!r}"
+        )
+        actor_msgs = "\n".join(getattr(admin, "messages", []))
+        assert "Admin has created a clonable rat" not in actor_msgs
+    finally:
+        mob_registry.pop(88660, None)

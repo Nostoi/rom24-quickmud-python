@@ -522,9 +522,21 @@ def do_clone(char: Character, args: str) -> str:
                 room.people = []
             room.people.append(clone)
 
+        # mirrors ROM src/act_wiz.c:2450 — act("$n has created $N.", ch, NULL, clone, TO_ROOM)
+        clone_short = (
+            getattr(clone, "short_descr", None)
+            or getattr(getattr(clone, "prototype", None), "short_descr", None)
+            or getattr(clone, "name", None)
+            or "something"
+        )
+        if room:
+            from mud.net.protocol import broadcast_room
+
+            actor_name = getattr(char, "name", None) or "Someone"
+            broadcast_room(room, f"{actor_name} has created {clone_short}.", exclude=char)
+
         from mud.wiznet import WiznetFlag, wiznet
 
-        clone_short = getattr(clone, "short_descr", "something")
         wiznet(f"$N clones {clone_short}.", char, None, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))
         return "You clone $N.\n\r"
 
