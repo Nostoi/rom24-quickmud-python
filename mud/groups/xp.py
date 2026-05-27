@@ -162,6 +162,12 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
     align_delta = victim_alignment - gch_alignment
 
     if not _act_has_flag(victim, ActFlag.NOALIGN):
+        # ARITH-006/007/008: ROM src/fight.c:1892/1900/1908 divides
+        # `... / total_levels` raw. The `max(1, total_levels)` floors here
+        # are dead defensive code — the upstream guard at
+        # `group_gain` xp.py:111-112 floors `total_levels` to ≥ 1 before
+        # any call to xp_compute. See docs/parity/audits/ARITHMETIC_BOUNDARY.md
+        # rows 46/48/51 (⛔ N/A).
         if align_delta > 500:
             change = c_div(c_div((align_delta - 500) * base_exp, 500) * gch_level, max(1, total_levels))
             change = max(1, change)
