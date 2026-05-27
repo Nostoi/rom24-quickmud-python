@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.57]
+
+### Fixed
+- **`PARALLEL-002` — `do_nosummon` NPC branch toggled the wrong immunity bit** (`mud/commands/player_config.py:76`). Pre-fix `IMM_SUMMON = 0x00000010` (bit 4) did not match canonical `DefenseBit.SUMMON = 1<<0 = 0x1` (ROM `src/merc.h` letter A). The NPC `nosummon` toggle modified an unrelated immunity bit, leaving the NPC actually-summonable despite the toggle reporting success. Replaced with `int(DefenseBit.SUMMON)`. New regression: `tests/integration/test_imm_summon_bit_alignment.py` (3/3).
+- **`PARALLEL-003a` — `do_gain` trainer-lookup checked the wrong `ACT_GAIN` bit** (`mud/commands/remaining_rom.py:211`). Inline `ACT_GAIN = 0x00100000` (bit 20) did not match canonical `ActFlag.GAIN = 1<<27 = 0x8000000` (ROM letter `bb`). Trainer-mob scan failed to recognize canonically-flagged trainers ("You can't do that here.") and spuriously treated mobs with unrelated bit 20 set as trainers. Replaced with `int(ActFlag.GAIN)`. New regression: `tests/integration/test_do_gain_act_gain_bit.py` (3/3).
+- **`PARALLEL-003b` — `do_quiet` toggled the wrong `COMM_QUIET` bit** (`mud/commands/remaining_rom.py:105`). Module-local `COMM_QUIET = 0x00000004` (bit 2) did not match canonical `CommFlag.QUIET = 1<<0 = 0x1` (ROM letter A). A player loaded with the canonical QUIET set saw "From now on, you will only hear says and emotes." instead of "Quiet mode removed.", and the toggle disagreed with every other read of `CommFlag.QUIET` in the codebase. Replaced with `int(CommFlag.QUIET)`. New regression: `tests/integration/test_do_quiet_comm_bit.py` (3/3).
+- **`PARALLEL-006` — `do_purge` checked the wrong `ACT_NOPURGE` / `ITEM_NOPURGE` bits** (`mud/commands/imm_load.py:184, 194`). Inline `ACT_NOPURGE = 0x00002000` was bit 13 (canonical `ActFlag.NOPURGE = 1<<21 = 0x200000`); `ITEM_NOPURGE = 0x00000040` was bit 6 (canonical `ExtraFlag.NOPURGE = 1<<14 = 0x4000`). Canonically-NOPURGE NPCs/objects were purged anyway; unrelated bits spuriously protected mobs/items. Replaced with `int(ActFlag.NOPURGE)` / `int(ExtraFlag.NOPURGE)`. New regression: `tests/integration/test_do_purge_nopurge_bits.py` (4/4).
+
+### Removed
+- **`PARALLEL-008` — dead `.carrying` fallback in `_find_obj_inventory`** (`mud/commands/consumption.py:308-316`). The defensive `getattr(ch, "carrying", [])` branch was unreachable on real `Character` instances (the attribute does not exist) and read as if `.carrying` were still a supported parallel rep. Removed; canonical `char.inventory` is the only path. Existing consumables integration suite (47 tests) covers the live path.
+
+### Changed
+- **`PARALLEL-011` — `mud/handler.py:694` `count_users` docstring** updated from "Uses obj.in_room.characters instead of linked list" to "Uses room.people (canonical attribute) instead of linked list" — the original claim was stale; the function walks `in_room.people` per AGENTS.md canonical-attribute rule. Doc-only.
+
+### Notes
+- Five active hex-flag bugs surfaced and closed across the PARALLEL_REPRESENTATIONS Class 7 burn-down — the audit's original "LOW (drift-risk)" classification is now confirmed unreliable for any inline hex literal. PARALLEL-002, PARALLEL-003a, PARALLEL-003b, PARALLEL-006 all matched bits that disagreed with canonical IntEnums. Audit doc reclassified accordingly.
+- Three of the five gaps (PARALLEL-002, PARALLEL-006, PARALLEL-008+011) were closed by parallel Haiku-model subagent dispatch — agents wrote to the main worktree rather than producing isolated worktree branches (the `isolation: worktree` parameter did not produce separate branches), so the result landed as a single bundled commit (`8d81ed84`). PARALLEL-003a/003b done sequentially on master because they share `remaining_rom.py`.
+
 ## [2.9.56]
 
 ### Fixed
