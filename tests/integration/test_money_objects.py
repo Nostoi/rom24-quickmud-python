@@ -657,6 +657,43 @@ def test_money_object_small_amount_has_minimum_weight():
     assert weight >= 1, "Even 1 silver coin should have weight"
 
 
+@pytest.mark.parametrize(
+    ("gold", "silver", "expected_weight", "gap_id", "rom_line"),
+    [
+        # ARITH-101 — gold-only branch (mud/handler.py:995 vs src/handler.c:2455)
+        (2, 0, 0, "ARITH-101", 2455),
+        (4, 0, 0, "ARITH-101", 2455),
+        (5, 0, 1, "ARITH-101", 2455),
+        # ARITH-102 — silver-only branch (mud/handler.py:1003 vs src/handler.c:2465)
+        (0, 2, 0, "ARITH-102", 2465),
+        (0, 19, 0, "ARITH-102", 2465),
+        (0, 20, 1, "ARITH-102", 2465),
+        # ARITH-103 — mixed branch (mud/handler.py:1011 vs src/handler.c:2477)
+        (2, 2, 0, "ARITH-103", 2477),
+        (4, 19, 0, "ARITH-103", 2477),
+        (5, 20, 2, "ARITH-103", 2477),
+    ],
+)
+def test_create_money_weight_matches_rom_raw_division(gold, silver, expected_weight, gap_id, rom_line):
+    """ARITH-101/102/103: create_money weight is raw c_div, not `max(1, ...)`.
+
+    ROM src/handler.c:2455 (gold-only) / :2465 (silver-only) / :2477 (mixed)
+    computes weight via raw integer division — 1-4 gold yields weight 0,
+    1-19 silver yields weight 0, and the mixed branch sums the raw quotients.
+
+    Python previously inflated each branch's weight to at least 1 via
+    `max(1, ...)`.  That distorts carry-weight accounting for small coin
+    stacks dropped on the floor, given to mobs, or carried by NPCs.
+    """
+    money = create_money(gold=gold, silver=silver)
+    assert money is not None
+    weight = int(getattr(money.prototype, "weight", 0) or 0)
+    assert weight == expected_weight, (
+        f"{gap_id}: ROM handler.c:{rom_line} gives weight {expected_weight} "
+        f"for ({gold} gold, {silver} silver); got {weight}"
+    )
+
+
 # =============================================================================
 # Test Coverage Summary
 # =============================================================================

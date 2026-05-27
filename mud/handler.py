@@ -947,6 +947,7 @@ def create_money(gold: int, silver: int) -> Object:
         - Creates fallback objects when money prototypes don't exist in area files
         - Money object vnums (1-5) are special ROM objects not loaded from areas
     """
+    from mud.math.c_compat import c_div
     from mud.models.constants import (
         OBJ_VNUM_COINS,
         OBJ_VNUM_GOLD_ONE,
@@ -992,7 +993,8 @@ def create_money(gold: int, silver: int) -> Object:
         name = "coins gold"
         short_descr = f"{gold} gold coins"
         cost = 100 * gold
-        weight = max(1, gold // 5)
+        # mirroring ROM src/handler.c:2455 — raw `gold / 5` (1-4 gold → weight 0)
+        weight = c_div(gold, 5)
         value_0 = 0
         value_1 = gold
     elif gold == 0:
@@ -1000,7 +1002,8 @@ def create_money(gold: int, silver: int) -> Object:
         name = "coins silver"
         short_descr = f"{silver} silver coins"
         cost = silver
-        weight = max(1, silver // 20)
+        # mirroring ROM src/handler.c:2465 — raw `silver / 20` (1-19 silver → weight 0)
+        weight = c_div(silver, 20)
         value_0 = silver
         value_1 = 0
     else:
@@ -1008,7 +1011,8 @@ def create_money(gold: int, silver: int) -> Object:
         name = "coins silver gold"
         short_descr = f"{silver} silver and {gold} gold coins"
         cost = 100 * gold + silver
-        weight = max(1, gold // 5 + silver // 20)
+        # mirroring ROM src/handler.c:2477 — raw `gold / 5 + silver / 20`
+        weight = c_div(gold, 5) + c_div(silver, 20)
         value_0 = silver
         value_1 = gold
 

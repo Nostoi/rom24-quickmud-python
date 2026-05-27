@@ -1,6 +1,6 @@
 # ARITHMETIC_BOUNDARY — META Class 2 Audit
 
-**Status:** ✅ TRIAGE COMPLETE (2026-05-27). 45 gap candidates filed at triage (ARITH-001..023, ARITH-101..113, ARITH-201..209), +1 post-triage finding (ARITH-024). Close-out is per-gap via `/rom-gap-closer`. Post-triage reclassifications: **ARITH-013 → ⛔ N/A** (dead-code post-gate, see row 66 notes), **ARITH-009 → ⛔ N/A** (dead-code defensive floor — `xp_compute` arithmetic has no path to negative; the misdiagnosed downstream gate divergence is now tracked as ARITH-024). FIXED so far: ARITH-010, ARITH-015, ARITH-016, ARITH-024. **Effective open ❌ MISSING: 40** (45 − 4 FIXED − 2 N/A + 1 new ARITH-024 then immediately FIXED).
+**Status:** ✅ TRIAGE COMPLETE (2026-05-27). 45 gap candidates filed at triage (ARITH-001..023, ARITH-101..113, ARITH-201..209), +1 post-triage finding (ARITH-024). Close-out is per-gap via `/rom-gap-closer`. Post-triage reclassifications: **ARITH-013 → ⛔ N/A** (dead-code post-gate, see row 66 notes), **ARITH-009 → ⛔ N/A** (dead-code defensive floor — `xp_compute` arithmetic has no path to negative; the misdiagnosed downstream gate divergence is now tracked as ARITH-024). FIXED so far: ARITH-010, ARITH-015, ARITH-016, ARITH-024, ARITH-101, ARITH-102, ARITH-103. **Effective open ❌ MISSING: 37** (45 − 7 FIXED − 2 N/A + 1 new ARITH-024 then immediately FIXED).
 
 **Owner method:** see [`docs/parity/META_AUDIT_TAXONOMY.md`](../META_AUDIT_TAXONOMY.md) → "Class 2: ARITHMETIC_BOUNDARY".
 
@@ -10,8 +10,8 @@
 |--------|-------|---|
 | Total sites audited | 215 + 1 post-triage finding (ARITH-024) | 100% |
 | ✅ MATCH (ROM has same guard) | 56 | 26% |
-| ❌ MISSING — open | 40 | 19% |
-| ✅ FIXED post-triage | 4 (ARITH-010, ARITH-015, ARITH-016, ARITH-024) | 2% |
+| ❌ MISSING — open | 37 | 17% |
+| ✅ FIXED post-triage | 7 (ARITH-010, ARITH-015, ARITH-016, ARITH-024, ARITH-101, ARITH-102, ARITH-103) | 3% |
 | ⛔ N/A reclassified post-triage | 2 (ARITH-009, ARITH-013) | 1% |
 | N/A (non-parity / stdlib / intentional divergence) | 114 | 53% |
 
@@ -44,9 +44,9 @@ Splits:
 | ARITH-009 | `mud/groups/xp.py:257` | ⛔ N/A (dead-code defensive floor) — re-analysis 2026-05-27. `xp_compute` arithmetic has no path to a negative result: `base_exp ≥ 0` (line 156 early-returns 0), all subsequent `c_div` ops divide positive by positive, `number_range(low, high)` has `low = xp*3/4 ≤ high = xp*5/4` when xp ≥ 0, and final `c_div(xp * gch_level, divisor)` preserves sign. The `max(0, xp)` at line 257 never fires. Original audit prose ("ROM can return negative XP from edge-case alignment math") misdiagnosed the location — alignment math mutates `gch.alignment`, it does not feed back into the xp value. The **real** divergence is the downstream `if xp <= 0: continue` gate in `group_gain` (line 118), now filed as **ARITH-024**. |
 | ARITH-024 | `mud/groups/xp.py:117-122` | ✅ FIXED — `group_gain` now delivers the "You receive %d experience points." message and calls `gain_exp(gch, xp)` unconditionally, matching ROM `src/fight.c:1786-1789`. Pre-fix `if xp <= 0: continue` swallowed both when `xp_compute` returned 0 (reachable when `level_range < -9`). Surfaced 2026-05-27 during ARITH-009 reclass analysis. Test: `tests/integration/test_character_advancement.py::test_group_gain_zero_xp_still_delivers_message_and_gain_exp`. |
 | ARITH-105 | `mud/models/character.py:478` | `get_curr_stat` floored to **0**. ROM uses `URANGE(3, perm+mod, max)` — stats can never go below 3. Python allows debuffed stats to reach 0–2, which flows into every stat-dependent calculation (hit/dam/AC/carry/wield/sneak). |
-| ARITH-101 | `mud/handler.py:995` | `create_money` gold weight floored to 1. ROM `gold / 5` produces weight **0** for 1–4 gold; Python inflates to 1. Carry-weight accounting. |
-| ARITH-102 | `mud/handler.py:1003` | Same for silver — `silver / 20` produces weight 0 for 1–19 silver. |
-| ARITH-103 | `mud/handler.py:1011` | Same for mixed coin stacks. |
+| ARITH-101 | `mud/handler.py:995` | ✅ FIXED — `create_money` gold-only branch now uses raw `c_div(gold, 5)`, matching ROM `src/handler.c:2455`. Pre-fix `max(1, gold // 5)` inflated 1–4-gold piles to weight 1; ROM gives weight 0. Test: `tests/integration/test_money_objects.py::test_create_money_weight_matches_rom_raw_division` (ARITH-101 rows). |
+| ARITH-102 | `mud/handler.py:1003` | ✅ FIXED — silver-only branch now uses raw `c_div(silver, 20)`, matching ROM `src/handler.c:2465`. Pre-fix `max(1, silver // 20)` inflated 1–19-silver piles. Same test as ARITH-101 (ARITH-102 rows). |
+| ARITH-103 | `mud/handler.py:1011` | ✅ FIXED — mixed-coin branch now uses raw `c_div(gold, 5) + c_div(silver, 20)`, matching ROM `src/handler.c:2477`. Same test (ARITH-103 rows). |
 
 ### Medium-impact (edge cases, level 0, abnormal state)
 
@@ -224,9 +224,9 @@ ARITH-206 (`reset_handler.py:405` room_limit floor — ROM may treat 0 as unlimi
 | 2 | mud/handler.py:171 | `min(4, len(ch.armor))` | src/handler.c:~1754 equip_char | — | N/A | — | Same as row 1 — Python list-bounds guard on armor array. |
 | 3 | mud/handler.py:231 | `min(4, len(ch.armor))` | src/handler.c:~1804 unequip_char | — | N/A | — | Same as row 1 — Python list-bounds guard on armor array. |
 | 4 | mud/handler.py:351 | `max(0, paf.get("type", 0))` | src/handler.c:1005 clone_object | Yes | ✅ MATCH | — | ROM uses `UMAX(0, paf->type)` at exactly this point in clone_object. |
-| 5 | mud/handler.py:995 | `max(1, gold // 5)` | src/handler.c:2455 create_money | No | ❌ MISSING | ARITH-101 | ROM does `obj->weight = gold / 5` with no floor; 1–4 gold coins produce weight 0 in ROM but weight 1 in Python. |
-| 6 | mud/handler.py:1003 | `max(1, silver // 20)` | src/handler.c:2465 create_money | No | ❌ MISSING | ARITH-102 | ROM does `obj->weight = silver / 20` raw; 1–19 silver coins produce weight 0 in ROM but weight 1 in Python. |
-| 7 | mud/handler.py:1011 | `max(1, gold // 5 + silver // 20)` | src/handler.c:2477 create_money | No | ❌ MISSING | ARITH-103 | ROM does `obj->weight = gold/5 + silver/20` raw; mixed small-coin stacks get weight 0 in ROM but weight 1 in Python. |
+| 5 | mud/handler.py:995 | `c_div(gold, 5)` | src/handler.c:2455 create_money | No (raw) | ✅ FIXED | ARITH-101 | Was `max(1, gold // 5)`; now `c_div(gold, 5)` matching ROM raw division. |
+| 6 | mud/handler.py:1003 | `c_div(silver, 20)` | src/handler.c:2465 create_money | No (raw) | ✅ FIXED | ARITH-102 | Was `max(1, silver // 20)`; now raw. |
+| 7 | mud/handler.py:1011 | `c_div(gold, 5) + c_div(silver, 20)` | src/handler.c:2477 create_money | No (raw) | ✅ FIXED | ARITH-103 | Was `max(1, gold // 5 + silver // 20)`; now raw sum. |
 | 8 | mud/world/vision.py:134 | `max(0, min(100, percent))` | src/handler.c:446,515 get_skill | Yes | ✅ MATCH | — | ROM `get_skill` returns `URANGE(0, skill, 100)` — same 0..100 clamp. |
 | 9 | mud/world/movement.py:151 | `max(0, min(25, int(val)))` | src/handler.c:852–872 get_curr_stat | Yes | ✅ MATCH | — | ROM `get_curr_stat` clamps to `URANGE(3, ..., max≤25)`; Python's 0..25 is slightly more permissive at the low end but the 25 ceiling matches and this site feeds an NPC stat read, not the parity path for PC stat floors (see ARITH-104). |
 | 10 | mud/world/movement.py:428 | `max(0, move_cost // 2)` | src/act_move.c:181 do_move | No | ❌ MISSING | ARITH-104 | ROM does `move /= 2` without a floor; movement_loss table values are all ≥1 so the result is ≥0, but ROM has no explicit guard — Python's `max(0,...)` is an extra defensive floor not present in ROM. |
