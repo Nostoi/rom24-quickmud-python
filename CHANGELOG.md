@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **`BCAST-016` — `do_open` now emits all three ROM TO_ROOM broadcasts plus the linked-room notification** (ROM `src/act_move.c:345-453`). Pre-fix `mud/commands/doors.py:do_open` returned only the actor's TO_CHAR string ("Ok." / "You open $p.") with zero `broadcast_room` calls — the room never saw the open and the linked room never learned the door opened from the other side. Added: portal-branch TO_ROOM `$n opens $p.` (act_move.c:384), container-branch TO_ROOM `$n opens $p.` (act_move.c:412), door-branch TO_ROOM `$n opens the $d.` in actor's room (act_move.c:436), and per-person `The $d opens.` in the linked room (act_move.c:447-448). New helper `_door_keyword(pexit)` extracts the first word of `pexit.keyword` to mirror ROM's `$d` substitution. New regression: `tests/integration/test_door_broadcasts.py` (4/4).
+
 ## [2.9.58]
 
 ### Fixed

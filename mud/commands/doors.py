@@ -19,7 +19,14 @@ from mud.models.constants import (
     EX_NOCLOSE,
     EX_NOLOCK,
 )
+from mud.net.protocol import broadcast_room
 from mud.world.obj_find import get_obj_here, get_obj_carry
+
+
+def _door_keyword(pexit) -> str:
+    """ROM ``$d`` substitution uses the first word of ``pexit->keyword``."""
+    keyword = (getattr(pexit, "keyword", "") or "").strip()
+    return keyword.split()[0] if keyword else "door"
 
 
 # Direction name mapping
@@ -128,6 +135,9 @@ def do_open(char: Character, args: str) -> str:
 
             obj.value[1] = values[1] & ~EX_CLOSED
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # mirroring ROM src/act_move.c:384 — act("$n opens $p.", ch, obj, NULL, TO_ROOM)
+            actor_name = getattr(char, "name", None) or "someone"
+            broadcast_room(room, f"{actor_name} opens {obj_name}.", exclude=char)
             return f"You open {obj_name}."
 
         # Container
@@ -141,6 +151,9 @@ def do_open(char: Character, args: str) -> str:
 
             obj.value[1] = values[1] & ~ContainerFlag.CLOSED
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # mirroring ROM src/act_move.c:412 — act("$n opens $p.", ch, obj, NULL, TO_ROOM)
+            actor_name = getattr(char, "name", None) or "someone"
+            broadcast_room(room, f"{actor_name} opens {obj_name}.", exclude=char)
             return f"You open {obj_name}."
 
         return "That's not a container."
@@ -161,6 +174,9 @@ def do_open(char: Character, args: str) -> str:
 
     # Open this side
     pexit.exit_info = exit_info & ~EX_CLOSED
+    # mirroring ROM src/act_move.c:436 — act("$n opens the $d.", ch, NULL, pexit->keyword, TO_ROOM)
+    actor_name = getattr(char, "name", None) or "someone"
+    broadcast_room(room, f"{actor_name} opens the {_door_keyword(pexit)}.", exclude=char)
 
     # Open the other side
     to_room = getattr(pexit, "to_room", None)
@@ -174,6 +190,12 @@ def do_open(char: Character, args: str) -> str:
                 if rev_to is room:
                     rev_info = getattr(pexit_rev, "exit_info", 0)
                     pexit_rev.exit_info = rev_info & ~EX_CLOSED
+                    # mirroring ROM src/act_move.c:447-448 — per-person TO_CHAR
+                    # "The $d opens." in the linked room (no exclude — actor isn't there).
+                    broadcast_room(
+                        to_room,
+                        f"The {_door_keyword(pexit_rev)} opens.",
+                    )
 
     return "Ok."
 
