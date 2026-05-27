@@ -35,7 +35,7 @@ Splits:
 
 | Gap ID | Site | Divergence |
 |--------|------|------------|
-| ARITH-010 | `mud/commands/advancement.py:174` | `do_practice` floors `learn // rating` to 1. ROM gives **0** when `learn < rating` (low-INT, high-rating skill) — no improvement that session. Python always advances ≥1. Skill-training balance. |
+| ARITH-010 | `mud/commands/advancement.py:174` | ✅ FIXED — `do_practice` now uses `c_div(gain_rate, rating)` raw, matching ROM `act_info.c:2772-2774`. Test: `tests/integration/test_do_practice_command.py::test_practice_low_int_high_rating_skill_yields_zero_increment`. |
 | ARITH-013 | `mud/commands/combat.py:779` | Mana cost divisor `(2 + ch->level - required_level)` floored to 1. ROM divides raw, then `UMAX(min_mana, ...)` clamps the resulting negative/huge cost to min_mana. Python caps cost at 100. Diverges for under-level casters. |
 | ARITH-015 | `mud/skills/handlers.py:1445` | Berserk `number_fuzzy(level/8)` base floored to 1. ROM gives 0-duration (no affect applied) for levels 1–7; Python gives ≥1-round berserk. |
 | ARITH-016 | `mud/skills/handlers.py:2121` | Charm-person `number_fuzzy(level/4)` floored to 1. ROM gives 0-duration charm (wears off instantly) for levels 1–3; Python gives ≥1-round. |
@@ -134,7 +134,7 @@ ARITH-206 (`reset_handler.py:405` room_limit floor — ROM may treat 0 as unlimi
 | 55 | mud/groups/xp.py:257 | `max(0, xp)` | src/fight.c:2031 — returns xp raw | No | ❌ MISSING | ARITH-009: ROM returns xp raw from xp_compute; Python floors to 0; ROM can return negative XP for edge-case alignment math, which would reduce player XP via gain_exp. |
 | 56 | mud/math/stat_apps.py:193 | `max(0, min(25, int(raw[idx])...))` | src/handler.c:852 `URANGE(3,...,25)` | — | N/A | Python table-index clamp (0..25) for get_stat fallback; different floor (0 vs ROM's 3) but this is an internal Python table-lookup safety, not a character stat path. |
 | 57 | mud/math/stat_apps.py:197 | `max(0, min(25, int(val)))` | src/handler.c:852 `URANGE(3,...,25)` | — | N/A | Same as row 56. |
-| 58 | mud/commands/advancement.py:174 | `max(1, gain_rate // max(1, rating))` | src/act_info.c:2773 `int_app[...].learn / skill_table[sn].rating[ch->class]` | No | ❌ MISSING | ARITH-010: ROM divides `learn / rating` raw; no UMAX(1,...) guard; Python floors result to 1; if learn=0 or rating > learn, ROM gives 0 increment (skill doesn't improve), Python gives 1 (skill always improves at least 1). |
+| 58 | mud/commands/advancement.py:174 | `c_div(gain_rate, rating)` | src/act_info.c:2772-2774 `int_app[...].learn / skill_table[sn].rating[ch->class]` | No (raw) | ✅ FIXED | ARITH-010 | Was `max(1, gain_rate // max(1, rating))`. ROM divides `learn / rating` raw — when result rounds to 0, learned[sn] stays unchanged but practice is still decremented. |
 | 59 | mud/commands/combat.py:180 | `max(0, min(100, int(learned)))` | src/handler.c:446 `URANGE(0,skill,100)` | Yes | ✅ MATCH | ROM clamps skill percent to [0,100] via URANGE. |
 | 60 | mud/commands/combat.py:281 | `max(0, min(100, int(raw)))` | src/handler.c:446 `URANGE(0,skill,100)` | Yes | ✅ MATCH | Same URANGE pattern. |
 | 61 | mud/commands/combat.py:462 | `max(1, c_div(base * 3, 2))` | src/fight.c:2484 `WAIT_STATE(ch, skill_table[gsn_bash].beats * 3 / 2)` | No | N/A | ROM divides raw; `beats` config value is always ≥1 so result ≥1; `max(1,...)` is redundant but not a parity gap. |

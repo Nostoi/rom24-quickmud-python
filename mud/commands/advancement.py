@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from mud.math.c_compat import c_div
 from mud.models.character import Character
 from mud.models.constants import LEVEL_IMMORTAL, ActFlag, convert_flags_from_letters
 from mud.skills.registry import skill_registry
@@ -171,7 +172,12 @@ def do_practice(char: Character, args: str) -> str:
         return f"You are already learned at {skill.name}."
 
     gain_rate = char.get_int_learn_rate()
-    increment = max(1, gain_rate // max(1, rating))
+    # mirrors ROM src/act_info.c:2772-2774 — raw `int_app[INT].learn / rating`
+    # with NO UMAX(1,...) guard. When learn < rating the integer division
+    # rounds to 0 and learned[sn] does not change, even though practice is
+    # still decremented. The `rating > 0` check above (act_info.c:2752-2755)
+    # guarantees the divisor is positive. (Closes ARITH-010.)
+    increment = c_div(gain_rate, rating)
 
     char.practice -= 1
     new_value = min(adept, current + increment)

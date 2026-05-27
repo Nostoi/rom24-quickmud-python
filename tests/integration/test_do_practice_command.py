@@ -217,6 +217,32 @@ def test_practice_success_not_at_adept(practice_char, practice_trainer, test_ski
     assert practice_char.skills["fireball"] > 50
 
     assert len(practice_char.messages) > 0
+
+
+def test_practice_low_int_high_rating_skill_yields_zero_increment(
+    practice_char, practice_trainer, test_skill
+):
+    """ARITH-010 — ROM src/act_info.c:2772-2774 does
+    `learned[sn] += int_app[INT].learn / skill_table[sn].rating[class]` raw,
+    no UMAX(1,...) guard. When learn < rating the integer division floors to
+    zero and learned[sn] does not change, but practice is still decremented
+    and the "You practice $T." message still fires (act_info.c:2771-2780).
+
+    Pre-fix Python had `max(1, gain_rate // max(1, rating))` which always
+    advanced learned by at least 1, inflating skill training for low-INT
+    characters.
+    """
+    # learn = 3 (lowest INT-app row), rating = 10 → 3/10 = 0 in ROM C
+    practice_char.get_int_learn_rate = lambda: 3
+    test_skill.rating = {practice_char.ch_class: 10}
+    practice_char.skills["fireball"] = 50
+
+    do_practice(practice_char, "fireball")
+
+    # Practice still decremented (ROM act_info.c:2771)
+    assert practice_char.practice == 9
+    # Skill unchanged because 3 / 10 = 0 in ROM (act_info.c:2772-2774)
+    assert practice_char.skills["fireball"] == 50
     message = practice_char.messages[0].lower()
     assert "practice" in message or "learned" in message
 

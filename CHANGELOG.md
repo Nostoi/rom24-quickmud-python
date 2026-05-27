@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **`ARITH-010` — `do_practice` no longer floors skill increment to 1** (ROM `src/act_info.c:2772-2774`). Pre-fix `mud/commands/advancement.py:174` used `max(1, gain_rate // max(1, rating))`, so a low-INT character practising a high-rating skill always advanced learned% by at least 1 even when ROM's raw integer division `int_app[INT].learn / skill_table[sn].rating[class]` rounded to 0. Replaced with `c_div(gain_rate, rating)`; the outer `max(1, ...)` is gone. The `rating > 0` precondition (`act_info.c:2752-2755`, mirrored at `advancement.py:162-163`) guarantees no division-by-zero. Practice is still decremented when increment is 0 (ROM `act_info.c:2771`). Regression: `tests/integration/test_do_practice_command.py::test_practice_low_int_high_rating_skill_yields_zero_increment`. First ARITH-NNN gap closed; flips the audit row in `docs/parity/audits/ARITHMETIC_BOUNDARY.md` to ✅ FIXED.
+
 ## [2.9.64]
 
 ### Added
