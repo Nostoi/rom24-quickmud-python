@@ -16,6 +16,27 @@ if TYPE_CHECKING:
     pass
 
 
+def _notvict_broadcast(room, actor, victim, message: str) -> None:
+    """ROM ``TO_NOTVICT`` — deliver to every room occupant except actor and victim.
+
+    Mirrors ``broadcast_room`` (mud/net/protocol.py:58) but supports a
+    two-actor exclude set. Fires the socket task for connected players
+    and appends to the test-fallback ``messages`` list.
+    """
+    import asyncio as _asyncio
+
+    from mud.net.protocol import send_to_char as _send_to_char_async
+
+    for bystander in list(getattr(room, "people", [])):
+        if bystander is actor or bystander is victim:
+            continue
+        writer = getattr(bystander, "connection", None)
+        if writer:
+            _asyncio.create_task(_send_to_char_async(bystander, message))
+        if hasattr(bystander, "messages"):
+            bystander.messages.append(message)
+
+
 def do_load(char: Character, args: str) -> str:
     """
     Load a mobile or object into the game.
@@ -233,6 +254,12 @@ def do_purge(char: Character, args: str) -> str:
                 continue
             _extract_obj(obj)
 
+        # BCAST-035: TO_ROOM mirroring ROM src/act_wiz.c:2605 —
+        # act("$n purges the room!", ch, NULL, NULL, TO_ROOM).
+        from mud.net.protocol import broadcast_room
+        actor_name = getattr(char, "name", None) or "Someone"
+        broadcast_room(room, f"{actor_name} purges the room!", exclude=char)
+
         return "Ok.\n\r"
 
     # Purge specific target
@@ -253,10 +280,34 @@ def do_purge(char: Character, args: str) -> str:
             _send_to_char(victim, f"{getattr(char, 'name', 'Someone')} tried to purge you!\n\r")
             return "Maybe that wasn't a good idea...\n\r"
 
+        # BCAST-035: TO_NOTVICT mirroring ROM src/act_wiz.c:2633 —
+        # act("$n disintegrates $N.", ch, 0, victim, TO_NOTVICT).
+        # Excludes both actor and victim; victim is about to be extracted.
+        actor_name = getattr(char, "name", None) or "Someone"
+        victim_short = (
+            getattr(victim, "short_descr", None)
+            or getattr(victim, "name", None)
+            or "someone"
+        )
+        _notvict_broadcast(room, char, victim, f"{actor_name} disintegrates {victim_short}.")
+
         # PURGE-001: route through canonical chokepoint (INV-020).
         # Mirrors ROM src/act_wiz.c:2638 extract_char(victim, TRUE).
         _extract_character(victim)
         return "Ok.\n\r"
+
+    # BCAST-035: TO_NOTVICT mirroring ROM src/act_wiz.c:2645 —
+    # act("$n purges $N.", ch, NULL, victim, TO_NOTVICT). Excludes both
+    # actor and victim; victim is about to be extracted.
+    actor_name = getattr(char, "name", None) or "Someone"
+    victim_short = (
+        getattr(victim, "short_descr", None)
+        or getattr(victim, "name", None)
+        or "someone"
+    )
+    npc_room = getattr(char, "room", None)
+    if npc_room is not None:
+        _notvict_broadcast(npc_room, char, victim, f"{actor_name} purges {victim_short}.")
 
     # Purge NPC — mirrors ROM src/act_wiz.c:2645-2647 extract_char(victim, TRUE).
     _extract_character(victim)

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **`BCAST-035` — `do_purge` now emits ROM TO_ROOM and TO_NOTVICT broadcasts on all 3 paths** (ROM `src/act_wiz.c:2605, 2633, 2645`). Pre-fix room-purge / PC-disintegrate / NPC-purge each returned "Ok." silently. Added `broadcast_room` for room-purge `$n purges the room!`, and a new local `_notvict_broadcast` helper (mirrors `broadcast_room` but supports a two-actor exclude set, since ROM TO_NOTVICT skips both the actor and the about-to-be-extracted victim) for `$n disintegrates $N.` and `$n purges $N.`. Regression: `tests/integration/test_purge_broadcasts.py` (2/2).
 - **`BCAST-034` — `do_pick` now emits ROM TO_ROOM broadcasts on all 3 paths** (ROM `src/act_move.c:907, 945, 981`). Pre-fix portal/container returned "You pick the lock on $obj." and door returned "*Click*" — bystanders saw nothing. Added `broadcast_room` for each branch: portal/container `$n picks the lock on $p.`, door `$n picks the $d.` (with `$d` substitution via `_door_keyword`). Regression: `tests/integration/test_pick_broadcasts.py` (2/2).
 
 ## [2.9.61]
