@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **`BCAST-034` — `do_pick` now emits ROM TO_ROOM broadcasts on all 3 paths** (ROM `src/act_move.c:907, 945, 981`). Pre-fix portal/container returned "You pick the lock on $obj." and door returned "*Click*" — bystanders saw nothing. Added `broadcast_room` for each branch: portal/container `$n picks the lock on $p.`, door `$n picks the $d.` (with `$d` substitution via `_door_keyword`). Regression: `tests/integration/test_pick_broadcasts.py` (2/2).
+
 ## [2.9.61]
 
 ### Added

@@ -600,6 +600,10 @@ def do_pick(char: Character, args: str) -> str:
             obj.value[1] = values[1] & ~EX_LOCKED
             # TODO: Implement check_improve(ch, gsn_pick_lock, TRUE, 2)
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # BCAST-034: TO_ROOM mirroring ROM src/act_move.c:907 —
+            # act("$n picks the lock on $p.", ch, obj, NULL, TO_ROOM).
+            actor_name = getattr(char, "name", None) or "Someone"
+            broadcast_room(room, f"{actor_name} picks the lock on {obj_name}.", exclude=char)
             return f"You pick the lock on {obj_name}."
 
         # Container (ROM C lines 916-947)
@@ -616,6 +620,10 @@ def do_pick(char: Character, args: str) -> str:
             obj.value[1] = values[1] & ~ContainerFlag.LOCKED
             # TODO: Implement check_improve(ch, gsn_pick_lock, TRUE, 2)
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # BCAST-034: TO_ROOM mirroring ROM src/act_move.c:945 —
+            # act("$n picks the lock on $p.", ch, obj, NULL, TO_ROOM).
+            actor_name = getattr(char, "name", None) or "Someone"
+            broadcast_room(room, f"{actor_name} picks the lock on {obj_name}.", exclude=char)
             return f"You pick the lock on {obj_name}."
 
         return "That's not a container."
@@ -660,5 +668,11 @@ def do_pick(char: Character, args: str) -> str:
                 if rev_to is room:
                     rev_info = getattr(pexit_rev, "exit_info", 0)
                     pexit_rev.exit_info = rev_info & ~EX_LOCKED
+
+    # BCAST-034: TO_ROOM mirroring ROM src/act_move.c:981 —
+    # act("$n picks the $d.", ch, NULL, pexit->keyword, TO_ROOM).
+    # ROM ``$d`` substitution is the first word of pexit->keyword.
+    actor_name = getattr(char, "name", None) or "Someone"
+    broadcast_room(room, f"{actor_name} picks the {_door_keyword(pexit)}.", exclude=char)
 
     return "*Click*"
