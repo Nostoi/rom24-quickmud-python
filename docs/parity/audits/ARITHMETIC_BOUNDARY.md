@@ -1,6 +1,6 @@
 # ARITHMETIC_BOUNDARY — META Class 2 Audit
 
-**Status:** ✅ TRIAGE COMPLETE (2026-05-27). 45 gap candidates filed (ARITH-001..023, ARITH-101..113, ARITH-201..209). Close-out is per-gap via `/rom-gap-closer`.
+**Status:** ✅ TRIAGE COMPLETE (2026-05-27). 45 gap candidates filed (ARITH-001..023, ARITH-101..113, ARITH-201..209). Close-out is per-gap via `/rom-gap-closer`. Post-triage reclassifications: **ARITH-013 → ⛔ N/A** (dead-code post-gate, see row 66 notes). Effective candidate count: **44**.
 
 **Owner method:** see [`docs/parity/META_AUDIT_TAXONOMY.md`](../META_AUDIT_TAXONOMY.md) → "Class 2: ARITHMETIC_BOUNDARY".
 
@@ -36,7 +36,7 @@ Splits:
 | Gap ID | Site | Divergence |
 |--------|------|------------|
 | ARITH-010 | `mud/commands/advancement.py:174` | ✅ FIXED — `do_practice` now uses `c_div(gain_rate, rating)` raw, matching ROM `act_info.c:2772-2774`. Test: `tests/integration/test_do_practice_command.py::test_practice_low_int_high_rating_skill_yields_zero_increment`. |
-| ARITH-013 | `mud/commands/combat.py:779` | Mana cost divisor `(2 + ch->level - required_level)` floored to 1. ROM divides raw, then `UMAX(min_mana, ...)` clamps the resulting negative/huge cost to min_mana. Python caps cost at 100. Diverges for under-level casters. |
+| ARITH-013 | `mud/commands/combat.py:779` | ⛔ N/A (dead-code post-gate) — re-analysis 2026-05-27. Both this branch and the `char_level + 2 == required_level` branch above are unreachable because the pre-flight gate at `combat.py:765-770` returns "You don't know any spells of that name" when `char_level < required_level`, mirroring ROM `src/magic.c:329-335`. After the gate, `char_level >= required_level`, so divisor `(2 + char_level - required_level) ≥ 2` and the `max(1, ...)` floor never fires. ROM `do_cast` inline mana formula at `src/magic.c:347-352` is identically dead. Not a parity divergence in practice. |
 | ARITH-015 | `mud/skills/handlers.py:1445` | Berserk `number_fuzzy(level/8)` base floored to 1. ROM gives 0-duration (no affect applied) for levels 1–7; Python gives ≥1-round berserk. |
 | ARITH-016 | `mud/skills/handlers.py:2121` | Charm-person `number_fuzzy(level/4)` floored to 1. ROM gives 0-duration charm (wears off instantly) for levels 1–3; Python gives ≥1-round. |
 | ARITH-009 | `mud/groups/xp.py:257` | `xp_compute` return floored to 0. ROM can return negative XP from edge-case alignment math, which **reduces** player XP via `gain_exp`. Python silently swallows. |
@@ -142,7 +142,7 @@ ARITH-206 (`reset_handler.py:405` room_limit floor — ROM may treat 0 as unlimi
 | 63 | mud/commands/combat.py:536 | `max(1, 3 * get_pulse_violence())` | src/fight.c:2350 `WAIT_STATE(ch, 3 * PULSE_VIOLENCE)` | — | N/A | PULSE_VIOLENCE is always positive config constant; max(1,...) redundant but not divergent. |
 | 64 | mud/commands/combat.py:636 | `max(1, int(getattr(char, "max_hit", 1) or 1))` | src/act_move.c — do_flee `100 * ch->hit / ch->max_hit` | No | ❌ MISSING | ARITH-012: Same pattern as ARITH-011 but in do_flee hp_percent; ROM uses raw division. |
 | 65 | mud/commands/combat.py:719 | `max(0, char.move - c_div(char.max_move, 10))` | src/act_move.c — move cost | — | N/A | Move cost floor at 0; defensive Python guard, not a parity concern. |
-| 66 | mud/commands/combat.py:779 | `max(min_mana, 100 // max(1, 2 + char_level - required_level))` | src/magic.c:291 `UMAX(min_mana, (100 / (2 + ch->level - level)))` | No | ❌ MISSING | ARITH-013: ROM has no guard on divisor `(2 + ch->level - level)`; if divisor ≤ 0 ROM gets negative/large mana cost then UMAX clamps; Python floors divisor to 1, capping cost at 100; diverges when ch->level < level - 2. |
+| 66 | mud/commands/combat.py:779 | `max(min_mana, 100 // max(1, 2 + char_level - required_level))` | src/magic.c:347-352 inline `do_cast` mana formula (NOT `mana_cost()` helper at :287-292, which is declared in merc.h but never called) | N/A | ⛔ N/A | — | **Re-analysis 2026-05-27 reclassified ARITH-013 from ❌ MISSING to ⛔ N/A.** The Python pre-flight gate at `combat.py:765-770` returns "You don't know any spells of that name" when `char_level < required_level`, mirroring ROM `magic.c:329-335`. After the gate, divisor `(2 + char_level - required_level) ≥ 2` and the `max(1, ...)` floor is unreachable. ROM `do_cast`'s inline `ch->level + 2 == level → 50` branch is equally dead. Tally adjusted: 56 ✅ / **44 ❌** / **115 N/A**. |
 | 67 | mud/commands/combat.py:843 | `max(0, char.mana - c_div(mana_cost, 2))` | src/fight.c — combat spell half-mana | — | N/A | Mana floor at 0 after deduction; defensive Python guard. |
 | 68 | mud/skills/registry.py:292 | `max(1, c_div(lag_pulses, 2))` | src/skills.c — haste lag halving | — | N/A | Haste halves lag; lag is always ≥ 1 from skill config, so dividing by 2 can give 0 for lag=1; `max(1,...)` preserves minimum wait. Not parity-sensitive since ROM's WAIT_STATE handles this differently. |
 | 69 | mud/skills/registry.py:296 | `max(1, int(lag_pulses))` | src/skills.c — skill lag | — | N/A | Final lag clamp; prevents 0-lag which would mean no wait; defensive Python guard. |
