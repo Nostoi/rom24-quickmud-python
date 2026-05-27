@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.51]
+
+### Fixed
+- **`RESTORE-001` — `do_restore` now strips plague/poison/blindness/sleep/curse** (ROM `src/act_wiz.c:2807, 2839, 2861` — five `affect_strip` calls at every restore code path). Python's `_restore_char` in `mud/commands/imm_load.py` was only refilling hit/mana/move and clamping position — the affect strip was a TODO comment ("In full implementation, would strip..."). A poisoned/plagued/blinded/sleeping/cursed character that got restored stayed afflicted, contrary to ROM. Added a loop calling `char.strip_affect(name)` for each of the five named affects before vitals are refilled. New regression: `tests/integration/test_restore_strips_affects.py` (`test_restore_strips_poison_plague_blindness_sleep_curse`).
+
 ## [2.9.50]
 
 ### Added

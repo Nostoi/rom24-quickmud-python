@@ -359,10 +359,15 @@ def do_sla(char: Character, args: str) -> str:
 # Helper functions
 
 def _restore_char(char: Character) -> None:
-    """Fully restore a character."""
-    # Strip negative affects — mirrors ROM affect_strip calls
-    # (In full implementation, would strip plague, poison, blindness, sleep, curse)
-    
+    """Fully restore a character.
+
+    Mirrors ROM ``src/act_wiz.c:2807, 2839, 2861`` — strip the five named
+    negative affects, then refill hit/mana/move and re-evaluate position.
+    """
+    # RESTORE-001: strip the five negative affects ROM cures.
+    for affect_name in ("plague", "poison", "blindness", "sleep", "curse"):
+        char.strip_affect(affect_name)
+
     # Restore stats
     char.hit = getattr(char, "max_hit", 100)
     char.mana = getattr(char, "max_mana", 100)
