@@ -1,72 +1,73 @@
-# Session Status — 2026-05-26 — META audits Classes 1, 7, 8 (2.9.52)
+# Session Status — 2026-05-26 — META burn-down MATH-001 + PARALLEL-010 (2.9.54)
 
 ## Current State
 
-- **Three META audit docs landed in parallel** (Classes 1, 7, 8 from
-  `docs/parity/META_AUDIT_TAXONOMY.md`). Audits-only commit; no
-  runtime behavior changes. Audit doc structure mirrors
-  `audits/DUPLICATE_IMPLEMENTATIONS.md` template.
-- **Class 1 BROADCAST_COVERAGE** (`audits/BROADCAST_COVERAGE.md`):
-  283 of ~284 commands; 209 ✅ / 10 ⚠️ / 29 ❌ / 35 N/A. Caveat:
-  shallow body-only — ❌ count inflated by helper transitivity
-  (`world/movement.py`, `combat/engine.py:damage()`). Stable IDs
-  `BCAST-001`…`BCAST-039`.
-- **Class 7 PARALLEL_REPRESENTATIONS**
-  (`audits/PARALLEL_REPRESENTATIONS.md`): 1 ❌ / 8 ⚠️ / 6 ✅.
-  Hypothesis "mostly closed by INV-012/13/14" HELD. Single ❌
-  `PARALLEL-010`: `do_flee` writes to nonexistent
-  `room.characters` — masked by broad try/except, char pays move
-  cost but doesn't move.
-- **Class 8 MATH_AND_RNG** (`audits/MATH_AND_RNG.md`): 1 ❌ HIGH /
-  3 ⚠️ LOW / ~110 ✅. RNG channel completely clean (0 hits).
-  Single ❌ `MATH-001`: `combat/engine.py:1290` cursed-damroll
-  signed-divide divergence.
+- **Two concrete META audit ❌ rows closed** as 2.9.53 and 2.9.54:
+  - **`MATH-001`** (`5d5e246`, 2.9.53): `mud/combat/engine.py:1290`
+    damroll math now uses `c_div` instead of `//` so cursed-damroll
+    swings produce ROM-faithful damage (C truncate-toward-zero) rather
+    than Python floor (off-by-one in the negative regime).
+  - **`PARALLEL-010`** (`90aa8ce`, 2.9.54): `mud/commands/combat.py`
+    `do_flee` now uses canonical `room.remove_character` /
+    `room.add_character` helpers (and broadcast loop uses
+    `room.people`). Pre-fix: char paid move cost but didn't move;
+    misleading "Flee failed" message swallowed by broad `try/except`.
+- **Pre-existing flake discovered (not addressed this session)**:
+  `tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs`
+  fails when run after `tests/integration/` regardless of fix state.
+  Order-dependent shared-state issue; filed for separate gap-closer.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-26_META_AUDITS_CLASS_1_7_8.md](SESSION_SUMMARY_2026-05-26_META_AUDITS_CLASS_1_7_8.md)
+  [SESSION_SUMMARY_2026-05-26_META_BURNDOWN_MATH001_PARALLEL010.md](SESSION_SUMMARY_2026-05-26_META_BURNDOWN_MATH001_PARALLEL010.md)
   (predecessors:
+  [SESSION_SUMMARY_2026-05-26_META_AUDITS_CLASS_1_7_8.md](SESSION_SUMMARY_2026-05-26_META_AUDITS_CLASS_1_7_8.md),
   [SESSION_SUMMARY_2026-05-26_RESTORE_AFFECT_STRIP.md](SESSION_SUMMARY_2026-05-26_RESTORE_AFFECT_STRIP.md),
   [SESSION_SUMMARY_2026-05-26_SLAY_BROADCASTS.md](SESSION_SUMMARY_2026-05-26_SLAY_BROADCASTS.md),
-  [SESSION_SUMMARY_2026-05-26_PURGE_EXTRACT_CHARACTER_ROUTING.md](SESSION_SUMMARY_2026-05-26_PURGE_EXTRACT_CHARACTER_ROUTING.md),
-  [SESSION_SUMMARY_2026-05-26_SLAY_RAW_KILL_ROUTING.md](SESSION_SUMMARY_2026-05-26_SLAY_RAW_KILL_ROUTING.md))
+  [SESSION_SUMMARY_2026-05-26_PURGE_EXTRACT_CHARACTER_ROUTING.md](SESSION_SUMMARY_2026-05-26_PURGE_EXTRACT_CHARACTER_ROUTING.md))
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.52 |
-| Tests | 2239 passed, 3 skipped (integration only, 72s — unchanged from 2.9.51) |
+| Version | 2.9.54 |
+| Tests | Integration suite green (last full run 2239 pass + 3 skip @ 2.9.51); 45/45 flee-adjacent and 29/29 weapon-damage-adjacent green at 2.9.54 |
 | ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75% (unchanged) |
 | Cross-file invariants | 23 of ~20 enforced (unchanged) |
-| Meta-audit progress | **4 of 8 META classes audited** — Class 1 ✅ BROADCAST_COVERAGE, Class 6 ✅ DUPLICATE_IMPLEMENTATIONS, Class 7 ✅ PARALLEL_REPRESENTATIONS, Class 8 ✅ MATH_AND_RNG. Remaining: Class 2 ARITHMETIC_BOUNDARY, Class 3 GATE_CONSISTENCY, Class 4 TRIGGER_CALL_SITE_MIGRATION, Class 5 LIFECYCLE_STAGING. |
-| Branch | `master` — local 2.9.52 (1 commit pending push approval) |
+| Meta-audit progress | 4 of 8 META classes audited (Class 1 BROADCAST_COVERAGE, Class 6 DUPLICATE_IMPLEMENTATIONS, Class 7 PARALLEL_REPRESENTATIONS, Class 8 MATH_AND_RNG). Class 7 and Class 8 burn-down: **both concrete ❌ rows closed**. Class 1 burn-down: not started (29 ❌ rows, inflated by helper transitivity). |
+| Branch | `master` — local 2.9.54 (3 commits pending push approval: `4197fec`, `5d5e246`, `90aa8ce`) |
 
 ## Next Intended Task
 
-1. **Push approval** required for 2.9.52. Per standing rule: do NOT
-   push without explicit per-cluster approval ("yes push v2.9.52 to
-   origin/master").
-2. **Burn-down begins** — pick up the two concrete ❌ rows from this
-   session's audits in smallest-first order:
-   - **`MATH-001`** (2.9.53 candidate): one-line `//` → `c_div` at
-     `mud/combat/engine.py:1290`. Failing test: combat with
-     negative-damroll victim. ROM `src/fight.c` `one_hit`.
-   - **`PARALLEL-010`** (2.9.54 candidate): rewrite `do_flee` move
-     code at `mud/commands/combat.py:683-688` to use canonical
-     `room.remove_character` / `new_room.add_character` helpers.
-     Failing test: flee with multi-exit room, assert char is in new
-     room's `people` after success.
-3. **BCAST-001…BCAST-039 walk** (after the two concrete ❌s): in
-   agent's priority order. **Verify helper coverage first** for
-   each row — door commands almost certainly covered by
-   `world/movement.py`; combat skills routed through `damage()`.
-   Helper hits collapse rows to ✅ without a commit; misses become
-   gap-closers.
-4. **Drift-risk cleanup batch** (8 PARALLEL ⚠️ + 3 MATH ⚠️): one
-   mechanical-cleanup commit cycle once the ❌s are closed.
-5. **Hygiene**: unlock + remove the locked Class 1 worktree at
-   `.claude/worktrees/agent-a1b07201d504ce97b` in a separate pass
-   (`git worktree remove -f -f` after `git worktree unlock`).
-6. **Remaining META classes** (after Class 1/7/8 burn-down):
-   Class 2 ARITHMETIC_BOUNDARY (half-session), Class 3
-   GATE_CONSISTENCY (session), Class 4 TRIGGER_CALL_SITE_MIGRATION
-   (half-session), Class 5 LIFECYCLE_STAGING (session+).
+1. **Push approval** required for 2.9.52/2.9.53/2.9.54 (3 commits).
+   Per standing rule, no push without explicit per-cluster approval
+   ("yes push v2.9.54 to origin/master" or similar).
+2. **Class 1 BROADCAST_COVERAGE burn-down**: walk
+   `audits/BROADCAST_COVERAGE.md` ❌/⚠️ rows in agent-priority order.
+   **Before promoting each row to a gap-closer, verify helper
+   coverage** — door commands likely covered by `world/movement.py`;
+   combat skills routed through `damage()`. Helper hits collapse rows
+   to ✅ without a commit; misses become gap-closers.
+   - **Top 3 ranked**: BCAST-disarm-* / BCAST-trip-* / BCAST-dirt-* /
+     BCAST-surrender-* (TO_VICT+TO_NOTVICT hit-feedback);
+     BCAST-goto-001/002 (poofout TO_ROOM at origin + poofin TO_VICT
+     at destination); BCAST-invis-001 / BCAST-incognito-001
+     ("X slowly fades into thin air." TO_ROOM on visibility
+     transitions).
+3. **Drift-risk cleanup batch** (8 PARALLEL ⚠️ + 3 MATH ⚠️): one
+   mechanical-cleanup commit cycle once the BCAST ❌s are closed or
+   while waiting for push approval. Inline hex flag aliases +
+   dead `.carrying` fallback + stale docstring.
+4. **Filed: pre-existing flake**
+   `tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs`
+   — order-dependent shared-state failure. Single gap-closer once
+   isolated; probable root cause is `character_registry` state leakage
+   breaking wiznet broadcast resolution to the immortal mailbox.
+5. **GitNexus refresh**: index still stale (last indexed `069f17f`).
+   Run `npx gitnexus analyze --skip-agents-md` before any new probe.
+6. **Locked Class 1 worktree hygiene**:
+   `.claude/worktrees/agent-a1b07201d504ce97b` is still locked from
+   the parallel-audit session. Unlock + remove in a separate hygiene
+   pass (`git worktree unlock` then `git worktree remove -f`).
+7. **Remaining META classes** (when ready to audit more): Class 2
+   ARITHMETIC_BOUNDARY (half-session), Class 3 GATE_CONSISTENCY
+   (session), Class 4 TRIGGER_CALL_SITE_MIGRATION (half-session),
+   Class 5 LIFECYCLE_STAGING (session+).
