@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.63]
+
+### Fixed
+- **`STEAL-001` — `_steal_failure` TO_VICT and TO_NOTVICT broadcasts now reach live sockets** (ROM `src/act_obj.c:2222-2223`). Pre-fix the failure-path acts (`$n tried to steal from you.` and `$n tried to steal from $N.`) only appended to the test-fallback `.messages` list, so connected players saw nothing on a failed steal. New `_send_to_char_sync` helper in `mud/commands/thief_skills.py` fires `asyncio.create_task(send_to_char(...))` for connected players and falls back to `.messages` for tests. TO_VICT routes through that helper; TO_NOTVICT routes through a `room.people` loop excluding `{char, victim}`. Regression: `tests/integration/test_steal_broadcasts.py` (1/1). **Closes BCAST-038.**
+- **`GROUP-001` — `do_group` add and remove broadcasts now reach live sockets** (ROM `src/act_comm.c:1842-1854`). Pre-fix both `$N joins $n's group.` / `You join $n's group.` and the remove-from-group equivalents only appended to `.messages`. Same `_send_to_char_sync` pattern as STEAL-001 routed through both add (act_comm.c:1850-1854) and remove (:1842-1846) branches. Regression: `tests/integration/test_group_broadcasts.py` (2/2). **Closes BCAST-009.**
+- **`ORDER-001` — `do_order` TO_VICT now routes through `act()`-equivalent visibility gating** (ROM `src/act_comm.c:1752-1754`). Pre-fix Python formatted `f"{char.name} orders you to '…'"` manually, leaking wiz-invis orderer names to low-trust charmed followers. New `_pers_gated(actor, viewer)` helper mirrors ROM `src/handler.c:pers` — returns `"someone"` when `can_see_character(viewer, actor)` fails, else the actor's name. Both all-targets and single-target branches build `order_message` via the gated helper and deliver through `_send_to_char_sync`. Also fixed a pre-existing bug: the old `send_to_char(order_message, victim)` call had arguments reversed and was never awaited. The audit's secondary claim ("Python checks the wrong word position for the mob guard") was incorrect — Python's `command.split(None, 1)[0]` IS the second word of the original input (ROM's `arg2`); no fix needed there. Regression: `tests/integration/test_order_broadcasts.py` (2/2). **Closes BCAST-017.**
+
+### Changed
+- **Class 1 META BROADCAST_COVERAGE burn-down — COMPLETE.** Every row in `docs/parity/audits/BROADCAST_COVERAGE.md` is now ✅ FIXED or ✅ COVERED. The three remaining ⚠️ Partial-blocked rows from 2.9.62 (BCAST-009, -017, -038) all closed this session. INV-027 ACT-INVIS-TRUST-GATE is now the natural next-up (the `_pers_gated` helper introduced for ORDER-001 is a stepping-stone toward the wider `_can_witness(actor, witness)` thread-through).
+
 ## [2.9.62]
 
 ### Changed
