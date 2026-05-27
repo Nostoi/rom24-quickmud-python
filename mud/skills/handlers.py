@@ -2118,8 +2118,13 @@ def charm_person(caster: Character, target: Character | None = None) -> bool:
     add_follower(target, caster)
     target.leader = caster
 
-    base_duration = max(1, c_div(level, 4))
-    duration = rng_mm.number_fuzzy(base_duration)
+    # mirrors ROM src/magic.c:1383 — `number_fuzzy(level / 4)` with NO
+    # UMAX guard on the dividend. number_fuzzy itself already clamps to
+    # `UMAX(1, ...)` (ROM src/db.c:3496), so passing 0 for low levels
+    # yields a deterministic duration of 1; passing 1 (the pre-fix
+    # `max(1, ...)`) shifts 25% of the distribution to duration 2.
+    # (Closes ARITH-016.)
+    duration = rng_mm.number_fuzzy(c_div(level, 4))
 
     effect = SpellEffect(
         name="charm person",
