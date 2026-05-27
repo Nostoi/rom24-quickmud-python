@@ -20,7 +20,7 @@ Counts shown as `ROM` (TO_ROOM / TO_VICT / TO_NOTVICT / TO_ALL) vs `Py total` (s
 | # | Command | Python entry | ROM C ref | TO_ROOM | TO_VICT | TO_NOTVICT | TO_ALL | Py total | Status | Notes |
 |---|---------|--------------|-----------|---------|---------|------------|--------|----------|--------|-------|
 | 1 | `@goto` | `mud/commands/build.py:3930` | `src/act_wiz.c:905` | 0 | 4 | 0 | 0 | 0 | ✅ COVERED | **BCAST-001** — FALSE POSITIVE. Same handler as `do_goto` (admin alias). `do_goto` in `imm_commands.py:164` already broadcasts via `_act_room(old_room, ...)` (bamfout) and `_act_room(location, ...)` (bamfin) at lines 196, 198, 208, 210. The audit's body-only static scan missed `_act_room` as a broadcast helper. Helper-transitivity caveat applies. |
-| 2 | `clone` | `mud/commands/imm_search.py:375` | `src/act_wiz.c:2296` | 2 | 0 | 0 | 0 | 0 | ❌ | **BCAST-002** — ROM has 2 non-TO_CHAR act() (obj branch `$n has cloned $p.`, mob branch `$n has cloned $N.`). WIZLOAD-001 unblocked both paths; ready for standard `rom-gap-closer`. Adjacent (out of scope for BCAST): return strings `"You clone $p."` / `"You clone $N."` are unsubstituted ROM template literals — `$p`/`$N` are not expanded to the clone's short_descr. |
+| 2 | `clone` | `mud/commands/imm_search.py:375` | `src/act_wiz.c:2296` | 2 | 1 | 0 | 0 | 0 | ⚠️ Partial (obj branch ✅ FIXED 2.9.61; mob branch BLOCKED by CLONE-001) | **BCAST-002** — Obj branch TO_ROOM `$n has created $p.` now emitted (mirrors ROM `src/act_wiz.c:2406`); test `tests/integration/test_clone_broadcasts.py::test_clone_object_emits_to_room_broadcast`. Mob branch TO_ROOM `$n has created $N.` (ROM `:2450`) is unreachable because the upstream trust gate (`mud/commands/imm_search.py:470`) imports non-existent `LEVEL_AVATAR`/`LEVEL_DEMI`/`LEVEL_GOD` constants — see **CLONE-001** in the Blocked rows section. Adjacent (out of scope for BCAST): return strings `"You clone $p."` / `"You clone $N."` are unsubstituted ROM template literals — `$p`/`$N` are not expanded to the clone's short_descr. |
 | 3 | `close` | `mud/commands/doors.py:181` | `src/act_move.c:425` | 3 | 0 | 0 | 0 | 3 | ✅ FIXED (2.9.59) | **BCAST-003** — Pre-fix `do_close` returned only the actor "Ok." / "You close $p." string with zero `broadcast_room` calls. Added portal/container TO_ROOM `$n closes $p.` (act_move.c:492, 515), door TO_ROOM `$n closes the $d.` (act_move.c:534), and linked-room per-person `The $d closes.` (act_move.c:545-547). Symmetric to BCAST-016. Regression: `tests/integration/test_close_broadcasts.py` (4/4). |
 | 4 | `dirt` | `mud/commands/combat.py:839` | `src/fight.c:2349` | 1 | 1 | 0 | 0 | 2 | ✅ COVERED (2.9.59) | **BCAST-004** — FALSE POSITIVE. Probe (2.9.59) confirmed `mud/skills/handlers.py:3018-3026` already emits TO_ROOM `"$n is blinded by the dirt in their eyes!"` via `broadcast_room` and TO_VICT `"$n kicks dirt in your eyes!"` via `_send_to_char`. The audit's static scan inspected `combat.py:do_dirt` (the dispatcher entry point) but the broadcasts live in the skill handler. Helper-transitivity caveat (audit looked at the wrong file). |
 | 5 | `disarm` | `mud/commands/combat.py:963` | `src/fight.c:2995` | 0 | 1 | 1 | 0 | 2 | ✅ COVERED (2.9.59) | **BCAST-005** — FALSE POSITIVE. Probe (2.9.59) confirmed `mud/skills/handlers.py:3108-3134` already emits TO_VICT + TO_NOTVICT on all three ROM branches (success, failure, NOREMOVE). The audit's static scan inspected `combat.py:do_disarm` but the broadcasts live in the skill handler. Helper-transitivity caveat. |
@@ -340,6 +340,34 @@ Ranked by user-visible impact and likelihood the ❌/⚠️ is a real gap (not a
 ## Blocked rows
 
 Pre-existing parity bugs that prevent the listed BCAST rows from being closed via the normal `rom-gap-closer` path. Surface these in the next-session SUMMARY's "Outstanding" so they get picked up.
+
+### CLONE-001 — do_clone mob branch imports non-existent LEVEL_ constants (surfaced 2026-05-27 during BCAST-002 obj-branch closure)
+
+**Status**: ❌ OPEN. Surfaced when adding a mob-branch regression test for BCAST-002; the test ImportErrored before reaching the broadcast point. Filed durably here rather than fixed inline because it is unrelated to the broadcast wiring (per the durable-bug-filing discipline added in 2.9.60).
+
+**Bug** (`mud/commands/imm_search.py:470`):
+```python
+from mud.models.constants import LEVEL_AVATAR, LEVEL_DEMI, LEVEL_GOD, LEVEL_IMMORTAL
+```
+Only `LEVEL_IMMORTAL` (52) and `LEVEL_ANGEL` (53) exist in `mud/models/constants.py`. The four-tier trust gate that follows references all five names, so any call to `do_clone <mob>` ImportErrors before the spawn/broadcast.
+
+**ROM C reference** (`src/act_wiz.c:2424-2429`):
+```c
+if ((mob->level > 20 && !IS_TRUSTED (ch, GOD))
+ || (mob->level > 10 && !IS_TRUSTED (ch, IMMORTAL))
+ || (mob->level > 5  && !IS_TRUSTED (ch, DEMI))
+ || (mob->level > 0  && !IS_TRUSTED (ch, ANGEL))
+ || !IS_TRUSTED (ch, AVATAR))
+```
+ROM `merc.h` defines `IMPLEMENTOR 60`, `CREATOR 59`, `SUPREME 58`, `DEITY 57`, `GOD 56`, `IMMORTAL 55`, `DEMI 54`, `ANGEL 53`, `AVATAR 52`. Note ROM's `IMMORTAL` and `AVATAR` constants are reversed from Python's `LEVEL_IMMORTAL = 52` (which currently coincides with ROM `AVATAR`, not ROM `IMMORTAL`). The fix needs to either:
+1. Add `LEVEL_AVATAR = MAX_LEVEL - 8` (52), `LEVEL_DEMI = MAX_LEVEL - 6` (54), `LEVEL_GOD = MAX_LEVEL - 4` (56) plus matching real `LEVEL_IMMORTAL = MAX_LEVEL - 5` (55) — but renaming `LEVEL_IMMORTAL` has wide blast radius and the existing 52 value is already used in command-level trust checks elsewhere; or
+2. Add the missing constants while leaving the existing `LEVEL_IMMORTAL = 52` alone and just gate `do_clone` against the corrected ROM ladder via locally-defined IS_TRUSTED-equivalent helper.
+
+Option 2 is the lower-risk path. Effort: ~30 lines + the BCAST-002 mob-branch test that this commit deferred.
+
+**Blocks**: BCAST-002 mob branch (obj branch closed 2.9.61).
+
+
 
 ### WIZLOAD-001 — wiz-load/clone surface registry+import name mismatches (surfaced 2026-05-27, ✅ FIXED 2026-05-27)
 
