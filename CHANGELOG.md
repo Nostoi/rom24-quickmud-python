@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.50]
+
+### Added
+- **`SLAY-002` — `do_slay` now emits TO_VICT + TO_NOTVICT broadcasts** (ROM `src/fight.c:3282-3284`). Pre-fix Python only returned the TO_CHAR string ("You slay X in cold blood!"); the victim and bystanders got nothing. Added two broadcasts before `raw_kill(victim)`: TO_VICT "$n slays you in cold blood!\n\r" to the victim, TO_NOTVICT "$n slays $N in cold blood!\n\r" to every other room occupant (excluding both attacker and victim). Broadcasts must fire pre-kill because `raw_kill` removes the victim from the room. New regression: `tests/integration/test_slay_broadcasts.py` (`test_slay_sends_to_vict_and_notvict`).
+
 ## [2.9.49]
 
 ### Fixed

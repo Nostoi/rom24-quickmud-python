@@ -320,6 +320,19 @@ def do_slay(char: Character, args: str) -> str:
     
     # Slay the victim
     victim_name = getattr(victim, "name", "someone")
+    victim_short = getattr(victim, "short_descr", None) or victim_name
+    char_name = getattr(char, "name", "someone")
+
+    # SLAY-002: broadcast TO_VICT and TO_NOTVICT before raw_kill removes
+    # the victim from the room. Mirrors ROM src/fight.c:3282-3284 — the
+    # three act() calls fire in CHAR/VICT/NOTVICT order before raw_kill.
+    _send_to_char(victim, f"{char_name} slays you in cold blood!\n\r")
+    room = getattr(char, "room", None)
+    if room is not None:
+        for bystander in list(getattr(room, "people", [])):
+            if bystander is char or bystander is victim:
+                continue
+            _send_to_char(bystander, f"{char_name} slays {victim_short} in cold blood!\n\r")
 
     # SLAY-001: route through raw_kill so the slain victim gets the
     # full death pipeline — corpse, death_cry, gold/silver drop, and
