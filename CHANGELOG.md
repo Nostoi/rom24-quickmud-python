@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **`ARITH-024` — `group_gain` delivers XP message and calls `gain_exp` unconditionally** (ROM `src/fight.c:1786-1789`). Pre-fix `mud/groups/xp.py:117-122` had `if xp <= 0: continue` which silently dropped the "You receive 0 experience points." message and skipped the `gain_exp(gch, 0)` call when `xp_compute` returned 0 (reachable when `level_range < -9` or outside the base_exp table). ROM's `group_gain` loop is unconditional — both the `sprintf`/`send_to_char` and `gain_exp` calls always fire. Replaced the early-continue with the linear path that ROM uses. `_drop_alignment_conflicts(ch)` still runs after each member, matching ROM's unconditional anti-alignment zap loop at `fight.c:1791-1806`. Regression: `tests/integration/test_character_advancement.py::test_group_gain_zero_xp_still_delivers_message_and_gain_exp`. Surfaced during ARITH-009 reclass analysis.
+
+### Changed
+- **`ARITH-009` reclassified to ⛔ N/A** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md`. The `max(0, xp)` floor at `mud/groups/xp.py:257` is unreachable defensive code — `xp_compute`'s arithmetic has no path to a negative result. The audit prose's "negative XP via alignment math" claim was a misdiagnosis: alignment math mutates `gch.alignment`, it does not feed back into xp. The real divergence the original triage was groping at lives one frame up in `group_gain`'s `xp <= 0` gate, now tracked as ARITH-024.
+
 ## [2.9.65]
 
 ### Fixed

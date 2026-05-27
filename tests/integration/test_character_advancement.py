@@ -390,6 +390,46 @@ def test_player_kill_applies_rom_death_penalty(monkeypatch):
     assert victim.exp == expected_exp, "Combat death should apply ROM death-penalty XP"
 
 
+def test_group_gain_zero_xp_still_delivers_message_and_gain_exp(monkeypatch):
+    """ARITH-024: group_gain must deliver message + call gain_exp even when xp == 0.
+
+    Mirrors ROM src/fight.c:1786-1789 — the "You receive %d experience points."
+    sprintf and gain_exp(gch, xp) calls are unconditional.  When xp_compute
+    returns 0 (reachable when level_range < -9 or outside the base_exp table),
+    Python previously short-circuited via `if xp <= 0: continue`, swallowing
+    both the message and the gain_exp call.
+    """
+    from mud.groups import xp as xp_module
+
+    char = create_test_character("ZeroXp", room_vnum=3001)
+    char.level = 30
+    char.messages = []
+
+    victim = create_test_character("LowVictim", room_vnum=3001)
+    victim.level = 1
+    victim.is_npc = True
+
+    calls: list[int] = []
+
+    real_gain_exp = xp_module.gain_exp
+
+    def spy_gain_exp(c, amount):
+        calls.append(int(amount))
+        real_gain_exp(c, amount)
+
+    monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    monkeypatch.setattr(xp_module, "gain_exp", spy_gain_exp)
+
+    xp_module.group_gain(char, victim)
+
+    assert any("You receive 0 experience points." in m for m in char.messages), (
+        "ROM fight.c:1787-1788 sends the zero-xp message unconditionally"
+    )
+    assert calls == [0], (
+        f"ROM fight.c:1789 calls gain_exp(gch, xp) unconditionally; got {calls!r}"
+    )
+
+
 def test_group_xp_split_among_members(test_character):
     """Given group of 2 players
     When mob killed

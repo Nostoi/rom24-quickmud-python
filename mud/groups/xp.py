@@ -115,9 +115,10 @@ def group_gain(ch: Character, victim: Character) -> None:
         if getattr(gch, "is_npc", False):
             continue
         xp = xp_compute(gch, victim, total_levels)
-        if xp <= 0:
-            _drop_alignment_conflicts(ch)
-            continue
+        # mirroring ROM src/fight.c:1786-1789 — message + gain_exp are
+        # unconditional.  When xp == 0 (level_range < -9 or outside the
+        # base_exp table), ROM still prints "You receive 0 experience
+        # points." and calls gain_exp(gch, 0).
         gch.send_to_char(f"You receive {xp} experience points.")
         gain_exp(gch, xp)
         _drop_alignment_conflicts(ch)
