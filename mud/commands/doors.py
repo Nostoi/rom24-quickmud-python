@@ -348,6 +348,9 @@ def do_lock(char: Character, args: str) -> str:
 
             obj.value[1] = values[1] | EX_LOCKED
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # mirroring ROM src/act_move.c:622 — act("$n locks $p.", ch, obj, NULL, TO_ROOM)
+            actor_name = getattr(char, "name", None) or "someone"
+            broadcast_room(room, f"{actor_name} locks {obj_name}.", exclude=char)
             return f"You lock {obj_name}."
 
         # Container (ROM C lines 627-656)
@@ -365,6 +368,9 @@ def do_lock(char: Character, args: str) -> str:
 
             obj.value[1] = values[1] | ContainerFlag.LOCKED
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # mirroring ROM src/act_move.c:655 — act("$n locks $p.", ch, obj, NULL, TO_ROOM)
+            actor_name = getattr(char, "name", None) or "someone"
+            broadcast_room(room, f"{actor_name} locks {obj_name}.", exclude=char)
             return f"You lock {obj_name}."
 
         return "That's not a container."
@@ -390,6 +396,11 @@ def do_lock(char: Character, args: str) -> str:
 
     # Lock this side
     pexit.exit_info = exit_info | EX_LOCKED
+    # mirroring ROM src/act_move.c:690 — act("$n locks the $d.", ch, NULL, pexit->keyword, TO_ROOM)
+    # ROM does NOT broadcast to the linked room on lock (line 697 silently
+    # SET_BITs pexit_rev->exit_info), so neither do we.
+    actor_name = getattr(char, "name", None) or "someone"
+    broadcast_room(room, f"{actor_name} locks the {_door_keyword(pexit)}.", exclude=char)
 
     # Lock the other side
     to_room = getattr(pexit, "to_room", None)
