@@ -8,6 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.character import Character
+from mud.models.constants import CommFlag, PlayerFlag
 from mud.skills.registry import check_improve
 from mud.utils.rng_mm import number_percent
 
@@ -15,8 +16,9 @@ if TYPE_CHECKING:
     pass
 
 
-# Comm flags
-COMM_AFK = 0x00000800
+# Comm flag alias — preserved for backwards compat with callers that
+# import this name. Canonical value lives in `CommFlag.AFK` (ROM Z = 1<<25).
+COMM_AFK = int(CommFlag.AFK)
 
 
 def do_afk(char: Character, args: str) -> str:
@@ -85,19 +87,21 @@ def do_config(char: Character, args: str) -> str:
     act_flags = getattr(char, "act", 0)
     comm_flags = getattr(char, "comm", 0)
     
-    # Define config options
+    # PARALLEL-001: the hex literals previously here did not match the
+    # canonical IntEnum values the toggle commands set, so the display
+    # always disagreed with the actual flag state. Use the enums directly.
     configs = [
-        ("autoassist", 0x00001000, act_flags, "You automatically assist group members."),
-        ("autoexit", 0x00002000, act_flags, "You automatically see exits."),
-        ("autogold", 0x00004000, act_flags, "You automatically loot gold from corpses."),
-        ("autoloot", 0x00008000, act_flags, "You automatically loot corpses."),
-        ("autosac", 0x00010000, act_flags, "You automatically sacrifice corpses."),
-        ("autosplit", 0x00020000, act_flags, "You automatically split gold with group."),
-        ("compact", 0x00000200, comm_flags, "You see no extra blank lines."),
-        ("brief", 0x00000100, comm_flags, "You see brief room descriptions."),
-        ("prompt", 0x00000400, comm_flags, "You have a prompt."),
-        ("combine", 0x00001000, comm_flags, "You combine items in inventory."),
-        ("afk", COMM_AFK, comm_flags, "You are Away From Keyboard."),
+        ("autoassist", int(PlayerFlag.AUTOASSIST), act_flags, "You automatically assist group members."),
+        ("autoexit", int(PlayerFlag.AUTOEXIT), act_flags, "You automatically see exits."),
+        ("autogold", int(PlayerFlag.AUTOGOLD), act_flags, "You automatically loot gold from corpses."),
+        ("autoloot", int(PlayerFlag.AUTOLOOT), act_flags, "You automatically loot corpses."),
+        ("autosac", int(PlayerFlag.AUTOSAC), act_flags, "You automatically sacrifice corpses."),
+        ("autosplit", int(PlayerFlag.AUTOSPLIT), act_flags, "You automatically split gold with group."),
+        ("compact", int(CommFlag.COMPACT), comm_flags, "You see no extra blank lines."),
+        ("brief", int(CommFlag.BRIEF), comm_flags, "You see brief room descriptions."),
+        ("prompt", int(CommFlag.PROMPT), comm_flags, "You have a prompt."),
+        ("combine", int(CommFlag.COMBINE), comm_flags, "You combine items in inventory."),
+        ("afk", int(CommFlag.AFK), comm_flags, "You are Away From Keyboard."),
     ]
     
     for name, flag, flags, desc in configs:

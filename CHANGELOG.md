@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.55]
+
+### Fixed
+- **`PARALLEL-001` + `PARALLEL-004` — `do_config` display now reflects actual flag state** (`mud/commands/misc_player.py`). Pre-fix the `configs` table hardcoded hex literals (`autoloot = 0x00008000`, `autosac = 0x00010000`, `compact = 0x00000200`, `afk = COMM_AFK = 0x00000800`, …) that did **not** match the canonical IntEnum bit values the toggle commands actually set. ROM letter macros are bit-shifts (`A=1<<0`, `C=1<<2`, `E=1<<4`, `L=1<<11`, `M=1<<12`, `Z=1<<25`, …); `mud/models/constants.py` mirrors them, but the hex literals in this file came from a different (wrong) convention. Symptom: `autoloot` toggle flipped `PlayerFlag.AUTOLOOT` (bit 4) but the table read bit 15 — `config` always showed OFF for `autoloot`/`autosac`/`autoexit`. Worse, brief toggle (`CommFlag.BRIEF` = 1<<12) collided with the table's "combine" hex (`0x00001000` = bit 12), so `brief` ON lit up "combine ON" in the display. Fix: replaced every hex literal with `int(PlayerFlag.X)` / `int(CommFlag.X)`, and re-pointed module-local `COMM_AFK` alias at `int(CommFlag.AFK)`. New regression: `tests/integration/test_do_config_flag_alignment.py` (2/2). Audit hypothesis "drift-risk only" overturned — re-classified PARALLEL-001 and PARALLEL-004 as MEDIUM active bugs in `docs/parity/audits/PARALLEL_REPRESENTATIONS.md`.
+
 ## [2.9.54]
 
 ### Fixed
