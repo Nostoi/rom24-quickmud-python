@@ -562,7 +562,22 @@ def do_surrender(char: Character, args: str) -> str:
 
     # Messages (ROM fight.c:3230-3232)
     opponent_name = getattr(opponent, "name", "someone")
+    opponent_short = getattr(opponent, "short_descr", None) or opponent_name
+    char_name = getattr(char, "name", "someone")
     messages = [f"You surrender to {opponent_name}!"]
+
+    # BCAST-025: ROM src/fight.c:3231 TO_VICT and :3232 TO_NOTVICT.
+    # Pre-fix only the TO_CHAR string was returned — the opponent and
+    # bystanders saw nothing.
+    from mud.utils.messaging import send_to_char_buffered as _send
+
+    _send(opponent, f"{char_name} surrenders to you!\n\r")
+    room = getattr(char, "room", None)
+    if room is not None:
+        for bystander in list(getattr(room, "people", [])):
+            if bystander is char or bystander is opponent:
+                continue
+            _send(bystander, f"{char_name} tries to surrender to {opponent_short}!\n\r")
 
     # Stop fighting (ROM fight.c:3233 - stop_fighting(ch, TRUE))
     stop_fighting(char, True)
