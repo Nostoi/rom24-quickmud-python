@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.75]
+
+### Fixed
+- **`ARITH-107` — `Room.remove_character` no longer floors `area.nplayer` at 0** (ROM `src/handler.c:1502`). Pre-fix `mud/models/room.py:171` used `max(0, current - 1)`. ROM does bare `--ch->in_room->area->nplayer` with no floor, intentionally letting the counter go negative when a non-NPC leaves a room whose area-counter was already 0. A negative `nplayer` is ROM's way of surfacing desync bugs from code paths that mutate `room.people` directly (see INV-023 — `do_recall` and several admin/imm paths bypass the canonical helpers in shipped ROM areas too). The Python floor silently absorbed that desync, hiding bugs that ROM would expose via repop / area-age divergence in `src/db.c:1617-1630`. Floor removed; the existing `if char in self.people:` guard still prevents a bare `room.remove_character(non-present-char)` from decrementing. Regression: `tests/integration/test_arith_107_nplayer_no_floor.py` (3 cases: negative-on-desync, NPC-skip, balanced-add-remove). Full integration suite: **2340 passed, 3 skipped**. Tally adjusted: cumulative **15 FIXED** / 13 N/A / **18 ❌ MISSING** open in the ARITH triage.
+
 ## [2.9.74]
 
 ### Fixed

@@ -167,8 +167,10 @@ class Room:
             self.people.remove(char)
             area = getattr(self, "area", None)
             if area is not None and not getattr(char, "is_npc", True):
-                current = int(getattr(area, "nplayer", 0))
-                area.nplayer = max(0, current - 1)
+                # mirroring ROM src/handler.c:1502 — bare --area->nplayer
+                # with no floor. A negative counter exposes desync bugs
+                # (see INV-023, ARITH-107) rather than masking them.
+                area.nplayer = int(getattr(area, "nplayer", 0)) - 1
         if getattr(char, "room", None) is self:
             char.room = None
 
