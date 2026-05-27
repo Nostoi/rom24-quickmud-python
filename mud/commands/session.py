@@ -53,6 +53,15 @@ def do_quit(ch: Character, args: str) -> str:
         except Exception as exc:
             print(f"[ERROR] Failed to save character on quit: {exc}")
 
+    # mirroring ROM src/act_comm.c:1482 — act("$n has left the game.", ch, NULL, NULL, TO_ROOM)
+    # Fires BEFORE the connection-extraction tear-down so witnesses in the
+    # current room see the departure while the actor is still in room.people.
+    room = getattr(ch, "room", None)
+    if room is not None:
+        from mud.net.protocol import broadcast_room
+        actor_name = getattr(ch, "name", None) or "someone"
+        broadcast_room(room, f"{actor_name} has left the game.", exclude=ch)
+
     # Set a flag to signal the connection handler to disconnect
     setattr(ch, "_quit_requested", True)
 

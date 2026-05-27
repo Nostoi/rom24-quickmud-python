@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **`BCAST-018` — `do_quit` now emits the ROM TO_ROOM broadcast** (ROM `src/act_comm.c:1462-1518`). Pre-fix `mud/commands/session.py:do_quit` returned "May your travels be safe." and set `_quit_requested` without informing the room — bystanders saw the player vanish silently. Added `broadcast_room(room, f"{actor_name} has left the game.", exclude=ch)` (act_comm.c:1482) after `save_character` and before the disconnect flag, mirroring ROM's ordering (broadcast fires while the actor is still in `room.people`). The existing fight / below-STUNNED position guards short-circuit before the broadcast, matching ROM. New regression: `tests/integration/test_quit_broadcasts.py` (3/3, including 2 negative-pin tests for the blocked-quit paths).
+
 ## [2.9.59]
 
 ### Fixed
