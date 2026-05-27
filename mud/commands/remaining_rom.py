@@ -208,7 +208,7 @@ def do_gain(char: Character, args: str) -> str:
         for person in getattr(room, "people", []):
             if getattr(person, "is_npc", False):
                 act_flags = getattr(person, "act", 0)
-                ACT_GAIN = 0x00100000
+                ACT_GAIN = int(ActFlag.GAIN)  # mirroring ROM src/merc.h ACT_GAIN (bb = 1<<27)
                 if act_flags & ACT_GAIN:
                     trainer = person
                     break
