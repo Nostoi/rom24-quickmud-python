@@ -24,6 +24,24 @@ def _send_to_char_sync(character: Character, message: str) -> None:
         character.messages.append(message)
 
 
+def _pers_gated(actor: Character, viewer: Character) -> str:
+    """ROM ``pers(ch, vict)`` — returns actor's name to viewer, or "someone" if blind.
+
+    Mirrors ROM ``src/handler.c:pers`` visibility gating used by ``act()``.
+    """
+    from mud.world.vision import can_see_character
+
+    if not can_see_character(viewer, actor):
+        return "someone"
+    name = getattr(actor, "name", None)
+    if isinstance(name, str) and name:
+        return name
+    short_descr = getattr(actor, "short_descr", None)
+    if isinstance(short_descr, str) and short_descr:
+        return short_descr
+    return "someone"
+
+
 def _display_name(character: Character | None) -> str:
     if character is None:
         return "Someone"
@@ -483,8 +501,7 @@ def do_order(char: Character, args: str) -> str:
     - order <target> <command>
     - order all <command>
     """
-    from mud.commands.dispatcher import process_command
-    from mud.net.protocol import send_to_char
+    import mud.commands.dispatcher as _dispatcher
 
     args = args.strip()
     parts = args.split(None, 1)
@@ -518,13 +535,14 @@ def do_order(char: Character, args: str) -> str:
 
                 if affected_by & AffectFlag.CHARM and master is char:
                     found = True
-                    # ROM C line 1752-1754: Send order message and execute command
-                    order_message = f"{char.name} orders you to '{command}'."
-                    send_to_char(order_message, occupant)
+                    # mirroring ROM src/act_comm.c:1752-1753 — act() pers(ch, vict) gates $n on visibility
+                    actor_name = _pers_gated(char, occupant)
+                    order_message = f"{actor_name} orders you to '{command}'."
+                    _send_to_char_sync(occupant, order_message)
 
                     # ROM C line 1754: interpret(och, argument) - Execute command
                     try:
-                        process_command(occupant, command)
+                        _dispatcher.process_command(occupant, command)
                     except Exception:
                         # Silently handle execution errors (ROM C doesn't error-check interpret())
                         pass
@@ -553,13 +571,14 @@ def do_order(char: Character, args: str) -> str:
         if not (affected_by & AffectFlag.CHARM) or master is not char:
             return "Do it yourself!"
 
-        # ROM C lines 1752-1754: Send order message and execute command
-        order_message = f"{char.name} orders you to '{command}'."
-        send_to_char(order_message, victim)
+        # mirroring ROM src/act_comm.c:1752-1753 — act() pers(ch, vict) gates $n on visibility
+        actor_name = _pers_gated(char, victim)
+        order_message = f"{actor_name} orders you to '{command}'."
+        _send_to_char_sync(victim, order_message)
 
         # ROM C line 1754: interpret(och, argument) - Execute command
         try:
-            process_command(victim, command)
+            _dispatcher.process_command(victim, command)
         except Exception:
             # Silently handle execution errors (ROM C doesn't error-check interpret())
             pass
