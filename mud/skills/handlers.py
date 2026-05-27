@@ -1442,8 +1442,13 @@ def berserk(
     ac_penalty = max(10, 10 * c_div(level, 5))
 
     if duration is None:
-        base = max(1, c_div(level, 8))
-        duration = rng_mm.number_fuzzy(base)
+        # mirrors ROM src/fight.c:2333 — `number_fuzzy(ch->level / 8)`
+        # raw, with NO UMAX guard on the dividend. number_fuzzy itself
+        # clamps to ≥1 via UMAX (src/db.c:3496), so passing 0 for low
+        # levels yields a deterministic duration of 1. Pre-fix outer
+        # `max(1, ...)` shifted 25% of the distribution to duration 2.
+        # (Closes ARITH-015.)
+        duration = rng_mm.number_fuzzy(c_div(level, 8))
 
     effect = SpellEffect(
         name="berserk",
