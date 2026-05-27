@@ -65,7 +65,9 @@ def do_mload(char: Character, vnum_arg: str) -> str:
     from mud import registry
 
     # mirrors ROM src/act_wiz.c:2504-2507
-    mob_index = getattr(registry, "mob_prototypes", {}).get(vnum)
+    # WIZLOAD-001: canonical attribute is ``mob_registry`` (not
+    # ``mob_prototypes``). Prior name typo always early-returned.
+    mob_index = getattr(registry, "mob_registry", {}).get(vnum)
     if mob_index is None:
         return "No mob has that vnum.\n\r"
 
@@ -118,13 +120,19 @@ def do_oload(char: Character, vnum_arg: str, level_arg: str | None = None) -> st
     from mud import registry
 
     # mirrors ROM src/act_wiz.c:2555-2558
-    obj_index = getattr(registry, "obj_prototypes", {}).get(vnum)
+    # WIZLOAD-001: canonical attribute is ``obj_registry`` and the
+    # spawner is ``spawn_object`` (no level arg). Prior names always
+    # early-returned or ImportErrored.
+    obj_index = getattr(registry, "obj_registry", {}).get(vnum)
     if obj_index is None:
         return "No object has that vnum.\n\r"
 
     # Create the object
-    from mud.spawning.obj_spawner import spawn_obj
-    obj = spawn_obj(vnum, level)
+    from mud.spawning.obj_spawner import spawn_object
+    obj = spawn_object(vnum)
+    if obj is not None:
+        # mirrors ROM src/act_wiz.c:2560 obj = create_object(pObjIndex, level)
+        obj.level = level
 
     if obj is None:
         return "No object has that vnum.\n\r"

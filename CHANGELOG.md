@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **`WIZLOAD-001` — wiz-load/clone command surface now functional** (four layered pre-existing typos that left `do_mload`, `do_oload`, and `do_clone` object branch wholly unreachable on real prototypes). `mud/commands/imm_load.py` now reads `registry.mob_registry`/`obj_registry` (was: non-existent `*_prototypes`) and calls `spawn_object(vnum)` then sets `obj.level = level` post-spawn (was: non-existent `spawn_obj(vnum, level)`). `mud/commands/imm_search.py:do_clone` object branch uses `spawn_object` and skips the read-only `name` property in its attribute-copy loop (a fourth layered bug that surfaced once the ImportError was lifted — folded into the same commit). Three success-path regression tests in `tests/integration/test_act_wiz_command_parity.py` pin each entry point. **Unblocks BCAST-002 / 014 / 015** (broadcasts still need wiring; rows reverted from ⚠️ BLOCKED to ❌).
+
 ## [2.9.60]
 
 ### Changed

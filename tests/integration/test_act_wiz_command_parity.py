@@ -507,7 +507,7 @@ def test_mstat_uses_get_hitroll_and_get_damroll() -> None:
     assert "Hit:" in result
     assert "Dam:" in result
     # GET_HITROLL and GET_DAMROLL add STR-app bonuses; must not be raw values
-    from mud.math.stat_apps import get_hitroll, get_damroll
+    from mud.math.stat_apps import get_damroll, get_hitroll
 
     assert f"Hit: {get_hitroll(mob)}" in result
     assert f"Dam: {get_damroll(mob)}" in result
@@ -515,9 +515,10 @@ def test_mstat_uses_get_hitroll_and_get_damroll() -> None:
 
 def test_mstat_age_played_last_level_computed() -> None:
     # mirrors ROM src/act_wiz.c:1651-1657 — get_age, (played+current_time-logon)/3600, pcdata.last_level
+    import time
+
     from mud.commands.imm_search import do_mstat
     from mud.handler import get_age
-    import time
 
     room = _room(9242, name="StatRoom")
     pc = _imm("AgeTarget", room.vnum, trust=5)
@@ -570,10 +571,10 @@ def test_mstat_carry_weight_uses_get_carry_weight() -> None:
 def test_ostat_number_and_weight_uses_helpers() -> None:
     # mirrors ROM src/act_wiz.c:1258-1260 — get_obj_number, get_obj_weight, get_true_weight
     from mud.commands.imm_search import do_ostat
+    from mud.commands.obj_manipulation import _get_obj_weight
     from mud.models.character import _object_carry_number
     from mud.models.obj import ObjIndex, object_registry
     from mud.models.object import Object
-    from mud.commands.obj_manipulation import _get_obj_weight
 
     room = _room(9244, name="StatRoom")
     admin = _imm("Admin", room.vnum, trust=60)
@@ -1585,3 +1586,82 @@ def test_clone_not_here() -> None:
     result = do_clone(admin, "NothingHere")
     assert "don't see" in result.lower()
     assert result.endswith("\n\r")
+
+
+# ── WIZLOAD-001: success-path regressions for wiz-load/clone ──────────
+# These three tests pin the success paths that were silently broken by
+# stale registry/spawner identifier references (mob_prototypes,
+# obj_prototypes, spawn_obj). ROM src/act_wiz.c:2504-2515 (do_mload),
+# :2555-2568 (do_oload), :2386-2402 (do_clone object branch).
+
+
+def test_mload_success_places_mob_in_room() -> None:
+    # WIZLOAD-001 — do_mload must look up mob_registry (not
+    # mob_prototypes) and place the spawned mob in the admin's room.
+    # Mirrors ROM src/act_wiz.c:2504-2515.
+    from mud.commands.imm_load import do_mload
+    from mud.models.mob import MobIndex
+    from mud.registry import mob_registry
+
+    room = _room(11150)
+    admin = _imm("Admin", 11150)
+    proto = MobIndex(vnum=88150, short_descr="a test rat", level=1)
+    mob_registry[88150] = proto
+    try:
+        result = do_mload(admin, "88150")
+        assert "Ok" in result
+        assert any(
+            getattr(p, "prototype", None) is proto for p in getattr(room, "people", [])
+        ), "spawned mob not placed in admin's room"
+    finally:
+        mob_registry.pop(88150, None)
+
+
+def test_oload_success_places_obj_in_inventory_or_room() -> None:
+    # WIZLOAD-001 — do_oload must look up obj_registry (not
+    # obj_prototypes) and use spawn_object (not spawn_obj).
+    # Mirrors ROM src/act_wiz.c:2555-2568.
+    from mud.commands.imm_load import do_oload
+    from mud.models.obj import ObjIndex
+    from mud.registry import obj_registry
+
+    room = _room(11250)
+    admin = _imm("Admin", 11250)
+    proto = ObjIndex(vnum=88250, name="widget", short_descr="a widget")
+    obj_registry[88250] = proto
+    try:
+        result = do_oload(admin, "88250")
+        assert "Ok" in result
+        placed = [getattr(o, "prototype", None) for o in getattr(admin, "inventory", []) or []]
+        placed += [getattr(o, "prototype", None) for o in getattr(room, "contents", []) or []]
+        assert proto in placed, "spawned object not placed in inventory or room"
+    finally:
+        obj_registry.pop(88250, None)
+
+
+def test_clone_object_success_places_clone() -> None:
+    # WIZLOAD-001 — do_clone object branch must import spawn_object
+    # (not spawn_obj). Mirrors ROM src/act_wiz.c:2386-2402.
+    from mud.commands.imm_search import do_clone
+    from mud.models.obj import ObjIndex
+    from mud.models.object import Object
+    from mud.registry import obj_registry
+
+    room = _room(11550)
+    admin = _imm("Admin", 11550)
+    proto = ObjIndex(vnum=88550, name="amulet", short_descr="an amulet")
+    obj_registry[88550] = proto
+    original = Object(instance_id=None, prototype=proto)
+    original.in_room = room
+    if not hasattr(room, "contents") or room.contents is None:
+        room.contents = []
+    room.contents.append(original)
+    try:
+        result = do_clone(admin, "amulet")
+        # ROM returns "You clone $p.\n\r" — substitution not expanded here.
+        assert "clone" in result.lower()
+        clones = [o for o in (getattr(room, "contents", []) or []) if o is not original and getattr(o, "prototype", None) is proto]
+        clones += [o for o in (getattr(admin, "inventory", []) or []) if getattr(o, "prototype", None) is proto]
+        assert clones, "clone not produced"
+    finally:
+        obj_registry.pop(88550, None)

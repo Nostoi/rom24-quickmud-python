@@ -414,21 +414,29 @@ def do_clone(char: Character, args: str) -> str:
 
     # Clone object — mirrors ROM src/act_wiz.c:2386-2409
     if obj is not None:
-        from mud.spawning.obj_spawner import spawn_obj
+        # WIZLOAD-001: canonical spawner is ``spawn_object``.
+        from mud.spawning.obj_spawner import spawn_object
 
         proto = getattr(obj, "prototype", None)
         if proto is None:
             proto = obj
 
         vnum = getattr(proto, "vnum", 0)
-        clone = spawn_obj(vnum)
+        clone = spawn_object(vnum)
 
         if clone is None:
             return "Your powers are not great enough for such a task.\n\r"
 
-        for attr in ("short_descr", "description", "name", "level", "cost", "weight"):
+        # WIZLOAD-001: skip ``name`` — it is a read-only property on
+        # ``Object`` derived from the prototype, so setattr would
+        # AttributeError. The clone already shares the prototype, so
+        # ``name`` is identical without copying.
+        for attr in ("short_descr", "description", "level", "cost", "weight"):
             if hasattr(obj, attr):
-                setattr(clone, attr, getattr(obj, attr))
+                try:
+                    setattr(clone, attr, getattr(obj, attr))
+                except AttributeError:
+                    pass
 
         # mirrors ROM src/act_wiz.c:2399-2402
         carrier = getattr(obj, "carried_by", None)
