@@ -456,6 +456,9 @@ def do_unlock(char: Character, args: str) -> str:
 
             obj.value[1] = values[1] & ~EX_LOCKED
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # mirroring ROM src/act_move.c:757 — act("$n unlocks $p.", ch, obj, NULL, TO_ROOM)
+            actor_name = getattr(char, "name", None) or "someone"
+            broadcast_room(room, f"{actor_name} unlocks {obj_name}.", exclude=char)
             return f"You unlock {obj_name}."
 
         # Container (ROM C lines 761-791)
@@ -473,6 +476,9 @@ def do_unlock(char: Character, args: str) -> str:
 
             obj.value[1] = values[1] & ~ContainerFlag.LOCKED
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # mirroring ROM src/act_move.c:790 — act("$n unlocks $p.", ch, obj, NULL, TO_ROOM)
+            actor_name = getattr(char, "name", None) or "someone"
+            broadcast_room(room, f"{actor_name} unlocks {obj_name}.", exclude=char)
             return f"You unlock {obj_name}."
 
         return "That's not a container."
@@ -498,6 +504,11 @@ def do_unlock(char: Character, args: str) -> str:
 
     # Unlock this side
     pexit.exit_info = exit_info & ~EX_LOCKED
+    # mirroring ROM src/act_move.c:825 — act("$n unlocks the $d.", ch, NULL, pexit->keyword, TO_ROOM)
+    # ROM does NOT broadcast to the linked room on unlock (line 832 silently
+    # REMOVE_BITs pexit_rev->exit_info), so neither do we. Symmetric to lock.
+    actor_name = getattr(char, "name", None) or "someone"
+    broadcast_room(room, f"{actor_name} unlocks the {_door_keyword(pexit)}.", exclude=char)
 
     # Unlock the other side
     to_room = getattr(pexit, "to_room", None)
