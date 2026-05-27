@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.71]
+
+### Changed
+- **`ARITH-209` reclassified to ⛔ N/A** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md` — dead defensive code on shipped ROM areas. Spot-check confirmed ROM does not floor `arg4` for P resets: `src/db.c:1040-1044 load_resets` reads it raw via `fread_number(fp)`, and `src/db.c:1788 reset_room` uses it raw in `while (count < pReset->arg4)` (so `arg4 == 0` is a legitimate no-op in ROM). Audit of all 77 P resets in shipped `area/*.are` files: every one uses `arg4 == 1`; none use `arg4 == 0`. Both Python floors (`mud/loaders/json_loader.py:357-359` and `mud/spawning/reset_handler.py:665`) are unreachable on shipped data. The inaccurate comment at `json_loader.py:357` ("mirrors ROM's max(1, arg4)") — flagged as needs-followup in the original triage — was replaced with an accurate ROM-cite at both sites noting the floors are unreachable on shipped data and only affect custom areas that explicitly request `arg4 == 0`. No production behavior change — comments-only edits + audit reclass. Tally adjusted: 57 ✅ / **36 ❌** / **122 N/A**. Effective open ❌ MISSING in the ARITH triage drops to **26**.
+
 ## [2.9.70]
 
 ### Fixed

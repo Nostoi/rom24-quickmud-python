@@ -354,7 +354,15 @@ def load_area_from_json(json_file_path: str) -> Area:
             if arg4 == 0:
                 arg4 = arg2 if arg2 > 0 else 1
         elif command == "P":
-            # Default contained item count mirrors ROM's max(1, arg4).
+            # ARITH-209: ROM `src/db.c:1040-1044 load_resets` and
+            # `src/db.c:1788 reset_room` use `arg4` raw — no `max(1, arg4)`
+            # floor.  Shipped ROM area files (`area/*.are`) never use
+            # `arg4 == 0` for a P reset (77 occurrences, all `arg4 == 1`),
+            # so this defensive floor is unreachable on shipped data.
+            # Kept to preserve current behavior on degenerate custom areas
+            # that explicitly request `arg4 == 0` (which ROM would treat
+            # as "spawn 0 contained items" via `while (count < 0)` no-op).
+            # See docs/parity/audits/ARITHMETIC_BOUNDARY.md row 50 (⛔ N/A).
             if arg4 == 0:
                 arg4 = 1
 
