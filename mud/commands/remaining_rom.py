@@ -102,7 +102,7 @@ def _lookup_flag_bit(token: str, flag_enum: type[IntFlag]) -> int | None:
 
 # Comm flags
 COMM_DEAF = 0x00000002
-COMM_QUIET = 0x00000004
+COMM_QUIET = int(CommFlag.QUIET)  # mirroring ROM src/merc.h COMM_QUIET (A = 1<<0)
 
 
 def do_wimpy(char: Character, args: str) -> str:
