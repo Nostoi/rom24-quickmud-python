@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.52]
+
+### Added
+- **Three META audit docs landed in parallel** — Classes 1, 7, 8 from `docs/parity/META_AUDIT_TAXONOMY.md`. Audits-only commit; no runtime behavior changes. Burn-down candidates extracted (see SESSION_SUMMARY).
+  - `docs/parity/audits/BROADCAST_COVERAGE.md` (Class 1, 347 lines, 283 of ~284 dispatcher commands) — 209 ✅ / 10 ⚠️ / 29 ❌ / 35 N/A. Caveat: shallow body-only scan; ❌ count is inflated by helper-transitivity (door commands almost certainly covered by `world/movement.py`; combat skills routed through `damage()`). Top 3 gap candidates: `do_disarm`/`do_trip`/`do_dirt`/`do_surrender` TO_VICT+TO_NOTVICT (if not delegated), `do_goto` poofin/poofout broadcasts, `do_invis`/`do_incognito` visibility-transition broadcasts. Stable IDs `BCAST-001` … `BCAST-039`.
+  - `docs/parity/audits/PARALLEL_REPRESENTATIONS.md` (Class 7, 15 rows) — 1 ❌ / 8 ⚠️ / 6 ✅. Hypothesis "mostly closed by INV-012/INV-013/INV-014" upheld. Single ❌ `PARALLEL-010`: `mud/commands/combat.py:683-688` `do_flee` writes to nonexistent `room.characters` / `new_room.characters` — `hasattr` gate hides the remove silently, `append` raises `AttributeError` caught by broad `try/except` that surfaces a misleading "Flee failed" while `char.move` is still decremented at line 699 (char pays move cost but doesn't move). Eight ⚠️ are inline hex flag aliases duplicating existing IntEnums + a dead `.carrying` fallback in `consumption.py:308-316`.
+  - `docs/parity/audits/MATH_AND_RNG.md` (Class 8) — 1 ❌ HIGH / 3 ⚠️ LOW / ~110 ✅. RNG channel **completely clean** (0 `import random` / `random.*` hits in `mud/`). Single ❌ `MATH-001`: `mud/combat/engine.py:1290` uses `//` on `get_damroll(attacker) * min(100, skill_total)` where `get_damroll` can be negative (cursed gear/debuffs) — Python floor-div diverges from ROM C truncate-toward-zero. Three ⚠️ are currently-safe-via-upstream-clamps but fragile under refactor. Includes PARITY008 + PARITY009 ruff rule sketches with allowlist mechanism.
+
 ## [2.9.51]
 
 ### Fixed
