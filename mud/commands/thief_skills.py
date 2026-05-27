@@ -14,6 +14,19 @@ from mud.utils.rng_mm import number_percent, number_range
 from mud.world.char_find import get_char_room
 
 
+def _send_to_char_sync(character: Character, message: str) -> None:
+    """Fire-and-forget real-socket delivery (mirrors AGENTS.md Message Delivery)."""
+    import asyncio as _asyncio
+
+    from mud.net.protocol import send_to_char as _send_to_char_async
+
+    writer = getattr(character, "connection", None)
+    if writer:
+        _asyncio.create_task(_send_to_char_async(character, message))
+    if hasattr(character, "messages"):
+        character.messages.append(message)
+
+
 def do_sneak(char: Character, args: str) -> str:
     """
     Attempt to move silently (thief skill).
@@ -183,14 +196,13 @@ def _steal_failure(char: Character, victim: Character) -> str:
     notvict_msg = act_format(
         "$n tried to steal from $N.\n", recipient=None, actor=char, arg1=None, arg2=victim
     )
-    if hasattr(victim, "messages"):
-        victim.messages.append(victim_msg)
+    # mirroring ROM src/act_obj.c:2222-2223 — TO_VICT and TO_NOTVICT via socket
+    _send_to_char_sync(victim, victim_msg)
     if room is not None:
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is char or occupant is victim:
                 continue
-            if hasattr(occupant, "messages"):
-                occupant.messages.append(notvict_msg)
+            _send_to_char_sync(occupant, notvict_msg)
 
     # ROM L2225-2240: random yell text
     char_name = getattr(char, "name", "someone") or "someone"
