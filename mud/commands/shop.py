@@ -582,6 +582,11 @@ def _handle_pet_shop_purchase(char: Character, args: str) -> str:
     if haggle_skill > 0:
         roll = rng_mm.number_percent()
         if roll < haggle_skill:
+            # ROM src/act_obj.c:2605 — `cost -= cost / 2 * roll / 100`.
+            # `max(0, ...)` is dead defensive code: max discount is
+            # `(cost // 2) * 99 // 100 < cost // 2`, so the result is
+            # always ≥ cost - cost//2 = cost - cost//2 ≥ 0 for any
+            # cost ≥ 0. ARITH-110 reclassed N/A (2.9.73).
             discount = (cost // 2) * roll // 100
             cost = max(0, cost - discount)
             char.messages.append(f"You haggle the price down to {cost} coins.")

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.73]
+
+### Changed
+- **`ARITH-110` reclassified to ⛔ N/A** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md` — dead defensive code. Pet-shop haggle at `mud/commands/shop.py:586` uses `max(0, cost - discount)`. ROM `src/act_obj.c:2605` does `cost -= cost / 2 * roll / 100` raw with no floor. Reachability analysis: `discount = c_div(c_div(cost, 2) * roll, 100)` with `roll ∈ [0, 99]`; the inner `c_div(cost, 2) * roll` is at most `c_div(cost, 2) * 99`, so `discount ≤ c_div(c_div(cost, 2) * 99, 100) < c_div(cost, 2)`. Therefore `cost - discount > cost - c_div(cost, 2) ≥ 0` for all `cost ≥ 0` — the `max(0, ...)` floor cannot fire. Same shape as the dead-defensive-code reclassifications in 2.9.67/68/69 (ARITH-006/007/008/013/014). ROM-cite comment added at `mud/commands/shop.py:582-590`. No production behavior change — comment-only edit + audit reclass. Tally adjusted: 56 ✅ / 36 ❌ / **123 N/A**. Effective open ❌ MISSING in the ARITH triage drops to **24**.
+- **ARITH-111 left ❌ MISSING** with documented reachability conditions. Unlike ARITH-110, the item-shop branch at `mud/commands/shop.py:822` computes `discount` from `obj->cost` (the unmarked-up proto cost) but applies it to the marked-up `unit_price = obj->cost * profit_buy / 100`. **Reachable** when `profit_buy < 50` (custom area shops), because then `unit_price < proto.cost / 2 ≤ max possible discount`. ROM allows `cost` to go negative; Python clamps to 0. A clean close requires understanding the `deduct_cost` interaction when cost is negative — held back for a future targeted session.
+
 ## [2.9.72]
 
 ### Fixed
