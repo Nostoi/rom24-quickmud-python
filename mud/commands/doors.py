@@ -232,6 +232,9 @@ def do_close(char: Character, args: str) -> str:
 
             obj.value[1] = values[1] | EX_CLOSED
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # mirroring ROM src/act_move.c:492 — act("$n closes $p.", ch, obj, NULL, TO_ROOM)
+            actor_name = getattr(char, "name", None) or "someone"
+            broadcast_room(room, f"{actor_name} closes {obj_name}.", exclude=char)
             return f"You close {obj_name}."
 
         # Container
@@ -243,6 +246,9 @@ def do_close(char: Character, args: str) -> str:
 
             obj.value[1] = values[1] | ContainerFlag.CLOSED
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
+            # mirroring ROM src/act_move.c:515 — act("$n closes $p.", ch, obj, NULL, TO_ROOM)
+            actor_name = getattr(char, "name", None) or "someone"
+            broadcast_room(room, f"{actor_name} closes {obj_name}.", exclude=char)
             return f"You close {obj_name}."
 
         return "That's not a container."
@@ -261,6 +267,9 @@ def do_close(char: Character, args: str) -> str:
 
     # Close this side
     pexit.exit_info = exit_info | EX_CLOSED
+    # mirroring ROM src/act_move.c:534 — act("$n closes the $d.", ch, NULL, pexit->keyword, TO_ROOM)
+    actor_name = getattr(char, "name", None) or "someone"
+    broadcast_room(room, f"{actor_name} closes the {_door_keyword(pexit)}.", exclude=char)
 
     # Close the other side
     to_room = getattr(pexit, "to_room", None)
@@ -274,6 +283,12 @@ def do_close(char: Character, args: str) -> str:
                 if rev_to is room:
                     rev_info = getattr(pexit_rev, "exit_info", 0)
                     pexit_rev.exit_info = rev_info | EX_CLOSED
+                    # mirroring ROM src/act_move.c:545-547 — per-person TO_CHAR
+                    # "The $d closes." in the linked room.
+                    broadcast_room(
+                        to_room,
+                        f"The {_door_keyword(pexit_rev)} closes.",
+                    )
 
     return "Ok."
 
