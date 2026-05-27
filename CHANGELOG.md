@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.60]
+
 ### Changed
 - **`BCAST-007` / `BCAST-020` / `BCAST-029` — three more BCAST rows reclassified to ✅ COVERED** (no code change). Probe (2.9.60) confirmed: `do_envenom` already emits both ROM TO_ROOM acts via the `mud/skills/handlers.py:envenom` handler (lines 3742, 3847); `do_report` emits the room broadcast via an inline `room.people` loop (`mud/commands/info.py:583-595`); `do_violate` routes through `_act_room` for both rooms. The audit's static scan inspected the dispatchers/wrappers, not the handler modules. Same helper-transitivity pattern as the BCAST-001/004/005/008/026 collapses. **Separate fidelity bug surfaced** during the BCAST-029 collapse: `_act_room` and `broadcast_room` lack ROM's `get_trust(rch) >= ch->invis_level` per-recipient filter — filed as **INV-027 candidate ACT-INVIS-TRUST-GATE** in the cross-file invariants Watch list.
 - **`BCAST-002` / `BCAST-014` / `BCAST-015` — three rows annotated ⚠️ BLOCKED by WIZLOAD-001** (no code change). Three layered pre-existing bugs in the wiz-load/clone surface: (1) `do_mload` reads non-existent `registry.mob_prototypes` (canonical: `mob_registry`); (2) `do_oload` reads non-existent `registry.obj_prototypes` AND imports non-existent `spawn_obj` from `mud.spawning.obj_spawner` (canonical: `spawn_object`); (3) `do_clone` object-branch has the same `spawn_obj` ImportError. All three commands are wholly broken on real prototypes. Filed as **WIZLOAD-001** in `docs/parity/audits/BROADCAST_COVERAGE.md` "Blocked rows" section with fix shape and effort estimate; the three BCAST rows can't be closed until WIZLOAD-001 lands.
