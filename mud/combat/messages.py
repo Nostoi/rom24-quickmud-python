@@ -112,6 +112,9 @@ def _severity_terms(damage: int, victim: object) -> tuple[str, str, int]:
     if damage <= 0:
         return "miss", "misses", 0
     max_hit = getattr(victim, "max_hit", 0) or 0
+    # ROM src/fight.c:dam_message divides damage*100/victim->max_hit raw (SIGFPE if 0).
+    # Python floor kept as deliberate divergence — see docs/divergences/UB_DIVISORS.md
+    # (NPC victim with degenerate hit_dice can spawn with max_hit == 0).
     divisor = max(1, int(max_hit))
     dam_percent = c_div(int(damage) * 100, divisor)
     for threshold, vs, vp in _DAMAGE_TIERS:

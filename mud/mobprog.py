@@ -1105,6 +1105,9 @@ def _cmd_eval(
     if check == "hpcnt":
         if target_char is None:
             return False
+        # ROM src/mob_cmds.c hpcnt divides current*100/max_hit raw (SIGFPE if 0).
+        # Python floor kept as deliberate divergence — see docs/divergences/UB_DIVISORS.md
+        # (NPC target with degenerate hit_dice can spawn with max_hit == 0).
         max_hit = max(1, int(getattr(target_char, "max_hit", 1)))
         current = int(getattr(target_char, "hit", max_hit))
         percent = current * 100 // max_hit
@@ -1648,6 +1651,8 @@ def mp_hprct_trigger(mob: Character, ch: object | None) -> bool:
             threshold = int(trig_phrase)
         except ValueError:
             continue
+        # ROM src/mob_cmds.c HPCT trigger divides current*100/max_hit raw (SIGFPE if 0).
+        # Python floor kept as deliberate divergence — see docs/divergences/UB_DIVISORS.md.
         max_hit = max(1, int(getattr(mob, "max_hit", 1)))
         current = int(getattr(mob, "hit", max_hit))
         percent = current * 100 // max_hit

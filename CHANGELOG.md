@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.68]
+
+### Changed
+- **`ARITH-001`/`ARITH-002`/`ARITH-003` reclassified to ⛔ N/A** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md` under the `docs/divergences/UB_DIVISORS.md` policy. The `max(1, max_hit)` divisor floors at `mud/mobprog.py:1108` (mob-program `hpcnt` check, ROM `src/mob_cmds.c`), `mud/mobprog.py:1651` (mob-program HPCT trigger), and `mud/combat/messages.py:115` (`dam_message` severity tier lookup, ROM `src/fight.c:dam_message`) are deliberate divergences from ROM, not parity gaps. ROM divides `current * 100 / max_hit` raw in all three sites and tolerates the SIGFPE on degenerate mob data because it kills only one process; Python cannot raise `ZeroDivisionError` inside the game loop without dropping every connected player. All three are NPC-reachable: `mud/spawning/templates.py:170-172` floors `_roll_dice` at 0 (not 1), so a mob proto with `hit_dice = (0,0,0)` spawns with `max_hit == 0`, and the `getattr(..., 1)` default only fires when the attribute is missing entirely — not when it's literally 0. Floors are kept and ROM-cited at all three sites. No production behavior change — comments + audit reclass only. Tally adjusted: 56 ✅ / **39 ❌** / **120 N/A**. Effective open ❌ MISSING in the ARITH triage drops to **29**.
+
 ## [2.9.67]
 
 ### Changed
