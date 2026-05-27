@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.72]
+
+### Fixed
+- **`ARITH-105` — `Character.get_curr_stat` now floors at 3** (ROM `src/handler.c:872`). Pre-fix `mud/models/character.py:478` used `max(0, min(25, total))`. ROM uses `URANGE(3, ch->perm_stat[stat] + ch->mod_stat[stat], max)` — minimum stat is **3**, never 0. Pre-fix, stacked debuffs (e.g. weaken, chill_touch, plague tick, cursed equipment) could drive a character's effective STR/INT/WIS/DEX/CON to 0–2, feeding wrong-row reads of `str_app` (hit/dam), `dex_app` (defensive AC, save-vs-spell, carry), `con_app` (HP gain on level), `int_app` (learn rate), `wis_app` (practice gain on level), and the `_STR_WIELD` carry/wield ladders. ROM bug-walled the floor at 3 specifically so those tables never need the 0-2 rows in PC stat-space (they exist as defensive padding only). Side-effect: a CON-0 PC test (`test_advancement_con_app::test_advance_level_hp_minimum_floor_is_two`) that was reaching the `UMAX(2, add_hp)` defensive floor in `advance_level` via the buggy floor was updated to verify the floor via monkeypatch of `con_hitp_bonus` — the floor remains dead in stock-class PC space (lowest add_hp is now `(con_app[3].hitp + mage.hp_min) * 9/10 = 3`) but is kept for future-class / save-corruption safety, matching ROM. Regression: `tests/integration/test_get_curr_stat_floor_three.py` (17 parametrized cases across STR/INT/WIS/DEX/CON × heavily-debuffed / exactly-zero / already-3 / positive-buff / ceiling). Test suite: 2334 passed, 3 skipped.
+- **Ceiling divergence filed as `ARITH-114`** (new) at `mud/models/character.py:478`. Python clamps to a flat 25; ROM clamps to per-race/class `max_stat` (`src/handler.c:861-869`) for PCs and only 25 for NPCs/immortals. Not in scope for this commit — tracked for future close-out. Tally adjusted: cumulative 9 FIXED / 12 N/A / **25 ❌ MISSING** open in the ARITH triage after ARITH-105 close + ARITH-114 file.
+
 ## [2.9.71]
 
 ### Changed

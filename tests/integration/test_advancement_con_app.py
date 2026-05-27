@@ -131,17 +131,26 @@ def test_advance_level_hp_uses_class_table_range_and_con_app(
 
 
 def test_advance_level_hp_minimum_floor_is_two(monkeypatch: pytest.MonkeyPatch) -> None:
-    """ROM UMAX(2, add_hp) — even a maximally penalized roll yields >= 2 HP.
+    """ROM UMAX(2, add_hp) at `mud/advancement.py:114` mirrors `src/update.c:79`.
 
-    With CON-0 (con_app.hitp == -4), mage hp_min == 6, the raw add_hp is
-    (-4 + 6) * 9 / 10 == 18 / 10 == 1 (c_div), which UMAX(2, ...) lifts to 2.
+    Under ROM-correct rules, `get_curr_stat(CON)` floors at 3 (ARITH-105 /
+    `src/handler.c:872`), so the lowest stock-class add_hp is
+    `(con_app[3].hitp + mage.hp_min) * 9 / 10 = (-2 + 6) * 9 / 10 = 3` — the
+    UMAX(2,...) floor is **defensively dead** in PC stat-space. ROM keeps
+    the floor for future-class / save-corruption safety, and so do we.
+    To verify the floor without violating the CON-3 floor, inject a
+    synthetic con_hitp_bonus value via monkeypatch.
     """
 
-    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
+    import mud.advancement as advancement_module
 
-    char = _make_pc(ch_class=0, con=0)  # mage
+    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
+    monkeypatch.setattr(advancement_module, "con_hitp_bonus", lambda ch: -4)
+
+    char = _make_pc(ch_class=0, con=13)  # mage, hp_min=6
     pre = char.max_hit
     advance_level(char)
+    # raw add_hp = (-4 + 6) * 9 / 10 = 18 / 10 = 1 (c_div) → UMAX(2, 1) = 2.
     assert char.max_hit - pre == 2
 
 

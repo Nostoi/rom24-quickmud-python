@@ -467,7 +467,13 @@ class Character:
         return int(val)
 
     def get_curr_stat(self, stat: int | Stat) -> int | None:
-        """Compute current stat (perm + mod) clamped to ROM 0..25."""
+        """Compute current stat (perm + mod) clamped to ROM 3..max.
+
+        Mirrors ROM `src/handler.c:872` — `URANGE(3, perm+mod, max)`.
+        Minimum stat is 3, never 0. The ceiling divergence (Python uses
+        a flat 25; ROM uses race/class-specific `max_stat` for PCs and
+        only 25 for NPCs/immortals) is tracked as ARITH-114.
+        """
 
         idx = int(stat)
         base_val = self._stat_from_list(self.perm_stat, idx)
@@ -475,7 +481,7 @@ class Character:
         if base_val is None and mod_val is None:
             return None
         total = (base_val or 0) + (mod_val or 0)
-        return max(0, min(25, total))
+        return max(3, min(25, total))
 
     def get_int_learn_rate(self) -> int:
         """Return int_app.learn value for the character's current INT."""
