@@ -233,6 +233,28 @@ For the audit methodology itself (5 phases, ROM-C → audit doc → implementati
 → integration tests → completion), see
 [`docs/ROM_PARITY_VERIFICATION_GUIDE.md`](docs/ROM_PARITY_VERIFICATION_GUIDE.md).
 
+### Out-of-scope bugs surfaced mid-audit (file durably, do not just mention)
+
+Bugs discovered while reading code for an audit or gap-closer — but that
+are NOT the gap you're closing — must be filed durably **before** moving
+on. Chat-only mentions evaporate at session end and have caused real
+regressions to ship.
+
+Routing by bug shape:
+
+| Bug shape | File where |
+|-----------|-----------|
+| Cross-file / cross-module contract violation (root cause spans files) | New `INV-NNN` row in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`. Use next free ID; check the table for the current max — IDs are non-contiguous because of retirements. |
+| Local divergence in a single function (typo, wrong constant, missing branch) | Per-file `docs/parity/<FILE>_C_AUDIT.md` with a stable ID matching the file's pattern (e.g. `MLOAD-001`, `OLOAD-002`). |
+| Blocks a different audit's gap closure | Annotate the blocked row's status to `⚠️ BLOCKED` and reference the new bug ID under "Notes". Add a short "Blocked rows" subsection at the bottom of the audit doc if the file doesn't already have one. |
+| Generic feature gap / missing helper | `docs/parity/ROM_PARITY_FEATURE_TRACKER.md`. |
+
+Then surface it in this session's `SESSION_SUMMARY_*.md` "Outstanding"
+section so the next agent sees the new ID without having to re-discover it.
+
+A verbal mention to the user is not filing. The chat transcript is not
+durable workflow state — the trackers are.
+
 ---
 
 ## Session Notes

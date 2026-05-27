@@ -145,6 +145,48 @@ the cross-file work is tracked here.
 
 ## Watch list
 
+**Open: INV-027 candidate — ACT-INVIS-TRUST-GATE (surfaced 2026-05-27 during the BCAST wiz/imm probe; not yet enforced).**
+
+- **ROM mechanism**: `src/comm.c:act()` (around the per-recipient loop)
+  filters every recipient by `get_trust(rch) >= ch->invis_level`. When
+  the actor is invisible (positive `invis_level`), only witnesses whose
+  trust meets or exceeds that level receive the formatted line. ROM-
+  side this is enforced inside `act()` itself, so every TO_ROOM /
+  TO_VICT / TO_NOTVICT broadcast — and the per-person TO_CHAR fan-out
+  in `src/act_wiz.c:do_violate` (BCAST-029) — inherits the trust
+  filter for free.
+- **Python pre-state (2.9.59)**: `mud/commands/imm_display.py:_act_room`
+  (and its `mud/commands/imm_commands.py:473-481` sibling) walks
+  `room.people` and delivers via `_send_to_char` to every member except
+  the actor — **no `invis_level`/trust filter**. `mud/net/protocol.py:
+  broadcast_room` likewise has no trust filter. The fan-out wins the
+  BCAST audit-coverage check (witnesses are reachable) but loses the
+  fidelity contract that invisible immortals should not be visible to
+  sub-trust witnesses.
+- **Touched by (probe evidence)**: `mud/commands/imm_server.py:do_violate`
+  is the BCAST-029 callsite that surfaced this — it routes through
+  `_act_room` for both `bamfout`/default and `bamfin`/default
+  broadcasts, so the per-line broadcast strings reach witnesses
+  unconditionally. Same shape applies to every other `_act_room` and
+  `broadcast_room` caller that ROM emits via `act()`.
+- **Proposed enforcement (when promoted)**: introduce a single
+  `_can_witness(actor, witness)` helper that wraps `get_trust(witness)
+  >= getattr(actor, "invis_level", 0)` (and AffectFlag.INVISIBLE / DLK
+  for live invis), and route both `_act_room` and `broadcast_room`
+  through it. Regression test: spawn an actor with `invis_level=60`,
+  emit a TO_ROOM via `broadcast_room`, assert a trust=10 witness sees
+  nothing and a trust=60 witness sees the line. Filename slot:
+  `tests/integration/test_inv027_act_invis_trust_gate.py`.
+- **Why deferred**: the BCAST-029 row was reclassified ✅ COVERED on
+  the *act-emission* axis (the audit's count check) — the trust-gate
+  is a separate fidelity axis. Promoting to INV-027 ENFORCED means
+  writing the regression and changing every `_act_room` /
+  `broadcast_room` call site to thread the actor through. Out of
+  scope for the door-command session that surfaced it.
+- **Risk if left unenforced**: any wiz-invis player remains visible
+  in room/event broadcasts to all witnesses — a long-standing parity
+  bug ROM players would notice immediately.
+
 **Open: INV-025 follow-up — broaden mp_act_trigger_room dispatch beyond do_emote.**
 
 - ~~INV-025 candidate (MOBPROG-ACT-TRIGGER-DISPATCH)~~ **enforced 2.9.40**.

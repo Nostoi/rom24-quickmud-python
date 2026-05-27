@@ -98,3 +98,4 @@ Use `feat(parity)` if the gap is "missing feature" (e.g. ITEM_PILL support added
 - ❌ Using `random.*`, `//`, or `%` in the fix. Use `rng_mm`, `c_div`, `c_mod`.
 - ❌ Skipping `gitnexus_impact` because "it's a small change". CLAUDE.md says MUST.
 - ❌ Hardcoding hex flag values. Use the IntEnum from `mud/models/constants.py`.
+- ❌ Surfacing an unrelated pre-existing bug while closing the gap and only mentioning it in chat. Chat-only mentions evaporate at session end. File it durably per the AGENTS.md "Out-of-scope bugs surfaced mid-audit" routing table (new INV-NNN for cross-file contracts; new stable ID in the relevant `<FILE>_C_AUDIT.md` for local divergences; ⚠️ BLOCKED annotation on any audit row the bug prevents from closing). Then add a line under the current session's `SESSION_SUMMARY_*.md` "Outstanding" so the next agent finds it.

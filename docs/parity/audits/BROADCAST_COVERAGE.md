@@ -32,8 +32,8 @@ Counts shown as `ROM` (TO_ROOM / TO_VICT / TO_NOTVICT / TO_ALL) vs `Py total` (s
 | 11 | `incognito` | `mud/commands/imm_display.py:54` | `src/act_wiz.c:4375` | 3 | 0 | 0 | 0 | 3 | ✅ FIXED (2.9.58) | **BCAST-011** — Toggle-off (uncloak) had no broadcast; level-set branch had no broadcast. Added `_act_room` calls on both paths. Toggle-on already correct (incognito does not block in-room can_see). Regression: `tests/integration/test_incognito_broadcasts.py` (3/3). |
 | 12 | `invis` | `mud/commands/imm_display.py:18` | `src/act_wiz.c:4329` | 3 | 0 | 0 | 0 | 3 | ✅ FIXED (2.9.58) | **BCAST-012** — Pre-fix all three TO_ROOM broadcasts silently dropped: (a) toggle-off said "fades back into existence" vs ROM "fades into existence"; (b) toggle-on and (c) level-set set `invis_level` BEFORE calling `_act_room`, but `_act_room` enforces `can_see_character` so witnesses below trust never saw the fade-out. Re-ordered to broadcast BEFORE invis_level commit + added missing level-set broadcast + fixed wording. Regression: `tests/integration/test_invis_broadcasts.py` (3/3). |
 | 13 | `lock` | `mud/commands/doors.py:276` | `src/act_move.c:539` | 3 | 0 | 0 | 0 | 3 | ✅ FIXED (2.9.59) | **BCAST-013** — Pre-fix `do_lock` returned only "*Click*" with zero `broadcast_room` calls. Added portal/container TO_ROOM `$n locks $p.` (act_move.c:622, 655) and door TO_ROOM `$n locks the $d.` (act_move.c:690). ROM does NOT broadcast to the linked room on lock (line 697 silently SET_BITs `pexit_rev->exit_info`); Python pins this asymmetry. Regression: `tests/integration/test_lock_broadcasts.py` (3/3). |
-| 14 | `mload` | `mud/commands/imm_load.py:52` | `src/act_wiz.c:2447` | 1 | 0 | 0 | 0 | 0 | ❌ | **BCAST-014** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
-| 15 | `oload` | `mud/commands/imm_load.py:95` | `src/act_wiz.c:2479` | 1 | 0 | 0 | 0 | 0 | ❌ | **BCAST-015** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
+| 14 | `mload` | `mud/commands/imm_load.py:52` | `src/act_wiz.c:2447` | 1 | 0 | 0 | 0 | 0 | ⚠️ BLOCKED by WIZLOAD-001 | **BCAST-014** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. **Blocked**: `do_mload` cannot reach the broadcast point because its registry lookup (`mud/commands/imm_load.py:68`) reads `registry.mob_prototypes` which doesn't exist (canonical attribute is `mob_registry`). Function always early-returns "No mob has that vnum." See WIZLOAD-001 in the Blocked rows section below. |
+| 15 | `oload` | `mud/commands/imm_load.py:95` | `src/act_wiz.c:2479` | 1 | 0 | 0 | 0 | 0 | ⚠️ BLOCKED by WIZLOAD-001 | **BCAST-015** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. **Blocked**: same root cause as BCAST-014 — `do_oload` (line 121) reads `registry.obj_prototypes` which doesn't exist (canonical: `obj_registry`). Function always early-returns "No object has that vnum." See WIZLOAD-001. |
 | 16 | `open` | `mud/commands/doors.py:97` | `src/act_move.c:313` | 3 | 0 | 0 | 0 | 3 | ✅ FIXED (2.9.59) | **BCAST-016** — Pre-fix `do_open` returned only the actor "Ok." / "You open $p." string with zero `broadcast_room` calls. Added portal/container TO_ROOM `$n opens $p.` (act_move.c:384, 412), door TO_ROOM `$n opens the $d.` (act_move.c:436), and linked-room per-person `The $d opens.` (act_move.c:447-448). Regression: `tests/integration/test_door_broadcasts.py` (4/4). |
 | 17 | `order` | `mud/commands/group_commands.py:473` | `src/act_comm.c:1650` | 0 | 1 | 0 | 0 | 0 | ❌ | **BCAST-017** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
 | 18 | `quit` | `mud/commands/session.py:36` | `src/act_comm.c:1430` | 1 | 0 | 0 | 0 | 0 | ❌ | **BCAST-018** — ROM has 1 non-TO_CHAR act() but Python has 0 broadcast hits. Py indicators: (no broadcast hits) |
@@ -336,6 +336,22 @@ Ranked by user-visible impact and likelihood the ❌/⚠️ is a real gap (not a
 8. **`do_envenom` — `act_obj.c:820`** (R=2, Py=0) — TO_ROOM `$n coats $p with deadly venom.` Plain-sight skill that ROM publishes; Python silently succeeds.
 9. **`do_value` — `act_obj.c:2904`** (V=4, Py=0) — shopkeeper TO_VICT haggling responses. Player-facing but cosmetic.
 10. **`do_quit` — `act_comm.c:1430`** (R=1, Py=0) — ROM emits `$n has left the game.` TO_ROOM. Currently Python may rely on a session-close event; if so, bystanders may not see the departure broadcast in real time.
+
+## Blocked rows
+
+Pre-existing parity bugs that prevent the listed BCAST rows from being closed via the normal `rom-gap-closer` path. Surface these in the next-session SUMMARY's "Outstanding" so they get picked up.
+
+### WIZLOAD-001 — `do_mload` / `do_oload` registry-lookup name mismatch (surfaced 2026-05-27)
+
+- **Symptom**: `do_mload(char, "<any vnum>")` and `do_oload(char, "<any vnum>", ...)` always return `"No mob has that vnum."` / `"No object has that vnum."` regardless of vnum.
+- **Root cause**:
+  - `mud/commands/imm_load.py:68` reads `getattr(registry, "mob_prototypes", {}).get(vnum)`.
+  - `mud/commands/imm_load.py:121` reads `getattr(registry, "obj_prototypes", {}).get(vnum)`.
+  - Neither attribute exists on `mud/registry.py` — the canonical names are `mob_registry` and `obj_registry`. The `getattr(..., {})` default makes the bug silent: lookup returns `None`, early-return fires before reaching `spawn_mob` / `spawn_obj` (which use the correct registries). The function is wholly broken on real prototypes.
+- **ROM C reference**: `src/act_wiz.c:2510 do_mload`, `src/act_wiz.c:2553 do_oload` — both look up via `get_mob_index(atoi(arg))` / `get_obj_index(atoi(arg))`.
+- **Blocks**: BCAST-014 (`do_mload`), BCAST-015 (`do_oload`). The broadcast point can't be reached for a regression test until the lookup is fixed.
+- **Fix shape**: replace lines 68 and 121 with `from mud.registry import mob_registry, obj_registry; ... mob_registry.get(vnum)` / `obj_registry.get(vnum)`. Drop the `getattr(..., {})` defensive wrapper since the symbols are unconditional. Add a regression test that loads a known prototype and asserts the function returns `"Ok.\\n\\r"`, then layer the BCAST-014/015 broadcast tests on top.
+- **Effort**: ~10 lines + 1 test for the lookup fix, then a standard `rom-gap-closer` pass on each of BCAST-014/015 (~1 broadcast each).
 
 ## Methodology limits & follow-up
 
