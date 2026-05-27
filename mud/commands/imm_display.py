@@ -71,7 +71,11 @@ def do_incognito(char: Character, args: str) -> str:
 
     if not args or not args.strip():
         if incog_level:
+            # BCAST-011: ROM src/act_wiz.c:4388-4390 — clear incog first
+            # then broadcast TO_ROOM. Pre-fix: no broadcast at all on
+            # uncloak; bystanders were silently surprised.
             char.incog_level = 0
+            _act_room(char, "$n is no longer cloaked.", do_not_see_char=True)
             return "You are no longer cloaked.\n\r"
 
         char.incog_level = get_trust(char)
@@ -86,6 +90,9 @@ def do_incognito(char: Character, args: str) -> str:
     if level < 2 or level > get_trust(char):
         return "Incognito level must be between 2 and your level.\n\r"
 
+    # BCAST-011: ROM src/act_wiz.c:4410-4412 — level-set branch also
+    # broadcasts TO_ROOM. Pre-fix the broadcast was missing.
+    _act_room(char, "$n cloaks $s presence.", do_not_see_char=True)
     char.incog_level = level
     char.reply = None
     return "You cloak your presence.\n\r"
