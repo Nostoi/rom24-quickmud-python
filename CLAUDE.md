@@ -80,7 +80,7 @@ This warning sits **above** the "MUST run impact analysis" rule below, not again
 
 This project is indexed by GitNexus as **rom24-quickmud-python** (39196 symbols, 65340 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
-> If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
+> **🛑 STOP-AND-REINDEX RULE — NON-NEGOTIABLE.** The moment ANY GitNexus tool, MCP response, hook output, or PostToolUse message reports "index is stale", "last indexed: <sha>", "FTS index ensure failed", or any equivalent, **you MUST immediately run `npx gitnexus analyze --skip-agents-md` (via the `gitnexus-cli` skill) BEFORE the next non-trivial tool call.** Do not defer. Do not "note it for next session." Do not continue working with a stale graph because "the current task doesn't need it" — every subsequent `gitnexus_impact` / `gitnexus_detect_changes` / `gitnexus_context` call you make on a stale index returns wrong answers, and those wrong answers will mislead the user. Reindex is cheap (~1–3 minutes, run in background); skipping it is expensive (regressions land that impact analysis would have flagged). The ONLY exception is when the reindex itself is what's failing (read-only DB, disk full, etc.) — in that case, surface the failure to the user and stop, do not silently proceed. This rule overrides the "don't reindex mid-session" instinct: if the warning fires, reindex now.
 
 ## Always Do
 
