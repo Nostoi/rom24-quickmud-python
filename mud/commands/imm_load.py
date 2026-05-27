@@ -174,6 +174,22 @@ def do_oload(char: Character, vnum_arg: str, level_arg: str | None = None) -> st
             room.contents.append(obj)
             obj.in_room = room
 
+    # BCAST-015: TO_ROOM broadcast mirroring ROM
+    # src/act_wiz.c:2566 act("$n has created $p!", ch, obj, NULL, TO_ROOM).
+    # $n -> ch->name, $p -> obj->short_descr.
+    from mud.net.protocol import broadcast_room
+    actor_room = getattr(char, "room", None)
+    if actor_room is not None:
+        proto_short = getattr(getattr(obj, "prototype", None), "short_descr", None)
+        obj_short = (
+            getattr(obj, "short_descr", None)
+            or proto_short
+            or getattr(obj, "name", None)
+            or "something"
+        )
+        actor_name = getattr(char, "name", None) or "Someone"
+        broadcast_room(actor_room, f"{actor_name} has created {obj_short}!", exclude=char)
+
     # mirrors ROM src/act_wiz.c:2566-2568
     from mud.wiznet import wiznet, WiznetFlag
     wiznet("$N loads $p.", char, obj, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))

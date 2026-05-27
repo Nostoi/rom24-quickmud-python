@@ -75,3 +75,25 @@ def test_mload_emits_to_room_broadcast_with_victim_short_descr() -> None:
         mob_registry.pop(88160, None)
 
 
+def test_oload_emits_to_room_broadcast_with_obj_short_descr() -> None:
+    # mirrors ROM src/act_wiz.c:2566 — act("$n has created $p!", ch, obj, NULL, TO_ROOM)
+    from mud.commands.imm_load import do_oload
+
+    room = _room(40250)
+    admin = _imm("Admin", 40250)
+    bystander = _witness("Watcher", 40250)
+    proto = ObjIndex(vnum=88260, name="widget", short_descr="a shiny widget")
+    obj_registry[88260] = proto
+    try:
+        result = do_oload(admin, "88260")
+        assert "Ok" in result
+        msgs = "\n".join(bystander.messages)
+        assert "Admin has created a shiny widget" in msgs, (
+            f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
+        )
+        actor_msgs = "\n".join(getattr(admin, "messages", []))
+        assert "Admin has created a shiny widget" not in actor_msgs
+    finally:
+        obj_registry.pop(88260, None)
+
+
