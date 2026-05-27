@@ -327,6 +327,11 @@ class SkillRegistry:
             return
 
         chance = 10 * caster.get_int_learn_rate()
+        # ROM src/skills.c:938 — `chance /= (multiplier * skill_table[sn].rating[ch->class] * 4)` raw.
+        # ROM's `rating == 0` early-return at src/skills.c:932 is mirrored above (`rating <= 0`),
+        # and every caller passes `multiplier >= 1`, so `multiplier * rating * 4 >= 4` here.
+        # The `max(1, ...)` floor is dead defensive code (ARITH-014 N/A, same shape as
+        # ARITH-006/007/008); see docs/divergences/UB_DIVISORS.md.
         chance //= max(1, multiplier * rating * 4)
         chance += caster.level
         if rng_mm.number_range(1, 1000) > chance:

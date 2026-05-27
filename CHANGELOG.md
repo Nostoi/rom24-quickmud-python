@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.69]
+
+### Changed
+- **`ARITH-014` reclassified to ⛔ N/A** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md` — dead defensive code (same shape as ARITH-006/007/008/013). The `max(1, multiplier * rating * 4)` floor at `mud/skills/registry.py:330` cannot fire: the upstream `if rating <= 0: return` at `:326-327` mirrors ROM's `skill_table[sn].rating[ch->class] == 0` early-return at `src/skills.c:932`, and every `check_improve` call site across `mud/combat/engine.py`, `mud/commands/*`, `mud/skills/handlers.py`, and `mud/game_loop.py` passes `multiplier >= 1` (default 1; observed values 1/2/3/4/5/6/8). So `multiplier * rating * 4 >= 4` at line 330 always, and the floor is unreachable — no behavioral divergence from ROM `src/skills.c:938`. ROM-cite comment added at `mud/skills/registry.py:329-333`. No production behavior change — comment-only edit + audit reclass. Tally adjusted: 56 ✅ / **38 ❌** / **121 N/A**. Effective open ❌ MISSING in the ARITH triage drops to **28**.
+
 ## [2.9.68]
 
 ### Changed
