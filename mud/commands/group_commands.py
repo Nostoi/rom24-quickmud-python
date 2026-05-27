@@ -11,6 +11,19 @@ from mud.models.constants import AffectFlag, PlayerFlag, Position
 from mud.world.char_find import get_char_room
 
 
+def _send_to_char_sync(character: Character, message: str) -> None:
+    """Fire-and-forget real-socket delivery (mirrors AGENTS.md Message Delivery)."""
+    import asyncio as _asyncio
+
+    from mud.net.protocol import send_to_char as _send_to_char_async
+
+    writer = getattr(character, "connection", None)
+    if writer:
+        _asyncio.create_task(_send_to_char_async(character, message))
+    if hasattr(character, "messages"):
+        character.messages.append(message)
+
+
 def _display_name(character: Character | None) -> str:
     if character is None:
         return "Someone"
@@ -265,38 +278,28 @@ def do_group(char: Character, args: str) -> str:
     # Already in group - remove (ROM src/act_comm.c:1838-1847)
     if is_same_group(victim, char) and char is not victim:
         victim.leader = None
-        # TO_VICT: "$n removes you from $s group."
-        victim_messages = getattr(victim, "messages", None)
-        if isinstance(victim_messages, list):
-            victim_messages.append(f"{leader_name} removes you from {leader_name}'s group.")
-        # TO_NOTVICT: "$n removes $N from $s group."
+        # mirroring ROM src/act_comm.c:1842-1846 — TO_VICT and TO_NOTVICT via act()
+        _send_to_char_sync(victim, f"{leader_name} removes you from {leader_name}'s group.")
         room = getattr(char, "room", None)
         if room is not None:
             notvict_msg = f"{leader_name} removes {victim_name_str} from {leader_name}'s group."
             for occupant in list(getattr(room, "people", []) or []):
                 if occupant is char or occupant is victim:
                     continue
-                occ_messages = getattr(occupant, "messages", None)
-                if isinstance(occ_messages, list):
-                    occ_messages.append(notvict_msg)
+                _send_to_char_sync(occupant, notvict_msg)
         return f"You remove {victim_name_str} from your group."
 
     # Add to group (ROM src/act_comm.c:1850-1854)
     victim.leader = char
-    # TO_VICT: "You join $n's group."
-    victim_messages = getattr(victim, "messages", None)
-    if isinstance(victim_messages, list):
-        victim_messages.append(f"You join {leader_name}'s group.")
-    # TO_NOTVICT: "$N joins $n's group."
+    # mirroring ROM src/act_comm.c:1850-1854 — TO_VICT and TO_NOTVICT via act()
+    _send_to_char_sync(victim, f"You join {leader_name}'s group.")
     room = getattr(char, "room", None)
     if room is not None:
         notvict_msg = f"{victim_name_str} joins {leader_name}'s group."
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is char or occupant is victim:
                 continue
-            occ_messages = getattr(occupant, "messages", None)
-            if isinstance(occ_messages, list):
-                occ_messages.append(notvict_msg)
+            _send_to_char_sync(occupant, notvict_msg)
     return f"{victim_name_str} joins your group."
 
 
