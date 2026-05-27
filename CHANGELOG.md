@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.49]
+
+### Fixed
+- **`PURGE-001` — `do_purge` now routes through the canonical `_extract_character` chokepoint** (ROM `src/act_wiz.c:2595, 2638, 2646` — three `extract_char(victim, TRUE)` call sites). Python's immortal `purge` command was calling the same stripped-down local `_extract_char` stub that `do_slay` (closed in 2.9.48) was using: stops fighting, unlinks from `room.people`, removes from `registry.char_list` — but bypasses the INV-020 cleanup chain (`nuke_pets` + `die_follower`) and skips inventory extraction. Symptom: an immortal purging a charmed pet's master left the pet in the world with a dangling `master` pointer and `AFF_CHARM` still set; group followers kept their `leader` pointing at the extracted Character (the same dangling-pointer hazard INV-020 was created to close). Wired all three call sites (room-purge loop, named-player purge, named-NPC purge) through `mud/mob_cmds.py:_extract_character` so the full ROM `src/handler.c:2103-2180 extract_char` pipeline runs. Removed the now-unused local `_extract_char` stub. New regression: `tests/integration/test_purge_routes_through_extract_character.py` (`test_purge_room_nukes_pets` — pins the pet-cleanup leg; the follower leg is already locked by INV-020's chain test grid via the shared helper).
+
 ## [2.9.48]
 
 ### Fixed

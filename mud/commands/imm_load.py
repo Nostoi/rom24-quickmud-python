@@ -7,8 +7,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from mud.commands.imm_commands import MAX_LEVEL, get_char_room, get_char_world, get_trust
+from mud.mob_cmds import _extract_character
 from mud.models.character import Character
-from mud.commands.imm_commands import get_trust, get_char_world, get_char_room, MAX_LEVEL
 
 if TYPE_CHECKING:
     pass
@@ -184,7 +185,10 @@ def do_purge(char: Character, args: str) -> str:
             act_flags = getattr(victim, "act", 0)
             if act_flags & ACT_NOPURGE:
                 continue
-            _extract_char(victim)
+            # PURGE-001: route through the canonical extract_char
+            # chokepoint so nuke_pets + die_follower run (INV-020).
+            # Mirrors ROM src/act_wiz.c:2595 extract_char(victim, TRUE).
+            _extract_character(victim)
 
         contents = list(getattr(room, "contents", []))
         for obj in contents:
@@ -213,11 +217,13 @@ def do_purge(char: Character, args: str) -> str:
             _send_to_char(victim, f"{getattr(char, 'name', 'Someone')} tried to purge you!\n\r")
             return "Maybe that wasn't a good idea...\n\r"
 
-        _extract_char(victim)
+        # PURGE-001: route through canonical chokepoint (INV-020).
+        # Mirrors ROM src/act_wiz.c:2638 extract_char(victim, TRUE).
+        _extract_character(victim)
         return "Ok.\n\r"
 
-    # Purge NPC — mirrors ROM src/act_wiz.c:2645-2647
-    _extract_char(victim)
+    # Purge NPC — mirrors ROM src/act_wiz.c:2645-2647 extract_char(victim, TRUE).
+    _extract_character(victim)
     return "Ok.\n\r"
 
 
@@ -353,28 +359,6 @@ def _restore_char(char: Character) -> None:
     from mud.models.constants import Position
     if getattr(char, "position", Position.STANDING) < Position.STANDING:
         char.position = Position.STANDING
-
-
-def _extract_char(char: Character) -> None:
-    """Remove character from the game."""
-    # Stop fighting
-    if getattr(char, "fighting", None):
-        char.fighting = None
-    
-    # Remove from room
-    room = getattr(char, "room", None)
-    if room:
-        people = getattr(room, "people", [])
-        if char in people:
-            people.remove(char)
-    
-    # Remove from global list
-    from mud import registry
-    char_list = getattr(registry, "char_list", [])
-    if char in char_list:
-        char_list.remove(char)
-    
-    char.room = None
 
 
 # DUPL-003 — canonical at mud/game_loop.py:_extract_obj.
