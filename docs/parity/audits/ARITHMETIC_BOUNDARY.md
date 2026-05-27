@@ -1,0 +1,313 @@
+# ARITHMETIC_BOUNDARY — META Class 2 Audit
+
+**Status:** ✅ TRIAGE COMPLETE (2026-05-27). 45 gap candidates filed (ARITH-001..023, ARITH-101..113, ARITH-201..209). Close-out is per-gap via `/rom-gap-closer`.
+
+**Owner method:** see [`docs/parity/META_AUDIT_TAXONOMY.md`](../META_AUDIT_TAXONOMY.md) → "Class 2: ARITHMETIC_BOUNDARY".
+
+## Summary
+
+| Bucket | Count | % |
+|--------|-------|---|
+| Total sites audited | 215 | 100% |
+| ✅ MATCH (ROM has same guard) | 56 | 26% |
+| ❌ MISSING (Python guards, ROM does not — gap candidate) | 45 | 21% |
+| N/A (non-parity / stdlib / intentional divergence) | 114 | 53% |
+
+Splits:
+
+- **Batch A — combat / skills / groups / advancement / mob progs** (134 sites): 31 ✅ / 23 ❌ (ARITH-001..023) / 80 N/A.
+- **Batch B — handler / world / models / equipment / shop / consumption** (31 sites): 9 ✅ / 13 ❌ (ARITH-101..113) / 9 N/A.
+- **Batch C — game_loop / loaders / spawning / db / config / imm_set / rng** (50 sites): 16 ✅ / 9 ❌ (ARITH-201..209) / 25 N/A.
+
+## Method
+
+1. `grep -rn -E "max\(1,|max\(0,|max\(-1,|min\([0-9]+," mud/ --include='*.py'` (excluded test_/web/net/account/json_io/imc).
+2. Split 215 hits into 3 batches (above) and dispatched parallel sonnet subagents.
+3. Each hit triaged against ROM C in `src/`:
+   - **N/A** if non-parity (stdlib bounds, UI clamps, parser indices, persistence safety, RNG internals).
+   - **✅ MATCH** if ROM has a `UMAX`/`UMIN`/`URANGE`/explicit guard at the same point.
+   - **❌ MISSING** if Python guards a game-mechanic value that ROM C does not.
+4. Each ❌ row received a stable ARITH-NNN gap ID for future close-out.
+
+## Priority
+
+### High-impact (gameplay-visible in normal play, not just UB edge cases)
+
+| Gap ID | Site | Divergence |
+|--------|------|------------|
+| ARITH-010 | `mud/commands/advancement.py:174` | `do_practice` floors `learn // rating` to 1. ROM gives **0** when `learn < rating` (low-INT, high-rating skill) — no improvement that session. Python always advances ≥1. Skill-training balance. |
+| ARITH-013 | `mud/commands/combat.py:779` | Mana cost divisor `(2 + ch->level - required_level)` floored to 1. ROM divides raw, then `UMAX(min_mana, ...)` clamps the resulting negative/huge cost to min_mana. Python caps cost at 100. Diverges for under-level casters. |
+| ARITH-015 | `mud/skills/handlers.py:1445` | Berserk `number_fuzzy(level/8)` base floored to 1. ROM gives 0-duration (no affect applied) for levels 1–7; Python gives ≥1-round berserk. |
+| ARITH-016 | `mud/skills/handlers.py:2121` | Charm-person `number_fuzzy(level/4)` floored to 1. ROM gives 0-duration charm (wears off instantly) for levels 1–3; Python gives ≥1-round. |
+| ARITH-009 | `mud/groups/xp.py:257` | `xp_compute` return floored to 0. ROM can return negative XP from edge-case alignment math, which **reduces** player XP via `gain_exp`. Python silently swallows. |
+| ARITH-105 | `mud/models/character.py:478` | `get_curr_stat` floored to **0**. ROM uses `URANGE(3, perm+mod, max)` — stats can never go below 3. Python allows debuffed stats to reach 0–2, which flows into every stat-dependent calculation (hit/dam/AC/carry/wield/sneak). |
+| ARITH-101 | `mud/handler.py:995` | `create_money` gold weight floored to 1. ROM `gold / 5` produces weight **0** for 1–4 gold; Python inflates to 1. Carry-weight accounting. |
+| ARITH-102 | `mud/handler.py:1003` | Same for silver — `silver / 20` produces weight 0 for 1–19 silver. |
+| ARITH-103 | `mud/handler.py:1011` | Same for mixed coin stacks. |
+
+### Medium-impact (edge cases, level 0, abnormal state)
+
+ARITH-020, ARITH-021, ARITH-022, ARITH-023 — level-0 spell/skill dice/save edges; reachable via mob-program or scripted dispatch.
+
+ARITH-110, ARITH-111 — shop haggle floors that ROM doesn't apply. Negligible because the multiplier range can't drive negative in practice, but the floor exists in Python where ROM has none.
+
+ARITH-203, ARITH-204 — plague tick mana/move floors. ROM can drive these stats negative.
+
+ARITH-208 — `dice(n,s) + bonus` floored to 0 in template spawning; ROM allows negative.
+
+### Low-impact (UB protection that masks ROM divide-by-zero rather than crashing)
+
+ARITH-001/002/003 (max_hit=0), ARITH-005 (level-0 PC in xp_compute), ARITH-006/007/008 (total_levels=0 in alignment branches), ARITH-011/012 (max_hit=0 in berserk/flee hp%), ARITH-014 (rating=0 in check_improve).
+
+Python silently produces a reasonable value; ROM would invoke UB (likely SIGFPE or wraparound) on the same input. **Both are wrong, but ROM's behavior is "crash" and Python's is "silent inflation."** These are still parity gaps but not direct-replication candidates — closing them probably means raising a controlled error or matching ROM's most-likely observed behavior on real `gcc` builds.
+
+### Carry-accounting underflow floors (ROM lets these go negative)
+
+ARITH-106 (`carry_number` in `extract_obj`/`obj_from_char`), ARITH-107 (`area.nplayer` in `char_from_room`), ARITH-108/109/112/113 (`carry_weight` / `carry_number` in obj_manipulation + consumption removal paths), ARITH-201/205 (game_loop ticks).
+
+ROM intentionally exposes double-extraction as a negative count — these are sentinel values that gameplay code may rely on. Python's `max(0, ...)` masks the corruption silently.
+
+### Likely-invention or unclear
+
+ARITH-209 (`json_loader.py:357` comment claims ROM `max(1, arg4)` but `db.c` doesn't — flagged as needs-followup; may be removable rather than fixable as a gap).
+
+ARITH-206 (`reset_handler.py:405` room_limit floor — ROM may treat 0 as unlimited; needs `db.c` reset-room re-read).
+
+## Findings — Batch A (combat / skills / groups / advancement / mob progs)
+
+| # | Python site | Guard | ROM C ref | ROM has guard? | Status | Gap ID | Notes |
+|---|-------------|-------|-----------|----------------|--------|--------|-------|
+| 1 | mud/advancement.py:61 | `max(0, int(creation_points))` | src/db.c — exp_per_level | — | N/A | Non-parity: Python defensive coerce of caller arg; creation_points always ≥0 from caller. |
+| 2 | mud/advancement.py:138 | `max(0, now - logon)` | src/update.c — gain_level | — | N/A | Clock subtraction guard; ROM has same implicit non-negative assumption. |
+| 3 | mud/mob_cmds.py:271 | `max(0, current - 1)` | src/handler.c:extract_char | — | N/A | nplayer counter floor; ROM decrements raw but nplayer can't go below 0 logically. |
+| 4 | mud/mob_cmds.py:499 | `max(0, delay)` | src/mob_cmds.c — do_mpdelay | — | N/A | Parsed delay floor; ROM stores raw int, both clamp to ≥0 semantically. |
+| 5 | mud/mob_cmds.py:1109 | `max(0, int(getattr(ch, "carry_number", 0)) - 1)` | src/handler.c — unequip | — | N/A | carry_number counter floor; no parity gap, same semantic bound. |
+| 6 | mud/mob_cmds.py:1242 | `min(amount, max(0, getattr(victim, "hit", 0)))` | src/mob_cmds.c:1134 — `UMIN(victim->hit, ...)` | Yes | ✅ MATCH | ROM has `UMIN(victim->hit, number_range(...))` which caps damage to victim's current HP. |
+| 7 | mud/mobprog.py:601 | `he_she[max(0, min(sex, 2))]` | src/act_comm.c — mprog | — | N/A | List index guard for 3-element pronoun table; non-parity stdlib safety. |
+| 8 | mud/mobprog.py:617 | `he_she[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7 — pronoun index safety. |
+| 9 | mud/mobprog.py:621 | `he_she[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 10 | mud/mobprog.py:626 | `he_she[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 11 | mud/mobprog.py:633 | `he_she[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 12 | mud/mobprog.py:639 | `him_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7 — pronoun index safety. |
+| 13 | mud/mobprog.py:643 | `him_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 14 | mud/mobprog.py:646 | `him_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 15 | mud/mobprog.py:651 | `him_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 16 | mud/mobprog.py:658 | `him_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 17 | mud/mobprog.py:664 | `his_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 18 | mud/mobprog.py:668 | `his_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 19 | mud/mobprog.py:671 | `his_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 20 | mud/mobprog.py:676 | `his_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 21 | mud/mobprog.py:683 | `his_her[max(0, min(sex, 2))]` | src/act_comm.c | — | N/A | Same as row 7. |
+| 22 | mud/mobprog.py:1108 | `max(1, int(getattr(target_char, "max_hit", 1)))` | src/mob_cmds.c — hpcnt check | No | ❌ MISSING | ARITH-001: ROM divides current*100/max_hit raw; Python floors max_hit to 1, preventing div-by-zero but also masking 0-HP max_hit edge. |
+| 23 | mud/mobprog.py:1651 | `max(1, int(getattr(mob, "max_hit", 1)))` | src/mob_cmds.c — HPCT trigger | No | ❌ MISSING | ARITH-002: Same as ARITH-001 but in HP-percent trigger check for mob programs; ROM divides raw. |
+| 24 | mud/combat/messages.py:115 | `max(1, int(max_hit))` | src/fight.c:dam_message | No | ❌ MISSING | ARITH-003: ROM `dam_message` uses `victim->max_hit` raw as divisor; Python floors to 1, masking zero-maxhit edge; ROM would produce divide-by-zero or negative severity. |
+| 25 | mud/combat/messages.py:155 | `max(0, int(damage))` | src/fight.c:dam_message:2035 | — | N/A | Defensive coerce before passing to _severity_terms which has its own 0-check; not a parity gap. |
+| 26 | mud/combat/engine.py:179 | `max(0, min(100, percent))` | src/handler.c:446 `URANGE(0,skill,100)` | Yes | ✅ MATCH | ROM uses `URANGE(0, skill, 100)` for skill lookups. |
+| 27 | mud/combat/engine.py:194 | `max(0, min(100, percent))` | src/handler.c:446 `URANGE(0,skill,100)` | Yes | ✅ MATCH | Same URANGE clamp pattern. |
+| 28 | mud/combat/engine.py:255 | `max(0, min(100, 3 * level))` | src/fight.c — get_weapon_skill NPC bare-handed | — | N/A | NPC weapon skill formula is Python-internal; clamp to [0,100] is always valid since skill is a percentage. |
+| 29 | mud/combat/engine.py:259 | `max(0, min(100, 40 + 2 * level))` | src/fight.c — NPC hand-to-hand | — | N/A | Same as row 28. |
+| 30 | mud/combat/engine.py:260 | `max(0, min(100, 40 + (5 * level) // 2))` | src/fight.c — NPC weapon | — | N/A | Same as row 28. |
+| 31 | mud/combat/engine.py:950 | `max(0, int(getattr(corpse, "level", 0) or 0))` | src/act_obj.c:1822 | — | N/A | Defensive coerce; `silver = UMAX(1, obj->level*3)` in ROM uses level directly; corpse.level should always be ≥0. |
+| 32 | mud/combat/engine.py:951 | `max(1, corpse_level * 3)` | src/act_obj.c:1822 `UMAX(1, obj->level*3)` | Yes | ✅ MATCH | ROM has `UMAX(1, obj->level * 3)` exactly. |
+| 33 | mud/combat/engine.py:952 | `max(0, int(getattr(attacker, "silver", 0) or 0))` | src/act_obj.c:1838 `ch->silver += silver` | — | N/A | Defensive coerce of silver field; ROM accesses directly; no ROM guard needed, attacker.silver should be ≥0. |
+| 34 | mud/combat/engine.py:1047 | `max(0, int(getattr(member, "silver", 0) or 0))` | src/fight.c — do_split | — | N/A | Same as row 33 — silver field defensive coerce. |
+| 35 | mud/combat/engine.py:1236 | `max(0, values[1])` | src/fight.c:one_hit — weapon values | — | N/A | Weapon dice_number floor; dice values from object data should be ≥0 already; non-parity Python defensive. |
+| 36 | mud/combat/engine.py:1237 | `max(0, values[2])` | src/fight.c:one_hit — weapon values | — | N/A | Same as row 35. |
+| 37 | mud/combat/engine.py:1293 | `min(100, skill_total)` | src/fight.c:588 `UMIN(100, skill)` | Yes | ✅ MATCH | ROM has `UMIN(100, skill)` in GET_DAMROLL multiply. |
+| 38 | mud/combat/engine.py:1562 | `max(1, weapon_level)` | src/fight.c — WEAPON_POISON weapon_level | No | ❌ MISSING | ARITH-004: ROM uses `wield->level` raw for poison level; `level / 2` in saves_spell; Python floors to 1, masking level-0 weapon edge where ROM would pass 0 to saves_spell. |
+| 39 | mud/combat/death.py:431 | `max(0, int(getattr(victim, "gold", 0) or 0))` | src/fight.c:make_corpse | — | N/A | Defensive coerce; gold should be ≥0; no ROM guard needed. |
+| 40 | mud/combat/death.py:432 | `max(0, int(getattr(victim, "silver", 0) or 0))` | src/fight.c:make_corpse | — | N/A | Same as row 39. |
+| 41 | mud/combat/death.py:586 | `max(1, int(getattr(victim, "hit", 0) or 0))` | src/fight.c:1718 `UMAX(1, victim->hit)` | Yes | ✅ MATCH | ROM has `UMAX(1, victim->hit)` in raw_kill. |
+| 42 | mud/combat/death.py:587 | `max(1, int(getattr(victim, "mana", 0) or 0))` | src/fight.c:1719 `UMAX(1, victim->mana)` | Yes | ✅ MATCH | ROM has `UMAX(1, victim->mana)` in raw_kill. |
+| 43 | mud/combat/death.py:588 | `max(1, int(getattr(victim, "move", 0) or 0))` | src/fight.c:1720 `UMAX(1, victim->move)` | Yes | ✅ MATCH | ROM has `UMAX(1, victim->move)` in raw_kill. |
+| 44 | mud/groups/xp.py:112 | `max(1, _resolve_level(getattr(ch, "level", 0)))` | src/fight.c:1727-1786 group_gain | — | N/A | Fallback when total_levels=0; defensive guard not in ROM C. Harmless — only used when entire group has 0 levels. |
+| 45 | mud/groups/xp.py:129 | `max(1, _resolve_level(getattr(gch, "level", 0)))` | src/fight.c:1819 xp_compute — gch->level used raw | No | ❌ MISSING | ARITH-005: ROM xp_compute uses `gch->level` raw in base_table lookup and arithmetic; Python floors to 1, hiding level-0 PC. ROM would return 0 XP naturally. |
+| 46 | mud/groups/xp.py:165 | `max(1, total_levels)` | src/fight.c:1892 — `/ total_levels` raw | No | ❌ MISSING | ARITH-006: ROM divides by total_levels raw (no guard); Python floors to 1; if total_levels=0 ROM has undefined behavior (div by zero), Python silently returns inflated alignment change. |
+| 47 | mud/groups/xp.py:166 | `max(1, change)` | src/fight.c:1893 `UMAX(1, change)` | Yes | ✅ MATCH | ROM has `UMAX(1, change)`. |
+| 48 | mud/groups/xp.py:169 | `max(1, total_levels)` | src/fight.c:1900 — `/ total_levels` raw | No | ❌ MISSING | ARITH-007: Same as ARITH-006, second alignment branch (align < -500). |
+| 49 | mud/groups/xp.py:170 | `max(1, change)` | src/fight.c:1901 `UMAX(1, change)` | Yes | ✅ MATCH | ROM has `UMAX(1, change)`. |
+| 50 | mud/groups/xp.py:171 | `min(1000, gch_alignment + change)` | src/fight.c:1902 `UMIN(1000, ...)` | Yes | ✅ MATCH | ROM has `UMIN(1000, gch->alignment + change)`. |
+| 51 | mud/groups/xp.py:173 | `max(1, total_levels)` | src/fight.c:1908 — `/ total_levels` raw | No | ❌ MISSING | ARITH-008: Third alignment branch (neutral, `change = gch->alignment * base_exp / 500 * gch->level / total_levels`); ROM divides raw, Python guards. |
+| 52 | mud/groups/xp.py:233 | `max(1, gch_level - 25)` | src/fight.c:2009 `15*xp/(gch->level-25)` — only runs if level > 35 | Yes | ✅ MATCH | Level > 35 ensures divisor ≥ 11; `max(1,...)` is redundant but not divergent. |
+| 53 | mud/groups/xp.py:241 | `max(0, int(time.time() - logon_ts))` | src/fight.c:2016 `current_time - gch->logon` raw | — | N/A | Clock subtraction guard; non-parity defensive Python. |
+| 54 | mud/groups/xp.py:255 | `max(1, total_levels - 1)` | src/fight.c:2029 `UMAX(1, total_levels - 1)` | Yes | ✅ MATCH | ROM has `UMAX(1, total_levels - 1)` exactly. |
+| 55 | mud/groups/xp.py:257 | `max(0, xp)` | src/fight.c:2031 — returns xp raw | No | ❌ MISSING | ARITH-009: ROM returns xp raw from xp_compute; Python floors to 0; ROM can return negative XP for edge-case alignment math, which would reduce player XP via gain_exp. |
+| 56 | mud/math/stat_apps.py:193 | `max(0, min(25, int(raw[idx])...))` | src/handler.c:852 `URANGE(3,...,25)` | — | N/A | Python table-index clamp (0..25) for get_stat fallback; different floor (0 vs ROM's 3) but this is an internal Python table-lookup safety, not a character stat path. |
+| 57 | mud/math/stat_apps.py:197 | `max(0, min(25, int(val)))` | src/handler.c:852 `URANGE(3,...,25)` | — | N/A | Same as row 56. |
+| 58 | mud/commands/advancement.py:174 | `max(1, gain_rate // max(1, rating))` | src/act_info.c:2773 `int_app[...].learn / skill_table[sn].rating[ch->class]` | No | ❌ MISSING | ARITH-010: ROM divides `learn / rating` raw; no UMAX(1,...) guard; Python floors result to 1; if learn=0 or rating > learn, ROM gives 0 increment (skill doesn't improve), Python gives 1 (skill always improves at least 1). |
+| 59 | mud/commands/combat.py:180 | `max(0, min(100, int(learned)))` | src/handler.c:446 `URANGE(0,skill,100)` | Yes | ✅ MATCH | ROM clamps skill percent to [0,100] via URANGE. |
+| 60 | mud/commands/combat.py:281 | `max(0, min(100, int(raw)))` | src/handler.c:446 `URANGE(0,skill,100)` | Yes | ✅ MATCH | Same URANGE pattern. |
+| 61 | mud/commands/combat.py:462 | `max(1, c_div(base * 3, 2))` | src/fight.c:2484 `WAIT_STATE(ch, skill_table[gsn_bash].beats * 3 / 2)` | No | N/A | ROM divides raw; `beats` config value is always ≥1 so result ≥1; `max(1,...)` is redundant but not a parity gap. |
+| 62 | mud/commands/combat.py:512 | `max(1, int(getattr(char, "max_hit", 1) or 1))` | src/fight.c:2310 `hp_percent = 100 * ch->hit / ch->max_hit` | No | ❌ MISSING | ARITH-011: ROM divides `ch->hit * 100 / ch->max_hit` raw in berserk; Python floors max_hit to 1; level-0/newbie with 0 max_hit would cause ROM divide-by-zero, Python safely returns 100. |
+| 63 | mud/commands/combat.py:536 | `max(1, 3 * get_pulse_violence())` | src/fight.c:2350 `WAIT_STATE(ch, 3 * PULSE_VIOLENCE)` | — | N/A | PULSE_VIOLENCE is always positive config constant; max(1,...) redundant but not divergent. |
+| 64 | mud/commands/combat.py:636 | `max(1, int(getattr(char, "max_hit", 1) or 1))` | src/act_move.c — do_flee `100 * ch->hit / ch->max_hit` | No | ❌ MISSING | ARITH-012: Same pattern as ARITH-011 but in do_flee hp_percent; ROM uses raw division. |
+| 65 | mud/commands/combat.py:719 | `max(0, char.move - c_div(char.max_move, 10))` | src/act_move.c — move cost | — | N/A | Move cost floor at 0; defensive Python guard, not a parity concern. |
+| 66 | mud/commands/combat.py:779 | `max(min_mana, 100 // max(1, 2 + char_level - required_level))` | src/magic.c:291 `UMAX(min_mana, (100 / (2 + ch->level - level)))` | No | ❌ MISSING | ARITH-013: ROM has no guard on divisor `(2 + ch->level - level)`; if divisor ≤ 0 ROM gets negative/large mana cost then UMAX clamps; Python floors divisor to 1, capping cost at 100; diverges when ch->level < level - 2. |
+| 67 | mud/commands/combat.py:843 | `max(0, char.mana - c_div(mana_cost, 2))` | src/fight.c — combat spell half-mana | — | N/A | Mana floor at 0 after deduction; defensive Python guard. |
+| 68 | mud/skills/registry.py:292 | `max(1, c_div(lag_pulses, 2))` | src/skills.c — haste lag halving | — | N/A | Haste halves lag; lag is always ≥ 1 from skill config, so dividing by 2 can give 0 for lag=1; `max(1,...)` preserves minimum wait. Not parity-sensitive since ROM's WAIT_STATE handles this differently. |
+| 69 | mud/skills/registry.py:296 | `max(1, int(lag_pulses))` | src/skills.c — skill lag | — | N/A | Final lag clamp; prevents 0-lag which would mean no wait; defensive Python guard. |
+| 70 | mud/skills/registry.py:330 | `max(1, multiplier * rating * 4)` | src/skills.c:938 `chance /= (multiplier * skill_table[sn].rating[ch->class] * 4)` | No | ❌ MISSING | ARITH-014: ROM divides chance raw; no guard; if rating=0 ROM divides by zero; Python floors to 1; rating=0 means skill has no class rating and is filtered earlier, but Python's guard changes the math path. |
+| 71 | mud/skills/registry.py:336 | `max(5, min(95, 100 - learned))` | src/skills.c:948 `URANGE(5, 100 - ch->pcdata->learned[sn], 95)` | Yes | ✅ MATCH | ROM has `URANGE(5, 100-learned, 95)` exactly. |
+| 72 | mud/skills/registry.py:338 | `min(100, learned + 1)` | src/skills.c:954 `ch->pcdata->learned[sn]++` then implicit ≤100 from adept | Yes | ✅ MATCH | ROM uses adept cap; Python uses min(100,...). |
+| 73 | mud/skills/registry.py:343 | `max(5, min(30, learned // 2))` | src/skills.c:961 `URANGE(5, ch->pcdata->learned[sn] / 2, 30)` | Yes | ✅ MATCH | ROM has `URANGE(5, learned/2, 30)` exactly. |
+| 74 | mud/skills/registry.py:346 | `min(100, learned + increment)` | src/skills.c:969 `UMIN(ch->pcdata->learned[sn], 100)` | Yes | ✅ MATCH | ROM has `UMIN(learned, 100)` after increment. |
+| 75 | mud/skills/handlers.py:172 | `max(0, min(100, percent))` | src/handler.c:446 `URANGE(0,skill,100)` | Yes | ✅ MATCH | Standard skill percent clamp. |
+| 76 | mud/skills/handlers.py:798 | `max(0, int(getattr(proto, "level", 0) or 0))` | src/magic.c — proto level | — | N/A | Proto object level floor; defensive Python coerce. |
+| 77 | mud/skills/handlers.py:1402 | `max(0, int(getattr(caster, "size", 0) or 0))` | src/fight.c:2430 `ch->size - victim->size` | — | N/A | Size field defensive coerce; no ROM guard at field access. |
+| 78 | mud/skills/handlers.py:1440 | `max(1, int(getattr(caster, "level", 1) or 1))` | src/fight.c:2334 `UMAX(1, ch->level / 5)` | Yes | ✅ MATCH | ROM has `UMAX(1, ch->level/5)` for berserk hitroll modifier; Python's level floor is upstream of that same divide. |
+| 79 | mud/skills/handlers.py:1441 | `max(1, c_div(level, 5))` | src/fight.c:2334 `UMAX(1, ch->level/5)` | Yes | ✅ MATCH | Berserk hitroll/damroll modifier guard. |
+| 80 | mud/skills/handlers.py:1445 | `max(1, c_div(level, 8))` | src/fight.c:2333 `number_fuzzy(ch->level / 8)` | No | ❌ MISSING | ARITH-015: ROM uses `number_fuzzy(ch->level / 8)` raw; level/8 = 0 for levels 0-7; Python floors to 1, inflating berserk duration for low-level callers. |
+| 81 | mud/skills/handlers.py:1584 | `max(0, min(level, len(dam_each) - 1))` | src/magic.c — dam_each table index | — | N/A | Python table index clamp; non-parity bounds check on list access. |
+| 82 | mud/skills/handlers.py:1619 | `max(0, c_div(level, 2))` | src/magic.c:939 `dice(level / 2, 8)` raw | — | N/A | call_lightning: ROM uses level/2 raw but level < 2 gives 0 naturally; Python max(0,...) is redundant (c_div already floors toward 0). |
+| 83 | mud/skills/handlers.py:1698 | `max(0, c_div(spell_level, 4))` | src/magic.c:1018 `af.duration = level / 4` raw | — | N/A | Calm duration; ROM can produce 0 for level 0-3; Python max(0,...) is redundant but not divergent. |
+| 84 | mud/skills/handlers.py:1891 | `max(0, base_damage)` | src/magic.c — AoE spell damage | — | N/A | Damage floor at 0 before apply_damage; ROM would pass negative to damage() which handles it; minor divergence but damage() returns early on ≤0 in ROM too. |
+| 85 | mud/skills/handlers.py:1895 | `max(0, before - int(getattr(target, "hit", 0) or 0))` | src/magic.c — return damage dealt | — | N/A | Return value clamp; Python returns 0 if negative (healing edge); non-parity. |
+| 86 | mud/skills/handlers.py:1910 | `max(0, base_damage)` | src/magic.c | — | N/A | Same as row 84. |
+| 87 | mud/skills/handlers.py:1914 | `max(0, before - ...)` | src/magic.c | — | N/A | Same as row 85. |
+| 88 | mud/skills/handlers.py:1929 | `max(0, base_damage)` | src/magic.c | — | N/A | Same as row 84. |
+| 89 | mud/skills/handlers.py:1933 | `max(0, before - ...)` | src/magic.c | — | N/A | Same as row 85. |
+| 90 | mud/skills/handlers.py:2059 | `max(0, min(rng_mm.number_range(0, 2), 2))` | src/magic.c — change sex | — | N/A | Pronoun/sex index guard; number_range(0,2) is already [0,2]; redundant but harmless. |
+| 91 | mud/skills/handlers.py:2121 | `max(1, c_div(level, 4))` | src/magic.c:1383 `number_fuzzy(level / 4)` raw | No | ❌ MISSING | ARITH-016: ROM uses `number_fuzzy(level/4)` raw; level/4 = 0 for levels 0-3; Python floors to 1, giving longer charm duration for low-level casters. |
+| 92 | mud/skills/handlers.py:2211 | `max(0, min(level, len(dam_each) - 1))` | src/magic.c — chill touch table | — | N/A | Table index clamp; non-parity Python list-safety. |
+| 93 | mud/skills/handlers.py:2306 | `max(0, min(level, len(dam_each) - 1))` | src/magic.c — colour spray table | — | N/A | Same as row 92. |
+| 94 | mud/skills/handlers.py:2405 | `max(0, c_div(level, 3))` | src/magic.c:1505 `dice(level/3, 4)` raw | — | N/A | control_weather: ROM uses level/3 raw; level/3=0 for levels 0-2 gives dice(0,4)=0; Python max(0,...) is redundant. |
+| 95 | mud/skills/handlers.py:2514 | `max(0, capacity - current)` | src/magic.c — create water | — | N/A | Remaining capacity floor at 0; defensive Python arithmetic. |
+| 96 | mud/skills/handlers.py:2798 | `max(1, int(getattr(caster, "level", 0) or 0))` | src/magic.c:1828 `dice(level, 10)` raw | No | ❌ MISSING | ARITH-017: demons_gate uses `dice(level, 10)` raw; level=0 gives dice(0,10)=0 in ROM; Python floors to 1 giving minimum 1 damage; also curse_level uses `3*level/4` which at level=1 gives 0 in ROM. |
+| 97 | mud/skills/handlers.py:2808 | `max(0, c_div(3 * level, 4))` | src/magic.c:1832 `spell_curse(gsn_curse, 3*level/4, ...)` raw | — | N/A | curse_level derivation; max(0,...) redundant since level≥1 after row 96's floor. |
+| 98 | mud/skills/handlers.py:3173 | `max(0, chance)` | src/fight.c:3145 do_disarm — chance computed raw | — | N/A | Disarm chance floor at 0; ROM can produce negative chance (very unfavorable match), Python returns 0; harmless since both mean "always fail". |
+| 99 | mud/skills/handlers.py:3262 | `max(1, int(getattr(caster, "level", 0) or 0))` | src/magic.c:2010 `spell_dispel_evil` — `level` param used raw | No | ❌ MISSING | ARITH-018: ROM uses level as passed (always ≥1 via spell dispatch); Python adds floor at 1 which is redundant for normal dispatch but diverges if spell is called internally with level=0. |
+| 100 | mud/skills/handlers.py:3263 | `max(0, int(getattr(victim, "hit", 0) or 0))` | src/magic.c:2034 `UMAX(victim->hit, dice(level, 4))` | Yes | ✅ MATCH | ROM uses `UMAX(victim->hit, dice(...))` which implicitly reads victim->hit raw; Python defensively floors hit at 0. Semantically equivalent. |
+| 101 | mud/skills/handlers.py:3307 | `max(1, int(getattr(caster, "level", 0) or 0))` | src/magic.c:2042 `spell_dispel_good` — level param | No | ❌ MISSING | ARITH-019: Same as ARITH-018 for dispel_good; ROM uses level parameter raw. |
+| 102 | mud/skills/handlers.py:3308 | `max(0, int(getattr(victim, "hit", 0) or 0))` | src/magic.c:2042 — victim->hit | Yes | ✅ MATCH | Same as row 100. |
+| 103 | mud/skills/handlers.py:3734 | `rng_mm.dice(1, max(1, level))` | src/magic.c:2727 `dice(1, level)` raw | No | ❌ MISSING | ARITH-020: energy_drain uses `dice(1, level)` raw; level=0 gives dice(1,0) which is implementation-defined in ROM; Python floors level to 1 giving minimum 1 damage. |
+| 104 | mud/skills/handlers.py:3741 | `max(0, damage)` | src/magic.c:2733 `damage(ch, victim, dam, ...)` | — | N/A | Damage floor; same as row 84. |
+| 105 | mud/skills/handlers.py:3743 | `max(0, before - after)` | src/magic.c | — | N/A | Return value clamp; same as row 85. |
+| 106 | mud/skills/handlers.py:4117 | `max(0, level - 2)` | src/magic.c:4701 `saves_spell(level - 2, vch, DAM_FIRE)` raw | No | ❌ MISSING | ARITH-021: fire_breath AoE uses `saves_spell(level - 2, ...)` raw; level 0-1 gives negative save level in ROM; Python floors to 0; negative save_level in ROM makes spell saves easier (more negative = weaker save). |
+| 107 | mud/skills/handlers.py:4202 | `max(0, damage)` | src/magic.c — fireball | — | N/A | Damage floor; same as row 84. |
+| 108 | mud/skills/handlers.py:4203 | `max(0, before - ...)` | src/magic.c | — | N/A | Return value clamp; same as row 85. |
+| 109 | mud/skills/handlers.py:4222 | `rng_mm.number_fuzzy(max(0, c_div(level, 4)))` | src/magic.c — flamestrike duration | — | N/A | Similar to calm duration; ROM uses level/4 raw; max(0,...) is redundant since c_div returns 0 for level 0-3. |
+| 110 | mud/skills/handlers.py:4266 | `max(0, damage)` | src/magic.c — flamestrike | — | N/A | Same as row 84. |
+| 111 | mud/skills/handlers.py:4267 | `max(0, before - ...)` | src/magic.c | — | N/A | Same as row 85. |
+| 112 | mud/skills/handlers.py:4507 | `max(0, level - 2)` | src/magic.c:4759 `saves_spell(level - 2, vch, DAM_COLD)` raw | No | ❌ MISSING | ARITH-022: frost_breath AoE; same pattern as ARITH-021 for cold damage; ROM passes level-2 raw to saves_spell. |
+| 113 | mud/skills/handlers.py:4695 | `max(0, damage)` | src/magic.c — gas_breath | — | N/A | Same as row 84. |
+| 114 | mud/skills/handlers.py:4700 | `max(0, before - after)` | src/magic.c | — | N/A | Same as row 85. |
+| 115 | mud/skills/handlers.py:4892 | (context: `dam = min(50, c_div(dam, 2))`) | src/magic.c:3054 `dam = UMIN(50, dam/2)` | Yes | ✅ MATCH | ROM has `UMIN(50, dam/2)`; comment is informational. |
+| 116 | mud/skills/handlers.py:4894 | `dam = min(50, c_div(dam, 2))` | src/magic.c:3054 `UMIN(50, dam/2)` | Yes | ✅ MATCH | ROM has `UMIN(50, dam/2)` for save case. |
+| 117 | mud/skills/handlers.py:4897 | `dam = min(100, dam)` | src/magic.c:3059 `dam = UMIN(100, dam)` | Yes | ✅ MATCH | ROM has `UMIN(100, dam)` cap. |
+| 118 | mud/skills/handlers.py:5189 | `max(0, damage)` | src/magic.c — lightning bolt | — | N/A | Same as row 84. |
+| 119 | mud/skills/handlers.py:5194 | `max(0, before - after)` | src/magic.c | — | N/A | Same as row 85. |
+| 120 | mud/skills/handlers.py:5253 | `max(0, c_div(level, 2))` | src/magic.c:3323 `spell_curse(curse_num, level/2, ...)` raw | — | N/A | holy_word curse sub-call; level/2=0 for level 0-1; max(0,...) redundant since level≥1 in normal dispatch. |
+| 121 | mud/skills/handlers.py:5498 | `max(0, min(100, int(raw_chance)))` | src/handler.c:446 `URANGE(0,skill,100)` | Yes | ✅ MATCH | Standard skill percent clamp in kick handler. |
+| 122 | mud/skills/handlers.py:5508 | `max(1, int(getattr(caster, "level", 1) or 1))` | src/fight.c:3129 `number_range(1, ch->level)` raw | No | ❌ MISSING | ARITH-023: kick uses `number_range(1, ch->level)` raw; level=0 would give number_range(1,0) which ROM treats as undefined; Python floors to 1 giving fixed 1 damage. |
+| 123 | mud/skills/handlers.py:5623 | `max(0, damage)` | src/magic.c — lightning bolt | — | N/A | Same as row 84. |
+| 124 | mud/skills/handlers.py:5625 | `max(0, before - after)` | src/magic.c | — | N/A | Same as row 85. |
+| 125 | mud/skills/handlers.py:5676 | `max(0, min(level * 2, 100))` | src/magic.c:3741 `number_percent() > 2 * level` | Yes | ✅ MATCH | At level ≥ 50 both ROM and Python produce "always detects" threshold; clamping to 100 is correct. |
+| 126 | mud/skills/handlers.py:5806 | `max(0, damage)` | src/magic.c — magic missile | — | N/A | Same as row 84. |
+| 127 | mud/skills/handlers.py:5808 | `max(0, before - after)` | src/magic.c | — | N/A | Same as row 85. |
+| 128 | mud/skills/handlers.py:6027 | `max(0, c_div(level, 4))` | src/magic.c:3882 `number_fuzzy(level / 4)` raw | — | N/A | pass_door duration; same pattern as calm (row 83); max(0,...) redundant. |
+| 129 | mud/skills/handlers.py:6667 | `max(0, scaled)` | src/magic.c:4116 `damage(ch, victim, dam, ...)` | — | N/A | ray_of_truth damage floor; same as row 84. |
+| 130 | mud/skills/handlers.py:6670 | `max(0, c_div(3 * level, 4))` | src/magic.c:4118 `3 * level / 4` raw | — | N/A | blind_level for ray_of_truth; ROM passes raw; max(0,...) redundant since level≥1 in normal dispatch. |
+| 131 | mud/skills/handlers.py:6673 | `max(0, before - after)` | src/magic.c | — | N/A | Same as row 85. |
+| 132 | mud/skills/handlers.py:6811 | `max(1, c_div(chargemax * percent, 100))` | src/magic.c:4174 `UMAX(1, chargemax * percent / 100)` | Yes | ✅ MATCH | ROM has `UMAX(1, chargemax * percent / 100)` exactly. |
+| 133 | mud/skills/handlers.py:6819 | `min(95, c_div(3 * chance, 2))` | src/magic.c:4175 `UMIN(95, 3 * chance / 2)` | Yes | ✅ MATCH | ROM has `UMIN(95, 3 * chance / 2)` exactly. |
+| 134 | mud/skills/handlers.py:7168 | `max(0, min(level, len(dam_each) - 1))` | src/magic.c:4347 — thunder_clap table | — | N/A | Python table index clamp; non-parity list-safety. |
+
+## Findings — Batch B (handler / world / models / equipment / shop / consumption)
+
+| # | Python site | Guard | ROM C ref | ROM has guard? | Status | Gap ID | Notes |
+|---|-------------|-------|-----------|----------------|--------|--------|-------|
+| 1 | mud/handler.py:147 | `min(4, len(ch.armor))` | src/handler.c:~1019 affect_modify | — | N/A | — | Non-parity: Python list-bounds guard so `range()` doesn't overrun a 4-element armor list; ROM indexes a fixed C array directly. |
+| 2 | mud/handler.py:171 | `min(4, len(ch.armor))` | src/handler.c:~1754 equip_char | — | N/A | — | Same as row 1 — Python list-bounds guard on armor array. |
+| 3 | mud/handler.py:231 | `min(4, len(ch.armor))` | src/handler.c:~1804 unequip_char | — | N/A | — | Same as row 1 — Python list-bounds guard on armor array. |
+| 4 | mud/handler.py:351 | `max(0, paf.get("type", 0))` | src/handler.c:1005 clone_object | Yes | ✅ MATCH | — | ROM uses `UMAX(0, paf->type)` at exactly this point in clone_object. |
+| 5 | mud/handler.py:995 | `max(1, gold // 5)` | src/handler.c:2455 create_money | No | ❌ MISSING | ARITH-101 | ROM does `obj->weight = gold / 5` with no floor; 1–4 gold coins produce weight 0 in ROM but weight 1 in Python. |
+| 6 | mud/handler.py:1003 | `max(1, silver // 20)` | src/handler.c:2465 create_money | No | ❌ MISSING | ARITH-102 | ROM does `obj->weight = silver / 20` raw; 1–19 silver coins produce weight 0 in ROM but weight 1 in Python. |
+| 7 | mud/handler.py:1011 | `max(1, gold // 5 + silver // 20)` | src/handler.c:2477 create_money | No | ❌ MISSING | ARITH-103 | ROM does `obj->weight = gold/5 + silver/20` raw; mixed small-coin stacks get weight 0 in ROM but weight 1 in Python. |
+| 8 | mud/world/vision.py:134 | `max(0, min(100, percent))` | src/handler.c:446,515 get_skill | Yes | ✅ MATCH | — | ROM `get_skill` returns `URANGE(0, skill, 100)` — same 0..100 clamp. |
+| 9 | mud/world/movement.py:151 | `max(0, min(25, int(val)))` | src/handler.c:852–872 get_curr_stat | Yes | ✅ MATCH | — | ROM `get_curr_stat` clamps to `URANGE(3, ..., max≤25)`; Python's 0..25 is slightly more permissive at the low end but the 25 ceiling matches and this site feeds an NPC stat read, not the parity path for PC stat floors (see ARITH-104). |
+| 10 | mud/world/movement.py:428 | `max(0, move_cost // 2)` | src/act_move.c:181 do_move | No | ❌ MISSING | ARITH-104 | ROM does `move /= 2` without a floor; movement_loss table values are all ≥1 so the result is ≥0, but ROM has no explicit guard — Python's `max(0,...)` is an extra defensive floor not present in ROM. |
+| 11 | mud/utils/prompt.py:65 | `max(0, int(getattr(char, "hit", 0)))` | src/comm.c:1437–1443 bust_a_prompt | — | N/A | — | Documented intentional async-safe divergence (MESSAGE_DELIVERY.md): ROM's synchronous loop never renders a negative-hp prompt; Python clamps the display transient. |
+| 12 | mud/utils/prompt.py:195 | `max(0, int(getattr(char, "hit", 0)))` | src/comm.c:1459–1580 show_prompt | — | N/A | — | Same rationale as row 11 — async prompt guard, not a game-mechanic floor. |
+| 13 | mud/models/character.py:478 | `max(0, min(25, total))` | src/handler.c:872 get_curr_stat | No | ❌ MISSING | ARITH-105 | ROM `get_curr_stat` uses `URANGE(3, perm+mod, max)` — minimum stat is **3**, not 0. Python's floor of 0 allows debuffed stats to reach 0 or lower, where ROM they cannot go below 3. |
+| 14 | mud/models/character.py:486 | `max(0, min(stat_val, len(_INT_LEARN_RATES) - 1))` | src/handler.c:852–872 get_curr_stat | — | N/A | — | Pure Python list-index bounds guard for `_INT_LEARN_RATES[idx]`; ROM indexes into `int_app[]` C table directly via the stat value already clamped by get_curr_stat. |
+| 15 | mud/models/character.py:574 | `max(0, self.carry_number - carry_delta)` | src/handler.c:1678 obj_from_char | No | ❌ MISSING | ARITH-106 | ROM `obj_from_char` does `ch->carry_number -= get_obj_number(obj)` with no floor; Python floors at 0, hiding any double-extraction underflow that ROM would expose as negative. |
+| 16 | mud/models/character.py:708 | `max(0, min(new_sex, int(Sex.EITHER)))` | src/magic.c (affect_modify sex) | — | N/A | — | Fallback error path in except-block when `Sex(new_sex)` raises ValueError; not a parity guard on the normal code path. |
+| 17 | mud/models/character.py:832 | `max(0, min(new_sex, int(Sex.EITHER)))` | src/magic.c (affect_modify sex) | — | N/A | — | Same as row 16 — error-path fallback only. |
+| 18 | mud/models/room.py:171 | `max(0, current - 1)` | src/handler.c:1502 char_from_room | No | ❌ MISSING | ARITH-107 | ROM does `--ch->in_room->area->nplayer` with no floor; Python prevents nplayer going negative, masking any double-removal bug that ROM would expose as a negative player count. |
+| 19 | mud/commands/equipment.py:34 | `max(0, min(25, int(str_stat)))` | src/handler.c:1148 can_wield | — | N/A | — | Pure Python list-index bounds guard on `_STR_WIELD[idx]`; ROM uses `str_app[get_curr_stat(...)]` where get_curr_stat already ensures 0..25. |
+| 20 | mud/commands/obj_manipulation.py:446 | `max(1, obj_level * 3)` | src/act_obj.c:1822 do_sacrifice | Yes | ✅ MATCH | — | ROM uses `UMAX(1, obj->level * 3)` — identical floor. |
+| 21 | mud/commands/obj_manipulation.py:638 | `max(0, getattr(char, "carry_weight", 0) - weight)` | src/handler.c:1679 obj_from_char | No | ❌ MISSING | ARITH-108 | ROM `obj_from_char` does `ch->carry_weight -= get_obj_weight(obj)` with no floor; Python prevents negative carry weight masking double-removal corruption. |
+| 22 | mud/commands/obj_manipulation.py:639 | `max(0, getattr(char, "carry_number", 0) - 1)` | src/handler.c:1678 obj_from_char | No | ❌ MISSING | ARITH-109 | Same as row 21 but for carry_number; ROM has no floor on the subtraction. |
+| 23 | mud/commands/obj_manipulation.py:705 | `max(1, count)` | src/fight.c:1755–1759 group_gain | Yes | ✅ MATCH | — | ROM has equivalent `if (members == 0) { bug(...); members = 1; }` guard — result is the same minimum-1 protection. |
+| 24 | mud/commands/shop.py:529 | `max(0, int(cost))` | src/act_obj.c:2477–2527 get_cost | — | N/A | — | Defensive Python int-cast floor; ROM `get_cost` returns raw `int cost` which is always ≥0 by construction (unsigned obj->cost, positive profit percentages). No real parity divergence. |
+| 25 | mud/commands/shop.py:586 | `max(0, cost - discount)` | src/act_obj.c:2601–2608 do_buy (pet) | No | ❌ MISSING | ARITH-110 | ROM pet-shop haggle does `cost -= cost/2 * roll/100` raw with no floor; Python clamps to 0, which would hide any overflow from a very large roll (theoretically impossible with roll 0–99 but ROM has no guard). |
+| 26 | mud/commands/shop.py:822 | `max(0, unit_price - discount)` | src/act_obj.c:2722–2729 do_buy | No | ❌ MISSING | ARITH-111 | ROM item-shop buy haggle does `cost -= obj->cost/2 * roll/100` raw; Python clamps to 0. Same pattern as ARITH-110 applied to regular shop buys. |
+| 27 | mud/commands/consumption.py:99 | `min(48, condition[_COND_FULL] + food_value[0])` | src/update.c:377 gain_condition | Yes | ✅ MATCH | — | ROM `gain_condition` uses `URANGE(0, condition + value, 48)` — same upper cap of 48. |
+| 28 | mud/commands/consumption.py:101 | `min(48, condition[_COND_HUNGER] + food_value[1])` | src/update.c:377 gain_condition | Yes | ✅ MATCH | — | Same as row 27 — ROM URANGE cap of 48 on COND_HUNGER. |
+| 29 | mud/commands/consumption.py:347 | `max(0, ch.carry_weight - obj_weight)` | src/handler.c:1679 obj_from_char | No | ❌ MISSING | ARITH-112 | Duplicate site of ARITH-108: consumption path also floors carry_weight at 0 where ROM does raw subtraction. |
+| 30 | mud/commands/consumption.py:350 | `max(0, ch.carry_number - 1)` | src/handler.c:1678 obj_from_char | No | ❌ MISSING | ARITH-113 | Duplicate site of ARITH-109: consumption path also floors carry_number at 0 where ROM does raw subtraction. |
+| 31 | mud/characters/conditions.py:40 | `max(0, min(48, current + delta))` | src/update.c:377 gain_condition | Yes | ✅ MATCH | — | ROM `gain_condition` uses `URANGE(0, condition + value, 48)` — exact match for both floor and ceiling. |
+
+## Findings — Batch C (game_loop / loaders / spawning / db / config / imm_set / rng)
+
+| # | Python site | Guard | ROM C ref | ROM has guard? | Status | Gap ID | Notes |
+|---|-------------|-------|-----------|----------------|--------|--------|-------|
+| 1 | `mud/config.py:33` | `max(1, int(...scale...))` | N/A — no TIME_SCALE in ROM C | No (infrastructure-only) | N/A | — | Dev-only time-scale config, no ROM equivalent |
+| 2 | `mud/config.py:43` | `max(1, base // scale)` | N/A — no TIME_SCALE in ROM C | No (infrastructure-only) | N/A | — | Prevents div-by-zero in tick interval; infrastructure |
+| 3 | `mud/config.py:53` | `max(1, int(...scale...))` | N/A | No | N/A | — | Same pattern as #1, different config var |
+| 4 | `mud/config.py:61` | `max(1, base // scale)` | N/A | No | N/A | — | Same pattern as #2 |
+| 5 | `mud/config.py:71` | `max(1, int(...scale...))` | N/A | No | N/A | — | Same pattern as #1 |
+| 6 | `mud/config.py:79` | `max(1, base // scale)` | N/A | No | N/A | — | Same pattern as #2 |
+| 7 | `mud/config.py:85` | `max(1, int(...scale...))` | N/A | No | N/A | — | Same pattern as #1 |
+| 8 | `mud/config.py:93` | `max(1, base // scale)` | N/A | No | N/A | — | Same pattern as #2 |
+| 9 | `mud/config.py:103` | `max(1, int(...scale...))` | N/A | No | N/A | — | Same pattern as #1 |
+| 10 | `mud/config.py:111` | `max(1, base // scale)` | N/A | No | N/A | — | Same pattern as #2 |
+| 11 | `mud/game_loop.py:152` | `max(0, int(getattr(character, "level", 0) or 0))` | `update.c:hit_gain` — level used directly, no floor | No explicit floor | N/A | — | Defensive attr-access guard for possibly-None level; ROM C always has valid int level |
+| 12 | `mud/game_loop.py:211` | `max(0, int(getattr(ch, "max_hit", 0)) - int(getattr(ch, "hit", 0)))` | `update.c:229` — `return UMIN(gain, ch->max_hit - ch->hit)` | Yes — ROM uses `UMIN(gain, max_hit-hit)` which implicitly handles deficit | ✅ MATCH | — | Python floor(0) on deficit mirrors ROM's UMIN clamp preventing overheal |
+| 13 | `mud/game_loop.py:212` | `max(0, min(gain, deficit))` | `update.c:229` — `return UMIN(gain, ch->max_hit - ch->hit)` | Yes — `UMIN` | ✅ MATCH | — | Direct equivalent of ROM `UMIN(gain, max_hit-hit)` |
+| 14 | `mud/game_loop.py:220` | `max(0, int(getattr(character, "level", 0) or 0))` | `update.c:mana_gain` — level used directly | No explicit floor | N/A | — | Same defensive attr-access pattern as #11; infrastructure |
+| 15 | `mud/game_loop.py:282` | `max(0, int(getattr(ch, "max_mana", 0)) - int(getattr(ch, "mana", 0)))` | `update.c:311` — `return UMIN(gain, ch->max_mana - ch->mana)` | Yes | ✅ MATCH | — | Mana version of #12 |
+| 16 | `mud/game_loop.py:283` | `max(0, min(gain, deficit))` | `update.c:311` — `return UMIN(gain, ch->max_mana - ch->mana)` | Yes | ✅ MATCH | — | Mana version of #13 |
+| 17 | `mud/game_loop.py:291` | `max(0, int(getattr(character, "level", 0) or 0))` | `update.c:move_gain` — level used directly | No explicit floor | N/A | — | Same defensive attr-access pattern as #11; infrastructure |
+| 18 | `mud/game_loop.py:326` | `max(0, int(getattr(ch, "max_move", 0)) - int(getattr(ch, "move", 0)))` | `update.c:362` — `return UMIN(gain, ch->max_move - ch->move)` | Yes | ✅ MATCH | — | Move version of #12 |
+| 19 | `mud/game_loop.py:327` | `max(0, min(gain, deficit))` | `update.c:362` — `return UMIN(gain, ch->max_move - ch->move)` | Yes | ✅ MATCH | — | Move version of #13 |
+| 20 | `mud/game_loop.py:426` | `max(0, current_weight - int(weight))` | `handler.c:1679` — `ch->carry_weight -= get_obj_weight(obj)` — no floor | No — ROM can go negative | ❌ MISSING | ARITH-201 | ROM C decrements carry_weight with no floor; Python clamps to 0; negative carry_weight theoretically possible in ROM on edge cases |
+| 21 | `mud/game_loop.py:454` | `max(0, current_light - 1)` | `update.c:726` — `--ch->in_room->light` — no floor | No — ROM decrements with no floor | ❌ MISSING | ARITH-202 | ROM C `--room->light` has no floor; Python adds `max(0,...)`; harmless in practice (light shouldn't go negative) but is a divergence |
+| 22 | `mud/game_loop.py:626` | `max(0, int(getattr(ch, "mana", 0) or 0) - dam)` | `update.c` / `fight.c` — mana/move drain: no explicit floor found in plague tick | No explicit floor in plague drain path | ❌ MISSING | ARITH-203 | ROM C plague mana/move drain (`ch->mana -= dam; ch->move -= dam`) has no floor; Python floors at 0 |
+| 23 | `mud/game_loop.py:627` | `max(0, int(getattr(ch, "move", 0) or 0) - dam)` | Same plague-drain path as #22 | No explicit floor | ❌ MISSING | ARITH-204 | Same as ARITH-203 for move stat |
+| 24 | `mud/game_loop.py:810` | `max(0, current_number - int(slot_cost))` | `handler.c:1678` — `ch->carry_number -= get_obj_number(obj)` — no floor | No — ROM can go negative | ❌ MISSING | ARITH-205 | ROM C decrements carry_number with no floor; Python floors at 0 |
+| 25 | `mud/game_loop.py:1318` | `max(0, wait - get_pulse_violence())` | `update.c:193` — `ch->wait = UMAX(0, ch->wait - PULSE_VIOLENCE)` | Yes — `UMAX(0,...)` | ✅ MATCH | — | Direct equivalent of ROM `UMAX(0, ch->wait - PULSE_VIOLENCE)` |
+| 26 | `mud/game_loop.py:1320` | `max(0, wait)` | `update.c:193` — decrements wait only when > 0 | Yes — ROM only decrements when > 0, same effect | ✅ MATCH | — | Equivalent to ROM's conditional decrement |
+| 27 | `mud/game_loop.py:1330` | `max(0, daze - get_pulse_violence())` | `update.c:196` — `ch->daze = UMAX(0, ch->daze - PULSE_VIOLENCE)` | Yes — `UMAX(0,...)` | ✅ MATCH | — | Direct equivalent of ROM `UMAX(0, ch->daze - PULSE_VIOLENCE)` |
+| 28 | `mud/game_loop.py:1332` | `max(0, daze)` | `update.c:196` — same pattern as wait | Yes | ✅ MATCH | — | Equivalent to ROM's conditional decrement |
+| 29 | `mud/spawning/reset_handler.py:316` | `max(0, (olevel * 3 // 4) - 2)` | `db.c:1887` — `olevel = UMAX(0, (olevel * 3 / 4) - 2)` | Yes — `UMAX(0,...)` | ✅ MATCH | — | Direct port of ROM `UMAX(0, (olevel * 3 / 4) - 2)` |
+| 30 | `mud/spawning/reset_handler.py:338` | `max(0, LEVEL_HERO - 1)` | `db.c:1750` — `URANGE(0, pMob->level - 2, LEVEL_HERO - 1)` | Yes — LEVEL_HERO-1 is upper bound of URANGE | ✅ MATCH | — | Hero cap mirrors ROM `LEVEL_HERO - 1` upper bound |
+| 31 | `mud/spawning/reset_handler.py:339` | `max(0, min(mob_level, hero_cap))` | `db.c:1750` — `URANGE(0, pMob->level - 2, LEVEL_HERO - 1)` | Yes — `URANGE` = `max(lo, min(val, hi))` | ✅ MATCH | — | Python `max(0, min(..., hero_cap))` directly implements ROM `URANGE(0, ..., LEVEL_HERO-1)` |
+| 32 | `mud/spawning/reset_handler.py:405` | `max(1, room_limit)` | `db.c` reset logic — no `max(1, room_limit)` found; ROM uses arg values directly | No | ❌ MISSING | ARITH-206 | Python floors room_limit to 1; ROM C uses the reset arg value directly (could be 0 meaning unlimited or just 0); needs follow-up |
+| 33 | `mud/spawning/reset_handler.py:489` | `max(0, LEVEL_HERO - 1)` | `db.c:1750` — same URANGE | Yes | ✅ MATCH | — | Second occurrence of hero_cap; same match as #30 |
+| 34 | `mud/spawning/reset_handler.py:490` | `max(0, min(mob_level - 2, hero_cap))` | `db.c:1750` — `URANGE(0, pMob->level - 2, LEVEL_HERO - 1)` | Yes | ✅ MATCH | — | Direct port including the `-2` adjustment |
+| 35 | `mud/spawning/reset_handler.py:527` | `max(0, LEVEL_HERO - 1)` | `db.c:1781-1782` — `UMIN(number_fuzzy(level), LEVEL_HERO - 1)` | Yes | ✅ MATCH | — | Third occurrence; matches ROM hero cap |
+| 36 | `mud/spawning/reset_handler.py:528` | `max(0, min(last_mob_level, hero_cap))` | `db.c:1781-1782` — `UMIN(number_fuzzy(level), LEVEL_HERO - 1)` | Yes | ✅ MATCH | — | Matches ROM `UMIN(..., LEVEL_HERO - 1)` with floor 0 |
+| 37 | `mud/spawning/reset_handler.py:665` | `max(1, int(reset.arg4 or 1))` | `db.c` reset — arg4 used directly for target_count, no explicit max(1,...) | No | ❌ MISSING | ARITH-207 | Python floors target_count to 1; ROM C uses arg4 value directly; if arg4 == 0 ROM may skip or handle differently |
+| 38 | `mud/spawning/reset_handler.py:684` | `max(0, limit - object_counts.get(obj_vnum, 0))` | `db.c` reset — remaining computed by count comparison, no explicit floor | No explicit floor in ROM | N/A | — | Defensive Python floor on remaining count; ROM uses conditional logic (`if count < limit`) rather than computing a floored remainder |
+| 39 | `mud/spawning/reset_handler.py:762` | `max(0, container_level)` | `db.c:1826` — `number_fuzzy(LastObj->level)` used directly, no floor | No | N/A | — | Defensive floor on container_level attr; practical since level should never be negative; infrastructure safety |
+| 40 | `mud/spawning/reset_handler.py:775` | `max(0, limit - object_counts.get(obj_vnum, 0))` | Same as #38 | No explicit floor | N/A | — | Same pattern as #38; infrastructure |
+| 41 | `mud/spawning/reset_handler.py:798` | `max(0, n - 1)` in `range(0, max(0, n-1))` | `db.c` loop — ROM uses loop counter directly, no floor on range | No | N/A | — | Prevents negative range in Python; infrastructure safety; no parity impact |
+| 42 | `mud/spawning/templates.py:171` | `max(0, bonus)` | `db.c` — bonus computed from table values, no explicit floor in ROM | No | N/A | — | Defensive floor on bonus; spawning template helper; ROM C can pass negative bonus to dice but dice itself clamps; low risk |
+| 43 | `mud/spawning/templates.py:172` | `max(0, rng_mm.dice(number, size) + bonus)` | `db.c` — no floor on dice+bonus result | No | ❌ MISSING | ARITH-208 | Python floors dice+bonus to 0; ROM C `dice(number,size) + bonus` can return negative (e.g. bonus = -5, dice = 1d2 = 1, result = -4); game mechanic value needs follow-up |
+| 44 | `mud/spawning/templates.py:322` | `min(25, 11 + c_div(level_value, 4))` | `db.c:2118` — `mob->perm_stat[i] = UMIN(25, 11 + mob->level / 4)` | Yes — `UMIN(25, ...)` | ✅ MATCH | — | Direct port of ROM `UMIN(25, 11 + level/4)` |
+| 45 | `mud/spawning/templates.py:460` | `max(0, self.carry_number - 1)` | `handler.c:1678` — `ch->carry_number -= get_obj_number(obj)` — no floor | No | N/A | — | Spawning template safety; carry_number decremented by 1 with floor; templating infrastructure not game-tick path |
+| 46 | `mud/spawning/templates.py:480` | `max(0, min(25, self.perm_stat[idx]))` | `db.c:2118` — `UMIN(25,...)` but no floor 0 on reads | Partial — ROM has UMIN(25) cap but no floor-0 on read | N/A | — | Python adds floor-0 on stat read; ROM stats are unsigned in C so can't go negative; defensive only |
+| 47 | `mud/utils/rng_mm.py:123` | `max(1, number)` | ROM C `number_range`: `if (from > to) { bug(...); return from; }` — effectively floors to `from` | ROM-faithful by design | ✅ MATCH | — | RNG internal; `rng_mm.py` is ROM-faithful; this clamp matches ROM's number_range floor behavior |
+| 48 | `mud/db/serializers.py:69` | `max(0, min(100, learned))` | `save.c` — ROM reads skill pct from file directly, no explicit clamp on load | No | N/A | — | Persistence/serialization safety clamp; not a game-mechanic guard; protects against corrupt save data |
+| 49 | `mud/commands/imm_set.py:396` | `min(50, value)` | `act_wiz.c:3998` — `obj->value[0] = UMIN(50, value)` | Yes — `UMIN(50, value)` | ✅ MATCH | — | Direct port of ROM `UMIN(50, value)` for obj value[0] |
+| 50 | `mud/loaders/json_loader.py:357` | comment: `# Default contained item count mirrors ROM's max(1, arg4)` | `db.c` reset — arg4 used directly; ROM does not have an explicit max(1,arg4) | No | ❌ MISSING | ARITH-209 | Comment claims ROM has `max(1, arg4)` but `db.c` reset uses arg4 directly without such a floor; the Python floor may be an invention; needs follow-up |
+
+---
+
+## Next steps
+
+1. **Close high-impact gaps first** via `/rom-gap-closer` — each ARITH-NNN is a single-commit close per the standard TDD flow.
+2. **Update `docs/parity/META_AUDIT_TAXONOMY.md`** to mark Class 2 as triaged (5 of 8 META classes were complete pre-session; now 6 of 8).
+3. **Decide policy on UB-protection gaps** (ARITH-001/002/003/005/006/007/008/011/012/014). These can't be directly replicated without ROM-style crashes. Most realistic close: assert the precondition at the gap site (e.g. `assert max_hit >= 1`) or document the divergence in `docs/divergences/`.
+4. **Consider whether ARITH-209 is removable** rather than fixable — the Python floor may be inventing a guarantee ROM doesn't make.
