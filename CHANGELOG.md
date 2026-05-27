@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.53]
+
+### Fixed
+- **`MATH-001` — `calculate_weapon_damage` damroll line now uses `c_div`** (ROM `src/fight.c` `one_hit`: `dam += GET_DAMROLL(ch) * UMIN(100, skill) / 100`). Python's `//` floors toward negative infinity; C's `/` truncates toward zero. With cursed gear or debuffs `get_damroll` can be negative, so the product is negative and any product not evenly divisible by 100 falls on the diverging side: e.g. `damroll=-1, skill=99` → product `-99` → Python `// 100` gives `-1`, ROM `c_div(-99, 100)` gives `0`. Net effect: Python over-debited damage by 1 in the cursed-damroll regime. Replaced `// 100` with `c_div(..., 100)` at `mud/combat/engine.py:1290`. Surfaced by the parallel META audit Class 8 (`docs/parity/audits/MATH_AND_RNG.md`). New regression: `tests/integration/test_weapon_damage_damroll_c_div.py` (`test_damroll_uses_c_truncation_not_python_floor`).
+
 ## [2.9.52]
 
 ### Added

@@ -1287,7 +1287,10 @@ def calculate_weapon_damage(
 
     # Add damroll bonus - ROM: GET_DAMROLL(ch) * UMIN(100, skill) / 100
     # ROM src/merc.h:2109-2110 GET_DAMROLL adds str_app[STR].todam to ch->damroll.
-    dam += get_damroll(attacker) * min(100, skill_total) // 100
+    # MATH-001: ROM C `/` truncates toward zero; Python `//` floors toward
+    # negative infinity. With cursed gear get_damroll can be negative, so the
+    # product can be negative — must use c_div to match ROM.
+    dam += c_div(get_damroll(attacker) * min(100, skill_total), 100)
 
     # Ensure minimum damage - ROM: if (dam <= 0) dam = 1
     if dam <= 0:
