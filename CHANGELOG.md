@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **`ARITH-011` and `ARITH-012` reclassified to ⛔ N/A** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md`, and a new policy doc `docs/divergences/UB_DIVISORS.md` was added covering both. The `max(1, max_hit)` floors at `mud/commands/combat.py:512` (`do_berserk` hp_percent) and `:636` (`do_flee` hp_percent) are deliberate divergences from ROM (`src/fight.c:2310` and `src/act_move.c` do_flee), not parity gaps. ROM divides `100 * ch->hit / ch->max_hit` raw — SIGFPE if `max_hit == 0`. ROM tolerates this because SIGFPE kills one process; Python cannot, because a `ZeroDivisionError` propagating up through the dispatcher would crash the game loop for every connected player. Reachability probe: PCs always initialize `max_hit ≥ 20` (`mud/models/character.py:951-976`), so do_berserk is unreachable in steady-state PC play; do_flee is genuinely reachable for NPCs because `_roll_dice` at `mud/spawning/templates.py:170-172` floors at 0 (not 1) and a mob proto with `hit_dice = (0,0,0)` will spawn with `max_hit == 0`. Floors are kept and ROM-cited; the new policy doc defines how the same evaluation applies to ARITH-001/002/003/005/006/007/008/014. Regressions: `tests/test_arith_max_hit_floor.py::TestMaxHitFloorDivergence::test_berserk_with_zero_max_hit_does_not_raise` and `::test_flee_with_zero_max_hit_does_not_raise`. Tally adjusted: 56 ✅ / **42 ❌** / **117 N/A**. Effective open ❌ MISSING in the ARITH triage drops to **35**.
+
 ## [2.9.66]
 
 ### Fixed

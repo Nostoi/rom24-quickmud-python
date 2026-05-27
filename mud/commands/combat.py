@@ -509,6 +509,10 @@ def do_berserk(char: Character, args: str) -> str:
         return "You are still recovering."
 
     roll = rng_mm.number_percent()
+    # ARITH-011: ROM src/fight.c:2310 divides `100 * ch->hit / ch->max_hit`
+    # raw (SIGFPE if max_hit == 0). Python floors to prevent a single
+    # corrupt-state character from crashing the game loop. See
+    # docs/divergences/UB_DIVISORS.md.
     hp_max = max(1, int(getattr(char, "max_hit", 1) or 1))
     hp_percent = c_div(int(getattr(char, "hit", 0) or 0) * 100, hp_max)
     chance = learned
@@ -633,6 +637,10 @@ def do_flee(char: Character, args: str) -> str:
     chance = 50 + (dex - 13) * 5  # Base 50%, +/- 5% per dex point
 
     # Reduce chance if badly hurt
+    # ARITH-012: ROM src/act_move.c do_flee divides `100 * ch->hit /
+    # ch->max_hit` raw (SIGFPE if max_hit == 0). Reachable in Python via
+    # NPC mob protos with degenerate hit_dice. See
+    # docs/divergences/UB_DIVISORS.md.
     hp_percent = c_div(int(getattr(char, "hit", 0) or 0) * 100, max(1, int(getattr(char, "max_hit", 1) or 1)))
     if hp_percent < 30:
         chance -= 25
