@@ -1,6 +1,12 @@
 from __future__ import annotations
 
+import pytest
+
+from mud.models.character import Character
+from mud.models.constants import Position
+from mud.models.room import Room
 from tools.diff_harness.compare import diff_traces, normalize_step
+from tools.diff_harness.pysnap import snapshot_python
 from tools.diff_harness.schema import CharSnap, RoomSnap, StepSnap, step_from_dict, step_to_dict
 
 
@@ -66,3 +72,34 @@ def test_diff_traces_identical_returns_none():
     a = [StepSnap(step=1, command="look", chars=[], rooms=[], output=["hi"])]
     b = [StepSnap(step=1, command="look", chars=[], rooms=[], output=["hi"])]
     assert diff_traces(a, b) is None
+
+
+@pytest.fixture
+def watched_world():
+    room = Room(vnum=3001, name="R", description="")
+    char = Character(name="Tester", level=5, position=Position.STANDING)
+    char.hit = char.max_hit = 100
+    char.room = room
+    room.add_character(char)
+    return room, char
+
+
+def test_snapshot_python_captures_watch_set(watched_world):
+    room, char = watched_world
+    rooms_by_vnum = {3001: room}
+    chars_by_name = {"Tester": char}
+
+    step = snapshot_python(
+        step=2, command="look",
+        chars_by_name=chars_by_name, rooms_by_vnum=rooms_by_vnum, output=["You see a room."],
+    )
+
+    assert step.step == 2
+    assert step.command == "look"
+    assert step.chars[0].key == "Tester"
+    assert step.chars[0].room == 3001
+    assert step.chars[0].position == "STANDING"
+    assert step.chars[0].hp == 100
+    assert step.rooms[0].vnum == 3001
+    assert "Tester" in step.rooms[0].people
+    assert step.output == ["You see a room."]
