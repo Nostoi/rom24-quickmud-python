@@ -47,8 +47,23 @@ def setup_world():
 
 @pytest.fixture
 def test_room():
-    """Get the Temple of Mota (room 3001) for testing."""
-    return room_registry.get(3001)
+    """Get the Temple of Mota (room 3001) for testing.
+
+    Restores the shared room's occupant list afterwards so characters spawned by
+    one test (e.g. an aggressive mob's victim) do not leak into the next test in
+    the class — the same snapshot/restore discipline the isolated fixtures use for
+    character_registry. Without this, FIGHT-019's THAC0 model (which kills less
+    often than the retired percent model) leaves victims alive in room 3001 across
+    tests, and a later aggressive-mob test attacks the leftover instead of its own
+    target.
+    """
+    room = room_registry.get(3001)
+    people_snapshot = list(room.people) if room is not None else []
+    try:
+        yield room
+    finally:
+        if room is not None:
+            room.people[:] = people_snapshot
 
 
 @pytest.fixture

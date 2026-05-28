@@ -87,9 +87,9 @@ def test_combat_engine_uses_get_ac(monkeypatch: pytest.MonkeyPatch) -> None:
 
     Spies engine.get_ac and asserts it is called with the victim during the
     THAC0 path's victim_ac computation.
-    """
 
-    monkeypatch.setattr(combat_engine, "COMBAT_USE_THAC0", True)
+    FIGHT-019: THAC0 is the only melee-hit model — no feature flag to enable.
+    """
 
     seen_ac: list[int] = []
     real_get_ac = combat_engine.get_ac

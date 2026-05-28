@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 from mud.commands import process_command
-from mud.models.constants import DamageType, WearLocation, WeaponType, attack_lookup
+from mud.models.constants import DamageType, WeaponType, WearLocation, attack_lookup
 from mud.world import create_test_character, initialize_world
 
 
@@ -23,9 +23,7 @@ def setup_thac0_env():
 
 
 def test_thac0_path_hit_and_miss(monkeypatch):
-    # Enable THAC0 feature flag (patch engine's imported flag)
-    monkeypatch.setattr("mud.combat.engine.COMBAT_USE_THAC0", True)
-
+    # FIGHT-019: the THAC0 attack roll is the only melee-hit model (no flag).
     # Deterministic dicerolls
     monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 10)
 
@@ -49,8 +47,7 @@ def test_thac0_path_hit_and_miss(monkeypatch):
 
 
 def test_weapon_skill_influences_thac0(monkeypatch):
-    monkeypatch.setattr("mud.combat.engine.COMBAT_USE_THAC0", True)
-
+    # FIGHT-019: THAC0 is the only model — no feature flag to enable.
     skills_used: list[int] = []
 
     def fake_compute_thac0(level: int, ch_class: int, *, hitroll: int, skill: int) -> int:

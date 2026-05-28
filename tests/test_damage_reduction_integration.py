@@ -20,8 +20,18 @@ def assert_attack_message(message: str, target: str) -> None:
     assert message.endswith("{x")
 
 
-def setup_combat_with_damage_reduction():
-    """Set up combat scenario for damage reduction testing."""
+def setup_combat_with_damage_reduction(monkeypatch):
+    """Set up combat scenario for damage reduction testing.
+
+    FIGHT-019: ROM `one_hit` resolves the swing through the THAC0 / number_bits(5)
+    roll (src/fight.c:508-510), where a natural 19 always lands (the `diceroll != 19`
+    guard). These tests exercise the *damage-reduction math*, not hit probability, so
+    we pin the attack roll to a guaranteed-hit nat 19 — the ROM-faithful analog of the
+    old `hitroll=100` "guarantee hit" comment under the retired percent model. The
+    subsequent damage rolls still draw from the seeded stream.
+    """
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
+
     attacker = Character(
         name="Attacker",
         level=10,
@@ -46,11 +56,11 @@ def setup_combat_with_damage_reduction():
     return attacker, victim
 
 
-def test_sanctuary_integration_in_combat():
+def test_sanctuary_integration_in_combat(monkeypatch):
     """Test sanctuary affect reduces damage in full combat round."""
     rng_mm.seed_mm(12345)  # Deterministic results
 
-    attacker, victim = setup_combat_with_damage_reduction()
+    attacker, victim = setup_combat_with_damage_reduction(monkeypatch)
     victim.add_affect(AffectFlag.SANCTUARY)
 
     original_hp = victim.hit
@@ -66,11 +76,11 @@ def test_sanctuary_integration_in_combat():
     assert damage_dealt < 10  # But reduced due to sanctuary (would be ~6-8 normally, ~3-4 with sanctuary)
 
 
-def test_protection_spell_integration_in_combat():
+def test_protection_spell_integration_in_combat(monkeypatch):
     """Test protection affects reduce damage vs opposing alignment."""
     rng_mm.seed_mm(12345)
 
-    attacker, victim = setup_combat_with_damage_reduction()
+    attacker, victim = setup_combat_with_damage_reduction(monkeypatch)
     attacker.alignment = -500  # Evil attacker
     victim.add_affect(AffectFlag.PROTECT_EVIL)
 
@@ -85,11 +95,11 @@ def test_protection_spell_integration_in_combat():
     assert damage_dealt < 10  # Reduced by 25% from protection
 
 
-def test_drunk_condition_integration_in_combat():
+def test_drunk_condition_integration_in_combat(monkeypatch):
     """Test drunk condition reduces damage in full combat."""
     rng_mm.seed_mm(12345)
 
-    attacker, victim = setup_combat_with_damage_reduction()
+    attacker, victim = setup_combat_with_damage_reduction(monkeypatch)
     victim.pcdata.condition = [15, 0, 0, 0]  # Drunk condition > 10
 
     original_hp = victim.hit
@@ -102,11 +112,11 @@ def test_drunk_condition_integration_in_combat():
     assert damage_dealt > 0
 
 
-def test_multiple_reductions_stack_in_combat():
+def test_multiple_reductions_stack_in_combat(monkeypatch):
     """Test multiple damage reductions stack properly in combat."""
     rng_mm.seed_mm(12345)
 
-    attacker, victim = setup_combat_with_damage_reduction()
+    attacker, victim = setup_combat_with_damage_reduction(monkeypatch)
 
     # Apply all three types of damage reduction
     victim.add_affect(AffectFlag.SANCTUARY)  # 50% reduction
@@ -126,11 +136,11 @@ def test_multiple_reductions_stack_in_combat():
     assert damage_dealt < 5  # Should be heavily reduced
 
 
-def test_no_damage_reduction_for_npcs():
+def test_no_damage_reduction_for_npcs(monkeypatch):
     """Test NPCs don't get drunk condition reduction."""
     rng_mm.seed_mm(12345)
 
-    attacker, victim = setup_combat_with_damage_reduction()
+    attacker, victim = setup_combat_with_damage_reduction(monkeypatch)
     victim.pcdata = None  # Make victim an NPC
 
     # Set up conditions that would reduce damage for PCs
@@ -147,11 +157,11 @@ def test_no_damage_reduction_for_npcs():
     assert damage_dealt > 0
 
 
-def test_damage_reduction_with_riv_scaling():
+def test_damage_reduction_with_riv_scaling(monkeypatch):
     """Test damage reduction interacts correctly with RIV scaling."""
     rng_mm.seed_mm(12345)
 
-    attacker, victim = setup_combat_with_damage_reduction()
+    attacker, victim = setup_combat_with_damage_reduction(monkeypatch)
 
     # Add sanctuary for damage reduction
     victim.add_affect(AffectFlag.SANCTUARY)

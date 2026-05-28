@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.4]
+
+### Fixed
+- **`FIGHT-019` / FINDING-008 (sub-issue 1) — combat shipped a non-ROM hit model game-wide (CRITICAL).** ROM `one_hit` (`src/fight.c:386-516`) resolves every melee swing through a single model: the THAC0 / `number_bits(5)` attack roll (re-roll loop until `< 20`, miss on `diceroll == 0` or `diceroll != 19 && diceroll < thac0 - victim_ac`). The Python port shipped this faithful path behind a `COMBAT_USE_THAC0` feature flag **defaulted to False**, so production combat ran a non-ROM percent model instead (`50 + hitroll + AC/2`, rolled with `number_percent()`) — diverging from ROM on both the RNG draw *and* the hit/miss decision. `mud/combat/engine.py::attack_round` now uses the THAC0 model exclusively; the percent branch and the `COMBAT_USE_THAC0` flag (`mud/config.py`) are deleted. **Surfaced by the differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-008): from seed 777 the drunk #3064's first incoming attack is a `miss` in ROM C but registered a `scratch` (hit) under the percent model. Regression: `tests/integration/test_fight_019_thac0_attack_roll.py`.
+- **NPC-attacker THAC0 branch was missing (masked by the flag).** Making THAC0 the only path exposed that `attack_round`/`compute_thac0` always indexed the PC `class_table[attacker.ch_class]`, which raises `AttributeError` for NPC attackers (`MobInstance` has no `ch_class`) and ignored ROM's NPC rule. Per ROM `src/fight.c:445-457`, NPC attackers use `thac0_00 = 20` and a `thac0_32` keyed off their ACT class flag (WARRIOR -10 / THIEF -4 / CLERIC 2 / MAGE 6, default -4). `compute_thac0` gained a `thac0_pair` override and `attack_round` now selects the NPC pair from act flags. Regression: `tests/test_combat_thac0.py::test_thac0_npc_pair_overrides_class_table`, `tests/integration/test_fight_019_thac0_attack_roll.py::test_fight_019_npc_attacker_thac0_pair_from_act_flag`.
+- **Test isolation:** `tests/integration/test_mob_ai.py`'s `test_room` fixture now restores room 3001's `.people` after each test. THAC0's lower kill rate (vs the retired percent model) left an aggressive mob's victim alive in the shared room across tests, causing a later level-difference test to attack the leftover. (15 percent-model-dependent combat tests were re-baselined ROM-faithfully as part of this change.)
+
 ## [2.11.3]
 
 ### Fixed

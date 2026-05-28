@@ -23,7 +23,6 @@ from mud.models.character import Character, character_registry
 from mud.models.constants import Position
 from mud.models.room import Room
 from mud.registry import room_registry
-from mud.spawning.templates import MobInstance
 
 
 @pytest.fixture
@@ -306,9 +305,12 @@ class TestGroupExperienceSharing:
         follower2.leader = leader
         leader.leader = leader
 
-        # Setup stats
+        # Setup stats. FIGHT-019: hits now resolve through ROM's THAC0 /
+        # number_bits(5) roll (src/fight.c:508-510); a high hitroll drives thac0
+        # well below the roll so the group reliably lands its swings and fells the
+        # mob within the tick budget (this test verifies XP *split*, not hit chance).
         for char in [leader, follower1, follower2]:
-            char.hitroll = 20
+            char.hitroll = 100
             char.damroll = 15
             char.perm_stat = [13, 13, 13, 13, 13]
             char.exp = 0  # Track XP gain

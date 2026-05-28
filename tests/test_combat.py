@@ -5,6 +5,7 @@ import pytest
 
 from mud.combat import engine as combat_engine
 from mud.commands import process_command
+from mud.config import get_pulse_violence
 from mud.models.character import Character
 from mud.models.constants import (
     AC_BASH,
@@ -14,21 +15,20 @@ from mud.models.constants import (
     WEAPON_POISON,
     AffectFlag,
     DamageType,
+    DefenseBit,
     ImmFlag,
     PlayerFlag,
     Position,
-    DefenseBit,
     RoomFlag,
     VulnFlag,
-    WearLocation,
     WeaponType,
+    WearLocation,
     attack_lookup,
 )
 from mud.models.room import Room
 from mud.skills import load_skills, skill_registry
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
-from mud.config import get_pulse_violence
 
 
 def setup_combat() -> tuple[Character, Character]:
@@ -339,11 +339,19 @@ def test_multi_hit_single_attack():
     assert victim.hit == 4  # 10 - 6 = 4
 
 
-def test_multi_hit_with_haste():
+def test_multi_hit_with_haste(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     victim.hit = 20  # Increase HP to survive two attacks
+
+    # FIGHT-019: hits resolve through ROM's THAC0 / number_bits(5) roll
+    # (src/fight.c:508-510). Pin a natural 19 so both haste swings land (this test
+    # verifies the haste attack *count*), and pin number_range to its low end so the
+    # unarmed base damage is deterministic — reproducing ROM's 6/hit (base 5 +
+    # damroll 1), i.e. 20 - (6 + 6) = 8.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
 
     # Add haste affect
     attacker.add_affect(AffectFlag.HASTE)
@@ -577,44 +585,36 @@ def test_ac_mapping_and_sign_semantics():
 
 
 def test_ac_influences_hit_chance(monkeypatch):
+    # FIGHT-019: AC influences hit chance through ROM's THAC0 / number_bits(5)
+    # attack roll (src/fight.c:508-510) — miss when `diceroll == 0` or
+    # `diceroll != 19 && diceroll < thac0 - victim_ac`. With the roll pinned to a
+    # mid value (not nat 0 / nat 19), a strongly negative victim AC (better
+    # defence) raises `thac0 - victim_ac` above the roll → miss, while a positive
+    # AC (worse defence) drops it below the roll → hit. Same roll, AC flips it.
     attacker, victim = setup_combat()
     attacker.hitroll = 10
     attacker.damroll = 3
     attacker.dam_type = int(DamageType.BASH)
 
-    # Fix roll to 60 for deterministic checks
-    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 60)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 10)
 
-    # No armor: base to_hit = 50 + 10 = 60 → hit on 60
-    victim.armor = [0, 0, 0, 0]
-    victim.hit = 10
+    # Positive AC (worse defence) → the pinned roll lands.
+    victim.armor = [200, 200, 200, 200]
+    victim.hit = 50
     out = process_command(attacker, "kill victim")
-    # ROM damage: base 5 + damroll 3 = 8 total
     assert_attack_message(out)
 
-    # Reset combat state for next test
+    # Reset combat state for next case
     attacker.position = Position.STANDING
     attacker.fighting = None
     victim.position = Position.STANDING
     victim.fighting = None
 
-    # Strong negative AC lowers to_hit and causes miss
+    # Strongly negative AC (better defence) → the same roll now misses.
     victim.hit = 50
-    victim.armor = [-22, -22, -22, -22]
+    victim.armor = [-200, -200, -200, -200]
     out = process_command(attacker, "kill victim")
     assert out == "{2You miss Victim.{x"
-
-    # Reset combat state for next test
-    attacker.position = Position.STANDING
-    attacker.fighting = None
-    victim.position = Position.STANDING
-    victim.fighting = None
-
-    # Positive AC raises to_hit and causes hit
-    victim.hit = 50
-    victim.armor = [20, 20, 20, 20]
-    out = process_command(attacker, "kill victim")
-    assert_attack_message(out)
 
 
 def test_visibility_and_position_modifiers(monkeypatch):

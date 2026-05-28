@@ -111,9 +111,6 @@ def get_pulse_mobile() -> int:
     return max(1, base // scale)
 
 
-# Feature flags
-COMBAT_USE_THAC0: bool = False
-
 # Optional test-only time scaling (1 = real ROM cadence)
 TIME_SCALE: int = 1
 
