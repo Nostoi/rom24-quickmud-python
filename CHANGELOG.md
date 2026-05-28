@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.3]
+
+### Fixed
+- **`SPAWN-001` / FINDING-007 — mob spawn RNG draw-order diverged from ROM game-wide (CRITICAL).** ROM `create_mobile` (`src/db.c:2047-2113`) draws the spawn RNG stream in a fixed order — **gold/wealth → HP dice → mana dice → random damtype (when `dam_type == 0`) → random sex (when `sex == EITHER`)**. `mud/spawning/templates.py::MobInstance.from_prototype` drew them in nearly the reverse order (sex first, damtype next, gold last), so every seed-dependent mob landed at a different RNG stream position than ROM. Concretely: ROM's gold draw precedes the HP roll, so the drunk #3064 rolled HP **31** in ROM C but **33** in Python from the same seed. Reordered `from_prototype`'s draws to mirror ROM exactly (using the real `rng_mm` primitives, which short-circuit `number_range`/`dice` without consuming the stream, so the draw *count* stays data-dependent and correct). The `create_mobile` row in `DB_C_AUDIT.md` had been certified on stat-copy parity; the RNG **ordering** contract was never checked — corrected. **Surfaced by the combat differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-007). Regression: `tests/integration/test_spawn_001_rng_draw_order.py`.
+
 ## [2.11.2]
 
 ### Fixed
