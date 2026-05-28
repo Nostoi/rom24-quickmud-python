@@ -824,7 +824,11 @@ def do_buy(char: Character, args: str) -> str:
         if roll < haggle_skill:
             base_cost = int(getattr(proto, "cost", getattr(selected_obj, "cost", 0)) or 0) if proto is not None else int(getattr(selected_obj, "cost", 0) or 0)
             discount = c_div(c_div(base_cost, 2) * roll, 100)
-            unit_price = max(0, unit_price - discount)
+            # ROM src/act_obj.c:2727 — `cost -= obj->cost / 2 * roll / 100;`
+            # is raw subtraction. When shop.profit_buy < 50, the discount can
+            # exceed unit_price and cost goes negative; deduct_cost then
+            # refunds the player (ROM src/handler.c:2410). Do not floor at 0.
+            unit_price = unit_price - discount
             total_cost = unit_price * quantity
             if hasattr(char, "messages"):
                 char.messages.append("You haggle with the shopkeeper.")

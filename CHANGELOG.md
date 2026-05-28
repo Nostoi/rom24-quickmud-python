@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.77]
+
+### Fixed
+- **`ARITH-111` — item-shop haggle no longer floors `unit_price` at 0** (ROM `src/act_obj.c:2722-2729`). Pre-fix `mud/commands/shop.py:822` used `unit_price = max(0, unit_price - discount)`. ROM does `cost -= obj->cost / 2 * roll / 100;` raw — when `shop.profit_buy < 50` (custom area shops) and the haggle roll wins, the discount exceeds `unit_price` and `cost` goes negative. `deduct_cost(ch, negative_cost)` at ROM `src/handler.c:2397-2422` then refunds the player: `silver = UMIN(ch->silver, cost) = cost` (negative), `silver < cost` is false so gold stays 0, then `ch->silver -= silver` adds `|cost|` to the player's purse. Python's `deduct_cost` at `mud/handler.py:885` already mirrors that arithmetic; only the upstream clamp blocked the divergence. Floor removed with ROM-cite comment. Regression: `tests/integration/test_arith_111_haggle_no_floor.py` (profit_buy=40, cost=100, roll=99 → unit_price = 40 − 49 = −9; player wealth 100 → 109). Full integration suite: **2341 passed, 3 skipped** in 89.17s.
+
+### Changed
+- **`ARITH-115` filed as ❌ MISSING** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md` (row 32). Surfaced during ARITH-111 close-out: keeper-side bookkeeping at `mud/commands/shop.py:462` (`_set_keeper_total_wealth` clamps `total` at 0) and the companion `_set_character_total_wealth` floor at line 474 do not match ROM `src/act_obj.c:2747-2748`, which lets `keeper->gold` / `keeper->silver` drift negative on the refund path. Held back from the ARITH-111 commit because (a) it bites only on a narrower sub-condition (`|negative total_cost| > keeper current wealth`) and (b) it touches two helpers used by both buy and sell paths — needs its own focused regression test rather than being bundled. Tally adjusted: **16 FIXED / 17 N/A / 14 ❌ MISSING** open in the ARITH triage (47 total: 45 triaged + ARITH-024 post-triage + ARITH-114 + ARITH-115 follow-ons).
+
 ## [2.9.76]
 
 ### Changed
