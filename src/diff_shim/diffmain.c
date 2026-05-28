@@ -33,6 +33,7 @@
 void boot_db (void);
 void init_mm (void);
 void reset_char (CHAR_DATA *ch);
+void violence_update (void);
 
 /* ---- synthetic descriptor: ROM's output funcs write here ------------------ */
 
@@ -518,6 +519,40 @@ int main (int argc, char **argv)
             while (*args == ' ' || *args == '\t')
                 args++;
             handle_snapshot (args);
+            continue;
+        }
+
+        /* __seed=<n>: reseed OLD_RAND mid-run, same convention as boot
+         * (init_mm seeds piState from current_time). Scopes the next
+         * commands' RNG to a known stream position. */
+        if (strncmp (line, "__seed=", 7) == 0)
+        {
+            current_time = (time_t) atol (line + 7);
+            init_mm ();
+            continue;
+        }
+
+        /* __mload=<vnum>: spawn a fresh mob into the PC's current room
+         * (ROM create_mobile + char_to_room). */
+        if (strncmp (line, "__mload=", 8) == 0)
+        {
+            int vnum = atoi (line + 8);
+            MOB_INDEX_DATA *mi = get_mob_index (vnum);
+            if (mi != NULL && ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob = create_mobile (mi);
+                char_to_room (mob, ch->in_room);
+            }
+            continue;
+        }
+
+        /* __tick: run one violence_update() pulse (combat round only),
+         * capturing the PC's combat output. */
+        if (strncmp (line, "__tick", 6) == 0)
+        {
+            shim_reset_output ();
+            violence_update ();
+            emit_output ();
             continue;
         }
 
