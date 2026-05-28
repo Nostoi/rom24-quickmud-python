@@ -202,6 +202,11 @@ static void emit_char_snapshot (CHAR_DATA *ch)
             ch->hit, ch->max_hit, ch->mana, ch->move);
     printf (",\"level\":%d,\"align\":%d,\"gold\":%ld",
             ch->level, ch->alignment, ch->gold);
+    printf (",\"eff_hitroll\":%d", GET_HITROLL (ch));
+    printf (",\"eff_damroll\":%d", GET_DAMROLL (ch));
+    printf (",\"eff_ac\":[%d,%d,%d,%d]",
+            GET_AC (ch, AC_PIERCE), GET_AC (ch, AC_BASH),
+            GET_AC (ch, AC_SLASH), GET_AC (ch, AC_EXOTIC));
 
     /* fighting: target's first-word name, or null. */
     if (ch->fighting != NULL)

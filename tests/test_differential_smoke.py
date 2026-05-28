@@ -52,6 +52,15 @@ def test_python_matches_c_golden(scen_path):
     char.max_hit = char.hit = 20
     char.max_mana = char.mana = 100
     char.max_move = char.move = 100
+    # Mirror the C shim's make_test_char (src/diff_shim/diffmain.c:380): class 0
+    # (mage), perm_stat all 13 with prime (INT) +3, no gear. create_test_character
+    # leaves perm_stat empty, which combat math reads; set it so effective
+    # hitroll/damroll/AC match the C reference. ROM stat order: STR, INT, WIS, DEX, CON.
+    char.ch_class = 0
+    char.perm_stat = [13, 16, 13, 13, 13]
+    char.hitroll = 0
+    char.damroll = 0
+    char.armor = [100, 100, 100, 100]
 
     chars_by_name = {sc.char_name: char}
     rooms_by_vnum = {v: room_registry[v] for v in sc.watch_rooms}

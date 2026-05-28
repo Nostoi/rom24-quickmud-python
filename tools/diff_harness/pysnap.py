@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from mud.math.stat_apps import get_ac, get_damroll, get_hitroll
 from mud.models.constants import Position
 from tools.diff_harness.schema import CharSnap, RoomSnap, StepSnap
 
@@ -50,6 +51,9 @@ def _char_snap(key: str, char: object) -> CharSnap:
         align=int(getattr(char, "alignment", 0)),
         gold=int(getattr(char, "gold", 0)),
         fighting=getattr(fighting, "name", None),
+        eff_hitroll=int(get_hitroll(char)),
+        eff_damroll=int(get_damroll(char)),
+        eff_ac=[int(get_ac(char, i)) for i in range(4)],
         affects=_affect_names(char),
         affect_flags=_affect_flag_names(char),
         inventory=inventory,
