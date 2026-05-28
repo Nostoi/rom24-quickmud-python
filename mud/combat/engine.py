@@ -16,7 +16,7 @@ from mud.groups.xp import group_gain
 from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
 from mud.math.c_compat import c_div, urange
 from mud.math.stat_apps import get_ac, get_damroll, get_hitroll
-from mud.models.character import Character, character_registry
+from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
     AC_BASH,
     AC_EXOTIC,
@@ -33,6 +33,7 @@ from mud.models.constants import (
     ItemType,
     PlayerFlag,
     Position,
+    Stat,
     WeaponType,
     WearFlag,
     WearLocation,
@@ -1580,7 +1581,22 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
                     "{name} is poisoned by the venom on {weapon}.",
                     weapon=weapon_name,
                 )
-            if hasattr(victim, "add_affect"):
+            # mirroring ROM src/fight.c:616-624 — affect_join a structured
+            # AFF_POISON affect, not a bare flag: af.level = level*3/4,
+            # af.duration = level/2, af.location = APPLY_STR, af.modifier = -1.
+            # Character.apply_spell_effect is the Python affect_join port.
+            if hasattr(victim, "apply_spell_effect"):
+                victim.apply_spell_effect(
+                    SpellEffect(
+                        name="poison",
+                        level=c_div(level * 3, 4),
+                        duration=c_div(level, 2),
+                        stat_modifiers={Stat.STR: -1},
+                        affect_flag=AffectFlag.POISON,
+                        wear_off_message="You feel less sick.",
+                    )
+                )
+            elif hasattr(victim, "add_affect"):
                 victim.add_affect(AffectFlag.POISON)
             messages.append("You feel poison coursing through your veins.")
 

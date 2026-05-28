@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.88]
+
+### Fixed
+- **`FIGHT-016` — WEAPON_POISON now applies a timed, STR-reducing poison affect instead of a bare flag** (ROM `src/fight.c:616-624`). On a poisoned-weapon hit where the victim fails the poison save, ROM `affect_join`s a structured affect: `af.level = level*3/4`, `af.duration = level/2`, `af.location = APPLY_STR`, `af.modifier = -1`, `af.bitvector = AFF_POISON`. Python previously called only `victim.add_affect(AffectFlag.POISON)` — an untimed flag that never wore off, applied no STR penalty, and skipped `affect_join` merge semantics. The branch now builds a `SpellEffect(name="poison", level=c_div(level*3,4), duration=c_div(level,2), stat_modifiers={Stat.STR:-1}, affect_flag=AffectFlag.POISON, wear_off_message="You feel less sick.")` and routes it through `Character.apply_spell_effect` (the Python `affect_join` port), matching `spell_poison`. Regression: `tests/integration/test_weapon_poison_affect.py`.
+- **`test_weapon_flaming_fire_damage` no longer over-asserts `number_range` call count** — the WEAPON_FLAMING proc legitimately calls `rng_mm.number_range` twice (once for the fire-damage roll, once inside `fire_effect`), but the test pinned `assert_called_once_with(1, 4)` on the shared mock, so it failed in isolation (and only passed under full-suite ordering quirks). Switched to `assert_any_call(1, 4)`, which verifies the flaming damage roll without forbidding `fire_effect`'s internal roll. Test-only; no production change.
+
+### Changed
+- Reclassified **`ARITH-004` → ⛔ N/A** in `docs/parity/audits/ARITHMETIC_BOUNDARY.md` — the `max(1, weapon_level)` floor in `process_weapon_special_attacks` is behaviorally dead (every consumer divides the level by ≥2, so `0//N == 1//N`; `weapon_level` is also pre-floored at the shared `_weapon_level(wield) or 1`). Same shape as ARITH-020/021/022/023. The real WEAPON_POISON divergence is now tracked as FIGHT-016 (above) and FIGHT-017. Effective open ARITH ❌ MISSING: 7 → 6.
+- Filed **`FIGHT-017`** (`docs/parity/FIGHT_C_AUDIT.md`) — temporary-envenomed-weapon level source (`affect_find(wield->affected, gsn_poison)` → `poison->level` else `wield->level`) + per-hit weakening (`poison->level -= 2`, `duration -= 1`, "worn off" message) per ROM `src/fight.c:605-608, 627-636`. Not yet closed.
+
 ## [2.9.87]
 
 ### Fixed
