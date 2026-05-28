@@ -2,7 +2,7 @@
 
 **Date started:** 2026-04-28
 **Auditor:** automated (rom-parity-audit skill)
-**Status:** ✅ AUDITED — all CRITICAL/IMPORTANT gaps closed (DB2-001, DB2-002, DB2-003, DB2-006); two MINOR gaps deferred (DB2-004 kill_table, DB2-005 single-line fread_string) — both documented as not user-reachable.
+**Status:** ✅ AUDITED — all CRITICAL/IMPORTANT gaps closed (DB2-001, DB2-002, DB2-003, DB2-006, DB2-007); two MINOR gaps deferred (DB2-004 kill_table, DB2-005 single-line fread_string) — both documented as not user-reachable. **DB2-007 (2026-05-28)** corrected a stat-line field-shift this audit's Phase 2 had marked ✅ — every JSON-loaded mob had wrong HP/mana/damage; surfaced by the combat differential harness.
 **ROM file:** `src/db2.c` (958 lines)
 **Python module(s):** `mud/loaders/social_loader.py`, `mud/loaders/mob_loader.py`, `mud/loaders/obj_loader.py`
 
@@ -42,7 +42,7 @@ ROM behavior, with parity status:
 | `affected_by = fread_flag \| race.aff` | 241–242 | mob_loader.py:119 raw string only | ❌ DB2-002 |
 | `alignment`, `group` | 244–245 | mob_loader.py:120–121 | ✅ |
 | `level`, `hitroll` | 247–248 | mob_loader.py:122–123 (named `thac0`) | ✅ |
-| Hit dice / mana dice / damage dice | 251–269 | mob_loader.py:124–127 (parsed lazily by spawn) | ✅ |
+| Hit dice / mana dice / damage dice | 251–269 | mob_loader.py:142–158 | ✅ FIXED (DB2-007) — was field-shifted by a phantom scalar `ac` token at index [2]; ROM has no scalar AC on this line (AC is read at 273–276), so HP dice was dropped and hit/mana/damage all read one field late |
 | `dam_type = attack_lookup(...)` | 270 | mob_loader.py:128 raw string, parsed by spawn | ✅ |
 | `ac[*] = fread_number * 10` | 273–276 | mob_loader.py:84–88 — **does not multiply by 10** | ❌ DB2-006 (CRITICAL) |
 | `off_flags \| race.off`, `imm_flags \| race.imm`, `res_flags \| race.res`, `vuln_flags \| race.vuln` | 279–286 | mob_loader.py:92–95 raw strings only | ❌ DB2-002 |
@@ -90,6 +90,7 @@ Skipped — see Phase 1 N/A rationale. No old-format areas exist; no Python entr
 | **DB2-004** | MINOR | `src/db2.c:370` | — | `load_mobiles` does not maintain `kill_table[level].number` count. No user-visible impact in QuickMUD-Python today (no `kill_table` command surface). Track only; defer until/unless kill_table is ported. | 🔄 OPEN (deferred) |
 | **DB2-005** | MINOR | `src/db2.c:230–232,420–422` | `mud/loaders/mob_loader.py:60–61`, `mud/loaders/obj_loader.py:378–379` | Single-line `next_line().rstrip("~")` used where ROM uses `fread_string` (multi-line tilde-terminated). Canonical areas never use multi-line for these fields, but third-party areas could. Theoretical only. | 🔄 OPEN (deferred) |
 | **DB2-006** | CRITICAL | `src/db2.c:273–276` | `mud/loaders/mob_loader.py:84–88`, `mud/loaders/json_loader.py:438–441` | `load_mobiles` did not multiply armor-class fields by 10 on load. ROM stores `pMobIndex->ac[AC_PIERCE] = fread_number(fp) * 10;` (and bash/slash/exotic). Both the .are loader and the JSON loader now apply the `* 10` normalization on read; `convert_are_to_json.py` divides back when re-emitting JSON so the JSON files remain a faithful raw mirror of the .are upstream. | ✅ FIXED — `tests/integration/test_db2_loader_parity.py::test_load_mobiles_multiplies_armor_class_by_ten` and `::test_load_mobiles_from_json_multiplies_armor_class_by_ten` |
+| **DB2-007** | CRITICAL | `src/db2.c:247–270` | `mud/loaders/mob_loader.py:139–158`; regenerated `data/areas/*.json` (45 files) | `load_mobiles` read a phantom scalar `ac` token at stat-line index [2]. ROM's new-format stat line is `level hitroll <hp-dice> <mana-dice> <dam-dice> damtype` — the four AC values are on the *following* line (273–276), so there is **no** scalar AC here. The phantom token shifted every dice field by one: `hit_dice` received the `.are` mana dice, `mana_dice` the damage dice, `damage_dice` the damtype word, and the real **HP dice was dropped**. Every JSON-loaded mob therefore had the wrong HP, mana, and damage game-wide (e.g. Hassan #3001: 100 HP instead of 1000; drunk #3064: 100 instead of `2d6+22`≈31). Latent because the test suite only uses synthetic mobs with explicit HP; surfaced by the combat differential harness (FINDINGS.md FINDING-006). Fix reads dice from [2]/[3]/[4]/[5] and defaults the vestigial OLC-only `MobIndex.ac` to `"1d1+0"`; all 52 area JSONs regenerated from the corrected loader. | ✅ FIXED — `tests/test_mob_dice_parity.py::test_mob_dice_match_are` |
 
 Severity legend: CRITICAL = visible behavior diverges (combat math, flag tests). IMPORTANT = wording/broadcast wrong. MINOR = cosmetic or not yet user-reachable.
 

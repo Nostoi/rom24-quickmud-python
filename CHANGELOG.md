@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.2]
+
+### Fixed
+- **`DB2-007` — mob HP/mana/damage dice were mislabeled game-wide (CRITICAL).** `mud/loaders/mob_loader.py` read a phantom scalar `ac` token at index [2] of the ROM new-format mob stat line. But ROM's stat line is `level hitroll <hp-dice> <mana-dice> <dam-dice> damtype` — the four AC values are on the *following* line (`src/db2.c:273-276`), so there is no scalar AC there. The phantom token shifted every dice field by one: `hit_dice` got the mana dice, `mana_dice` the damage dice, `damage_dice` the damtype word, and the real **HP dice was dropped**. Every JSON-loaded mob therefore spawned with the wrong HP, mana, and damage (e.g. Hassan #3001 had 100 HP instead of 1000; the drunk #3064 had 100 instead of `2d6+22`≈31). Fix reads the dice from [2]/[3]/[4]/[5]; the vestigial OLC-only `MobIndex.ac` field now defaults to `"1d1+0"`. **All 52 area JSONs regenerated** from the corrected loader (45 changed). Latent for the project's life because the test suite uses synthetic mobs with explicit HP — **surfaced by the combat differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-006). Regression: `tests/test_mob_dice_parity.py`. The per-file `DB2_C_AUDIT.md` had marked this stat line ✅ in Phase 2; corrected.
+
 ## [2.11.1]
 
 ### Fixed
