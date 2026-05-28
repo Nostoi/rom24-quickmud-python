@@ -84,11 +84,23 @@ decision: **make the checker opt-in**.
 - `diff-harness` branch: 4911 passed / 1 xfailed (FINDING-001, self-clearing once
   the branch gets the master LOOK-001 fix).
 
+## Loop closure (post-fix)
+
+`master` was pushed to origin (`b3f52e2d`) and merged into `diff-harness`
+(`c878dd41`). Re-running the differential harness on the branch confirmed the
+LOOK-001 fix: **the room/output divergence is gone — the Python replay now matches
+the C reference exactly.** The harness then advanced to the next divergence,
+**FINDING-002** (test-character hp: C=20 vs py=0) — a harness char-creation
+asymmetry (C shim `new_char` vs Python `create_test_character`), not a parity bug;
+the scenario stays xfailed on it. FINDING-001 marked ✅ RESOLVED in
+`tools/diff_harness/FINDINGS.md`. This is the full end-to-end demonstration: build
+→ catch → fix on master → re-run → confirmed clean → next finding queued.
+
 ## Outstanding
 
-- **`diff-harness` branch unmerged** — v1 with the (now-fixed-on-master) FINDING-001.
-  Merge master → branch to clear the xfail and confirm the full differential loop
-  closes, then decide on merging the harness.
+- **`diff-harness` branch — 2 soundness follow-ups** before it produces fully
+  trustworthy diffs and can merge: **FINDING-002** (reconcile the C-shim and
+  Python test-character creation) and the input-source asymmetry below.
 - **Harness input-source asymmetry** (harness soundness, separate from FINDING-001):
   the C side reads `.are` files (repaired midgaard overlay) while Python reads
   `data/areas/*.json`. Reconcile before trusting midgaard-based divergences broadly.
