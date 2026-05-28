@@ -10,7 +10,7 @@
 - ✅ Phase 1: Function Inventory Complete (26/26 functions cataloged)
 - ✅ Phase 2: QuickMUD Mapping Complete (100% mapping coverage)
 - ✅ Phase 3: ROM C Verification COMPLETE (26/26 functions verified - 100%)
-  - ✅ move_char() - 100% parity ⭐ **FIXED April 27, 2026** (MOVE-001 arrival message, MOVE-002 LAW follower-name broadcast)
+  - ✅ move_char() - 100% parity ⭐ **FIXED April 27, 2026** (MOVE-001 arrival message, MOVE-002 LAW follower-name broadcast); **MOVE-003 FIXED May 28, 2026** (dropped non-ROM "You walk" line — caught by the differential harness, FINDING-003)
   - ✅ do_open() - 100% parity ⭐
   - ✅ do_close() - 100% parity ⭐ **FIXED!**
   - ✅ do_lock() - 100% parity ⭐ **FIXED!**
@@ -182,6 +182,7 @@ act_move.c contains all ROM 2.4b6 movement, door, position, and skill-related co
 
 - **MOVE-001** — Arrival broadcast text. ROM `src/act_move.c:202` emits `"$n has arrived."` via `act(..., TO_ROOM)`. QuickMUD previously broadcast `"{name} arrives."` (line ~417). Updated to `"{name} has arrived."`. Coverage: `tests/test_movement_followers.py::test_arrival_message_uses_rom_has_arrived_text`.
 - **MOVE-002** — LAW follower rejection. ROM `src/act_move.c:224` emits `"You can't bring $N into the city."` where `$N` substitutes the *follower's* name. QuickMUD previously emitted the literal string `"You can't bring that follower into the city."` from `_move_followers()`. Updated to `f"You can't bring {follower_name} into the city."`. Coverage: `tests/test_movement_followers.py::test_aggressive_follower_blocked_in_law_room` (existing test updated to assert ROM-faithful wording).
+- **MOVE-003** ✅ FIXED May 28, 2026 (caught by the differential harness, FINDING-003) — non-ROM movement output. ROM `move_char` ends with `do_function(ch, &do_look, "auto")` (`src/act_move.c:204`): the mover sees only the **destination room description**, with **no** "you walk" line (others get the `$n leaves`/`$n has arrived` broadcasts). QuickMUD's `move_character()` returned `"You walk {dir} to {room}."` (formerly `mud/world/movement.py:455,470`), which the dispatcher delivered to the player as an extra, non-ROM line ahead of the auto-look. Fix: directional `move_character` now returns the room view (`look(char)`, the Python command-output convention, computed before followers move per ROM order); followers still receive the room via their own message stream (`_auto_look`). The original per-file audit (40/40 "100%") missed this because it verified the broadcasts and movement logic, not the mover's own visible output — an engine-vs-engine differential surfaced it. Coverage: `tests/integration/test_move_003_walk_line.py`; ~25 existing assertions across 14 files updated from the walk-line to the ROM-faithful room output.
 
 ### do_sneak() / do_hide() Gap Fixes (April 27, 2026)
 
@@ -192,7 +193,7 @@ The dispatcher entry points in `mud/commands/thief_skills.py` previously returne
 
 **Coverage**: `tests/test_thief_skills_dispatcher_parity.py` (4 new tests) plus the pre-existing `tests/test_skill_hide_rom_parity.py` (10 tests) and `tests/test_skills_buffs.py::test_sneak_*` (2 tests). All 214 `move/sneak/hide`-keyword tests pass: `pytest tests/ -k "move or sneak or hide" -q` → `214 passed`.
 
-**Conclusion**: `move_character()` has **EXCELLENT** ROM C parity. The two minor gaps are cosmetic message formatting differences that don't affect gameplay logic. Recommend marking as ✅ **100% P0 PARITY COMPLETE** and optionally improving message formatting in P2.
+**Conclusion**: `move_character()` has **EXCELLENT** ROM C parity. MOVE-001/002 were cosmetic broadcast-wording gaps; **MOVE-003 (May 28, 2026) was a genuine player-visible divergence** (an extra "you walk" line) that the per-file audit missed and the differential harness caught — a reminder that function-by-function audits verify logic/broadcasts but can miss the mover's own output contract. Now ✅ **100% P0 PARITY** including the auto-look output.
 
 ---
 

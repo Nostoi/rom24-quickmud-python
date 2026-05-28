@@ -1823,7 +1823,7 @@ def test_area_player_counts_follow_char_moves():
     assert area.age == 0
 
     response = move_character(player, "north")
-    assert response == "You walk north to Target Room."
+    assert "Target Room" in response  # ROM act_move.c:204 — mover sees room
     assert player.room is target
     assert area.nplayer == 1
     assert area.empty is False

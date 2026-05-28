@@ -449,10 +449,21 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     if show_movement:
         broadcast_room(target_room, f"{char_name} has arrived.", exclude=char)
 
-    _auto_look(char)
+    # ROM src/act_move.c:204 — move_char ends with do_function(ch, &do_look, "auto"):
+    # the mover sees the destination room and ROM sends NO "you walk <dir>" line.
+    # The mover's room view is its command output (the Python command-return
+    # convention, like do_look). Computed before followers move so the view excludes
+    # arriving followers (ROM order). Followers move via _move_followers, which
+    # discards the callback return, so they receive the room via their own message
+    # stream (_auto_look).
+    if _is_follow:
+        _auto_look(char)
+        room_view = ""
+    else:
+        room_view = look(char)
 
     if current_room is target_room:
-        return f"You walk {dir_key} to {target_room.name}."
+        return room_view
 
     _move_followers(
         char,
@@ -467,7 +478,7 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     else:
         mobprog.mp_greet_trigger(char)
 
-    return f"You walk {dir_key} to {target_room.name}."
+    return room_view
 
 
 def move_character_through_portal(char: Character, portal: object, *, _is_follow: bool = False) -> str:

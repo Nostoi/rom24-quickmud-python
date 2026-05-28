@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.4]
+
+### Fixed
+- **`MOVE-003` — directional movement no longer emits a non-ROM "You walk &lt;dir&gt; to &lt;room&gt;." line** (ROM `src/act_move.c:204`). ROM `move_char` ends with `do_function(ch, &do_look, "auto")`: the mover sees only the destination room description (others get the `$n leaves`/`$n has arrived` broadcasts), with no "you walk" line. Python's `move_character()` returned `"You walk {dir} to {room}."`, which the dispatcher delivered to the player as an extra line ahead of the auto-look. `move_character` now returns the destination room view (the Python command-output convention, like `do_look`; computed before followers move per ROM order); followers still receive the room via their own message stream. **Surfaced by the differential testing harness (FINDING-003) against a row the `act_move.c` audit had marked "100% parity"** — the audit verified broadcasts/logic but not the mover's own visible output. Regression: `tests/integration/test_move_003_walk_line.py`; ~25 existing assertions across 14 files updated to the ROM-faithful room output.
+
 ## [2.10.3]
 
 ### Changed

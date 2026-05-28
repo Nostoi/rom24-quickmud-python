@@ -116,7 +116,7 @@ def test_encumbrance_movement_gating_respects_caps():
     start.add_character(immortal)
     immortal.carry_number = 999
     immortal.carry_weight = 9_999_000
-    assert move_character(immortal, "north") == "You walk north to Destination."
+    assert "Destination" in move_character(immortal, "north")  # ROM act_move.c:204
     assert immortal.room is dest
 
 
@@ -136,7 +136,7 @@ def test_coin_weight_limits_movement():
     hoarder.move = 10
 
     success = move_character(hoarder, "north")
-    assert success == "You walk north to Destination."
+    assert "Destination" in success  # ROM act_move.c:204 — mover sees room
     assert hoarder.room is dest
 
 

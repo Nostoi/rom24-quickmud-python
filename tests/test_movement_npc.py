@@ -21,7 +21,7 @@ def test_npc_moves_without_boat_or_move_cost() -> None:
 
     result = move_character(npc, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert npc.room is target
     assert npc.move == 0
     assert npc.wait == 0

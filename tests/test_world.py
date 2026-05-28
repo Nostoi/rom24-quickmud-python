@@ -22,7 +22,7 @@ def test_movement_and_look(movable_char_factory):
     out1 = look(char)
     assert "Temple" in out1
     msg = move_character(char, "north")
-    assert "You walk north" in msg
+    assert msg and "You walk" not in msg  # ROM act_move.c:204 — mover sees room, no walk-line
     assert char.room.vnum == room_registry[3054].vnum
     out2 = look(char)
     assert "temple" in out2.lower() or "altar" in out2.lower()

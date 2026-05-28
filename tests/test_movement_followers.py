@@ -42,7 +42,7 @@ def test_followers_move_and_trigger_mobprogs(monkeypatch) -> None:
 
     result = move_character(leader, "north")
 
-    assert "You walk north" in result
+    assert "Target" in result  # ROM act_move.c:204 — mover sees destination room (do_look auto)
     assert leader.room is target
     assert follower.room is target
     assert "You follow Leader." in follower.messages
@@ -84,10 +84,12 @@ def test_player_receives_auto_look_after_move() -> None:
     leader = Character(name="Leader", is_npc=False, move=20)
     start.add_character(leader)
 
-    move_character(leader, "north")
+    result = move_character(leader, "north")
 
     assert leader.room is target
-    assert any("A quiet chamber with soft light." in msg for msg in leader.messages)
+    # ROM act_move.c:204 — the mover's do_look "auto" is its command output (the
+    # room description), delivered by the dispatcher rather than a separate message.
+    assert "A quiet chamber with soft light." in result
 
 
 def test_charmed_follower_stands_before_following() -> None:
