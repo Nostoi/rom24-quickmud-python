@@ -10,10 +10,11 @@ import pytest
 
 from mud.commands.dispatcher import process_command
 from mud.registry import room_registry
+from mud.spawning.mob_spawner import spawn_mob
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
 from tools.diff_harness.compare import diff_traces
-from tools.diff_harness.pysnap import snapshot_python
+from tools.diff_harness.pysnap import _person_key, snapshot_python
 from tools.diff_harness.scenario import load_scenario
 from tools.diff_harness.schema import step_from_dict
 
@@ -25,7 +26,13 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # reason. When a divergence is actually fixed the diff goes clean, no xfail
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
-KNOWN_DIVERGENCES = {}
+KNOWN_DIVERGENCES = {
+    # FINDING-007: mob spawn RNG draw-order diverges (ROM create_mobile draws
+    # gold before HP; from_prototype draws gold last), so the drunk #3064 spawns
+    # at HP 31 (C) vs 33 (Python) from the same seed. Real Python parity bug,
+    # fix pending on master (reorder from_prototype draws). See FINDINGS.md.
+    "combat_melee_rounds": "FINDING-007 — mob spawn RNG draw-order (gold vs HP) diverges; fix pending on master",
+}
 
 
 def _scenarios():
@@ -74,7 +81,26 @@ def test_python_matches_c_golden(scen_path):
 
     py_trace = []
     for i, command in enumerate(sc.steps, start=1):
-        response = process_command(char, command) or ""
+        # Meta-commands mirror the C shim's stdin driver (src/diff_shim/diffmain.c):
+        # __seed reseeds the shared RNG, __mload spawns a mob into the PC's room,
+        # __tick runs one violence_update() combat pulse. Everything else is an
+        # ordinary ROM command.
+        if command.startswith("__seed="):
+            rng_mm.seed_mm(int(command[len("__seed="):]))
+            response = ""
+        elif command.startswith("__mload="):
+            mob = spawn_mob(int(command[len("__mload="):]))
+            assert mob is not None, f"spawn_mob failed for {command!r}"
+            char.room.add_character(mob)
+            chars_by_name[_person_key(mob)] = mob
+            response = ""
+        elif command.startswith("__tick"):
+            from mud.game_loop import violence_tick
+
+            violence_tick(do_combat=True)
+            response = ""
+        else:
+            response = process_command(char, command) or ""
         drained = list(char.messages)
         char.messages.clear()
         lines: list[str] = []

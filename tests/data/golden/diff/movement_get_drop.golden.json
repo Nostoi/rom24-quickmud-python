@@ -1,6 +1,6 @@
 {
   "scenario": "movement_get_drop",
-  "c_commit": "9be478a9995bc603e56cf20ad5e395698c055de2",
+  "c_commit": "53c1b52725eeb606a49ef683e09ffb9bd6a43f7e",
   "build_flags": "-DOLD_RAND",
   "seed": 1234,
   "trace": [

@@ -8,6 +8,39 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-007 — mob spawn RNG draw-order diverges (gold vs HP) — 🔴 OPEN, gates combat v1
+
+**Status:** 🔴 OPEN — **real Python parity bug.** Surfaced 2026-05-28 by the
+`combat_melee_rounds` scenario: the drunk #3064 spawns at HP **31** in ROM C vs **33**
+in Python from the *same* seed (777). Both roll the correct `2d6+22` (FINDING-006 is
+fixed); the values differ because the two engines draw RNG in a **different order**
+during mob creation.
+
+**Root cause.** ROM `create_mobile` (`src/db.c:2047-2091`) draws in this order:
+1. **gold/wealth** — `number_range(wealth/2, 3*wealth/2)` then `number_range(wealth/200, wealth/100)` (2 draws when `wealth > 0`),
+2. **HP** dice, 3. **mana** dice, 4. random damtype via `number_range(1,3)` *only if* `dam_type == 0`.
+
+Python `MobInstance.from_prototype` (`mud/spawning/templates.py:364-394`) draws:
+1. random damtype (`number_range(1,3)`) *first* if `dam_type == 0`,
+2. **HP**, 3. **mana**, 4. **gold** *last*.
+
+So gold is drawn last in Python but first in ROM, and the damtype roll is first vs
+last. The drunk has `wealth=65 > 0`, so ROM's 2 gold draws precede its HP roll while
+Python's don't — shifting the `2d6`. This affects **every seed-dependent mob spawn**
+game-wide (mob stats diverge from ROM), latent because the suite uses synthetic mobs.
+
+**Fix shape (master gap-closer, e.g. SPAWN-001 / a templates.py row):** reorder
+`from_prototype`'s RNG draws to match `create_mobile` exactly — gold/wealth first, then
+HP, then mana, then the `dam_type == 0` random roll last. Bounded to one function;
+expect possible seeded-test fallout (it changes spawn RNG order). Same pattern as
+DB2-007: a real Python parity bug surfaced by the harness, fixed on master, then
+re-run the differential (the `combat_melee_rounds` `KNOWN_DIVERGENCES` xfail
+auto-clears when the diff goes clean).
+
+**Gated:** `combat_melee_rounds` is in `KNOWN_DIVERGENCES` (xfail) until this lands.
+
+---
+
 ## FINDING-006 — area JSON mob HP/mana/damage dice are mislabeled (field-shifted) — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-05-28 via **DB2-007** (master 2.11.2, commit `1857b5f8`).

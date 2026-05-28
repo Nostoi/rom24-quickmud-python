@@ -169,14 +169,39 @@ static void char_key (const CHAR_DATA *ch, char *buf, size_t cap)
 }
 
 /* Find a connected/loaded character by name's first word, searching char_list. */
-static CHAR_DATA *find_char_by_key (const char *key)
+/*
+ * Resolve a snapshot char key to a specific instance, scoped to the watched
+ * rooms. A keyword like "drunk" can match multiple instances game-wide (a
+ * reset-spawned one in its home room plus one __mload'd into the scenario room);
+ * a global first-match would snapshot whichever was created most recently, which
+ * differs from the Python replay's explicit instance. Scoping to the watched
+ * rooms makes the lookup unambiguous: the watched char is the one the scenario
+ * is actually observing. No global fallback — if the key is not in a watched
+ * room it is omitted (the Python side omits it too).
+ */
+static CHAR_DATA *find_char_by_key (const char *key, const int *room_vnums, int n_rooms)
 {
     CHAR_DATA *ch;
     for (ch = char_list; ch != NULL; ch = ch->next)
     {
         char buf[MAX_INPUT_LENGTH];
+        int i, in_watched = 0;
+
         char_key (ch, buf, sizeof (buf));
-        if (str_cmp (buf, key) == 0)
+        if (str_cmp (buf, key) != 0)
+            continue;
+
+        if (n_rooms <= 0)
+            return ch;                       /* unscoped: preserve old behavior */
+        if (ch->in_room == NULL)
+            continue;
+        for (i = 0; i < n_rooms; i++)
+            if (ch->in_room->vnum == room_vnums[i])
+            {
+                in_watched = 1;
+                break;
+            }
+        if (in_watched)
             return ch;
     }
     return NULL;
@@ -343,6 +368,22 @@ static void handle_snapshot (char *args)
             strncpy (rooms_csv, tok + 6, sizeof (rooms_csv) - 1);
     }
 
+    /* Parse the watched room vnums into an int array (from a copy, so the
+     * destructive strtok below does not clobber rooms_csv, which the rooms
+     * output loop re-parses). Used to scope the char-key lookup. */
+    int watched_rooms[64];
+    int n_watched = 0;
+    {
+        char rooms_copy[MAX_INPUT_LENGTH];
+        char *p, *save;
+        strncpy (rooms_copy, rooms_csv, sizeof (rooms_copy) - 1);
+        rooms_copy[sizeof (rooms_copy) - 1] = '\0';
+        for (p = strtok_r (rooms_copy, ",", &save);
+             p != NULL && n_watched < 64;
+             p = strtok_r (NULL, ",", &save))
+            watched_rooms[n_watched++] = atoi (p);
+    }
+
     fputs ("{\"type\":\"snapshot\",\"chars\":[", stdout);
     {
         char *p, *save;
@@ -350,7 +391,7 @@ static void handle_snapshot (char *args)
         for (p = strtok_r (chars_csv, ",", &save); p != NULL;
              p = strtok_r (NULL, ",", &save))
         {
-            CHAR_DATA *ch = find_char_by_key (p);
+            CHAR_DATA *ch = find_char_by_key (p, watched_rooms, n_watched);
             if (ch == NULL)
                 continue;
             if (!first)

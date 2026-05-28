@@ -1,0 +1,566 @@
+{
+  "scenario": "combat_melee_rounds",
+  "c_commit": "53c1b52725eeb606a49ef683e09ffb9bd6a43f7e",
+  "build_flags": "-DOLD_RAND",
+  "seed": 12345,
+  "trace": [
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 1,
+      "command": "__seed=777",
+      "output": []
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 2,
+      "command": "__mload=3064",
+      "output": []
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 3,
+      "command": "__seed=777",
+      "output": []
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": "drunk",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 4,
+      "command": "kill drunk",
+      "output": [
+        "",
+        "\rYou miss the drunk.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 17,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": "drunk",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 5,
+      "command": "__tick",
+      "output": [
+        "",
+        "\rThe drunk's beating hits you.",
+        "\rYou miss the drunk.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 16,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": "drunk",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 30,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 6,
+      "command": "__tick",
+      "output": [
+        "",
+        "\rThe drunk's beating scratches you.",
+        "\rYou scratch the drunk.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 16,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": "drunk",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 29,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 7,
+      "command": "__tick",
+      "output": [
+        "",
+        "\rThe drunk's beating misses you.",
+        "\rYou scratch the drunk.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 11,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": "drunk",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 29,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 8,
+      "command": "__tick",
+      "output": [
+        "",
+        "\rThe drunk's beating wounds you.",
+        "\rYou miss the drunk.",
+        ""
+      ]
+    }
+  ]
+}
