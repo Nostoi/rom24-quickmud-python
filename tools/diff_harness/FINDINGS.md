@@ -8,6 +8,49 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-006 — area JSON mob HP/mana/damage dice are mislabeled (field-shifted) — 🔴 OPEN, BLOCKS combat v1
+
+**Status:** 🔴 OPEN — **real, systematic Python parity bug.** Surfaced 2026-05-28 while
+preparing the combat differential scenario (drunk #3064 spawned at 100 HP in Python
+vs 31 in ROM C). **Blocks** `combat_melee_rounds` (the combatant's HP cannot match
+across engines until fixed).
+
+**Root cause.** ROM new-format mob stat line (`src/db.c` `load_mobiles`) is
+`level hitroll <hp-dice> <mana-dice> <dam-dice> damtype`. The `.are`→JSON conversion
+that produced `data/areas/*.json` shifted these by one field:
+
+| JSON field | Holds (wrong) | Should hold |
+|------------|---------------|-------------|
+| `hit_dice` | the `.are` **mana** dice | the `.are` **HP** dice |
+| `mana_dice` | the `.are` **damage** dice | the `.are` **mana** dice |
+| `damage_dice` | the **damtype** word (e.g. `"beating"`) | the `.are` **damage** dice |
+
+The real HP dice is dropped entirely. `MobInstance.from_prototype`
+(`mud/spawning/templates.py:374`) then rolls `max_hit` from `hit_dice` — i.e. from the
+mana dice — so every JSON-loaded mob has the wrong HP, mana, and damage.
+
+**Evidence (drunk #3064, room 3008, seed 777):**
+- `area/midgaard.are`: `2 -1 2d6+22 1d1+99 1d6+0 beating` → HP `2d6+22`, mana `1d1+99`, dam `1d6+0`.
+- C shim (`src/diffshim`, = ROM loading the `.are`): `max_hp = 31` (a `2d6+22` roll).
+- Python `spawn_mob(3064).max_hit = 100` (parsed `1d1+99`, the **mana** dice).
+- Hassan #3001 `.are` HP `1d1+999` → ROM 1000 HP; JSON `hit_dice='1d1+99'` → Python 100 HP.
+
+**Scope.** Systematic: **62 of 65** midgaard mobs mismatch on `hit_dice` (the 3 that
+"match" do so only because their HP and mana dice are coincidentally equal). Almost
+certainly affects **all** `data/areas/*.json`, not just midgaard — i.e. every
+JSON-loaded mob game-wide has wrong HP/mana/damage. Latent because the test suite
+uses synthetic mobs (`movable_mob_factory` with explicit points), never asserting a
+JSON-loaded mob's HP against ROM.
+
+**Fix shape (master, NOT this branch — wide blast radius, needs scoping with the user):**
+likely fix the `.are`→JSON converter's field mapping and regenerate every
+`data/areas/*.json`, then add a regression that checks a JSON-loaded mob's HP/mana/
+damage dice against the `.are`. Route via `rom-gap-closer` once scoped; file the
+data-conversion bug in the appropriate tracker. Until fixed, `combat_melee_rounds`
+stays uncaptured / out of `KNOWN_DIVERGENCES`.
+
+---
+
 ## FINDING-005 — input-source asymmetry (C reads `.are`, Python reads JSON) — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-05-28 — investigated, found **structurally benign**,
@@ -41,6 +84,12 @@ to either source that desyncs the two engines' world data now fails this guard.
 `midgaard.json` (Option B). The probe proves it is unnecessary for soundness, and
 regenerating the JSON has a wide blast radius across tests asserting current
 JSON-loaded state. The overlay + guard is the minimal sound close.
+
+**⚠️ Update (FINDING-006):** this guard checks vnum-set *coverage* only, not field
+*values*. FINDING-006 (below) found the JSON's mob HP/mana/damage dice are
+field-shifted vs the `.are` — so the two sources are NOT value-equivalent even though
+their vnum sets match. The guard should be extended to compare mob dice as part of
+FINDING-006's fix.
 
 ---
 
