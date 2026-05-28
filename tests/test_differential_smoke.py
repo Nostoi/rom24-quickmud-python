@@ -27,10 +27,14 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES = {
     "movement_get_drop": (
-        "FINDING-002: test-character hp differs (C=20 vs py=0) — harness "
-        "char-creation asymmetry (C shim new_char vs Python create_test_character), "
-        "not a parity bug. Room/output rendering now matches after FINDING-001 "
-        "(LOOK-001/002) was fixed. See tools/diff_harness/FINDINGS.md."
+        "Two real ROM parity bugs (deferred to master gap-closers), surfaced once "
+        "the harness output capture was made fair:\n"
+        "  FINDING-003 — movement emits a non-ROM 'You walk <dir> to <room>.' line "
+        "(ROM act_move.c:204 shows room-only via do_look auto). mud/world/movement.py:455,470.\n"
+        "  FINDING-004 — room object list shows obj name ('the donation pit') not "
+        "ROM's ground description ('A pit for sacrifices...'). mud/world/look.py:172-173.\n"
+        "Harness start-state/capture asymmetries (FINDING-002 hp/level, people-key, "
+        "output channel) are resolved. See tools/diff_harness/FINDINGS.md."
     ),
 }
 
@@ -52,18 +56,37 @@ def test_python_matches_c_golden(scen_path):
     initialize_world()
     char = create_test_character(sc.char_name, sc.start_room)
     char.level = sc.char_level
+    # Mirror the C shim's test char: ROM new_char() seeds hit/mana/move from the
+    # recycle.c:299-304 defaults (20/100/100), which make_test_char then copies
+    # into the live pools. create_test_character (a shared test stub) leaves them
+    # at the dataclass default 0, so set them here for a fair differential start.
+    char.max_hit = char.hit = 20
+    char.max_mana = char.mana = 100
+    char.max_move = char.move = 100
 
     chars_by_name = {sc.char_name: char}
     rooms_by_vnum = {v: room_registry[v] for v in sc.watch_rooms}
 
+    # The C shim captures the descriptor's output buffer — everything ROM sends to
+    # the player. The fair Python equivalent mirrors the live server loop
+    # (mud/net/connection.py:1979-2000): the command's return value is sent first,
+    # then char.messages (send_to_char delivery, e.g. movement auto-look) is drained.
+    # Capturing only the return value (the v1 behavior) misses send_to_char output.
+    assert not char.messages, f"unexpected pre-command messages: {char.messages}"
+
     py_trace = []
     for i, command in enumerate(sc.steps, start=1):
-        output = process_command(char, command) or ""
+        response = process_command(char, command) or ""
+        drained = list(char.messages)
+        char.messages.clear()
+        lines: list[str] = []
+        for chunk in (response, *drained):
+            lines.extend(chunk.split("\n"))
         py_trace.append(
             snapshot_python(
                 step=i, command=command,
                 chars_by_name=chars_by_name, rooms_by_vnum=rooms_by_vnum,
-                output=output.split("\n"),
+                output=lines,
             )
         )
 

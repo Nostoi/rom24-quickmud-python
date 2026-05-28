@@ -27,7 +27,7 @@ def _c_commit() -> str:
 
 
 def _drive(sc: Scenario, binary: Path) -> list[dict]:
-    lines = [f"boot seed={sc.seed} start_room={sc.start_room} char={sc.char_name}"]
+    lines = [f"boot seed={sc.seed} start_room={sc.start_room} level={sc.char_level} char={sc.char_name}"]
     for step in sc.steps:
         lines.append(step)
         lines.append(f"__snapshot chars={','.join(sc.watch_chars)} rooms={','.join(map(str, sc.watch_rooms))}")

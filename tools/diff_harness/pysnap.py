@@ -57,8 +57,21 @@ def _char_snap(key: str, char: object) -> CharSnap:
     )
 
 
+def _person_key(person: object) -> str:
+    # Mirror the C shim's char_key (diffmain.c): the snapshot key is the first
+    # whitespace-delimited word of ROM's ch->name. ROM create_mobile copies the
+    # mob keyword list (MobIndex.player_name) into ch->name, so a mob keys on its
+    # keyword ("healer"), not its display short_descr ("the healer"). A PC keys on
+    # its own name. MobInstance.name holds the display string, so reach through to
+    # the prototype's player_name for mobs.
+    proto = getattr(person, "prototype", None)
+    rom_name = getattr(proto, "player_name", None) or getattr(person, "name", "") or ""
+    words = rom_name.split()
+    return words[0] if words else ""
+
+
 def _room_snap(room: object) -> RoomSnap:
-    people = [getattr(p, "name", "?") for p in getattr(room, "people", []) or []]
+    people = [_person_key(p) for p in getattr(room, "people", []) or []]
     contents = [v for v in (_obj_vnum(o) for o in getattr(room, "contents", []) or []) if v is not None]
     return RoomSnap(vnum=int(getattr(room, "vnum", -1)), people=people, contents=contents)
 

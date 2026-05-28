@@ -50,7 +50,7 @@ def diff_traces(c_trace: list[StepSnap], py_trace: list[StepSnap]) -> str | None
     """Return a human-readable report of the FIRST divergence, or None if equal."""
     if len(c_trace) != len(py_trace):
         return f"trace length differs: C={len(c_trace)} py={len(py_trace)}"
-    for c_step_raw, py_step_raw in zip(c_trace, py_trace):
+    for c_step_raw, py_step_raw in zip(c_trace, py_trace, strict=True):
         c_step = normalize_step(c_step_raw)
         py_step = normalize_step(py_step_raw)
         if c_step == py_step:

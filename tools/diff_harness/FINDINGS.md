@@ -8,20 +8,84 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-002 — test-character hp differs between the C shim and Python replay
+## FINDING-004 — room object list shows obj name, not ROM ground `description`
 
-**Status:** Open — harness-soundness (not a confirmed parity bug). After
-FINDING-001 was fixed, the `movement_get_drop` diff advanced to its next
-divergence: `step 1 chars[Tester].hp · C=20 py=0`. The two sides create the
-scripted test character differently — the C `src/diff_shim/diffmain.c` shim via
-`new_char`/level-set, the Python replay via `mud.world.create_test_character` —
-so this is most likely **char-creation asymmetry** (the same class as the
-`.are`-vs-JSON input asymmetry), not a ROM-vs-Python game-logic divergence.
-**Next:** reconcile the two test-character creation paths (have the shim and the
-replay produce an identically-statted char, or seed hp/level explicitly on both)
-before trusting per-field character diffs. Until then the `movement_get_drop`
-scenario stays xfailed on this field. Note: the room/output rendering (the
-FINDING-001 surface) now matches exactly — only derived character stats differ.
+**Status:** Open — **real parity bug** (object analog of FINDING-001/LOOK-001).
+Surfaced once the harness output capture was made fair (see "Harness soundness
+fixes" below). On `look`/auto-look, ROM lists each object lying in a room by its
+**`description`** (the long ground line), e.g. `"A pit for sacrifices is in front
+of the altar."` Python (`mud/world/look.py:171-173`) lists `obj.short_descr or
+obj.name`, e.g. `"the donation pit"`.
+- **ROM C:** `src/act_info.c` `do_look` room display → `show_list_to_char` →
+  `format_obj_to_char(obj, ch, FALSE)` emits `obj->description` for ground items.
+- **Python:** `mud/world/look.py:172-173` (`_describe_room` object loop).
+- **Fix (master gap-closer, e.g. `LOOK-003`/`OBJ-DESC-001`):** show the object's
+  `description` for items on the ground; fall back to short_descr only when
+  `description` is empty. Mirror the LOOK-001 long_descr approach.
+- Gated under `KNOWN_DIVERGENCES["movement_get_drop"]` until fixed on master.
+
+---
+
+## FINDING-003 — movement emits a non-ROM "You walk <dir> to <room>." line
+
+**Status:** Open — **real parity bug.** Surfaced once the harness output capture
+was made fair. On `north`/`south`, ROM shows only the destination room
+(`do_look auto`); the mover gets **no** "you walk" line. Python
+(`mud/world/movement.py:455,470`) returns `"You walk {dir} to {room}."`, which the
+live server (`mud/net/connection.py:1981`) sends to the player **before** draining
+the auto-look messages — so a Python player sees an extra line AND in the wrong
+order (walk-line → room; ROM: room only).
+- **ROM C:** `src/act_move.c:204` — `do_function(ch, &do_look, "auto");` is the
+  only output to the mover; there is no walk-line anywhere in `move_char`.
+- **Python:** `mud/world/movement.py:455` and `:470` (`move_character` return).
+- **Fix (master gap-closer, e.g. `MOVE-001`):** drop the `"You walk ..."` return
+  string; keep the `_auto_look(char)` call. Note the **ordering** is part of the
+  bug — the same fix resolves both (remove the pre-room line, leaving room-only).
+  Audit fallout in any test asserting the `"You walk ..."` return.
+- Gated under `KNOWN_DIVERGENCES["movement_get_drop"]` until fixed on master.
+
+---
+
+## Harness soundness fixes — 2026-05-28 (this commit)
+
+Three start-state / capture asymmetries that made the harness's diffs untrustworthy
+were reconciled (harness-only changes — no ROM `src/` edits, no production `mud/`
+edits). These are NOT parity bugs; they were unfairness in the comparison itself:
+
+1. **Test-character HMV (FINDING-002, resolved below).** Python now seeds the
+   harness char with ROM `new_char()` defaults (recycle.c:299-304: hp/max=20,
+   mana/max=100, move/max=100) so it matches the C shim's `make_test_char`.
+   `tests/test_differential_smoke.py`.
+2. **Scenario `level` not passed to C.** `capture.py:_drive` boot line now includes
+   `level={char_level}` (the C shim already parsed it). Previously C always booted
+   at level 1 while Python set the scenario level — a hidden second divergence the
+   first-divergence comparator masked behind the hp diff.
+3. **Snapshot people-key field.** `pysnap._room_snap` now keys room occupants the
+   way the C shim's `char_key` does — first word of ROM's `ch->name`, which for a
+   mob is the keyword list (`MobIndex.player_name`, e.g. `"healer"`), not the
+   display `short_descr` (`"the healer"`). PCs key on their own name.
+4. **Output capture channel.** The replay now captures the full player-visible
+   output — the command return value followed by drained `char.messages`
+   (send_to_char delivery), mirroring the live server loop
+   (`mud/net/connection.py:1979-2000`) — instead of the return value alone. This
+   is what surfaced FINDING-003 and FINDING-004 above.
+
+The golden was recaptured (only `char.level` 1→5 changed; output arrays
+unchanged, confirming the C side was untouched).
+
+---
+
+## FINDING-002 — test-character hp/level differ between C shim and Python replay — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28 — harness-soundness (not a parity bug). Two
+parts: (a) Python's `create_test_character` (a shared test stub, not ROM's
+new-player path) left hp/mana/move at the dataclass default 0 while the C shim's
+`make_test_char` copied ROM `new_char()` defaults (20/100/100); (b) `capture.py`
+never passed the scenario `level=` to the C shim, so C booted at level 1 vs
+Python's level 5. Both reconciled as harness start-state fixes (see "Harness
+soundness fixes" above): the replay seeds the recycle.c HMV defaults and the boot
+line now carries `level=`. Golden recaptured. The remaining `movement_get_drop`
+divergences are the real parity bugs FINDING-003 + FINDING-004.
 
 ---
 
