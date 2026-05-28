@@ -1,65 +1,54 @@
-# Session Status — 2026-05-27 — ARITH-202/205 close + ARITH-104/201 N/A reclass (2.9.83)
+# Session Status — 2026-05-27 — INV-028 light-slot coherence + stale-test cleanup (2.9.86)
 
 ## Current State
 
-- **Active audit**: META Class 2 ARITHMETIC_BOUNDARY — **CLOSE-OUT in progress**.
-  Triage doc (`docs/parity/audits/ARITHMETIC_BOUNDARY.md`): cumulative
-  **21 FIXED / 19 N/A / 7 ❌ MISSING** of 47 candidates.
-- **Last completed**: **ARITH-202** (✅ FIXED 2.9.81 — worn-light burnout
-  `--room->light` floor removed, `mud/game_loop.py:454`), **ARITH-205**
-  (✅ FIXED 2.9.82 — runtime-extract `carry_number` floor removed,
-  `_remove_from_character`), and **ARITH-104 + ARITH-201** (⛔ N/A reclass
-  2.9.83 — verified dead/redundant defensive floors, comment-only).
+- **Last completed**: **INV-028 (LIGHT-SLOT-KEY-COHERENCE)** ✅ ENFORCED (2.9.85)
+  — `do_wear`/`do_hold` now route `ITEM_LIGHT` into `WearLocation.LIGHT`
+  (ROM `act_obj.c:1415-1422`), and both readers (`Room._has_lit_light_source`,
+  `_find_equipped_light`) tolerate the live-int and reloaded-str key forms.
+  This also activates the 2.9.81 ARITH-202 burnout fix in live play. Then
+  fixed **5 stale stat-floor unit tests** (2.9.86) left behind by ARITH-105's
+  floor-3 change, surfaced by the first full-suite run this work stream.
+- **Active audit**: META Class 2 ARITHMETIC_BOUNDARY close-out — **21 FIXED /
+  19 N/A / 7 ❌ MISSING** (unchanged this session; INV-028 is a cross-file
+  invariant, not an ARITH row).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-27_ARITH_202_205_CLOSE.md](SESSION_SUMMARY_2026-05-27_ARITH_202_205_CLOSE.md)
+  [SESSION_SUMMARY_2026-05-27_INV_028_LIGHT_SLOT.md](SESSION_SUMMARY_2026-05-27_INV_028_LIGHT_SLOT.md)
   (predecessors:
-  [SESSION_SUMMARY_2026-05-27_GL_024_LEVEL1_PLAGUE.md](SESSION_SUMMARY_2026-05-27_GL_024_LEVEL1_PLAGUE.md),
-  [SESSION_SUMMARY_2026-05-27_ARITH_203_204_PLAGUE_DRAIN.md](SESSION_SUMMARY_2026-05-27_ARITH_203_204_PLAGUE_DRAIN.md))
+  [SESSION_SUMMARY_2026-05-27_ARITH_202_205_CLOSE.md](SESSION_SUMMARY_2026-05-27_ARITH_202_205_CLOSE.md),
+  [SESSION_SUMMARY_2026-05-27_GL_024_LEVEL1_PLAGUE.md](SESSION_SUMMARY_2026-05-27_GL_024_LEVEL1_PLAGUE.md))
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.84 |
-| Tests | Full integration suite **2346 passed, 3 skipped** in 83.18s. New regressions: `test_room_light_tracking.py::test_burnout_light_decrement_has_no_floor_exposing_desync` 1/1, `test_arith_205_carry_number_no_floor.py` 1/1. INV-011 coherence suite green. |
-| ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75%. `update.c` / `handler.c` / `act_move.c` arithmetic floors covered by the ARITH triage. |
-| Cross-file invariants | 23 ENFORCED + 2 candidates (INV-027 ACT-INVIS-TRUST-GATE, **INV-028 LIGHT-SLOT-KEY-COHERENCE — filed this session**). INV-011 verified still green after ARITH-205. |
-| Meta-audit progress | 6 of 8 META classes complete or triaged. Class 2 ARITHMETIC_BOUNDARY close-out: **21 FIXED, 19 N/A, 7 ❌ MISSING** (47 total). |
-| Branch | `master` — local 2.9.84 ahead of `origin/master` by **6 commits** (GL-024 2.9.80 + handoff, ARITH-202 2.9.81, ARITH-205 2.9.82, ARITH-104/201 2.9.83, handoff). INV-028 filing commit will make 7. (2.9.77→2.9.79 already pushed.) |
+| Version | 2.9.86 |
+| Tests | **Full suite: 4889 passed, 4 skipped, 0 failed** in 486s. INV-028 suite 3/3; the 5 prior stat-floor unit failures resolved. |
+| ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75%. |
+| Cross-file invariants | **24 ENFORCED** (INV-028 added) + 1 candidate (INV-027 ACT-INVIS-TRUST-GATE). |
+| Meta-audit progress | 6 of 8 META classes complete/triaged. ARITHMETIC_BOUNDARY: 21 FIXED / 19 N/A / 7 ❌ MISSING. |
+| Branch | `master` — local 2.9.86 ahead of `origin/master` by **9 commits** (GL-024 2.9.80 → INV-028 2.9.85 → stale-tests 2.9.86). Handoff commit makes 10. (2.9.77→2.9.79 already pushed.) |
 
 ## Next Intended Task
 
-0. **INV-028 candidate — LIGHT-SLOT-KEY-COHERENCE (filed this session).**
-   Highest-value follow-up: the worn-light slot is keyed three inconsistent
-   ways (`do_wear` → `WearLocation.HOLD`, `Room._has_lit_light_source` →
-   str `"0"`, `_find_equipped_light` → `"light"`/int-LIGHT), so PC lights
-   never burn out and room lighting from PC-held lights is mis-tracked.
-   Surfaced verifying ARITH-202 reachability. Closing it makes ARITH-202
-   take effect in live play. Prose + proposed enforcement in
-   `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
-1. **Push approval needed** — 6 (soon 7) commits ahead of `origin/master`,
-   shipping 2.9.80 → 2.9.84. Verify with `git log origin/master..HEAD`.
-2. **ARITH-017 / 018 / 019** — left ❌ OPEN this session. Subagent's N/A
-   verdict only proved the `do_cast` player path; the N/A bar requires
-   proving the scroll/wand/potion (`obj_cast_spell`, item level can be 0)
-   and mobprog (`mpcast`) dispatch paths too. **Verify those before
-   reclassing** — read `obj_cast_spell` level sourcing in ROM `src/magic.c`
-   + Python equivalent.
-3. **ARITH-004** — stays ❌ OPEN, real divergence: `mud/combat/engine.py:1562`
-   double-floors weapon level so it can never pass `saves_spell(0,...)`, but
-   ROM `src/fight.c:606` uses `wield->level` raw (level-0 weapon → 0).
-   Candidate straight fix.
-4. **Remaining 7 ❌ MISSING**: ARITH-004/017/018/019 (above) + **ARITH-114**
-   (get_curr_stat per-race/class ceiling — focused stat-table session),
-   **ARITH-206/207** (`reset_handler.py` arg=0 semantics — need `db.c`
-   reset re-read), **ARITH-208** (`templates.py:172` dice+bonus — check
-   `docs/divergences/UB_DIVISORS.md` policy first).
-5. **GitNexus read-only DB** — `gitnexus_impact`/`detect_changes` unavailable
-   this session (`Cannot execute write operations`); reindex can't write
-   either. Fix DB perms/lock outside the session if it persists. 32KB
-   scope-extraction failures on the documented file list also persist.
-6. **Pre-existing lint** parked: B007/F841 cluster; F541 in `shop.py:798`
-   area; new I001 import-sort at `mud/world/movement.py:1-17`.
-7. **Pre-existing flake** at
-   `tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs`.
-8. **Worktree hygiene** — locked worktrees still present in `.claude/worktrees/`.
+1. **Push approval** — 9 (soon 10) commits ahead of `origin/master`, shipping
+   2.9.80 → 2.9.86. Verify with `git log origin/master..HEAD`. Not pushed.
+2. **Equipment-dict key-type normalization** (INV-028 followup) — live `int`
+   vs reloaded `str` slot keys affect every slot, not just LIGHT. Normalize on
+   load (coerce to `int(wear_loc)` in persistence restore) and drop the
+   per-reader tolerance shims. Candidate INV / persistence gap.
+3. **`_wear_all` light handling** — `wear all` won't equip a light (no LIGHT
+   branch in `_wear_all`); ROM's `wear all` → `wear_obj` → WEAR_LIGHT would.
+   Minor adjacent gap.
+4. **ARITH triage remaining (7 ❌ MISSING)**: ARITH-004 (real level-0 weapon
+   divergence — candidate fix), ARITH-017/018/019 (verify scroll/wand/potion/
+   mobprog dispatch before any N/A reclass), ARITH-114 (per-race/class stat
+   ceiling), ARITH-206/207 (`reset_handler` arg=0), ARITH-208 (UB-divisor).
+5. **GitNexus read-only DB** — `gitnexus_impact`/`detect_changes` unavailable;
+   reindex can't write. Fix DB perms/lock outside the session.
+6. **Pre-existing lint** parked: B007/F841 cluster; F541 `shop.py:798`; I001
+   `mud/world/movement.py:1-17`; F401/F841 in `test_equipment_system.py`.
+7. **Pre-existing flake** `tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs`.
+8. **Test side-effect** — some test mutates `data/areas/area.lst` (drops the
+   `test.json` line); revert before committing. **Worktree hygiene** — locked
+   worktrees still in `.claude/worktrees/`.
