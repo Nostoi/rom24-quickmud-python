@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.0]
+
+### Added
+- **Differential testing harness (ROM C ⇄ Python), v1** (`tools/diff_harness/`). A local golden-trace capture/replay tool that runs the Python port and the original ROM 2.4b6 C engine through identical scripted scenarios and diffs observable state + output, surfacing parity divergences mechanically. The usual nondeterminism blocker is already solved here: the C engine is built with `-DOLD_RAND` so its Mitchell-Moore RNG matches `mud/utils/rng_mm.py` bit-for-bit. **Capture** drives an additively-instrumented C binary (`src/diffshim`, built via `src/Makefile.diffshim` — ROM `src/*.c` unchanged, all macOS portability via compile flags + shim headers) over stdin and records committed golden traces (`tests/data/golden/diff/`). **Replay** (`tests/test_differential_smoke.py`, pure-Python, no C build needed) drives the Python engine through the same scenario, snapshots state, normalizes both sides identically, and asserts equality. v1 covers a deterministic smoke slice (look/movement/get/drop/inventory). Design + plan: `docs/superpowers/specs/2026-05-28-differential-testing-harness-design.md`, `docs/superpowers/plans/2026-05-28-differential-testing-harness.md`. Workflow: `tools/diff_harness/README.md`.
+
+### Fixed
+- (harness finding, not yet fixed) **FINDING-001** — the harness's first run surfaced a divergence: room `look` renders an NPC by name vs ROM's `long_descr`, with an ambiguous root cause (the malformed `area/midgaard.are` — the C side reads a repaired overlay while Python reads the original, so inputs may be unequal — plus a possible instance `long_descr` gap). Recorded in `tools/diff_harness/FINDINGS.md` and gated as a self-clearing `xfail`; triage deferred to a focused session.
+
 ## [2.10.0]
 
 ### Added
