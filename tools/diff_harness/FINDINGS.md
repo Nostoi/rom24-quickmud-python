@@ -8,7 +8,23 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-006 — area JSON mob HP/mana/damage dice are mislabeled (field-shifted) — 🔴 OPEN, BLOCKS combat v1
+## FINDING-006 — area JSON mob HP/mana/damage dice are mislabeled (field-shifted) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28 via **DB2-007** (master 2.11.2, commit `1857b5f8`).
+Root cause was a phantom scalar `ac` token at stat-line index [2] in
+`mud/loaders/mob_loader.py` (ROM has no scalar AC there — it's on the next line), which
+shifted every dice field by one and dropped the real HP dice. Fixed; all 52 area JSONs
+regenerated; full suite 4925/0. The per-file `DB2_C_AUDIT.md` Phase 2 had marked this
+stat line ✅ — corrected. Regression: `tests/test_mob_dice_parity.py`.
+
+**Combat-v1 follow-on (not a data bug — normal harness RNG-alignment work):** with the
+fix, the drunk #3064 now rolls `2d6+22` on both engines, but the *value* still differs
+(C 31, Python 33) because the RNG stream position at `__mload` time isn't yet aligned
+between `create_mobile` and `from_prototype` (seeding convention and/or spawn draw
+order). The combat scenario's `__seed`-before-`__mload` + matched-stub tasks address
+this; the first capture will surface it as the mob's starting-HP diff to triage.
+
+### (historical, root-cause notes below)
 
 **Status:** 🔴 OPEN — **real, systematic Python parity bug.** Surfaced 2026-05-28 while
 preparing the combat differential scenario (drunk #3064 spawned at 100 HP in Python
