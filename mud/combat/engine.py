@@ -242,6 +242,18 @@ def _broadcast_damage_messages(
             continue
         _push_message(occupant, _render(messages.room, attacker, victim, occupant) or "")
 
+    # ROM src/fight.c:2217/2222 — dam_message's TO_ROOM (self-inflicted) /
+    # TO_NOTVICT act() calls carry no MOBtrigger=FALSE wrap, so per
+    # src/comm.c:2384 every NPC recipient in the room fires TRIG_ACT against
+    # the formatted line. Mirror that so mob ACT-progs respond to combat.
+    from mud.mobprog import mp_act_trigger_room
+
+    canonical = messages.room.format(
+        attacker=getattr(attacker, "name", "Someone"),
+        victim=getattr(victim, "name", "Someone"),
+    )
+    mp_act_trigger_room(canonical, room, attacker, exclude=victim)
+
 
 # Back-compat alias — the old name is referenced in older session
 # notes and some test files. Both names invoke the same logic.

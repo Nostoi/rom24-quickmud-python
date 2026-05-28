@@ -253,14 +253,19 @@ the cross-file work is tracked here.
   (3) NPC emoter does not self-fire its own TRIG_ACT.
   **Follow-up sweep** (not yet scoped as an INV row — the contract is
   locked): remaining ROM act() callsites in Python that should also feed
-  `mp_act_trigger_room` — `do_give`, `do_drop`, `do_get`, `do_put`,
-  `do_sacrifice`, `do_wear`/`do_remove`/`do_wield`/`do_hold`, position-
-  transition broadcasts (`mud/combat/engine.py:apply_position_change`),
-  the `_push_message`/`broadcast_room` surface for combat narration. Each
-  is one-callsite per commit and gated by whether the matching ROM site
-  uses `MOBtrigger = FALSE` around its act() emission (do_give does;
-  drop/get/put do not). Track as ad-hoc follow-up commits rather than a
-  new INV row.
+  `mp_act_trigger_room`. Closed so far (one-callsite-per-commit): `do_give`,
+  `do_drop`, `do_get`, `do_put`, `do_sacrifice`,
+  `do_wear`/`do_remove`/`do_wield`/`do_hold`, position-transition
+  broadcasts (`mud/combat/engine.py:apply_position_change` →
+  `_broadcast_pos_change`), and **combat `dam_message`**
+  (`mud/combat/engine.py:_broadcast_damage_messages`, closed as `FIGHT-018`
+  in 2.9.90 — every combat hit fires TRIG_ACT on room NPCs, ROM
+  `src/fight.c:2215-2226`, no `MOBtrigger` wrap). Still open: the broader
+  `_push_message`/`broadcast_room` narration surface (non-combat act()
+  lines). Each is gated by whether the matching ROM site uses
+  `MOBtrigger = FALSE` around its act() emission (do_give does;
+  drop/get/put/dam_message do not). Track as ad-hoc follow-up commits
+  rather than a new INV row.
 - ~~PORTAL-TRAVEL-OBJ-DECAY (probed 2.9.39)~~: charge depletion in
   `mud/world/movement.py:580-584` reads/writes `portal.value[0]` on the
   instance (not the prototype); timer-decay in `mud/game_loop.py:1157-1188`

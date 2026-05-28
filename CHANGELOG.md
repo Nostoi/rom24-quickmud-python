@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.90]
+
+### Fixed
+- **`FIGHT-018` — combat hit messages now fire mob ACT triggers (TRIG_ACT)** (ROM `src/fight.c:2215-2226`). ROM `dam_message` emits the combat line TO_ROOM (self-inflicted) or TO_NOTVICT (normal) via `act()` with no `MOBtrigger=FALSE` wrap, so per `src/comm.c:2384` every NPC in the room (other than attacker/victim) fires `mp_act_trigger` against the formatted line — mob ACT-progs respond to combat happening around them. Python's `_broadcast_damage_messages` rendered the per-recipient combat text but never dispatched TRIG_ACT, so combat-watching mobprogs silently no-opped. The room broadcast now calls `mp_act_trigger_room(<rendered line>, room, attacker, exclude=victim)`, mirroring the rest of the INV-025 act()-dispatch sweep. Regression: `tests/integration/test_fight_018_dam_message_act_trigger_dispatch.py`.
+
 ## [2.9.89]
 
 ### Fixed
