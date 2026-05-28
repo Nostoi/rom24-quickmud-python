@@ -44,14 +44,17 @@ int main (int argc, char **argv)
 
     /*
      * ROM's boot_db() opens area.lst (and reserves NULL_FILE) relative to CWD.
-     * The stock server runs from the area/ directory (its EXE is ../area/rom),
-     * so we chdir there. The binary itself stays in src/; only the working dir
+     * The stock server runs from the area/ directory; we instead chdir into the
+     * generated overlay (diff_shim/area, built by `make area-overlay`), which
+     * symlinks every stock area file but substitutes a midgaard.are with the
+     * `#ROOMS` section keyword injected (stock midgaard omits it, which the
+     * ROM parser rejects). The binary stays in src/; only the working dir
      * moves. Honour an explicit DIFFSHIM_AREA_DIR override if set.
      */
     {
         const char *area_dir = getenv ("DIFFSHIM_AREA_DIR");
         if (area_dir == NULL || area_dir[0] == '\0')
-            area_dir = "../area";
+            area_dir = "diff_shim/area";
         if (chdir (area_dir) != 0)
         {
             perror (area_dir);

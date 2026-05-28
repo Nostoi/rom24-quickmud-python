@@ -27,8 +27,43 @@ ROM_SRC = act_comm.c act_enter.c act_info.c act_move.c act_obj.c act_wiz.c \
 
 ROM_OBJ = $(ROM_SRC:.c=.diffo)
 
-diffshim: $(ROM_OBJ) diff_shim/diffmain.diffo
+# The shared area/ tree is read-only too. midgaard.are omits the `#ROOMS`
+# section keyword stock ROM's boot_db() requires (it has a bare `#` between the
+# objects terminator and the first room). We materialize a generated overlay
+# under diff_shim/area/: every area file is symlinked from ../../area/ except
+# midgaard.are, which is copied with `#ROOMS` injected. diffmain.c chdirs here.
+AREA_SRC     = ../area
+AREA_OVERLAY = diff_shim/area
+
+diffshim: $(ROM_OBJ) diff_shim/diffmain.diffo area-overlay
 	$(CC) $(C_FLAGS) -o diffshim $(ROM_OBJ) diff_shim/diffmain.diffo
+
+# Build the area overlay: symlink all files, then replace midgaard.are with a
+# repaired copy. Stock midgaard.are in this repo is malformed vs ROM 2.4: the
+# OBJECTS→ROOMS boundary has a bare `#` (no `#ROOMS` keyword) before room 3001,
+# and the section keyword has migrated to the first room's description, gluing
+# onto its `~` terminator as `~ROOMS`. ROM's fread_string() stops at `~` but
+# leaves `ROOMS\n` in the stream, so the next fread_number() chokes. The fix is
+# (1) rewrite the bare boundary `#` (followed by a `#<vnum>` line) to `#ROOMS`,
+# and (2) strip the stray keyword so `~ROOMS` becomes a clean `~`. Every other
+# area file loads as-is and is symlinked. All edits live in this generated
+# overlay; the shared area/ tree is never modified.
+.PHONY: area-overlay
+area-overlay:
+	@mkdir -p $(AREA_OVERLAY)
+	@for f in $(AREA_SRC)/*; do \
+		b=`basename $$f`; \
+		if [ "$$b" != "midgaard.are" ]; then \
+			ln -sf ../../$(AREA_SRC)/$$b $(AREA_OVERLAY)/$$b; \
+		fi; \
+	done
+	@awk 'NR>1 { \
+	        if (prev=="#" && $$0 ~ /^#[0-9]+$$/) print "#ROOMS"; \
+	        else { sub(/^~ROOMS$$/, "~", prev); print prev; } \
+	      } { prev=$$0 } END { sub(/^~ROOMS$$/, "~", prev); print prev }' \
+	      $(AREA_SRC)/midgaard.are > $(AREA_OVERLAY)/midgaard.are
+	@grep -q '^#ROOMS$$' $(AREA_OVERLAY)/midgaard.are \
+		|| (echo "area-overlay: failed to inject #ROOMS into midgaard.are" && exit 1)
 
 # comm.c owns the real main()/game_loop; rename main so diffmain.c provides it.
 comm.diffo: comm.c
