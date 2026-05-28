@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.89]
+
+### Fixed
+- **`FIGHT-017` — WEAPON_POISON now sources its level from a temporary envenom affect and weakens it per hit** (ROM `src/fight.c:605-608, 627-636`). ROM derives the poison `level` from `affect_find(wield->affected, gsn_poison)` — using `poison->level` when a temporary envenom (from `spell_poison` cast on the weapon) is present, else `wield->level` — and after applying the venom weakens a temporary poison each hit: `poison->level = UMAX(0, poison->level - 2)`, `poison->duration = UMAX(0, poison->duration - 1)`, emitting `"The poison on $p has worn off."` to the **wielder** (TO_CHAR) when either reaches 0. Python previously ignored `wield.affected` entirely (always used the weapon level) and never decayed an envenom. The WEAPON_POISON branch in `process_weapon_special_attacks` now scans `wield.affected` for the affect with `spell_name == "poison"`, uses its level (raw, no floor) when present, and weakens it after the save block — independent of whether the victim saved. Permanent WEAPON_POISON weapons (no envenom affect) are unchanged. Regression: `tests/integration/test_weapon_poison_affect.py::test_fight_017_*` (4 cases).
+
 ## [2.9.88]
 
 ### Added

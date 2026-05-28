@@ -1558,15 +1558,35 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     weapon_name = getattr(wield, "name", None) or getattr(wield, "short_descr", None) or "the weapon"
     room = getattr(victim, "room", None)
 
-    # WEAPON_POISON - ROM src/fight.c L600-634
+    # WEAPON_POISON - ROM src/fight.c L600-636
     if weapon_flags & WEAPON_POISON:
-        # ARITH-004 (⛔ N/A): ROM `src/fight.c:606` uses `wield->level` raw, but
-        # the `max(1, ...)` floor here is behaviorally dead — `weapon_level` is
-        # only ever consumed via `// 2` (and the other procs via `// N (+const)`),
-        # and `0 // N == 1 // N == 0` for N >= 2, so flooring a level-0 weapon to
-        # 1 never changes an observable value. `weapon_level` is also already
-        # floored at line 1556 (`_weapon_level(wield) or 1`).
-        level = max(1, weapon_level)
+        # FIGHT-017: ROM derives the poison level from a TEMPORARY envenom
+        # affect on the weapon if present — `affect_find(wield->affected,
+        # gsn_poison)` → `poison->level`, else `wield->level`
+        # (src/fight.c:605-608). The envenom path (spell_poison on an object,
+        # mud/skills/handlers.py:6388) stores such an affect with
+        # `spell_name == "poison"` on `wield.affected`.
+        poison_af = None
+        affected = getattr(wield, "affected", None)
+        for af in affected if isinstance(affected, list) else []:
+            name = getattr(af, "spell_name", None) or getattr(af, "type", None)
+            if name == "poison":
+                poison_af = af
+                break
+
+        if poison_af is None:
+            # ARITH-004 (⛔ N/A): ROM `src/fight.c:606` uses `wield->level` raw,
+            # but the `max(1, ...)` floor here is behaviorally dead —
+            # `weapon_level` is only ever consumed via `// 2` (and the other
+            # procs via `// N (+const)`), and `0 // N == 1 // N == 0` for N >= 2,
+            # so flooring a level-0 weapon to 1 never changes an observable
+            # value. `weapon_level` is also already floored at line 1556
+            # (`_weapon_level(wield) or 1`).
+            level = max(1, weapon_level)
+        else:
+            # ROM src/fight.c:608 — `level = poison->level` raw (no floor; a
+            # level-0 envenom must still pass saves_spell(0, ...) and weaken).
+            level = max(0, int(getattr(poison_af, "level", 0) or 0))
 
         if not saves_spell(level // 2, victim, DamageType.POISON):
             _push_message(victim, "You feel poison coursing through your veins.")
@@ -1599,6 +1619,18 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
             elif hasattr(victim, "add_affect"):
                 victim.add_affect(AffectFlag.POISON)
             messages.append("You feel poison coursing through your veins.")
+
+        # FIGHT-017: weaken a temporary envenom per hit — ROM src/fight.c:627-636.
+        # This sits OUTSIDE the save block: weakening happens whether or not the
+        # victim saved. Permanent WEAPON_POISON weapons have no envenom affect
+        # (poison_af is None) and are never weakened.
+        if poison_af is not None:
+            poison_af.level = max(0, int(getattr(poison_af, "level", 0) or 0) - 2)
+            poison_af.duration = max(0, int(getattr(poison_af, "duration", 0) or 0) - 1)
+            if poison_af.level == 0 or poison_af.duration == 0:
+                # ROM act("The poison on $p has worn off.", ch, wield, NULL,
+                # TO_CHAR) — to the wielder (attacker), not the victim.
+                _push_message(attacker, f"The poison on {weapon_name} has worn off.")
 
     # WEAPON_VAMPIRIC - ROM src/fight.c L640-649
     if weapon_flags & WEAPON_VAMPIRIC:
