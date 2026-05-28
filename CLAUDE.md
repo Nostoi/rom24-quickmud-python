@@ -36,6 +36,27 @@ These skills sit on top of (and call out to) the existing rules:
 
 Do not invoke `rom-gap-closer` without a documented gap ID. Do not invoke `rom-parity-audit` for a single-gap fix. Do not skip `rom-session-handoff` at session end — `SESSION_STATUS.md` and `CHANGELOG.md` rot fast otherwise.
 
+# META - MAINTAINING THIS DOCUMENT
+
+## When to Add a New Rule
+Add a rule to this document when:
+- You make the same mistake twice in one session
+- You correct a pattern more than once across sessions
+- A user correction reveals a structural assumption you keep getting wrong
+
+## How to Write Good Rules
+1. Use absolute directives — start with NEVER or ALWAYS
+2. Include the anti-pattern alongside the correct pattern
+3. If a rule could be enforced by tooling (ESLint, a hook, a git check),
+   note that explicitly so it can be escalated to a hook
+4. One rule per behavior — no bundling
+
+## Escalation: When a Rule Should Become a Hook
+If you find yourself adding a rule that says "ALWAYS run X before Y", consider whether it should instead be a PostToolUse or PreToolUse hook in .claude/settings.json — hooks are guarantees, rules are suggestions.
+   - Repeated style/syntax issue → add an ESLint rule
+   - Repeated pre-commit failure → add a Lefthook/husky hook
+   - Repeated unsafe tool use → add a PreToolUse hook in .claude/settings.json
+
 # ⚠️ Known GitNexus Indexing Gap (load-bearing — read before trusting `gitnexus_impact`)
 
 GitNexus's scope extractor has a **32 KB-per-file limit** in tree-sitter's binding (upstream bug, [issue #1097](https://github.com/abhigyanpatwari/GitNexus/issues/1097)). Failures show as `scope extraction failed for <file>: Invalid argument` during `npx gitnexus analyze -v`. Confirmed still present on **gitnexus 1.6.4-rc.13** (April 27, 2026) — [PR #1100](https://github.com/abhigyanpatwari/GitNexus/pull/1100) closed only the empty-`__init__.py` half of the bug, not the buffer cap.
