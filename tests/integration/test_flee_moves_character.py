@@ -23,8 +23,34 @@ import pytest
 
 from mud.commands.combat import do_flee
 from mud.models.constants import Position
+from mud.registry import area_registry, room_registry
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
+
+
+@pytest.fixture(autouse=True)
+def _restore_world_registries():
+    """Snapshot/restore the global world registries this module mutates.
+
+    The flee test calls ``initialize_world()`` (which clears and reloads
+    ``room_registry`` / ``area_registry`` from disk) and then mutates a *real*
+    registered room's ``exits`` into a dict to exercise do_flee's dict-format
+    branch. Both the populated registries and the dict-shaped exits used to leak
+    across xdist worker boundaries: a later sibling test running ``game_tick()``
+    would reset the leaked area and crash in ``_restore_exit_states`` when
+    ``enumerate({"north": ...})`` yielded the string key and tried
+    ``"north".exit_info = ...``. Snapshot before / restore after discards this
+    test's corrupted Room objects and returns the registries to their pre-test
+    state (AGENTS.md "Parallel test execution & isolation").
+    """
+
+    rooms_before = dict(room_registry)
+    areas_before = dict(area_registry)
+    yield
+    room_registry.clear()
+    room_registry.update(rooms_before)
+    area_registry.clear()
+    area_registry.update(areas_before)
 
 
 def test_flee_moves_character_to_new_room(monkeypatch: pytest.MonkeyPatch) -> None:

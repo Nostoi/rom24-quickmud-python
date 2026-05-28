@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.91]
+
+### Fixed
+- **xdist isolation leak — `test_flee_moves_character` corrupted a shared world room's `exits`** (test-side only; no production behavior changed). `tests/integration/test_flee_moves_character.py` calls `initialize_world()` (which clears+reloads `room_registry`/`area_registry` from disk) and then sets the *real* registered room 3001's `exits` to a dict (`{"north": {...}}`) to exercise do_flee's dict-format branch — but never restored it. With xdist `--dist loadscope`, the populated registries and the dict-shaped exits leaked to whatever test landed next on the same worker. A later `game_tick()` (e.g. in `tests/integration/test_group_combat.py`) reset the leaked area, and `reset_handler._restore_exit_states` crashed: `enumerate({"north": ...})` yields the string key `"north"`, so `"north".exit_info = 0` raised `AttributeError: 'str' object has no attribute 'exit_info'`. Manifested as an intermittent failure of `test_group_xp_split_between_members` whenever worker grouping put the two files together with the leaked area aged ≥3. Added an autouse snapshot-before/restore-after fixture for `room_registry`/`area_registry` in the flee file (AGENTS.md "Parallel test execution & isolation"), discarding the test's corrupted Room objects and returning the registries to their pre-test state.
+
 ## [2.9.90]
 
 ### Fixed
