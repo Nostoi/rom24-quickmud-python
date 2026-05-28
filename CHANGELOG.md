@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.86]
+
+### Changed
+- **Fixed 5 stale unit tests that asserted pre-ARITH-105 stat-floor behavior** (surfaced by running the full `pytest` suite, not just the integration subset). ARITH-105 (2.9.72) changed `Character.get_curr_stat` to floor at 3 (ROM `URANGE(3,...,25)`, `src/handler.c:872`), but these tests still assumed `perm_stat=0` → stat 0. No implementation change — the tests now assert ROM-correct values:
+  - `tests/test_player_stats.py::TestStatBoundsAndClamping::test_get_curr_stat_clamps_to_minimum_0` → renamed to `..._minimum_3`; STR/INT debuffed below 3 now read 3, not 0.
+  - `tests/test_skill_combat_rom_parity.py` bash size/dodge, disarm differential, and dirt-kicking terrain tests: expected chances recomputed to include the PC's floored STR/DEX (3) where they previously assumed 0. The dirt-kicking test's brittle `assert_called_once()` (incompatible with the success path's `number_range` damage roll) was replaced with a blind-effect success check.
+
 ## [2.9.85]
 
 ### Fixed

@@ -200,15 +200,19 @@ class TestStatBoundsAndClamping:
         assert player.get_curr_stat(Stat.WIS) == 18
         assert player.get_curr_stat(Stat.DEX) == 25
 
-    def test_get_curr_stat_clamps_to_minimum_0(self):
-        """get_curr_stat() should clamp total to 0 (ROM minimum)."""
+    def test_get_curr_stat_clamps_to_minimum_3(self):
+        """get_curr_stat() should clamp total to 3 (ROM URANGE(3,...,25), src/handler.c:872).
+
+        ARITH-105 (2.9.72) corrected the PC floor from 0 to ROM's 3; debuffs that
+        drive perm+mod below 3 read back as 3, not 0.
+        """
         player = create_player_with_initialized_stat_arrays(
             "MinClampTest", perm_stats=[5, 3, 8, 10, 12], mod_stats=[-10, -5, -2, 0, 0]
         )
 
-        assert player.get_curr_stat(Stat.STR) == 0
-        assert player.get_curr_stat(Stat.INT) == 0
-        assert player.get_curr_stat(Stat.WIS) == 6
+        assert player.get_curr_stat(Stat.STR) == 3  # 5 + (-10) = -5 -> floored to 3
+        assert player.get_curr_stat(Stat.INT) == 3  # 3 + (-5) = -2 -> floored to 3
+        assert player.get_curr_stat(Stat.WIS) == 6  # 8 + (-2) = 6 -> in range
 
     def test_get_curr_stat_handles_stat_enum(self):
         """get_curr_stat() should accept Stat enum values."""

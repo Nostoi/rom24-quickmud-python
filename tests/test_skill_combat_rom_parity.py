@@ -695,7 +695,9 @@ class TestBashRomParity:
         mob.level = 0
         mob.off_flags = 0
 
-        expected_chance = 50 + (4 - 2) * 10
+        # +3: a PC's get_curr_stat(STR) floors to 3 (ROM URANGE(3,...,25), ARITH-105),
+        # so perm_stat=0 contributes +3, not 0. Mob DEX/AC floor to 0 and contribute 0.
+        expected_chance = 50 + (4 - 2) * 10 + 3
 
         def _bash_stub(caster: Character, target: Character | None = None, *, success=None, chance=None) -> str:
             assert success is True or success is False
@@ -784,7 +786,11 @@ class TestBashRomParity:
         victim.level = 0
         victim.off_flags = 0
 
-        expected_chance = 50 - 3 * (75 - 50)
+        # Both combatants are PCs, so get_curr_stat floors STR/DEX to 3
+        # (ROM URANGE(3,...,25), ARITH-105): attacker STR=3, victim DEX=3.
+        pre_dodge = 50 + 3 - (3 * 4) // 3  # = 49 (base 50 + STR 3 - (DEX*4)/3)
+        # ROM L2447-2454: dodge penalty subtracts 3*(dodge - CURRENT chance).
+        expected_chance = pre_dodge - 3 * (75 - pre_dodge)  # 49 - 3*26 = -29
 
         def _bash_stub(caster: Character, target: Character | None = None, *, success=None, chance=None) -> str:
             assert success is True or success is False
@@ -1401,7 +1407,11 @@ class TestDisarmRomParity:
         vict_weapon = 20
         ch_vict_weapon = 80
         diff_mod = ((ch_vict_weapon // 2) - vict_weapon) // 2
-        expected_chance = (60 * ch_weapon) // 100 + diff_mod
+        # ROM L3194-3197 also adds DEX(ch) - 2*STR(victim). With perm_stat=0 the
+        # PC caster's get_curr_stat(DEX) floors to 3 (ROM URANGE(3,...,25), ARITH-105)
+        # while the mob victim's get_curr_stat(STR) floors to 0, so the term is +3.
+        dex_str_mod = 3 - 2 * 0
+        expected_chance = (60 * ch_weapon) // 100 + diff_mod + dex_str_mod
 
         def _weapon_sn(_who, _weapon=None):  # noqa: ANN001
             return "sword"
@@ -2347,15 +2357,23 @@ class TestDirtKickingRomParity:
         room = room_registry[3001]
         room.sector_type = Sector.INSIDE
 
-        expected_chance = 50 - 20
+        # ROM dirt chance = skill% + DEX(ch) - 2*DEX(victim) + ... + terrain.
+        # PC caster get_curr_stat(DEX) floors to 3 (ROM URANGE(3,...,25), ARITH-105);
+        # mob victim DEX floors to 0. INSIDE terrain is -20. So 50 + 3 - 20 = 33.
+        expected_chance = 50 + 3 - 20
+
+        applied_effects: list = []
+        victim.apply_spell_effect = lambda effect: applied_effects.append(effect)
 
         with (
-            patch("mud.skills.handlers.rng_mm.number_percent", return_value=expected_chance - 1) as mock_roll,
+            patch("mud.skills.handlers.rng_mm.number_percent", return_value=expected_chance - 1),
             patch("mud.skills.handlers.apply_damage", return_value="damage applied"),
         ):
             result = do_dirt(char, "mob")
 
-        mock_roll.assert_called_once()
+        # roll == expected_chance - 1 < chance, so the success path blinds the victim;
+        # this pins expected_chance (terrain -20 + DEX floor +3) at the success boundary.
+        assert applied_effects and applied_effects[0].affect_flag == AffectFlag.BLIND
         assert "damage applied" in result or "kick dirt" in result.lower()
 
     def test_dirt_kicking_water_air_zero_chance(self, movable_char_factory, movable_mob_factory):
