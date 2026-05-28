@@ -64,6 +64,36 @@ LOW risk).
   `HEAD~1`); not caused by this session's changes (verified via stash). Switched
   to `assert_any_call(1, 4)`. Test-only; no production change. Commit `73e96228`.
 
+### Test infrastructure — parallel execution by default (pytest-xdist)
+
+Enabled `pytest -n auto --dist loadscope` as the default (`pyproject.toml`
+`addopts` + `pytest-xdist` dev dep). **Full suite ~517s → ~94s (~5.5×)** on a
+10-core machine; serial still available via `-n0` (verified 4896 passed, 510s).
+Parallel + serial both green: **4896 passed, 4 skipped**.
+
+Enabling parallelism surfaced 5 latent test-isolation bugs (cross-worker shared
+state / cross-file dependencies that serial ordering masked). All fixed
+test-side, no production change:
+
+- **Shared SQLite DB** (`mud/db/session.py` fixed `sqlite:///mud.db`) — per-worker
+  `DATABASE_URL` from `PYTEST_XDIST_WORKER`, set at the top of `tests/conftest.py`
+  before the engine imports. Fixed 2 websocket failures.
+- **`registry.descriptor_list` leak** — `wiznet()` uses descriptors when present,
+  else `character_registry`; a leaked list flipped delivery. Autouse
+  snapshot/restore in `tests/conftest.py`. Fixed the wiznet failure.
+- **`area_registry` pollution** — `_get_area_for_vnum(100)` resolved to a leaked
+  real area, tripping the mpedit security gate. `test_mpedit_001…` autouse fixture
+  now snapshots/clears/restores `area_registry`. Fixed 9 mpedit failures.
+- **Global-time dependency** — `test_movement_npc` relied on ambient daytime
+  (`time_info.sunlight`) for `room_is_dark()`; rooms now explicitly lit.
+- **Repo-file pollution** — OLC `asave` tests (`test_olc_save.py`,
+  `test_olc_builders.py`) let `save_area_list()`'s default path rewrite the real
+  `data/areas/area.lst` (dropping `test.json`); a `tests/conftest.py` autouse
+  fixture now redirects the default write to a per-test tmp file.
+
+AGENTS.md gained a "Parallel test execution & isolation" subsection documenting
+`-n0` for debugging and the rules for keeping new tests parallel-safe.
+
 ## Files Modified
 
 - `mud/combat/engine.py` — WEAPON_POISON structured affect (FIGHT-016) + ARITH-004 ROM-cite comment; `SpellEffect` / `Stat` imports.

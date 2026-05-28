@@ -17,6 +17,12 @@
   - **`test_weapon_flaming_fire_damage`** de-flaked (`assert_any_call` instead
     of `assert_called_once_with`; `fire_effect` makes a second `number_range`
     roll on the shared mock).
+  - **Parallel test execution by default** (`pytest-xdist`, `-n auto --dist
+    loadscope`) — ~5.5× faster. Fixed 5 latent test-isolation bugs it surfaced
+    (per-worker DB, `descriptor_list` leak, `area_registry` pollution,
+    `test_movement_npc` global-time dependency, OLC `asave` tests rewriting the
+    real `data/areas/area.lst`). See AGENTS.md "Parallel test execution &
+    isolation".
 - **Filed this session (not closed)**: **`FIGHT-017`** — temporary-envenomed
   weapon level source + per-hit poison weakening (ROM `src/fight.c:605-608,
   627-636`).
@@ -30,7 +36,7 @@
 | Metric | Value |
 |--------|-------|
 | Version | 2.9.88 |
-| Tests | **Full suite: 4896 passed, 4 skipped, 0 failed** in 516.82s. |
+| Tests | **4896 passed, 4 skipped, 0 failed** — now parallel by default (`-n auto --dist loadscope`): **~94s** vs ~510s serial (`-n0`). Both verified green. |
 | ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75%; `fight.c` 95% (FIGHT-017 open). |
 | Cross-file invariants | 24 ENFORCED. |
 | Branch | `master` — 3 commits ahead of `origin/master` (094536dd reclass, 2024e071 FIGHT-016, 73e96228 flaming de-flake). Not pushed. |

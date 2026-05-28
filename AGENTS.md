@@ -162,8 +162,12 @@ reference those tests from the per-file rows. The
 ## Build / Lint / Test
 
 ```bash
-# All tests (~16s)
+# All tests — runs in parallel by default (-n auto --dist loadscope via
+# pyproject addopts); ~94s on a 10-core machine (~517s serial).
 pytest
+
+# Single-test debugging — disable parallelism for readable output / pdb:
+pytest -n0 tests/test_foo.py::test_bar
 
 # Integration tests
 pytest tests/integration/ -v
@@ -223,6 +227,48 @@ read the corresponding ROM C function before assuming the Python code is
 wrong. (Example: `test_giant_strength_refuses_to_stack` was originally
 `test_stat_modifiers_stack_from_same_spell` — the test asserted stacking,
 but ROM `magic.c:3022-3030` explicitly anti-stacks.)
+
+### Parallel test execution & isolation
+
+The suite runs in parallel by default — `pyproject.toml` sets
+`addopts = "-n auto --dist loadscope"` (pytest-xdist). ~94s vs ~517s serial.
+
+```bash
+pytest                              # all tests, parallel (default)
+pytest -n0                          # force serial (debugging, pdb, readable output)
+pytest -n0 tests/test_foo.py::bar   # one test, serial
+pytest tests/integration/ -v        # a subdir, still parallel
+```
+
+`--dist loadscope` keeps every test in a module/class on **one** worker, so
+module-scoped fixtures and intra-file ordering behave exactly as in a serial
+run. What it does **not** protect against is **cross-file shared state**:
+xdist workers are separate processes, so they only share the **filesystem,
+network ports, and global singletons that persist within a worker across the
+multiple files assigned to it**. When you add or touch a test, keep it
+parallel-safe:
+
+- **Never depend on global state another test file sets up.** A test must pass
+  when run alone (`pytest -n0 path::test`). If it only passes in the full
+  suite, it has a hidden cross-file dependency (e.g. `time_info.sunlight` left
+  at daytime, a populated `area_registry`, a seeded DB schema). Set up what you
+  need locally instead.
+- **Reset global mutable singletons you mutate** — `area_registry`,
+  `character_registry`, `mud.registry.descriptor_list`, `time_info`,
+  `object_registry`. Snapshot/clear/restore in an autouse fixture (see
+  `tests/conftest.py` `_reset_object_registry` / `_reset_descriptor_list` for
+  the pattern). A test that leaves a registry dirty breaks whatever lands next
+  on the same worker.
+- **Per-worker resources for anything on disk or a port.** The shared SQLite
+  engine (`mud/db/session.py`, fixed `sqlite:///mud.db`) is isolated by
+  `tests/conftest.py` setting a per-worker `DATABASE_URL` from
+  `PYTEST_XDIST_WORKER`. If you add a test that binds a port or writes a fixed
+  file, namespace it by `worker_id` / `PYTEST_XDIST_WORKER` (or use `tmp_path`).
+- **Diagnosing an xdist-only failure:** run the file alone (`-n0`). Passes
+  alone but fails parallel → your test leaks OR a sibling leaks into it (reset
+  the singleton). Fails alone too → it depends on cross-file setup (make it
+  self-contained). Worker grouping shifts between runs, so a different latent
+  leak can surface each run — fix the root cause, don't just re-run.
 
 ---
 

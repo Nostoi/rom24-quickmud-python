@@ -10,8 +10,8 @@ from __future__ import annotations
 
 import pytest
 
-from mud.models.mob import MprogCode, mprog_code_registry
 from mud.models.area import Area
+from mud.models.mob import MprogCode, mprog_code_registry
 from mud.net.session import Session
 from mud.olc.editor_state import EditorMode
 from mud.registry import area_registry
@@ -19,15 +19,26 @@ from mud.registry import area_registry
 
 @pytest.fixture(autouse=True)
 def clear_registry():
+    # Fully isolate area_registry (snapshot + clear + restore), not just pop our
+    # own key. The mpedit security gate resolves the area via
+    # _get_area_for_vnum(vnum=100) (mud/commands/build.py), which returns the
+    # FIRST area in insertion order whose [min_vnum, max_vnum] covers 100. Under
+    # `pytest -n auto` a sibling world-loading test on the same worker leaks real
+    # areas covering vnum 100 ahead of our test area, so the gate resolves to a
+    # real area and returns "Insufficient security". Clearing guarantees vnum 100
+    # resolves to this file's test area; the snapshot is restored on teardown so
+    # other tests sharing the worker keep their loaded areas.
+    area_snapshot = dict(area_registry)
+    area_registry.clear()
     mprog_code_registry.clear()
-    area_registry.pop("test_mpedit_001", None)
     yield
     mprog_code_registry.clear()
-    area_registry.pop("test_mpedit_001", None)
+    area_registry.clear()
+    area_registry.update(area_snapshot)
 
 
 @pytest.fixture
-def test_area():
+def test_area(clear_registry):
     area = Area(name="Test Area", min_vnum=100, max_vnum=299, security=0, builders="All")
     area_registry["test_mpedit_001"] = area
     return area

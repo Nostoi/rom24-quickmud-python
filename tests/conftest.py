@@ -1,5 +1,69 @@
-import pytest
-from helpers import ensure_can_move as _ensure_can_move_helper
+import os
+import tempfile
+
+# xdist isolation: give each worker its own SQLite DB file. `mud/db/session.py`
+# builds a module-level `engine` from `DATABASE_URL` (default `sqlite:///mud.db`)
+# at import time, and several tests call `Base.metadata.drop_all/create_all` on
+# it — under `-n auto` concurrent workers sharing one file wipe each other's
+# tables. xdist sets `PYTEST_XDIST_WORKER` in each worker subprocess before any
+# conftest/test module is imported, so setting the env here (before
+# `mud.db.session` is ever imported) binds the engine to a per-worker file.
+# Serial runs (`PYTEST_XDIST_WORKER` unset) keep the default and are unaffected.
+_xdist_worker = os.environ.get("PYTEST_XDIST_WORKER")
+if _xdist_worker and "DATABASE_URL" not in os.environ:
+    _worker_db = os.path.join(tempfile.gettempdir(), f"quickmud_test_{_xdist_worker}.db")
+    os.environ["DATABASE_URL"] = f"sqlite:///{_worker_db}"
+
+import pytest  # noqa: E402  (must follow the per-worker DATABASE_URL setup above)
+from helpers import ensure_can_move as _ensure_can_move_helper  # noqa: E402
+
+
+@pytest.fixture(autouse=True)
+def _reset_descriptor_list():
+    """Prevent `registry.descriptor_list` leaking across tests.
+
+    `wiznet()` (mud/wiznet.py) iterates `registry.descriptor_list` when it is
+    present and non-empty, otherwise falls back to `character_registry`. Many
+    net/wiznet tests set `registry.descriptor_list` directly; if one leaks a
+    non-empty list, a later registry-only test (e.g.
+    test_logging_admin::test_log_all_notifies_secure_wiznet) silently takes the
+    descriptor path and never sees its test character. Snapshot/restore makes
+    each test's mutation non-leaking while preserving any module-scoped setup.
+    """
+    from mud import registry
+
+    had = hasattr(registry, "descriptor_list")
+    snapshot = getattr(registry, "descriptor_list", None)
+    yield
+    if had:
+        registry.descriptor_list = snapshot
+    elif hasattr(registry, "descriptor_list"):
+        delattr(registry, "descriptor_list")
+
+
+@pytest.fixture(autouse=True)
+def _redirect_save_area_list(tmp_path, monkeypatch):
+    """Keep OLC `asave` tests from rewriting the repo's `data/areas/area.lst`.
+
+    `mud/olc/save.py:save_area_list` defaults to the relative path
+    `data/areas/area.lst`; `cmd_asave` ("list"/"world"/"changed") calls it with
+    no argument, so any asave test that doesn't redirect the write clobbers the
+    tracked file with the in-memory registry (dropping entries like `test.json`).
+    Redirect only the default path to a per-test tmp file; explicit paths (the
+    tests that pass `output_file=tmp_path/...`) pass through unchanged. cmd_asave
+    re-imports the symbol at call time, so patching the module attribute works.
+    """
+    import mud.olc.save as _olc_save
+
+    _real_save_area_list = _olc_save.save_area_list
+    _default = "data/areas/area.lst"
+
+    def _redirected(output_file=_default):
+        if str(output_file) == _default:
+            output_file = str(tmp_path / "area.lst")
+        return _real_save_area_list(output_file=output_file)
+
+    monkeypatch.setattr(_olc_save, "save_area_list", _redirected)
 
 
 @pytest.fixture(autouse=True)
