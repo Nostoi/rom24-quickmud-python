@@ -1,3 +1,5 @@
+import pytest
+
 import mud.game_loop as gl
 from mud import config as mud_config
 from mud.config import get_pulse_violence
@@ -44,6 +46,7 @@ def test_wait_and_daze_decrement_per_pulse_for_connected_character():
     assert ch.wait == 0 and ch.daze == 0
 
 
+@pytest.mark.no_invariant_check  # uses object() sentinel rooms; not a coherent world
 def test_wait_and_daze_decrement_each_pulse_before_violence_combat(monkeypatch):
     room = object()
     fighter = Character(name="Fighter", wait=3, daze=3, position=int(Position.FIGHTING))

@@ -19,6 +19,28 @@ from helpers import ensure_can_move as _ensure_can_move_helper  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
+def _enable_world_invariant_checks(request):
+    """Assert steady-state ROM world invariants after every game_tick.
+
+    Turns the suite's game_tick-driving tests into continuous parity probes
+    (mud.diagnostics.invariants). Opt out per-test with
+    @pytest.mark.no_invariant_check for tests whose artificial setup
+    legitimately violates a steady-state contract.
+    """
+    import mud.game_loop as game_loop
+
+    if request.node.get_closest_marker("no_invariant_check"):
+        yield
+        return
+    prev = game_loop._INVARIANT_CHECK_ENABLED
+    game_loop._INVARIANT_CHECK_ENABLED = True
+    try:
+        yield
+    finally:
+        game_loop._INVARIANT_CHECK_ENABLED = prev
+
+
+@pytest.fixture(autouse=True)
 def _reset_descriptor_list():
     """Prevent `registry.descriptor_list` leaking across tests.
 

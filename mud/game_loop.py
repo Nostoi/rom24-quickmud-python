@@ -1303,6 +1303,11 @@ _music_counter = get_pulse_music()
 _mobile_counter = 0  # Will be initialized on first tick
 _violence_counter = 0  # Will be initialized on first tick
 
+# Off in production (zero overhead in the live loop). The test suite enables it
+# via an autouse fixture in tests/conftest.py so every game_tick asserts the
+# steady-state world invariants (mud.diagnostics.invariants).
+_INVARIANT_CHECK_ENABLED = False
+
 
 def violence_tick(*, do_combat: bool = False) -> None:
     """Process wait/daze counters and combat rounds on the ROM violence cadence.
@@ -1457,6 +1462,12 @@ def game_tick() -> None:
     # 6. Every-pulse housekeeping — ROM: aggr_update(); tail_chain();
     event_tick()
     aggressive_update()
+
+    # Test-only steady-state invariant post-condition (no-op in production).
+    if _INVARIANT_CHECK_ENABLED:
+        from mud.diagnostics.invariants import check_world_invariants
+
+        check_world_invariants()
 
 
 async def async_game_loop() -> None:

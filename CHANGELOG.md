@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.0]
+
+### Added
+- **Always-on `game_tick` world-invariant checker** (`mud/diagnostics/invariants.py`). After every `game_tick` during the test suite, `check_world_invariants()` walks the live registries and asserts steady-state ROM structural invariants, turning the suite's `game_tick`-driving tests into continuous parity probes (complementary to the per-INV enforcement tests). v1 asserts **FIGHTING-COHERENCE** (INV-005/006: a fighting character's target is in the same room and not DEAD) and **ROOM-PEOPLE-COHERENCE** (INV-010: `room.people` membership and `char.room` agree in both directions). Wired via a gated hook at the end of `game_tick` (`_INVARIANT_CHECK_ENABLED`, **off in production** — zero live-loop overhead) and an autouse fixture in `tests/conftest.py`. Tests with intentionally artificial state opt out via `@pytest.mark.no_invariant_check` (three pre-existing tests using `object()` sentinel rooms / deliberately desynced `room.people` were marked; the checker surfaced **zero real bugs**). Design: `docs/superpowers/specs/2026-05-28-game-tick-invariant-checker-design.md`. A companion design for a ROM C ⇄ Python differential-testing harness is specced at `docs/superpowers/specs/2026-05-28-differential-testing-harness-design.md`.
+
 ## [2.9.91]
 
 ### Fixed
