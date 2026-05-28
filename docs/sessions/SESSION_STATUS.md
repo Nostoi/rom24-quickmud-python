@@ -1,47 +1,51 @@
-# Session Status — 2026-05-28 — Equipment-key canonicalization + convention guards (2.9.87)
+# Session Status — 2026-05-28 — FIGHT-016 weapon-poison affect + ARITH-004 reclass (2.9.88)
 
 ## Current State
 
-- **Last completed**: **Equipment-key canonicalization** (the INV-028 followup)
-  ✅ CLOSED (2.9.87). `Character.equipment` is now keyed strictly by
-  `int(WearLocation.X)` on every path (new `canonical_wear_slot` resolver applied
-  at `equip_object`, `from_orm` restore, and `serializers._slot_to_wear_loc`;
-  all readers use the int key; INV-028 per-reader LIGHT shims removed). Fixed two
-  real bugs (newbie war-banner light uncounted in room lighting; do_wear shield
-  invisible to the combat shield check) and one latent bug (`compare.py` read the
-  non-existent `char.equipped` attr). Added two grep-guards
-  (`test_equipment_key_convention.py`, `test_attribute_convention.py`) + matching
-  pre-commit hooks; reworded the AGENTS.md integer-math rule; filed CLEANUP-001
-  (hex flag literals); added CLAUDE.md meta-rules.
-- **Active focus**: cross-file invariants pass remains the active mode (per-file
-  audit tracker has no Partial/Not-Audited rows). INV-028 is fully closed
-  including its broad followup.
+- **Active mode**: cross-file / remaining-documented-gap pass (per-file audit
+  tracker has no ⚠️ Partial / ❌ Not Audited rows). This session worked the
+  open `ARITHMETIC_BOUNDARY.md` gaps and the `fight.c` weapon-proc surface.
+- **Last completed**:
+  - **`FIGHT-016`** ✅ FIXED (2.9.88) — WEAPON_POISON now applies a timed,
+    STR-reducing poison affect via `affect_join` (`SpellEffect` +
+    `Character.apply_spell_effect`), replacing the bare `add_affect(POISON)`
+    flag. ROM `src/fight.c:616-624`. Test:
+    `tests/integration/test_weapon_poison_affect.py`.
+  - **`ARITH-004`** ⛔ N/A — behaviorally dead weapon-proc level floor
+    (every consumer divides by ≥2; `0//N == 1//N`). Effective open ARITH
+    ❌ MISSING: 7 → 6.
+  - **`test_weapon_flaming_fire_damage`** de-flaked (`assert_any_call` instead
+    of `assert_called_once_with`; `fire_effect` makes a second `number_range`
+    roll on the shared mock).
+- **Filed this session (not closed)**: **`FIGHT-017`** — temporary-envenomed
+  weapon level source + per-hit poison weakening (ROM `src/fight.c:605-608,
+  627-636`).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-28_EQUIPMENT_KEY_CANONICALIZATION.md](SESSION_SUMMARY_2026-05-28_EQUIPMENT_KEY_CANONICALIZATION.md)
+  [SESSION_SUMMARY_2026-05-28_FIGHT_016_WEAPON_POISON_AFFECT.md](SESSION_SUMMARY_2026-05-28_FIGHT_016_WEAPON_POISON_AFFECT.md)
   (predecessor:
-  [SESSION_SUMMARY_2026-05-27_INV_028_LIGHT_SLOT.md](SESSION_SUMMARY_2026-05-27_INV_028_LIGHT_SLOT.md))
+  [SESSION_SUMMARY_2026-05-28_EQUIPMENT_KEY_CANONICALIZATION.md](SESSION_SUMMARY_2026-05-28_EQUIPMENT_KEY_CANONICALIZATION.md))
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.87 |
-| Tests | **Full suite: 4894 passed, 4 skipped, 0 failed** in 512s. |
-| ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75%. |
-| Cross-file invariants | 24 ENFORCED; INV-028 + its broad followup fully closed. |
-| Branch | `master` — 3 commits ahead of `origin/master` (3f3570d6 fix, 70f0d87d chore, b1f6d791 docs). Not pushed. |
+| Version | 2.9.88 |
+| Tests | **Full suite: 4896 passed, 4 skipped, 0 failed** in 516.82s. |
+| ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75%; `fight.c` 95% (FIGHT-017 open). |
+| Cross-file invariants | 24 ENFORCED. |
+| Branch | `master` — 3 commits ahead of `origin/master` (094536dd reclass, 2024e071 FIGHT-016, 73e96228 flaming de-flake). Not pushed. |
 
 ## Next Intended Task
 
-1. **Push approval** — 3 commits ahead of `origin/master` shipping 2.9.87.
-   Verify with `git log origin/master..HEAD`. Not pushed (awaiting approval).
-2. **CLEANUP-001** — migrate the ~41 hardcoded hex flag literals to enum
-   references (per-site `merc.h` verification), file-by-file. See
-   `docs/parity/ROM_PARITY_FEATURE_TRACKER.md`.
-3. **`_wear_all` light handling** — `wear all` won't equip a light; ROM's
-   `wear all` → `wear_obj` → WEAR_LIGHT would. Minor adjacent gap.
-4. **ARITH triage remaining (7 ❌ MISSING)**: ARITH-004, 017/018/019, 114,
-   206/207, 208.
-5. **GitNexus read-only DB** — `gitnexus_impact`/`detect_changes`/reindex
+1. **`FIGHT-017`** — close the temporary-envenomed-weapon level source +
+   per-hit poison weakening via `/rom-gap-closer` (extends FIGHT-016; shares the
+   `level` variable). ROM `src/fight.c:605-608, 627-636`.
+2. **Remaining open ARITH (6 ❌ MISSING)**: ARITH-017/018/019 (verify
+   reachability — likely N/A like ARITH-020..023), ARITH-114 (per-race/class
+   stat ceiling, larger), ARITH-206/207 (likely N/A like ARITH-209), ARITH-208
+   (template dice+bonus floor — genuinely reachable).
+3. **Push approval** — 3 commits ahead of `origin/master` shipping 2.9.88. Not
+   pushed (awaiting approval).
+4. **GitNexus read-only DB** — `gitnexus_impact`/`detect_changes`/reindex
    unavailable; fix DB perms/lock outside the session.
-6. **Pre-existing flake** `tests/test_combat_death.py::test_auto_flags_trigger_and_wiznet_logs`.
+5. **`_wear_all` light handling** and **`CLEANUP-001`** (hex flag literals) carried over.
