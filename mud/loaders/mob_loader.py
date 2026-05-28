@@ -136,15 +136,24 @@ def load_mobiles(tokenizer: BaseTokenizer, area):
             alignment = int(act_line[2]) if len(act_line) > 2 and act_line[2].lstrip("-").isdigit() else 0
             group = int(act_line[3]) if len(act_line) > 3 and act_line[3].isdigit() else 0
 
-            # Parse level, thac0, ac, hitnodice, hitdicenum, hitdicesides, manadice, damroll, damdice
+            # ROM new-format mob stat line (mirroring src/db2.c load_mobiles):
+            #   level  hitroll  <hp-dice>  <mana-dice>  <dam-dice>  damtype
+            # The four AC values are on the FOLLOWING line (parsed just below), so
+            # there is NO scalar AC token here. Previously this consumed a phantom
+            # `ac` token at index [2], which shifted every dice field by one — the
+            # real HP dice was dropped, hit_dice got the mana dice, mana_dice the
+            # damage dice, damage_dice the damtype word. See FINDING-006.
             stats_line = tokenizer.next_line().split()
             level = int(stats_line[0]) if len(stats_line) > 0 and stats_line[0].isdigit() else 1
             thac0 = int(stats_line[1]) if len(stats_line) > 1 and stats_line[1].lstrip("-").isdigit() else 20
-            ac = stats_line[2] if len(stats_line) > 2 else "1d1+0"
-            hit_dice = stats_line[3] if len(stats_line) > 3 else "1d1+0"
-            mana_dice = stats_line[4] if len(stats_line) > 4 else "1d1+0"
-            damage_dice = stats_line[5] if len(stats_line) > 5 else "1d4+0"
-            damage_type = stats_line[6] if len(stats_line) > 6 else "beating"
+            hit_dice = stats_line[2] if len(stats_line) > 2 else "1d1+0"
+            mana_dice = stats_line[3] if len(stats_line) > 3 else "1d1+0"
+            damage_dice = stats_line[4] if len(stats_line) > 4 else "1d4+0"
+            damage_type = stats_line[5] if len(stats_line) > 5 else "beating"
+            # ROM mobs carry no scalar AC; the four AC values are read from the next
+            # line. MobIndex.ac is a Python-only OLC-display field — keep it at the
+            # conventional neutral default rather than the (now-correct) hp-dice token.
+            ac = "1d1+0"
 
             # Parse armor class values; mirrors ROM src/db2.c:273-276 which
             # stores ``fread_number(fp) * 10`` for each AC field.
