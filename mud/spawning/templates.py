@@ -256,6 +256,9 @@ class MobInstance:
     # ROM src/db.c:2040 create_mobile copies long_descr from the mob index; the
     # room listing (show_char_to_char_0) shows it for an NPC at its start_pos.
     long_descr: str | None = None
+    # ROM create_mobile also copies description; show_char_to_char_1 (look <mob>)
+    # shows it when non-empty.
+    description: str | None = None
     inventory: list[Object] = field(default_factory=list)
     room: Room | None = None
     # Minimal encumbrance fields to interoperate with move_character
@@ -400,6 +403,7 @@ class MobInstance:
             max_hit=max_hit,
             prototype=proto,
             long_descr=getattr(proto, "long_descr", None),  # ROM create_mobile (src/db.c:2040)
+            description=getattr(proto, "description", None),  # ROM create_mobile (src/db.c)
             gold=gold_coins,
             silver=silver_coins,
             act=int(act_flags),

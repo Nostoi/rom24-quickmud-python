@@ -48,3 +48,28 @@ def test_look_001_room_shows_npc_long_descr_at_start_pos():
     assert LONG in out, f"expected NPC long_descr in room look, got:\n{out}"
     # the bare PERS name must NOT be the occupant rendering
     assert "Hassan" not in [ln.strip() for ln in out.split("\n")]
+
+
+DESC = "Hassan is a tall, imposing guard with a stern gaze."
+
+
+def test_look_002_mob_instance_carries_description_from_prototype():
+    # ROM src/db.c create_mobile: mob->description = str_dup(pMobIndex->description)
+    proto = MobIndex(vnum=9101, player_name="hassan", short_descr="hassan", description=DESC + "\n", level=10)
+    mob = MobInstance.from_prototype(proto)
+    assert (getattr(mob, "description", None) or "").strip() == DESC
+
+
+def test_look_002_look_at_mob_shows_description():
+    # ROM src/act_info.c show_char_to_char_1: shows victim->description when non-empty.
+    room = Room(vnum=9101, name="Test Room", description="A test room.")
+    proto = MobIndex(vnum=9101, player_name="hassan", short_descr="hassan", description=DESC + "\n", level=10)
+    mob = MobInstance.from_prototype(proto)
+    mob.room = room
+    room.people.append(mob)
+
+    observer = _observer(room)
+    out = look(observer, "hassan")
+
+    assert DESC in out, f"expected mob description from look-at-mob, got:\n{out}"
+    assert "nothing special" not in out

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.2]
+
+### Fixed
+- **`LOOK-002` — `look <mob>` now shows the NPC's description** (ROM `src/act_info.c` `show_char_to_char_1`; `src/db.c` `create_mobile`). `MobInstance` never carried `description` from its prototype, so examining a spawned NPC always printed "You see nothing special about X." instead of ROM's mob description. `MobInstance.from_prototype` now copies `description` (alongside the LOOK-001 `long_descr` fix), mirroring `create_mobile`. Sibling of LOOK-001, found while closing it. Regression: `tests/integration/test_look_long_descr_rom_parity.py::test_look_002_*`.
+
 ## [2.10.1]
 
 ### Fixed
