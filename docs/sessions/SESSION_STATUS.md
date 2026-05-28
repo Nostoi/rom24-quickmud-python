@@ -1,63 +1,48 @@
-# Session Status — 2026-05-28 — room_registry xdist isolation leak (2.9.91)
+# Session Status — 2026-05-28 — invariant checker (2.10.0) + differential harness v1
 
 ## Current State
 
-- **Active mode**: cross-file / remaining-documented-gap pass (the per-file audit
-  tracker has no ⚠️ Partial / ❌ Not Audited rows — all 40 audit-bound ROM C
-  files ✅, 3 N/A). This session was **test-infra**, not parity: it pinned and
-  fixed the long-standing intermittent xdist isolation flake the last two
-  handoffs flagged as the highest-value cleanup.
+- **Active mode**: parity-verification *tooling* pass. The per-file audit tracker
+  has no ⚠️/❌ rows; this session built infrastructure to make cross-file /
+  cross-engine parity verification systematic rather than judgment-driven.
 - **Last completed**:
-  - **`room_registry` xdist isolation leak** ✅ FIXED (2.9.91) — the intermittent
-    `AttributeError` at `reset_handler.py:178` in
-    `test_group_combat::test_group_xp_split_between_members` was caused by
-    `tests/integration/test_flee_moves_character.py:59` setting the **real
-    registered** room 3001's `.exits` to a dict (`{"north": {...}}`, to exercise
-    `do_flee`'s dict branch) after `initialize_world()`, and never restoring it.
-    The leaked dict-shaped exits + populated registries persisted across the
-    xdist worker; a later `game_tick()` area-reset hit
-    `_restore_exit_states`, where `enumerate(dict)` yields the string key and
-    `"north".exit_info = 0` raised. Fixed with an autouse snapshot/restore
-    fixture for `room_registry`/`area_registry` in the flee file. Verified:
-    stashed baseline reproduces the failure (1 failed); with the fix the full
-    suite is green 6/6 parallel runs. Commit `5396c067`.
+  - **`room_registry` xdist isolation leak** ✅ FIXED (2.9.91, `5396c067`) — see
+    `SESSION_SUMMARY_2026-05-28_ROOM_REGISTRY_ISOLATION_LEAK.md`.
+  - **`game_tick` invariant checker** ✅ SHIPPED (2.10.0, `04e8f67d`) —
+    `mud/diagnostics/invariants.py` asserts steady-state ROM invariants
+    (FIGHTING-COHERENCE, ROOM-PEOPLE-COHERENCE) after every `game_tick` in the
+    suite; gated off in production; opt out via `@pytest.mark.no_invariant_check`.
+    Surfaced 3 artificial-setup tests (marked), zero real bugs.
+  - **Differential testing harness v1** ✅ BUILT on branch `diff-harness`
+    (unmerged; 2.11.0 on the branch) — ROM C ⇄ Python golden capture/replay.
+    First run surfaced **FINDING-001** (NPC `look` name vs ROM long_descr;
+    ambiguous root cause incl. malformed `area/midgaard.are`); gated xfail,
+    triage deferred.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-28_ROOM_REGISTRY_ISOLATION_LEAK.md](SESSION_SUMMARY_2026-05-28_ROOM_REGISTRY_ISOLATION_LEAK.md)
-  (predecessor:
-  [SESSION_SUMMARY_2026-05-28_FIGHT_018_DAM_MESSAGE_ACT_TRIGGER.md](SESSION_SUMMARY_2026-05-28_FIGHT_018_DAM_MESSAGE_ACT_TRIGGER.md))
+  [SESSION_SUMMARY_2026-05-28_INVARIANT_CHECKER_AND_DIFF_HARNESS.md](SESSION_SUMMARY_2026-05-28_INVARIANT_CHECKER_AND_DIFF_HARNESS.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.91 |
-| Tests | **4898 passed, 4 skipped, 0 failed** — parallel by default (`-n auto --dist loadscope`), ~81–116s. Verified green across 6 consecutive full runs. The `room_registry` isolation flake is **fixed** (was intermittent at HEAD: stashed baseline = 1 failed). Total test count stable at 4902. |
-| ROM C files audited | 40 / 43 ✅ (3 N/A: recycle/mem/imc). Per-file audit queue drained. `fight.c` ~95% in the top tracker (historical broader-sweep debt; FIGHT-001..018 all closed). |
-| Cross-file invariants | 24 ENFORCED. INV-025 act()-dispatch follow-up partly extended (combat `dam_message` covered; non-combat `_push_message`/`broadcast_room` still open). |
-| Branch | `master` — **3 commits ahead** of `origin/master` (`dbcd5735` FIGHT-017 / 2.9.89, `f2bd9723` FIGHT-018 / 2.9.90, `5396c067` room_registry leak / 2.9.91). Not pushed. |
+| Version (master) | 2.10.0 (branch `diff-harness`: 2.11.0, unmerged) |
+| Tests (master) | **4905 passed, 4 skipped, 0 failed** (parallel, `-n auto`). Branch adds 6 diff-harness unit tests + 1 xfail (FINDING-001) → 4911 passed / 1 xfailed there. |
+| ROM C files audited | 40 / 43 ✅ (3 N/A). Per-file queue drained. |
+| Cross-file invariants | 24 ENFORCED. New: an always-on `game_tick` checker generalizes 2 of them (INV-005/006, INV-010) into continuous suite-wide probes. |
+| Branch | `master` — **6 commits ahead** of `origin/master` (2.9.91 + 2.10.0 + specs/plan). `diff-harness` — 12 commits, local-only, unmerged. |
 
 ## Next Intended Task
 
-1. **Push approval** — 3 commits ahead of `origin/master` shipping 2.9.89 +
-   2.9.90 + 2.9.91. Awaiting approval.
-2. **INV-025 non-combat narration sweep** (optional, ad-hoc) — the
-   `_push_message` / `broadcast_room` surface for non-combat ROM `act()` lines
-   that should feed `mp_act_trigger_room`. One callsite per commit, each gated on
-   whether the ROM site carries a `MOBtrigger = FALSE` wrap.
-3. **INV-layer systematization** (optional, discussed this session, not yet
-   filed) — make cross-file invariant discovery systematic rather than
-   judgment-driven: static call-site enumeration (GitNexus call graph / `ast`)
-   to build a guarantee × call-site coverage matrix, an always-on `game_tick`
-   invariant-assertion checker (so the existing ~4900 tests double as INV
-   probes), Hypothesis stateful testing over the command dispatcher, and —
-   highest ceiling — differential testing against the compiled `src/` C engine
-   (uniquely viable here: the Mitchell-Moore RNG and C integer math are already
-   bit-matched, removing the usual nondeterminism blocker). Suggested first step
-   is the always-on invariant checker (highest leverage-per-effort).
-4. **Broader `initialize_world()` leak** (low severity, see latest summary
-   "Outstanding") — 49 integration files leak a populated (but structurally
-   valid) world; only the flee test corrupted a room. A conftest-level fix must
-   avoid wiping the 3 module-scoped-world fixture files.
-5. **GitNexus** — MCP query path read-only this session; on-disk graph stale
-   (`last indexed: 2272b2e`). Re-run `npx gitnexus analyze --skip-agents-md`
-   once the DB lock clears.
+1. **FINDING-001 triage** (branch `diff-harness`) — pin the `mob_registry`
+   long_descr diagnostic nondeterminism, reconcile C/Python inputs (repair
+   `area/midgaard.are` to match stock ROM vs point Python at the repaired
+   overlay), fix the real cause; the harness xfail auto-clears. See
+   `tools/diff_harness/FINDINGS.md`.
+2. **Extend the invariant checker** — add INV-003 (REGISTRY-MEMBERSHIP),
+   INV-013 (OBJECT-LOCATION), INV-015 (AFFECT-EXPIRY) one at a time, fix-fallout.
+3. **Merge `diff-harness`** once FINDING-001 is resolved; then add a combat/RNG
+   differential slice (the RNG is already bit-matched).
+4. **INV-025 non-combat narration sweep** — still open from earlier.
+5. **GitNexus** — on-disk graph stale (`2272b2e`) and the MCP DB has been
+   read-only all session; re-run `npx gitnexus analyze --skip-agents-md` once the
+   lock clears.
