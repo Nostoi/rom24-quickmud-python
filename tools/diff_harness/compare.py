@@ -11,8 +11,17 @@ from tools.diff_harness.schema import CharSnap, RoomSnap, StepSnap
 _ANSI = re.compile(r"\x1b\[[0-9;]*m")
 
 
-def _clean_line(line: str) -> str:
-    return _ANSI.sub("", line).replace("\r\n", "\n").replace("\r", "\n").rstrip()
+def _normalize_output(lines: list[str]) -> list[str]:
+    """Canonicalize a step's output for cross-engine comparison.
+
+    ROM emits ``\\n\\r`` line endings (CR *after* LF), while Python uses ``\\n``;
+    the two also differ in how blank/padding lines are batched. Strip ANSI and
+    all CR, re-split on LF, trim each line, and drop empty lines so the
+    comparison is over the sequence of non-empty text lines — the behaviorally
+    meaningful content, independent of newline convention and blank spacing.
+    """
+    text = _ANSI.sub("", "\n".join(lines)).replace("\r", "")
+    return [stripped for raw in text.split("\n") if (stripped := raw.strip())]
 
 
 def _normalize_char(c: CharSnap) -> CharSnap:
@@ -33,7 +42,7 @@ def normalize_step(step: StepSnap) -> StepSnap:
         step,
         chars=[_normalize_char(c) for c in step.chars],
         rooms=[_normalize_room(r) for r in step.rooms],
-        output=[_clean_line(line) for line in step.output],
+        output=_normalize_output(step.output),
     )
 
 
