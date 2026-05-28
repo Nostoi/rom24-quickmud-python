@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from mud.models.character import Character
@@ -7,6 +9,7 @@ from mud.models.constants import Position
 from mud.models.room import Room
 from tools.diff_harness.compare import diff_traces, normalize_step
 from tools.diff_harness.pysnap import snapshot_python
+from tools.diff_harness.scenario import Scenario, load_scenario
 from tools.diff_harness.schema import CharSnap, RoomSnap, StepSnap, step_from_dict, step_to_dict
 
 
@@ -103,3 +106,23 @@ def test_snapshot_python_captures_watch_set(watched_world):
     assert step.rooms[0].vnum == 3001
     assert "Tester" in step.rooms[0].people
     assert step.output == ["You see a room."]
+
+
+def test_load_scenario_parses_fields(tmp_path: Path):
+    p = tmp_path / "s.json"
+    p.write_text(
+        '{"name":"s","seed":1234,"start_room":3001,'
+        '"char":{"name":"Tester","level":5},'
+        '"watch":{"chars":["Tester"],"rooms":[3001,3054]},'
+        '"steps":["look","north"]}'
+    )
+    sc = load_scenario(p)
+    assert isinstance(sc, Scenario)
+    assert sc.name == "s"
+    assert sc.seed == 1234
+    assert sc.start_room == 3001
+    assert sc.char_name == "Tester"
+    assert sc.char_level == 5
+    assert sc.watch_chars == ["Tester"]
+    assert sc.watch_rooms == [3001, 3054]
+    assert sc.steps == ["look", "north"]
