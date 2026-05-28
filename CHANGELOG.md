@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.85]
+
+### Fixed
+- **`INV-028` — worn lights now land in the `WEAR_LIGHT` slot and burn out / track room light correctly** (ROM `src/act_obj.c:1415-1422`). `do_wear`/`do_hold` previously routed an `ITEM_LIGHT` through the HOLD-flag branch into `WearLocation.HOLD`, while `Room._has_lit_light_source` read the str key `"0"` and `mud/game_loop.py:_find_equipped_light` matched only `"light"`/int-`WearLocation.LIGHT` — three inconsistent keys, so PC light sources never burned out and PC-held lights were mis-counted in room lighting vs ROM. Fix: `do_wear` now has an `item_type == ItemType.LIGHT` branch (before the HOLD branch, mirroring ROM's item-type-first dispatch in `wear_obj`) that equips into `int(WearLocation.LIGHT)` with the "lights $p and holds it" messages; `Room._has_lit_light_source` and `_find_equipped_light` now tolerate both the live `int` key and the reloaded `str "0"` key. This also lets the 2.9.81 ARITH-202 burnout-decrement fix actually take effect in live play. Regression: `tests/integration/test_inv028_light_slot_key_coherence.py` (do_wear → LIGHT slot by key; room.light increments on enter; burnout tick decrements room.light and destroys the torch). Promoted INV-028 candidate → ✅ ENFORCED.
+
+### Changed
+- `tests/integration/test_equipment_system.py::test_wear_011_do_hold_auto_replaces_existing_held` now uses non-light holdables (wands) to exercise the HOLD auto-replace mechanic, since lights correctly route to `WEAR_LIGHT` (INV-028).
+- **Known followup (not closed by INV-028):** the broader `character.equipment` key-type inconsistency — live `int` slot keys vs reloaded `str` keys for *every* slot — remains open; INV-028 only reconciles the LIGHT slot.
+
 ## [2.9.84]
 
 ### Changed

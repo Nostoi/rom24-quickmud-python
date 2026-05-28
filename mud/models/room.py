@@ -26,8 +26,12 @@ def _has_lit_light_source(char) -> bool:
     if not isinstance(equipment, dict):
         return False
 
-    light_slot_name = str(int(WearLocation.LIGHT))  # Equipment dict uses string keys
-    light_obj = equipment.get(light_slot_name)
+    # INV-028: the equipment dict is keyed by int(wear_loc) when freshly equipped
+    # (do_wear) but by str keys after a JSON save/reload, so tolerate both forms
+    # for the WEAR_LIGHT slot.
+    light_obj = equipment.get(int(WearLocation.LIGHT))
+    if light_obj is None:
+        light_obj = equipment.get(str(int(WearLocation.LIGHT)))
     if light_obj is None:
         return False
 

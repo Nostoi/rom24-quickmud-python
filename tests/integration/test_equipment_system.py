@@ -1163,40 +1163,44 @@ def test_wear_011_do_hold_auto_replaces_existing_held(test_character, object_fac
     """ROM src/act_obj.c:1670-1677 — HOLD branch calls `remove_obj(ch,
     WEAR_HOLD, fReplace=TRUE)` which auto-unequips the existing held item.
     ROM `do_hold` is just an alias on `do_wear` so the same dispatcher runs.
+
+    Uses non-light holdables (wands): ITEM_LIGHT routes to the WEAR_LIGHT slot
+    (ROM act_obj.c:1415-1422 / INV-028), not HOLD, so the HOLD auto-replace
+    mechanic must be exercised with a non-light item.
     """
     from mud.commands.equipment import do_hold
 
     char = test_character
 
-    first_torch = object_factory(
+    first_wand = object_factory(
         {
             "vnum": 1601,
-            "name": "torch first",
-            "short_descr": "a small torch",
-            "item_type": int(ItemType.LIGHT),
+            "name": "wand first",
+            "short_descr": "a carved wand",
+            "item_type": int(ItemType.WAND),
             "wear_flags": int(WearFlag.HOLD),
             "value": [0, 0, 100, 0],
         }
     )
-    second_torch = object_factory(
+    second_wand = object_factory(
         {
             "vnum": 1602,
-            "name": "lantern second",
-            "short_descr": "a brass lantern",
-            "item_type": int(ItemType.LIGHT),
+            "name": "rod second",
+            "short_descr": "a brass rod",
+            "item_type": int(ItemType.WAND),
             "wear_flags": int(WearFlag.HOLD),
             "value": [0, 0, 200, 0],
         }
     )
-    char.add_object(first_torch)
-    char.add_object(second_torch)
+    char.add_object(first_wand)
+    char.add_object(second_wand)
 
-    do_hold(char, "torch")
-    assert char.equipment.get(int(WearLocation.HOLD)) is first_torch
+    do_hold(char, "wand")
+    assert char.equipment.get(int(WearLocation.HOLD)) is first_wand
 
-    result = do_hold(char, "lantern")
+    result = do_hold(char, "rod")
 
     assert "already holding" not in result.lower(), f"Should auto-replace, got: {result}"
-    assert char.equipment.get(int(WearLocation.HOLD)) is second_torch, "New item should occupy HOLD slot"
-    assert first_torch in char.inventory, "Replaced item should return to inventory"
-    assert first_torch.wear_loc == int(WearLocation.NONE)
+    assert char.equipment.get(int(WearLocation.HOLD)) is second_wand, "New item should occupy HOLD slot"
+    assert first_wand in char.inventory, "Replaced item should return to inventory"
+    assert first_wand.wear_loc == int(WearLocation.NONE)

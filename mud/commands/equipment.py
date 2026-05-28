@@ -165,6 +165,46 @@ def do_wear(ch: Character, args: str) -> str:
     if item_type == ItemType.WEAPON:
         return _dispatch_wield(ch, obj)
 
+    # ROM src/act_obj.c:1415-1422 — wear_obj dispatches ITEM_LIGHT FIRST (before
+    # any wear-flag branch) into the WEAR_LIGHT slot. INV-028: the worn-light slot
+    # must be keyed consistently (int(WearLocation.LIGHT)) so room-light tracking
+    # (Room._has_lit_light_source) and burnout decay (_find_equipped_light) both
+    # see it. Pre-fix lights fell through to the HOLD branch and landed in HOLD.
+    if item_type == ItemType.LIGHT:
+        equipment = getattr(ch, "equipment", {})
+        light_loc = int(WearLocation.LIGHT)
+
+        if light_loc in equipment and equipment[light_loc] is not None:
+            existing = equipment[light_loc]
+            if not _unequip_to_inventory(ch, existing):
+                existing_name = getattr(existing, "short_descr", "it")
+                return f"You can't remove {existing_name}."
+
+        # Alignment zap (mirrors the HOLD/wear paths' _can_wear_alignment block).
+        can_wear, error_msg = _can_wear_alignment(ch, obj)
+        if not can_wear:
+            return error_msg or "You cannot hold that item."
+
+        if not equipment:
+            ch.equipment = {}
+        ch.equipment[light_loc] = obj
+        obj.worn_by = ch
+
+        inventory = getattr(ch, "inventory", [])
+        if obj in inventory:
+            inventory.remove(obj)
+
+        equip_char(ch, obj, light_loc)
+
+        obj_name = getattr(obj, "short_descr", "something")
+        ch_name = getattr(ch, "name", "Someone")
+        room = getattr(ch, "room", None)
+        # ROM src/act_obj.c:1419-1420 — same messages even though slot is WEAR_LIGHT.
+        room_message = f"{ch_name} lights {obj_name} and holds it."
+        broadcast_room(room, room_message, exclude=ch)
+        mp_act_trigger_room(room_message, room, ch, arg1=obj)
+        return f"You light {obj_name} and hold it."
+
     # ROM act_obj.c:1595-1614: SHIELD branch removes the existing shield FIRST
     # then performs the two-hand-weapon check. Implemented below after the
     # generic slot-remove (search "WEAR-009 SHIELD post-check").
@@ -203,15 +243,10 @@ def do_wear(ch: Character, args: str) -> str:
         obj_name = getattr(obj, "short_descr", "something")
         ch_name = getattr(ch, "name", "Someone")
 
-        # ROM act_obj.c:1415-1423 (LIGHT branch) vs 1670-1677 (HOLD branch).
+        # ROM act_obj.c:1670-1677 (HOLD branch). ITEM_LIGHT is handled earlier in
+        # its own WEAR_LIGHT branch (see ROM 1415-1423 / INV-028), so it never
+        # reaches here.
         room = getattr(ch, "room", None)
-        if item_type == ItemType.LIGHT:
-            room_message = f"{ch_name} lights {obj_name} and holds it."
-            broadcast_room(room, room_message, exclude=ch)
-            # ROM src/act_obj.c:1419 — no MOBtrigger wrap.
-            mp_act_trigger_room(room_message, room, ch, arg1=obj)
-            return f"You light {obj_name} and hold it."
-
         room_message = f"{ch_name} holds {obj_name} in their hand."
         broadcast_room(room, room_message, exclude=ch)
         # ROM src/act_obj.c:1674 — no MOBtrigger wrap.

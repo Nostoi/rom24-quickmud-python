@@ -354,8 +354,16 @@ def _find_equipped_light(character: Character) -> tuple[object | None, object | 
 
     for slot, obj in equipment.items():
         if isinstance(slot, str):
-            if slot.strip().lower() in {"light", WearLocation.LIGHT.name.lower()}:
+            normalized = slot.strip().lower()
+            if normalized in {"light", WearLocation.LIGHT.name.lower()}:
                 return slot, obj
+            # INV-028: a JSON save/reload turns the int LIGHT key into the str
+            # "0", so match a numeric str equal to WEAR_LIGHT too.
+            try:
+                if int(normalized) == int(WearLocation.LIGHT):
+                    return slot, obj
+            except (TypeError, ValueError):
+                continue
         else:
             try:
                 if int(slot) == int(WearLocation.LIGHT):
