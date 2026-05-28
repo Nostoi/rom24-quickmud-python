@@ -425,6 +425,9 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
         move_cost = (movement_loss.get(from_sector, 2) + movement_loss.get(to_sector, 2)) // 2
         # Conditional effects
         if char.affected_by & AffectFlag.FLYING or char.affected_by & AffectFlag.HASTE:
+            # mirroring ROM src/act_move.c:181 — `move /= 2` raw. ARITH-104 ⛔ N/A:
+            # all movement_loss values are ≥1, so move_cost ≥1 here and move_cost//2
+            # is always ≥0 — the max(0,...) floor is structurally redundant dead code.
             move_cost = max(0, move_cost // 2)
         if char.affected_by & AffectFlag.SLOW:
             move_cost *= 2

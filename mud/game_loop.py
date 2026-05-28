@@ -419,6 +419,12 @@ def _destroy_light(character: Character, slot_key: object | None, obj: object) -
         _extract_obj(obj)  # type: ignore[arg-type]
         return
 
+    # ARITH-201 ⛔ N/A: this carry_weight/number fallback is dead for real objects.
+    # Every `Object` exposes a `pIndexData` property (object.py:98), so the
+    # `hasattr(obj, "pIndexData")` early-return above always fires and routes through
+    # `_extract_obj` -> `_remove_from_character` (the ARITH-108/109/205-fixed raw path).
+    # Only non-Object test doubles lacking pIndexData reach the floors below.
+    # ROM src/handler.c:1678-1679 subtracts raw via obj_from_char with no floor.
     try:
         weight = getattr(getattr(obj, "prototype", None), "weight", 0) or getattr(obj, "weight", 0)
         if weight:

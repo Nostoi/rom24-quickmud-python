@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.83]
+
+### Changed
+- **`ARITH-104` and `ARITH-201` reclassified ❌ MISSING → ⛔ N/A** in the ARITHMETIC_BOUNDARY triage (comment-only, no behavior change; verified this session).
+  - **ARITH-104** (`mud/world/movement.py:428`) — the `max(0, move_cost // 2)` floor on the FLYING/HASTE movement-cost halving is structurally redundant: every `movement_loss` table value is ≥1, so `move_cost ≥ 1` and `move_cost // 2 ≥ 0` always — the floor can never fire. ROM `src/act_move.c:181` does `move /= 2` raw with the identical result.
+  - **ARITH-201** (`mud/game_loop.py:426`) — the carry_weight/number fallback in `_destroy_light` is dead for real objects: every `Object` exposes a `pIndexData` property (`mud/models/object.py:97`), so the `hasattr(obj, "pIndexData")` early-return at `game_loop.py:418-420` always fires and routes through `_extract_obj` → `_remove_from_character` (the ARITH-108/109/205-fixed raw path). Only non-`Object` test doubles reach the floored fallback. ROM `src/handler.c:1678-1679` subtracts raw via obj_from_char.
+  - ROM-cite comments added at both sites. Tally: cumulative **21 FIXED / 19 N/A / 7 ❌ MISSING** open in the ARITH triage.
+
 ## [2.9.82]
 
 ### Fixed
