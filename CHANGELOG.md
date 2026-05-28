@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.84]
+
+### Changed
+- **`INV-028` filed as a candidate cross-file invariant** (LIGHT-SLOT-KEY-COHERENCE) in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`. Surfaced while verifying ARITH-202 reachability: the worn-light equipment slot is keyed three inconsistent ways — `do_wear` stores held lights under `WearLocation.HOLD` (`mud/commands/equipment.py:192`; `_get_wear_location` has no LIGHT branch), `Room._has_lit_light_source` reads the str key `"0"` (`mud/models/room.py:29`), and `_find_equipped_light` matches only `"light"`/int-`WearLocation.LIGHT` (`mud/game_loop.py:357-361`). Net effect vs ROM (`src/act_obj.c:wear_obj` → `WEAR_LIGHT`, read consistently by `src/handler.c:1504-1573` room-light tracking and `src/update.c:721-730` burnout decay): PC light sources never burn out and PC-held lights are mis-tracked in room lighting. The ARITH-202 floor removal is ROM-faithful but its production effect is gated by INV-028. Not yet enforced — proposed fix + regression filename documented in the tracker.
+
 ## [2.9.83]
 
 ### Changed

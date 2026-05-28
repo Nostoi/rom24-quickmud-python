@@ -20,17 +20,25 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.9.83 |
+| Version | 2.9.84 |
 | Tests | Full integration suite **2346 passed, 3 skipped** in 83.18s. New regressions: `test_room_light_tracking.py::test_burnout_light_decrement_has_no_floor_exposing_desync` 1/1, `test_arith_205_carry_number_no_floor.py` 1/1. INV-011 coherence suite green. |
 | ROM C files audited | per-file P0/P1/P2 at 100%, P3 at 75%. `update.c` / `handler.c` / `act_move.c` arithmetic floors covered by the ARITH triage. |
-| Cross-file invariants | 23 ENFORCED + 1 candidate (INV-027) — unchanged. INV-011 verified still green after ARITH-205. |
+| Cross-file invariants | 23 ENFORCED + 2 candidates (INV-027 ACT-INVIS-TRUST-GATE, **INV-028 LIGHT-SLOT-KEY-COHERENCE — filed this session**). INV-011 verified still green after ARITH-205. |
 | Meta-audit progress | 6 of 8 META classes complete or triaged. Class 2 ARITHMETIC_BOUNDARY close-out: **21 FIXED, 19 N/A, 7 ❌ MISSING** (47 total). |
-| Branch | `master` — local 2.9.83 ahead of `origin/master` by **5 commits** (GL-024 2.9.80 + handoff, ARITH-202 2.9.81, ARITH-205 2.9.82, ARITH-104/201 2.9.83). Handoff commit will make 6. (2.9.77→2.9.79 already pushed.) |
+| Branch | `master` — local 2.9.84 ahead of `origin/master` by **6 commits** (GL-024 2.9.80 + handoff, ARITH-202 2.9.81, ARITH-205 2.9.82, ARITH-104/201 2.9.83, handoff). INV-028 filing commit will make 7. (2.9.77→2.9.79 already pushed.) |
 
 ## Next Intended Task
 
-1. **Push approval needed** — 5 (soon 6) commits ahead of `origin/master`,
-   shipping 2.9.80 → 2.9.83. Verify with `git log origin/master..HEAD`.
+0. **INV-028 candidate — LIGHT-SLOT-KEY-COHERENCE (filed this session).**
+   Highest-value follow-up: the worn-light slot is keyed three inconsistent
+   ways (`do_wear` → `WearLocation.HOLD`, `Room._has_lit_light_source` →
+   str `"0"`, `_find_equipped_light` → `"light"`/int-LIGHT), so PC lights
+   never burn out and room lighting from PC-held lights is mis-tracked.
+   Surfaced verifying ARITH-202 reachability. Closing it makes ARITH-202
+   take effect in live play. Prose + proposed enforcement in
+   `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
+1. **Push approval needed** — 6 (soon 7) commits ahead of `origin/master`,
+   shipping 2.9.80 → 2.9.84. Verify with `git log origin/master..HEAD`.
 2. **ARITH-017 / 018 / 019** — left ❌ OPEN this session. Subagent's N/A
    verdict only proved the `do_cast` player path; the N/A bar requires
    proving the scroll/wand/potion (`obj_cast_spell`, item level can be 0)

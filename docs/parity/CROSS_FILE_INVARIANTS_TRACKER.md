@@ -187,6 +187,60 @@ the cross-file work is tracked here.
   in room/event broadcasts to all witnesses — a long-standing parity
   bug ROM players would notice immediately.
 
+**Open: INV-028 candidate — LIGHT-SLOT-KEY-COHERENCE (surfaced 2026-05-27 during the ARITH-202 close; not yet enforced).**
+
+- **ROM mechanism**: ROM equips a worn light into the single `WEAR_LIGHT`
+  slot (`src/act_obj.c:wear_obj` → `equip_char(ch, obj, WEAR_LIGHT)`), and
+  every consumer reads that same slot via `get_eq_char(ch, WEAR_LIGHT)`:
+  room-light accounting (`src/handler.c:1504-1507` char_from_room /
+  `1571-1573` char_to_room) and the per-tick burnout decay
+  (`src/update.c:721-730`). One slot constant, used consistently across
+  equip, room-light tracking, and decay.
+- **Python pre-state (2.9.81)**: the LIGHT equipment slot is keyed **three
+  inconsistent ways**, so no single production path satisfies all consumers:
+  - `do_wear` (`mud/commands/equipment.py:173-219`) routes any HOLD-flagged
+    item — **including lights** — into `int(WearLocation.HOLD)` and emits
+    "You light $p and hold it"; it never writes `WearLocation.LIGHT`.
+    `_get_wear_location` (`equipment.py:534-591`) has **no LIGHT branch** at
+    all, so a light lacking the HOLD flag is simply "You can't wear that."
+  - `Room._has_lit_light_source` (`mud/models/room.py:29`) looks up the
+    light under the **string** key `str(int(WearLocation.LIGHT))` == `"0"`.
+  - `_find_equipped_light` (`mud/game_loop.py:348-365`) matches only the
+    literal str `"light"` or a **non-str** slot whose `int(slot) ==
+    int(WearLocation.LIGHT)` — it matches neither `"0"` nor the HOLD key.
+- **Consequence**: a PC who `wear`/`hold`s a light gets it in the HOLD slot,
+  where neither room-light tracking nor burnout decay sees it. The decay
+  loop is additionally PC-only (`mud/game_loop.py` skips `is_npc`), and PCs
+  only acquire equipment via `do_wear`, so `_decay_worn_light`'s burnout
+  branch (the ARITH-202 site) is effectively **unreachable in production**.
+  The existing `tests/integration/test_room_light_tracking.py` cases pass
+  only because they hand-key equipment under `"0"` (str) and exercise
+  `Room.add_character` directly — they never drive `_decay_worn_light`.
+- **Touched by (probe evidence)**: surfaced while closing **ARITH-202**
+  (worn-light burnout `--room->light` floor removal, `game_loop.py:454`).
+  The ARITH-202 fix is ROM-faithful arithmetic but reaches the live game
+  only once equipment is keyed under `WearLocation.LIGHT`; its regression
+  test had to equip under the IntEnum key to make `_find_equipped_light`
+  match. `mud/world/look.py:224`, `mud/commands/inventory.py:844`,
+  `mud/utils/olc_tables.py:19/47`, `mud/commands/build.py:636/663` all
+  reference the LIGHT slot/flag and would need to agree on the canonical key.
+- **Proposed enforcement (when promoted)**: adopt `int(WearLocation.LIGHT)`
+  as the one canonical key (matching the rest of `do_wear`, which stores
+  `int(wear_loc)` keys); add a `do_wear` LIGHT branch that equips
+  `ITEM_LIGHT` into `WearLocation.LIGHT` mirroring ROM `wear_obj`; make
+  `Room._has_lit_light_source` and `_find_equipped_light` read that same
+  int key. Regression: `tests/integration/test_inv028_light_slot_key_coherence.py`
+  — `do_wear` a lit torch → lands in `WearLocation.LIGHT`; `room.light`
+  increments on enter; a burnout tick decrements `room.light` and destroys
+  the torch.
+- **Why deferred**: closing it means reconciling `do_wear`'s HOLD-vs-LIGHT
+  routing against ROM `wear_obj` and unifying the slot key across three
+  modules — a focused cross-module change, out of scope for the ARITH
+  arithmetic-floor close-out that surfaced it.
+- **Risk if left unenforced**: PC light sources never burn out and PC-held
+  lights are mis-counted (or uncounted) in room lighting vs ROM — a
+  player-visible parity gap.
+
 **Open: INV-025 follow-up — broaden mp_act_trigger_room dispatch beyond do_emote.**
 
 - ~~INV-025 candidate (MOBPROG-ACT-TRIGGER-DISPATCH)~~ **enforced 2.9.40**.
