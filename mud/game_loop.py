@@ -621,17 +621,21 @@ def _char_update_tick_effects(character: Character) -> bool:
                         else:  # pragma: no cover - defensive fallback for test doubles
                             vch.add_affect(AffectFlag.PLAGUE)
 
-            # Drain mana and move — ROM src/update.c:843-845
-            # ARITH-203/204: ROM does `ch->mana -= dam; ch->move -= dam;` raw —
-            # no floor.  When current mana/move is below dam the pools go
-            # negative and regenerate back toward zero next tick.
-            dam = min(int(getattr(character, "level", 1) or 1), af_level // 5 + 1)
-            character.mana = int(getattr(character, "mana", 0) or 0) - dam
-            character.move = int(getattr(character, "move", 0) or 0) - dam
-            try:
-                _damage(character, character, dam, int(DamageType.DISEASE))
-            except Exception:
-                pass
+                # Drain mana and move — ROM src/update.c:843-845
+                # ARITH-203/204: ROM does `ch->mana -= dam; ch->move -= dam;` raw —
+                # no floor.  When current mana/move is below dam the pools go
+                # negative and regenerate back toward zero next tick.
+                # GL-024: this block lives under `af_level > 1` because ROM
+                # `src/update.c:818-819` does `if (af->level == 1) continue;` —
+                # a level-1 plague prints the writhe messages above, then skips
+                # spread + drain + damage entirely (dormant that tick).
+                dam = min(int(getattr(character, "level", 1) or 1), af_level // 5 + 1)
+                character.mana = int(getattr(character, "mana", 0) or 0) - dam
+                character.move = int(getattr(character, "move", 0) or 0) - dam
+                try:
+                    _damage(character, character, dam, int(DamageType.DISEASE))
+                except Exception:
+                    pass
         return False
 
     # Poison tick — ROM src/update.c:848-862

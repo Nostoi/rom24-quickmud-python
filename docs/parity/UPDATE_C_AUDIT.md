@@ -54,7 +54,7 @@
 | GL-021 | GAP | update.c:1186 | Point pulse emits `wiznet("TICK!", NULL, NULL, WIZ_TICKS, 0, 0)` before weather/char/obj update work. | ✅ FIXED |
 | GL-022 | BUG | update.c:128-139 | `gain_exp()` sent the level-up banner after `advance_level()` and skipped ROM `log_string("%s gained level %d")` entirely. | ✅ FIXED |
 | GL-023 | BUG | update.c:61-139 | `advance_level()` / `gain_exp()` XP-path verification was not represented in this audit even though the ROM functions live in `update.c`. | ✅ FIXED — audit coverage now explicitly includes `mud/advancement.py`; targeted tests lock message order, log-before-wiznet ordering, and death-floor behavior. |
-| GL-024 | BUG | update.c:818-819 | Plague tick: ROM does `if (af->level == 1) continue;` — a level-1 plague affect skips the entire spread + mana/move drain + `damage()` block that tick. Python `mud/game_loop.py:_char_update_tick_effects` gates only the *spread* on `if af_level > 1:`; the drain and `damage()` still run when `af_level == 1`, so a level-1 plague keeps dealing damage/draining where ROM goes dormant. Surfaced 2.9.79 during ARITH-203/204 close-out. | ❌ OPEN |
+| GL-024 | BUG | update.c:818-819 | Plague tick: ROM does `if (af->level == 1) continue;` — a level-1 plague affect skips the entire spread + mana/move drain + `damage()` block that tick. Python `mud/game_loop.py:_char_update_tick_effects` gated only the *spread* on `if af_level > 1:`; the drain and `damage()` still ran when `af_level == 1`. **FIX (2.9.80):** moved the drain + `damage()` block inside the `if af_level > 1:` guard so a level-1 plague prints the writhe messages then goes dormant (no spread, drain, or damage), mirroring ROM's `continue`. Test: `tests/integration/test_gl_024_level1_plague_dormant.py`. | ✅ FIXED |
 
 ---
 

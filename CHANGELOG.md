@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.80]
+
+### Fixed
+- **`GL-024` — level-1 plague affect is now dormant** (ROM `src/update.c:818-819`). ROM's plague tick prints the writhe messages, then does `if (af->level == 1) continue;` — skipping spread, mana/move drain, and `damage()` for a level-1 plague. Python's `_char_update_tick_effects` (`mud/game_loop.py`) gated only the *spread* on `if af_level > 1:`; the drain and `damage()` still ran at level 1, so a level-1 plague kept draining mana/move and dealing disease damage where ROM goes dormant. Fix: moved the drain + `damage()` block inside the `if af_level > 1:` guard. Regression: `tests/integration/test_gl_024_level1_plague_dormant.py` (level-1 plague NPC → mana/move/hit unchanged by the tick). Surfaced during the 2.9.79 ARITH-203/204 close-out. Full integration suite: **2344 passed, 3 skipped** in 85.66s.
+
 ## [2.9.79]
 
 ### Fixed
