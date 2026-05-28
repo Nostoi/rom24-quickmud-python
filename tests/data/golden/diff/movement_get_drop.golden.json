@@ -1,6 +1,6 @@
 {
   "scenario": "movement_get_drop",
-  "c_commit": "e9073bdbb03c3777e8ac25eab3f01adb745aa795",
+  "c_commit": "a9c3ffff8b2371e74d9a80c6eb2e138b2419934b",
   "build_flags": "-DOLD_RAND",
   "seed": 1234,
   "trace": [
@@ -220,6 +220,196 @@
       "chars": [
         {
           "key": "Tester",
+          "room": 3054,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "Tester",
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 5,
+      "command": "get pit",
+      "output": [
+        "",
+        "\rYou can't take that.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3054,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "Tester",
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 6,
+      "command": "inventory",
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3054,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "Tester",
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 7,
+      "command": "drop pit",
+      "output": [
+        "",
+        "\rYou do not have that item.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3054,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "Tester",
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 8,
+      "command": "inventory",
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
           "room": 3001,
           "position": "STANDING",
           "hp": 20,
@@ -255,7 +445,7 @@
           ]
         }
       ],
-      "step": 5,
+      "step": 9,
       "command": "south",
       "output": [
         "",
@@ -311,12 +501,20 @@
           ]
         }
       ],
-      "step": 6,
-      "command": "inventory",
+      "step": 10,
+      "command": "look",
       "output": [
         "",
-        "\rYou are carrying:",
-        "\r     Nothing.",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rHassan is here, waiting to dispense some justice.",
         ""
       ]
     }
