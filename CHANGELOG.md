@@ -7,13 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.1]
+
+### Fixed
+- **FINDING-005 — differential-harness input-source asymmetry, RESOLVED.** The C shim reads the repaired `midgaard` `.are` overlay while the Python replay reads `data/areas/*.json`. A probe proved the two sources cover an identical room/mobile/object vnum set (143/65/160 each — the JSON was generated from a correctly-parsed source, not the malformed stock `area/midgaard.are`), so the asymmetry was structurally benign. Locked with a guard: `tests/test_diff_harness_data_parity.py` reconstructs the repaired `.are` in-Python (byte-identical to the `Makefile.diffshim` overlay awk, so it needs no build artifact) and asserts its vnum sets equal the JSON the Python loader reads — any future edit that desyncs the two engines' world data now fails. This was the last harness-soundness follow-up gating a `diff-harness` → `master` merge. Details: `tools/diff_harness/FINDINGS.md`.
+
 ## [2.11.0]
 
 ### Added
 - **Differential testing harness (ROM C ⇄ Python), v1** (`tools/diff_harness/`). A local golden-trace capture/replay tool that runs the Python port and the original ROM 2.4b6 C engine through identical scripted scenarios and diffs observable state + output, surfacing parity divergences mechanically. The usual nondeterminism blocker is already solved here: the C engine is built with `-DOLD_RAND` so its Mitchell-Moore RNG matches `mud/utils/rng_mm.py` bit-for-bit. **Capture** drives an additively-instrumented C binary (`src/diffshim`, built via `src/Makefile.diffshim` — ROM `src/*.c` unchanged, all macOS portability via compile flags + shim headers) over stdin and records committed golden traces (`tests/data/golden/diff/`). **Replay** (`tests/test_differential_smoke.py`, pure-Python, no C build needed) drives the Python engine through the same scenario, snapshots state, normalizes both sides identically, and asserts equality. v1 covers a deterministic smoke slice (look/movement/get/drop/inventory). Design + plan: `docs/superpowers/specs/2026-05-28-differential-testing-harness-design.md`, `docs/superpowers/plans/2026-05-28-differential-testing-harness.md`. Workflow: `tools/diff_harness/README.md`.
 
 ### Fixed
-- **FINDING-001 (harness's first catch) — RESOLVED via LOOK-001/LOOK-002** (2.10.1 / 2.10.2). The harness's first run surfaced a divergence: room `look` rendered an NPC by name vs ROM's `long_descr`. Root cause was a real parity bug (not the data asymmetry): `MobInstance` didn't carry `long_descr`/`description` from its prototype and `mud/world/look.py` used the PERS path instead of `show_char_to_char_0`'s long_descr branch. Fixed on master; the differential `movement_get_drop` diff is now clean and the `KNOWN_DIVERGENCES` xfail removed. (The separate harness input-source asymmetry — C reads `.are`, Python reads JSON — remains a documented soundness follow-up in `tools/diff_harness/FINDINGS.md`.)
+- **FINDING-001 (harness's first catch) — RESOLVED via LOOK-001/LOOK-002** (2.10.1 / 2.10.2). The harness's first run surfaced a divergence: room `look` rendered an NPC by name vs ROM's `long_descr`. Root cause was a real parity bug (not the data asymmetry): `MobInstance` didn't carry `long_descr`/`description` from its prototype and `mud/world/look.py` used the PERS path instead of `show_char_to_char_0`'s long_descr branch. Fixed on master; the differential `movement_get_drop` diff is now clean and the `KNOWN_DIVERGENCES` xfail removed. (The separate harness input-source asymmetry — C reads `.are`, Python reads JSON — was investigated and resolved in 2.11.1, FINDING-005.)
 ## [2.10.5]
 
 ### Fixed

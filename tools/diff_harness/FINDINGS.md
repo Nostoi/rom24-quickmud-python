@@ -8,6 +8,42 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-005 — input-source asymmetry (C reads `.are`, Python reads JSON) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28 — investigated, found **structurally benign**,
+and locked with a guard test. This was the last harness-soundness follow-up before
+`diff-harness` can merge.
+
+The two engines load world data from different sources: the C shim reads the
+repaired `midgaard` `.are` overlay (`src/diff_shim/area/`), the Python replay reads
+`data/areas/*.json`. The concern (carried from FINDING-001's "separate latent
+issue") was that for midgaard scenarios the two might load **different** data and
+manufacture false divergences.
+
+**Probe result (2026-05-28):** the JSON and the repaired `.are` cover an
+**identical** room/mobile/object vnum set (143 / 65 / 160 each; `only in .are=[]`,
+`only in JSON=[]`). The JSON was generated from a correctly-parsed (or pre-repaired)
+source — it does **not** drop the entities the malformed stock `area/midgaard.are`
+would (the `#`→`#ROOMS` / `~ROOMS`→`~` corruption at the OBJECTS→ROOMS boundary
+only ever affected the C-side raw parse, which the overlay repairs). So the
+soundness coverage is already complete:
+- structural drift (a vnum in one source but not the other) → none today;
+- field drift on an entity a scenario exercises → caught by the per-step snapshot diff;
+- field drift on a non-exercised entity → invisible but irrelevant (not exercised).
+
+**Fix:** added `tests/test_diff_harness_data_parity.py`, which reconstructs the
+repaired `.are` in-Python (byte-identical to the `Makefile.diffshim` `area-overlay`
+awk, verified — so it does not depend on the gitignored build artifact) and asserts
+its room/mob/object vnum sets equal the JSON the Python loader reads. Any future edit
+to either source that desyncs the two engines' world data now fails this guard.
+
+**Not done (deliberately):** repairing stock `area/midgaard.are` + regenerating
+`midgaard.json` (Option B). The probe proves it is unnecessary for soundness, and
+regenerating the JSON has a wide blast radius across tests asserting current
+JSON-loaded state. The overlay + guard is the minimal sound close.
+
+---
+
 ## FINDING-004 — room object list shows obj name, not ROM ground `description` — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-05-28 via **LOOK-004** (master 2.10.5, commit `2e5ebf3f`).
@@ -152,11 +188,9 @@ written by the build subagent); it is now stable: 986 mobs, exactly 1
 
 **Separate latent issue (harness soundness, not FINDING-001):** the C side reads
 `.are` files (a repaired midgaard overlay) while Python reads `data/areas/*.json`.
-For midgaard-based scenarios the two engines load from different sources; this
-did not cause FINDING-001 (both prototypes have long_descr) but must be
-reconciled before trusting midgaard divergences in general — either regenerate
-the JSON from the repaired `.are`, repair `area/midgaard.are` at source, or point
-both engines at the same data.
+For midgaard-based scenarios the two engines load from different sources. **This is
+now resolved — see FINDING-005:** the two sources were proven to cover an identical
+vnum set, and `tests/test_diff_harness_data_parity.py` guards the equivalence.
 
 ### (historical) original triage notes
 
