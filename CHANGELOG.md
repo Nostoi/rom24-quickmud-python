@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.3]
+
+### Changed
+- **`game_tick` world-invariant checker is now opt-in (`@pytest.mark.check_invariants`), not always-on.** The 2.10.0 deployment ran `check_world_invariants` after *every* `game_tick` suite-wide, but the checker walks the GLOBAL `character_registry`/`room_registry`, which the test suite never fully isolates (tests call `initialize_world`, mutate shared `room.people` in place, and leave registered chars behind). That made the checker an intermittent flake generator — an unrelated sibling test would fail depending on xdist worker grouping (observed in `test_group_combat`, then `test_skills_integration`). Investigating confirmed a *fresh* `initialize_world` is fully coherent, so the violations were cross-test pollution, not real bugs. The checker, its `game_tick` hook, and its unit tests are retained; tests now opt in via `@pytest.mark.check_invariants` (the old `no_invariant_check` opt-out marker and three marks added for the always-on rollout were removed). This trades suite-wide free coverage for reliability; per-test opt-in keeps the checker available where a coherent world is guaranteed.
+
 ## [2.10.2]
 
 ### Fixed

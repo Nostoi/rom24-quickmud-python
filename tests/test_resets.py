@@ -1,12 +1,9 @@
-import pytest
-
 from mud.game_loop import game_tick
 from mud.registry import room_registry
 from mud.spawning.templates import MobInstance
 from mud.world import initialize_world
 
 
-@pytest.mark.no_invariant_check  # strips mobs from room.people but leaves them registered
 def test_execution_cycle(monkeypatch):
     initialize_world("area/area.lst")
 

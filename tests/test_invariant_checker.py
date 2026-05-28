@@ -118,8 +118,9 @@ def _incoherent_room_people() -> None:
     room_a.people.append(char)
 
 
-def test_game_tick_enforces_invariants_when_enabled(clean_registries):
-    """The autouse fixture enables the checker; an incoherent world fails game_tick."""
+@pytest.mark.check_invariants
+def test_game_tick_enforces_invariants_when_opted_in(clean_registries):
+    """A test marked check_invariants runs the checker after game_tick."""
     from mud.game_loop import game_tick
 
     _incoherent_room_people()
@@ -128,12 +129,11 @@ def test_game_tick_enforces_invariants_when_enabled(clean_registries):
         game_tick()
 
 
-@pytest.mark.no_invariant_check
-def test_marker_disables_invariant_enforcement(clean_registries):
-    """A test marked no_invariant_check runs game_tick without the post-check."""
+def test_game_tick_does_not_check_by_default(clean_registries):
+    """Without the check_invariants marker the checker is OFF (opt-in)."""
     from mud.game_loop import game_tick
 
     _incoherent_room_people()
 
-    # No raise despite the incoherence.
+    # No raise: the post-tick checker is disabled unless explicitly opted in.
     game_tick()

@@ -20,18 +20,23 @@ from helpers import ensure_can_move as _ensure_can_move_helper  # noqa: E402
 
 @pytest.fixture(autouse=True)
 def _enable_world_invariant_checks(request):
-    """Assert steady-state ROM world invariants after every game_tick.
+    """Opt-in: assert steady-state ROM world invariants after every game_tick.
 
-    Turns the suite's game_tick-driving tests into continuous parity probes
-    (mud.diagnostics.invariants). Opt out per-test with
-    @pytest.mark.no_invariant_check for tests whose artificial setup
-    legitimately violates a steady-state contract.
+    The checker (`mud.diagnostics.invariants.check_world_invariants`) walks the
+    GLOBAL `character_registry` / `room_registry`, so running it after every
+    game_tick suite-wide was flaky: tests legitimately leave those un-isolated
+    registries in incoherent cross-test states (a registered char whose room no
+    longer lists it, in-place `room.people` mutations), which tripped the checker
+    in an unrelated sibling depending on xdist worker grouping. It is therefore
+    **opt-in**: only tests marked `@pytest.mark.check_invariants` enable it, and
+    such a test is responsible for a coherent world (typically a fresh
+    `initialize_world` or a self-contained setup). Production leaves the flag off.
     """
-    import mud.game_loop as game_loop
-
-    if request.node.get_closest_marker("no_invariant_check"):
+    if not request.node.get_closest_marker("check_invariants"):
         yield
         return
+    import mud.game_loop as game_loop
+
     prev = game_loop._INVARIANT_CHECK_ENABLED
     game_loop._INVARIANT_CHECK_ENABLED = True
     try:
