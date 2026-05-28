@@ -76,7 +76,7 @@ def test_sneaking_player_moves_silently() -> None:
 
     result = move_character(sneaker, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert sneaker.room is target
     assert observer_start.messages == []
     assert observer_target.messages == []
@@ -97,7 +97,7 @@ def test_high_invis_player_arrives_quietly() -> None:
 
     result = move_character(wizard, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert wizard.room is target
     assert observer_start.messages == []
     assert observer_target.messages == []
@@ -112,7 +112,7 @@ def test_immortal_can_cross_air_without_flight() -> None:
 
     result = move_character(immortal, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert immortal.room is target
 
 
@@ -125,5 +125,5 @@ def test_immortal_can_enter_noswim_without_boat() -> None:
 
     result = move_character(immortal, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert immortal.room is target

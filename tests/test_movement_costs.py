@@ -27,7 +27,7 @@ def test_sector_move_cost_and_wait():
 
     # CITY (2) to FOREST (3) → average floor((2+3)/2)=2
     out = move(ch, "north")
-    assert "You walk north" in out
+    assert out and "You walk" not in out  # ROM act_move.c:204 — mover sees room, no walk-line
     assert ch.room is room_to
     assert ch.move == 18
     assert ch.wait == 1
@@ -61,7 +61,7 @@ def test_boat_allows_water_noswim(object_factory):
     ch.add_object(boat)
     ch.move = 20
     out = move(ch, "north")
-    assert "You walk north" in out
+    assert out and "You walk" not in out  # ROM act_move.c:204 — mover sees room, no walk-line
     assert ch.room is room_to
     # Cost average of CITY(2) and WATER_NOSWIM(1) = 1
     assert ch.move == 19
@@ -77,7 +77,7 @@ def test_flying_bypasses_water():
 
     out = move(ch, "north")
 
-    assert "You walk north" in out
+    assert out and "You walk" not in out  # ROM act_move.c:204 — mover sees room, no walk-line
     assert ch.room is room_to
     # Flying halves the already minimal movement cost → zero deduction
     assert ch.move == 20
@@ -92,7 +92,7 @@ def test_unknown_sector_defaults_to_highest_loss():
 
     out = move(ch, "north")
 
-    assert "You walk north" in out
+    assert out and "You walk" not in out  # ROM act_move.c:204 — mover sees room, no walk-line
     assert ch.room is room_to
     assert ch.move == 14
     assert ch.wait == 1

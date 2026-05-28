@@ -25,7 +25,7 @@ def test_process_command_sequence(movable_char_factory, place_object_factory):
 
     # Walk north into Temple of Mota where the sword was placed and pick it up.
     out3 = process_command(char, "north")
-    assert "You walk north" in out3
+    assert out3 and "You walk" not in out3  # ROM act_move.c:204 — mover sees room, no walk-line
     north_room = room_registry[3001]  # Temple of Mota
     assert char.room is north_room
 
@@ -66,7 +66,7 @@ def test_abbreviations_and_quotes(movable_char_factory):
     assert "Temple" in out1
 
     out2 = process_command(char, "n")
-    assert "You walk north" in out2
+    assert out2 and "You walk" not in out2  # ROM act_move.c:204 — mover sees room, no walk-line
 
     out3 = process_command(char, 'say "hello world"')
     # ROM src/act_comm.c:777 — `act("{6You say '{7$T{6'{x", ...)`.

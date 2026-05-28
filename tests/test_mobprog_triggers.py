@@ -234,8 +234,8 @@ def test_event_hooks_fire_rom_triggers(monkeypatch) -> None:
 
     character_registry.extend([player, guard, greeter])
 
-    assert move_character(player, "north") == "You walk north to Target."
-    assert move_character(guard, "north") == "You walk north to Target."
+    assert "Target" in move_character(player, "north")  # ROM act_move.c:204
+    assert "Target" in move_character(guard, "north")  # ROM act_move.c:204
 
     do_say(player, "hello there")
     do_tell(player, f"{guard.name} secret news")

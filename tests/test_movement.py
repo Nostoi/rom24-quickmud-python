@@ -26,7 +26,7 @@ def test_follower_cascade():
 
     result = move_character(leader, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert leader.room is target
     assert follower.room is target
     assert any(msg.startswith("You follow") for msg in follower.messages)

@@ -114,7 +114,7 @@ class TestEncumbranceIntegration:
         walker.carry_number = 0
         walker.carry_weight = 0
         success = move_character(walker, "north")
-        assert success == "You walk north to Destination."
+        assert "Destination" in success  # ROM act_move.c:204 — mover sees room
         assert walker.room is dest
 
 

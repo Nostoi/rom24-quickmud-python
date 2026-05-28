@@ -168,9 +168,14 @@ def _look_room(char: Character, room) -> str:
         room_desc = room.description or ""
         lines.append(room_desc)
 
-    # Objects in room — ROM appends raw object lines via show_list_to_char.
+    # Objects in room — ROM show_list_to_char(..., fShort=FALSE) →
+    # format_obj_to_char(obj, ch, FALSE) (src/act_info.c): each object is listed by
+    # its ground description (obj->description), and any object whose description is
+    # empty is skipped entirely. (Object analog of show_char_to_char_0's long_descr.)
     for obj in room.contents:
-        lines.append(obj.short_descr or obj.name or "object")
+        description = getattr(obj, "description", None)
+        if description:
+            lines.append(description)
 
     # Characters in room — ROM appends raw character lines via show_char_to_char.
     for occupant in room.people:

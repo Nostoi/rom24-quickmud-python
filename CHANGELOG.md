@@ -14,6 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - **FINDING-001 (harness's first catch) — RESOLVED via LOOK-001/LOOK-002** (2.10.1 / 2.10.2). The harness's first run surfaced a divergence: room `look` rendered an NPC by name vs ROM's `long_descr`. Root cause was a real parity bug (not the data asymmetry): `MobInstance` didn't carry `long_descr`/`description` from its prototype and `mud/world/look.py` used the PERS path instead of `show_char_to_char_0`'s long_descr branch. Fixed on master; the differential `movement_get_drop` diff is now clean and the `KNOWN_DIVERGENCES` xfail removed. (The separate harness input-source asymmetry — C reads `.are`, Python reads JSON — remains a documented soundness follow-up in `tools/diff_harness/FINDINGS.md`.)
+## [2.10.5]
+
+### Fixed
+- **`LOOK-004` — room object listing now shows the ROM ground `description`, not `short_descr`** (ROM `src/act_info.c` `format_obj_to_char`). `do_look` rendered each room object as `obj.short_descr` (e.g. "the donation pit"); ROM lists ground objects by `obj->description` (e.g. "A pit for sacrifices is in front of the altar.") via `format_obj_to_char(obj, ch, fShort=FALSE)`, and skips any object whose description is empty. The `_describe_room` object loop now emits `obj.description` and skips description-less objects (the object analog of the LOOK-001 NPC `long_descr` fix). **Surfaced by the differential testing harness (FINDING-004)** against the `format_obj_to_char` row the `act_info.c` audit had marked "100% PARITY". Regression: `tests/integration/test_look_004_room_object_description.py`. (The aura/stat prefixes — `(Glowing)`/`(Humming)`/`(Invis)`/detect auras — from `format_obj_to_char` remain a separate latent gap.)
+
+## [2.10.4]
+
+### Fixed
+- **`MOVE-003` — directional movement no longer emits a non-ROM "You walk &lt;dir&gt; to &lt;room&gt;." line** (ROM `src/act_move.c:204`). ROM `move_char` ends with `do_function(ch, &do_look, "auto")`: the mover sees only the destination room description (others get the `$n leaves`/`$n has arrived` broadcasts), with no "you walk" line. Python's `move_character()` returned `"You walk {dir} to {room}."`, which the dispatcher delivered to the player as an extra line ahead of the auto-look. `move_character` now returns the destination room view (the Python command-output convention, like `do_look`; computed before followers move per ROM order); followers still receive the room via their own message stream. **Surfaced by the differential testing harness (FINDING-003) against a row the `act_move.c` audit had marked "100% parity"** — the audit verified broadcasts/logic but not the mover's own visible output. Regression: `tests/integration/test_move_003_walk_line.py`; ~25 existing assertions across 14 files updated to the ROM-faithful room output.
 
 ## [2.10.3]
 

@@ -49,7 +49,7 @@ def test_owner_can_enter_private_room() -> None:
 
     result = move_character(char, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert char.room is target
 
 
@@ -62,7 +62,7 @@ def test_trusted_enters_private_room() -> None:
 
     result = move_character(char, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert char.room is target
 
 
@@ -82,5 +82,5 @@ def test_guild_room_allows_own_class() -> None:
 
     result = move_character(char, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert char.room is target

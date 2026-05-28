@@ -41,7 +41,7 @@ def test_pass_door_allows_closed_door() -> None:
 
     result = move_character(char, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert char.room is target
     assert char.wait == 1
 
@@ -64,5 +64,5 @@ def test_immortal_bypasses_closed_door() -> None:
 
     result = move_character(char, "north")
 
-    assert "You walk north" in result
+    assert result and "You walk" not in result  # ROM act_move.c:204 — mover sees room, no walk-line
     assert char.room is target
