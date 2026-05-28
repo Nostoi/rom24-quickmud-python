@@ -8,7 +8,35 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-001 — `look` renders room NPC by name, not ROM long_descr
+## FINDING-002 — test-character hp differs between the C shim and Python replay
+
+**Status:** Open — harness-soundness (not a confirmed parity bug). After
+FINDING-001 was fixed, the `movement_get_drop` diff advanced to its next
+divergence: `step 1 chars[Tester].hp · C=20 py=0`. The two sides create the
+scripted test character differently — the C `src/diff_shim/diffmain.c` shim via
+`new_char`/level-set, the Python replay via `mud.world.create_test_character` —
+so this is most likely **char-creation asymmetry** (the same class as the
+`.are`-vs-JSON input asymmetry), not a ROM-vs-Python game-logic divergence.
+**Next:** reconcile the two test-character creation paths (have the shim and the
+replay produce an identically-statted char, or seed hp/level explicitly on both)
+before trusting per-field character diffs. Until then the `movement_get_drop`
+scenario stays xfailed on this field. Note: the room/output rendering (the
+FINDING-001 surface) now matches exactly — only derived character stats differ.
+
+---
+
+## FINDING-001 — `look` renders room NPC by name, not ROM long_descr — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28 via **LOOK-001** (master 2.10.1) + **LOOK-002**
+(2.10.2). It was a real, broad parity bug after all (not the data asymmetry):
+`MobInstance` didn't carry `long_descr`/`description` from its prototype (ROM
+`create_mobile`) and `mud/world/look.py` used the PERS path instead of
+`show_char_to_char_0`'s long_descr branch. Fixed on master; the differential
+room/output rendering now matches the C reference exactly. The scenario's
+remaining xfail is FINDING-002 (character hp), a separate harness-soundness item.
+Historical investigation notes retained below.
+
+### (historical) root-cause investigation
 
 **Status:** ROOT CAUSE CONFIRMED (2026-05-28) — real, broad parity bug; fix
 pending (xfailed in `movement_get_drop`). It is **not** the malformed

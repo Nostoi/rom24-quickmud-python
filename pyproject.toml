@@ -91,7 +91,7 @@ markers = [
   "p2: Lower-priority regression and coverage tests",
   "telnet: Telnet server tests that open sockets",
   "timeout: Tests guarded by pytest-timeout to prevent hangs",
-  "no_invariant_check: Disable the post-game_tick world-invariant checker for tests with intentionally artificial state",
+  "check_invariants: Opt in to the post-game_tick world-invariant checker (mud.diagnostics.invariants) for this test",
 ]
 
 [tool.ruff]

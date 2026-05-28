@@ -1,7 +1,5 @@
 from types import SimpleNamespace
 
-import pytest
-
 import mud.game_loop as gl
 import mud.mobprog as mobprog
 from mud.ai import mobile_update
@@ -195,7 +193,6 @@ def test_point_pulse_emits_tick_wiznet_before_updates(monkeypatch):
     ]
 
 
-@pytest.mark.no_invariant_check  # uses object() sentinel rooms; not a coherent world
 def test_violence_update_waits_for_pulse_violence(monkeypatch):
     room = object()
     attacker = Character(name="Attacker", is_npc=False, position=int(Position.FIGHTING))

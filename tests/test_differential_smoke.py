@@ -27,10 +27,10 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES = {
     "movement_get_drop": (
-        "FINDING-001: room `look` renders NPC Hassan by name ('Hassan') vs ROM "
-        "long_descr ('Hassan is here, waiting...'). Root cause under triage — "
-        "midgaard.are is malformed and the C side reads a repaired overlay while "
-        "Python reads the original, so inputs may be unequal. See FINDINGS.md."
+        "FINDING-002: test-character hp differs (C=20 vs py=0) — harness "
+        "char-creation asymmetry (C shim new_char vs Python create_test_character), "
+        "not a parity bug. Room/output rendering now matches after FINDING-001 "
+        "(LOOK-001/002) was fixed. See tools/diff_harness/FINDINGS.md."
     ),
 }
 

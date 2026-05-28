@@ -1,8 +1,33 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import Direction, Position
+from mud.models.constants import AffectFlag, Direction, Position
 from mud.world.vision import can_see_character, describe_character
+
+
+def _room_occupant_line(observer: Character, victim) -> str:
+    """Render a room-list occupant — ROM src/act_info.c show_char_to_char_0.
+
+    An NPC whose position equals its start position and which has a non-empty
+    long_descr is listed by that long_descr (with affect auras prefixed),
+    e.g. "Hassan is here, waiting to dispense some justice." Otherwise fall back
+    to the PERS rendering (short name + auras).
+    """
+    long_descr = getattr(victim, "long_descr", None)
+    if (
+        getattr(victim, "is_npc", False)
+        and long_descr
+        and getattr(victim, "position", None) == getattr(victim, "start_pos", None)
+    ):
+        prefixes = []
+        if hasattr(victim, "has_affect"):
+            if victim.has_affect(AffectFlag.SANCTUARY):
+                prefixes.append("(White Aura)")
+            if victim.has_affect(AffectFlag.FAERIE_FIRE):
+                prefixes.append("(Pink Aura)")
+        prefix = (" ".join(prefixes) + " ") if prefixes else ""
+        return prefix + str(long_descr).rstrip("\r\n")
+    return describe_character(observer, victim)
 
 
 def _ed_fields(ed) -> tuple[str | None, str | None]:
@@ -153,7 +178,7 @@ def _look_room(char: Character, room) -> str:
             continue
         if not can_see_character(char, occupant):
             continue
-        lines.append(describe_character(char, occupant))
+        lines.append(_room_occupant_line(char, occupant))
 
     result = "\n".join(lines).strip()
 
