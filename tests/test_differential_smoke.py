@@ -25,18 +25,7 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # reason. When a divergence is actually fixed the diff goes clean, no xfail
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
-KNOWN_DIVERGENCES = {
-    "movement_get_drop": (
-        "Two real ROM parity bugs (deferred to master gap-closers), surfaced once "
-        "the harness output capture was made fair:\n"
-        "  FINDING-003 — movement emits a non-ROM 'You walk <dir> to <room>.' line "
-        "(ROM act_move.c:204 shows room-only via do_look auto). mud/world/movement.py:455,470.\n"
-        "  FINDING-004 — room object list shows obj name ('the donation pit') not "
-        "ROM's ground description ('A pit for sacrifices...'). mud/world/look.py:172-173.\n"
-        "Harness start-state/capture asymmetries (FINDING-002 hp/level, people-key, "
-        "output channel) are resolved. See tools/diff_harness/FINDINGS.md."
-    ),
-}
+KNOWN_DIVERGENCES = {}
 
 
 def _scenarios():

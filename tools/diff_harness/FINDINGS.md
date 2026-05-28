@@ -8,9 +8,15 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-004 — room object list shows obj name, not ROM ground `description`
+## FINDING-004 — room object list shows obj name, not ROM ground `description` — ✅ RESOLVED
 
-**Status:** Open — **real parity bug** (object analog of FINDING-001/LOOK-001).
+**Status:** ✅ RESOLVED 2026-05-28 via **LOOK-004** (master 2.10.5, commit `2e5ebf3f`).
+The `_describe_room` object loop now emits `obj.description` (ROM
+`format_obj_to_char` fShort=FALSE) and skips description-less objects. Merged into
+this branch; the differential `movement_get_drop` diff is clean. (Aura/stat
+prefixes remain a separate latent gap, noted in the audit.) Original analysis below.
+
+**Status (historical):** Open — **real parity bug** (object analog of FINDING-001/LOOK-001).
 Surfaced once the harness output capture was made fair (see "Harness soundness
 fixes" below). On `look`/auto-look, ROM lists each object lying in a room by its
 **`description`** (the long ground line), e.g. `"A pit for sacrifices is in front
@@ -26,9 +32,15 @@ obj.name`, e.g. `"the donation pit"`.
 
 ---
 
-## FINDING-003 — movement emits a non-ROM "You walk <dir> to <room>." line
+## FINDING-003 — movement emits a non-ROM "You walk <dir> to <room>." line — ✅ RESOLVED
 
-**Status:** Open — **real parity bug.** Surfaced once the harness output capture
+**Status:** ✅ RESOLVED 2026-05-28 via **MOVE-003** (master 2.10.4, commit `ab8f9bd9`).
+`move_character` now returns the destination room view (ROM `act_move.c:204`
+`do_look "auto"`) instead of the "You walk" line; ~25 assertions across 14 files
+were updated to the ROM-faithful output. Merged into this branch; the differential
+`movement_get_drop` diff is clean. Original analysis below.
+
+**Status (historical):** Open — **real parity bug.** Surfaced once the harness output capture
 was made fair. On `north`/`south`, ROM shows only the destination room
 (`do_look auto`); the mover gets **no** "you walk" line. Python
 (`mud/world/movement.py:455,470`) returns `"You walk {dir} to {room}."`, which the
