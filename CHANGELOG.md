@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.79]
+
+### Fixed
+- **`ARITH-203` / `ARITH-204` — plague-tick mana/move drain no longer floors at 0** (ROM `src/update.c:843-845`). Pre-fix `mud/game_loop.py:626-627` (`_char_update_tick_effects`) used `character.mana = max(0, mana - dam)` and the same for `move`. ROM's plague tick does `dam = UMIN(ch->level, af->level/5 + 1); ch->mana -= dam; ch->move -= dam;` raw — when the character's current mana/move is below `dam` the pools go negative and regenerate back toward zero on the next tick. The Python floor swallowed that negative drift. Both floors removed in one commit (same tick, same ROM line family). Regression: `tests/integration/test_arith_203_204_plague_drain_no_floor.py` (level=10, af.level=10 → dam=3; mana 1 → −2, move 2 → −1). Full integration suite: **2343 passed, 3 skipped** in 82.29s.
+
+### Changed
+- **`GL-024` filed as ❌ OPEN** in `docs/parity/UPDATE_C_AUDIT.md`. Surfaced during the ARITH-203/204 close-out: ROM's plague tick at `src/update.c:818-819` does `if (af->level == 1) continue;` — a level-1 plague affect skips the entire spread + mana/move drain + `damage()` block. Python's `_char_update_tick_effects` gates only the *spread* on `if af_level > 1:`, so a level-1 plague keeps draining and dealing damage where ROM goes dormant. Filed per AGENTS.md "out-of-scope bugs surfaced mid-audit" rule; `update.c` subsystem-tracker row annotated with the open follow-up.
+
 ## [2.9.78]
 
 ### Fixed

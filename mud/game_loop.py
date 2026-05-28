@@ -622,9 +622,12 @@ def _char_update_tick_effects(character: Character) -> bool:
                             vch.add_affect(AffectFlag.PLAGUE)
 
             # Drain mana and move — ROM src/update.c:843-845
+            # ARITH-203/204: ROM does `ch->mana -= dam; ch->move -= dam;` raw —
+            # no floor.  When current mana/move is below dam the pools go
+            # negative and regenerate back toward zero next tick.
             dam = min(int(getattr(character, "level", 1) or 1), af_level // 5 + 1)
-            character.mana = max(0, int(getattr(character, "mana", 0) or 0) - dam)
-            character.move = max(0, int(getattr(character, "move", 0) or 0) - dam)
+            character.mana = int(getattr(character, "mana", 0) or 0) - dam
+            character.move = int(getattr(character, "move", 0) or 0) - dam
             try:
                 _damage(character, character, dam, int(DamageType.DISEASE))
             except Exception:
