@@ -88,7 +88,9 @@ def test_look_room_contents_are_not_prefixed_with_objects_label():
     room = _basic_room()
 
     class Obj:
+        # ROM format_obj_to_char(fShort=FALSE) lists ground objects by description.
         short_descr = "a wooden sword"
+        description = "A wooden sword lies here."
         name = "sword"
         wear_loc = -1
 
@@ -101,7 +103,7 @@ def test_look_room_contents_are_not_prefixed_with_objects_label():
 
     output = do_look(char, "")
 
-    assert output == "Midgaard Temple\nYou are in the temple.\na wooden sword"
+    assert output == "Midgaard Temple\nYou are in the temple.\nA wooden sword lies here."
 
 
 def test_look_room_people_are_not_prefixed_with_characters_label():

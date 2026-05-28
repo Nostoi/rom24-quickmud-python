@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.5]
+
+### Fixed
+- **`LOOK-004` — room object listing now shows the ROM ground `description`, not `short_descr`** (ROM `src/act_info.c` `format_obj_to_char`). `do_look` rendered each room object as `obj.short_descr` (e.g. "the donation pit"); ROM lists ground objects by `obj->description` (e.g. "A pit for sacrifices is in front of the altar.") via `format_obj_to_char(obj, ch, fShort=FALSE)`, and skips any object whose description is empty. The `_describe_room` object loop now emits `obj.description` and skips description-less objects (the object analog of the LOOK-001 NPC `long_descr` fix). **Surfaced by the differential testing harness (FINDING-004)** against the `format_obj_to_char` row the `act_info.c` audit had marked "100% PARITY". Regression: `tests/integration/test_look_004_room_object_description.py`. (The aura/stat prefixes — `(Glowing)`/`(Humming)`/`(Invis)`/detect auras — from `format_obj_to_char` remain a separate latent gap.)
+
 ## [2.10.4]
 
 ### Fixed
