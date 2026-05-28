@@ -8,9 +8,56 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-007 — mob spawn RNG draw-order diverges (gold vs HP) — 🔴 OPEN, gates combat v1
+## FINDING-008 — combat first-attack outcome / message rendering diverges at `kill` — 🔴 OPEN, gates combat v1
 
-**Status:** 🔴 OPEN — **real Python parity bug.** Surfaced 2026-05-28 by the
+**Status:** 🔴 OPEN — surfaced 2026-05-28 the moment FINDING-007 was fixed: with the
+spawn HP now aligned (steps 1–3 match the C golden byte-for-byte), the
+`combat_melee_rounds` first divergence advanced to **step 4 `kill drunk`**:
+
+```
+step 4 (command='kill drunk') · output ·
+  C  = ['You miss the drunk.']
+  py = ['{2You scratch the drunk.{x', '{2You scratch the drunk.{x']
+```
+
+`__seed=777` runs immediately before `kill drunk`, so combat resolves from a known RNG
+state — the divergence is in the *attack resolution / message path*, not the spawn.
+**Three sub-issues, each needs triage to classify (real parity bug vs harness
+normalization vs single-delivery invariant) before its own gap-closer:**
+
+1. **Hit/miss + damage-tier outcome differs** — C `miss`, Python `scratch` (a hit).
+   The first attack roll lands differently from the same seed. Likely a combat RNG
+   draw-order / THAC0 / damage-tier divergence in `multi_hit`/`one_hit`
+   (`mud/combat/engine.py` vs ROM `src/fight.c`). **Probable real parity bug.**
+2. **Color codes not normalized** — Python emits raw ROM color codes (`{2…{x`); the
+   C reference line has none. Determine whether the C shim strips color on output
+   (ROM `write_to_buffer` colour processing) or the test descriptor has colour off —
+   then strip on the matching side in `compare._norm_lines`. **Likely harness
+   normalization (compare-fairness), like FINDING-002/005.**
+3. **Double-delivery** — Python emits the line **twice**, C once. The replay captures
+   the command return value *and* drained `char.messages`; if combat output reaches
+   both channels it double-counts (cf. the SINGLE-DELIVERY invariant). Determine
+   whether this is a capture artifact or a real double-send. **Triage against
+   `CROSS_FILE_INVARIANTS_TRACKER.md` SINGLE-DELIVERY.**
+
+**Gated:** `combat_melee_rounds` stays in `KNOWN_DIVERGENCES` (xfail) under FINDING-008
+until these are triaged and closed. FINDING-007 (the spawn-HP blocker) is resolved.
+
+---
+
+## FINDING-007 — mob spawn RNG draw-order diverges (gold vs HP) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28 via **SPAWN-001** (master `47f8fd75`,
+v2.11.3). `MobInstance.from_prototype` now draws the spawn RNG stream in ROM
+`create_mobile` order — **gold/wealth → HP dice → mana dice → random damtype
+(`dam_type == 0`) → random sex (`sex == EITHER`)** — so the drunk #3064 spawns at HP
+**31** on both engines from seed 777. Verified end-to-end: the `combat_melee_rounds`
+first divergence advanced past the `__mload` spawn step (steps 1–3 now match the C
+golden) to the step-4 combat output, which is the separate **FINDING-008**. Regression:
+`tests/integration/test_spawn_001_rng_draw_order.py`; audit row
+`docs/parity/DB_C_AUDIT.md` SPAWN-001. Original analysis below.
+
+**Status (historical):** 🔴 OPEN — **real Python parity bug.** Surfaced 2026-05-28 by the
 `combat_melee_rounds` scenario: the drunk #3064 spawns at HP **31** in ROM C vs **33**
 in Python from the *same* seed (777). Both roll the correct `2d6+22` (FINDING-006 is
 fixed); the values differ because the two engines draw RNG in a **different order**

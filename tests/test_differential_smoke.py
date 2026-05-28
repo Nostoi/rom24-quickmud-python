@@ -27,11 +27,13 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES = {
-    # FINDING-007: mob spawn RNG draw-order diverges (ROM create_mobile draws
-    # gold before HP; from_prototype draws gold last), so the drunk #3064 spawns
-    # at HP 31 (C) vs 33 (Python) from the same seed. Real Python parity bug,
-    # fix pending on master (reorder from_prototype draws). See FINDINGS.md.
-    "combat_melee_rounds": "FINDING-007 — mob spawn RNG draw-order (gold vs HP) diverges; fix pending on master",
+    # FINDING-008: with FINDING-007 (spawn RNG draw-order) fixed on master via
+    # SPAWN-001, the spawn HP now matches and the first divergence advanced to
+    # step 4 `kill drunk`: C='You miss the drunk.' vs py='{2You scratch the
+    # drunk.{x' (x2). Three sub-issues to triage — combat hit/miss outcome (real
+    # parity?), unstripped color codes (normalization), double-delivery
+    # (single-delivery invariant). See FINDINGS.md FINDING-008.
+    "combat_melee_rounds": "FINDING-008 — combat first-attack outcome/message rendering diverges at `kill drunk` (FINDING-007 spawn-HP resolved via SPAWN-001)",
 }
 
 
