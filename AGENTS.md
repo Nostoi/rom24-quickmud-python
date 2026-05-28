@@ -53,14 +53,37 @@ run the area-specific integration test suite to catch regressions.
 These are non-negotiable. Violations are bugs even if tests pass.
 
 - **RNG:** use `mud.math.rng_mm.number_*`, never `random.*` in combat/affects.
-- **Integer math:** use `c_div`/`c_mod` from `mud.math.c_compat`, never `//` or `%`.
+- **Integer math:** use `c_div`/`c_mod` from `mud.math.c_compat` whenever an
+  operand **can be negative**. ROM is C: integer division truncates toward zero
+  and `%` takes the sign of the dividend, whereas Python `//` floors toward
+  −∞ and `%` takes the sign of the divisor — they diverge only when a negative
+  operand is involved (e.g. `alignment`, `saving_throw`, stat modifiers, any
+  signed delta). Bare `//` / `%` are acceptable and widely used for provably
+  non-negative operands (levels, percents, dice counts, gold splits), where they
+  are bit-for-bit identical to C. When in doubt, use `c_div`/`c_mod`. This is NOT
+  grep-enforceable (a blanket `//` ban would flag ~30 correct non-negative
+  uses); it requires reading the operand domain — cite the ROM C line on
+  signed-math sites.
 - **Flag values:** use enums (`PlayerFlag.AUTOLOOT`, `WearFlag.NO_SAC`,
   `WearLocation.HOLD`, …). Never hardcode hex bit values — ROM C uses bit shifts
   and the hex you'd guess from the constant name is often wrong.
   - Wrong: `PLR_AUTOLOOT = 0x00000800`
   - Right: `PlayerFlag.AUTOLOOT`
-- **Equipment lookup:** `char.equipment[WearLocation.HOLD]` (IntEnum keyed),
-  not `char.equipped["held"]` and not `char.carrying`.
+- **Equipment lookup:** `char.equipment` is keyed STRICTLY by the integer wear
+  slot — `char.equipment[int(WearLocation.HOLD)]` (IntEnum keys hash-equal to
+  their int, so `char.equipment[WearLocation.HOLD]` is the same key). NEVER use a
+  string slot name (`char.equipment["hold"]`, `char.equipped["held"]`) and never
+  `char.carrying`. ROM keys equipment by `int iWear` (`src/handler.c:1733
+  get_eq_char` loops `obj->wear_loc == iWear`); there are no string slot names in
+  ROM. All write paths canonicalize: `do_wear` stores `int(wear_loc)`,
+  `Character.equip_object(obj, slot)` runs `slot` through
+  `mud.models.constants.canonical_wear_slot` (which accepts an int, a numeric
+  string, or a legacy name like `"wield"`), and the JSON restore in `from_orm`
+  coerces the str-keyed reload back to int. Readers MUST look up the int key — a
+  string-literal read like `equipment.get("shield")` silently misses objects
+  equipped under the canonical int key (the 2.9.87 school-light / combat-shield
+  bug class). Enforced by `tests/test_equipment_key_convention.py` (grep-guard,
+  same pattern as `test_rng_determinism.py`).
 - **Character inventory:** `char.inventory`, not `char.carrying`.
 - **Room occupants:** `room.people`, not `room.characters`.
 - **Comments:** reference ROM C source on parity-sensitive code, e.g.

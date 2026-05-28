@@ -1201,6 +1201,38 @@ python scripts/benchmark_subsystem.py
 
 ---
 
+## 🧹 Known Cleanup Backlog (non-blocking)
+
+These are parity-rule hygiene items — not behavioral gaps. They don't break
+gameplay, but they violate an AGENTS.md "ROM Parity Rules" convention and should
+be migrated opportunistically.
+
+### `CLEANUP-001` — hardcoded hex flag literals → enum references
+
+- **Rule**: AGENTS.md "Flag values" — use enums (`PlayerFlag.AUTOLOOT`,
+  `AffectFlag.CHARM`, …), never hardcode hex bit values; the hex you'd guess
+  from a constant name is often wrong (ROM uses bit shifts).
+- **Scope**: ~41 module-level hex flag literals remain across `mud/`, e.g.
+  `mud/commands/player_config.py:12-14` (`PLR_CANLOOT = 0x00008000`,
+  `PLR_NOSUMMON = 0x00010000`, `PLR_NOFOLLOW = 0x00020000`),
+  `mud/commands/remaining_rom.py:104` (`COMM_DEAF = 0x00000002`),
+  `mud/handler.py:623,654` (`AFF_CHARM`, `ACT_NOALIGN`), `mud/wiznet.py:28`
+  (`WIZ_FLAGS = 0x00000100`). Find all with
+  `grep -rnE "=\s*0x[0-9A-Fa-f]+" mud/` and triage.
+- **Fix**: replace each with the corresponding IntFlag member from
+  `mud/models/constants.py` (or the relevant enum), verifying the value matches
+  ROM `merc.h` rather than trusting the local literal. Some literals are correct
+  ROM-mirroring values and some may be wrong — each needs per-site verification
+  against `merc.h`, which is exactly why a blanket grep-guard is NOT appropriate
+  here (it would require the migration done first and can't judge correctness).
+- **Why non-blocking**: where the literal happens to equal the ROM value,
+  behavior is already correct; the risk is a future edit trusting a wrong-by-
+  name literal. Migrate file-by-file; no single PR required.
+- **Filed**: 2.9.87 (during the equipment-key-canonicalization session, while
+  surveying which AGENTS.md rules are machine-enforceable).
+
+---
+
 ## 🎉 Milestone Definitions
 
 ### **Alpha ROM Parity** ✅ **ACHIEVED**

@@ -22,3 +22,15 @@ repos:
         language: system
         pass_filenames: false
         files: ^(area/.*\.are|data/areas/.*\.json)$
+      - id: equipment-key-convention
+        name: Equipment dict must be int(WearLocation)-keyed (no string slot keys)
+        entry: python3 -m pytest tests/test_equipment_key_convention.py -q
+        language: system
+        pass_filenames: false
+        files: ^mud/.*\.py$
+      - id: attribute-convention
+        name: Use char.inventory / room.people (not .carrying / .characters)
+        entry: python3 -m pytest tests/test_attribute_convention.py -q
+        language: system
+        pass_filenames: false
+        files: ^mud/.*\.py$
