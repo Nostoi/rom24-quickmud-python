@@ -150,8 +150,11 @@ def test_weapon_flaming_fire_damage(mock_apply_damage, mock_number_range, attack
 
     messages = process_weapon_special_attacks(attacker, victim)
 
-    # Should call number_range(1, 12//4 + 1) = (1, 4)
-    mock_number_range.assert_called_once_with(1, 4)
+    # Should roll fire damage with number_range(1, 12//4 + 1) = (1, 4).
+    # Use assert_any_call (not assert_called_once_with): the WEAPON_FLAMING
+    # branch also calls fire_effect, which makes its own rng_mm.number_range
+    # roll on the same patched mock, so the call count is >1.
+    mock_number_range.assert_any_call(1, 4)
 
     # Should apply fire damage
     mock_apply_damage.assert_called_once_with(attacker, victim, 3, DamageType.FIRE, show=False)
