@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import pytest
 
+from mud.game_loop import _decay_worn_light
 from mud.models.constants import ItemType, WearLocation
 from mud.models.room import Room
 from mud.world import create_test_character
@@ -201,6 +202,36 @@ def test_room_light_never_goes_negative(room, character):
 
     # Verify room light stayed at 0 (not negative)
     assert room.light == 0
+
+
+def test_burnout_light_decrement_has_no_floor_exposing_desync(room, character, object_factory):
+    """ARITH-202: ROM src/update.c:726 `--ch->in_room->light` decrements raw, no floor.
+
+    On the worn-light burnout path, Python clamped with max(0, light - 1), masking a
+    desynced negative room.light count. ROM exposes the desync as a negative value
+    (same philosophy as ARITH-107 nplayer / INV-023). Construct the desync: room.light
+    is already 0 while a worn torch burns out this tick, so the raw decrement must
+    yield -1, not a floored 0.
+    """
+    torch = object_factory(
+        {
+            "vnum": 200,
+            "name": "a torch",
+            "short_descr": "a guttering torch",
+            "description": "A torch sputters here.",
+            "item_type": int(ItemType.LIGHT),
+            "value": [0, 0, 1, 0, 0],  # value[2] == 1 -> burns out this tick
+        }
+    )
+    torch.value = [0, 0, 1, 0, 0]  # object_factory doesn't sync value from proto (see AGENTS.md)
+    character.equipment[WearLocation.LIGHT] = torch
+    character.room = room
+    room.light = 0  # desync: room never counted this torch's contribution
+
+    _decay_worn_light(character)
+
+    # ROM update.c:726 decrements raw -> -1; pre-fix Python clamped to 0
+    assert room.light == -1
 
 
 def test_room_light_correct_when_character_re_enters(room, character, lit_torch):

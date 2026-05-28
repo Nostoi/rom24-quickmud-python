@@ -451,7 +451,9 @@ def _decay_worn_light(character: Character) -> None:
     if new_remaining <= 0:
         if room is not None:
             current_light = int(getattr(room, "light", 0) or 0)
-            room.light = max(0, current_light - 1)
+            # mirroring ROM src/update.c:726 — `--ch->in_room->light` raw, no floor
+            # (ARITH-202; exposes desync as negative like ARITH-107 nplayer / INV-023)
+            room.light = current_light - 1
             _message_room(room, _render_obj_message(light, "$p goes out."), exclude=character)
             _send_to_char(character, _render_obj_message(light, "$p flickers and goes out."))
         else:

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.81]
+
+### Fixed
+- **`ARITH-202` — worn-light burnout no longer floors `room.light` at 0** (ROM `src/update.c:726`). Pre-fix `mud/game_loop.py:454` (`_decay_worn_light`) used `room.light = max(0, current_light - 1)` when a worn light burned out. ROM does `--ch->in_room->light;` raw with no floor, so a desynced room light count is allowed to drift negative. The Python floor silently masked the desync; the raw decrement now exposes it (same philosophy as ARITH-107 nplayer / INV-023). Regression: `tests/integration/test_room_light_tracking.py::test_burnout_light_decrement_has_no_floor_exposing_desync` (room.light 0 + worn torch burns out → −1, not floored 0). Tally: cumulative **20 FIXED / 17 N/A / 10 ❌ MISSING** open in the ARITH triage.
+
 ## [2.9.80]
 
 ### Fixed
