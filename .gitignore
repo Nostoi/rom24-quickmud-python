@@ -45,3 +45,9 @@ htmlcov/
 # Editor / OS backup files
 *.bak
 .claude/worktrees/
+
+# Differential-testing C shim build artifacts (src/Makefile.diffshim)
+src/diffshim
+src/**/*.diffo
+src/**/*.o
+src/diff_shim/area/
