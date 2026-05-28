@@ -1,6 +1,6 @@
 """Shop command handlers."""
 
-from mud.math.c_compat import c_div
+from mud.math.c_compat import c_div, c_mod
 from mud.characters.follow import add_follower
 from mud.handler import deduct_cost
 from mud.models.character import Character, character_registry
@@ -459,9 +459,13 @@ def _keeper_total_wealth(keeper) -> int:
 
 
 def _set_keeper_total_wealth(keeper, total: int) -> None:
-    total = max(total, 0)
-    keeper.gold = total // 100
-    keeper.silver = total % 100
+    # ARITH-115: ROM src/act_obj.c:2747-2748 (do_buy item-shop branch)
+    # adds keeper gold/silver raw — no floor.  When `cost` is negative
+    # (player-refund branch from a winning haggle on a `profit_buy < 50`
+    # shop, see ARITH-111), keeper wealth is allowed to drift negative.
+    total = int(total)
+    keeper.gold = c_div(total, 100)
+    keeper.silver = c_mod(total, 100)
 
 
 def _character_total_wealth(char: Character) -> int:
@@ -471,9 +475,13 @@ def _character_total_wealth(char: Character) -> int:
 
 
 def _set_character_total_wealth(char: Character, total: int) -> None:
-    total = max(int(total), 0)
-    char.gold = total // 100
-    char.silver = total % 100
+    # ARITH-115: companion to _set_keeper_total_wealth.  ROM has no
+    # floor on raw gold/silver increments; the only safety net is
+    # `deduct_cost`'s end-of-function rebalance at src/handler.c:2412-2421,
+    # which Python's deduct_cost (mud/handler.py:918-923) already mirrors.
+    total = int(total)
+    char.gold = c_div(total, 100)
+    char.silver = c_mod(total, 100)
 
 
 def _get_cost(keeper, obj: Object, *, buy: bool) -> int:

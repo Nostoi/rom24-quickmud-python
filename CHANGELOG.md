@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.78]
+
+### Fixed
+- **`ARITH-115` — keeper/character wealth helpers no longer floor at 0** (ROM `src/act_obj.c:2747-2748`). Pre-fix `mud/commands/shop.py:462` (`_set_keeper_total_wealth`) and `:473` (`_set_character_total_wealth`) used `total = max(total, 0)` plus Python `//` and `%`. ROM does `keeper->gold += cost * number / 100; keeper->silver += cost * number - (cost * number / 100) * 100;` raw — when `cost` is negative (the ARITH-111 player-refund branch on `shop.profit_buy < 50` custom shops with a winning haggle roll), keeper gold/silver are allowed to drift below zero. ROM has no keeper-side safety net; the only clamp is `deduct_cost`'s end-of-function rebalance at `src/handler.c:2412-2421` which applies to the *character*, and which Python's `deduct_cost` already mirrors at `mud/handler.py:918-923`. The Python floor silently swallowed the refund-side loss. Floors removed from both helpers; `//`/`%` switched to `c_div`/`c_mod` so negative totals split ROM-faithfully (e.g. `cost = -9 → gold = 0, silver = -9`, matching ROM's incremental adds). Regression: `tests/integration/test_arith_115_keeper_wealth_no_floor.py` (profit_buy=40, cost=100, roll=99, keeper starts at 0 wealth → drifts to −9). Full integration suite: **2342 passed, 3 skipped** in 87.45s. Tally adjusted: cumulative **17 FIXED / 17 N/A / 13 ❌ MISSING** open in the ARITH triage.
+
 ## [2.9.77]
 
 ### Fixed
