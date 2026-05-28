@@ -19,7 +19,7 @@ from mud.account.account_service import clear_active_accounts, create_character
 from mud.db.models import Base, Character as DBCharacter
 from mud.db.session import SessionLocal, engine
 from mud.models.character import Character, PCData, character_registry, from_orm
-from mud.models.constants import ROOM_VNUM_SCHOOL
+from mud.models.constants import ROOM_VNUM_SCHOOL, WearLocation
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.security import bans
 from mud.world import initialize_world
@@ -314,9 +314,9 @@ def test_db_round_trip_equipment_state():
         assert db_char is not None
         assert db_char.equipment_state is not None
         assert isinstance(db_char.equipment_state, dict)
-        assert "wield" in db_char.equipment_state
-        assert db_char.equipment_state["wield"]["vnum"] == OBJ_VNUM_SCHOOL_SWORD
-        assert db_char.equipment_state["wield"]["level"] == 3
+        assert str(int(WearLocation.WIELD)) in db_char.equipment_state
+        assert db_char.equipment_state[str(int(WearLocation.WIELD))]["vnum"] == OBJ_VNUM_SCHOOL_SWORD
+        assert db_char.equipment_state[str(int(WearLocation.WIELD))]["level"] == 3
     finally:
         session.close()
 

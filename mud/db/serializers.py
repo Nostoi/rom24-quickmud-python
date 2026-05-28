@@ -16,7 +16,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from mud.models.character import PCDATA_COLOUR_FIELDS, PCData
-from mud.models.constants import WearLocation
+from mud.models.constants import WearLocation, canonical_wear_slot
 from mud.models.json_io import dataclass_from_dict
 from mud.models.obj import Affect
 
@@ -168,13 +168,16 @@ _SLOT_TO_WEAR_LOC_MAP.update(
 )
 
 
-def _slot_to_wear_loc(slot: str | None) -> int:
-    if not slot:
+def _slot_to_wear_loc(slot: int | str | None) -> int:
+    if slot is None or slot == "":
         return int(WearLocation.NONE)
-    key = slot.lower().replace(" ", "")
-    if key in _SLOT_TO_WEAR_LOC_MAP:
-        return _SLOT_TO_WEAR_LOC_MAP[key]
-    return int(WearLocation.NONE)
+    # Equipment slots are canonical int(WearLocation) keys now; canonical_wear_slot
+    # also accepts numeric/name strings for legacy ObjectSave snapshots.
+    try:
+        return canonical_wear_slot(slot)
+    except ValueError:
+        key = str(slot).lower().replace(" ", "")
+        return _SLOT_TO_WEAR_LOC_MAP.get(key, int(WearLocation.NONE))
 
 
 # ---------------------------------------------------------------------------
@@ -200,7 +203,7 @@ class ObjectSave:
     """Serializable snapshot of a runtime object and its nested contents."""
 
     vnum: int
-    wear_slot: str | None = None
+    wear_slot: int | str | None = None
     wear_loc: int = int(WearLocation.NONE)
     level: int = 0
     timer: int = 0
@@ -298,7 +301,7 @@ def _serialize_affects(obj: Any) -> list[ObjectAffectSave]:
     return affects
 
 
-def _serialize_object(obj: Any, *, wear_slot: str | None = None) -> ObjectSave:
+def _serialize_object(obj: Any, *, wear_slot: int | str | None = None) -> ObjectSave:
     proto = getattr(obj, "prototype", None)
     vnum = getattr(proto, "vnum", None)
     if vnum is None:

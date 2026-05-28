@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 from mud.commands import process_command
-from mud.models.constants import DamageType, WeaponType, attack_lookup
+from mud.models.constants import DamageType, WearLocation, WeaponType, attack_lookup
 from mud.world import create_test_character, initialize_world
 
 
@@ -81,7 +81,7 @@ def test_weapon_skill_influences_thac0(monkeypatch):
     atk.level = 32
     atk.hitroll = 0
     atk.skills["sword"] = 0
-    atk.equipment["wield"] = weapon
+    atk.equipment[int(WearLocation.WIELD)] = weapon
     vic.hit = 50
     vic.armor = [-40, -40, -40, -40]
     process_command(atk, "kill vic")
@@ -91,7 +91,7 @@ def test_weapon_skill_influences_thac0(monkeypatch):
     atk.level = 32
     atk.hitroll = 0
     atk.skills["sword"] = 100
-    atk.equipment["wield"] = weapon
+    atk.equipment[int(WearLocation.WIELD)] = weapon
     vic.hit = 50
     vic.armor = [-40, -40, -40, -40]
     process_command(atk, "kill vic")

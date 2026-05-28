@@ -76,7 +76,7 @@ def non_light_item(object_factory):
 def test_room_light_increments_when_character_with_lit_torch_enters(room, character, lit_torch):
     """ROM C handler.c:1571-1573 - Room light increments when character enters with lit light source."""
     # Equip lit torch in LIGHT slot
-    character.equipment[str(int(WearLocation.LIGHT))] = lit_torch
+    character.equipment[int(WearLocation.LIGHT)] = lit_torch
 
     # Verify room starts dark
     assert room.light == 0
@@ -91,7 +91,7 @@ def test_room_light_increments_when_character_with_lit_torch_enters(room, charac
 def test_room_light_decrements_when_character_with_lit_torch_leaves(room, character, lit_torch):
     """ROM C handler.c:1504-1507 - Room light decrements when character leaves with lit light source."""
     # Equip lit torch in LIGHT slot
-    character.equipment[str(int(WearLocation.LIGHT))] = lit_torch
+    character.equipment[int(WearLocation.LIGHT)] = lit_torch
 
     # Character enters room (light should increase to 1)
     room.add_character(character)
@@ -107,7 +107,7 @@ def test_room_light_decrements_when_character_with_lit_torch_leaves(room, charac
 def test_room_light_not_affected_by_unlit_torch(room, character, unlit_torch):
     """Room light should NOT change when character has unlit torch (value[2] = 0)."""
     # Equip unlit torch in LIGHT slot
-    character.equipment[str(int(WearLocation.LIGHT))] = unlit_torch
+    character.equipment[int(WearLocation.LIGHT)] = unlit_torch
 
     # Character enters room
     room.add_character(character)
@@ -125,7 +125,7 @@ def test_room_light_not_affected_by_unlit_torch(room, character, unlit_torch):
 def test_room_light_not_affected_by_non_light_item(room, character, non_light_item):
     """Room light should NOT change when character has non-light item equipped."""
     # Equip sword in LIGHT slot (wrong item type)
-    character.equipment[str(int(WearLocation.LIGHT))] = non_light_item
+    character.equipment[int(WearLocation.LIGHT)] = non_light_item
 
     # Character enters room
     room.add_character(character)
@@ -160,15 +160,15 @@ def test_room_light_tracks_multiple_characters_with_lit_torches(room, lit_torch)
     # Create three characters with lit torches
     char1 = create_test_character("Char1", room_vnum=1000)
     char1.is_npc = False
-    char1.equipment = {str(int(WearLocation.LIGHT)): lit_torch}
+    char1.equipment = {int(WearLocation.LIGHT): lit_torch}
 
     char2 = create_test_character("Char2", room_vnum=1000)
     char2.is_npc = False
-    char2.equipment = {str(int(WearLocation.LIGHT)): lit_torch}
+    char2.equipment = {int(WearLocation.LIGHT): lit_torch}
 
     char3 = create_test_character("Char3", room_vnum=1000)
     char3.is_npc = False
-    char3.equipment = {str(int(WearLocation.LIGHT)): lit_torch}
+    char3.equipment = {int(WearLocation.LIGHT): lit_torch}
 
     # All enter room
     room.add_character(char1)
@@ -236,7 +236,7 @@ def test_burnout_light_decrement_has_no_floor_exposing_desync(room, character, o
 
 def test_room_light_correct_when_character_re_enters(room, character, lit_torch):
     """Test light tracking when same character enters/leaves multiple times."""
-    character.equipment[str(int(WearLocation.LIGHT))] = lit_torch
+    character.equipment[int(WearLocation.LIGHT)] = lit_torch
 
     # First entry
     room.add_character(character)
@@ -260,12 +260,12 @@ def test_room_light_with_mixed_characters(room, lit_torch, unlit_torch):
     # Character 1: lit torch
     char1 = create_test_character("Char1", room_vnum=1000)
     char1.is_npc = False
-    char1.equipment = {str(int(WearLocation.LIGHT)): lit_torch}
+    char1.equipment = {int(WearLocation.LIGHT): lit_torch}
 
     # Character 2: unlit torch
     char2 = create_test_character("Char2", room_vnum=1000)
     char2.is_npc = False
-    char2.equipment = {str(int(WearLocation.LIGHT)): unlit_torch}
+    char2.equipment = {int(WearLocation.LIGHT): unlit_torch}
 
     # Character 3: no equipment
     char3 = create_test_character("Char3", room_vnum=1000)

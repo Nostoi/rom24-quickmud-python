@@ -27,7 +27,7 @@ from mud.account.account_service import clear_active_accounts, create_character
 from mud.db.models import Base
 from mud.db.session import engine
 from mud.models.character import Character, PCData, character_registry
-from mud.models.constants import ROOM_VNUM_SCHOOL
+from mud.models.constants import ROOM_VNUM_SCHOOL, WearLocation
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.security import bans
 from mud.world import initialize_world
@@ -198,7 +198,10 @@ def test_inv008_equipment_and_carry_state_survive_round_trip():
 
     reloaded = load_character("Outfitstate")
     assert reloaded is not None
-    assert sorted(reloaded.equipment.keys()) == ["body", "light", "shield", "wield"]
+    assert sorted(reloaded.equipment.keys()) == sorted([
+        int(WearLocation.LIGHT), int(WearLocation.BODY),
+        int(WearLocation.SHIELD), int(WearLocation.WIELD),
+    ])
     assert len(reloaded.inventory) == 1
     assert reloaded.carry_number == 5
     assert reloaded.carry_weight == 120

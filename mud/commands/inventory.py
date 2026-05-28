@@ -28,6 +28,8 @@ from mud.models.constants import (
     PlayerFlag,
     WeaponFlag,
     WearFlag,
+    WearLocation,
+    canonical_wear_slot,
 )
 from mud.net.protocol import broadcast_room
 from mud.spawning.obj_spawner import spawn_object
@@ -151,7 +153,7 @@ def give_school_outfit(char: Character, *, include_map: bool = True) -> bool:
 
     def _equip(slot: str, vnum: int) -> None:
         nonlocal equipped
-        if equipment.get(slot) is not None:
+        if equipment.get(canonical_wear_slot(slot)) is not None:
             return
         obj = spawn_object(vnum)
         if obj is None:
@@ -163,7 +165,7 @@ def give_school_outfit(char: Character, *, include_map: bool = True) -> bool:
     _equip("light", OBJ_VNUM_SCHOOL_BANNER)
     _equip("body", OBJ_VNUM_SCHOOL_VEST)
 
-    if equipment.get("wield") is None:
+    if equipment.get(int(WearLocation.WIELD)) is None:
         weapon_vnum = int(getattr(char, "default_weapon_vnum", 0) or 0)
         primary_weapon = spawn_object(weapon_vnum) if weapon_vnum else None
         if primary_weapon is None:
@@ -173,7 +175,7 @@ def give_school_outfit(char: Character, *, include_map: bool = True) -> bool:
             char.equip_object(primary_weapon, "wield")
             equipped = True
 
-    wielded = equipment.get("wield")
+    wielded = equipment.get(int(WearLocation.WIELD))
     weapon_flags = 0
     if wielded is not None:
         values = getattr(wielded, "value", [0, 0, 0, 0, 0])

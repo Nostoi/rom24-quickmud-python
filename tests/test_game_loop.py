@@ -558,7 +558,7 @@ def test_light_decay_extinguishes_worn_torch():
     torch.wear_loc = int(WearLocation.LIGHT)
     torch.carried_by = hero
     object_registry.append(torch)
-    hero.equipment["light"] = torch
+    hero.equipment[int(WearLocation.LIGHT)] = torch
 
     char_update()
 

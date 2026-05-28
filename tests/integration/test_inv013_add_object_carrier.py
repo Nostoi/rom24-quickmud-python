@@ -33,6 +33,7 @@ import pytest
 
 from mud.mob_cmds import do_mpoload
 from mud.models.character import Character
+from mud.models.constants import WearLocation
 from mud.models.obj import ObjIndex
 from mud.models.room import Room
 from mud.registry import obj_registry, room_registry
@@ -132,7 +133,7 @@ def test_equip_object_sets_carried_by(carrier: Character) -> None:
 
     carrier.equip_object(obj, "wield")
 
-    assert carrier.equipment.get("wield") is obj
+    assert carrier.equipment.get(int(WearLocation.WIELD)) is obj
     assert obj.carried_by is carrier, (
         "Character.equip_object did not set obj.carried_by; ROM keeps "
         "equipped objs owned by the carrier (only wear_loc changes), "
@@ -176,7 +177,7 @@ def test_remove_object_clears_carried_by_when_equipped(
 
     carrier.remove_object(obj)
 
-    assert carrier.equipment.get("wield") is None
+    assert carrier.equipment.get(int(WearLocation.WIELD)) is None
     assert obj.carried_by is None
 
 

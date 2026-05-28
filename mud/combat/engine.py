@@ -35,6 +35,7 @@ from mud.models.constants import (
     Position,
     WeaponType,
     WearFlag,
+    WearLocation,
     attack_damage_type,
 )
 from mud.models.social import expand_placeholders
@@ -66,10 +67,9 @@ def get_wielded_weapon(attacker: Character | None):
 
     equipment = getattr(attacker, "equipment", None)
     if isinstance(equipment, dict):
-        for slot in ("wield", "weapon", "main_hand", "primary"):
-            candidate = equipment.get(slot)
-            if candidate is not None:
-                return candidate
+        candidate = equipment.get(int(WearLocation.WIELD))
+        if candidate is not None:
+            return candidate
     return None
 
 
@@ -145,7 +145,7 @@ def _has_shield_equipped(attacker: Character) -> bool:
         return bool(has_attr)
     equipment = getattr(attacker, "equipment", None)
     if isinstance(equipment, dict):
-        return equipment.get("shield") is not None
+        return equipment.get(int(WearLocation.SHIELD)) is not None
     return False
 
 

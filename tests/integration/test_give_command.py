@@ -6,7 +6,7 @@ import pytest
 
 from mud.commands.dispatcher import process_command
 from mud.mobprog import Trigger
-from mud.models.constants import ActFlag, ExtraFlag, ItemType
+from mud.models.constants import ActFlag, ExtraFlag, ItemType, WearLocation
 from mud.models.mob import MobProgram
 from mud.models.shop import Shop
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
@@ -123,7 +123,7 @@ def test_give_equipped_item_requires_removing_it_first(movable_char_factory, obj
 
     assert result == "You must remove it first."
     assert armor not in giver.inventory
-    assert giver.equipment.get("body") is armor
+    assert giver.equipment.get(int(WearLocation.BODY)) is armor
     assert armor not in victim.inventory
 
 

@@ -26,12 +26,9 @@ def _has_lit_light_source(char) -> bool:
     if not isinstance(equipment, dict):
         return False
 
-    # INV-028: the equipment dict is keyed by int(wear_loc) when freshly equipped
-    # (do_wear) but by str keys after a JSON save/reload, so tolerate both forms
-    # for the WEAR_LIGHT slot.
+    # Equipment is keyed by int(WearLocation) on every path (do_wear, equip_object,
+    # JSON reload all canonicalize) — ROM src/handler.c get_eq_char(ch, WEAR_LIGHT).
     light_obj = equipment.get(int(WearLocation.LIGHT))
-    if light_obj is None:
-        light_obj = equipment.get(str(int(WearLocation.LIGHT)))
     if light_obj is None:
         return False
 

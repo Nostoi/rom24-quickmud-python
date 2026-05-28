@@ -162,6 +162,62 @@ class WearLocation(IntEnum):
     FLOAT = 18
 
 
+# Canonical equipment-slot resolution. ROM keys equipped objects by the integer
+# wear slot (`src/handler.c:1733 get_eq_char(ch, int iWear)` loops
+# `obj->wear_loc == iWear`); there are no string slot names in ROM. Python's
+# `Character.equipment` MUST be keyed by `int(WearLocation.X)`. This table maps
+# the legacy string slot names some callers still pass into that canonical int.
+# See AGENTS.md "Equipment lookup" and tests/test_equipment_key_convention.py.
+WEAR_SLOT_BY_NAME: dict[str, int] = {
+    "light": int(WearLocation.LIGHT),
+    "finger": int(WearLocation.FINGER_L),
+    "lfinger": int(WearLocation.FINGER_L),
+    "rfinger": int(WearLocation.FINGER_R),
+    "neck": int(WearLocation.NECK_1),
+    "neck1": int(WearLocation.NECK_1),
+    "neck2": int(WearLocation.NECK_2),
+    "body": int(WearLocation.BODY),
+    "head": int(WearLocation.HEAD),
+    "legs": int(WearLocation.LEGS),
+    "feet": int(WearLocation.FEET),
+    "hands": int(WearLocation.HANDS),
+    "arms": int(WearLocation.ARMS),
+    "shield": int(WearLocation.SHIELD),
+    "about": int(WearLocation.ABOUT),
+    "waist": int(WearLocation.WAIST),
+    "wrist": int(WearLocation.WRIST_L),
+    "lwrist": int(WearLocation.WRIST_L),
+    "rwrist": int(WearLocation.WRIST_R),
+    "wield": int(WearLocation.WIELD),
+    "wielded": int(WearLocation.WIELD),
+    "hold": int(WearLocation.HOLD),
+    "float": int(WearLocation.FLOAT),
+    "floating": int(WearLocation.FLOAT),
+}
+
+
+def canonical_wear_slot(slot) -> int:
+    """Coerce an equipment slot key to its canonical `int(WearLocation)` form.
+
+    Accepts an int / WearLocation (IntEnum is an int subclass), a numeric string
+    (the JSON-reload form, e.g. "0"), or a known legacy slot name ("wield"). Any
+    other value raises ValueError — loud failure beats silently storing an
+    unreadable key, which is how the pre-2.9.87 string-key divergence hid bugs.
+
+    ROM keys equipment by integer wear slot; see WEAR_SLOT_BY_NAME above.
+    """
+    if isinstance(slot, int):  # WearLocation is an IntEnum subclass of int
+        return int(slot)
+    if isinstance(slot, str):
+        text = slot.strip()
+        if text.lstrip("-").isdigit():
+            return int(text)
+        mapped = WEAR_SLOT_BY_NAME.get(text.lower())
+        if mapped is not None:
+            return mapped
+    raise ValueError(f"Unknown equipment wear slot: {slot!r}")
+
+
 class WearFlag(IntFlag):
     """Object wear flags mirroring ROM ITEM_* bitmasks."""
 

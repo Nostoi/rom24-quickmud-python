@@ -352,24 +352,12 @@ def _find_equipped_light(character: Character) -> tuple[object | None, object | 
     if not isinstance(equipment, dict) or not equipment:
         return None, None
 
-    for slot, obj in equipment.items():
-        if isinstance(slot, str):
-            normalized = slot.strip().lower()
-            if normalized in {"light", WearLocation.LIGHT.name.lower()}:
-                return slot, obj
-            # INV-028: a JSON save/reload turns the int LIGHT key into the str
-            # "0", so match a numeric str equal to WEAR_LIGHT too.
-            try:
-                if int(normalized) == int(WearLocation.LIGHT):
-                    return slot, obj
-            except (TypeError, ValueError):
-                continue
-        else:
-            try:
-                if int(slot) == int(WearLocation.LIGHT):
-                    return slot, obj
-            except (TypeError, ValueError):  # pragma: no cover - defensive guard
-                continue
+    # Equipment is keyed by int(WearLocation) on every path — ROM src/handler.c
+    # get_eq_char(ch, WEAR_LIGHT) reads the integer slot directly.
+    light_loc = int(WearLocation.LIGHT)
+    obj = equipment.get(light_loc)
+    if obj is not None:
+        return light_loc, obj
     return None, None
 
 

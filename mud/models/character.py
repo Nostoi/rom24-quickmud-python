@@ -16,6 +16,7 @@ from mud.models.constants import (
     Position,
     Sex,
     Stat,
+    canonical_wear_slot,
 )
 from mud.models.weapon_table import weapon_skill_name_for_school_vnum
 
@@ -385,7 +386,7 @@ class Character:
     pcdata: PCData | None = None
     gen_data: object | None = None  # ROM: GEN_DATA for character generation
     inventory: list[Object] = field(default_factory=list)  # ROM: carrying
-    equipment: dict[str, Object] = field(default_factory=dict)  # ROM: on (worn items)
+    equipment: dict[int, Object] = field(default_factory=dict)  # ROM: keyed by int(WearLocation)
     messages: list[str] = field(default_factory=list)
     cooldowns: dict[str, int] = field(default_factory=dict)
     connection: object | None = None
@@ -555,13 +556,15 @@ class Character:
         self.carry_number += _object_carry_number(obj)
         self._recalculate_carry_weight()
 
-    def equip_object(self, obj: Object, slot: str) -> None:
+    def equip_object(self, obj: Object, slot: int | str) -> None:
         carry_delta = _object_carry_number(obj)
         if obj in self.inventory:
             self.inventory.remove(obj)
         else:
             self.carry_number += carry_delta
-        self.equipment[slot] = obj
+        # ROM keys equipment by int wear slot (src/handler.c equip_char); coerce
+        # legacy string slot names ("wield", "shield", …) to the canonical int.
+        self.equipment[canonical_wear_slot(slot)] = obj
         # mirroring ROM src/handler.c equip_char — equipped objs stay
         # owned by the carrier (only wear_loc changes); INV-013 makes
         # carried_by the canonical carrier field.
@@ -1211,7 +1214,10 @@ def from_orm(db_char: DBCharacter) -> Character:
                 snapshot = dataclass_from_dict(ObjectSave, obj_dict)
                 obj = _deserialize_object(snapshot)
                 if obj is not None:
-                    restored_equipment[slot] = obj
+                    # JSON forces string dict keys, so the canonical int wear
+                    # slot reloads as e.g. "0"; coerce it back to int so live
+                    # int-keyed readers find it (ROM src/handler.c get_eq_char).
+                    restored_equipment[canonical_wear_slot(slot)] = obj
             except Exception:
                 pass
         char.equipment = restored_equipment

@@ -134,9 +134,13 @@ def _spill_contents_to_room(obj: Object, room) -> None:
         room.add_object(contained)
 
 
-def _is_floating_slot(slot: str | None, obj: Object) -> bool:
-    if slot is not None and slot.lower() in {"float", "floating"}:
-        return True
+def _is_floating_slot(slot: int | None, obj: Object) -> bool:
+    if slot is not None:
+        try:
+            if int(slot) == int(WearLocation.FLOAT):
+                return True
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            pass
     try:
         wear_loc = int(getattr(obj, "wear_loc", int(WearLocation.NONE)))
     except (TypeError, ValueError):  # pragma: no cover - defensive guard

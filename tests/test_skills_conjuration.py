@@ -217,7 +217,7 @@ def test_floating_disc_creates_disc_with_capacity() -> None:
         disc = skill_handlers.floating_disc(caster)
 
         assert disc is not None
-        assert caster.equipment["float"] is disc
+        assert caster.equipment[int(WearLocation.FLOAT)] is disc
         assert disc.value[0] == caster.level * 10
         assert disc.value[3] == caster.level * 5
         assert caster.messages[-1] == "You create a floating disc."
@@ -246,12 +246,12 @@ def test_floating_disc_respects_noremove_items() -> None:
         existing = Object(instance_id=None, prototype=prototype)
         existing.extra_flags = int(ExtraFlag.NOREMOVE)
         existing.wear_loc = int(WearLocation.FLOAT)
-        caster.equipment["float"] = existing
+        caster.equipment[int(WearLocation.FLOAT)] = existing
 
         result = skill_handlers.floating_disc(caster)
 
         assert result is False
-        assert caster.equipment["float"] is existing
+        assert caster.equipment[int(WearLocation.FLOAT)] is existing
         assert caster.messages[-1] == "You can't remove an amulet."
     finally:
         if original is None:

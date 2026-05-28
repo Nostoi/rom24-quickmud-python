@@ -61,6 +61,7 @@ from mud.models.constants import (
     Size,
     Stat,
     VulnFlag,
+    WearLocation,
 )
 from mud.models.character import (
     Character as RuntimeCharacter,
@@ -1293,9 +1294,9 @@ def test_new_character_receives_starting_outfit():
     provided = give_school_outfit(newbie)
     assert provided is True
 
-    assert {"light", "body", "wield", "shield"} <= set(newbie.equipment.keys())
+    assert {int(WearLocation.LIGHT), int(WearLocation.BODY), int(WearLocation.WIELD), int(WearLocation.SHIELD)} <= set(newbie.equipment.keys())
 
-    wielded = newbie.equipment["wield"]
+    wielded = newbie.equipment[int(WearLocation.WIELD)]
     assert getattr(getattr(wielded, "prototype", None), "vnum", None) in {
         OBJ_VNUM_SCHOOL_SWORD,
         newbie.default_weapon_vnum,

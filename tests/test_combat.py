@@ -20,6 +20,7 @@ from mud.models.constants import (
     DefenseBit,
     RoomFlag,
     VulnFlag,
+    WearLocation,
     WeaponType,
     attack_lookup,
 )
@@ -728,7 +729,7 @@ def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
         level=20,
         name="practice sword",
     )
-    attacker.equipment["wield"] = weapon
+    attacker.equipment[int(WearLocation.WIELD)] = weapon
 
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.dice", lambda number, size: number * size)
@@ -759,7 +760,7 @@ def test_sharp_weapon_doubles_damage_on_proc(monkeypatch: pytest.MonkeyPatch) ->
         level=30,
         name="razorblade",
     )
-    attacker.equipment["wield"] = weapon
+    attacker.equipment[int(WearLocation.WIELD)] = weapon
 
     monkeypatch.setattr(rng_mm, "dice", lambda number, size: number * size)
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 10)
@@ -804,7 +805,7 @@ def test_poison_weapon_applies_affect(monkeypatch: pytest.MonkeyPatch) -> None:
         level=20,
         name="Viperblade",
     )
-    attacker.equipment["wield"] = weapon
+    attacker.equipment[int(WearLocation.WIELD)] = weapon
     victim.messages.clear()
 
     monkeypatch.setattr(rng_mm, "dice", lambda number, size: number * size)

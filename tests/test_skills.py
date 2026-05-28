@@ -16,6 +16,7 @@ from mud.models.constants import (
     Position,
     RoomFlag,
     Stat,
+    WearLocation,
     WeaponType,
 )
 from mud.models.object import Object, ObjIndex
@@ -727,7 +728,7 @@ def test_backstab_uses_position_and_weapon(monkeypatch: pytest.MonkeyPatch) -> N
         position=Position.STANDING,
     )
     attacker.room = room
-    attacker.equipment["wield"] = DummyWeapon()
+    attacker.equipment[int(WearLocation.WIELD)] = DummyWeapon()
     room.people.append(attacker)
 
     victim = Character(

@@ -9,7 +9,7 @@ from mud.commands.dispatcher import process_command
 from mud.mobprog import Trigger
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.constants import LEVEL_HERO, ItemType
+from mud.models.constants import LEVEL_HERO, ItemType, WearLocation
 from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
@@ -468,7 +468,7 @@ def test_combat_cleanup_commands_handle_inventory_damage_and_escape(monkeypatch)
     token = Object(instance_id=None, prototype=obj_proto_a)
     sword = Object(instance_id=None, prototype=obj_proto_b)
     mob.inventory = [token, sword]
-    mob.equipment = {"wield": sword}
+    mob.equipment = {int(WearLocation.WIELD): sword}
 
     mob_cmds.mob_interpret(mob, "junk token")
     assert all(getattr(obj.prototype, "vnum", None) != 6000 for obj in mob.inventory)
@@ -523,7 +523,7 @@ def test_mpjunk_removes_equipped_items_and_nested_contents():
     mob.equip_object(container, "hold")
 
     assert mob.carry_number == 1
-    assert mob.equipment.get("hold") is container
+    assert mob.equipment.get(int(WearLocation.HOLD)) is container
     assert container.contained_items == [nested]
 
     mob_cmds.mob_interpret(mob, "junk bin")

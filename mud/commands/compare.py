@@ -7,7 +7,7 @@ ROM Reference: src/act_info.c do_compare (lines 2297-2395)
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import ItemType
+from mud.models.constants import ItemType, WearLocation
 from mud.utils.act import act_format
 from mud.world.obj_find import get_obj_carry
 
@@ -97,15 +97,14 @@ def do_compare(char: Character, args: str) -> str:
 def _find_equipped_match(char: Character, obj) -> object | None:
     """Find an equipped item of the same type to compare against."""
     item_type = getattr(obj, "item_type", 0)
-    equipped = getattr(char, "equipped", {})
+    equipped = getattr(char, "equipment", {})
 
     if item_type == ItemType.WEAPON:
-        return equipped.get("wield") or equipped.get("main_hand")
+        return equipped.get(int(WearLocation.WIELD))
     elif item_type == ItemType.ARMOR:
-        # Check all armor slots for matching wear location
-        wear_flags = getattr(obj, "wear_flags", 0)
+        # Check all armor slots (anything that isn't the weapon/held slot).
         for slot, eq_obj in equipped.items():
-            if eq_obj and slot not in ("wield", "main_hand", "held"):
+            if eq_obj and slot not in (int(WearLocation.WIELD), int(WearLocation.HOLD)):
                 return eq_obj
 
     return None

@@ -8,7 +8,7 @@ import pytest
 
 from mud.combat import engine as combat_engine
 from mud.models import Character
-from mud.models.constants import AffectFlag, Position, Sector, WeaponType
+from mud.models.constants import AffectFlag, Position, Sector, WearLocation, WeaponType
 from mud.models.room import Room
 from mud.skills import handlers as skill_handlers
 
@@ -145,7 +145,7 @@ def test_disarm_strips_weapon_and_trains_skill(monkeypatch: pytest.MonkeyPatch) 
         wear_loc=16,
         location=None,
     )
-    mercenary.equipment["wield"] = weapon
+    mercenary.equipment[int(WearLocation.WIELD)] = weapon
 
     improvements: list[tuple[bool, int]] = []
 

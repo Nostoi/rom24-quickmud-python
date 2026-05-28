@@ -2,7 +2,7 @@ import pytest
 
 from mud.math.c_compat import c_div
 from mud.models.character import Character
-from mud.models.constants import AffectFlag, ItemType, OBJ_VNUM_PORTAL, RoomFlag
+from mud.models.constants import AffectFlag, ItemType, OBJ_VNUM_PORTAL, RoomFlag, WearLocation
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room
@@ -137,7 +137,7 @@ def test_portal_conjures_warp_stone_gateway(portal_prototype: ObjIndex) -> None:
         assert portal_obj.location is origin
         assert portal_obj.value[3] == destination.vnum
         assert portal_obj.timer == 2 + c_div(caster.level, 25)
-        assert caster.equipment.get("hold") is None
+        assert caster.equipment.get(int(WearLocation.HOLD)) is None
         assert warp_stone not in caster.inventory
 
         assert caster.messages[:3] == [
@@ -178,7 +178,7 @@ def test_portal_blocks_blind_caster_without_sight(portal_prototype: ObjIndex) ->
         portal_obj = skill_handlers.portal(caster, target)
 
         assert portal_obj is None
-        assert caster.equipment.get("hold") is warp_stone
+        assert caster.equipment.get(int(WearLocation.HOLD)) is warp_stone
         assert warp_stone not in caster.inventory
         assert caster.messages[-1] == "You failed."
     finally:
@@ -213,8 +213,8 @@ def test_portal_blocks_forbidden_destinations(portal_prototype: ObjIndex) -> Non
 
         assert result is None
         assert caster.messages[-1] == "You failed."
-        assert caster.equipment.get("hold") is warp_stone
-        assert warp_stone in caster.inventory or warp_stone is caster.equipment.get("hold")
+        assert caster.equipment.get(int(WearLocation.HOLD)) is warp_stone
+        assert warp_stone in caster.inventory or warp_stone is caster.equipment.get(int(WearLocation.HOLD))
         assert origin.contents == []
     finally:
         _restore_room(origin.vnum, previous_origin)
@@ -283,7 +283,7 @@ def test_nexus_creates_bidirectional_portals(portal_prototype: ObjIndex) -> None
         assert returning.value[3] == origin.vnum
         assert outgoing.timer == 1 + c_div(caster.level, 10)
         assert returning.timer == 1 + c_div(caster.level, 10)
-        assert caster.equipment.get("hold") is None
+        assert caster.equipment.get(int(WearLocation.HOLD)) is None
 
         assert caster.messages[:3] == [
             "You draw upon the power of a radiant warp stone.",
@@ -358,7 +358,7 @@ def test_nexus_allows_private_origin_rooms(portal_prototype: ObjIndex) -> None:
         assert returning.value[3] == origin.vnum
         assert outgoing.timer == 1 + c_div(caster.level, 10)
         assert returning.timer == 1 + c_div(caster.level, 10)
-        assert caster.equipment.get("hold") is None
+        assert caster.equipment.get(int(WearLocation.HOLD)) is None
     finally:
         _restore_room(origin.vnum, previous_origin)
         _restore_room(destination.vnum, previous_destination)
@@ -391,7 +391,7 @@ def test_nexus_blocks_blind_caster_without_sight(portal_prototype: ObjIndex) -> 
         portals = skill_handlers.nexus(caster, target)
 
         assert portals == []
-        assert caster.equipment.get("hold") is warp_stone
+        assert caster.equipment.get(int(WearLocation.HOLD)) is warp_stone
         assert warp_stone not in caster.inventory
         assert caster.messages[-1] == "You failed."
     finally:
@@ -426,7 +426,7 @@ def test_nexus_fails_when_origin_forbids_recall(portal_prototype: ObjIndex) -> N
 
         assert portals == []
         assert caster.messages[-1] == "You failed."
-        assert caster.equipment.get("hold") is warp_stone
+        assert caster.equipment.get(int(WearLocation.HOLD)) is warp_stone
         assert origin.contents == []
     finally:
         _restore_room(origin.vnum, previous_origin)

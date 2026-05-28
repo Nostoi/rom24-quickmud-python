@@ -4300,7 +4300,7 @@ def floating_disc(caster: Character, target=None):  # noqa: ARG001 - parity sign
     equipment = getattr(caster, "equipment", {}) or {}
     floating_item = None
     if isinstance(equipment, dict):
-        floating_item = equipment.get("float") or equipment.get("floating")
+        floating_item = equipment.get(int(WearLocation.FLOAT))
 
     if floating_item is not None:
         flags = int(getattr(floating_item, "extra_flags", 0) or 0)
@@ -5978,7 +5978,7 @@ def nexus(caster: Character, target: Character | None = None) -> list[Object]:
         if saves_spell(level, target, int(DamageType.NONE)):
             return _fail()
 
-    held_obj = getattr(caster, "equipment", {}).get("hold") if hasattr(caster, "equipment") else None
+    held_obj = getattr(caster, "equipment", {}).get(int(WearLocation.HOLD)) if hasattr(caster, "equipment") else None
     held_type = _resolve_item_type(getattr(held_obj, "item_type", None))
     if held_type is None and getattr(held_obj, "prototype", None) is not None:
         held_type = _resolve_item_type(getattr(held_obj.prototype, "item_type", None))
@@ -6525,7 +6525,7 @@ def portal(caster: Character, target: Character | None = None) -> Object | None:
             _fail()
             return None
 
-    held_obj = getattr(caster, "equipment", {}).get("hold") if hasattr(caster, "equipment") else None
+    held_obj = getattr(caster, "equipment", {}).get(int(WearLocation.HOLD)) if hasattr(caster, "equipment") else None
     held_type = _resolve_item_type(getattr(held_obj, "item_type", None))
     if held_type is None and getattr(held_obj, "prototype", None) is not None:
         held_type = _resolve_item_type(getattr(held_obj.prototype, "item_type", None))

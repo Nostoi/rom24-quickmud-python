@@ -259,7 +259,7 @@ def test_portal_creates_portal_object_and_consumes_warp_stone():
     assert isinstance(created, Object)
     assert created in start.contents
     assert int(created.value[3]) == dest.vnum
-    assert caster.equipment.get("hold") is None
+    assert caster.equipment.get(int(WearLocation.HOLD)) is None
     assert all("warp stone" not in getattr(obj, "name", "") for obj in caster.equipment.values())
     assert any("rises up" in msg.lower() for msg in caster.messages)
 
@@ -282,7 +282,7 @@ def test_portal_blocked_by_room_no_recall_on_target_room_and_does_not_consume_co
     created = portal(caster, target)
 
     assert created is None
-    assert caster.equipment.get("hold") is stone
+    assert caster.equipment.get(int(WearLocation.HOLD)) is stone
     assert start.contents == []
     assert any("you failed" in msg.lower() for msg in caster.messages)
 
@@ -305,7 +305,7 @@ def test_portal_blocked_by_room_no_recall_on_caster_room_and_does_not_consume_co
     created = portal(caster, target)
 
     assert created is None
-    assert caster.equipment.get("hold") is stone
+    assert caster.equipment.get(int(WearLocation.HOLD)) is stone
     assert start.contents == []
     assert any("you failed" in msg.lower() for msg in caster.messages)
 
@@ -366,7 +366,7 @@ def test_nexus_creates_two_portals_and_consumes_warp_stone():
     created = nexus(caster, target)
 
     assert len(created) == 2
-    assert caster.equipment.get("hold") is None
+    assert caster.equipment.get(int(WearLocation.HOLD)) is None
 
     out_portal = next(obj for obj in start.contents if isinstance(obj, Object))
     return_portal = next(obj for obj in dest.contents if isinstance(obj, Object))
@@ -393,7 +393,7 @@ def test_nexus_blocked_by_room_no_recall_on_target_room_and_does_not_consume_com
     created = nexus(caster, target)
 
     assert created == []
-    assert caster.equipment.get("hold") is stone
+    assert caster.equipment.get(int(WearLocation.HOLD)) is stone
     assert start.contents == []
     assert dest.contents == []
     assert any("you failed" in msg.lower() for msg in caster.messages)
@@ -517,7 +517,7 @@ def test_floating_disc_creates_disc_and_equips_float_slot():
     disc = floating_disc(caster)
 
     assert isinstance(disc, Object)
-    assert caster.equipment.get("float") is disc
+    assert caster.equipment.get(int(WearLocation.FLOAT)) is disc
     assert disc.wear_loc == int(WearLocation.FLOAT)
     assert disc.value[0] == 25 * 10
     assert disc.value[3] == 25 * 5
@@ -537,7 +537,7 @@ def test_floating_disc_replaces_existing_float_item_puts_old_in_inventory():
     disc = floating_disc(caster)
 
     assert disc is not False
-    assert caster.equipment.get("float") is disc
+    assert caster.equipment.get(int(WearLocation.FLOAT)) is disc
     assert old_float in caster.inventory
 
 
@@ -556,24 +556,25 @@ def test_floating_disc_blocked_when_existing_float_item_is_noremove():
     result = floating_disc(caster)
 
     assert result is False
-    assert caster.equipment.get("float") is old_float
+    assert caster.equipment.get(int(WearLocation.FLOAT)) is old_float
     assert any("can't remove" in msg.lower() for msg in caster.messages)
 
 
-def test_floating_disc_replaces_both_float_and_floating_alias_slots():
+def test_floating_disc_replaces_existing_float_slot_item():
+    """ROM has a single WEAR_FLOAT slot; 'float' and 'floating' are aliases for
+    the same int(WearLocation.FLOAT) key.  Equipping a new floating disc must
+    remove whatever occupies that one slot and move it to inventory."""
     room = make_room(vnum=5031, name="Room")
     room_registry[room.vnum] = room
 
     caster = make_character(name="Caster", level=25, room=room)
 
-    old_float = _make_floating_item(extra_flags=0, vnum=9991)
-    old_floating = _make_floating_item(extra_flags=0, vnum=9992)
-    caster.equipment["float"] = old_float
-    caster.equipment["floating"] = old_floating
+    old_disc = _make_floating_item(extra_flags=0, vnum=9991)
+    caster.equipment[int(WearLocation.FLOAT)] = old_disc
 
     disc = floating_disc(caster)
 
     assert disc is not False
-    assert caster.equipment.get("float") is disc
-    assert "floating" not in caster.equipment
-    assert old_float in caster.inventory
+    assert caster.equipment.get(int(WearLocation.FLOAT)) is disc
+    assert int(WearLocation.FLOAT) in caster.equipment
+    assert old_disc in caster.inventory

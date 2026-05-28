@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.87]
+
+### Fixed
+- **Equipment-key canonicalization — `Character.equipment` is now keyed strictly by `int(WearLocation.X)` on every path** (ROM `src/handler.c:1733 get_eq_char(ch, int iWear)`; there are no string slot names in ROM). This closes the broader followup left open by INV-028 (2.9.85) and fixes two real, player-visible parity bugs the key-type inconsistency was hiding:
+  - **New characters' starting light was uncounted in room lighting.** `give_school_outfit` equips a lit war banner (vnum 3716, `item_type light`, `value[2]=200`) via `Character.equip_object(obj, "light")` — a string key — but `Room._has_lit_light_source` only read `int(WearLocation.LIGHT)`, so every newbie's torch was invisible to room-light accounting.
+  - **A shield worn via `do_wear` was invisible to the combat shield check.** `do_wear` stored the shield under `int(WearLocation.SHIELD)` (==11) while `mud/combat/engine.py:_has_shield_equipped` read the string key `"shield"` — so the bash/shield-block logic never saw a normally-worn shield.
+- Root cause: `Character.equip_object(obj, slot)` stored its `slot` argument raw, so production callers (`give_school_outfit`, the `floating_disc` spell, the AI agent) seeded the dict with semantic string keys (`"light"`, `"body"`, `"wield"`, `"float"`) while `do_wear` used int keys; readers were split across both conventions, and JSON save/reload turned int keys into stringified-int keys (`"0"`).
+- Fix: new `mud.models.constants.canonical_wear_slot(slot)` resolver (accepts an int/IntEnum, a numeric string, or a legacy slot name; raises `ValueError` on anything else) is applied at every write site — `equip_object`, the `from_orm` equipment restore, and `mud/db/serializers.py:_slot_to_wear_loc`. All readers now use the int key: `engine.py` (wield + shield), `inventory.py:give_school_outfit`, `skills/handlers.py` (floating disc + the `portal`/`nexus` HOLD-slot warp-stone lookup), `combat/death.py:_is_floating_slot`, and `commands/compare.py` (this last also fixed a latent bug — `_find_equipped_match` read the non-existent `char.equipped` attribute, so `compare` against a worn weapon silently never matched). The per-reader LIGHT tolerance shims added by INV-028 (`room.py` str-`"0"` fallback, `game_loop.py` `"light"`-name match) were removed. `Character.equipment` retyped `dict[int, Object]`.
+
+### Added
+- `tests/test_equipment_key_convention.py` — grep-guard (same pattern as `test_rng_determinism.py`) that fails if any string-literal `equipment["..."]` / `equipment.get("...")` access reappears in `mud/`.
+- `tests/integration/test_equip_key_canonical.py` — 3 regression cases: school-outfit light counted in room light; do_wear shield seen by the combat shield check; do_wear→save→load yields the int LIGHT key (not str `"0"`).
+- AGENTS.md "Equipment lookup" rule expanded with the int-key contract, the `canonical_wear_slot` write-path detail, and a pointer to the guard test.
+- `tests/test_attribute_convention.py` — companion grep-guard banning the AGENTS.md anti-pattern attribute names `.carrying` / `.characters` / `.equipped` (the last surfaced the compare.py latent bug). Pre-commit hooks added for both convention guards in `.pre-commit-config.yaml`.
+
+### Changed
+- AGENTS.md "Integer math" rule reworded: `c_div`/`c_mod` are required only when an operand **can be negative** (where ROM's truncate-toward-zero diverges from Python's floor); bare `//`/`%` are correct and widely used for provably non-negative operands. The previous blanket "never `//` or `%`" contradicted ~30 legitimate uses and is not grep-enforceable.
+- Filed `CLEANUP-001` in `docs/parity/ROM_PARITY_FEATURE_TRACKER.md` — ~41 hardcoded hex flag literals to migrate to enum references (per-site `merc.h` verification needed; non-blocking).
+
 ## [2.9.86]
 
 ### Changed
