@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.10.1]
+
+### Fixed
+- **`LOOK-001` — room `look` now shows an NPC's `long_descr`, not its name** (ROM `src/act_info.c` `show_char_to_char_0`). For an NPC whose `position == start_pos` and whose `long_descr` is non-empty, ROM lists it by the long description (e.g. "Hassan is here, waiting to dispense some justice."); Python's `mud/world/look.py` rendered every room occupant via `describe_character` (the PERS/brief path), showing the bare name, and `MobInstance` never carried `long_descr` from its prototype (ROM `create_mobile`, `src/db.c:2040`, copies it). `MobInstance.from_prototype` now copies `long_descr`, and `look.py:_room_occupant_line` implements the long_descr branch (with affect-aura prefixes), falling back to PERS otherwise. **This divergence was surfaced by the new differential testing harness (FINDING-001) against a row the `act_info.c` audit had marked "100% PARITY"** — a concrete example of the per-file audit missing a contract that engine-vs-engine comparison catches. Regression: `tests/integration/test_look_long_descr_rom_parity.py`.
+
 ## [2.10.0]
 
 ### Added
