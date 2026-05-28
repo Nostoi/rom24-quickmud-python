@@ -1559,6 +1559,12 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
 
     # WEAPON_POISON - ROM src/fight.c L600-634
     if weapon_flags & WEAPON_POISON:
+        # ARITH-004 (⛔ N/A): ROM `src/fight.c:606` uses `wield->level` raw, but
+        # the `max(1, ...)` floor here is behaviorally dead — `weapon_level` is
+        # only ever consumed via `// 2` (and the other procs via `// N (+const)`),
+        # and `0 // N == 1 // N == 0` for N >= 2, so flooring a level-0 weapon to
+        # 1 never changes an observable value. `weapon_level` is also already
+        # floored at line 1556 (`_weapon_level(wield) or 1`).
         level = max(1, weapon_level)
 
         if not saves_spell(level // 2, victim, DamageType.POISON):
