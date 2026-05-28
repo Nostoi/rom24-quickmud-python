@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.9.82]
+
+### Fixed
+- **`ARITH-205` — runtime extract path no longer floors `carry_number` at 0** (ROM `src/handler.c:1678`). Pre-fix `mud/game_loop.py:819` (`_remove_from_character`, the `_extract_obj` carrier branch) used `carry_number = max(0, current_number - slot_cost)`. ROM's `obj_from_char` does `ch->carry_number -= get_obj_number(obj);` raw with no floor, and `extract_obj` (`src/handler.c:2051`) routes through it. The Python floor masked a desynced count; the raw subtraction now exposes it as a negative value (same philosophy as ARITH-107 nplayer / INV-023). carry_weight is re-summed via `_recalculate_carry_weight()` after the subtraction, so INV-011 (CARRY-WEIGHT-COHERENCE) still holds on the in-sync path — the divergence surfaces only on desync. Regression: `tests/integration/test_arith_205_carry_number_no_floor.py` (carry_number 0 + one carried object extracted → −1). INV-011 enforcement suite still green. Tally: cumulative **21 FIXED / 17 N/A / 9 ❌ MISSING** open in the ARITH triage.
+
 ## [2.9.81]
 
 ### Fixed

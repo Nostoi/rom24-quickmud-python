@@ -816,7 +816,9 @@ def _remove_from_character(obj: Object, character: Character) -> None:
         except Exception:  # pragma: no cover - defensive guard
             slot_cost = 1
         current_number = int(getattr(character, "carry_number", 0) or 0)
-        character.carry_number = max(0, current_number - int(slot_cost))
+        # mirroring ROM src/handler.c:1678 — `ch->carry_number -= get_obj_number(obj)`
+        # raw, no floor (ARITH-205; exposes desync as negative like ARITH-107 / INV-023)
+        character.carry_number = current_number - int(slot_cost)
 
         recalc = getattr(character, "_recalculate_carry_weight", None)
         if callable(recalc):
