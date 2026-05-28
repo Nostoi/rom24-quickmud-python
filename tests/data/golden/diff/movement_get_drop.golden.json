@@ -1,0 +1,324 @@
+{
+  "scenario": "movement_get_drop",
+  "c_commit": "e9073bdbb03c3777e8ac25eab3f01adb745aa795",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 1,
+      "command": "look",
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 2,
+      "command": "inventory",
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3054,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "Tester",
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 3,
+      "command": "north",
+      "output": [
+        "",
+        "\rBy the Temple Altar",
+        "\r  You are by the temple altar in the northern end of the Temple of Mota.",
+        "\rA huge altar made from white polished marble is standing in front of you and",
+        "\rbehind it is a ten foot tall sitting statue of Odin, the King of the Gods.",
+        "\rThe back of the altar opens into a a beautiful atrium, above which can be",
+        "\rseen a rainbow.",
+        "\r     A pit for sacrifices is in front of the altar.",
+        "\r(White Aura) A healer is here, selling spells.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3054,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "Tester",
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 4,
+      "command": "look",
+      "output": [
+        "",
+        "\rBy the Temple Altar",
+        "\r  You are by the temple altar in the northern end of the Temple of Mota.",
+        "\rA huge altar made from white polished marble is standing in front of you and",
+        "\rbehind it is a ten foot tall sitting statue of Odin, the King of the Gods.",
+        "\rThe back of the altar opens into a a beautiful atrium, above which can be",
+        "\rseen a rainbow.",
+        "\r     A pit for sacrifices is in front of the altar.",
+        "\r(White Aura) A healer is here, selling spells.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 98,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 5,
+      "command": "south",
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 98,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
+      "step": 6,
+      "command": "inventory",
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    }
+  ]
+}
