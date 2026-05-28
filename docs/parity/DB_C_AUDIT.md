@@ -525,3 +525,28 @@ findings from the audit: `JSONLD-005` (`wear_flags` raw string),
 (mob `hitroll` populated from wrong JSON key). Until those close, the
 db.c "100% certified" header on this file applies only to the
 `.are` loader path.
+
+---
+
+## Surfaced gaps (create_mobile RNG draw-order)
+
+| ID | ROM C | Python | Severity | Status |
+|----|-------|--------|----------|--------|
+| `SPAWN-001` | `src/db.c:2047-2113` `create_mobile` | `mud/spawning/templates.py` `MobInstance.from_prototype` | CRITICAL | ✅ FIXED |
+
+**`SPAWN-001` — mob spawn RNG draw-order (gold → hp → mana → damtype → sex)
+— ✅ FIXED 2026-05-28.** ROM `create_mobile` consumes the spawn RNG stream in a
+fixed order: **gold/wealth** (`number_range(wealth/2, 3*wealth/2)` then
+`number_range(wealth/200, wealth/100)`, `src/db.c:2047-2060`), **HP** dice,
+**mana** dice (`:2074-2082`), **random damtype** when `dam_type == 0`
+(`:2085-2097`), then **random sex** when `sex == EITHER` (`:2107`).
+`from_prototype` previously drew these in nearly the reverse order (sex first,
+then damtype, HP/mana, gold last), so every seed-dependent mob spawned at a
+different RNG stream position than ROM — e.g. the drunk #3064 rolled HP **33**
+instead of ROM's **31** from the same seed, because ROM's gold draw precedes the
+`2d6` HP roll and Python's did not. The `create_mobile()` row above was marked
+✅ on stat-copy parity; the RNG **ordering** contract was never checked.
+Reordered to match ROM exactly. **Surfaced by the differential testing harness**
+(`combat_melee_rounds` scenario; `tools/diff_harness/FINDINGS.md` FINDING-007).
+Regression: `tests/integration/test_spawn_001_rng_draw_order.py` (replays ROM's
+draw order with the real RNG primitives + a stream-position sentinel).

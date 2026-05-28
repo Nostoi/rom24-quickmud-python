@@ -321,8 +321,9 @@ class MobInstance:
         start_pos = _parse_position(getattr(proto, "start_pos", Position.STANDING))
         default_pos = _parse_position(getattr(proto, "default_pos", start_pos))
         sex = _parse_sex(getattr(proto, "sex", Sex.NONE))
-        if sex == Sex.EITHER:
-            sex = Sex(rng_mm.number_range(int(Sex.MALE), int(Sex.FEMALE)))
+        # NB: the random-sex roll (sex == EITHER) is deferred to the bottom of
+        # this method — ROM create_mobile draws it LAST, after gold/hp/mana/damtype
+        # (src/db.c:2107). Drawing it here would shift the RNG stream for every mob.
         size = _parse_size(getattr(proto, "size", Size.MEDIUM))
         level_value = _parse_int(getattr(proto, "level", 0))
         base_stat = min(25, 11 + c_div(level_value, 4))
@@ -363,24 +364,19 @@ class MobInstance:
         material = getattr(proto, "material", None)
         damage_tuple = _parse_dice(getattr(proto, "damage", (0, 0, 0)), getattr(proto, "damage_dice", ""))
         dam_type_value = _parse_damage_type(getattr(proto, "dam_type", 0), getattr(proto, "damage_type", 0))
-        if dam_type_value == 0:
-            roll = rng_mm.number_range(1, 3)
-            if roll == 1:
-                dam_type_value = int(DamageType.SLASH)
-            elif roll == 2:
-                dam_type_value = int(DamageType.BASH)
-            else:
-                dam_type_value = int(DamageType.PIERCE)
         hit_tuple = _parse_dice(getattr(proto, "hit", (0, 0, 0)), getattr(proto, "hit_dice", ""))
         mana_tuple = _parse_dice(getattr(proto, "mana", (0, 0, 0)), getattr(proto, "mana_dice", ""))
-        max_hit = _roll_dice(hit_tuple)
-        max_mana = _roll_dice(mana_tuple)
         armor = (
             _parse_int(getattr(proto, "ac_pierce", 0)),
             _parse_int(getattr(proto, "ac_bash", 0)),
             _parse_int(getattr(proto, "ac_slash", 0)),
             _parse_int(getattr(proto, "ac_exotic", 0)),
         )
+        # RNG draw order MUST mirror ROM create_mobile (src/db.c:2047-2113) exactly,
+        # because the spawn RNG stream is shared: gold -> hp -> mana -> damtype -> sex.
+        # (Drawing in any other order shifts every subsequent mob's rolls vs ROM —
+        # FINDING-007 / SPAWN-001: the drunk #3064 rolled HP 33 instead of ROM's 31.)
+        # 1. gold/wealth (src/db.c:2047-2060)
         if wealth > 0:
             low = wealth // 2
             high = (3 * wealth) // 2
@@ -393,6 +389,21 @@ class MobInstance:
                 gold_max = gold_min
             gold_coins = rng_mm.number_range(gold_min, gold_max)
             silver_coins = max(total - gold_coins * 100, 0)
+        # 2. HP dice, 3. mana dice (src/db.c:2074-2082)
+        max_hit = _roll_dice(hit_tuple)
+        max_mana = _roll_dice(mana_tuple)
+        # 4. random damtype when unset (src/db.c:2085-2097)
+        if dam_type_value == 0:
+            roll = rng_mm.number_range(1, 3)
+            if roll == 1:
+                dam_type_value = int(DamageType.SLASH)
+            elif roll == 2:
+                dam_type_value = int(DamageType.BASH)
+            else:
+                dam_type_value = int(DamageType.PIERCE)
+        # 5. random sex (src/db.c:2107) — drawn LAST, deferred from the parse above
+        if sex == Sex.EITHER:
+            sex = Sex(rng_mm.number_range(int(Sex.MALE), int(Sex.FEMALE)))
         max_move = 100
         default_comm = CommFlag.NOSHOUT | CommFlag.NOTELL | CommFlag.NOCHANNELS
 
