@@ -8,6 +8,63 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-015 — affect spells emit no ROM success message when cast through `do_cast` — ⏳ OPEN (armor fix pending master land)
+
+**Status:** ⏳ OPEN. Surfaced 2026-05-29 by the new `affect_armor` scenario (an L10 mage
+self-casts `armor`). Gated in `KNOWN_DIVERGENCES` until the Python fix lands on master and
+the diff goes clean. Tracked as a per-file gap at `docs/parity/MAGIC_C_AUDIT.md` **MAGIC-002**.
+
+**Scenario:** `affect_armor` — `__seed=777`, `__learn=armor`, `cast armor` (level 10 so a
+mage clears armor's `skill_level[mage]==7` gate; armor is −20 AC regardless of level, so the
+higher level keeps the baseline clean).
+
+Symptom (step 3, `cast armor`):
+```
+C : ['You feel someone protecting you.']
+py: []
+```
+Everything else converges: `affects == ['armor']`, `eff_ac == [80,80,80,80]` (−20), and
+`mana == 80` (100 − 20) on both sides. The **only** diverging field is `output`.
+
+**Root cause:** ROM `spell_armor` (`src/magic.c:753-777`) sends
+`"You feel someone protecting you.\n\r"` to the victim on success (and `act("$N is protected
+by your magic.")` to the caster when `ch != victim`). The Python `armor` handler
+(`mud/skills/handlers.py:1335`) applies the affect but sends **nothing** on success. Because
+`do_cast` is silent on a successful cast (FINDING-013: all player-facing output comes from the
+spell function), the message is dropped entirely.
+
+This is a **class**, not a one-off: `bless` (`handlers.py:1465`) and `shield`
+(`handlers.py:7094`) are likewise silent on success, so every affect-only spell cast through
+`do_cast` is missing its ROM success line. (When cast via the older `skill_registry.cast`
+path they instead get the generic `_default_success_message` "You cast <spell>." fallback —
+also non-ROM, just a different wrong string.) The `affect_armor` scenario exercises and fixes
+the `armor` instance; the broader sweep (bless/shield/giant strength/haste/frenzy/… — verify
+each handler against its `src/magic.c` `spell_*` success message) is filed under MAGIC-002 as
+follow-up, not closed here (one gap = one test = one commit).
+
+**Fix (armor, on master):** make the `armor` handler deliver ROM's messaging faithfully —
+`"You feel someone protecting you."` to the target on success, and the `"$N is protected by
+your magic."` caster line for a cross-target cast; also correct the already-affected branch to
+ROM's `"You are already armored."` / `act("$N is already armored.")` (Python currently sends
+the non-ROM `"They are already protected."`). Regression: a master integration test
+(`tests/integration/test_magic_002_armor_message.py`) asserting the success message reaches
+the target through `do_cast`; the differential `affect_armor` golden then converges and the
+`KNOWN_DIVERGENCES` entry self-clears.
+
+**Instrument note (separate from the bug):** before this scenario the snapshot's `affects`
+field was never exercised by any golden, and `pysnap._affect_names` only read
+`aff.spell_name`/`aff.name` — neither of which the real affect model (`AffectData`) carries
+(it stores the spell identity in `.type`: a lowercase ROM skill name in the SpellEffect-sync
+path, or an int SN via `affect_to_char`). So `affects` was silently always `[]` on the Python
+side. Fixed in `pysnap.py` (read `.type`, mapping int SNs through `ROM_SKILL_NAMES_BY_INDEX`
+to match the C shim's `skill_table[paf->type].name`), locked by two Python-only unit tests in
+`test_diff_harness_unit.py`. The `affect_flags` case mismatch (C lowercase `affect_flags[]`
+vs Python `AffectFlag.<NAME>.name`) is **not** touched here — `armor` sets no bitvector, so no
+flag is exercised; defer that normalization to a flag-setting scenario (sanctuary/haste/
+detect-invis) where a real golden can prove it.
+
+---
+
 ## FINDING-014 — wait-state ("lag") enforcement: synchronous pulse-loop vs async — ✅ RESOLVED (architectural divergence)
 
 **Status:** ✅ RESOLVED 2026-05-29 as a **documented architectural divergence** (class of

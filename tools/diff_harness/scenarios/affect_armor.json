@@ -1,0 +1,8 @@
+{
+  "name": "affect_armor",
+  "seed": 12345,
+  "start_room": 3008,
+  "char": { "name": "Tester", "level": 10 },
+  "watch": { "chars": ["Tester"], "rooms": [3008] },
+  "steps": ["__seed=777", "__learn=armor", "cast armor"]
+}

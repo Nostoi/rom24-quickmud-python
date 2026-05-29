@@ -112,6 +112,46 @@ def test_snapshot_python_captures_watch_set(watched_world):
     assert step.output == ["You see a room."]
 
 
+def test_snapshot_reads_affects_from_spell_effect(watched_world):
+    """A SpellEffect applied via apply_spell_effect must surface in the snapshot's
+    `affects` list under the ROM skill name, matching the C shim's
+    skill_table[paf->type].name. The real affect model (AffectData) stores the
+    identity in `.type`, not `.spell_name`/`.name`, so pysnap must read `.type`.
+    No differential golden exercises affects, so this is the only regression
+    guard for that instrument read."""
+    from mud.models.character import SpellEffect
+
+    room, char = watched_world
+    # ROM spell_armor: APPLY_AC -20, no bitvector (character.py armor handler).
+    char.apply_spell_effect(SpellEffect(name="armor", duration=24, level=10, ac_mod=-20))
+
+    step = snapshot_python(
+        step=1, command="cast armor",
+        chars_by_name={"Tester": char}, rooms_by_vnum={3001: room}, output=[],
+    )
+    assert step.chars[0].affects == ["armor"]
+
+
+def test_snapshot_reads_affects_from_int_sn_affect(watched_world):
+    """AffectData added via affect_to_char carries an int ROM SN in `.type`;
+    pysnap must map it through the skill_table index so it matches the C shim's
+    skill_table[paf->type].name (lowercase)."""
+    from mud.models.character import AffectData
+    from mud.skills.metadata import ROM_SKILL_NAMES_BY_INDEX
+
+    room, char = watched_world
+    armor_sn = ROM_SKILL_NAMES_BY_INDEX.index("armor")
+    char.affect_to_char(
+        AffectData(type=armor_sn, level=10, duration=24, location=17, modifier=-20, bitvector=0)
+    )
+
+    step = snapshot_python(
+        step=1, command="look",
+        chars_by_name={"Tester": char}, rooms_by_vnum={3001: room}, output=[],
+    )
+    assert step.chars[0].affects == ["armor"]
+
+
 def test_load_scenario_parses_fields(tmp_path: Path):
     p = tmp_path / "s.json"
     p.write_text(

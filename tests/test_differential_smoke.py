@@ -27,8 +27,7 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES: dict[str, str] = {
-    # Empty — all three scenarios converge end-to-end:
-    #   movement_get_drop, combat_melee_rounds, spell_combat.
+    # movement_get_drop, combat_melee_rounds, spell_combat converge end-to-end.
     # spell_combat surfaced FINDING-012 (saving_throw crash) + FINDING-013 (spurious
     # "You cast" line), both fixed on master (v2.11.18/.19). The step-6 wait-state
     # gap (FINDING-014) is an architectural divergence (sync pulse-loop vs async),
@@ -36,6 +35,12 @@ KNOWN_DIVERGENCES: dict[str, str] = {
     # (char.wait = 0), mirroring the C shim's direct interpret(). See FINDINGS.md.
     # When a divergence is resolved the diff goes clean, the xfail flips to XPASS,
     # and its entry should be removed here (self-cleaning).
+    "affect_armor": (
+        "FINDING-015 (MAGIC-002): ROM spell_armor sends 'You feel someone protecting "
+        "you.' on success (src/magic.c:753); the Python armor handler is silent, and "
+        "do_cast (silent since FINDING-013) drops it. affects/eff_ac/mana all converge "
+        "— only `output` diverges. Self-clears when the master armor fix lands."
+    ),
 }
 
 
