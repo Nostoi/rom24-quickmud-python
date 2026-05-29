@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.17]
+
+### Changed
+- **`SHOP-PET-001` reclassified N/A (premise-incorrect).** The filed gap claimed a bought pet's `dam_type` ends up `0` → attack-table index 0 → noun "hit", because `mud/commands/shop.py::_clone_pet_character` was believed to read `proto.dam_type` (which the loader leaves at 0; the `.are` word lands on `proto.damage_type`). Verified the premise is factually wrong: the clone reads the kennel `MobInstance`'s `dam_type`, not the proto's — and that instance is created by `apply_resets` → `spawn_mob` → `MobInstance.from_prototype`, which already resolves the damtype word to a non-zero attack-table index (FIGHT-023; ROM resolves it on the proto at load, `src/db2.c:270`). End-to-end, a bought pet of a "beating" proto gets `dam_type == 13` and renders noun "beating", never 0/"hit". No code change. Added a regression guard, `tests/integration/test_shop_pet_001_dam_type_resolution.py`, so a future "fix" that switches the clone to `proto.dam_type` (which would reintroduce the "hit" symptom) is caught.
+- **Filed `SHOP-PET-002` (open).** The genuine residual divergence surfaced while verifying SHOP-PET-001: ROM `do_buy` does `pet = create_mobile(pet->pIndexData)` (`src/act_obj.c:2613`) — a *fresh* re-roll from the index — where `_clone_pet_character` copies the kennel template's runtime fields. So a no-word proto's random-default dam_type is cloned (ROM re-rolls per `create_mobile`), the pet purchase does not advance the spawn RNG stream the way `create_mobile` does (`src/db.c:2047-2113`), and HP/mana/gold are inherited rather than freshly rolled. Tracked in `docs/parity/FIGHT_C_AUDIT.md`; not fixed here (it changes RNG-stream ordering and breaks the existing pet-shop gold/stat assertions — out of scope for the SHOP-PET-001 verification).
+
 ## [2.11.16]
 
 ### Fixed
