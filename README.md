@@ -1,6 +1,6 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.11.29-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.11.30-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-4963%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
@@ -163,7 +163,7 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.11.29
+- **Version**: 2.11.30
 - **ROM 2.4b Gameplay Parity**: ⚠️ **broadly audited, currently being revalidated** —
   combat, skills, spells, movement, communication, world/db, save/load, mob programs,
   and all 255 ROM commands are implemented, but some previously “verified” user-visible surfaces were only smoke-tested and are being rechecked with ROM-exact assertions.
@@ -172,7 +172,7 @@ python -m mud  # Start development server
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
 - **Cross-file Invariants**: ✅ **8/8 enforced** — message delivery, prompt clamping, registry membership,
   same-room combat, death/connection behavior, RNG determinism, and persistence coherence are locked by dedicated tests.
-- **Test Suite**: ✅ **4980 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
+- **Test Suite**: ✅ **4982 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
   integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
 - **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact output, boundary, and runtime-path tests on the highest-risk user-visible surfaces.
 - **Compatibility**: Python 3.10+, cross-platform
