@@ -27,16 +27,17 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES = {
-    # FINDING-010: FINDING-009's four step-5 facets are all resolved — RNG draw-count
-    # desync (FIGHT-021/022), mob damtype attack-index → noun (FIGHT-023), combat-tick
-    # iteration order (FIGHT-024), act() first-char capitalization (FIGHT-025), plus the
-    # FIGHT-026 crash the reorder exposed. Step 5 now converges; the first divergence
-    # advanced to step 6 (the *second* __tick round): C=["The drunk's beating scratches
-    # you.", 'You scratch the drunk.'] vs py=["The drunk's beating hits you.", 'You
-    # scratch the drunk.'] — round-2 damage amount lands in a different severity tier
-    # ("scratches" ≤5% vs "hits" ≤15%). A new, deeper divergence (damage amount), not a
-    # FINDING-009 rendering/draw-order facet. See FINDINGS.md FINDING-010.
-    "combat_melee_rounds": "FINDING-010 — combat-tick round-2 damage amount diverges (severity verb): C 'scratches' (≤5%) vs py 'hits' (≤15%)",
+    # FINDING-011: FINDING-010 (unarmed-NPC damage used the PC formula, not the mob
+    # damage dice) is resolved on master — FIGHT-027 (v2.11.15): an unarmed NPC now
+    # rolls dice(damage[DICE_NUMBER], damage[DICE_TYPE]) instead of the degenerate
+    # PC-unarmed number_range. Steps 1–6 now converge (hp + severity verbs match
+    # end-to-end). The first divergence advanced to step 7 (the *third* __tick round),
+    # a MISS-LINE rendering gap: when an NPC with a resolved attack type misses, ROM
+    # renders the attack noun (C=["The drunk's beating misses you.", ...]) but Python
+    # drops it (py=['The drunk misses you.', ...]). Distinct root cause from FIGHT-027
+    # (dam_message miss-path rendering, not damage calc). See FINDINGS.md FINDING-011
+    # / FIGHT_C_AUDIT.md FIGHT-028.
+    "combat_melee_rounds": "FINDING-011 — combat miss line drops the attack noun: C \"The drunk's beating misses you.\" vs py 'The drunk misses you.'",
 }
 
 

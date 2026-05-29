@@ -8,9 +8,68 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-010 — combat-tick round-2 damage amount diverges (severity verb) — 🔴 OPEN
+## FINDING-011 — combat miss line drops the attack noun — 🔴 OPEN
 
-**Status:** 🔴 OPEN — surfaced 2026-05-29 the moment FINDING-009 (all 4 facets)
+**Status:** 🔴 OPEN — surfaced 2026-05-29 the moment FINDING-010 (FIGHT-027,
+v2.11.15) was closed. With the unarmed-NPC damage-dice fix merged from master, the
+`combat_melee_rounds` first divergence advanced from step 6 to **step 7** (the
+*third* `__tick`/`violence_update` round); **steps 1–6 now converge fully on both
+engines** (hp + severity verbs match end-to-end).
+
+Symptom (step 7, third combat round — the drunk *misses*):
+```
+step 7 (command='__tick') · output ·
+  C  = ["The drunk's beating misses you.", 'You scratch the drunk.']
+  py = ["The drunk misses you.",            'You scratch the drunk.']
+        └ C includes the attack noun "beating"; py drops it on the miss line
+```
+
+Line 2 (the PC's swing) is identical, and the hp converges (both engines: the
+drunk's miss deals 0). The only diff is the **miss-line rendering**: ROM
+`dam_message` (`src/fight.c:2171-2211`) for `dt != TYPE_HIT` builds
+`"{4$n's %s %s you%c{x"` with `attack = attack_table[dt - TYPE_HIT].noun` and
+`vp = "misses"` (for `dam == 0`), i.e. **"The drunk's beating misses you."**.
+Only the bare `dt == TYPE_HIT` case (`src/fight.c:2157-2169`) renders the
+noun-less `"$n %s you"`. The drunk's `dt = TYPE_HIT + 13` ("beating"), so ROM
+uses the noun template — and indeed a *hit* by the same mob renders
+"The drunk's beating hits you." correctly in Python (step 5/6). So Python's
+**miss path** specifically routes through the noun-less template where its own
+hit path uses the noun template.
+
+**Root cause (to confirm):** the Python miss path (`apply_damage` with `dam == 0`,
+or `mud/combat/messages.py:dam_message`) selects the `TYPE_HIT` noun-less branch
+instead of the attack-noun branch keyed on `dt`. Distinct from FIGHT-027 (damage
+calc) — this is dam_message rendering. Filed as **FIGHT-028** in
+`docs/parity/FIGHT_C_AUDIT.md`. `combat_melee_rounds` stays in
+`KNOWN_DIVERGENCES` (xfail) under FINDING-011 until the miss line converges.
+
+---
+
+## FINDING-010 — combat-tick round-2 damage amount diverges (severity verb) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-29 via **FIGHT-027** (master v2.11.15). Root cause:
+`mud/combat/engine.py:calculate_weapon_damage` had no `IS_NPC` branch, so an
+unarmed mob fell through to the **PC-unarmed** formula
+`number_range(1 + 4*skill/100, 2*level/3*skill/100)`. For the drunk #3064 (level 2,
+damage dice 1d6, skill_total ≈ 50) that collapsed to a degenerate
+`number_range(3, 0)` → ROM returns `from` = constant **3**, consuming **zero**
+`number_mm` draws — so the Python drunk dealt a constant 3 every hit (round 1's
+tier happened to match C's roll of 3), while ROM rolls `dice(1, 6)` (range 1–6,
+**one** draw). The round-4 C hit of **5** is unreachable by the old-format
+`number_range(level/2, level*3/2)`=1–3, proving the new-format dice path. The
+missing draw *also* desynced the shared combat RNG stream from round 2 on. Fix:
+`calculate_weapon_damage` now resolves an unarmed NPC (`is_npc and wield is None`)
+via `rng_mm.dice(damage[DICE_NUMBER], damage[DICE_TYPE])` (ROM `convert_mobile`
+makes `new_format` universal at runtime, so the dice path is the only live one).
+**Verified:** the `combat_melee_rounds` differential now converges on all of steps
+1–6 (hp + severity verbs match); the first divergence advanced to step 7, filed as
+**FINDING-011** (miss-line noun). Regression:
+`tests/integration/test_fight_027_npc_unarmed_damage_dice.py`. Historical
+investigation notes retained below.
+
+### (historical) original triage
+
+Surfaced 2026-05-29 the moment FINDING-009 (all 4 facets)
 was fully closed. With FIGHT-021/022/023/024/025 + the worktree `reversed()`
 merged from master, the `combat_melee_rounds` first divergence advanced from
 step 5 to **step 6** (the *second* `__tick`/`violence_update` round); **step 5
