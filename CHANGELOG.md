@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.28]
+
+### Fixed
+- **`SHOP-PET-002` — buying a pet cloned the kennel template instead of re-creating it from the prototype, so pet stats were never re-rolled and the spawn RNG stream desynced from ROM.** ROM `do_buy` (`src/act_obj.c:2613`) does `pet = create_mobile(pet->pIndexData)` — a **fresh** mobile re-rolled from the index, not a copy of the kennel template's already-rolled runtime fields. `create_mobile` (`src/db.c:2047-2113`) draws the spawn RNG stream in a fixed order (gold → hp → mana → damtype-when-unset → sex-when-random) and re-rolls each value. Python's `_clone_pet_character` instead copied the template `MobInstance`'s HP/mana/gold/dam_type, so a bought pet (a) inherited the template's *cloned* random-default dam_type rather than re-rolling `number_range(1,3)`; (b) advanced the spawn RNG stream by **zero** draws, desyncing any RNG consumer ordered after the purchase versus ROM; (c) inherited HP/mana/gold from the template instead of freshly rolling them. `_handle_pet_shop_purchase` (`mud/commands/shop.py`) now creates the pet via `spawn_mob(proto.vnum)` — the `create_mobile` equivalent (single source of truth for the ROM draw order) — which also unifies the bought-pet type (`MobInstance`) with the already-`MobInstance` reload path (`_deserialize_pet`). The ROM `do_buy` overrides are reapplied to the fresh mob: `name` ← `player_name` and `short_descr` from the index (`src/db.c:2038-2039`, compensating for `from_prototype` setting `name` ← `short_descr`), `ACT_PET`, `AFF_CHARM`, and `comm` assigned outright (`src/act_obj.c:2614-2616`). The now-dead `_clone_pet_character` was removed. Regression: `tests/integration/test_shop_pet_002_create_mobile_reroll.py` — asserts the bought pet's random fields match a fresh `create_mobile` from the same seed AND that the purchase advances the RNG stream identically (a clone draws nothing — the deterministic discriminator). Surfaced 2026-05-29 while verifying SHOP-PET-001. See `docs/parity/FIGHT_C_AUDIT.md:SHOP-PET-002`.
+
 ## [2.11.27]
 
 ### Fixed

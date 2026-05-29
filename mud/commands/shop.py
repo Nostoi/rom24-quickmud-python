@@ -3,7 +3,7 @@
 from mud.math.c_compat import c_div, c_mod
 from mud.characters.follow import add_follower
 from mud.handler import deduct_cost
-from mud.models.character import Character, character_registry
+from mud.models.character import Character
 from mud.models.constants import (
     ActFlag,
     AffectFlag,
@@ -23,6 +23,7 @@ from mud.models.constants import (
 from mud.models.object import Object, create_object
 from mud.registry import room_registry, shop_registry
 from mud.skills import check_improve
+from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.time import time_info
 from mud.utils import rng_mm
@@ -154,67 +155,6 @@ def _find_pet_template(room, keyword: str):
         if _matches_pet_keyword(keyword, occupant):
             return occupant
     return None
-
-
-def _clone_pet_character(template) -> Character | None:
-    proto = getattr(template, "prototype", None)
-    if proto is None:
-        return None
-
-    pet = Character()
-    base_name = getattr(proto, "player_name", None) or getattr(template, "name", None)
-    pet.name = base_name or "pet"
-    pet.short_descr = getattr(proto, "short_descr", None) or getattr(template, "name", None)
-    pet.long_descr = getattr(proto, "long_descr", None)
-    pet.description = getattr(proto, "description", None)
-
-    def _coerce(value, default=0):
-        try:
-            return int(value)
-        except (TypeError, ValueError):
-            return default
-
-    pet.level = _coerce(getattr(template, "level", getattr(proto, "level", 0)))
-    current_hp = _coerce(getattr(template, "current_hp", 0))
-    max_hit = _coerce(getattr(template, "max_hit", 0))
-    if max_hit <= 0:
-        max_hit = max(current_hp, 1)
-    pet.max_hit = max_hit
-    pet.hit = current_hp if current_hp > 0 else max_hit
-    pet.max_mana = _coerce(getattr(template, "max_mana", 0))
-    pet.mana = pet.max_mana
-    pet.max_move = _coerce(getattr(template, "max_move", 0)) or 100
-    pet.move = pet.max_move
-    pet.gold = _coerce(getattr(template, "gold", 0))
-    pet.silver = _coerce(getattr(template, "silver", 0))
-    pet.alignment = _coerce(getattr(template, "alignment", 0))
-    pet.damroll = _coerce(getattr(template, "damroll", 0))
-    pet.hitroll = _coerce(getattr(template, "hitroll", 0))
-    pet.dam_type = _coerce(getattr(template, "dam_type", 0))
-    pet.perm_stat = [_coerce(value) for value in list(getattr(template, "perm_stat", []) or [])]
-    pet.mod_stat = [0] * len(pet.perm_stat)
-    pet.size = _coerce(getattr(template, "size", 0))
-    pet.material = getattr(template, "material", None)
-    pet.off_flags = _coerce(getattr(template, "off_flags", 0))
-    pet.imm_flags = _coerce(getattr(template, "imm_flags", 0))
-    pet.res_flags = _coerce(getattr(template, "res_flags", 0))
-    pet.vuln_flags = _coerce(getattr(template, "vuln_flags", 0))
-    pet.start_pos = _coerce(getattr(template, "start_pos", getattr(template, "position", 0)))
-    pet.default_pos = _coerce(getattr(template, "default_pos", getattr(template, "position", 0)))
-    pet.position = _coerce(getattr(template, "position", pet.default_pos))
-    pet.carry_number = _coerce(getattr(template, "carry_number", 0))
-    pet.carry_weight = _coerce(getattr(template, "carry_weight", 0))
-    pet.armor = [_coerce(value) for value in list(getattr(template, "armor", (0, 0, 0, 0)))]
-    pet.damage = [_coerce(value) for value in list(getattr(template, "damage", (0, 0, 0)))]
-    pet.act = _coerce(getattr(template, "act", int(ActFlag.IS_NPC))) | int(ActFlag.IS_NPC)
-    pet.affected_by = _coerce(getattr(template, "affected_by", 0))
-    pet.mob_programs = list(getattr(template, "mob_programs", []) or [])
-    pet.mprog_flags = _coerce(getattr(template, "mprog_flags", 0))
-    pet.mprog_target = None
-    pet.mprog_delay = 0
-    pet.race = getattr(proto, "race", getattr(template, "race", 0))
-    pet.prototype = proto
-    return pet
 
 
 def _format_coin_message(coins: int) -> str:
@@ -603,16 +543,38 @@ def _handle_pet_shop_purchase(char: Character, args: str) -> str:
     if total_wealth < cost:
         return "You can't afford it."
 
-    pet = _clone_pet_character(template)
-    if pet is None:
+    proto = getattr(template, "prototype", None)
+    if proto is None:
         return "Sorry, you can't buy that here."
 
+    # ROM do_buy (src/act_obj.c:2613): re-create the pet via
+    # create_mobile(pet->pIndexData) — a FRESH re-roll from the index
+    # (gold -> hp -> mana -> damtype -> sex, src/db.c:2047-2113), NOT a clone of
+    # the kennel template's already-rolled runtime fields (SHOP-PET-002). spawn_mob
+    # is the create_mobile equivalent and registers the mob in character_registry,
+    # so it must not be appended again here.
+    pet = spawn_mob(proto.vnum)
+    if pet is None:
+        # ROM's create_mobile exit(1)s on a bad vnum (no fail-soft path); spawn_mob
+        # returns None instead, so guard BEFORE charging. ROM deducts at
+        # src/act_obj.c:2612, but only ever reaches a guaranteed-valid index — we
+        # must not charge for a pet we could not create.
+        return "Sorry, you can't buy that here."
+
+    deduct_cost(char, cost)
+
+    # create_mobile copies name <- player_name and short_descr from the index
+    # (src/db.c:2038-2039); from_prototype sets name <- short_descr instead, so
+    # restore the ROM keyword name the rename below appends to, plus short_descr.
+    pet.name = getattr(proto, "player_name", None) or pet.name
+    pet.short_descr = getattr(proto, "short_descr", None)
+
+    # ROM do_buy overrides (src/act_obj.c:2614-2616).
     pet.act |= int(ActFlag.PET)
-    pet.group = getattr(template, "group", 0)
     pet.add_affect(AffectFlag.CHARM)
-    pet.set_comm_flag(CommFlag.NOTELL)
-    pet.set_comm_flag(CommFlag.NOSHOUT)
-    pet.set_comm_flag(CommFlag.NOCHANNELS)
+    # src/act_obj.c:2616 assigns comm outright; MobInstance has no comm-flag
+    # helpers (NPCs key comm as a raw int, as _deserialize_pet restores it).
+    pet.comm = int(CommFlag.NOTELL) | int(CommFlag.NOSHOUT) | int(CommFlag.NOCHANNELS)
 
     rename_token = (rename or "").strip()
     if rename_token:
@@ -625,9 +587,6 @@ def _handle_pet_shop_purchase(char: Character, args: str) -> str:
         base_description = f"{base_description}\n"
     pet.description = f"{base_description}A neck tag says 'I belong to {owner_name}'.\n"
 
-    deduct_cost(char, cost)
-
-    character_registry.append(pet)
     current_room = room
     current_room.add_character(pet)
 

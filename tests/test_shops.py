@@ -1370,9 +1370,11 @@ def test_pet_shop_purchase_creates_charmed_pet():
     assert "I belong to Buyer" in pet.description
     assert pet.has_affect(AffectFlag.CHARM)
     assert pet.act & int(ActFlag.PET)
-    assert pet.has_comm_flag(CommFlag.NOTELL)
-    assert pet.has_comm_flag(CommFlag.NOSHOUT)
-    assert pet.has_comm_flag(CommFlag.NOCHANNELS)
+    # SHOP-PET-002: a bought pet is now a MobInstance (a fresh create_mobile),
+    # which keys comm as a raw int — ROM `pet->comm = ...` (src/act_obj.c:2616).
+    assert pet.comm & int(CommFlag.NOTELL)
+    assert pet.comm & int(CommFlag.NOSHOUT)
+    assert pet.comm & int(CommFlag.NOCHANNELS)
 
 
 def test_pet_shop_rejects_second_pet():
