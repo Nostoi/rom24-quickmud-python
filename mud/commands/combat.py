@@ -123,10 +123,20 @@ def do_kill(char: Character, args: str) -> str:
     skill_registry._apply_wait_state(char, get_pulse_violence())
     check_killer(char, victim)
     # mirroring ROM src/fight.c:2815-2817 — do_kill enters combat via multi_hit
-    attack_messages = multi_hit(char, victim)
-    if not attack_messages:
-        return ""
-    return attack_messages[0]
+    # and returns void. All combat output (the per-swing dam_message, defense
+    # lines, death broadcasts) is delivered through `_push_message` inside
+    # `apply_damage`, exactly as ROM's `act()`/`send_to_char` write straight to
+    # the descriptor. We must NOT also return the line: the connection loop
+    # (mud/net/connection.py) sends the command's return value AND drains the
+    # push, so returning `multi_hit(...)[0]` double-delivers every combat line
+    # to connected PCs (INV-001 SINGLE-DELIVERY — the same class as the WS
+    # death-path duplicate bug). Every other multi_hit caller (do_murder,
+    # violence_tick, assist, aggressive AI, spec_funs) discards the return for
+    # this reason. The non-ROM "You kill X." that `_handle_death` returns is
+    # likewise never delivered (ROM src/fight.c:859-862 sends the killer
+    # nothing on death).
+    multi_hit(char, victim)
+    return ""
 
 
 def do_kick(char: Character, args: str) -> str:

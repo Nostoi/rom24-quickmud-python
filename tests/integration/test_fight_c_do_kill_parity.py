@@ -63,5 +63,9 @@ def test_do_kill_uses_rom_multi_hit_sequence(monkeypatch) -> None:
         if victim in character_registry:
             character_registry.remove(victim)
 
-    assert result == "hit 1"
+    # do_kill returns "" (ROM's void do_kill; INV-001 SINGLE-DELIVERY — combat
+    # output is delivered via _push_message, never the command return value).
+    # The contract this test pins is the multi_hit attack SEQUENCE, not the
+    # return string: the stub attack_round records each one_hit invocation.
+    assert result == ""
     assert len(calls) == 4

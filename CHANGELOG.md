@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.5]
+
+### Fixed
+- **`FIGHT-020` / FINDING-008 (sub-issue 3) — `kill` double-delivered every combat line to connected players (CRITICAL, SINGLE-DELIVERY/INV-001).** `mud/commands/combat.py::do_kill` returned `multi_hit(...)[0]` — the attacker's combat line that `apply_damage` had **already** delivered via `_push_message`. The connection read loop (`mud/net/connection.py`) sends a command's return value AND drains the push, so a connected PC received every `kill`-initiated combat line **twice** (async push send + `send_to_char(char, response)`) — the same class as the previously-fixed WS death-path double-message bug. ROM's `do_kill` (`src/fight.c:2771-2817`) is void; nearly every other `multi_hit` caller (`do_murder`, `violence_tick`, `assist`, aggressive AI, `spec_funs`) already discards the return and relies on the push (the exception, `do_surrender`'s NPC-ignores branch, is a second instance — see follow-up below). `do_kill` now runs `multi_hit(char, victim)` and returns `""`. This also stops delivering the non-ROM `"You kill X."` line (`_handle_death`'s return) that only surfaced on the `kill` first strike — ROM (`src/fight.c:859-862`) sends the killer nothing on death; the killing-blow dam_message (pushed before the death branch) is the killer's last line. Proven end-to-end with a mock-connection delivery harness: `tests/integration/test_kill_command_single_delivery.py`. Broadens INV-001 (`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`). **Re-triage note:** the 2.11.4 (FIGHT-019) session had recorded this sub-issue as a "harness capture artifact, not a SINGLE-DELIVERY violation" — that was wrong; it is a real engine bug affecting live connected players, confirmed here.
+- **Follow-ups filed (not yet fixed), same SINGLE-DELIVERY (INV-001) contract:** (a) `broadcast_room`/`broadcast_global` (`mud/net/protocol.py`) append to BOTH the async `send_to_char` task and `char.messages`, so a connected PC in the room receives every room broadcast (death/position-change/etc.) twice — surfaced by the FIGHT-020 death-path test. (b) `do_surrender` (`mud/commands/combat.py`, NPC-ignores-surrender branch) returns `multi_hit(...)` output, so the surrendering PC gets the TO_VICT push AND a returned attacker-perspective line — the same return-value double-send as `do_kill`, plus a wrong-perspective leak. Both tracked under INV-001; each needs its own failing-test-first fix.
+
+### Changed
+- 11 combat-content-return assertions across `tests/test_combat.py`, `tests/test_combat_thac0_engine.py`, and `tests/test_combat_defenses_prob.py` re-baselined to read the pushed combat line from `char.messages` (via a `deliver_kill` helper) instead of `do_kill`'s return value, which is now `""`. `tests/integration/test_fight_c_do_kill_parity.py` asserts `do_kill` returns `""` and pins the multi_hit attack sequence.
+
 ## [2.11.4]
 
 ### Fixed

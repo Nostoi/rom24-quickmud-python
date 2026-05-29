@@ -11,6 +11,20 @@ def assert_attack_message(message: str, target: str) -> None:
     assert message.endswith("{x")
 
 
+def deliver_kill(char, target: str) -> str:
+    """Run `kill <target>` and return the attacker-facing combat line.
+
+    INV-001/SINGLE-DELIVERY: do_kill returns "" (ROM's void do_kill); combat
+    output is delivered via _push_message, which lands in char.messages for a
+    connection-less test character. Returns the first line pushed by this
+    command.
+    """
+    before = len(char.messages)
+    process_command(char, f"kill {target}")
+    pushed = char.messages[before:]
+    return pushed[0] if pushed else ""
+
+
 def setup_thac0_env():
     initialize_world("area/area.lst")
     atk = create_test_character("Atk", 3001)
@@ -33,7 +47,7 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.level = 32
     atk.hitroll = 0
     vic.hit = 50  # Increase HP to survive ROM damage calculation
-    out = process_command(atk, "kill vic")
+    out = deliver_kill(atk, "vic")
     assert_attack_message(out, "Vic")
 
     # Weak attacker (mage0) should miss with same diceroll
@@ -42,7 +56,7 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.level = 0
     atk.hitroll = 0
     vic.hit = 50  # Increase HP to be consistent
-    out = process_command(atk, "kill vic")
+    out = deliver_kill(atk, "vic")
     assert out == "{2You miss Vic.{x"
 
 
@@ -101,5 +115,5 @@ def test_weapon_skill_influences_thac0(monkeypatch):
     atk.ch_class = 3
     atk.level = 32
     vic.hit = 10
-    out = process_command(atk, "kill vic")
+    out = deliver_kill(atk, "vic")
     assert out == "{2You miss Vic.{x"

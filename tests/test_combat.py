@@ -47,6 +47,21 @@ def assert_attack_message(message: str, victim_name: str = "Victim") -> None:
     assert message.endswith("{x")
 
 
+def deliver_kill(char: Character, target: str) -> str:
+    """Run `kill <target>` and return the attacker-facing combat line.
+
+    INV-001/SINGLE-DELIVERY: ``do_kill`` returns ``""`` (ROM's void do_kill);
+    combat output is delivered through ``_push_message``. Test characters have
+    no connection, so the push lands in ``char.messages``. Returns the first
+    line pushed by this command (the attacker's dam_message or defense line),
+    leaving ``char.messages`` intact so callers can still assert on it.
+    """
+    before = len(char.messages)
+    process_command(char, f"kill {target}")
+    pushed = char.messages[before:]
+    return pushed[0] if pushed else ""
+
+
 def test_rescue_checks_group_permission(monkeypatch: pytest.MonkeyPatch) -> None:
     load_skills(Path("data/skills.json"))
 
@@ -112,12 +127,14 @@ def test_kill_flags_player_as_killer(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
 
-    out = process_command(attacker, "kill duelist")
+    process_command(attacker, "kill duelist")
 
     assert attacker.act & int(PlayerFlag.KILLER)
     assert "*** You are now a KILLER!! ***" in attacker.messages
     assert attacker.wait >= get_pulse_violence()
-    assert out
+    # do_kill returns "" (INV-001); the attack's dam_message is delivered via
+    # _push_message (test char has no connection → lands in char.messages).
+    assert any(m.startswith("{2") for m in attacker.messages)
 
 
 def test_kill_does_not_flag_attacker_when_target_already_killer(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -210,7 +227,7 @@ def test_attack_damages_but_not_kill(monkeypatch: pytest.MonkeyPatch) -> None:
     victim.max_hit = 10
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     # ROM unarmed damage for level 1: base 5 + damroll 3 = 8 total
     # Damage tier should match ROM's *** DEVASTATE *** verb (80% of max HP)
     assert out == "{2You *** DEVASTATE *** Victim!{x"
@@ -231,8 +248,13 @@ def test_attack_kills_target(monkeypatch: pytest.MonkeyPatch) -> None:
     victim.max_hit = 5
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
-    out = process_command(attacker, "kill victim")
-    assert out == "You kill Victim."
+    out = deliver_kill(attacker, "victim")
+    # The killer's combat line is the killing-blow dam_message (pushed before
+    # the death branch). ROM (src/fight.c:859-862) sends the killer NOTHING on
+    # death — the non-ROM "You kill X." that _handle_death returns is no longer
+    # delivered (INV-001 SINGLE-DELIVERY; do_kill returns "").
+    assert_attack_message(out)
+    assert not any("You kill" in m for m in attacker.messages)
     assert victim.hit == 0
     assert attacker.position == Position.STANDING
     assert victim.position == Position.DEAD
@@ -248,7 +270,7 @@ def test_attack_misses_target(monkeypatch):
     victim.hit = 10
     # Guarantee miss deterministically
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 100)
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert out == "{2You miss Victim.{x"
     assert victim.hit == 10
     assert attacker.position == Position.FIGHTING
@@ -279,8 +301,11 @@ def test_defense_order_and_early_out(monkeypatch):
     monkeypatch.setattr(combat_engine, "check_dodge", dodge)
     monkeypatch.setattr(combat_engine, "check_shield_block", shield)
 
-    out = process_command(attacker, "kill victim")
-    assert out == "Victim dodges your attack."
+    # The stub check_* functions return the early-out verdict without pushing a
+    # message (the real check_dodge pushes "<v> dodges your attack." itself), so
+    # this test asserts the defense *order* / early-out, not the delivered line.
+    # do_kill returns "" now (INV-001 SINGLE-DELIVERY).
+    assert process_command(attacker, "kill victim") == ""
     # ROM src/fight.c:793-799 checks parry → dodge → shield_block.
     assert calls == ["parry", "dodge"]
 
@@ -301,7 +326,7 @@ def test_parry_blocks_when_skill_learned(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.setattr(combat_engine, "check_improve", fake_check_improve)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
 
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
 
     assert out == "Victim parries your attack."
     assert "You parry Attacker's attack." in victim.messages
@@ -318,11 +343,11 @@ def test_shield_block_requires_shield(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
 
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
 
+    # No shield equipped → shield_block cannot fire; the swing lands.
     assert "blocks your attack" not in out
-    if out != "You kill Victim.":
-        assert_attack_message(out)
+    assert_attack_message(out)
 
 
 def test_multi_hit_single_attack():
@@ -601,7 +626,7 @@ def test_ac_influences_hit_chance(monkeypatch):
     # Positive AC (worse defence) → the pinned roll lands.
     victim.armor = [200, 200, 200, 200]
     victim.hit = 50
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert_attack_message(out)
 
     # Reset combat state for next case
@@ -613,7 +638,7 @@ def test_ac_influences_hit_chance(monkeypatch):
     # Strongly negative AC (better defence) → the same roll now misses.
     victim.hit = 50
     victim.armor = [-200, -200, -200, -200]
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert out == "{2You miss Victim.{x"
 
 
@@ -627,7 +652,7 @@ def test_visibility_and_position_modifiers(monkeypatch):
 
     # At roll 60, baseline to_hit=60 → hit; invisible should make it miss
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 60)
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert_attack_message(out)
 
     attacker.position = Position.STANDING
@@ -655,7 +680,7 @@ def test_visibility_and_position_modifiers(monkeypatch):
     victim.remove_affect(AffectFlag.INVISIBLE)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 62)
     victim.position = Position.SLEEPING
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert_attack_message(out)
 
 
@@ -735,7 +760,7 @@ def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("mud.utils.rng_mm.dice", lambda number, size: number * size)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
 
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
 
     assert_attack_message(out)
     assert victim.hit == 85
