@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.11]
+
+### Fixed
+- **`FIGHT-026` — NPC offensive-skill commands (`do_dirt`/`do_trip`/`do_disarm`) crashed when invoked by `mob_hit` (CRITICAL; latent FIGHT-022 fallout).** FIGHT-022's `_mob_offensive_skill` dispatches the real command handlers on the NPC attacker, as ROM `mob_hit` does. `do_bash`/`do_kick`/`do_berserk` already gate NPCs on their `OFF_` flag, but `do_dirt`/`do_trip`/`do_disarm` read `char.skills.get(...)` directly — `MobInstance` has no `skills` dict, so any flagged mob that rolled those branches crashed with `AttributeError`. `do_trip` had a second crash: its DEX modifier indexed `getattr(victim, "perm_stat", [13]*5)[1]`, which `IndexError`s on the empty-list `perm_stat` default (the `[13]*5` fallback only fires when the attribute is *missing*, not empty). The crash was latent at FIGHT-022 commit time (no test rolled a flagged mob into those branches) and was surfaced by FIGHT-024's combat-tick reorder: the mayor #3143 (OFF_TRIP) then rolled into `do_trip` during `test_kill_mob_grants_xp_integration`. `do_dirt`/`do_trip` now mirror the `do_kick` NPC pattern (gate on the `OFF_` flag, treat the skill as learned for NPCs); `do_disarm` skips the PC percent gate for NPCs and reads hand-to-hand via the NPC-safe helper; `do_trip`'s DEX read now uses the canonical bounds-safe `get_curr_stat(Stat.DEX)` (also more ROM-faithful — current vs permanent stat). Regression: `tests/integration/test_fight_026_npc_offensive_skill_no_crash.py`. **Closes only the crash** — per-command RNG-draw fidelity for flagged-mob `do_X` remains unverified (tracked as a FIGHT_C_AUDIT follow-up; the differential can't exercise it because the drunk #3064 has no `OFF_` flags).
+
+### Changed
+- Re-baselined `tests/integration/test_group_combat.py::TestGroupExperienceSharing::test_group_xp_split_between_members`: pinned the ROM THAC0 / `number_bits(5)` attack roll to nat-19 (always hits) so the 3-member group deterministically fells the 50-hp mob within the 60-tick budget. The test verifies XP *split*, not hit chance; a high hitroll alone leaves nat-0 misses, so under parallel execution the unseeded combat-stream position (resequenced by the FIGHT-022 `mob_hit` draws and the FIGHT-024 tick reorder) could leave the mob alive at the budget and grant no XP. Same RNG-stream brittleness class as the 2.11.8 pass and the FIGHT-021 XP-test re-baseline. No production behavior change.
+
 ## [2.11.10]
 
 ### Fixed
