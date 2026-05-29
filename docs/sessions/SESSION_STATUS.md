@@ -1,46 +1,54 @@
-# Session Status — 2026-05-28 — FIGHT-019 combat THAC0 hit model (FINDING-008 sub-issue 1)
+# Session Status — 2026-05-28 — FIGHT-020 `kill` single-delivery (FINDING-008 sub-issue 3, re-triaged)
 
 ## Current State
 
-- **Active mode**: differential-harness-driven parity verification. The harness
-  surfaced FINDING-008 (combat first-attack divergence at `kill drunk`); this
-  session triaged all three sub-issues and closed the one real engine parity bug.
+- **Active mode**: differential-harness-driven parity verification. This session
+  re-triaged FINDING-008 sub-issue 3 (combat line emitted twice at `kill drunk`),
+  which the prior session had recorded as a "harness capture artifact." It is a
+  **real engine bug** — closed as FIGHT-020 on `master`.
 - **Last completed**:
-  - **`FIGHT-019`** ✅ FIXED (master 2.11.4, `7f4d55f1`) — combat now uses ROM's
-    THAC0 / `number_bits(5)` hit model exclusively; the non-ROM percent model and
-    the `COMBAT_USE_THAC0` flag are deleted. Also fixed a second masked divergence:
-    the NPC-attacker THAC0 branch (ROM `src/fight.c:445-457` — `thac0_00=20`,
-    `thac0_32` from ACT class flag). 15 percent-model-dependent combat tests
-    re-baselined; a `test_room` isolation leak fixed.
-  - **FINDING-008 triage (durable)**: sub-issue 1 = real bug, fixed via FIGHT-019;
-    sub-issue 2 (color codes) = harness color-normalization; sub-issue 3
-    (double-delivery) = **harness capture artifact, NOT a SINGLE-DELIVERY
-    violation** (isolated `multi_hit` returns one line). #2/#3 remain harness-side
-    on `diff-harness`.
+  - **`FIGHT-020`** ✅ FIXED (master 2.11.5, `d1e60112`) — `do_kill` returned
+    `multi_hit(...)[0]`, the attacker combat line `apply_damage` had already
+    pushed via `_push_message`; the connection loop sends the return value AND
+    drains the push, so connected PCs received every `kill`-initiated combat line
+    **twice** (SINGLE-DELIVERY / INV-001 violation). `do_kill` now returns `""`
+    (ROM's void `do_kill`); combat output flows solely through `_push_message`.
+    Also retired a non-ROM `"You kill X."` line. Proven end-to-end with a
+    mock-connection delivery harness; 11 combat tests re-baselined.
+  - **Re-triage correction**: the FIGHT-019 session's "harness capture artifact"
+    triage of sub-issue 3 was **wrong** (it traced only `multi_hit`'s return, not
+    the connected-PC push+return double-channel). Master-side docs reconciled;
+    `FINDINGS.md` on `diff-harness` still needs the correction.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-28_FIGHT_019_THAC0_HIT_MODEL.md](SESSION_SUMMARY_2026-05-28_FIGHT_019_THAC0_HIT_MODEL.md)
+  [SESSION_SUMMARY_2026-05-28_FIGHT_020_KILL_SINGLE_DELIVERY.md](SESSION_SUMMARY_2026-05-28_FIGHT_020_KILL_SINGLE_DELIVERY.md)
   (predecessor:
-  [SESSION_SUMMARY_2026-05-28_SPAWN_001_RNG_DRAW_ORDER.md](SESSION_SUMMARY_2026-05-28_SPAWN_001_RNG_DRAW_ORDER.md))
+  [SESSION_SUMMARY_2026-05-28_FIGHT_019_THAC0_HIT_MODEL.md](SESSION_SUMMARY_2026-05-28_FIGHT_019_THAC0_HIT_MODEL.md))
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version (master) | **2.11.4** (pushed to `origin`, `a0070fbc`; `diff-harness` separate, unmerged) |
-| Tests (master) | **4928 passed, 4 skipped, 0 failed** (full parallel suite, post-FIGHT-019). |
-| ROM C files audited | 40 / 43 ✅ (3 N/A). `fight.c` `one_hit` row corrected — FIGHT-019 closed the hit-model divergence the per-file audit had certified at 95%. |
-| Differential harness | **Sound.** Has caught **8 issues** (FINDING-001→008). FINDING-008 sub-issue 1 resolved via FIGHT-019; sub-issues 2 (color norm) + 3 (capture double-count) remain harness-side. `combat_melee_rounds` xfail correctly stays red until #2/#3 reconcile. v1 on `diff-harness`, unmerged. |
-| Branch | `master` — **pushed to `origin`** (`a0070fbc`, in sync): SPAWN-001 `47f8fd75` + FIGHT-019 `7f4d55f1` + handoff. (The `templates.py` ruff errors are part of repo-wide pre-existing lint debt — 1828 errors — that CI tolerates: `test.yml`'s `ruff check .` is `continue-on-error: true`, and the blocking `ci.yml` lint is scoped to `mud/net`/`mud/security`, which this work did not touch.) `diff-harness` — local-only, FINDING-008 #2/#3 open. |
+| Version (master) | **2.11.5** (1 commit ahead of `origin/master` — `d1e60112`, **UNPUSHED**). `diff-harness` separate, unmerged. |
+| Tests (master) | **4930 passed, 4 skipped, 0 failed** (full parallel suite, post-FIGHT-020). |
+| ROM C files audited | 40 / 43 ✅ (3 N/A). `fight.c` row: FIGHT-019 (hit model) + FIGHT-020 (`do_kill` single-delivery) closed. |
+| Differential harness | **Sound.** Surfaced FINDING-001→008. FINDING-008 sub-issue 1 (FIGHT-019) + sub-issue 3 (FIGHT-020) now resolved on `master`; sub-issue 2 (color norm) remains harness-side. `combat_melee_rounds` xfail stays red until `diff-harness` picks up master + sub-issue 2. v1 on `diff-harness`, unmerged. |
+| INV-001 follow-ups | **2 open** (same SINGLE-DELIVERY contract): (a) `broadcast_room`/`broadcast_global` dual-channel; (b) `do_surrender` return-value double-send. Both filed under INV-001. |
 
 ## Next Intended Task
 
-1. **Triage FINDING-008 sub-issues 2/3 on `diff-harness`** — color normalization
-   (`compare._norm_lines`) and the replay capture double-count — so the
-   `combat_melee_rounds` differential goes clean and combat v1 can land. Triage
-   conclusions already recorded in the latest summary + `FINDING-008`.
-2. **Settle the pre-existing `templates.py` ruff I001 errors** (`--fix`-able),
-   then push `master` (SPAWN-001 + FIGHT-019).
-3. **Merge `diff-harness` → master** once combat v1 is green.
-4. **Combat-test brittleness hardening pass** — pin `number_bits` in the unseeded
-   `tests/test_combat.py` hit/damage tests (see Notes in `FIGHT_C_AUDIT.md`).
-5. **INV-025 non-combat narration sweep** — still open from earlier.
+1. **Merge `master` → `diff-harness`** — brings FIGHT-019 + FIGHT-020 onto the
+   harness branch (resolves FINDING-008 sub-issues 1 + 3 there).
+2. **On `diff-harness`: fix sub-issue 2** (color normalization — strip ROM `{`
+   tokens in `compare._normalize_output`, reuse `mud.net.ansi.strip_ansi`) and
+   **correct `tools/diff_harness/FINDINGS.md`** (sub-issue 3 → "real engine bug,
+   FIGHT-020", not "capture artifact").
+3. **Re-run `combat_melee_rounds`** — the drunk (31 HP) does not die at step 4, so
+   the `broadcast_room` death duplicate won't affect it; expect step 4 to clear,
+   but the first divergence may **advance to step 5**. Re-run, don't declare. Then
+   merge `diff-harness` → `master`.
+4. **Close INV-001 follow-ups** (a) `broadcast_room` and (b) `do_surrender` as
+   separate failing-test-first gap-closer commits.
+5. **Combat-test brittleness** — pin `number_bits` in the unseeded
+   `tests/test_combat.py` hit/damage tests (single-file `-n0` runs are RNG-fragile;
+   the canonical parallel suite is green). Candidate hardening pass; see
+   `FIGHT_C_AUDIT.md` Notes.
