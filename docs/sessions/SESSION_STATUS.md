@@ -1,53 +1,56 @@
-# Session Status — 2026-05-29 — FIGHT-029 fixed (do_rescue SINGLE-DELIVERY)
+# Session Status — 2026-05-29 — FIGHT-030 + INV-001 (d) fixed (INV-001 family ENFORCED)
 
 ## Current State
 
 - **Active mode**: cross-file invariants (the per-file audit tracker is
-  exhausted). This session closed **FIGHT-029**, the last OPEN INV-001
-  SINGLE-DELIVERY violation from the MAGIC-003 handoff, and filed two new
-  siblings (FIGHT-030 + INV-001 (d)) while doing so.
+  exhausted). This session closed the two remaining open members of the
+  **INV-001 SINGLE-DELIVERY** family that surfaced from the `do_rescue` read
+  during FIGHT-029. **INV-001 is now fully ✅ ENFORCED — no open violations.**
 - **Last completed** (this session):
-  - **`FIGHT-029`** ✅ FIXED (master 2.11.25, `da73d821`) — `do_rescue` is void
-    in ROM (`src/fight.c:3089-3091`); `rescue()` now delivers all three legs
-    (TO_CHAR/TO_VICT/TO_NOTVICT) via the canonical `_send_to_char` channel and
-    `do_rescue` returns `""` (fail-path mailbox append also dropped). Fixes the
-    rescuer double-delivery (kill/surrender shape) AND the victim/room
-    wrong-channel (MAGIC-003 shape). Test
-    `tests/integration/test_rescue_single_delivery.py` splits the shape
-    (count-once for the rescuer + push-present/mailbox-empty for victim+bystander,
-    per the advisor catch that a pure count test false-greens on the vict/room
-    legs).
-  - **Filed `FIGHT-030`** (🔄 OPEN, `FIGHT_C_AUDIT.md`) — `do_rescue` omits
-    ROM's `check_killer(ch, fch)` (`src/fight.c:3097`), so a PC rescuing an ally
-    fighting **another PC** escapes the `PLR_KILLER` flag. Surfaced by the
-    advisor on the full `do_rescue` read. Not folded into FIGHT-029.
-  - **Filed `INV-001 (d)`** (🔄 OPEN, `CROSS_FILE_INVARIANTS_TRACKER.md`) — the
-    `"You are still recovering."` wait-state guard double-delivers (append +
-    return) across 7 `combat.py` commands + `skills/registry.py`. Not a ROM
-    line. One-sweep cleanup.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-29_FIGHT_029_RESCUE_SINGLE_DELIVERY.md](SESSION_SUMMARY_2026-05-29_FIGHT_029_RESCUE_SINGLE_DELIVERY.md)
+  - **`FIGHT-030`** ✅ FIXED (master 2.11.26, `095e268a`) — `do_rescue` now
+    calls `check_killer(caster, foe)` between the `stop_fighting` and
+    `set_fighting` pairs (`src/fight.c:3094-3099`), so a clan PC rescuing an ally
+    from **another PC** is flagged `PlayerFlag.KILLER` as ROM does. Placement is
+    load-bearing (`check_killer` early-returns once `attacker.fighting is foe`,
+    `engine.py:1291`). Test `tests/integration/test_rescue_killer_flag.py`
+    (PC-foe flags; NPC-foe doesn't).
+  - **`INV-001 (d)`** ✅ FIXED (master 2.11.27, `0956f8cf`) — the
+    `"You are still recovering."` wait-state guard double-delivered across 7
+    `combat.py` commands (`do_kick`, `do_rescue`, `do_backstab`, `do_bash`,
+    `do_berserk`, `do_flee`, `do_cast`): `char.messages.append(...)` AND
+    `return ...`. Dropped the append, kept the return.
+    `mud/skills/registry.py:163` deliberately EXCLUDED (raises not returns, no
+    production callers — single mailbox delivery, not a double; documented in
+    the tracker so it isn't re-flagged). Test
+    `tests/integration/test_still_recovering_single_delivery.py` (grep-guard on
+    all 7 sites + behavioral single-delivery through `do_kick`).
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-29_FIGHT_030_AND_STILL_RECOVERING_SWEEP.md](SESSION_SUMMARY_2026-05-29_FIGHT_030_AND_STILL_RECOVERING_SWEEP.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.11.25 |
-| Tests | 4974 passed, 4 skipped (full suite) |
+| Version | 2.11.27 |
+| Tests | 4978 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file pass complete; differential + cross-file invariants active) |
-| Active focus | INV-001 SINGLE-DELIVERY family (FIGHT-030 + INV-001 (d) open) + cross-file invariants |
+| Active focus | Cross-file invariants (INV-001 SINGLE-DELIVERY now fully ENFORCED) |
 
 ## Next Intended Task
 
-Close **`FIGHT-030`** (`FIGHT_C_AUDIT.md`) — `rom-gap-closer FIGHT-030`. Add
-`check_killer(caster, foe)` in `mud/skills/handlers.py:rescue` between the
-`stop_fighting` and `set_fighting` pairs (ROM ordering, `src/fight.c:3097`);
-test asserts the rescuer gains `PlayerFlag.KILLER` when rescuing an ally
-fighting another non-clan/non-killer PC. Stays in the `do_rescue` context.
+The INV-001 SINGLE-DELIVERY family is fully ✅ ENFORCED, so that high-yield vein
+is exhausted. Cross-file invariants remains the standing pass (per-file audit
+tracker has no ⚠️ Partial / ❌ Not Audited rows). Concrete next options:
 
-After that, the **INV-001 (d) "still recovering" sweep** is a small one-commit
-cross-command cleanup (drop the `char.messages.append` in ~8 sites; locate via
-`grep "still recovering" mud/`). Beyond those, the per-file audit tracker is
-exhausted — cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`) is the
-standing pass; the return-value-plus-mailbox (`do_rescue`/`do_surrender`/
-`do_kill`) shape keeps surfacing INV-001 siblings, so a targeted sweep for that
-pattern is high-yield.
+1. **`SHOP-PET-002`** (open, `FIGHT_C_AUDIT.md`) — `rom-gap-closer SHOP-PET-002`.
+   Pet purchase should `create_mobile(pIndexData)` (fresh re-roll) rather than
+   clone the template. Local single-function divergence.
+2. **Fresh cross-file invariant probe** — pick a candidate area not yet covered
+   by an INV row (affect ticks, position transitions, mob script triggers,
+   group/follower chain), run the 5-minute probe-then-scope (read ROM C contract
+   → read Python equivalent → one failing test), then close as a gap or file the
+   next free INV-NNN. See AGENTS.md "Cross-File Invariants".
+
+Other carried-open items (see the summary's Outstanding section): `do_cast`
+object-targeting legs, converter hardening (`convert_skills_to_json.py` lossy),
+and two known xdist flakes (`test_backstab_uses_position_and_weapon`,
+`test_combat_death.py`).
