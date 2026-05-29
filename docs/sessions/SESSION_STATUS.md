@@ -26,11 +26,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version (master) | **2.11.4** (unpushed; `diff-harness` separate, unmerged) |
+| Version (master) | **2.11.4** (pushed to `origin`, `a0070fbc`; `diff-harness` separate, unmerged) |
 | Tests (master) | **4928 passed, 4 skipped, 0 failed** (full parallel suite, post-FIGHT-019). |
 | ROM C files audited | 40 / 43 ✅ (3 N/A). `fight.c` `one_hit` row corrected — FIGHT-019 closed the hit-model divergence the per-file audit had certified at 95%. |
 | Differential harness | **Sound.** Has caught **8 issues** (FINDING-001→008). FINDING-008 sub-issue 1 resolved via FIGHT-019; sub-issues 2 (color norm) + 3 (capture double-count) remain harness-side. `combat_melee_rounds` xfail correctly stays red until #2/#3 reconcile. v1 on `diff-harness`, unmerged. |
-| Branch | `master` — **2 commits ahead of `origin`, UNPUSHED** (SPAWN-001 `47f8fd75` + FIGHT-019 `7f4d55f1`). Push blocked on 10 pre-existing ruff I001 errors in `templates.py`. `diff-harness` — local-only, FINDING-008 #2/#3 open. |
+| Branch | `master` — **pushed to `origin`** (`a0070fbc`, in sync): SPAWN-001 `47f8fd75` + FIGHT-019 `7f4d55f1` + handoff. (The `templates.py` ruff errors are part of repo-wide pre-existing lint debt — 1828 errors — that CI tolerates: `test.yml`'s `ruff check .` is `continue-on-error: true`, and the blocking `ci.yml` lint is scoped to `mud/net`/`mud/security`, which this work did not touch.) `diff-harness` — local-only, FINDING-008 #2/#3 open. |
 
 ## Next Intended Task
 
