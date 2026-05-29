@@ -1333,18 +1333,37 @@ def acid_breath(caster: Character, target: Character | None = None) -> int:
 
 
 def armor(caster: Character, target: Character | None = None) -> bool:
-    """ROM spell_armor: apply -20 AC affect with 24 tick duration."""
+    """ROM spell_armor: apply -20 AC affect with 24 tick duration.
+
+    Mirrors ROM src/magic.c:753-777 — on success sends "You feel someone
+    protecting you." to the victim (and ``act("$N is protected by your magic.")``
+    to the caster for a cross-target cast); the already-affected branch sends
+    "You are already armored." (self) / ``act("$N is already armored.")``.
+    """
     target = target or caster
     if target is None:
         raise ValueError("armor requires a target")
 
     if target.has_spell_effect("armor"):
-        _send_to_char(caster, "They are already protected.")
+        # mirroring ROM src/magic.c:758-763
+        if target is caster:
+            _send_to_char(caster, "You are already armored.")
+        else:
+            _send_to_char(caster, f"{_character_name(target)} is already armored.")
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
     effect = SpellEffect(name="armor", duration=24, level=level, ac_mod=-20)
-    return target.apply_spell_effect(effect)
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    # mirroring ROM src/magic.c:771-775 — send_to_char TO_VICT, then act TO_CHAR
+    # only when ch != victim.
+    _send_to_char(target, "You feel someone protecting you.")
+    if caster is not target:
+        _send_to_char(caster, f"{_character_name(target)} is protected by your magic.")
+    return True
 
 
 def backstab(

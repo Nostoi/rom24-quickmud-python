@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.20]
+
+### Fixed
+- **`MAGIC-002` / `FINDING-015` — affect spells emitted no ROM success message when cast through `do_cast` (armor instance).** ROM `spell_armor` (`src/magic.c:753-777`) sends "You feel someone protecting you." to the victim on a successful cast (and `act("$N is protected by your magic.")` to the caster for a cross-target cast); the already-affected branch is "You are already armored." (self) / `act("$N is already armored.")`. The Python `armor` handler (`mud/skills/handlers.py`) applied the −20 AC affect but was *silent* on success, and since `do_cast` is silent on a successful cast (FINDING-013 — all output comes from the spell function), the line was dropped entirely. The Python already-affected branch also sent the non-ROM "They are already protected." `armor` now mirrors ROM's messaging faithfully. **Surfaced by the differential testing harness** (`tools/diff_harness` `affect_armor` scenario, step 3: C `['You feel someone protecting you.']` vs py `[]`; affects/eff_ac/mana all converged — only `output` diverged). Regression: `tests/integration/test_magic_002_armor_message.py`. **Class, not one-off:** `bless` (`handlers.py:1465`) and `shield` (`handlers.py:7094`) are likewise silent on success — every affect-only spell cast via `do_cast` is missing its ROM success line; the broader sweep is filed under `MAGIC-002` in `docs/parity/MAGIC_C_AUDIT.md` as follow-up (this fixes the `armor` instance the `affect_armor` scenario exercises).
+
 ## [2.11.19]
 
 ### Fixed
