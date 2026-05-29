@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.14]
+
+### Fixed
+- **`FIGHT-025` / FINDING-009 (facet 4) — combat act() output did not capitalize its first character (CRITICAL).** ROM `act_new` (`src/comm.c:2373-2379`) upper-cases the first character of every rendered act() line, accounting for a leading `{X` colour code (`if (buf[0] == '{') buf[2] = UPPER(buf[2]); else buf[0] = UPPER(buf[0])`), so `{4the drunk's beating hits you.{x` is sent as `{4The drunk's beating hits you.{x`. Python's combat render chokepoint `mud/combat/messages.py::render_for` (which mirrors ROM's `act()` macro) substituted the PERS placeholders but never capitalized, so every NPC-initiated swing/spell line rendered lowercase ("the drunk's ..."). `render_for` now applies the ROM `act_new` capitalization (`_capitalize_act`). **Surfaced by the differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-009 `combat_melee_rounds` step-5 line 1: `the drunk's beating` vs ROM `The drunk's beating`). With FIGHT-021/022/023/024 this closes FINDING-009. Regression: `tests/integration/test_fight_025_act_capitalization.py`. (Scoped to the combat act chokepoint; `broadcast_room`/`act_format` capitalization is filed as a separate follow-up `ACT-CAP-001` — ROM capitalizes all act() output but that is a much wider surface.)
+
+### Changed
+- Hardened `tests/test_combat_skills.py::test_enhanced_damage_checks_improve`: pinned the ROM THAC0 / `number_bits(5)` attack roll to nat-19 (always hits). The test faked `number_percent`/`number_range` but left `number_bits` live, so `attack_round`'s hit roll depended on the unseeded combat-stream position — under parallel execution a sibling-shifted stream could roll a miss and leave the skill un-improved. Pre-existing brittleness (not caused by FIGHT-025; it touches no RNG), surfaced by FIGHT-025's parallel suite run. Same RNG-stream brittleness class as the 2.11.8 / FIGHT-021 / FIGHT-024 re-baselines.
+
 ## [2.11.13]
 
 ### Fixed

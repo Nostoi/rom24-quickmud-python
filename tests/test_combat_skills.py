@@ -95,6 +95,12 @@ def test_enhanced_damage_checks_improve(monkeypatch: pytest.MonkeyPatch):
 
     monkeypatch.setattr(rng_mm, "number_percent", fake_number_percent)
     monkeypatch.setattr(rng_mm, "number_range", fake_number_range)
+    # Pin the ROM THAC0 / number_bits(5) attack roll to nat-19 (always hits) so
+    # attack_round lands the swing — enhanced damage and its check_improve only
+    # fire on a hit. This test verifies skill *improvement*, not hit chance;
+    # number_bits was previously unpinned, so under parallel execution a sibling-
+    # shifted RNG stream position could roll a miss and leave the skill at 60.
+    monkeypatch.setattr(rng_mm, "number_bits", lambda *_: 19)
 
     attack_round(attacker, victim)
 
