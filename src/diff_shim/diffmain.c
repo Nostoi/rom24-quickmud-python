@@ -592,6 +592,26 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __learn=<skill/spell name>: teach the PC the skill at 100% so it can
+         * be cast/used. Mirrors nanny.c's class group_add (which make_test_char
+         * deliberately skips) but scoped per-scenario, so the existing melee
+         * scenario keeps an empty skill set. skill_lookup canonicalizes the
+         * name on this side; the Python replay resolves the same name through
+         * skill_registry. learned == 100 means deterministic success AND no
+         * check_improve RNG (src/skills.c:932 early-return), so the only RNG a
+         * cast draws is do_cast's number_percent success roll + the spell's own
+         * draws — symmetric with Python. No output. */
+        if (strncmp (line, "__learn=", 8) == 0)
+        {
+            if (ch != NULL && ch->pcdata != NULL)
+            {
+                int sn = skill_lookup (line + 8);
+                if (sn >= 0)
+                    ch->pcdata->learned[sn] = 100;
+            }
+            continue;
+        }
+
         /* __tick: run one violence_update() pulse (combat round only),
          * capturing the PC's combat output. */
         if (strncmp (line, "__tick", 6) == 0)

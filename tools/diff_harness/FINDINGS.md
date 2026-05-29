@@ -8,6 +8,68 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-013 — `do_cast` emits a spurious "You cast <spell>." line ROM never sends — 🔴 OPEN
+
+**Status:** 🔴 OPEN (surfaced 2026-05-29 by the new `spell_combat` scenario, step 5,
+the moment FINDING-012 unblocked casting). Gated in `KNOWN_DIVERGENCES`.
+
+**Scenario:** `spell_combat` — an L5 mage `__learn=magic missile` then
+`cast 'magic missile' drunk` twice, then one `__tick`.
+
+Symptom (step 5, first cast):
+```
+C : ['Your magic missile maims the drunk.']
+py: ['You cast magic missile.', 'Your magic missile maims the drunk.']
+```
+
+**Root cause:** ROM `do_cast` (`src/magic.c:553-563`) is **silent on a successful
+cast** — it deducts mana, calls `spell_fun`, and `check_improve`; the only player-
+facing output is whatever the spell function itself sends (here `damage()` →
+"Your magic missile maims the drunk."). Python's `do_cast`
+(`mud/commands/combat.py:897`) and `skill_registry.cast`
+(`mud/skills/registry.py:277`) both `return f"You cast {skill.name}."`, and the
+command dispatcher sends a command's return value to the player
+(`mud/net/connection.py:1979-2000`) — so the player sees an extra confirmation
+line ROM never produces.
+
+**Blast radius (why this is not a one-liner):** the `"You cast {skill.name}."`
+string is the return contract of both cast entry points and is asserted by 3
+existing tests — `tests/test_skills_spells_cast_listing.py:218`,
+`tests/test_skills.py:60` & `:118`. The ROM-faithful fix returns `""` on success
+(the spell handler already delivers messages via `char.messages`/`_deliver_message`)
+and re-baselines those 3 assertions (per AGENTS.md, a test contradicting ROM is the
+test's bug). File as a per-file gap before closing.
+
+---
+
+## FINDING-012 — `MobInstance` lacks `saving_throw`, crashing `saves_spell` for any NPC spell target — ✅ RESOLVED (fix applied, pending master land)
+
+**Status:** ✅ Fix applied in the `diff-harness` worktree (`mud/spawning/templates.py`);
+**pending commit + land on master**. Surfaced 2026-05-29 by the new `spell_combat`
+scenario, step 5 (the first offensive cast at an NPC).
+
+Symptom (step 5, before fix):
+```
+C : ['Your magic missile maims the drunk.']
+py: ["Spell cast failed: 'MobInstance' object has no attribute 'saving_throw'"]
+```
+(`do_cast` wraps `spell_fun` in try/except, so the `AttributeError` surfaced as a
+"Spell cast failed: …" line instead of crashing the process.)
+
+**Root cause:** ROM `CHAR_DATA.saving_throw` is a field shared by PCs **and** NPCs;
+`saves_spell` (`src/magic.c:170`) reads `victim->saving_throw` for every target. The
+Python `MobInstance` dataclass mirrors many `CHAR_DATA` fields but **omitted
+`saving_throw`**, so any `saves_spell`-using offensive spell cast at an NPC raised
+`AttributeError`. (No prior test caught it — existing spell tests target PCs or
+bypass the NPC-victim `saves_spell` path; the differential exercised it directly.)
+
+**Fix:** added `saving_throw: int = 0` to `MobInstance` (mirrors ROM `create_mobile`,
+which leaves a mob's `saving_throw` at 0 — never set from the proto). Purely
+additive (new field, default 0; no constructor or reader change). `gitnexus_impact`
+= HIGH by import-graph breadth (125 importers) but functionally low-risk (additive).
+
+---
+
 ## FINDING-011 — combat miss line drops the attack noun — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-05-29 via **FIGHT-028** (master v2.11.16). `dam_message`

@@ -27,12 +27,19 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES: dict[str, str] = {
-    # Empty — combat_melee_rounds now converges end-to-end. FINDING-011 (combat
-    # miss line dropped the attack noun) was resolved on master by FIGHT-028
-    # (v2.11.16): dam_message no longer forces the no-noun TYPE_HIT template on a
-    # miss, so an NPC with a resolved attack type renders "$n's beating misses you"
-    # like its own hit path. See FINDINGS.md FINDING-011 / FIGHT_C_AUDIT.md FIGHT-028.
-    # When a new divergence surfaces, add it here (scenario name → reason).
+    # combat_melee_rounds + movement_get_drop converge end-to-end (no entry).
+    # FINDING-012 (MobInstance lacked saving_throw → saves_spell crash) is fixed,
+    # so the spell_combat first divergence advanced to the render gap below.
+    "spell_combat": (
+        "FINDING-013 — do_cast emits a spurious 'You cast <spell>.' line ROM never "
+        "sends. ROM do_cast (src/magic.c:553-563) is silent on a successful cast; "
+        "Python do_cast (mud/commands/combat.py:897) and skill_registry.cast "
+        "(mud/skills/registry.py:277) return 'You cast {skill.name}.', which the "
+        "dispatcher sends to the player. ROM-faithful fix returns '' on success and "
+        "re-baselines 3 tests asserting the string. See FINDINGS.md FINDING-013."
+    ),
+    # When a divergence is resolved the diff goes clean, the xfail flips to XPASS,
+    # and its entry should be removed here (self-cleaning).
 }
 
 
@@ -88,6 +95,21 @@ def test_python_matches_c_golden(scen_path):
         # ordinary ROM command.
         if command.startswith("__seed="):
             rng_mm.seed_mm(int(command[len("__seed="):]))
+            response = ""
+        elif command.startswith("__learn="):
+            # Teach the PC a skill/spell at 100% (mirrors the C shim's __learn,
+            # src/diff_shim/diffmain.c). Canonicalize the name through the same
+            # registry do_cast reads, so the key matches skill.name exactly —
+            # a casing/spacing mismatch would make Python's cast silently fail
+            # while C succeeds (a harness artifact, not a parity bug).
+            from mud.skills import skill_registry
+
+            spell_name = command[len("__learn="):].strip()
+            resolved = skill_registry.find_spell(char, spell_name)
+            assert resolved is not None, f"__learn: unknown skill {spell_name!r}"
+            if char.skills is None:
+                char.skills = {}
+            char.skills[resolved.name] = 100
             response = ""
         elif command.startswith("__mload="):
             mob = spawn_mob(int(command[len("__mload="):]))
