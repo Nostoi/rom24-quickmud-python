@@ -8,14 +8,15 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-009 — combat-tick round diverges at `__tick` (violence_update) — 🔴 OPEN, gates combat v1
+## FINDING-009 — combat-tick round diverges at `__tick` (violence_update) — 🟡 PARTIAL (facets 1+3 closed, 2+4 open)
 
-**Status:** 🔴 OPEN — surfaced 2026-05-28 the moment FINDING-008 was fully closed.
-With the step-4 `kill drunk` first strike now matching (FIGHT-019 + FIGHT-020 +
-colour/`fighting`-key normalization), the `combat_melee_rounds` first divergence
-advanced to **step 5 `__tick`** — the `violence_update` combat round that resolves
-both combatants' swings:
+**Status:** 🟡 PARTIAL — surfaced 2026-05-28 the moment FINDING-008 was fully closed;
+**probed + root-caused, and facets 1+3 closed 2026-05-28 (this session).** With the
+step-4 `kill drunk` first strike matching (FIGHT-019 + FIGHT-020 + colour/`fighting`-key
+normalization), the `combat_melee_rounds` first divergence advanced to **step 5
+`__tick`** — the `violence_update` combat round that resolves both combatants' swings.
 
+Original symptom (Python iterating `character_registry` forward):
 ```
 step 5 (command='__tick') · output ·
   C  = ["The drunk's beating hits you.", 'You miss the drunk.']
@@ -23,29 +24,100 @@ step 5 (command='__tick') · output ·
 ```
 
 `__seed=777` ran before step 4, so both engines resolve this round from the same
-RNG state — the divergence is in the *combat-round resolution / rendering*. **Four
-distinct facets, each to triage (real parity bug vs harness normalization):**
+RNG state. The probe split this into **four facets, each root-caused** (two
+empirically, two by ROM source read). **Facets 1 + 3 are now closed**; the remaining
+step-5 diff is isolated to line 1 (the drunk's swing rendering — facets 2 + 4):
+```
+step 5 (command='__tick') · output ·   (after facet-3 reversed() + FIGHT-021 + FIGHT-022)
+  C  = ["The drunk's beating hits you.", 'You miss the drunk.']
+  py = ["the drunk's slice hits you.",   'You miss the drunk.']
+        └ f4: The/the · f2: beating/slice    └ line 2 IDENTICAL — facets 1+3 closed ✓
+```
 
-1. **PC round outcome differs** — C `You miss the drunk`, Python `You scratch the
-   drunk` (a hit). The round resolves to a different hit/miss from the same seed —
-   a combat-tick RNG **draw-order / draw-count** desync between ROM
-   `violence_update` and `mud/game_loop.py:violence_tick` (the step-4 `kill` first
-   strike now matches, so the desync accrues during the tick path, not `one_hit`).
-   **Probable real parity bug.**
-2. **Mob attack damtype word differs** — C `beating`, Python `slice`. The drunk's
-   attack damage-type/verb table lookup diverges (`dam_type` / `attack_table` /
-   weapon). **Probable real parity bug (data or attack-table).**
-3. **Message order differs** — C emits [mob-hits-you, you-miss-mob]; Python emits
-   [you-hit-mob, mob-hits-you]. `violence_update` iterates `char_list` in a fixed
-   order (who swings first); Python's `violence_tick` iteration order diverges.
-   **Probable real parity bug (iteration order).**
-4. **Capitalization differs** — C `The drunk's …`, Python `the drunk's …`. ROM
-   `act()` capitalizes a sentence-initial `$n`; the Python render path does not.
-   **Likely a real rendering gap (act() leading-cap), candidate INV / act-render fix.**
+### Facet 3 — message order — ✅ FIXED (worktree `reversed()`, master gap pending)
 
-**Gated:** `combat_melee_rounds` stays in `KNOWN_DIVERGENCES` (xfail) under FINDING-009.
-Needs its own probe-then-scope pass (start with the `violence_tick` RNG draw order vs
-ROM `violence_update`, then the damtype table, then iteration order + act() cap).
+ROM `violence_update` (`src/fight.c:72`) walks `char_list` **head-first**, and ROM
+inserts every new char at the HEAD of `char_list` (`src/db.c:2256-2257`
+create_mobile; `src/nanny.c:757-758` PC login) — so the list is in **reverse-creation
+order: the most-recently-loaded actor swings first.** The drunk (loaded after Tester)
+acts first. Python's `character_registry` is **append-order**, and `violence_tick`
+iterated `list(character_registry)` forward → Tester first → reversed message order.
+
+**Fix (staged in worktree, `mud/game_loop.py:violence_tick`):** iterate
+`list(reversed(character_registry))` (snapshot guards mid-tick removals, mirroring
+ROM's `ch_next = ch->next`). **Verified by re-run:** the message order flipped to
+match C — the drunk now swings first. This is load-bearing for RNG draw sequence
+(who consumes the stream first), not cosmetics. Belongs on master (combat-tick swing
+order changes game-wide → blast radius; grep callers + run full combat integration
+suite, triage non-ROM-order assertions as test bugs).
+
+Post-fix diff (swings now aligned, so facets 1/2/4 read independently):
+```
+  C  = ["The drunk's beating hits you.", 'You miss the drunk.']
+  py = ["the drunk's slice hits you.",   'You scratch the drunk.']
+        └ drunk swing: hit MATCHES ──┘    └ Tester swing: hit/miss DIFFERS (facet 1)
+          only noun (f2) + capital (f4) differ
+```
+
+### Facet 1 — `multi_hit`/`mob_hit` RNG draw-count desync — ✅ FIXED (master FIGHT-021 + FIGHT-022)
+
+**Closed 2026-05-28** as two master gap-closers — FIGHT-021 (`commit 79c4d7f7`, v2.11.9)
++ FIGHT-022 (`commit 4d9fb5c3`, v2.11.10). Convergence verified end-to-end: with the
+worktree's facet-3 `reversed()` plus both fixes, step-5 line 2 (Tester's swing) now
+reads `You miss the drunk.` on both engines (`scratch`→`miss`). Root cause + fix below.
+
+The drunk swings first in both engines and **both hit** ("hits" tier matches), yet
+Tester (2nd swing) **misses in C but scratches in Python** — Tester starts its
+`one_hit` from a *different RNG stream position* because the drunk's swing consumes a
+**different number of draws** in Python. Root cause (read in `mud/combat/engine.py`
+`multi_hit` vs ROM `src/fight.c` `multi_hit`/`mob_hit`):
+
+- **(a) Guarded second/third-attack draws.** Python guards the second/third-attack
+  `number_percent()` behind `if skill > 0` (`engine.py:346,362`). ROM evaluates
+  `number_percent() < chance` **unconditionally** — the draw fires even when
+  `chance==0` (a 0-skill attacker). So a no-skill attacker draws 0 in Python, 2 in ROM.
+- **(b) No `mob_hit`.** Python's `multi_hit` treats PC and NPC identically. ROM
+  `multi_hit` for an NPC calls `mob_hit` and returns — a separate path that (after
+  the unconditional 2nd/3rd `number_percent()`) draws `number_range(0,2)` (mob-cast
+  check) and `number_range(0,8)` (mob-skill check) when `ch->wait==0`. Python's NPC
+  path omits both.
+
+For the drunk (NPC, no second/third skill, `wait==0` on the first `__tick`): **ROM
+draws 4 values after `one_hit` (2× `number_percent` + `number_range(0,2)` +
+`number_range(0,8)`) that Python draws 0 of** → Python's stream is 4 draws behind
+when Tester swings. **Real, broad parity bug** — affects every combat round
+game-wide, latent because the suite uses seeded synthetic combat that never compared
+against a ROM golden stream. Master gap-closer(s); likely two rows (the unconditional
+2nd/3rd draw, and a faithful `mob_hit` port). Note `engine.py` + `game_loop.py` are on
+the 32KB gitnexus-gap list — `gitnexus_impact` under-reports; grep + integration suite.
+
+### Facet 2 — mob attack noun ("beating" → "slice") — 🔴 OPEN (real)
+
+C `beating`, Python `slice`. ROM `ch->dam_type` is an **attack_table index**
+(`src/const.c`: index 13 = `{"beating", "beating", DAM_BASH}`, index 0 =
+`{"slice","slice",DAM_SLASH}`); the noun is `attack_table[dam_type].noun`
+(`src/fight.c:2176`, via `dt = TYPE_HIT + ch->dam_type` for an unarmed mob,
+`fight.c:420-424`). Python conflates `dam_type` with a **DamageType damage-class**
+(`templates.py:366` `_parse_damage_type`, `:396-403`; `engine.py:403`
+`attack_index = attacker.dam_type or 0`), defaulting the index to 0 = "slice". The
+`.are` damtype word "beating" is read into `proto.damage_type`
+(`mud/loaders/mob_loader.py:152`) but never mapped through an `attack_lookup`. **Real
+parity bug** — bigger than cosmetic: the correct index also fixes the damage *class*
+(SLASH→BASH), which feeds AC-index and RIV selection. Master gap-closer (verify
+`_parse_damage_type` first — confirm whether it string-matches "beating" to anything
+and whether `proto.dam_type` is ever set numerically).
+
+### Facet 4 — act() sentence-initial capitalization ("the" → "The") — 🔴 OPEN (real rendering)
+
+C `The drunk's …`, Python `the drunk's …`. ROM `act_new` (`src/comm.c`) uppercases the
+first rendered character (`buf[0] = UPPER(buf[0])`). Python's act/`dam_message` render
+path does not. **Real rendering gap.** Fix at Python's single act/`dam_message`
+chokepoint (capitalize once — do NOT sprinkle `.capitalize()`). Candidate INV
+(act-render contract) or a per-file act row. Master gap-closer.
+
+**Gated:** `combat_melee_rounds` stays in `KNOWN_DIVERGENCES` (xfail) under FINDING-009
+until facets 1, 2, 4 land on master (facet 3's `reversed()` is staged in the worktree).
+The diff goes clean — and the xfail auto-clears — only when all four are resolved.
 
 ---
 
