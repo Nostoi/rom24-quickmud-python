@@ -1741,3 +1741,54 @@ def test_goto_bamf_visible_to_all_when_not_wizinvis() -> None:
     do_goto(admin, str(target.vnum))
 
     assert any("swirling mist" in m for m in witness.messages)
+
+
+def test_violate_suppresses_bamf_for_subtrust_witnesses_when_wizinvis() -> None:
+    # mirrors ROM src/act_wiz.c:1026-1051 — do_violate sends the bamfout/bamfin
+    # (swirling-mist) line via act(..., rch, TO_VICT) ONLY to room occupants
+    # where get_trust(rch) >= ch->invis_level, identical to do_goto. A wiz-invis
+    # immortal's departure/arrival is suppressed ENTIRELY for sub-trust witnesses
+    # (gated on invis_level only, not full can_see). WIZ-046.
+    source = _room(9140, name="Vault Antechamber")
+    target = _room(9141, owner="Keeper", name="Sealed Vault")  # owner → private (do_violate gate)
+
+    ghost = _imm("Phantom", source.vnum, trust=60)
+    ghost.invis_level = 60  # wiz-invis at trust 60
+
+    # Departure-leg witnesses (source room, ROM :1026-1035).
+    src_high = _imm("Archon", source.vnum, trust=60)  # trust >= invis_level → sees it
+    src_low = _imm("Acolyte", source.vnum, trust=10)  # trust < invis_level → suppressed
+    # Arrival-leg witnesses (destination room, ROM :1041-1051).
+    dst_high = _imm("Warden", target.vnum, trust=60)
+    dst_low = _imm("Novice", target.vnum, trust=10)
+
+    for witness in (src_high, src_low, dst_high, dst_low):
+        witness.messages.clear()
+
+    do_violate(ghost, str(target.vnum))
+
+    # ROM suppresses the line for the sub-trust witness on BOTH legs; it is not
+    # merely name-masked to "someone". Distinct verbs ("leaves" vs "appears")
+    # pin each broadcast to its own loop.
+    assert any("leaves in a swirling mist" in m for m in src_high.messages)
+    assert not any("swirling mist" in m for m in src_low.messages)
+    assert any("appears in a swirling mist" in m for m in dst_high.messages)
+    assert not any("swirling mist" in m for m in dst_low.messages)
+
+
+def test_violate_bamf_visible_to_all_when_not_wizinvis() -> None:
+    # Regression guard: with invis_level == 0 the gate get_trust(rch) >= 0 is
+    # always true, so a normal immortal's swirling-mist line reaches every
+    # witness exactly as before WIZ-046. ROM src/act_wiz.c:1028.
+    source = _room(9142, name="Open Foyer")
+    target = _room(9143, owner="Keeper", name="Guarded Cell")  # owner → private
+
+    admin = _imm("Overseer", source.vnum, trust=60)
+    admin.invis_level = 0
+
+    witness = _imm("Onlooker", source.vnum, trust=10)
+    witness.messages.clear()
+
+    do_violate(admin, str(target.vnum))
+
+    assert any("swirling mist" in m for m in witness.messages)

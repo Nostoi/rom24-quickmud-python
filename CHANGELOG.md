@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.31]
+
+### Fixed
+- **`WIZ-046` — `do_violate` showed a wiz-invis immortal's bamf departure/arrival (swirling-mist) line to *every* witness, the same identity-leak as WIZ-045.** ROM `do_violate` (`src/act_wiz.c:1026-1051`) is structurally identical to `do_goto`: it loops `ch->in_room->people` and sends each bamfout/bamfin (or default swirling-mist) line via `act(..., rch, TO_VICT)` **only** to occupants where `get_trust(rch) >= ch->invis_level`, so a wiz-invis immortal's departure/arrival is **suppressed entirely** for sub-trust witnesses. The Python `do_violate` (`mud/commands/imm_server.py`) routed its four bamf broadcasts through the ungated `_act_room`, leaking the line — and thus the immortal's presence — to all witnesses. Now `do_violate` reuses the `_act_room_invis_gated` helper introduced for WIZ-045 (per-recipient `get_trust(person) >= char.invis_level` gate; the `_act_room` import was swapped). With `invis_level == 0` (normal immortal) the gate is always true, so the announce reaches everyone exactly as before. Regression: `tests/integration/test_act_wiz_command_parity.py::test_violate_suppresses_bamf_for_subtrust_witnesses_when_wizinvis` (wiz-invis → high-trust witness sees the line, sub-trust witness sees nothing) + `::test_violate_bamf_visible_to_all_when_not_wizinvis` (regression guard for `invis_level == 0`). Closes the open follow-up filed with WIZ-045. See `docs/parity/ACT_WIZ_C_AUDIT.md:WIZ-046`.
+
 ## [2.11.30]
 
 ### Fixed

@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 
 from mud.commands.imm_commands import (
     LEVEL_HERO,
-    _act_room,
+    _act_room_invis_gated,
     _char_from_room,
     _char_to_room,
     find_location,
@@ -185,24 +185,29 @@ def do_violate(char: Character, args: str) -> str:
     if getattr(char, "fighting", None):
         char.fighting = None
 
+    # Announce departure (bamfout) — ROM src/act_wiz.c:1026-1035 gates each
+    # recipient on get_trust(rch) >= ch->invis_level (identical to do_goto), so a
+    # wiz-invis immortal's exit is suppressed entirely for sub-trust witnesses
+    # rather than name-masked (WIZ-046).
     old_room = getattr(char, "room", None)
     if old_room:
         pcdata = getattr(char, "pcdata", None)
         bamfout = getattr(pcdata, "bamfout", None) if pcdata else None
         if bamfout:
-            _act_room(old_room, char, bamfout)
+            _act_room_invis_gated(old_room, char, bamfout)
         else:
-            _act_room(old_room, char, "$n leaves in a swirling mist.")
+            _act_room_invis_gated(old_room, char, "$n leaves in a swirling mist.")
 
     _char_from_room(char)
     _char_to_room(char, location)
 
+    # Announce arrival (bamfin) — same invis_level gate, ROM src/act_wiz.c:1041-1051.
     pcdata = getattr(char, "pcdata", None)
     bamfin = getattr(pcdata, "bamfin", None) if pcdata else None
     if bamfin:
-        _act_room(location, char, bamfin)
+        _act_room_invis_gated(location, char, bamfin)
     else:
-        _act_room(location, char, "$n appears in a swirling mist.")
+        _act_room_invis_gated(location, char, "$n appears in a swirling mist.")
 
     from mud.commands.inspection import do_look
 

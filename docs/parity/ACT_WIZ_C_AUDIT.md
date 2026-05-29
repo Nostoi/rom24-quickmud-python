@@ -1,6 +1,6 @@
 # `act_wiz.c` Audit — ROM 2.4b6 → QuickMUD-Python Parity
 
-**Status:** ✅ AUDITED — 2026-05-19 hardened `wiznet` to enforce ROM's immortal gate on the descriptor path too; 2026-05-29 a cross-file INV-027 probe surfaced the wizinvis bamf announce-suppression gate (WIZ-045 `do_goto` ✅ FIXED, WIZ-046 `do_violate` ⚠️ OPEN follow-up)  
+**Status:** ✅ AUDITED — 2026-05-19 hardened `wiznet` to enforce ROM's immortal gate on the descriptor path too; 2026-05-29 a cross-file INV-027 probe surfaced the wizinvis bamf announce-suppression gate (WIZ-045 `do_goto` ✅ FIXED, WIZ-046 `do_violate` ✅ FIXED)  
 **Date:** 2026-05-14  
 **ROM C:** `src/act_wiz.c` (4685 lines, immortal/admin command family)  
 **Python:** `mud/wiznet.py`, `mud/commands/imm_commands.py`, `mud/commands/imm_admin.py`, `mud/commands/imm_server.py`, `mud/commands/imm_display.py`, `mud/commands/imm_punish.py`, `mud/commands/imm_load.py`, `mud/commands/imm_search.py`, `mud/commands/imm_set.py`, `mud/commands/imm_emote.py`, `mud/commands/admin_commands.py`, `mud/commands/inventory.py`, `mud/commands/remaining_rom.py`, `mud/commands/alias_cmds.py`, `mud/commands/typo_guards.py`  
@@ -129,13 +129,13 @@ Surfaced 2026-05-29 while correcting the INV-027 candidate (whose stated ROM
 mechanism — "`act()` filters every recipient by `get_trust >= invis_level`" — was
 wrong; the gate is per-command, here in `do_goto`/`do_violate`, not inside `act()`).
 
-Python now (WIZ-045, `do_goto`):
-- ✅ `do_goto`'s departure/arrival broadcasts apply the per-recipient
-  `get_trust(person) >= char.invis_level` gate (ROM `act_wiz.c:965-996`):
-  sub-trust witnesses receive nothing, `trust >= invis_level` witnesses receive
-  the line, and `invis_level == 0` (normal immortal) keeps everyone seeing it.
-- ⚠️ `do_violate` (WIZ-046) shares the identical pattern and the same leaky
-  `_act_room`; left Open as a scoped follow-up.
+Python now (WIZ-045 `do_goto`, WIZ-046 `do_violate`):
+- ✅ Both `do_goto` and `do_violate`'s departure/arrival broadcasts apply the
+  per-recipient `get_trust(person) >= char.invis_level` gate (ROM
+  `act_wiz.c:965-996` / `:1026-1057`) via the shared `_act_room_invis_gated`
+  helper: sub-trust witnesses receive nothing, `trust >= invis_level` witnesses
+  receive the line, and `invis_level == 0` (normal immortal) keeps everyone
+  seeing it.
 
 ### `do_protect`
 
@@ -217,7 +217,7 @@ Python now:
 | `WIZ-043` | HIGH | `src/act_wiz.c:1258-1260` | `mud/commands/imm_search.py:662` | `do_ostat` Number/Weight line hardcoded `1/1 weight/weight/weight` instead of `1/get_obj_number(obj) obj->weight/get_obj_weight(obj)/get_true_weight(obj)`. | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_ostat_number_and_weight_uses_helpers` |
 | `WIZ-044` | LOW | `src/act_wiz.c:1187` | `mud/commands/imm_search.py:600` | `do_rstat` Objects list had 2 spaces after colon; ROM has 3 (`".\n\rObjects:   "`). | ✅ FIXED — `tests/integration/test_act_wiz_command_parity.py::test_rstat_objects_spacing_matches_rom` |
 | `WIZ-045` | HIGH | `src/act_wiz.c:965-996` (`do_goto`) | `mud/commands/imm_commands.py:164` (`do_goto`), `mud/commands/imm_commands.py:473` (`_act_room`) | `do_goto`'s bamfout/bamfin (and default swirling-mist) departure/arrival broadcasts route through `_act_room`, which substitutes `$n`→`char.name` once and sends the SAME string to **every** room occupant. ROM loops `ch->in_room->people` and sends each line via `act(..., rch, TO_VICT)` **only** where `get_trust(rch) >= ch->invis_level`, so a wiz-invis immortal's departure/arrival is **suppressed entirely** for sub-trust witnesses (gated on `invis_level` only, not full `can_see`). Python leaked the line — and thus the immortal's presence — to all witnesses. | ✅ FIXED — `do_goto` routes both bamf broadcasts through `_act_room_invis_gated` (per-recipient `get_trust(person) >= char.invis_level`); `tests/integration/test_act_wiz_command_parity.py::test_goto_suppresses_bamf_for_subtrust_witnesses_when_wizinvis` + `::test_goto_bamf_visible_to_all_when_not_wizinvis` |
-| `WIZ-046` | HIGH | `src/act_wiz.c:1026-1057` (`do_violate`) | `mud/commands/imm_server.py:163` (`do_violate`) | `do_violate` shares `do_goto`'s bamf announce via the same `_act_room` helper and the same missing `get_trust(rch) >= ch->invis_level` per-recipient suppression gate (WIZ-045 root cause). Filed as a sibling of WIZ-045; scoped to a follow-up commit (one gap = one test = one commit). | ⚠️ OPEN — follow-up to WIZ-045 |
+| `WIZ-046` | HIGH | `src/act_wiz.c:1026-1057` (`do_violate`) | `mud/commands/imm_server.py:163` (`do_violate`) | `do_violate` shares `do_goto`'s bamf announce via the same `_act_room` helper and the same missing `get_trust(rch) >= ch->invis_level` per-recipient suppression gate (WIZ-045 root cause). Filed as a sibling of WIZ-045; scoped to a follow-up commit (one gap = one test = one commit). | ✅ FIXED — `do_violate` now routes its four bamf broadcasts through `_act_room_invis_gated` (same per-recipient gate as WIZ-045); import swapped from `_act_room`. `tests/integration/test_act_wiz_command_parity.py::test_violate_suppresses_bamf_for_subtrust_witnesses_when_wizinvis` + `::test_violate_bamf_visible_to_all_when_not_wizinvis` |
 
 ## Phase 4 — Closures
 
@@ -340,9 +340,10 @@ Completed this session (WIZ-039..044):
 - `do_ostat` Number/Weight now uses `_object_carry_number(obj)`, `getattr(obj, "weight", ...)` with prototype fallback, `_get_obj_weight(obj)` per ROM `get_obj_number` / `get_obj_weight` / `get_true_weight`.
 - `do_rstat` Objects line now has 3 spaces after colon per ROM.
 
-Still outstanding: WIZ-046 — `do_violate` shares `do_goto`'s wizinvis bamf
-announce-suppression gate (same `_act_room` root cause as WIZ-045); scoped to a
-follow-up commit.
+WIZ-046 ✅ FIXED (2026-05-29) — `do_violate` now routes its four bamf
+broadcasts through the shared `_act_room_invis_gated` helper (same per-recipient
+`get_trust(person) >= char.invis_level` gate as WIZ-045); the leaky `_act_room`
+import was swapped. No outstanding gaps in this file.
 
 Validation:
 - `pytest tests/integration/test_act_wiz_command_parity.py -q` — `108 passed` (+6 new tests)
