@@ -5,8 +5,15 @@
 - **Active mode**: cross-file invariants (the per-file audit tracker is
   exhausted — no ⚠️ Partial / ❌ Not Audited rows). This session closed the named
   next task **`SHOP-PET-002`** and a fresh INV-001 SINGLE-DELIVERY member the
-  advisor surfaced inside the same function. **INV-001 is again fully ✅ ENFORCED
-  — no open violations.**
+  advisor surfaced inside the same function. **INV-001 double-delivery (members
+  a–e) is fully ✅ ENFORCED.** One INV-001-family **wrong-channel** item remains
+  OPEN/tracked (not a double-delivery): the pet-shop haggle (`"You haggle the
+  price down to N coins."`) and `add_follower` "… now follows you." lines are
+  mailbox-only where ROM sends immediately (`src/act_obj.c:2606-2607`); the
+  haggle wrong-channel also spans the `do_buy`/`do_sell` item branches — a
+  shop-wide MAGIC-003-style channel pass, see the INV-001 row + Next Intended
+  Task. (Do NOT read this as "no open violations" — that phrasing is what let
+  INV-001 (e) hide; skim the cross-file tracker before claiming a file done.)
 - **Last completed** (this session):
   - **`SHOP-PET-002`** ✅ FIXED (master 2.11.28, `d4df5356`) — `do_buy`'s pet
     branch now re-creates the pet via `spawn_mob(proto.vnum)` (the
@@ -35,7 +42,7 @@
 | Version | 2.11.29 |
 | Tests | 4980 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file pass complete; differential + cross-file invariants active) |
-| Active focus | Cross-file invariants (INV-001 SINGLE-DELIVERY fully ENFORCED again) |
+| Active focus | Cross-file invariants (INV-001 double-delivery a–e ENFORCED; one wrong-channel item open/tracked) |
 
 ## Next Intended Task
 

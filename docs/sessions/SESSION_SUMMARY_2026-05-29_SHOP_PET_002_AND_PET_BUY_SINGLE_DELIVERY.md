@@ -131,8 +131,11 @@ Commits: `d4df5356` (SHOP-PET-002), `1ccf9b1e` (INV-001 (e)).
 ## Next Steps
 
 Per-file audit tracker remains exhausted (no ⚠️ Partial / ❌ Not Audited rows);
-**cross-file invariants is the standing pass**. INV-001 SINGLE-DELIVERY is again
-fully ✅ ENFORCED with member (e) closed. Concrete next candidates:
+**cross-file invariants is the standing pass**. INV-001 **double-delivery**
+(members a–e) is fully ✅ ENFORCED; one INV-001-family **wrong-channel** cousin
+remains open/tracked (the pet-shop haggle + "now follows you" lines are
+mailbox-only where ROM sends immediately — see Outstanding / candidate 2 below).
+Concrete next candidates:
 
 1. Probe a fresh cross-file invariant area not yet covered by an INV row (affect
    ticks, position transitions, mob script triggers, group/follower chain) —
