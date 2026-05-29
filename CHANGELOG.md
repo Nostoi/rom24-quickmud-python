@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.16]
+
+### Fixed
+- **`FIGHT-028` / FINDING-011 — combat miss line dropped the attack noun (IMPORTANT).** ROM `dam_message` (`src/fight.c:2157`) chooses its message template purely on `dt == TYPE_HIT` vs not — a miss (`dam == 0`) only swaps the verb to "misses"; it never changes which template branch renders. So an NPC with a resolved attack type (e.g. the drunk #3064, `dt = TYPE_HIT + 13` "beating") that *misses* renders `"The drunk's beating misses you."` (noun + "misses"), exactly like its own *hit* path. Python's `mud/combat/messages.py::dam_message` had a `percent <= 0` early-return that forced the **no-noun** `TYPE_HIT` template for *any* miss — and for any low-damage hit that rounded to percent 0 — regardless of `dt`, so it rendered `"The drunk misses you."`. Deleted the block so the no-noun output is keyed solely on `attack is None` (i.e. `dt == TYPE_HIT`); `_severity_terms` already returns the "miss"/"misses" verbs for `damage <= 0`, and the existing noun branch handles the resolved-`dt` case. **Surfaced by the differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-011 `combat_melee_rounds` step 7, once FIGHT-027 advanced convergence past the round-2 damage divergence). Regression: `tests/integration/test_fight_028_miss_attack_noun.py`. Closes FINDING-011.
+
+### Changed
+- Re-baselined 5 stale combat-message unit assertions that asserted the noun-less miss form ROM never produces for `dt != TYPE_HIT`: `tests/test_combat.py::test_kick_command_failure` & `::test_ac_influences_hit_chance`, `tests/test_combat_thac0_engine.py::test_thac0_path_hit_and_miss` & `::test_weapon_skill_influences_thac0`, and `tests/test_skills.py::test_kick_failure`. Each uses an attacker with a resolved `dt` (a `kick` skill noun, or a `dam_type=BASH` → attack-table noun), so ROM renders `"Your kick/slice misses ..."` — the previous `"You miss ..."` expectation was the bug, not the code (per AGENTS.md, a test contradicting ROM is the test's bug). No production behavior change beyond FIGHT-028 itself.
+
 ## [2.11.15]
 
 ### Fixed

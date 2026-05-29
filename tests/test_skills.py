@@ -686,7 +686,9 @@ def test_kick_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 
     result = skill_handlers.kick(attacker, victim)
 
-    assert result == "{2You miss Orc.{x"
+    # FIGHT-028: dt=gsn_kick != TYPE_HIT, so ROM dam_message renders the skill
+    # noun even on a miss (src/fight.c:2200-2211): "Your kick misses".
+    assert result == "{2Your kick misses Orc.{x"
     assert victim.hit == 100
     assert attacker.fighting is victim
     assert victim.fighting is attacker
