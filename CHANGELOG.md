@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.18]
+
+### Fixed
+- **`FINDING-012` — casting a `saves_spell` offensive spell at an NPC crashed (`MobInstance` lacked `saving_throw`).** ROM `CHAR_DATA.saving_throw` is a field shared by PCs and NPCs; `saves_spell` (`src/magic.c:170`) reads `victim->saving_throw` for every target. The Python `MobInstance` dataclass mirrors many `CHAR_DATA` fields but omitted `saving_throw`, so any offensive spell routing through `saves_spell` (magic missile, fireball, etc.) raised `AttributeError: 'MobInstance' object has no attribute 'saving_throw'` when cast at a real NPC — surfacing as a "Spell cast failed: …" line (`do_cast` wraps the spell function in try/except). No prior test caught it: existing spell tests use a `Character` victim or monkeypatch `saves_spell` away. Added `saving_throw: int = 0` to `MobInstance` (mirrors ROM `create_mobile`, which leaves a mob's `saving_throw` at 0). **Surfaced by the differential testing harness** (new `tools/diff_harness` `spell_combat` scenario, step 5). Regression: `tests/integration/test_finding_012_npc_spell_save.py`.
+
 ## [2.11.17]
 
 ### Changed

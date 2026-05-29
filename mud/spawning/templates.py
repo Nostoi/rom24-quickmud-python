@@ -270,6 +270,12 @@ class MobInstance:
     damage: tuple[int, int, int] = (0, 0, 0)
     dam_type: int = 0
     armor: tuple[int, int, int, int] = (0, 0, 0, 0)
+    # ROM CHAR_DATA.saving_throw is shared by PCs and NPCs (src/merc.h); saves_spell
+    # reads victim->saving_throw for every target (src/magic.c:170). create_mobile
+    # leaves it 0 for mobs (src/db.c — never set from the proto), so default 0.
+    # Without this field, casting any saves_spell offensive spell at an NPC crashed
+    # with AttributeError (FINDING-012, differential spell_combat scenario).
+    saving_throw: int = 0
     off_flags: int = 0
     imm_flags: int = 0
     res_flags: int = 0
