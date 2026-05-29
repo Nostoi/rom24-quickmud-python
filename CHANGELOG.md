@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.15]
+
+### Fixed
+- **`FIGHT-027` / FINDING-010 — unarmed-NPC damage used the PC unarmed formula instead of the mob damage dice (CRITICAL).** ROM `one_hit` (`src/fight.c:522-560`) routes an NPC attacker with no wielded weapon through a dedicated branch that rolls the mob's own damage dice: `dam = dice(ch->damage[DICE_NUMBER], ch->damage[DICE_TYPE])` (ROM `convert_mobile` upgrades *every* mob to `new_format` at load, so the dice path is universal at runtime — the `!new_format` `number_range(ch->level/2, ch->level*3/2)` sub-branch is dead code). `mud/combat/engine.py::calculate_weapon_damage` had **no NPC branch**, so an unarmed mob fell through to the PC-unarmed `else` clause `number_range(1 + 4*skill/100, 2*ch->level/3*skill/100)`. For the drunk #3064 (level 2, damage dice 1d6, skill_total ≈ 50) that collapsed to a **degenerate `number_range(3, 0)`** (`from > to` → ROM returns `from` = constant 3, consuming **zero** `number_mm` draws), so the Python drunk dealt a constant 3 every hit where ROM rolls `dice(1, 6)` (range 1–6, one `number_mm` draw) — *and* the missing draw desynced the shared combat RNG stream from round 2 onward. `calculate_weapon_damage` now resolves an unarmed NPC (`is_npc and wield is None`) via `rng_mm.dice(damage[DICE_NUMBER], damage[DICE_TYPE])`, using the `MobInstance.damage` tuple (the `[2]` bonus is applied later via damroll). **Surfaced by the differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-010 `combat_melee_rounds` step 6: C `"beating scratches you"` (1 dmg, ≤5% tier) vs py `"beating hits you"` (3 dmg, ≤15% tier); the C drunk's round-4 hit of 5 is unreachable by `number_range(level/2, level*3/2)`=1–3, proving the dice path). The harness now converges on all 8 steps (hp + severity verbs match end-to-end); the first divergence advanced to a *new* miss-line rendering gap (filed as FINDING-011 / `FIGHT-028`: ROM `"$n's beating misses you"` vs py `"$n misses you"`). Regression: `tests/integration/test_fight_027_npc_unarmed_damage_dice.py`. Closes FINDING-010.
+
 ## [2.11.14]
 
 ### Fixed
