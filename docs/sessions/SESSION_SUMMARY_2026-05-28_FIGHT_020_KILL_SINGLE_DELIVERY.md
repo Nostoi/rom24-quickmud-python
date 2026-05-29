@@ -129,3 +129,33 @@ Closed the higher-impact follow-up in the same session.
 - **Still open**: INV-001 follow-up (b) `do_surrender` (NPC-ignores branch
   returns `multi_hit` output — return-value double-send + wrong-perspective
   leak).
+
+## Continuation — INV-001 follow-up (b) do_surrender — ✅ FIXED (master, 2.11.7, commit `4d829d49`)
+
+Closed the last open INV-001 instance — INV-001 SINGLE-DELIVERY is now fully
+enforced (`do_kill` + `broadcast_room`/`broadcast_global` + `do_surrender`).
+
+- **Python**: `mud/commands/combat.py::do_surrender`
+- **ROM C**: `src/fight.c:3239-3240` (`multi_hit(mob, ch, TYPE_UNDEFINED)` — void)
+- **Gap**: the NPC-ignores-surrender branch did
+  `attack_messages = multi_hit(opponent, char); messages.extend(attack_messages)`
+  and returned them, so the surrendering PC received the NPC counterattack twice:
+  the correct TO_VICT push (`{4the brute hits you{x`) AND the returned
+  attacker-perspective line (`{2You hit …{x`) — return-value double-send +
+  wrong-perspective leak.
+- **Fix**: discard `multi_hit`'s return like `do_kill`; output reaches the PC via
+  the TO_VICT push and the room via TO_NOTVICT.
+- **Tests**: `tests/integration/test_surrender_single_delivery.py` (connected PC
+  surrenders → receives the `{4` TO_VICT line once, no `{2` attacker-perspective
+  leak). Targeted serial verification (surrender + kill + broadcast + thac0 +
+  defense suites): 14/14 green.
+
+### Combat-test brittleness surfaced (now the top remaining task)
+
+A clean parallel full-suite run flaked `test_one_hit_uses_equipped_weapon` — one
+of ~8 unseeded hit-dependent tests in `tests/test_combat.py` that resolve the
+FIGHT-019 THAC0 roll without pinning `number_bits`, so they pass/fail on RNG
+stream position (xdist worker grouping). Pinned that one (`number_bits = 19`);
+the other 7 remain and should be hardened next (see SESSION_STATUS task 5). This
+is RNG-neutral to the do_surrender change (verified: the flaky test does not
+involve surrender and passes in isolation).
