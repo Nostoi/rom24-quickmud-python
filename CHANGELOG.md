@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.32]
+
+### Changed
+- **`INV-027` (ACT-PERS-NAME-MASKING) probed — violation confirmed, enforcement attempted + reverted, blocker pinned.** ROM `act()` `$n`/`$N` substitutions mask an unseen actor's name to `"someone"` via `PERS`→`can_see` (`src/merc.h:2145`, `src/handler.c:2618-2664`) — confirmed for both generic `act(TO_ROOM)` and wiznet (`src/act_wiz.c:188` passes the actor as `vch`). `mud/utils/act.py:act_format._pers` lacks that gate (only the combat path via `mud/world/vision.py:pers` is faithful). The obvious fix — route `_pers` through `can_see_character` gated on `viewer is not None` — was implemented and **reverted**: it regresses 15 tests including real production wiznet paths (`announce_wiznet_new_player` passes a roomless `SimpleNamespace` placeholder, so `can_see_character`'s `room is None → False` bail renders **"Newbie alert! someone sighted."** / **"someone groks the fullness of his link."**). ROM `can_see` has no `victim->in_room` check, so enforcement is **blocked** on a separate `can_see_character` room-None reconciliation (its own gap: 43 `act_format` callers + combat depend on the helper). The same-room masking contract is now locked as a **strict `xfail`** in `tests/integration/test_inv027_act_pers_name_masking.py` (plus a passing `recipient=None` boundary guard); `_pers` carries an INV-027 NOTE. No production behavior change in this release. See `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-027 "Probe outcome (2026-05-29)".
+
 ## [2.11.31]
 
 ### Fixed

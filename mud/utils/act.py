@@ -54,7 +54,17 @@ def _possessive_pronoun(sex: Sex | None) -> str:
 
 
 def _pers(target: Any | None, viewer: Any | None) -> str:
-    """Return ROM-style perspective aware names."""
+    """Return ROM-style perspective aware names.
+
+    NOTE (INV-027, ACT-PERS-NAME-MASKING): ROM ``PERS(ch, looker)``
+    (``src/merc.h:2145``) masks ``$n``/``$N`` to ``"someone"`` when
+    ``can_see(looker, ch)`` is false. This helper does **not** apply that gate
+    yet — see ``docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`` INV-027 for why
+    the obvious fix (route through ``vision.can_see_character``) over-masks
+    Python's roomless synthetic wiznet actors (e.g. the
+    ``announce_wiznet_new_player`` placeholder) and is blocked on a prerequisite
+    ``can_see_character`` room-None reconciliation.
+    """
 
     if target is None:
         return "someone"

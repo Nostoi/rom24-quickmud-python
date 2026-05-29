@@ -146,7 +146,7 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**Open: INV-027 candidate — ACT-PERS-NAME-MASKING (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; still not enforced).**
+**Open: INV-027 candidate — ACT-PERS-NAME-MASKING (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; still OPEN). See the "Probe outcome (2026-05-29)" bullet below.**
 
 > **⚠️ CORRECTION (2026-05-29).** The original framing of this candidate
 > (below, struck) claimed `act()` *suppresses the whole line* for sub-trust
@@ -207,6 +207,49 @@ the cross-file work is tracked here.
 - **Risk if left unenforced**: an invisible/wiz-invis actor's **name** leaks to
   witnesses who shouldn't see it across `act_format`/`_act_room` broadcasts
   (movement, give, spec_fun narration, etc.) — they should read "someone".
+- **Probe outcome (2026-05-29) — violation CONFIRMED; enforcement ATTEMPTED +
+  REVERTED; blocker PINNED.** The probe separated the caller classes (per-recipient
+  vs `recipient=None` broadcast-once, as the deferral note asked) and verified the
+  ROM contract against primary source: `act_new` `$n`/`$N` → `PERS(ch, looker)`
+  (`src/merc.h:2145`) → `can_see(looker, ch)` (`src/handler.c:2618-2664`), for both
+  generic `act(TO_ROOM)` **and** wiznet (`src/act_wiz.c:188` passes the actor as
+  `vch`, so `$N` is PERS-masked per listener). So masking is the correct ROM
+  mechanism. The obvious fix — route `act_format._pers` through
+  `mud/world/vision.py:can_see_character`, gated on `viewer is not None` — was
+  implemented and **fails the full suite with 15 regressions** (`test_wiznet` ×7,
+  `test_account_auth` ×4, `test_spec_funs` ×4):
+  - **Pinned blocker — roomless synthetic actors trip `can_see_character`'s
+    room-None bail.** `mud/world/vision.py:can_see_character:161-164` returns
+    `False` when `observer.room is None or target.room is None`. ROM `can_see`
+    (`src/handler.c:2618-2664`) has **no `victim->in_room` check at all** and only
+    dereferences `ch->in_room` for the dark check (`:2638`), after the
+    trust/incog/holylight/blind gates — ROM playing chars always have rooms, so the
+    branch handles a state ROM never reaches. Python's wiznet path **deliberately
+    passes roomless actors**: `announce_wiznet_new_player`
+    (`mud/net/connection.py:207`) builds a `SimpleNamespace(name=…, sex=…)`
+    placeholder with no room. Routing `_pers` through `can_see_character` therefore
+    renders **"Newbie alert! someone sighted."** / **"someone groks the fullness of
+    his link."** in production — a real user-facing regression, not a test artifact.
+  - **Secondary**: `test_wiznet`/`test_spec_funs` construct actors as
+    `SimpleNamespace` without `room`/`has_affect`, so `can_see_character` either
+    over-masks (room-None) or raises `AttributeError` even where masking would be
+    ROM-correct (same-room invisible bite). Any future enforcement needs those mocks
+    upgraded to real `Character`s (or `has_affect`-bearing).
+  - **Prerequisite for enforcement (own gap, own test, own impact pass — do NOT
+    bundle into the `_pers` change):** reconcile `can_see_character`'s room-None
+    handling with ROM `can_see` ordering (trust/incog/holylight before any
+    room/dark logic; no `victim->in_room` bail), **and/or** have wiznet pass real
+    in-room actors (or bake names for synthetic placeholders). `can_see_character`
+    is the core visibility helper (43 direct `act_format` callers; combat also uses
+    `vision.pers`), so its room-None semantics have no ROM ground truth and changing
+    them is a design decision requiring its own failing test + `gitnexus_impact`.
+  - **Contract locked**: `tests/integration/test_inv027_act_pers_name_masking.py`
+    holds the same-room masking assertion as a **strict `xfail`** (reason names this
+    blocker) plus a passing `recipient=None` boundary guard. Remove the `xfail`
+    marker when the prerequisite lands. `act_format._pers` carries an INV-027 NOTE
+    pointing here. **Status stays OPEN** — the per-recipient subset is the only part
+    that could be enforced, and even it is blocked; broadcast-once stays divergent by
+    MESSAGE_DELIVERY architecture.
 
 <details><summary>Original (incorrect) framing — retained for the audit trail</summary>
 
