@@ -159,3 +159,29 @@ stream position (xdist worker grouping). Pinned that one (`number_bits = 19`);
 the other 7 remain and should be hardened next (see SESSION_STATUS task 5). This
 is RNG-neutral to the do_surrender change (verified: the flaky test does not
 involve surrender and passes in isolation).
+
+## Continuation — combat-test brittleness hardening — ✅ DONE (master, 2.11.8, commit `cdb1946f`)
+
+Closed the brittleness pass surfaced above.
+
+- **Gap**: after FIGHT-019 made THAC0 the only hit model, the unseeded
+  outcome-asserting tests in `tests/test_combat.py` resolved hits via the
+  unseeded `number_bits(5)` stream — passing only by RNG-stream position and
+  flaking on the nat-0/nat-19 edge under different xdist worker groupings.
+- **Fix**: pinned `number_bits` per test — `lambda *_: 19` (nat-19, always hits)
+  for hit/damage/kill assertions, `lambda *_: 0` (nat-0, always misses) for
+  `test_attack_misses_target`. 8 tests hardened (plus the 2 already pinned).
+  Tests whose only assertion is `assert_attack_message` (true for both hit and
+  miss) or that count attacks rather than hits were left unpinned — not
+  outcome-brittle. No production behavior change.
+- **Verification**: `test_combat.py` 32/32 across 3 serial runs; full parallel
+  suite **4934 passed, 4 skipped, 0 failed**.
+
+## Session net result
+
+INV-001 SINGLE-DELIVERY fully enforced (FIGHT-020 `do_kill` + `broadcast_room`/
+`broadcast_global` + `do_surrender`) and the combat-test suite is now
+deterministic. Master is **7 commits ahead of `origin` at 2.11.8, unpushed**.
+Remaining: push (with go-ahead), then the harness thread (merge master→
+`diff-harness`, sub-issue 2 color-norm, correct `FINDINGS.md`, re-run the
+`combat_melee_rounds` differential).

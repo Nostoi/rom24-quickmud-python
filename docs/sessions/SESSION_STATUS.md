@@ -41,8 +41,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Version (master) | **2.11.7** (5 commits ahead of `origin/master` — `4d829d49`, **UNPUSHED**). `diff-harness` separate, unmerged. |
-| Tests (master) | **4933 passed, 4 skipped** (clean parallel run, post-do_surrender). ⚠️ ~8 unseeded combat tests in `tests/test_combat.py` are RNG-stream-position fragile under xdist (one, `test_one_hit_uses_equipped_weapon`, pinned this session); a full hardening pass is the top remaining task — see below. |
+| Version (master) | **2.11.8** (7 commits ahead of `origin/master` — `cdb1946f`, **UNPUSHED**). `diff-harness` separate, unmerged. |
+| Tests (master) | **4934 passed, 4 skipped, 0 failed** (clean parallel run, post-brittleness-pass). The unseeded `tests/test_combat.py` outcome tests are now `number_bits`-pinned (deterministic) — the xdist RNG-position flakiness is resolved (2.11.8). |
 | ROM C files audited | 40 / 43 ✅ (3 N/A). `fight.c` row: FIGHT-019 (hit model) + FIGHT-020 (`do_kill` single-delivery) closed. |
 | Differential harness | **Sound.** Surfaced FINDING-001→008. FINDING-008 sub-issue 1 (FIGHT-019) + sub-issue 3 (FIGHT-020) now resolved on `master`; sub-issue 2 (color norm) remains harness-side. `combat_melee_rounds` xfail stays red until `diff-harness` picks up master + sub-issue 2. v1 on `diff-harness`, unmerged. |
 | INV-001 SINGLE-DELIVERY | ✅ **FULLY ENFORCED**: `do_kill` (FIGHT-020, 2.11.5) + `broadcast_room`/`broadcast_global` (2.11.6) + `do_surrender` (2.11.7). All three return-value/dual-channel double-sends closed; no open follow-ups. |
@@ -61,16 +61,8 @@
    merge `diff-harness` → `master`.
 4. ✅ DONE — INV-001 follow-up (b) `do_surrender` closed (2.11.7).
    ((a) `broadcast_room` closed in 2.11.6.)
-5. **Combat-test brittleness hardening (now the top remaining task — the parallel
-   suite is no longer reliably green).** ~8 unseeded hit-dependent tests in
-   `tests/test_combat.py` resolve the FIGHT-019 THAC0 roll without pinning
-   `number_bits`, so they pass/fail on RNG-stream position (xdist worker
-   grouping) — a clean parallel run flaked `test_one_hit_uses_equipped_weapon`
-   this session (now pinned). Remaining: `test_attack_damages_but_not_kill`,
-   `test_attack_kills_target`, `test_attack_misses_target`,
-   `test_shield_block_requires_shield`, `test_multi_hit_single_attack`,
-   `test_multi_hit_second_attack`, `test_visibility_and_position_modifiers`,
-   `test_riv_scaling_applies_before_side_effects`. Pin `number_bits` per test —
-   `lambda *_: 19` (nat-19, always hits) for hit-asserting tests; a miss-yielding
-   value for the miss-asserting ones (e.g. `test_attack_misses_target`). See
-   `FIGHT_C_AUDIT.md` Notes.
+5. ✅ DONE — Combat-test brittleness hardening (2.11.8). The 8 outcome-brittle
+   `tests/test_combat.py` tests now pin `number_bits` (nat-19 hit / nat-0 miss);
+   `test_combat.py` is deterministic across serial + parallel runs. Tests whose
+   only assertion is `assert_attack_message` (true for hit or miss) were
+   correctly left unpinned. See `FIGHT_C_AUDIT.md` Notes.
