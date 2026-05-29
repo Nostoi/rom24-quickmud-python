@@ -8,10 +8,49 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-013 — `do_cast` emits a spurious "You cast <spell>." line ROM never sends — 🔴 OPEN
+## FINDING-014 — wait-state ("lag") is enforced inside command handlers, not the game loop — 🔴 OPEN
 
-**Status:** 🔴 OPEN (surfaced 2026-05-29 by the new `spell_combat` scenario, step 5,
-the moment FINDING-012 unblocked casting). Gated in `KNOWN_DIVERGENCES`.
+**Status:** 🔴 OPEN (surfaced 2026-05-29 by `spell_combat` step 6, once FINDING-013
+unblocked the step-5 render). Gated in `KNOWN_DIVERGENCES`.
+
+Symptom (step 6, the second consecutive `cast 'magic missile' drunk`):
+```
+C : ['Your magic missile grazes the drunk.']
+py: ['You are still recovering.', 'You are still recovering.']
+```
+
+**Root cause:** ROM `do_cast` only *sets* wait via `WAIT_STATE(ch, skill_table[sn].beats)`
+(`src/magic.c:547`); it never rejects a cast for `ch->wait > 0`. The wait gate lives in
+the **game loop** (`src/comm.c:619-621` and `:820-822`): each pulse the loop decrements
+`d->character->wait` and skips processing that descriptor's queued input until wait
+reaches 0 — the command is *deferred silently*, never rejected, and ROM sends no
+"You are still recovering." message. Python instead checks `char.wait > 0` *inside* the
+command handlers (`do_cast` `mud/commands/combat.py:827`, plus `do_kick`/`do_rescue`/
+`do_backstab`/`do_berserk`/`do_bash` at :178/:236/:349/:402/:537) and returns a synthetic
+"You are still recovering." line. So the differential's second cast — driven directly via
+`process_command`/`interpret`, bypassing the loop on both sides — is *rejected* in Python
+but *executes* in C. (The doubled py line is `do_cast` both `return`-ing and appending the
+message to `char.messages`.)
+
+**Blast radius / fix shape:** the wait gate belongs in Python's command dispatch / game
+loop (defer input under wait, like ROM `comm.c`), not in each handler; the synthetic
+"You are still recovering." message has no ROM source. ~5 combat commands carry the
+in-handler check, and the dispatch/loop wait semantics need design (does Python's loop
+defer or drop input under wait?). Architectural — file as its own gap before closing.
+
+---
+
+## FINDING-013 — `do_cast` emits a spurious "You cast <spell>." line ROM never sends — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-29 via **master v2.11.19** (`do_cast` now returns `""` on a
+successful cast; the spell handler's own message is the only player-facing output, matching
+ROM `src/magic.c:553-563`). Merged into `diff-harness`; `spell_combat` step 5 now converges
+and the first divergence advanced to **step 6** (FINDING-014). Regression:
+`tests/integration/test_finding_013_cast_silent_on_success.py`. Re-baselined
+`tests/test_skills_spells_cast_listing.py::test_do_cast_offensive_no_target_defaults_to_fighting_victim`.
+
+Historical (surfaced 2026-05-29 the moment FINDING-012 unblocked casting). Gated in
+`KNOWN_DIVERGENCES` until resolved.
 
 **Scenario:** `spell_combat` — an L5 mage `__learn=magic missile` then
 `cast 'magic missile' drunk` twice, then one `__tick`.

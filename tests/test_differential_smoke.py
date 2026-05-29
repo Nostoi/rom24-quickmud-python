@@ -28,15 +28,17 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES: dict[str, str] = {
     # combat_melee_rounds + movement_get_drop converge end-to-end (no entry).
-    # FINDING-012 (MobInstance lacked saving_throw → saves_spell crash) is fixed,
-    # so the spell_combat first divergence advanced to the render gap below.
+    # FINDING-012 (saving_throw crash) and FINDING-013 (spurious "You cast" line)
+    # are both fixed on master, advancing the spell_combat first divergence to
+    # step 6 (FINDING-014).
     "spell_combat": (
-        "FINDING-013 — do_cast emits a spurious 'You cast <spell>.' line ROM never "
-        "sends. ROM do_cast (src/magic.c:553-563) is silent on a successful cast; "
-        "Python do_cast (mud/commands/combat.py:897) and skill_registry.cast "
-        "(mud/skills/registry.py:277) return 'You cast {skill.name}.', which the "
-        "dispatcher sends to the player. ROM-faithful fix returns '' on success and "
-        "re-baselines 3 tests asserting the string. See FINDINGS.md FINDING-013."
+        "FINDING-014 — wait-state ('lag') is enforced inside command handlers, not "
+        "the game loop. ROM do_cast only sets WAIT_STATE (src/magic.c:547); the wait "
+        "gate lives in the game loop (src/comm.c:619-621/:820-822), which silently "
+        "defers input — ROM never rejects a cast for wait>0 nor sends 'You are still "
+        "recovering.'. Python do_cast (mud/commands/combat.py:827) checks char.wait>0 "
+        "and rejects, so the second consecutive cast diverges (step 6). Architectural "
+        "fix: move the wait gate to dispatch/loop. See FINDINGS.md FINDING-014."
     ),
     # When a divergence is resolved the diff goes clean, the xfail flips to XPASS,
     # and its entry should be removed here (self-cleaning).
