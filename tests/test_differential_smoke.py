@@ -26,18 +26,13 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # reason. When a divergence is actually fixed the diff goes clean, no xfail
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
-KNOWN_DIVERGENCES = {
-    # FINDING-011: FINDING-010 (unarmed-NPC damage used the PC formula, not the mob
-    # damage dice) is resolved on master — FIGHT-027 (v2.11.15): an unarmed NPC now
-    # rolls dice(damage[DICE_NUMBER], damage[DICE_TYPE]) instead of the degenerate
-    # PC-unarmed number_range. Steps 1–6 now converge (hp + severity verbs match
-    # end-to-end). The first divergence advanced to step 7 (the *third* __tick round),
-    # a MISS-LINE rendering gap: when an NPC with a resolved attack type misses, ROM
-    # renders the attack noun (C=["The drunk's beating misses you.", ...]) but Python
-    # drops it (py=['The drunk misses you.', ...]). Distinct root cause from FIGHT-027
-    # (dam_message miss-path rendering, not damage calc). See FINDINGS.md FINDING-011
-    # / FIGHT_C_AUDIT.md FIGHT-028.
-    "combat_melee_rounds": "FINDING-011 — combat miss line drops the attack noun: C \"The drunk's beating misses you.\" vs py 'The drunk misses you.'",
+KNOWN_DIVERGENCES: dict[str, str] = {
+    # Empty — combat_melee_rounds now converges end-to-end. FINDING-011 (combat
+    # miss line dropped the attack noun) was resolved on master by FIGHT-028
+    # (v2.11.16): dam_message no longer forces the no-noun TYPE_HIT template on a
+    # miss, so an NPC with a resolved attack type renders "$n's beating misses you"
+    # like its own hit path. See FINDINGS.md FINDING-011 / FIGHT_C_AUDIT.md FIGHT-028.
+    # When a new divergence surfaces, add it here (scenario name → reason).
 }
 
 

@@ -8,13 +8,23 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-011 — combat miss line drops the attack noun — 🔴 OPEN
+## FINDING-011 — combat miss line drops the attack noun — ✅ RESOLVED
 
-**Status:** 🔴 OPEN — surfaced 2026-05-29 the moment FINDING-010 (FIGHT-027,
-v2.11.15) was closed. With the unarmed-NPC damage-dice fix merged from master, the
+**Status:** ✅ RESOLVED 2026-05-29 via **FIGHT-028** (master v2.11.16). `dam_message`
+had a `percent <= 0` early-return that forced the no-noun `TYPE_HIT` template for
+*any* miss (and any low-damage hit rounding to percent 0), regardless of `dt`. ROM
+`src/fight.c:2157` chooses its template purely on `dt == TYPE_HIT` vs not — `dam == 0`
+only swaps `vs/vp` to "miss"/"misses". Deleted the block so the no-noun output keys
+solely on `attack is None`; a resolved-noun miss now renders "$n's beating misses you"
+like its own hit path. **`combat_melee_rounds` now converges end-to-end** (clean diff,
+no xfail) and was removed from `KNOWN_DIVERGENCES`. Regression:
+`tests/integration/test_fight_028_miss_attack_noun.py`.
+
+Historical (surfaced 2026-05-29 the moment FINDING-010 (FIGHT-027, v2.11.15) was
+closed): with the unarmed-NPC damage-dice fix merged from master, the
 `combat_melee_rounds` first divergence advanced from step 6 to **step 7** (the
-*third* `__tick`/`violence_update` round); **steps 1–6 now converge fully on both
-engines** (hp + severity verbs match end-to-end).
+*third* `__tick`/`violence_update` round); steps 1–6 converged fully on both
+engines.
 
 Symptom (step 7, third combat round — the drunk *misses*):
 ```
@@ -39,9 +49,8 @@ hit path uses the noun template.
 **Root cause (to confirm):** the Python miss path (`apply_damage` with `dam == 0`,
 or `mud/combat/messages.py:dam_message`) selects the `TYPE_HIT` noun-less branch
 instead of the attack-noun branch keyed on `dt`. Distinct from FIGHT-027 (damage
-calc) — this is dam_message rendering. Filed as **FIGHT-028** in
-`docs/parity/FIGHT_C_AUDIT.md`. `combat_melee_rounds` stays in
-`KNOWN_DIVERGENCES` (xfail) under FINDING-011 until the miss line converges.
+calc) — this is dam_message rendering. Closed as **FIGHT-028** in
+`docs/parity/FIGHT_C_AUDIT.md` (see Status above).
 
 ---
 
