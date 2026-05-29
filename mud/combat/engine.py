@@ -31,6 +31,7 @@ from mud.models.constants import (
     AffectFlag,
     DamageType,
     ItemType,
+    OffFlag,
     PlayerFlag,
     Position,
     Stat,
@@ -316,6 +317,13 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
     if attacker.position < Position.RESTING:
         return results
 
+    # ROM src/fight.c multi_hit: NPC attackers resolve their round through the
+    # separate mob_hit() path — `if (IS_NPC(ch)) { mob_hit(ch,victim,dt); return; }`
+    # — which adds the OFF_AREA_ATTACK sweep, the OFF_FAST extra swing, and the
+    # mob spell/skill rolls after the 2nd/3rd attacks (FIGHT-022).
+    if getattr(attacker, "is_npc", False):
+        return mob_hit(attacker, victim, dt)
+
     # First attack always happens
     result = attack_round(attacker, victim, dt=dt)
     results.append(result)
@@ -381,6 +389,129 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
     # Mirrors ROM src/fight.c:84-98.
 
     return results
+
+
+def mob_hit(attacker: Character, victim: Character, dt: str | int | None = None) -> list[str]:
+    """ROM src/fight.c ``mob_hit`` — the NPC combat round (FIGHT-022).
+
+    Distinct from ``multi_hit``'s PC path: an NPC gets an OFF_AREA_ATTACK sweep and
+    an OFF_FAST extra swing, and after its (unconditional, see FIGHT-021) 2nd/3rd
+    attacks it rolls two more values **when not waiting** — ``number_range(0, 2)``
+    (mob spell-cast check; the casts are stubbed in ROM too) and
+    ``number_range(0, 8)`` (the off-skill dispatch: bash / berserk / disarm / kick /
+    kick-dirt / trip / backstab by OFF_ flag). Those two ``number_range`` draws MUST
+    fire even for a flag-less mob: they are part of the shared combat RNG stream, so
+    skipping them desyncs every later swing in the tick (the drunk-vs-player case in
+    differential FINDING-009 facet 1).
+    """
+    results: list[str] = []
+
+    # one_hit (ROM src/fight.c mob_hit:1).
+    result = attack_round(attacker, victim, dt=dt)
+    results.append(result)
+    if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
+        return results
+
+    off_flags = int(getattr(attacker, "off_flags", 0) or 0)
+    has_affect = getattr(attacker, "has_affect", None)
+    is_haste = bool(has_affect and attacker.has_affect(AffectFlag.HASTE))
+    is_slow = bool(has_affect and attacker.has_affect(AffectFlag.SLOW))
+
+    # Area attack — ROM: one extra swing at every OTHER char fighting this mob.
+    if off_flags & OffFlag.AREA_ATTACK and getattr(attacker, "room", None) is not None:
+        for vch in list(getattr(attacker.room, "people", []) or []):
+            if vch is not victim and getattr(vch, "fighting", None) is attacker:
+                results.append(attack_round(attacker, vch, dt=dt))
+
+    # Haste OR (OFF_FAST and not slowed) → extra swing at the main victim.
+    if is_haste or (off_flags & OffFlag.FAST and not is_slow):
+        results.append(attack_round(attacker, victim, dt=dt))
+
+    # ROM: single strike for backstab; bail if combat ended.
+    if not hasattr(attacker, "fighting") or attacker.fighting != victim or _normalize_dt(dt) == "backstab":
+        return results
+
+    # Second attack — unconditional number_percent() draw (FIGHT-021). For an NPC,
+    # slow halves the chance only when the mob is not OFF_FAST.
+    chance = getattr(attacker, "second_attack_skill", 0) // 2  # non-negative → bare // == C
+    if is_slow and not (off_flags & OffFlag.FAST):
+        chance //= 2
+    if rng_mm.number_percent() < chance:
+        results.append(attack_round(attacker, victim, dt=dt))
+        if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
+            return results
+
+    # Third attack — unconditional draw; slow (and not OFF_FAST) zeroes the chance.
+    chance = getattr(attacker, "third_attack_skill", 0) // 4  # non-negative → bare // == C
+    if is_slow and not (off_flags & OffFlag.FAST):
+        chance = 0
+    if rng_mm.number_percent() < chance:
+        results.append(attack_round(attacker, victim, dt=dt))
+        if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
+            return results
+
+    # "oh boy! Fun stuff!" — ROM rolls the mob spell/skill checks only when the mob
+    # is not waiting. The draws are part of the shared RNG stream regardless of
+    # whether any action fires.
+    if int(getattr(attacker, "wait", 0) or 0) > 0:
+        return results
+
+    act_flags = int(getattr(attacker, "act", 0) or 0)
+
+    # number_range(0, 2): mob spell-cast check. mob_cast_mage / mob_cast_cleric are
+    # commented out in ROM, so the draw is consumed and no cast fires.
+    cast_roll = rng_mm.number_range(0, 2)
+    if (cast_roll == 1 and act_flags & ActFlag.MAGE) or (cast_roll == 2 and act_flags & ActFlag.CLERIC):
+        pass  # ROM: mob_cast_* stubbed — draw consumed, no action
+
+    # number_range(0, 8): mob off-skill dispatch by OFF_ flag.
+    skill_roll = rng_mm.number_range(0, 8)
+    _mob_offensive_skill(attacker, skill_roll, off_flags, act_flags)
+
+    return results
+
+
+def _mob_offensive_skill(attacker: Character, roll: int, off_flags: int, act_flags: int) -> None:
+    """ROM src/fight.c ``mob_hit`` switch — fire a mob's offensive skill by OFF_ flag.
+
+    Output flows through each command's own ``act()`` / push, so the return value is
+    discarded exactly as ROM's ``do_function(ch, &do_x, "")``. Cases 5 (tail) and 7
+    (crush) are no-ops in ROM (commented out). The dispatch only fires when the
+    matching OFF_ flag is set; a flag-less mob (the differential's drunk) takes no
+    action. The mob-on-do_X invocation is faithful to ROM's structure but its own
+    RNG/draw fidelity is unverified for flagged mobs — if a do_X is later found to
+    diverge from ROM's draw pattern, file a follow-up gap rather than absorbing it.
+    """
+    # Lazy import: mud.commands.combat imports multi_hit from mud.combat (circular).
+    from mud.commands.combat import do_backstab, do_bash, do_berserk, do_dirt, do_disarm, do_kick, do_trip
+
+    has_affect = getattr(attacker, "has_affect", None)
+    if roll == 0:
+        if off_flags & OffFlag.BASH:
+            do_bash(attacker, "")
+    elif roll == 1:
+        if off_flags & OffFlag.BERSERK and not (has_affect and attacker.has_affect(AffectFlag.BERSERK)):
+            do_berserk(attacker, "")
+    elif roll == 2:
+        # ROM: OFF_DISARM, or an armed warrior/thief (get_weapon_sn != hand_to_hand).
+        weapon_sn = get_weapon_sn(attacker)
+        armed_class = weapon_sn not in (None, "hand to hand") and act_flags & (ActFlag.WARRIOR | ActFlag.THIEF)
+        if off_flags & OffFlag.DISARM or armed_class:
+            do_disarm(attacker, "")
+    elif roll == 3:
+        if off_flags & OffFlag.KICK:
+            do_kick(attacker, "")
+    elif roll == 4:
+        if off_flags & OffFlag.KICK_DIRT:
+            do_dirt(attacker, "")
+    elif roll == 6:
+        if off_flags & OffFlag.TRIP:
+            do_trip(attacker, "")
+    elif roll == 8:
+        if off_flags & OffFlag.BACKSTAB:
+            do_backstab(attacker, "")
+    # roll == 5 (OFF_TAIL) and roll == 7 (OFF_CRUSH): no-op in ROM (do_tail/do_crush
+    # commented out).
 
 
 def attack_round(attacker: Character, victim: Character, dt: str | int | None = None) -> str:

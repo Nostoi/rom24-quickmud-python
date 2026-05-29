@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.10]
+
+### Fixed
+- **`FIGHT-022` / FINDING-009 (facet 1) — NPC combat rounds skipped ROM's mob spell/skill RNG rolls, desyncing the combat-tick stream (CRITICAL).** ROM `src/fight.c` routes NPC attackers through a separate `mob_hit()` (`if (IS_NPC(ch)) { mob_hit(ch,victim,dt); return; }`), which after the (unconditional, FIGHT-021) 2nd/3rd-attack `number_percent()` checks rolls two more values **when the mob is not waiting**: `number_range(0,2)` (mob spell-cast check — `mob_cast_mage`/`mob_cast_cleric` are stubbed in ROM) and `number_range(0,8)` (off-skill dispatch by OFF_ flag). The Python port had no NPC `mob_hit` branch — `mud/combat/engine.py::multi_hit` handled PC and NPC identically — so every NPC combat round drew **two fewer** `number_range` values than ROM, shifting the shared combat RNG stream for every later swing in the tick. Added a faithful `mob_hit` (one_hit → OFF_AREA_ATTACK sweep → haste/OFF_FAST extra swing → unconditional 2nd/3rd draws → `wait>0` gate → the two `number_range` draws → `_mob_offensive_skill` switch: bash/berserk/disarm/kick/kick-dirt/trip/backstab by OFF_ flag, tail+crush no-op as in ROM); `multi_hit` dispatches to it for NPC attackers. The two `number_range` draws fire even for a flag-less mob (the drunk #3064) — they are part of the shared RNG stream. **Surfaced by the differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-009): the drunk's round consumed fewer draws than ROM `mob_hit`, so the player's follow-up swing read a shifted stream. Regression: `tests/integration/test_fight_022_mob_hit_skill_rolls.py`. **Closes FINDING-009 facet 1 with FIGHT-021.** The `do_X`-on-mob dispatch is faithful to ROM's structure; its per-command draw fidelity for flagged mobs is unverified (no flagged mob exercises it in the suite — file a follow-up if a `do_X` is later found to diverge). Full combat + integration suite green (2594 passed).
+
 ## [2.11.9]
 
 ### Fixed
