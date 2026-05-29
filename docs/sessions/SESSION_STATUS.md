@@ -1,53 +1,53 @@
-# Session Status — 2026-05-29 — CAST-003 + MAGIC-003 fixed (MAGIC-002 family complete)
+# Session Status — 2026-05-29 — FIGHT-029 fixed (do_rescue SINGLE-DELIVERY)
 
 ## Current State
 
-- **Active mode**: the MAGIC-002 affect-message family is now **complete** —
-  armor (2.11.20), bless (2.11.21), CAST-002 (2.11.22), and this session's
-  **CAST-003** (2.11.23) + **MAGIC-003** (2.11.24). The per-file audit tracker
-  is exhausted; cross-file invariants remains the standing pass.
+- **Active mode**: cross-file invariants (the per-file audit tracker is
+  exhausted). This session closed **FIGHT-029**, the last OPEN INV-001
+  SINGLE-DELIVERY violation from the MAGIC-003 handoff, and filed two new
+  siblings (FIGHT-030 + INV-001 (d)) while doing so.
 - **Last completed** (this session):
-  - **`CAST-003`** ✅ FIXED (master 2.11.23, `6551a743`) — `do_cast`'s offensive
-    object/char no-fight branch now returns ROM's distinct
-    `"Cast the spell on whom or what?"` (`src/magic.c:471`, for `curse`/`poison`)
-    instead of `TAR_CHAR_OFFENSIVE`'s `"Cast the spell on whom?"` (`:376`).
-    Guard test tightened to assert the exact wording.
-  - **`MAGIC-003`** ✅ FIXED (master 2.11.24, `95a6d776`) — `shield`/`sanctuary`/
-    `blindness`/`weaken` now deliver their victim + room-broadcast lines via the
-    canonical single-delivery channel (`_send_to_char`/`push_message`), not the
-    raw `char.messages.append` mailbox (INV-001 family). Connected-PC delivery
-    test added (`tests/integration/test_magic_003_affect_message_channel.py`);
-    the mailbox fallback for disconnected/test chars is preserved.
-  - **Filed `FIGHT-029`** (🔄 OPEN, `7d602d2f`) — `do_rescue` SINGLE-DELIVERY
-    violation: `rescue()` appends the rescuer line to `caster.messages` AND
-    `do_rescue` returns it, so a connected PC gets "You rescue X!" twice (the
-    `do_kill`/`do_surrender` shape); victim/room legs also wrong-channel.
-    Surfaced by the advisor while closing MAGIC-003; filed in `FIGHT_C_AUDIT.md`
-    + INV-001 cross-ref, **not** folded into MAGIC-003.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-29_MAGIC_003_AFFECT_CHANNEL.md](SESSION_SUMMARY_2026-05-29_MAGIC_003_AFFECT_CHANNEL.md)
+  - **`FIGHT-029`** ✅ FIXED (master 2.11.25, `da73d821`) — `do_rescue` is void
+    in ROM (`src/fight.c:3089-3091`); `rescue()` now delivers all three legs
+    (TO_CHAR/TO_VICT/TO_NOTVICT) via the canonical `_send_to_char` channel and
+    `do_rescue` returns `""` (fail-path mailbox append also dropped). Fixes the
+    rescuer double-delivery (kill/surrender shape) AND the victim/room
+    wrong-channel (MAGIC-003 shape). Test
+    `tests/integration/test_rescue_single_delivery.py` splits the shape
+    (count-once for the rescuer + push-present/mailbox-empty for victim+bystander,
+    per the advisor catch that a pure count test false-greens on the vict/room
+    legs).
+  - **Filed `FIGHT-030`** (🔄 OPEN, `FIGHT_C_AUDIT.md`) — `do_rescue` omits
+    ROM's `check_killer(ch, fch)` (`src/fight.c:3097`), so a PC rescuing an ally
+    fighting **another PC** escapes the `PLR_KILLER` flag. Surfaced by the
+    advisor on the full `do_rescue` read. Not folded into FIGHT-029.
+  - **Filed `INV-001 (d)`** (🔄 OPEN, `CROSS_FILE_INVARIANTS_TRACKER.md`) — the
+    `"You are still recovering."` wait-state guard double-delivers (append +
+    return) across 7 `combat.py` commands + `skills/registry.py`. Not a ROM
+    line. One-sweep cleanup.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-29_FIGHT_029_RESCUE_SINGLE_DELIVERY.md](SESSION_SUMMARY_2026-05-29_FIGHT_029_RESCUE_SINGLE_DELIVERY.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.11.24 |
-| Tests | 4973 passed, 4 skipped (full suite) |
+| Version | 2.11.25 |
+| Tests | 4974 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file pass complete; differential + cross-file invariants active) |
-| Active focus | INV-001 SINGLE-DELIVERY family (FIGHT-029 open) + cross-file invariants |
+| Active focus | INV-001 SINGLE-DELIVERY family (FIGHT-030 + INV-001 (d) open) + cross-file invariants |
 
 ## Next Intended Task
 
-Close **`FIGHT-029`** (`FIGHT_C_AUDIT.md`) — `rom-gap-closer FIGHT-029`. The
-`do_rescue` SINGLE-DELIVERY fix: have `do_rescue` `return ""` (discard the
-return like `do_kill`/`do_surrender`) and migrate `rescue`'s three legs
-(`mud/skills/handlers.py:7081-7091`) from `char.messages.append` onto
-`_push_message`/`_send_to_char` (self via push, room via the per-occupant
-`_send_to_char` loop). Needs a connection-loop double-delivery test (template
-`tests/integration/test_kill_command_single_delivery.py` /
-`test_surrender_single_delivery.py`). Keeps the work in the INV-001 family.
+Close **`FIGHT-030`** (`FIGHT_C_AUDIT.md`) — `rom-gap-closer FIGHT-030`. Add
+`check_killer(caster, foe)` in `mud/skills/handlers.py:rescue` between the
+`stop_fighting` and `set_fighting` pairs (ROM ordering, `src/fight.c:3097`);
+test asserts the rescuer gains `PlayerFlag.KILLER` when rescuing an ally
+fighting another non-clan/non-killer PC. Stays in the `do_rescue` context.
 
-Beyond that, the per-file audit tracker is exhausted — cross-file invariants
-(`CROSS_FILE_INVARIANTS_TRACKER.md`) is the standing pass (candidate areas:
-affect ticks, position transitions, mob script triggers, group/follower chain).
-A targeted sweep for other return-value-plus-mailbox commands (the `do_rescue`
-shape) would likely surface more INV-001 siblings.
+After that, the **INV-001 (d) "still recovering" sweep** is a small one-commit
+cross-command cleanup (drop the `char.messages.append` in ~8 sites; locate via
+`grep "still recovering" mud/`). Beyond those, the per-file audit tracker is
+exhausted — cross-file invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`) is the
+standing pass; the return-value-plus-mailbox (`do_rescue`/`do_surrender`/
+`do_kill`) shape keeps surfacing INV-001 siblings, so a targeted sweep for that
+pattern is high-yield.
