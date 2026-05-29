@@ -238,3 +238,52 @@ def test_do_cast_offensive_no_target_no_fight_errors():
     result = do_cast(caster, "'magic missile'")
 
     assert result == "Cast the spell on whom?", result
+
+
+def test_do_cast_defensive_obj_char_no_target_defaults_to_self():
+    """CAST-002 — ROM src/magic.c:514-519 — ``TAR_OBJ_CHAR_DEF`` with an
+    empty ``arg2`` defaults ``vo = ch`` (self), unlike ``TAR_OBJ_CHAR_OFF``
+    (src/magic.c:466-473) which defaults to ``ch->fighting``. The three
+    defensive object/char spells — ``bless`` / ``invisibility`` /
+    ``remove curse`` (``TAR_OBJ_CHAR_DEF`` in src/const.c) — must self-cast on a
+    no-target ``cast``. Regression: ``do_cast`` collapsed both ``TAR_OBJ_CHAR_*``
+    types into the offensive default, so these three wrongly errored
+    'Cast the spell on whom?' on a no-arg self-cast."""
+
+    from mud.models.room import Room
+    from mud.utils import rng_mm
+
+    room = Room(vnum=99002, name="Chapel", description="A quiet test chapel")
+    # bless is a cleric spell (mage level 53, cleric level 7 — src/const.c:967);
+    # cast it as a level-24 cleric (ch_class=1) so the level/class gate passes
+    # and the test exercises the TAR_OBJ_CHAR_DEF target dispatch.
+    caster = _make_mage(level=24, mana=200, ch_class=1, skills={"bless": 100})
+    caster.messages = []
+    caster.room = room
+    room.people.append(caster)
+
+    rng_mm.seed_mm(42)
+    result = do_cast(caster, "bless")  # no target arg → ROM self-default
+
+    # do_cast is silent on a successful cast (FINDING-013, src/magic.c:553-563);
+    # the bless affect landing on the caster proves the self-default resolved.
+    assert result == "", result
+    assert caster.has_spell_effect("bless"), "no-arg cast bless must self-cast"
+    assert "You feel righteous." in caster.messages
+
+
+def test_do_cast_offensive_obj_char_no_target_no_fight_still_errors():
+    """CAST-002 guard — ``TAR_OBJ_CHAR_OFF`` (``curse`` / ``poison``,
+    src/const.c) keeps the offensive fighting-default after the vocabulary
+    split: a no-arg cast with no ``ch->fighting`` errors and does NOT self-cast.
+    (The exact error wording for this branch is tracked separately as CAST-003;
+    asserting on the 'whom' substring keeps this guard stable across that fix.)"""
+
+    caster = _make_mage(level=24, mana=200, skills={"curse": 100})
+    caster.messages = []
+    # No room/fighting set — idle caster.
+
+    result = do_cast(caster, "curse")
+
+    assert "whom" in result.lower(), result  # offensive: errors, no self-default
+    assert not caster.has_spell_effect("curse"), "offensive spell must not self-cast"

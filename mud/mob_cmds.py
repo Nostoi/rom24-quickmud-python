@@ -58,8 +58,13 @@ _TARGET_STRINGS: dict[str, _TargetType] = {
     "friendly": _TargetType.TAR_CHAR_DEFENSIVE,
     "self": _TargetType.TAR_CHAR_SELF,
     "object": _TargetType.TAR_OBJ_INV,
-    # JSON collapses TAR_OBJ_CHAR_DEF and TAR_OBJ_CHAR_OFF into one string;
-    # ROM treats them identically in mob_cmds context (src/mob_cmds.c:1060-1065).
+    # ROM treats TAR_OBJ_CHAR_DEF and TAR_OBJ_CHAR_OFF identically in the
+    # mob_cmds context (src/mob_cmds.c:1060-1065 — both fall through to the
+    # object/char operand), so both JSON strings map to the same enum here even
+    # though do_cast (the player path) distinguishes them (CAST-002). The legacy
+    # collapsed string is kept for backward compatibility with any unconverted data.
+    "defensive_character_or_object": _TargetType.TAR_OBJ_CHAR_DEF,
+    "offensive_character_or_object": _TargetType.TAR_OBJ_CHAR_OFF,
     "character_or_object": _TargetType.TAR_OBJ_CHAR_DEF,
 }
 

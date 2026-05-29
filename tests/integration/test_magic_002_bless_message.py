@@ -70,12 +70,12 @@ def test_bless_self_cast_sends_rom_success_message():
     (src/magic.c:861).
 
     Exercised at the handler level: bless is ROM ``TAR_OBJ_CHAR_DEF``
-    (src/const.c:968), so a no-arg cast defaults to self (src/magic.c:514-519),
-    but Python's ``do_cast`` maps ``character_or_object`` to the *offensive*
-    fighting default and errors "Cast the spell on whom?" with no target — that
-    is the separate CAST-002 divergence (MAGIC_C_AUDIT.md). The success
-    messaging under test lives inside ``spell_bless`` itself; the cross-target
-    tests below cover the full do_cast → handler integration.
+    (src/const.c:968), so a no-arg cast defaults to self (src/magic.c:514-519).
+    The success messaging under test lives inside ``spell_bless`` itself; the
+    cross-target tests below cover the full do_cast → handler integration.
+    (CAST-002 — do_cast's no-arg self-default for the defensive object/char
+    spells — is now fixed; the do_cast → self path is covered by
+    tests/test_skills_spells_cast_listing.py::test_do_cast_defensive_obj_char_no_target_defaults_to_self.)
     """
     room = Room(vnum=99201, name="Chapel")
     caster = _cleric("Tester", room)

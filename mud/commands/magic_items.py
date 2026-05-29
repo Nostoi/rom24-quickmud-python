@@ -80,7 +80,8 @@ def _set_value(obj, idx: int, val) -> None:
 
 
 def _resolve_target_kind(spell_name: str) -> str:
-    """Return the target kind ('ignore'/'victim'/'friendly'/'self'/'object'/'character_or_object')."""
+    """Return the target kind ('ignore'/'victim'/'friendly'/'self'/'object'/
+    'defensive_character_or_object'/'offensive_character_or_object')."""
     skill = skill_registry.skills.get(spell_name)
     if skill is None:
         return "ignore"

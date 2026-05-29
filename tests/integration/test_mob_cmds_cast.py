@@ -67,7 +67,7 @@ class TestMpCastObjTargetResolvesObjOnly:
             room.add_character(char)
             character_registry.append(char)
 
-        # bless is TAR_OBJ_CHAR_DEF (JSON: "character_or_object"). With no
+        # bless is TAR_OBJ_CHAR_DEF (JSON: "defensive_character_or_object"). With no
         # object in the room named "Hero", ROM's switch falls through with
         # obj == NULL and returns. Python had wrongly resolved the character.
         invocations: list[tuple] = []

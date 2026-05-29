@@ -833,9 +833,10 @@ def do_cast(char: Character, args: str) -> str:
     #   "ignore"              -> TAR_IGNORE
     #   "self"                -> TAR_CHAR_SELF
     #   "friendly"            -> TAR_CHAR_DEFENSIVE
-    #   "victim"              -> TAR_CHAR_OFFENSIVE
-    #   "character_or_object" -> TAR_OBJ_CHAR_OFF / TAR_OBJ_CHAR_DEF
-    #   "object"              -> TAR_OBJ_INV
+    #   "victim"                        -> TAR_CHAR_OFFENSIVE
+    #   "offensive_character_or_object" -> TAR_OBJ_CHAR_OFF
+    #   "defensive_character_or_object" -> TAR_OBJ_CHAR_DEF
+    #   "object"                        -> TAR_OBJ_INV
     def _find_in_room(seeker, name: str):
         room = getattr(seeker, "room", None)
         if room is None:
@@ -849,8 +850,12 @@ def do_cast(char: Character, args: str) -> str:
 
     skill_target_type = (getattr(skill, "target", "ignore") or "ignore").lower()
 
-    if skill_target_type in {"victim", "character_or_object"}:
-        # ROM src/magic.c:371-387 — TAR_CHAR_OFFENSIVE defaults to ch->fighting.
+    if skill_target_type in {"victim", "offensive_character_or_object"}:
+        # ROM src/magic.c:371-387 (TAR_CHAR_OFFENSIVE) and :466-512
+        # (TAR_OBJ_CHAR_OFF) — offensive spells default victim to ch->fighting
+        # and error when not fighting. TAR_OBJ_CHAR_OFF's object-targeting leg
+        # (src/magic.c:502-506) is deferred until do_cast routes objects, so a
+        # named target resolves char-only here.
         if target_name:
             target = _find_in_room(char, target_name)
             if target is None:
@@ -860,8 +865,16 @@ def do_cast(char: Character, args: str) -> str:
             if fighting is None:
                 return "Cast the spell on whom?"
             target = fighting
-    elif skill_target_type == "friendly":
-        # ROM src/magic.c:419-435 — TAR_CHAR_DEFENSIVE defaults to ch (self).
+    elif skill_target_type in {"friendly", "defensive_character_or_object"}:
+        # ROM src/magic.c:419-435 (TAR_CHAR_DEFENSIVE) and :514-519
+        # (TAR_OBJ_CHAR_DEF) — defensive spells default to ch (self) on a no-arg
+        # cast. CAST-002: do_cast previously lumped TAR_OBJ_CHAR_DEF in with the
+        # offensive default, so a no-arg `cast bless` / `cast invis` /
+        # `cast 'remove curse'` wrongly errored "Cast the spell on whom?" instead
+        # of self-casting. TAR_OBJ_CHAR_DEF's object-carry leg (src/magic.c:525-529)
+        # and its distinct "You don't see that here." not-found message (:532) are
+        # deferred until do_cast routes object targets; a named target resolves
+        # char-only here, returning the TAR_CHAR_DEFENSIVE "They aren't here.".
         if target_name:
             target = _find_in_room(char, target_name)
             if target is None:

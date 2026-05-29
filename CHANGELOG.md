@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.22]
+
+### Fixed
+- **`CAST-002` — no-arg `cast bless` / `cast invis` / `cast 'remove curse'` errored "Cast the spell on whom?" instead of self-casting.** ROM splits the two object/character target types by their no-argument default: `TAR_OBJ_CHAR_DEF` defaults to self (`src/magic.c:514-519`) while `TAR_OBJ_CHAR_OFF` defaults to the fighting victim and errors when not fighting (`src/magic.c:466-473`). The Python skill-conversion (`mud/scripts/convert_skills_to_json.py`) collapsed **both** ROM `TAR_*` types into a single `"character_or_object"` string, and `do_cast` (`mud/commands/combat.py`) routed that one string through the *offensive* default — so the three **defensive** object/char spells (`bless`, `invisibility`, `remove curse` — all `TAR_OBJ_CHAR_DEF` in `src/const.c`) wrongly demanded a target on a no-arg self-cast. Fix restores ROM's 1:1 `TAR_*` mapping: the converter now emits `defensive_character_or_object` (`TAR_OBJ_CHAR_DEF`) and `offensive_character_or_object` (`TAR_OBJ_CHAR_OFF`); `data/skills.json` updated for the 5 affected spells; `do_cast` routes the defensive string with `friendly` (self default) and the offensive string with `victim` (fighting default, byte-identical to prior behavior — `curse`/`poison` unchanged). `mob_cmds.py` `_TARGET_STRINGS` maps both new strings (ROM `do_mpcast` collapses DEF/OFF identically, `src/mob_cmds.c:1060-1065`). Surfaced while writing the MAGIC-002 bless self-cast tests, which had to bypass `do_cast` because of this bug. Regression: `tests/test_skills_spells_cast_listing.py::test_do_cast_defensive_obj_char_no_target_defaults_to_self` (+ offensive-unchanged guard). The `TAR_OBJ_CHAR_*` object-target legs remain deferred; the distinct `TAR_OBJ_CHAR_OFF` no-fight wording ("Cast the spell on whom or what?", `src/magic.c:471`) is filed separately as **CAST-003**. See `docs/parity/MAGIC_C_AUDIT.md`.
+
 ## [2.11.21]
 
 ### Fixed

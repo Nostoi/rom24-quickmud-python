@@ -89,8 +89,11 @@ def parse_skill_table(const_c_path: Path) -> list[dict[str, Any]]:
             "TAR_CHAR_DEFENSIVE": "friendly",
             "TAR_CHAR_SELF": "self",
             "TAR_OBJ_INV": "object",
-            "TAR_OBJ_CHAR_DEF": "character_or_object",
-            "TAR_OBJ_CHAR_OFF": "character_or_object",
+            # ROM splits the two object/char target types by no-arg default
+            # (src/magic.c:514-535 DEF → self vs :466-512 OFF → fighting victim);
+            # keep them distinct so do_cast can dispatch each correctly (CAST-002).
+            "TAR_OBJ_CHAR_DEF": "defensive_character_or_object",
+            "TAR_OBJ_CHAR_OFF": "offensive_character_or_object",
         }
         target_type = target_mapping.get(target, "victim")
 
