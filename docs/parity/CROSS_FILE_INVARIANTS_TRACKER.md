@@ -146,47 +146,78 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**Open: INV-027 candidate — ACT-INVIS-TRUST-GATE (surfaced 2026-05-27 during the BCAST wiz/imm probe; not yet enforced).**
+**Open: INV-027 candidate — ACT-PERS-NAME-MASKING (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; still not enforced).**
 
-- **ROM mechanism**: `src/comm.c:act()` (around the per-recipient loop)
-  filters every recipient by `get_trust(rch) >= ch->invis_level`. When
-  the actor is invisible (positive `invis_level`), only witnesses whose
-  trust meets or exceeds that level receive the formatted line. ROM-
-  side this is enforced inside `act()` itself, so every TO_ROOM /
-  TO_VICT / TO_NOTVICT broadcast — and the per-person TO_CHAR fan-out
-  in `src/act_wiz.c:do_violate` (BCAST-029) — inherits the trust
-  filter for free.
-- **Python pre-state (2.9.59)**: `mud/commands/imm_display.py:_act_room`
-  (and its `mud/commands/imm_commands.py:473-481` sibling) walks
-  `room.people` and delivers via `_send_to_char` to every member except
-  the actor — **no `invis_level`/trust filter**. `mud/net/protocol.py:
-  broadcast_room` likewise has no trust filter. The fan-out wins the
-  BCAST audit-coverage check (witnesses are reachable) but loses the
-  fidelity contract that invisible immortals should not be visible to
-  sub-trust witnesses.
-- **Touched by (probe evidence)**: `mud/commands/imm_server.py:do_violate`
-  is the BCAST-029 callsite that surfaced this — it routes through
-  `_act_room` for both `bamfout`/default and `bamfin`/default
-  broadcasts, so the per-line broadcast strings reach witnesses
-  unconditionally. Same shape applies to every other `_act_room` and
-  `broadcast_room` caller that ROM emits via `act()`.
-- **Proposed enforcement (when promoted)**: introduce a single
-  `_can_witness(actor, witness)` helper that wraps `get_trust(witness)
-  >= getattr(actor, "invis_level", 0)` (and AffectFlag.INVISIBLE / DLK
-  for live invis), and route both `_act_room` and `broadcast_room`
-  through it. Regression test: spawn an actor with `invis_level=60`,
-  emit a TO_ROOM via `broadcast_room`, assert a trust=10 witness sees
-  nothing and a trust=60 witness sees the line. Filename slot:
-  `tests/integration/test_inv027_act_invis_trust_gate.py`.
-- **Why deferred**: the BCAST-029 row was reclassified ✅ COVERED on
-  the *act-emission* axis (the audit's count check) — the trust-gate
-  is a separate fidelity axis. Promoting to INV-027 ENFORCED means
-  writing the regression and changing every `_act_room` /
-  `broadcast_room` call site to thread the actor through. Out of
-  scope for the door-command session that surfaced it.
-- **Risk if left unenforced**: any wiz-invis player remains visible
-  in room/event broadcasts to all witnesses — a long-standing parity
-  bug ROM players would notice immediately.
+> **⚠️ CORRECTION (2026-05-29).** The original framing of this candidate
+> (below, struck) claimed `act()` *suppresses the whole line* for sub-trust
+> witnesses via a per-recipient `get_trust(rch) >= ch->invis_level` filter
+> inside `act()`. **That ROM mechanism is wrong** — verified against primary
+> source. ROM `act_new` (`src/comm.c:2230-2244`) delivers the line to **every**
+> eligible recipient in the room; there is no `invis_level` filter in the
+> recipient loop. Visibility is handled by the **`$n`/`$N` name substitution**:
+> `PERS(ch, to)` (`src/merc.h:2145`) → `can_see(to, ch)` (`src/handler.c:2618-2625`,
+> which returns FALSE when `get_trust(to) < ch->invis_level`), so a sub-trust
+> witness receives the line with the actor's name rendered as **"someone"**, NOT
+> nothing. Implementing the original "suppress for sub-trust" proposal would have
+> made the port *diverge* from ROM for generic `act(TO_ROOM)` broadcasts. The
+> *line-suppression* behavior is real but lives **per-command** in
+> `do_goto`/`do_violate` (`src/act_wiz.c:969-994,1026-1057`), which loop room
+> occupants and call `act(..., rch, TO_VICT)` only where
+> `get_trust(rch) >= ch->invis_level` — that contract is now tracked as
+> **WIZ-045** (`do_goto`, ✅ FIXED 2.11.30) and **WIZ-046** (`do_violate`, ⚠️ open)
+> in `docs/parity/ACT_WIZ_C_AUDIT.md`, not here. Two commands share that gate, so
+> it could itself firm into an invariant if more `act_wiz` surface uses it.
+
+- **Corrected ROM mechanism (the actual cross-file contract)**: every `act()`
+  `$n`/`$N` name substitution must route through `PERS`→`can_see`, so an actor
+  the recipient cannot see (wiz-invis `invis_level`, `AFF_INVISIBLE`, dark room,
+  blind/sneak/hide) renders as **"someone"** — while the line itself is still
+  delivered. This is name-masking, not line-suppression.
+- **Python state (2.11.30)**: only the combat path is faithful —
+  `mud/combat/messages.py` and `mud/combat/engine.py:856` use
+  `mud/world/vision.py:pers()` (full `can_see`). The other `act()`-style paths
+  do **not** mask:
+  - `mud/utils/act.py:act_format` (used by `mud/spec_funs.py`, `mud/wiznet.py`,
+    `mud/net/connection.py`, `mud/world/movement.py`, `mud/music/__init__.py`)
+    has a **local `_pers` (lines 56-73) that returns the name unconditionally** —
+    no `can_see`. Note `mud/world/movement.py:107` even *documents* the intent
+    ("use act_format so invisible …") that the helper does not deliver — a latent
+    bug. The fix is to route `act_format`'s `$n`/`$N` through `vision.pers()`
+    (and `$p`/`$P` through `can_see_object`, already partly done via `_object_name`).
+  - `mud/commands/imm_commands.py:_act_room` does `message.replace("$n", char.name)`
+    unconditionally (leaks the name); `mud/commands/imm_display.py:_act_room`
+    instead *gates* delivery on `can_see_character` (wrongly **suppresses** the
+    whole line — the original mis-framing's behavior).
+- **Corrected proposed enforcement (when promoted)**: do **not** route
+  `broadcast_room` through a suppress filter — `broadcast_room`
+  (`mud/net/protocol.py:58`) receives a **pre-formatted string** and has no
+  per-recipient `$n` rendering, so masking is impossible there; it must happen at
+  the per-recipient formatter (`act_format` / `_act_room`). Make `act_format`'s
+  `_pers` delegate to `vision.pers()`; reconcile the two `_act_room` helpers onto
+  the same PERS semantics. Regression: an actor with `invis_level=60` (or
+  `AFF_INVISIBLE`) emits a TO_ROOM `$n` line; a non-seeing witness receives the
+  line **with "someone"** (not nothing), a seeing witness receives the name.
+  Filename slot: `tests/integration/test_inv027_act_pers_name_masking.py`.
+- **Why still deferred**: wide blast radius (`spec_funs`, `wiznet`, `connection`,
+  `movement`, `music` all call `act_format`), and it needs its own probe to
+  separate per-recipient callers (where masking applies) from broadcast-once
+  callers (`recipient=None` → fed to `broadcast_room`, where ROM's per-recipient
+  PERS cannot be reproduced without restructuring — the MESSAGE_DELIVERY.md
+  architectural divergence). Out of scope for the WIZ-045 close that corrected it.
+- **Risk if left unenforced**: an invisible/wiz-invis actor's **name** leaks to
+  witnesses who shouldn't see it across `act_format`/`_act_room` broadcasts
+  (movement, give, spec_fun narration, etc.) — they should read "someone".
+
+<details><summary>Original (incorrect) framing — retained for the audit trail</summary>
+
+~~**ACT-INVIS-TRUST-GATE** — ROM mechanism: `src/comm.c:act()` filters every
+recipient by `get_trust(rch) >= ch->invis_level` inside `act()`, so sub-trust
+witnesses receive nothing. Proposed: a `_can_witness(actor, witness)` helper
+routing `_act_room` and `broadcast_room` through `get_trust(witness) >=
+invis_level`; test asserts a trust=10 witness sees nothing.~~ Wrong — see the
+correction above: `act()` does not filter recipients; it masks the `$n` name via
+PERS/can_see. Line-suppression is per-command (`do_goto`/`do_violate` → WIZ-045/046).
+</details>
 
 **~~Open: INV-028 candidate — LIGHT-SLOT-KEY-COHERENCE~~ ENFORCED 2.9.85** (test `tests/integration/test_inv028_light_slot_key_coherence.py`; see the active table row above). `do_wear` now routes `ITEM_LIGHT` into `WearLocation.LIGHT` (ROM `act_obj.c:1415-1422`), and both readers tolerate the int/str key forms. Candidate analysis retained below for the audit trail.**
 
