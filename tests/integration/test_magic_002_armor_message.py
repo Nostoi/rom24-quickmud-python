@@ -110,3 +110,23 @@ def test_armor_already_affected_uses_rom_message():
     assert any("You are already armored." in m for m in caster.messages), caster.messages
     # No second affect / no further AC change.
     assert caster.armor == [80, 80, 80, 80]
+
+
+def test_armor_already_affected_cross_target_uses_rom_act_message():
+    """The cross-target already-affected branch is ROM's `act("$N is already
+    armored.")` to the caster (src/magic.c:761), not the self "You are already
+    armored." line."""
+    room = Room(vnum=99104, name="Arena")
+    caster = _mage("Caster", room)
+    victim = _mage("Bob", room)
+
+    rng_mm.seed_mm(42)
+    do_cast(caster, "armor Bob")
+    caster.messages.clear()
+    victim.messages.clear()
+    caster.wait = 0
+    result = do_cast(caster, "armor Bob")
+
+    assert result == ""
+    assert any("Bob is already armored." in m for m in caster.messages), caster.messages
+    assert victim.armor == [80, 80, 80, 80]
