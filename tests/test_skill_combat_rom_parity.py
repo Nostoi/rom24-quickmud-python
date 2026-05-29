@@ -2611,7 +2611,11 @@ class TestRescueRomParity:
         ):
             result = do_rescue(char, "ally")
 
-        assert "rescue" in result.lower()
+        # FIGHT-029: do_rescue is void (ROM src/fight.c:3089-3101) — the rescuer
+        # line is delivered via _send_to_char (mailbox fallback for this
+        # disconnected char), not returned.
+        assert result == ""
+        assert any("rescue" in m.lower() for m in char.messages)
         assert improve_mock.called
         call_args = improve_mock.call_args
         assert call_args is not None
@@ -2642,7 +2646,10 @@ class TestRescueRomParity:
 
         assert stop_mock.call_count == 2
         assert set_mock.call_count == 2
-        assert "rescue" in result.lower()
+        # FIGHT-029: do_rescue is void (ROM src/fight.c:3089-3101) — rescuer line
+        # delivered via _send_to_char (mailbox fallback here), not returned.
+        assert result == ""
+        assert any("rescue" in m.lower() for m in char.messages)
 
 
 class TestBerserkRomParity:

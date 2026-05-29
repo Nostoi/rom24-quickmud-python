@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.25]
+
+### Fixed
+- **`FIGHT-029` — `do_rescue` violated SINGLE-DELIVERY (INV-001): the rescuer's success line double-delivered to a connected PC, and the victim/room lines went out on the wrong channel.** ROM `do_rescue` (`src/fight.c:3089-3091`) is **void** and writes all three success lines straight to the descriptor via `act()` (TO_CHAR "You rescue $N!" / TO_VICT "$n rescues you!" / TO_NOTVICT "$n rescues $N!"); there is no return-value channel. The Python port had two distinct bugs. (1) `rescue()` (`mud/skills/handlers.py`) did `caster.messages.append(char_msg)` **and** `do_rescue` returned that same line; the connection loop (`mud/net/connection.py`) sends a command's return value AND drains `char.messages`, so a connected PC rescuer received "You rescue X!" **twice** — the `do_kill` (FIGHT-020) / `do_surrender` shape. (2) The TO_VICT and TO_NOTVICT legs were appended to `target.messages` / `occupant.messages` only, so a connected victim/bystander saw them late on their next command drain instead of immediately via the async push (the MAGIC-003 wrong-channel shape). Now `rescue()` delivers all three legs via `_send_to_char` (the canonical single-delivery channel, mailbox fallback preserved for disconnected chars/tests) and `do_rescue` returns `""`; the fail-path `"You fail the rescue."` `char.messages.append` was likewise dropped (return-channel only). Regression: `tests/integration/test_rescue_single_delivery.py` splits the shape — rescuer line **count-once** plus victim/bystander **push-present & mailbox-empty** (a pure double-delivery count test false-greens on the vict/room legs, which are wrong-channel rather than duplicated). Existing rescue tests realigned to the void contract (`tests/test_skills.py`, `tests/test_skill_combat_rom_parity.py`, `tests/integration/test_skills_integration.py`). Out-of-scope sibling filed: the `"You are still recovering."` wait-state guard double-delivers the same way across 7 `combat.py` commands + `skills/registry.py` (not a ROM line) — tracked as INV-001 (d) OPEN. See `docs/parity/FIGHT_C_AUDIT.md:FIGHT-029` and `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md:INV-001`.
+
 ## [2.11.24]
 
 ### Fixed

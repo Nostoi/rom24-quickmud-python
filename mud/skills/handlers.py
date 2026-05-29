@@ -7077,18 +7077,23 @@ def rescue(
     vict_msg = f"{{5{rescuer_name} rescues you!{{x"
     room_msg = f"{{5{rescuer_name} rescues {victim_name}!{{x"
 
-    if hasattr(caster, "messages"):
-        caster.messages.append(char_msg)
-    if hasattr(target, "messages"):
-        target.messages.append(vict_msg)
+    # mirroring ROM src/fight.c:3089-3091 — do_rescue is void; all three lines
+    # write straight to the descriptor via act() (TO_CHAR / TO_VICT / TO_NOTVICT).
+    # FIGHT-029 / INV-001 SINGLE-DELIVERY: deliver via the canonical channel
+    # (_send_to_char/push_message), not the raw char.messages mailbox. A
+    # connected PC must receive on the async push so the line reaches the live
+    # prompt immediately (mailbox is a fallback for disconnected chars / tests);
+    # do_rescue discards this return so the rescuer line is not also re-sent via
+    # the connection loop's return-value channel.
+    _send_to_char(caster, char_msg)
+    _send_to_char(target, vict_msg)
 
     room = getattr(caster, "room", None)
     if room is not None:
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is caster or occupant is target:
                 continue
-            if hasattr(occupant, "messages"):
-                occupant.messages.append(room_msg)
+            _send_to_char(occupant, room_msg)
 
     stop_fighting(foe, False)
     stop_fighting(target, False)

@@ -255,15 +255,24 @@ def do_rescue(char: Character, args: str) -> str:
     success = roll <= learned
 
     if not success:
-        char.messages.append("You fail the rescue.")
+        # mirroring ROM src/fight.c:3084 — send_to_char("You fail the rescue.")
+        # then return (void). FIGHT-029 / INV-001: deliver via the return channel
+        # only; do NOT also append to char.messages (the connection loop sends
+        # the return value AND drains the mailbox, double-delivering to a
+        # connected PC — the do_kill/do_surrender shape).
         if skill is not None:
             skill_registry._check_improve(char, skill, "rescue", False)
         return "You fail the rescue."
 
-    message = skill_handlers.rescue(char, victim, opponent=opponent)
+    # mirroring ROM src/fight.c:3089-3101 — do_rescue is void; rescue() delivers
+    # all three success lines via _send_to_char (the canonical push channel).
+    # FIGHT-029 / INV-001: discard the return like do_kill (FIGHT-020) and
+    # do_surrender — returning rescue()'s line would re-send it to the connected
+    # PC rescuer via the connection loop's return-value channel (double delivery).
+    skill_handlers.rescue(char, victim, opponent=opponent)
     if skill is not None:
         skill_registry._check_improve(char, skill, "rescue", True)
-    return message
+    return ""
 
 
 def _find_room_target(char: Character, name: str) -> Character | None:

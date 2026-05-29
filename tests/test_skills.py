@@ -353,7 +353,10 @@ def test_rescue_switches_tank_and_wait_state(monkeypatch: pytest.MonkeyPatch) ->
 
     out = do_rescue(rescuer, "ally")
 
-    assert out == "{5You rescue Ally!{x"
+    # FIGHT-029: do_rescue is void in ROM (src/fight.c:3089-3101) — all three
+    # success lines are delivered via _send_to_char, not the return channel.
+    # These disconnected chars receive on the mailbox fallback (asserted below).
+    assert out == ""
     assert rescuer.fighting is foe
     assert foe.fighting is rescuer
     assert ally.fighting is None

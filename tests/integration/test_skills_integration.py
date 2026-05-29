@@ -191,8 +191,11 @@ class TestCombatSkillsIntegration:
         process_command(victim, "group thief")
 
         result = process_command(char, "rescue victim")
-        # Should either succeed or fail based on skill check
-        assert "rescue" in result.lower() or "bravely" in result.lower(), "Rescue attempt should be processed"
+        # FIGHT-029: do_rescue is void on success (returns ""); the rescuer line
+        # is delivered via _send_to_char (mailbox fallback for this disconnected
+        # char). On failure it returns "You fail the rescue." Accept either path.
+        delivered = (result + " " + " ".join(getattr(char, "messages", []) or [])).lower()
+        assert "rescue" in delivered or "bravely" in delivered, "Rescue attempt should be processed"
 
 
 # ============================================================================
