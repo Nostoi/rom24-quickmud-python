@@ -1,4 +1,4 @@
-# Session Status — 2026-05-28 — FIGHT-020 `kill` single-delivery (FINDING-008 sub-issue 3, re-triaged)
+# Session Status — 2026-05-28 — INV-001 single-delivery: FIGHT-020 `kill` + broadcast_room (FINDING-008 sub-issue 3, re-triaged)
 
 ## Current State
 
@@ -15,6 +15,12 @@
     (ROM's void `do_kill`); combat output flows solely through `_push_message`.
     Also retired a non-ROM `"You kill X."` line. Proven end-to-end with a
     mock-connection delivery harness; 11 combat tests re-baselined.
+  - **INV-001 follow-up (a) `broadcast_room`/`broadcast_global`** ✅ FIXED
+    (master 2.11.6, `6a4034f0`) — both appended to BOTH the async `send_to_char`
+    task AND `char.messages`, double-delivering every room/global broadcast
+    (deaths, position changes, arrivals, channels) to connected PCs. Now
+    connection-XOR-mailbox like `push_message`. Regression:
+    `tests/integration/test_broadcast_room_single_delivery.py`.
   - **Re-triage correction**: the FIGHT-019 session's "harness capture artifact"
     triage of sub-issue 3 was **wrong** (it traced only `multi_hit`'s return, not
     the connected-PC push+return double-channel). Master-side docs reconciled;
@@ -28,11 +34,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version (master) | **2.11.5** (1 commit ahead of `origin/master` — `d1e60112`, **UNPUSHED**). `diff-harness` separate, unmerged. |
-| Tests (master) | **4930 passed, 4 skipped, 0 failed** (full parallel suite, post-FIGHT-020). |
+| Version (master) | **2.11.6** (3 commits ahead of `origin/master` — `6a4034f0`, **UNPUSHED**). `diff-harness` separate, unmerged. |
+| Tests (master) | **4933 passed, 4 skipped, 0 failed** (full parallel suite, post-broadcast fix). |
 | ROM C files audited | 40 / 43 ✅ (3 N/A). `fight.c` row: FIGHT-019 (hit model) + FIGHT-020 (`do_kill` single-delivery) closed. |
 | Differential harness | **Sound.** Surfaced FINDING-001→008. FINDING-008 sub-issue 1 (FIGHT-019) + sub-issue 3 (FIGHT-020) now resolved on `master`; sub-issue 2 (color norm) remains harness-side. `combat_melee_rounds` xfail stays red until `diff-harness` picks up master + sub-issue 2. v1 on `diff-harness`, unmerged. |
-| INV-001 follow-ups | **2 open** (same SINGLE-DELIVERY contract): (a) `broadcast_room`/`broadcast_global` dual-channel; (b) `do_surrender` return-value double-send. Both filed under INV-001. |
+| INV-001 follow-ups | (a) `broadcast_room`/`broadcast_global` dual-channel ✅ FIXED (2.11.6). **(b) `do_surrender` return-value double-send — still OPEN** (filed under INV-001). |
 
 ## Next Intended Task
 
@@ -46,8 +52,9 @@
    the `broadcast_room` death duplicate won't affect it; expect step 4 to clear,
    but the first divergence may **advance to step 5**. Re-run, don't declare. Then
    merge `diff-harness` → `master`.
-4. **Close INV-001 follow-ups** (a) `broadcast_room` and (b) `do_surrender` as
-   separate failing-test-first gap-closer commits.
+4. **Close INV-001 follow-up (b) `do_surrender`** (NPC-ignores-surrender branch
+   returns `multi_hit` output) as a failing-test-first gap-closer commit.
+   ((a) `broadcast_room` closed in 2.11.6.)
 5. **Combat-test brittleness** — pin `number_bits` in the unseeded
    `tests/test_combat.py` hit/damage tests (single-file `-n0` runs are RNG-fragile;
    the canonical parallel suite is green). Candidate hardening pass; see
