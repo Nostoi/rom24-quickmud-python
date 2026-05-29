@@ -1,6 +1,21 @@
 #!/usr/bin/env python3
 """
 Convert ROM 2.4 skill_table from const.c to JSON format.
+
+⚠️ LOSSY — DO NOT blindly overwrite ``data/skills.json`` with this output.
+This parser only emits the ~132 spells/skills present in the ``src/const.c``
+``skill_table``. ``data/skills.json`` has been **hand-augmented** with entries
+that are not in (or not parseable from) ``const.c`` — e.g. ``cancellation`` and
+``harm`` — so a straight regeneration **drops** those skills. Always regenerate
+to a scratch path and ``diff`` against the live file before replacing it:
+
+    python3 -m mud.scripts.convert_skills_to_json --output /tmp/skills_regen.json
+    diff data/skills.json /tmp/skills_regen.json   # expect ONLY intended changes
+
+To pick up a mapping change (e.g. the CAST-002 target-vocabulary split), apply
+the delta by spell name in place rather than overwriting. Tooling-hardening
+(make the converter merge-not-replace, or parse the augmented entries) is filed
+as Outstanding — see the CAST-002 session summary.
 """
 
 import json
