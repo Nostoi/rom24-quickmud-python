@@ -64,10 +64,14 @@ def broadcast_room(
         if char is exclude:
             continue
         writer = getattr(char, "connection", None)
-        if writer:
-            # fire and forget
+        if writer is not None:
+            # INV-001 SINGLE-DELIVERY: a connected PC receives via the async send
+            # ONLY. The connection read loop (mud/net/connection.py) drains
+            # char.messages after the next command, so anything also queued there
+            # replays on the next prompt (duplicate delivery). Mirrors
+            # mud/utils/messaging.py:push_message — async XOR mailbox, never both.
             asyncio.create_task(send_to_char(char, message))
-        if hasattr(char, "messages"):
+        elif hasattr(char, "messages"):
             char.messages.append(message)
 
 
@@ -85,7 +89,8 @@ def broadcast_global(
         if channel in getattr(char, "muted_channels", set()):
             continue
         writer = getattr(char, "connection", None)
-        if writer:
+        if writer is not None:
+            # INV-001 SINGLE-DELIVERY — async send XOR mailbox (see broadcast_room).
             asyncio.create_task(send_to_char(char, message))
-        if hasattr(char, "messages"):
+        elif hasattr(char, "messages"):
             char.messages.append(message)

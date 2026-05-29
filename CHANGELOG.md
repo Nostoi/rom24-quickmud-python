@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.6]
+
+### Fixed
+- **INV-001 — `broadcast_room` / `broadcast_global` double-delivered every room/global broadcast to connected players (SINGLE-DELIVERY).** `mud/net/protocol.py`'s `broadcast_room` and `broadcast_global` appended each message to BOTH the fire-and-forget `asyncio.create_task(send_to_char(...))` send AND `char.messages`. For a connected PC the async send delivers immediately and the connection read loop (`mud/net/connection.py`) then drains `char.messages` after the next command — so every death/position-change/arrival/channel line routed through these helpers replayed once more on the next prompt. Both functions now deliver connection-XOR-mailbox (async send for connected PCs, `char.messages` fallback for disconnected characters and tests), mirroring `mud/utils/messaging.py:push_message`. This was the open follow-up (a) filed under INV-001 alongside FIGHT-020; surfaced by the FIGHT-020 death-path delivery test (`{RVictim is DEAD!!{x` and `... hits the ground ... DEAD.` each delivered twice to the connected killer). Regression: `tests/integration/test_broadcast_room_single_delivery.py`. The ~195 broadcast call sites are unchanged; connection-less recipients still queue to the mailbox exactly as before (full suite green, 4933 passed).
+- **Still open (INV-001 follow-up b): `do_surrender`** (`mud/commands/combat.py`, NPC-ignores-surrender branch) returns `multi_hit(...)` output — the surrendering PC gets the TO_VICT push AND a returned attacker-perspective line (return-value double-send + wrong-perspective leak). Tracked under INV-001; needs its own fix.
+
 ## [2.11.5]
 
 ### Fixed
