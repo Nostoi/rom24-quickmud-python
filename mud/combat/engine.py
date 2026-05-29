@@ -1414,12 +1414,15 @@ def calculate_weapon_damage(
     elif getattr(attacker, "is_npc", False):
         # NPC with no wielded weapon — ROM src/fight.c:522-530 rolls the mob's own
         # damage dice: `dam = dice(ch->damage[DICE_NUMBER], ch->damage[DICE_TYPE])`.
-        # convert_mobile (src/db.c) upgrades every mob to new_format at load, so this
-        # dice path is universal at runtime; ROM's `!new_format` sub-branch
-        # (`number_range(ch->level/2, ch->level*3/2)`) is dead code (and the Python
-        # proto `new_format` flag is unreliable — False even on dice-carrying mobs).
-        # MobInstance.damage == (DICE_NUMBER, DICE_TYPE, bonus); the bonus is applied
-        # below via damroll (MobInstance.damroll == damage[2]).
+        # Source of truth is the MobInstance.damage tuple == (DICE_NUMBER, DICE_TYPE,
+        # bonus); the bonus is applied below via damroll (MobInstance.damroll ==
+        # damage[2]). Do NOT key on the proto `new_format` flag — it is unreliable in
+        # the Python loader (False even on dice-carrying mobs like the drunk #3064);
+        # the loader populates valid dice regardless (verified: all 986 mob protos
+        # resolve to non-zero damage[0]/damage[1], so dice() never collapses to 0→1
+        # here). This mirrors ROM at runtime, where convert_mobile (src/db.c) upgrades
+        # every mob to new_format at load, making the `!new_format`
+        # `number_range(level/2, level*3/2)` sub-branch dead code.
         dice_spec = getattr(attacker, "damage", (0, 0, 0)) or (0, 0, 0)
         dam = rng_mm.dice(int(dice_spec[0]), int(dice_spec[1]))
     else:

@@ -45,6 +45,12 @@ end-to-end.
 - **Verification**: the `combat_melee_rounds` differential now converges on **all
   of steps 1–6** (hp + severity verbs match end-to-end); step 5 stays matched (the
   added draw realigned the stream, as predicted).
+- **Blast-radius scan**: `dice(n, 0)` / `dice(0, size)` return 0 (clamped to 1), so a
+  mob with a 0-component damage dice would have been silently downgraded to flat-1.
+  Scanned all **986 mob protos** through the spawner's `_parse_dice` — **zero** resolve
+  to a 0 in `damage[0]`/`damage[1]`, so the dice path is safe game-wide (the QuickMUD
+  loader populates valid dice for every mob, even those with `new_format=False`). No
+  loader gap to file.
 
 ### `FIGHT-028` / FINDING-011 — 🔴 FILED (not closed) — combat miss line drops the attack noun
 
