@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.9]
+
+### Fixed
+- **`FIGHT-021` / FINDING-009 (facet 1) — `multi_hit` skipped the second/third-attack RNG draws for skill-less attackers, desyncing the combat-tick stream (CRITICAL).** ROM `src/fight.c` `multi_hit` (PC) and `mob_hit` (NPC) resolve the 2nd/3rd extra attacks with `if (number_percent() < chance)`. `number_percent()` is the LEFT operand, so the RNG draw fires **unconditionally** — even when `chance == 0` for an attacker with no second/third-attack skill (every mob without those skills, every low-level mage). `mud/combat/engine.py::multi_hit` guarded the draw behind `if second_attack_skill > 0:` / `if third_attack_skill > 0:`, so a 0-skill attacker drew **two fewer** `number_percent()` values than ROM, shifting the shared combat RNG stream for every later swing in the tick. Both checks now compute `chance` and draw `number_percent()` unconditionally (guards removed); `chance` stays 0 for a skill-less attacker so no extra swing lands, but the draw now matches ROM. **Surfaced by the differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-009): in `combat_melee_rounds` the drunk #3064's `mob_hit` consumed fewer draws than ROM, so the player's follow-up swing read a shifted stream and resolved to a hit (`You scratch`) where ROM produced a miss (`You miss`). Regression: `tests/integration/test_fight_021_multi_hit_unconditional_draw.py`. **Partial close of FINDING-009 facet 1** — the NPC `mob_hit` path still omits ROM's `number_range(0,2)` mob-cast + `number_range(0,8)` mob-skill draws (tracked as FIGHT-022).
+
+### Changed
+- Re-baselined `tests/integration/test_character_advancement.py::test_kill_mob_grants_xp_integration`: pinned the ROM THAC0 / `number_bits(5)` attack roll to nat-19 (always hits) so the kill→XP flow does not depend on the combat RNG stream position. FIGHT-021's two extra (ROM-faithful) draws resequenced the stream, which let the test's fixed 60-tick budget lapse while room 3001's aggressive Hassan joined and removed the player — the same RNG-stream brittleness class the 2.11.8 pass addressed. The test exercises XP-on-kill, not hit probability. Full combat + integration suite green (2541 passed).
+
 ## [2.11.8]
 
 ### Changed

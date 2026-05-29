@@ -341,35 +341,38 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
         if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
             return results
 
-    # Second attack skill check
+    # Second attack — ROM src/fight.c multi_hit/mob_hit resolve the extra attack
+    # with `if (number_percent() < chance)`. number_percent() is the LEFT operand,
+    # so the RNG draw fires UNCONDITIONALLY — even when chance==0 for a skill-less
+    # attacker (most mobs, every low-level mage). FIGHT-021: do not guard the draw
+    # behind `skill > 0`; that drew two fewer values than ROM and desynced the
+    # shared combat RNG stream for every later swing in the tick.
     second_attack_skill = getattr(attacker, "second_attack_skill", 0)
-    if second_attack_skill > 0:
-        chance = second_attack_skill // 2
+    chance = second_attack_skill // 2  # skill is 0..100 (non-negative) → bare // == C truncation
 
-        # Slow reduces chances
-        if getattr(attacker, "has_affect", None) and attacker.has_affect(AffectFlag.SLOW):
-            chance //= 2
+    # Slow reduces chances
+    if getattr(attacker, "has_affect", None) and attacker.has_affect(AffectFlag.SLOW):
+        chance //= 2
 
-        if rng_mm.number_percent() < chance:
-            result = attack_round(attacker, victim)
-            results.append(result)
-            check_improve(attacker, "second attack", True, 5)
-            if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
-                return results
+    if rng_mm.number_percent() < chance:
+        result = attack_round(attacker, victim)
+        results.append(result)
+        check_improve(attacker, "second attack", True, 5)
+        if victim.position == Position.DEAD or not hasattr(attacker, "fighting") or attacker.fighting != victim:
+            return results
 
-    # Third attack skill check
+    # Third attack — ROM src/fight.c: same unconditional number_percent() draw.
     third_attack_skill = getattr(attacker, "third_attack_skill", 0)
-    if third_attack_skill > 0:
-        chance = third_attack_skill // 4
+    chance = third_attack_skill // 4  # non-negative → bare // == C truncation
 
-        # Slow prevents third attack entirely
-        if getattr(attacker, "has_affect", None) and attacker.has_affect(AffectFlag.SLOW):
-            chance = 0
+    # Slow prevents third attack entirely
+    if getattr(attacker, "has_affect", None) and attacker.has_affect(AffectFlag.SLOW):
+        chance = 0
 
-        if rng_mm.number_percent() < chance:
-            result = attack_round(attacker, victim)
-            results.append(result)
-            check_improve(attacker, "third attack", True, 6)
+    if rng_mm.number_percent() < chance:
+        result = attack_round(attacker, victim)
+        results.append(result)
+        check_improve(attacker, "third attack", True, 6)
 
     # INV-026: TRIG_FIGHT / TRIG_HPCNT dispatch moved to
     # mud.game_loop.violence_tick (the ROM violence_update analog) so

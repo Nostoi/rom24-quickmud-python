@@ -75,7 +75,7 @@ def test_mob():
     return mob
 
 
-def test_kill_mob_grants_xp_integration(test_character, test_mob):
+def test_kill_mob_grants_xp_integration(test_character, test_mob, monkeypatch):
     """Given character in combat with mob
     When mob dies
     Then character gains XP
@@ -90,6 +90,13 @@ def test_kill_mob_grants_xp_integration(test_character, test_mob):
     from mud.utils import rng_mm
 
     rng_mm.seed_mm(1)
+    # FIGHT-021: pin the ROM THAC0 / number_bits(5) attack roll to nat-19 (always
+    # hits) so the damroll-50 char one-shots the 10-hp mayor on the first combat
+    # pulse. This test exercises the kill→XP flow, not hit probability; without the
+    # pin it is brittle to the combat RNG stream position (the unconditional
+    # 2nd/3rd-attack draws resequenced it), letting the fixed 60-tick budget lapse
+    # while room 3001's aggressive Hassan joins and removes the player.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     char = test_character
     mob = test_mob
