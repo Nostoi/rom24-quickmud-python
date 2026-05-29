@@ -1411,9 +1411,20 @@ def calculate_weapon_damage(
             percent = rng_mm.number_percent()
             if percent <= (skill_total // 8):
                 dam = 2 * dam + (dam * 2 * percent // 100)
+    elif getattr(attacker, "is_npc", False):
+        # NPC with no wielded weapon — ROM src/fight.c:522-530 rolls the mob's own
+        # damage dice: `dam = dice(ch->damage[DICE_NUMBER], ch->damage[DICE_TYPE])`.
+        # convert_mobile (src/db.c) upgrades every mob to new_format at load, so this
+        # dice path is universal at runtime; ROM's `!new_format` sub-branch
+        # (`number_range(ch->level/2, ch->level*3/2)`) is dead code (and the Python
+        # proto `new_format` flag is unreliable — False even on dice-carrying mobs).
+        # MobInstance.damage == (DICE_NUMBER, DICE_TYPE, bonus); the bonus is applied
+        # below via damroll (MobInstance.damroll == damage[2]).
+        dice_spec = getattr(attacker, "damage", (0, 0, 0)) or (0, 0, 0)
+        dam = rng_mm.dice(int(dice_spec[0]), int(dice_spec[1]))
     else:
-        # Unarmed damage from ROM C: number_range(1 + 4*skill/100, 2*ch->level/3*skill/100)
-        # This is the exact ROM formula from src/fight.c:556-557
+        # PC unarmed damage from ROM C: number_range(1 + 4*skill/100, 2*ch->level/3*skill/100)
+        # This is the exact ROM formula from src/fight.c:556-559
         min_dam = 1 + (4 * skill_total // 100)
         max_dam = (2 * attacker.level // 3) * skill_total // 100
         # ROM allows max_dam to be less than min_dam for very low levels
