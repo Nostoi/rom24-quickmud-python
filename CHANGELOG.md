@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.27]
+
+### Fixed
+- **`INV-001 (d)` — the `"You are still recovering."` wait-state guard double-delivered to a connected PC across 7 combat commands (SINGLE-DELIVERY family).** `do_kick`, `do_rescue`, `do_backstab`, `do_bash`, `do_berserk`, `do_flee`, and `do_cast` (`mud/commands/combat.py`) each did `char.messages.append("You are still recovering.")` **and** `return "You are still recovering."` when the actor was still recovering. The connection read loop (`mud/net/connection.py:1980-2000`) sends a command's return value AND drains `char.messages`, so a connected PC saw the line **twice** — the same INV-001 shape fixed for `do_kill` (FIGHT-020), `do_surrender`, and `do_rescue` (FIGHT-029). The message itself is not a ROM line (ROM gates wait at the interpreter level, silent), so INV-001 (d) is delivery-channel only: the fix drops the mailbox append at all 7 sites and keeps the return (the single canonical delivery). `mud/skills/registry.py:163` was deliberately excluded — it `raise`s `ValueError("still recovering")` rather than returning the line, has no production callers (only tests call `SkillRegistry.use`), and the loop sends a generic error string on exceptions (never the exception text), so its append is a single mailbox delivery in a test-only path, not a double. Regression: `tests/integration/test_still_recovering_single_delivery.py` — a grep-guard locking all 7 combat.py sites against any future re-addition (the `test_rng_determinism.py`/`test_equipment_key_convention.py` idiom) plus a behavioral connected-PC single-delivery test through `do_kick`. See `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-001 (d) — now fully ✅ ENFORCED.
+
 ## [2.11.26]
 
 ### Fixed

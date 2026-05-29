@@ -175,7 +175,8 @@ def do_kick(char: Character, args: str) -> str:
 
     if skill is not None:
         if int(getattr(char, "wait", 0) or 0) > 0:
-            char.messages.append("You are still recovering.")
+            # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
+            # double-deliver (the connection loop sends the return AND drains char.messages).
             return "You are still recovering."
 
         lag = skill_registry._compute_skill_lag(char, skill)
@@ -233,7 +234,8 @@ def do_rescue(char: Character, args: str) -> str:
         return "Kill stealing is not permitted."
 
     if int(getattr(char, "wait", 0) or 0) > 0:
-        char.messages.append("You are still recovering.")
+        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
+        # double-deliver (the connection loop sends the return AND drains char.messages).
         return "You are still recovering."
 
     try:
@@ -355,7 +357,8 @@ def do_backstab(char: Character, args: str) -> str:
         return "You need to wield a weapon to backstab."
 
     if int(getattr(char, "wait", 0) or 0) > 0:
-        char.messages.append("You are still recovering.")
+        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
+        # double-deliver (the connection loop sends the return AND drains char.messages).
         return "You are still recovering."
 
     roll = rng_mm.number_percent()
@@ -408,7 +411,8 @@ def do_bash(char: Character, args: str) -> str:
         return "You'll have to let them get back up first."
 
     if int(getattr(char, "wait", 0) or 0) > 0:
-        char.messages.append("You are still recovering.")
+        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
+        # double-deliver (the connection loop sends the return AND drains char.messages).
         return "You are still recovering."
 
     chance = learned
@@ -543,7 +547,8 @@ def do_berserk(char: Character, args: str) -> str:
         return "You can't get up enough energy."
 
     if int(getattr(char, "wait", 0) or 0) > 0:
-        char.messages.append("You are still recovering.")
+        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
+        # double-deliver (the connection loop sends the return AND drains char.messages).
         return "You are still recovering."
 
     roll = rng_mm.number_percent()
@@ -661,7 +666,8 @@ def do_flee(char: Character, args: str) -> str:
 
     # Check wait state
     if int(getattr(char, "wait", 0) or 0) > 0:
-        char.messages.append("You are still recovering.")
+        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
+        # double-deliver (the connection loop sends the return AND drains char.messages).
         return "You are still recovering."
 
     # Set wait state for flee attempt
@@ -834,7 +840,8 @@ def do_cast(char: Character, args: str) -> str:
         return "You don't have enough mana."
 
     if int(getattr(char, "wait", 0) or 0) > 0:
-        char.messages.append("You are still recovering.")
+        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
+        # double-deliver (the connection loop sends the return AND drains char.messages).
         return "You are still recovering."
 
     # ROM src/magic.c:362-536 target dispatch on skill_table[sn].target.
