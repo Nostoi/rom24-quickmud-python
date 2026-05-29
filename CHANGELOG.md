@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.26]
+
+### Fixed
+- **`FIGHT-030` — `do_rescue` skipped the rescuer's PK (KILLER) flagging, so a clan PC rescuing an ally from another PC escaped the killer flag ROM imposes.** ROM `do_rescue` (`src/fight.c:3097`) calls `check_killer(ch, fch)` between the two `stop_fighting` and the two `set_fighting` calls (`:3094-3099`) — when the rescued ally is fighting **another PC** (`fch` is not an NPC), the rescuer joins that PvP fight and ROM flags it `PLR_KILLER` (+ killer timer + wiznet) exactly as `do_kill`/`do_murder` would. `do_rescue`'s only kill-stealing guard (`src/fight.c:3075`) is NPC-gated, so a PC-vs-PC rescue proceeds — precisely the case `check_killer` exists to flag. The Python `rescue()` handler (`mud/skills/handlers.py`) performed the `stop_fighting`/`set_fighting` swap but skipped `check_killer`, so the rescuer escaped the PK consequences. Now `rescue()` calls `check_killer(caster, foe)` in the ROM-faithful position. The placement is load-bearing: `check_killer` early-returns once `attacker.fighting is foe` (`mud/combat/engine.py:1291`), so it must run **before** `set_fighting(caster, foe)` or the flag would silently never fire. The common ally-vs-mob rescue is unaffected — `check_killer` early-returns when the foe is an NPC. Regression: `tests/integration/test_rescue_killer_flag.py` (PC foe → clan rescuer flagged `PlayerFlag.KILLER`, anchored on the state bit and asserting the tank swap actually ran so a missing flag can't masquerade as a bailed rescue; NPC foe → rescuer NOT flagged). Surfaced 2026-05-29 by the advisor during the FIGHT-029 close (full `do_rescue` read). See `docs/parity/FIGHT_C_AUDIT.md:FIGHT-030`.
+
 ## [2.11.25]
 
 ### Fixed

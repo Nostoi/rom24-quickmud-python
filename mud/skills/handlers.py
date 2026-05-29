@@ -13,6 +13,7 @@ from mud.combat.engine import (
     apply_damage,
     apply_position_change,
     attack_round,
+    check_killer,
     get_weapon_skill,
     get_weapon_sn,
     get_wielded_weapon,
@@ -7097,6 +7098,12 @@ def rescue(
 
     stop_fighting(foe, False)
     stop_fighting(target, False)
+    # mirroring ROM src/fight.c:3097 — check_killer(ch, fch) flags the rescuer
+    # PLR_KILLER when it joins a PvP fight (FIGHT-030). Must run BEFORE
+    # set_fighting(caster, foe): check_killer early-returns once
+    # caster.fighting is foe (engine.py:1291), so the ROM ordering
+    # (:3094-3099) is load-bearing.
+    check_killer(caster, foe)
     set_fighting(caster, foe)
     set_fighting(foe, caster)
 
