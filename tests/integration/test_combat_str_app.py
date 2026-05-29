@@ -70,12 +70,11 @@ def test_get_hitroll_preserves_raw_hitroll_addend() -> None:
 def test_engine_thac0_path_uses_str_app_tohit(monkeypatch: pytest.MonkeyPatch) -> None:
     """mud/combat/engine.py THAC0 path must pass get_hitroll(attacker) into compute_thac0.
 
-    Forces COMBAT_USE_THAC0 on, captures the hitroll kwarg compute_thac0 was
-    called with for a STR-3 and a STR-25 attacker that share an identical
-    ch.hitroll, and asserts the delta equals str_app[25].tohit - str_app[3].tohit (== 9).
+    FIGHT-019: THAC0 is the only melee-hit model. Captures the hitroll kwarg
+    compute_thac0 was called with for a STR-3 and a STR-25 attacker that share an
+    identical ch.hitroll, and asserts the delta equals
+    str_app[25].tohit - str_app[3].tohit (== 9).
     """
-
-    monkeypatch.setattr(combat_engine, "COMBAT_USE_THAC0", True)
 
     captured: list[int] = []
     real_compute_thac0 = combat_engine.compute_thac0
@@ -98,39 +97,6 @@ def test_engine_thac0_path_uses_str_app_tohit(monkeypatch: pytest.MonkeyPatch) -
     weak_hitroll = captured[0]
     strong_hitroll = captured[-1]
     assert strong_hitroll - weak_hitroll == STR_APP[25].tohit - STR_APP[3].tohit == 9
-
-
-def test_engine_percent_path_uses_str_app_tohit(monkeypatch: pytest.MonkeyPatch) -> None:
-    """The non-THAC0 percent fallback at mud/combat/engine.py must also use
-    get_hitroll(attacker), not the raw attacker.hitroll.
-
-    Asserts engine.get_hitroll is invoked with the attacker during attack_round.
-    """
-
-    monkeypatch.setattr(combat_engine, "COMBAT_USE_THAC0", False)
-
-    seen: list[int] = []
-    real_get_hitroll = combat_engine.get_hitroll
-
-    def spy_get_hitroll(ch) -> int:
-        value = real_get_hitroll(ch)
-        seen.append(value)
-        return value
-
-    monkeypatch.setattr(combat_engine, "get_hitroll", spy_get_hitroll)
-
-    weak = _make_attacker(strength=3, hitroll=0)
-    strong = _make_attacker(strength=25, hitroll=0)
-    victim = Character(name="Dummy", level=20, hit=100, max_hit=100, is_npc=True)
-    victim.armor = [0, 0, 0, 0]
-
-    combat_engine.attack_round(weak, victim)
-    combat_engine.attack_round(strong, victim)
-
-    assert seen, "engine.get_hitroll should be called by the percent path"
-    # str_app[3].tohit == -3, str_app[25].tohit == 6
-    assert STR_APP[3].tohit in seen
-    assert STR_APP[25].tohit in seen
 
 
 # ---------------------------------------------------------------------------

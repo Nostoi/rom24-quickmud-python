@@ -11,10 +11,9 @@ from mud.characters import is_clan_member, is_same_clan, is_same_group
 from mud.characters.follow import stop_follower
 from mud.combat.death import raw_kill
 from mud.combat.messages import TYPE_HIT, DamageMessages, dam_message
-from mud.config import COMBAT_USE_THAC0
 from mud.groups.xp import group_gain
 from mud.magic import SpellTarget, cold_effect, fire_effect, shock_effect
-from mud.math.c_compat import c_div, urange
+from mud.math.c_compat import c_div
 from mud.math.stat_apps import get_ac, get_damroll, get_hitroll
 from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
@@ -28,6 +27,7 @@ from mud.models.constants import (
     WEAPON_POISON,
     WEAPON_SHOCKING,
     WEAPON_VAMPIRIC,
+    ActFlag,
     AffectFlag,
     DamageType,
     ItemType,
@@ -423,32 +423,44 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
     if victim_ac < -15:
         victim_ac = c_div(victim_ac + 15, 5) - 15
 
-    if COMBAT_USE_THAC0:
-        # ROM diceroll using number_bits(5) until < 20
-        while True:
-            diceroll = rng_mm.number_bits(5)
-            if diceroll < 20:
-                break
-        # Compute class-based thac0 with hitroll/skill contributions
-        # ROM src/merc.h:2107-2108 GET_HITROLL adds str_app[STR].tohit to ch->hitroll.
+    # FIGHT-019: ROM one_hit has a single attack-roll model — the THAC0 /
+    # number_bits(5) roll (src/fight.c:508-516). The legacy percent model
+    # (50 + hitroll + AC/2 via number_percent) was a non-ROM divergence in both
+    # the RNG draw and the hit/miss decision; retired here so combat is faithful
+    # by default.
+    # ROM src/fight.c:508 — `while ((diceroll = number_bits(5)) >= 20);`
+    while True:
+        diceroll = rng_mm.number_bits(5)
+        if diceroll < 20:
+            break
+    # Compute thac0 with hitroll/skill contributions.
+    # ROM src/merc.h:2107-2108 GET_HITROLL adds str_app[STR].tohit to ch->hitroll.
+    if getattr(attacker, "is_npc", False):
+        # ROM src/fight.c:445-457 — NPC attackers use thac0_00 = 20 and a
+        # thac0_32 keyed off their ACT class flag ("as good as a thief" default).
+        act_flags = int(getattr(attacker, "act", 0))
+        if act_flags & ActFlag.WARRIOR:
+            npc_t32 = -10
+        elif act_flags & ActFlag.THIEF:
+            npc_t32 = -4
+        elif act_flags & ActFlag.CLERIC:
+            npc_t32 = 2
+        elif act_flags & ActFlag.MAGE:
+            npc_t32 = 6
+        else:
+            npc_t32 = -4
+        th = compute_thac0(
+            attacker.level, 0, hitroll=get_hitroll(attacker), skill=skill_total, thac0_pair=(20, npc_t32)
+        )
+    else:
         th = compute_thac0(
             attacker.level, attacker.ch_class, hitroll=get_hitroll(attacker), skill=skill_total
         )
-        vac = c_div(victim_ac, 10)
-        # Miss if nat 0 or (not 19 and diceroll < thac0 - victim_ac)
-        if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
-            # Miss — ROM C calls damage(ch, victim, 0, dt, dam_type, TRUE).
-            return apply_damage(attacker, victim, 0, int(dam_type), dt=attack_dt)
-    else:
-        # Percent model kept for parity stability outside feature flag
-        # ROM src/merc.h:2107-2108 GET_HITROLL adds str_app[STR].tohit.
-        to_hit = 50 + get_hitroll(attacker)
-        # Use C-style division for negative AC to match ROM semantics
-        to_hit += c_div(victim_ac, 2)
-        to_hit = urange(5, to_hit, 100)
-        if rng_mm.number_percent() > to_hit:
-            # Miss — ROM C calls damage(ch, victim, 0, dt, dam_type, TRUE).
-            return apply_damage(attacker, victim, 0, int(dam_type), dt=attack_dt)
+    vac = c_div(victim_ac, 10)
+    # ROM src/fight.c:510 — miss on nat 0, or (not 19 and diceroll < thac0 - victim_ac).
+    if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
+        # Miss — ROM C calls damage(ch, victim, 0, dt, dam_type, TRUE).
+        return apply_damage(attacker, victim, 0, int(dam_type), dt=attack_dt)
 
     # Hit determined - calculate weapon damage following C src/fight.c:one_hit logic
     damage = calculate_weapon_damage(
@@ -1517,7 +1529,9 @@ def interpolate(level: int, v00: int, v32: int) -> int:
     return v00 + c_div((v32 - v00) * level, 32)
 
 
-def compute_thac0(level: int, ch_class: int, *, hitroll: int = 0, skill: int = 100) -> int:
+def compute_thac0(
+    level: int, ch_class: int, *, hitroll: int = 0, skill: int = 100, thac0_pair: tuple[int, int] | None = None
+) -> int:
     """Compute THAC0 following ROM fight.c adjustments.
 
     - interpolate(level, thac0_00, thac0_32)
@@ -1525,8 +1539,12 @@ def compute_thac0(level: int, ch_class: int, *, hitroll: int = 0, skill: int = 1
     - if thac0 < -5: thac0 = -5 + (thac0 + 5)/2 (C div)
     - thac0 -= hitroll * skill / 100
     - thac0 += 5 * (100 - skill) / 100
+
+    ``thac0_pair`` overrides the (thac0_00, thac0_32) source — used for NPC
+    attackers, whose pair comes from ACT flags rather than the PC class table
+    (ROM src/fight.c:445-457).
     """
-    t00, t32 = THAC0_TABLE.get(ch_class, (20, 6))
+    t00, t32 = thac0_pair if thac0_pair is not None else THAC0_TABLE.get(ch_class, (20, 6))
     th = interpolate(level, t00, t32)
     if th < 0:
         th = c_div(th, 2)

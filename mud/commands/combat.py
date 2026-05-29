@@ -123,10 +123,20 @@ def do_kill(char: Character, args: str) -> str:
     skill_registry._apply_wait_state(char, get_pulse_violence())
     check_killer(char, victim)
     # mirroring ROM src/fight.c:2815-2817 — do_kill enters combat via multi_hit
-    attack_messages = multi_hit(char, victim)
-    if not attack_messages:
-        return ""
-    return attack_messages[0]
+    # and returns void. All combat output (the per-swing dam_message, defense
+    # lines, death broadcasts) is delivered through `_push_message` inside
+    # `apply_damage`, exactly as ROM's `act()`/`send_to_char` write straight to
+    # the descriptor. We must NOT also return the line: the connection loop
+    # (mud/net/connection.py) sends the command's return value AND drains the
+    # push, so returning `multi_hit(...)[0]` double-delivers every combat line
+    # to connected PCs (INV-001 SINGLE-DELIVERY — the same class as the WS
+    # death-path duplicate bug). Every other multi_hit caller (do_murder,
+    # violence_tick, assist, aggressive AI, spec_funs) discards the return for
+    # this reason. The non-ROM "You kill X." that `_handle_death` returns is
+    # likewise never delivered (ROM src/fight.c:859-862 sends the killer
+    # nothing on death).
+    multi_hit(char, victim)
+    return ""
 
 
 def do_kick(char: Character, args: str) -> str:
@@ -595,10 +605,14 @@ def do_surrender(char: Character, args: str) -> str:
         if not mobprog.mp_surr_trigger(opponent, char):
             # No mobprog or mobprog didn't handle it - NPC ignores and attacks
             messages.append(f"{opponent_name} seems to ignore your cowardly act!")
-            # ROM: multi_hit(mob, ch, TYPE_UNDEFINED)
-            attack_messages = multi_hit(opponent, char)
-            if attack_messages:
-                messages.extend(attack_messages)
+            # ROM: multi_hit(mob, ch, TYPE_UNDEFINED) — void; combat output is
+            # delivered via _push_message (TO_VICT to the surrendering PC,
+            # TO_NOTVICT to the room). Discard the return: it is the NPC
+            # attacker's TO_CHAR-perspective line, and returning it would (a)
+            # double-deliver to the PC on top of the TO_VICT push and (b) leak
+            # the wrong perspective ("You hit …" from the NPC's POV). Same
+            # SINGLE-DELIVERY contract as do_kill (FIGHT-020 / INV-001).
+            multi_hit(opponent, char)
 
     return "\n".join(messages) if len(messages) > 1 else messages[0]
 

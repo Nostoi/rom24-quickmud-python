@@ -19,6 +19,20 @@ def _setup_pair():
     return attacker, victim
 
 
+def deliver_kill(char, target: str) -> str:
+    """Run `kill <target>` and return the attacker-facing combat line.
+
+    INV-001/SINGLE-DELIVERY: do_kill returns "" (ROM's void do_kill); the
+    defense line (e.g. "<v> parries your attack.") is pushed to the attacker by
+    check_parry/dodge/shield_block via _push_message, landing in char.messages
+    for a connection-less test character. Returns the first line pushed here.
+    """
+    before = len(char.messages)
+    process_command(char, f"kill {target}")
+    pushed = char.messages[before:]
+    return pushed[0] if pushed else ""
+
+
 def test_parry_triggers_before_dodge_and_shield_block(monkeypatch):
     from mud.utils import rng_mm
 
@@ -31,7 +45,7 @@ def test_parry_triggers_before_dodge_and_shield_block(monkeypatch):
     victim.has_shield_equipped = True
     # Ensure percent roll always hits the threshold
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert out == "Victim parries your attack."
 
 
@@ -43,7 +57,7 @@ def test_parry_triggers_when_no_shield(monkeypatch):
     victim.skills["parry"] = 100  # Will give 100/2 = 50% base chance
     victim.has_weapon_equipped = True
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert out == "Victim parries your attack."
 
 
@@ -54,5 +68,5 @@ def test_dodge_triggers_when_no_shield_or_parry(monkeypatch):
     # Set ROM-style skill attribute that our implementation uses
     victim.skills["dodge"] = 100  # Will give (100/2) + (victim.level/2) base chance
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert out == "Victim dodges your attack."

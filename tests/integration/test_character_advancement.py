@@ -377,6 +377,9 @@ def test_player_kill_applies_rom_death_penalty(monkeypatch):
     victim.fighting = attacker
 
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
+    # FIGHT-019: the swing now resolves through ROM's THAC0 / number_bits(5) roll
+    # (src/fight.c:508-510); a natural 19 always lands, guaranteeing the killing hit.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)

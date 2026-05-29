@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 
 from mud.commands import process_command
-from mud.models.constants import DamageType, WearLocation, WeaponType, attack_lookup
+from mud.models.constants import DamageType, WeaponType, WearLocation, attack_lookup
 from mud.world import create_test_character, initialize_world
 
 
@@ -9,6 +9,20 @@ def assert_attack_message(message: str, target: str) -> None:
     assert message.startswith("{2")
     assert target in message
     assert message.endswith("{x")
+
+
+def deliver_kill(char, target: str) -> str:
+    """Run `kill <target>` and return the attacker-facing combat line.
+
+    INV-001/SINGLE-DELIVERY: do_kill returns "" (ROM's void do_kill); combat
+    output is delivered via _push_message, which lands in char.messages for a
+    connection-less test character. Returns the first line pushed by this
+    command.
+    """
+    before = len(char.messages)
+    process_command(char, f"kill {target}")
+    pushed = char.messages[before:]
+    return pushed[0] if pushed else ""
 
 
 def setup_thac0_env():
@@ -23,9 +37,7 @@ def setup_thac0_env():
 
 
 def test_thac0_path_hit_and_miss(monkeypatch):
-    # Enable THAC0 feature flag (patch engine's imported flag)
-    monkeypatch.setattr("mud.combat.engine.COMBAT_USE_THAC0", True)
-
+    # FIGHT-019: the THAC0 attack roll is the only melee-hit model (no flag).
     # Deterministic dicerolls
     monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 10)
 
@@ -35,7 +47,7 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.level = 32
     atk.hitroll = 0
     vic.hit = 50  # Increase HP to survive ROM damage calculation
-    out = process_command(atk, "kill vic")
+    out = deliver_kill(atk, "vic")
     assert_attack_message(out, "Vic")
 
     # Weak attacker (mage0) should miss with same diceroll
@@ -44,13 +56,12 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.level = 0
     atk.hitroll = 0
     vic.hit = 50  # Increase HP to be consistent
-    out = process_command(atk, "kill vic")
+    out = deliver_kill(atk, "vic")
     assert out == "{2You miss Vic.{x"
 
 
 def test_weapon_skill_influences_thac0(monkeypatch):
-    monkeypatch.setattr("mud.combat.engine.COMBAT_USE_THAC0", True)
-
+    # FIGHT-019: THAC0 is the only model — no feature flag to enable.
     skills_used: list[int] = []
 
     def fake_compute_thac0(level: int, ch_class: int, *, hitroll: int, skill: int) -> int:
@@ -104,5 +115,5 @@ def test_weapon_skill_influences_thac0(monkeypatch):
     atk.ch_class = 3
     atk.level = 32
     vic.hit = 10
-    out = process_command(atk, "kill vic")
+    out = deliver_kill(atk, "vic")
     assert out == "{2You miss Vic.{x"

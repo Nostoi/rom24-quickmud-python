@@ -5,6 +5,7 @@ import pytest
 
 from mud.combat import engine as combat_engine
 from mud.commands import process_command
+from mud.config import get_pulse_violence
 from mud.models.character import Character
 from mud.models.constants import (
     AC_BASH,
@@ -14,21 +15,20 @@ from mud.models.constants import (
     WEAPON_POISON,
     AffectFlag,
     DamageType,
+    DefenseBit,
     ImmFlag,
     PlayerFlag,
     Position,
-    DefenseBit,
     RoomFlag,
     VulnFlag,
-    WearLocation,
     WeaponType,
+    WearLocation,
     attack_lookup,
 )
 from mud.models.room import Room
 from mud.skills import load_skills, skill_registry
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world
-from mud.config import get_pulse_violence
 
 
 def setup_combat() -> tuple[Character, Character]:
@@ -45,6 +45,21 @@ def assert_attack_message(message: str, victim_name: str = "Victim") -> None:
     assert message.startswith("{2")
     assert victim_name in message
     assert message.endswith("{x")
+
+
+def deliver_kill(char: Character, target: str) -> str:
+    """Run `kill <target>` and return the attacker-facing combat line.
+
+    INV-001/SINGLE-DELIVERY: ``do_kill`` returns ``""`` (ROM's void do_kill);
+    combat output is delivered through ``_push_message``. Test characters have
+    no connection, so the push lands in ``char.messages``. Returns the first
+    line pushed by this command (the attacker's dam_message or defense line),
+    leaving ``char.messages`` intact so callers can still assert on it.
+    """
+    before = len(char.messages)
+    process_command(char, f"kill {target}")
+    pushed = char.messages[before:]
+    return pushed[0] if pushed else ""
 
 
 def test_rescue_checks_group_permission(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -112,12 +127,14 @@ def test_kill_flags_player_as_killer(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
 
-    out = process_command(attacker, "kill duelist")
+    process_command(attacker, "kill duelist")
 
     assert attacker.act & int(PlayerFlag.KILLER)
     assert "*** You are now a KILLER!! ***" in attacker.messages
     assert attacker.wait >= get_pulse_violence()
-    assert out
+    # do_kill returns "" (INV-001); the attack's dam_message is delivered via
+    # _push_message (test char has no connection → lands in char.messages).
+    assert any(m.startswith("{2") for m in attacker.messages)
 
 
 def test_kill_does_not_flag_attacker_when_target_already_killer(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -210,7 +227,10 @@ def test_attack_damages_but_not_kill(monkeypatch: pytest.MonkeyPatch) -> None:
     victim.max_hit = 10
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
-    out = process_command(attacker, "kill victim")
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so this damage-tier assertion
+    # is deterministic and not subject to the unseeded RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
+    out = deliver_kill(attacker, "victim")
     # ROM unarmed damage for level 1: base 5 + damroll 3 = 8 total
     # Damage tier should match ROM's *** DEVASTATE *** verb (80% of max HP)
     assert out == "{2You *** DEVASTATE *** Victim!{x"
@@ -231,8 +251,15 @@ def test_attack_kills_target(monkeypatch: pytest.MonkeyPatch) -> None:
     victim.max_hit = 5
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
-    out = process_command(attacker, "kill victim")
-    assert out == "You kill Victim."
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so the kill is deterministic.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
+    out = deliver_kill(attacker, "victim")
+    # The killer's combat line is the killing-blow dam_message (pushed before
+    # the death branch). ROM (src/fight.c:859-862) sends the killer NOTHING on
+    # death — the non-ROM "You kill X." that _handle_death returns is no longer
+    # delivered (INV-001 SINGLE-DELIVERY; do_kill returns "").
+    assert_attack_message(out)
+    assert not any("You kill" in m for m in attacker.messages)
     assert victim.hit == 0
     assert attacker.position == Position.STANDING
     assert victim.position == Position.DEAD
@@ -248,7 +275,10 @@ def test_attack_misses_target(monkeypatch):
     victim.hit = 10
     # Guarantee miss deterministically
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 100)
-    out = process_command(attacker, "kill victim")
+    # FIGHT-019 THAC0 roll: pin nat-0 (always misses) so this miss assertion is
+    # deterministic regardless of the unseeded RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 0)
+    out = deliver_kill(attacker, "victim")
     assert out == "{2You miss Victim.{x"
     assert victim.hit == 10
     assert attacker.position == Position.FIGHTING
@@ -279,8 +309,11 @@ def test_defense_order_and_early_out(monkeypatch):
     monkeypatch.setattr(combat_engine, "check_dodge", dodge)
     monkeypatch.setattr(combat_engine, "check_shield_block", shield)
 
-    out = process_command(attacker, "kill victim")
-    assert out == "Victim dodges your attack."
+    # The stub check_* functions return the early-out verdict without pushing a
+    # message (the real check_dodge pushes "<v> dodges your attack." itself), so
+    # this test asserts the defense *order* / early-out, not the delivered line.
+    # do_kill returns "" now (INV-001 SINGLE-DELIVERY).
+    assert process_command(attacker, "kill victim") == ""
     # ROM src/fight.c:793-799 checks parry → dodge → shield_block.
     assert calls == ["parry", "dodge"]
 
@@ -301,7 +334,7 @@ def test_parry_blocks_when_skill_learned(monkeypatch: pytest.MonkeyPatch) -> Non
     monkeypatch.setattr(combat_engine, "check_improve", fake_check_improve)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
 
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
 
     assert out == "Victim parries your attack."
     assert "You parry Attacker's attack." in victim.messages
@@ -318,18 +351,21 @@ def test_shield_block_requires_shield(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
 
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
 
+    # No shield equipped → shield_block cannot fire; the swing lands.
     assert "blocks your attack" not in out
-    if out != "You kill Victim.":
-        assert_attack_message(out)
+    assert_attack_message(out)
 
 
-def test_multi_hit_single_attack():
+def test_multi_hit_single_attack(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     victim.hit = 10
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so the damage assertion is
+    # deterministic regardless of the unseeded RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     # No extra attack skills - should only get one attack
     results = combat_engine.multi_hit(attacker, victim)
@@ -339,11 +375,19 @@ def test_multi_hit_single_attack():
     assert victim.hit == 4  # 10 - 6 = 4
 
 
-def test_multi_hit_with_haste():
+def test_multi_hit_with_haste(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     victim.hit = 20  # Increase HP to survive two attacks
+
+    # FIGHT-019: hits resolve through ROM's THAC0 / number_bits(5) roll
+    # (src/fight.c:508-510). Pin a natural 19 so both haste swings land (this test
+    # verifies the haste attack *count*), and pin number_range to its low end so the
+    # unarmed base damage is deterministic — reproducing ROM's 6/hit (base 5 +
+    # damroll 1), i.e. 20 - (6 + 6) = 8.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
+    monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
 
     # Add haste affect
     attacker.add_affect(AffectFlag.HASTE)
@@ -356,12 +400,15 @@ def test_multi_hit_with_haste():
     assert victim.hit == 8  # 20 - (6 + 6) = 8
 
 
-def test_multi_hit_second_attack():
+def test_multi_hit_second_attack(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     attacker.second_attack_skill = 100  # 50% chance (100/2)
     victim.hit = 20  # Increase HP to survive multiple attacks
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so both swings land and the
+    # damage assertion is deterministic regardless of RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     # Initialize fighting state
     combat_engine.set_fighting(attacker, victim)
@@ -548,12 +595,15 @@ def test_multi_hit_with_slow():
     # Second attack chance halved, third attack prevented
 
 
-def test_multi_hit_victim_dies_early():
+def test_multi_hit_victim_dies_early(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 5
     attacker.second_attack_skill = 100  # Would normally get second attack
     victim.hit = 3  # Dies on first hit
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so the first swing lands and
+    # kills (deterministic regardless of RNG stream position).
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     results = combat_engine.multi_hit(attacker, victim)
     assert len(results) == 1
@@ -577,44 +627,36 @@ def test_ac_mapping_and_sign_semantics():
 
 
 def test_ac_influences_hit_chance(monkeypatch):
+    # FIGHT-019: AC influences hit chance through ROM's THAC0 / number_bits(5)
+    # attack roll (src/fight.c:508-510) — miss when `diceroll == 0` or
+    # `diceroll != 19 && diceroll < thac0 - victim_ac`. With the roll pinned to a
+    # mid value (not nat 0 / nat 19), a strongly negative victim AC (better
+    # defence) raises `thac0 - victim_ac` above the roll → miss, while a positive
+    # AC (worse defence) drops it below the roll → hit. Same roll, AC flips it.
     attacker, victim = setup_combat()
     attacker.hitroll = 10
     attacker.damroll = 3
     attacker.dam_type = int(DamageType.BASH)
 
-    # Fix roll to 60 for deterministic checks
-    monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 60)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 10)
 
-    # No armor: base to_hit = 50 + 10 = 60 → hit on 60
-    victim.armor = [0, 0, 0, 0]
-    victim.hit = 10
-    out = process_command(attacker, "kill victim")
-    # ROM damage: base 5 + damroll 3 = 8 total
+    # Positive AC (worse defence) → the pinned roll lands.
+    victim.armor = [200, 200, 200, 200]
+    victim.hit = 50
+    out = deliver_kill(attacker, "victim")
     assert_attack_message(out)
 
-    # Reset combat state for next test
+    # Reset combat state for next case
     attacker.position = Position.STANDING
     attacker.fighting = None
     victim.position = Position.STANDING
     victim.fighting = None
 
-    # Strong negative AC lowers to_hit and causes miss
+    # Strongly negative AC (better defence) → the same roll now misses.
     victim.hit = 50
-    victim.armor = [-22, -22, -22, -22]
-    out = process_command(attacker, "kill victim")
+    victim.armor = [-200, -200, -200, -200]
+    out = deliver_kill(attacker, "victim")
     assert out == "{2You miss Victim.{x"
-
-    # Reset combat state for next test
-    attacker.position = Position.STANDING
-    attacker.fighting = None
-    victim.position = Position.STANDING
-    victim.fighting = None
-
-    # Positive AC raises to_hit and causes hit
-    victim.hit = 50
-    victim.armor = [20, 20, 20, 20]
-    out = process_command(attacker, "kill victim")
-    assert_attack_message(out)
 
 
 def test_visibility_and_position_modifiers(monkeypatch):
@@ -627,7 +669,7 @@ def test_visibility_and_position_modifiers(monkeypatch):
 
     # At roll 60, baseline to_hit=60 → hit; invisible should make it miss
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 60)
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert_attack_message(out)
 
     attacker.position = Position.STANDING
@@ -655,7 +697,7 @@ def test_visibility_and_position_modifiers(monkeypatch):
     victim.remove_affect(AffectFlag.INVISIBLE)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 62)
     victim.position = Position.SLEEPING
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
     assert_attack_message(out)
 
 
@@ -672,6 +714,9 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
         captured.append(d)
 
     monkeypatch.setattr(combat_engine, "on_hit_effects", on_hit)
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so on_hit_effects fires and
+    # the captured damage is deterministic regardless of RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     # With damroll=0, we get base unarmed damage + 0 damroll bonus
     # Then RIV resistance should reduce it by 1/3
@@ -734,8 +779,12 @@ def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.dice", lambda number, size: number * size)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+    # FIGHT-019 resolves the hit through the THAC0 `number_bits(5)` roll. Pin it
+    # to nat-19 (always hits) so this damage-tier assertion is deterministic and
+    # does not depend on the unseeded RNG stream position (xdist-grouping flake).
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
-    out = process_command(attacker, "kill victim")
+    out = deliver_kill(attacker, "victim")
 
     assert_attack_message(out)
     assert victim.hit == 85
@@ -812,6 +861,9 @@ def test_poison_weapon_applies_affect(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(rng_mm, "number_range", lambda low, high: low)
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
     monkeypatch.setattr(combat_engine, "saves_spell", lambda *args, **kwargs: False)
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so the weapon-poison on-hit
+    # effect fires deterministically regardless of RNG stream position.
+    monkeypatch.setattr(rng_mm, "number_bits", lambda *_: 19)
 
     combat_engine.attack_round(attacker, victim)
 
