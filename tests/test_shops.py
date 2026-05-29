@@ -1348,10 +1348,13 @@ def test_pet_shop_purchase_creates_charmed_pet():
     assert response == "Enjoy your pet."
     assert buyer.gold == 2
     assert buyer.silver == 90
-    assert buyer.messages[-3:] == [
+    # INV-001 (e): "Enjoy your pet." is delivered via the return value ONLY
+    # (asserted above), not also via the mailbox — the connection loop sends both,
+    # so a connected PC would otherwise see it twice. The mailbox now ends with the
+    # haggle + follow lines (wrong-channel cousins, still mailbox-only).
+    assert buyer.messages[-2:] == [
         "You haggle the price down to 210 coins.",
         "companion pet Fluffy now follows you.",
-        "Enjoy your pet.",
     ]
 
     pet = buyer.pet

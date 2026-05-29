@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.29]
+
+### Fixed
+- **`INV-001 (e)` — buying a pet double-delivered `"Enjoy your pet."` to a connected PC (SINGLE-DELIVERY family).** `do_buy`'s pet-shop branch (`mud/commands/shop.py:_handle_pet_shop_purchase`) did `char.messages.append("Enjoy your pet.")` **and** returned the same line. The connection read loop (`mud/net/connection.py:1980-2000`) sends a command's return value AND drains `char.messages`, so a connected PC buying a pet saw the line **twice** — the same INV-001 shape fixed for `do_kill` (FIGHT-020), `do_surrender`, `do_rescue` (FIGHT-029), and the "still recovering" sweep (INV-001 (d)). ROM `do_buy` (`src/act_obj.c:2635`) does `send_to_char("Enjoy your pet.\n\r", ch)` once and returns void. Fixed by dropping the mailbox append and keeping the return (the single canonical delivery). Regression: `tests/integration/test_pet_buy_single_delivery.py` (behavioral connected-PC single-delivery through `do_buy`); `tests/test_shops.py:test_pet_shop_purchase_creates_charmed_pet` realigned (the line is return-only now, no longer in the mailbox). Surfaced 2026-05-29 by the advisor while closing SHOP-PET-002, which rewrote this function. The haggle (`"You haggle the price down to N coins."`) and follow (`"… now follows you."`) lines remain mailbox-only — a lesser wrong-channel cousin noted in the tracker, not part of this fix (the haggle wrong-channel also spans the item-buy/sell branches). With (e) closed, INV-001 is again fully ✅ ENFORCED. See `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-001 (e).
+
 ## [2.11.28]
 
 ### Fixed

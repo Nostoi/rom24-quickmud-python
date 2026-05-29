@@ -594,9 +594,11 @@ def _handle_pet_shop_purchase(char: Character, args: str) -> str:
     pet.leader = char
     char.pet = pet
 
+    # INV-001 (e) SINGLE-DELIVERY: ROM do_buy (src/act_obj.c:2635) sends
+    # "Enjoy your pet." once via send_to_char and returns void. The connection
+    # loop sends do_buy's return value AND drains char.messages, so this line must
+    # live in ONE channel only — return it, do NOT also append it to the mailbox.
     buyer_message = "Enjoy your pet."
-    if hasattr(char, "messages"):
-        char.messages.append(buyer_message)
 
     actor_name = char.short_descr or char.name or "Someone"
     target_name = pet.short_descr or pet.name or "a pet"
