@@ -47,7 +47,10 @@ def test_normalize_sorts_unordered_lists_and_strips_ansi():
             inventory=[3010, 3022], equipment={},
         )],
         rooms=[RoomSnap(vnum=3001, people=["zeke", "abe"], contents=[3010, 3001])],
-        output=["\x1b[31mRed\x1b[0m text\r\n"],
+        # Real ANSI escapes AND raw ROM colour tokens ({2…{x) — the Python engine
+        # emits the latter; the C shim's colour-off descriptor strips them
+        # (FINDING-008 sub-issue 2). Both must normalize to plain text.
+        output=["\x1b[31mRed\x1b[0m text\r\n", "{2You miss the drunk.{x"],
     )
     norm = normalize_step(step)
     assert norm.chars[0].affects == ["armor", "bless"]        # sorted
@@ -55,7 +58,8 @@ def test_normalize_sorts_unordered_lists_and_strips_ansi():
     assert norm.chars[0].inventory == [3010, 3022]            # order preserved
     assert norm.rooms[0].people == ["abe", "zeke"]            # sorted
     assert norm.rooms[0].contents == [3001, 3010]             # sorted
-    assert norm.output == ["Red text"]                        # ANSI/CRLF/trailing stripped
+    # ANSI escapes + ROM colour tokens both stripped; CRLF/trailing trimmed.
+    assert norm.output == ["Red text", "You miss the drunk."]
 
 
 def test_diff_traces_reports_first_divergence():

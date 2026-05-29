@@ -6,6 +6,7 @@ from __future__ import annotations
 import re
 from dataclasses import replace
 
+from mud.net.ansi import strip_ansi
 from tools.diff_harness.schema import CharSnap, RoomSnap, StepSnap
 
 _ANSI = re.compile(r"\x1b\[[0-9;]*m")
@@ -15,12 +16,18 @@ def _normalize_output(lines: list[str]) -> list[str]:
     """Canonicalize a step's output for cross-engine comparison.
 
     ROM emits ``\\n\\r`` line endings (CR *after* LF), while Python uses ``\\n``;
-    the two also differ in how blank/padding lines are batched. Strip ANSI and
-    all CR, re-split on LF, trim each line, and drop empty lines so the
-    comparison is over the sequence of non-empty text lines — the behaviorally
-    meaningful content, independent of newline convention and blank spacing.
+    the two also differ in how blank/padding lines are batched. We also strip
+    colour: the Python engine emits raw ROM colour tokens (``{2``…``{x``) while
+    the C shim's descriptor runs with colour off (``src/comm.c`` ``colour()``
+    non-ANSI branch eats every ``{X`` pair), so its golden has none. ``strip_ansi``
+    mirrors that ROM non-colour branch, making the comparison fair over plain text
+    — it is a no-op on the already-stripped C side (FINDING-008 sub-issue 2, the
+    colour-normalization analog of FINDING-002/005). Then strip real ANSI escapes
+    and all CR, re-split on LF, trim, and drop empty lines so the comparison is
+    over the sequence of non-empty text lines — the behaviorally meaningful
+    content, independent of colour, newline convention, and blank spacing.
     """
-    text = _ANSI.sub("", "\n".join(lines)).replace("\r", "")
+    text = strip_ansi(_ANSI.sub("", "\n".join(lines))).replace("\r", "")
     return [stripped for raw in text.split("\n") if (stripped := raw.strip())]
 
 

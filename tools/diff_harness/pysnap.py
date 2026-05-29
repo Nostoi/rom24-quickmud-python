@@ -50,7 +50,11 @@ def _char_snap(key: str, char: object) -> CharSnap:
         level=int(getattr(char, "level", 0)),
         align=int(getattr(char, "alignment", 0)),
         gold=int(getattr(char, "gold", 0)),
-        fighting=getattr(fighting, "name", None),
+        # Record the fighting target by the C shim's char_key (first word of ROM
+        # ch->name — a mob's keyword, not its display short_descr), matching how
+        # the C golden stores it. MobInstance.name is the display string ("the
+        # drunk"), so reuse _person_key to reach the keyword ("drunk").
+        fighting=_person_key(fighting) if fighting is not None else None,
         eff_hitroll=int(get_hitroll(char)),
         eff_damroll=int(get_damroll(char)),
         eff_ac=[int(get_ac(char, i)) for i in range(4)],

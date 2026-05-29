@@ -8,40 +8,79 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-008 — combat first-attack outcome / message rendering diverges at `kill` — 🔴 OPEN, gates combat v1
+## FINDING-009 — combat-tick round diverges at `__tick` (violence_update) — 🔴 OPEN, gates combat v1
 
-**Status:** 🔴 OPEN — surfaced 2026-05-28 the moment FINDING-007 was fixed: with the
-spawn HP now aligned (steps 1–3 match the C golden byte-for-byte), the
-`combat_melee_rounds` first divergence advanced to **step 4 `kill drunk`**:
+**Status:** 🔴 OPEN — surfaced 2026-05-28 the moment FINDING-008 was fully closed.
+With the step-4 `kill drunk` first strike now matching (FIGHT-019 + FIGHT-020 +
+colour/`fighting`-key normalization), the `combat_melee_rounds` first divergence
+advanced to **step 5 `__tick`** — the `violence_update` combat round that resolves
+both combatants' swings:
 
 ```
-step 4 (command='kill drunk') · output ·
-  C  = ['You miss the drunk.']
-  py = ['{2You scratch the drunk.{x', '{2You scratch the drunk.{x']
+step 5 (command='__tick') · output ·
+  C  = ["The drunk's beating hits you.", 'You miss the drunk.']
+  py = ['You scratch the drunk.',        "the drunk's slice hits you."]
 ```
 
-`__seed=777` runs immediately before `kill drunk`, so combat resolves from a known RNG
-state — the divergence is in the *attack resolution / message path*, not the spawn.
-**Three sub-issues, each needs triage to classify (real parity bug vs harness
-normalization vs single-delivery invariant) before its own gap-closer:**
+`__seed=777` ran before step 4, so both engines resolve this round from the same
+RNG state — the divergence is in the *combat-round resolution / rendering*. **Four
+distinct facets, each to triage (real parity bug vs harness normalization):**
 
-1. **Hit/miss + damage-tier outcome differs** — C `miss`, Python `scratch` (a hit).
-   The first attack roll lands differently from the same seed. Likely a combat RNG
-   draw-order / THAC0 / damage-tier divergence in `multi_hit`/`one_hit`
-   (`mud/combat/engine.py` vs ROM `src/fight.c`). **Probable real parity bug.**
-2. **Color codes not normalized** — Python emits raw ROM color codes (`{2…{x`); the
-   C reference line has none. Determine whether the C shim strips color on output
-   (ROM `write_to_buffer` colour processing) or the test descriptor has colour off —
-   then strip on the matching side in `compare._norm_lines`. **Likely harness
-   normalization (compare-fairness), like FINDING-002/005.**
-3. **Double-delivery** — Python emits the line **twice**, C once. The replay captures
-   the command return value *and* drained `char.messages`; if combat output reaches
-   both channels it double-counts (cf. the SINGLE-DELIVERY invariant). Determine
-   whether this is a capture artifact or a real double-send. **Triage against
-   `CROSS_FILE_INVARIANTS_TRACKER.md` SINGLE-DELIVERY.**
+1. **PC round outcome differs** — C `You miss the drunk`, Python `You scratch the
+   drunk` (a hit). The round resolves to a different hit/miss from the same seed —
+   a combat-tick RNG **draw-order / draw-count** desync between ROM
+   `violence_update` and `mud/game_loop.py:violence_tick` (the step-4 `kill` first
+   strike now matches, so the desync accrues during the tick path, not `one_hit`).
+   **Probable real parity bug.**
+2. **Mob attack damtype word differs** — C `beating`, Python `slice`. The drunk's
+   attack damage-type/verb table lookup diverges (`dam_type` / `attack_table` /
+   weapon). **Probable real parity bug (data or attack-table).**
+3. **Message order differs** — C emits [mob-hits-you, you-miss-mob]; Python emits
+   [you-hit-mob, mob-hits-you]. `violence_update` iterates `char_list` in a fixed
+   order (who swings first); Python's `violence_tick` iteration order diverges.
+   **Probable real parity bug (iteration order).**
+4. **Capitalization differs** — C `The drunk's …`, Python `the drunk's …`. ROM
+   `act()` capitalizes a sentence-initial `$n`; the Python render path does not.
+   **Likely a real rendering gap (act() leading-cap), candidate INV / act-render fix.**
 
-**Gated:** `combat_melee_rounds` stays in `KNOWN_DIVERGENCES` (xfail) under FINDING-008
-until these are triaged and closed. FINDING-007 (the spawn-HP blocker) is resolved.
+**Gated:** `combat_melee_rounds` stays in `KNOWN_DIVERGENCES` (xfail) under FINDING-009.
+Needs its own probe-then-scope pass (start with the `violence_tick` RNG draw order vs
+ROM `violence_update`, then the damtype table, then iteration order + act() cap).
+
+---
+
+## FINDING-008 — combat first-attack outcome / message rendering diverges at `kill` — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28. Surfaced the moment FINDING-007 was fixed; the
+`combat_melee_rounds` first divergence sat at **step 4 `kill drunk`**
+(`C=['You miss the drunk.']` vs `py=['{2You scratch the drunk.{x', '{2You scratch the
+drunk.{x']`). All three sub-issues triaged and closed; the differential advanced past
+step 4 to **FINDING-009** (step 5).
+
+1. **Hit/miss + damage-tier outcome** — ✅ **real parity bug**, fixed as **FIGHT-019**
+   (master 2.11.4). Production combat shipped a non-ROM percent hit model behind a
+   `COMBAT_USE_THAC0=False` flag; ROM resolves every swing through the THAC0 /
+   `number_bits(5)` roll. Made THAC0 the only path → step-4 first strike is now `miss`
+   on both engines. (`docs/parity/FIGHT_C_AUDIT.md` FIGHT-019.)
+2. **Color codes** — ✅ **harness normalization** (compare-fairness, like
+   FINDING-002/005). The C shim's descriptor runs colour-off (ROM `colour()` non-ANSI
+   branch eats every `{X` pair), so its golden is plain text; the Python engine emits
+   raw ROM colour tokens. `compare._normalize_output` now applies
+   `mud.net.ansi.strip_ansi` (mirrors the ROM non-colour branch) to both sides — a
+   no-op on the already-plain C side. Fixed on `diff-harness`.
+3. **Double-delivery** — ✅ **real SINGLE-DELIVERY (INV-001) engine bug, fixed as
+   FIGHT-020** (master 2.11.5) — **NOT the "harness capture artifact" the earlier
+   triage recorded.** `do_kill` returned `multi_hit(...)[0]` — the attacker line
+   `apply_damage` had already pushed via `_push_message` — so the connection loop
+   double-delivered it to connected PCs (the same class as the WS death-path bug).
+   `do_kill` now returns `""`. The sibling `broadcast_room`/`broadcast_global` (2.11.6)
+   and `do_surrender` (2.11.7) double-sends were closed in the same INV-001 sweep.
+   Closing #3 also surfaced a harness `fighting`-field key mismatch (snapshot recorded
+   the mob display name `the drunk` vs the C shim's char_key `drunk`); `pysnap._char_snap`
+   now records `fighting` via `_person_key`, matching the room/char key convention.
+
+**Outcome:** step 4 matches byte-for-byte on both engines; the gate moved to
+FINDING-009 (the step-5 `__tick` round).
 
 ---
 

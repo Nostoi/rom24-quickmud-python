@@ -27,13 +27,14 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES = {
-    # FINDING-008: with FINDING-007 (spawn RNG draw-order) fixed on master via
-    # SPAWN-001, the spawn HP now matches and the first divergence advanced to
-    # step 4 `kill drunk`: C='You miss the drunk.' vs py='{2You scratch the
-    # drunk.{x' (x2). Three sub-issues to triage — combat hit/miss outcome (real
-    # parity?), unstripped color codes (normalization), double-delivery
-    # (single-delivery invariant). See FINDINGS.md FINDING-008.
-    "combat_melee_rounds": "FINDING-008 — combat first-attack outcome/message rendering diverges at `kill drunk` (FINDING-007 spawn-HP resolved via SPAWN-001)",
+    # FINDING-009: FINDING-008 (step-4 `kill drunk` first strike) is fully resolved
+    # — hit/miss via FIGHT-019, double-delivery via FIGHT-020, color + `fighting`-key
+    # via harness normalization. The first divergence advanced to step 5 `__tick`
+    # (the violence_update round): C=["The drunk's beating hits you.", 'You miss the
+    # drunk.'] vs py=['You scratch the drunk.', "the drunk's slice hits you."] — a
+    # combat-tick RNG draw-order/count desync + mob damtype word + message order +
+    # act() leading-cap. See FINDINGS.md FINDING-009.
+    "combat_melee_rounds": "FINDING-009 — combat-tick round diverges at `__tick` (violence_update): PC hit/miss, mob damtype, message order, act() capitalization",
 }
 
 
