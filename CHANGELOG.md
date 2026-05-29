@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.21]
+
+### Fixed
+- **`MAGIC-002` — `bless` was silent on a successful cast (the genuinely-silent instance of the affect-spell sweep).** ROM `spell_bless` (`src/magic.c:836-865`, character branch) sends "You feel righteous." to the victim on success and `act("You grant $N the favor of your god.")` to the caster for a cross-target cast; the already-affected branch — which ROM also takes when `victim->position == POS_FIGHTING` (`src/magic.c:840`, a deliberate quirk: a fighting target is treated as already-blessed even with no bless affect) — sends "You are already blessed." (self) / `act("$N already has divine favor.")` (cross-target). The Python `bless` handler (`mud/skills/handlers.py`) applied the +hitroll / −saving-throw affect but was **silent** on success, and the already-affected branch returned `False` with no message at all (since `do_cast` is silent on a successful cast — FINDING-013 — the line was dropped entirely). `bless` now mirrors ROM's messaging faithfully. The `spell_bless` object-target branch (`TAR_OBJ_CHAR_DEF` obj case, `src/magic.c:788-834`) remains deferred — unreachable until `do_cast` routes object targets. This also makes `spell_holy_word`'s `bless` sub-cast (`src/magic.c:3304`) faithfully emit the bless line to affected targets. Regression: `tests/integration/test_magic_002_bless_message.py` (5 tests). Sibling residuals filed: **MAGIC-003** (`shield`/`sanctuary`/`weaken`/`blindness` deliver via the divergent `char.messages.append` channel — wrong-channel, not silent), **CAST-002** (`do_cast` maps `character_or_object` to the offensive default, so the defensive `TAR_OBJ_CHAR_DEF` spells `bless`/`invisibility`/`remove curse` wrongly error "Cast the spell on whom?" on a no-arg self-cast instead of defaulting to self). See `docs/parity/MAGIC_C_AUDIT.md`.
+
 ## [2.11.20]
 
 ### Fixed

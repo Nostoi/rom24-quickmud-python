@@ -1482,12 +1482,32 @@ def berserk(
 
 
 def bless(caster: Character, target: Character | None = None) -> bool:
-    """ROM spell_bless for characters: +hitroll, -saving_throw."""
+    """ROM spell_bless for characters: +hitroll, -saving_throw.
+
+    Mirrors ROM src/magic.c:836-865 (character branch) — on success sends
+    "You feel righteous." to the victim (and ``act("You grant $N the favor of
+    your god.")`` to the caster for a cross-target cast). The already-affected
+    branch — which ROM also takes when the victim is fighting
+    (``victim->position == POS_FIGHTING``, src/magic.c:840, a deliberate quirk)
+    — sends "You are already blessed." (self) / ``act("$N already has divine
+    favor.")`` (cross-target).
+
+    The object-target branch (``TARGET_OBJ``, src/magic.c:788-834) is not ported
+    here: do_cast does not yet route object targets — it falls back to the caster
+    as a placeholder (see MAGIC_C_AUDIT.md Scope Notes) — so that branch is
+    currently unreachable.
+    """
     target = target or caster
     if target is None:
         raise ValueError("bless requires a target")
 
+    # mirroring ROM src/magic.c:840-846 — POS_FIGHTING is treated as
+    # already-blessed even with no bless affect on the victim.
     if target.position == Position.FIGHTING or target.has_spell_effect("bless"):
+        if target is caster:
+            _send_to_char(caster, "You are already blessed.")
+        else:
+            _send_to_char(caster, f"{_character_name(target)} already has divine favor.")
         return False
 
     level = max(getattr(caster, "level", 0), 0)
@@ -1499,7 +1519,16 @@ def bless(caster: Character, target: Character | None = None) -> bool:
         hitroll_mod=modifier,
         saving_throw_mod=-modifier,
     )
-    return target.apply_spell_effect(effect)
+    applied = target.apply_spell_effect(effect)
+    if not applied:
+        return False
+
+    # mirroring ROM src/magic.c:861-864 — send_to_char TO_VICT, then act
+    # TO_CHAR only when ch != victim.
+    _send_to_char(target, "You feel righteous.")
+    if caster is not target:
+        _send_to_char(caster, f"You grant {_character_name(target)} the favor of your god.")
+    return True
 
 
 def blindness(caster: Character, target: Character | None = None) -> bool:
