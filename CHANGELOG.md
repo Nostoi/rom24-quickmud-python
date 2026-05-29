@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.12]
+
+### Fixed
+- **`FIGHT-024` / FINDING-009 (facet 3) — combat ticks resolved swings in the reverse of ROM's order, desyncing the shared combat RNG stream (CRITICAL).** ROM `src/fight.c:76` `violence_update` walks `char_list` from the head, and every newly created actor is **prepended** to `char_list` (`src/db.c:2256-2257` `create_mobile`, `src/nanny.c:757-758` PC login), so `char_list` is in reverse-creation order — the most-recently-loaded actor swings first. Python's `character_registry` is append-order (creation order), and `mud/game_loop.py::violence_tick` walked it forward, the exact reverse of ROM. Because the combat RNG stream is shared across every swing in a tick, *who swings first* determines who consumes the stream first, so the forward walk shifted every downstream swing's hit/miss vs ROM. `violence_tick` now iterates `list(reversed(character_registry))` (snapshot mirrors ROM's `ch_next = ch->next` guard against mid-tick deaths). **Surfaced by the differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-009 `combat_melee_rounds`): the drunk #3064 (loaded after the player) must swing first as in ROM, but Python swung the player first. Regression: `tests/integration/test_fight_024_violence_tick_order.py`. With FIGHT-021+022 this completes the combat-tick RNG **draw-order** side of FINDING-009; the remaining step-5 diffs are render-only (facet 2 dam_type noun, facet 4 act capitalization). (Exposed a latent FIGHT-022 crash in the NPC `do_X` dispatch — fixed first as FIGHT-026.)
+
 ## [2.11.11]
 
 ### Fixed
