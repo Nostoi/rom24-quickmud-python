@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.30]
+
+### Fixed
+- **`WIZ-045` — `do_goto` showed a wiz-invis immortal's bamf departure/arrival (swirling-mist) line to *every* witness, leaking their identity and presence to sub-trust mortals.** ROM `do_goto` (`src/act_wiz.c:969-994`) does **not** broadcast the bamfout/bamfin (or default swirling-mist) line with a plain `act(..., TO_ROOM)`. It loops `ch->in_room->people` and sends each line via `act(..., rch, TO_VICT)` **only** to occupants where `get_trust(rch) >= ch->invis_level`, so a wiz-invis immortal's departure/arrival is **suppressed entirely** for sub-trust witnesses (gated on `invis_level` only, not full `can_see`). The Python `do_goto` (`mud/commands/imm_commands.py`) routed both bamf broadcasts through `_act_room`, which substitutes `$n`→`char.name` once and sends the same string to all room occupants — no `invis_level` gate. A new `_act_room_invis_gated` helper applies the per-recipient `get_trust(person) >= char.invis_level` gate (mirroring ROM); `do_goto`'s four bamf calls now use it. With `invis_level == 0` (normal immortal) the gate is always true, so the announce reaches everyone exactly as before. The shared `_act_room` (used by `do_transfer`, whose ROM path is a plain `act(TO_ROOM)` with PERS name-masking, no `invis_level` gate) is left untouched. Regression: `tests/integration/test_act_wiz_command_parity.py::test_goto_suppresses_bamf_for_subtrust_witnesses_when_wizinvis` (wiz-invis → high-trust witness sees the line, sub-trust witness sees nothing) + `::test_goto_bamf_visible_to_all_when_not_wizinvis` (regression guard for `invis_level == 0`). Surfaced 2026-05-29 while correcting the INV-027 candidate in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`, whose stated ROM mechanism (`act()` filters every recipient by trust) was wrong — the gate is per-command in `do_goto`/`do_violate`, not inside `act()`. The identical leak in `do_violate` (same `_act_room` root cause) is filed as **WIZ-046** (open follow-up). See `docs/parity/ACT_WIZ_C_AUDIT.md:WIZ-045`.
+
 ## [2.11.29]
 
 ### Fixed

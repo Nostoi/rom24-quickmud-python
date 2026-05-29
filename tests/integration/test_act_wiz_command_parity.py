@@ -1696,3 +1696,48 @@ def test_clone_object_success_places_clone() -> None:
         assert clones, "clone not produced"
     finally:
         obj_registry.pop(88550, None)
+
+
+def test_goto_suppresses_bamf_for_subtrust_witnesses_when_wizinvis() -> None:
+    # mirrors ROM src/act_wiz.c:969-994 — do_goto sends the bamfout/bamfin
+    # (swirling-mist) line via act(..., rch, TO_VICT) ONLY to room occupants
+    # where get_trust(rch) >= ch->invis_level. A wiz-invis immortal's
+    # departure/arrival is suppressed ENTIRELY for sub-trust witnesses
+    # (gated on invis_level only, not full can_see). WIZ-045.
+    source = _room(9130, name="Departure Hall")
+    target = _room(9131, name="Arrival Hall")
+
+    ghost = _imm("Ghost", source.vnum, trust=60)
+    ghost.invis_level = 60  # wiz-invis at trust 60
+
+    high = _imm("Highpriest", source.vnum, trust=60)  # trust >= invis_level → sees it
+    low = _imm("Mortal", source.vnum, trust=10)  # trust < invis_level → suppressed
+
+    high.messages.clear()
+    low.messages.clear()
+
+    do_goto(ghost, str(target.vnum))
+
+    # The high-trust witness sees the departure (swirling mist); the
+    # sub-trust witness sees nothing — ROM suppresses the line, it is not
+    # merely name-masked to "someone".
+    assert any("swirling mist" in m for m in high.messages)
+    assert not any("swirling mist" in m for m in low.messages)
+
+
+def test_goto_bamf_visible_to_all_when_not_wizinvis() -> None:
+    # Regression guard: with invis_level == 0 the gate get_trust(rch) >= 0 is
+    # always true, so a normal immortal's swirling-mist line reaches every
+    # witness exactly as before WIZ-045. ROM src/act_wiz.c:971.
+    source = _room(9132, name="Plain Hall")
+    target = _room(9133, name="Far Hall")
+
+    admin = _imm("Visible", source.vnum, trust=60)
+    admin.invis_level = 0
+
+    witness = _imm("Bystander", source.vnum, trust=10)
+    witness.messages.clear()
+
+    do_goto(admin, str(target.vnum))
+
+    assert any("swirling mist" in m for m in witness.messages)

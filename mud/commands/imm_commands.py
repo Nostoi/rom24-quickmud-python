@@ -187,27 +187,29 @@ def do_goto(char: Character, args: str) -> str:
     if getattr(char, "fighting", None):
         char.fighting = None
 
-    # Announce departure (bamfout)
+    # Announce departure (bamfout) — ROM src/act_wiz.c:969-978 gates each
+    # recipient on get_trust(rch) >= ch->invis_level, so a wiz-invis immortal's
+    # exit is suppressed entirely for sub-trust witnesses (WIZ-045).
     old_room = getattr(char, "room", None)
     if old_room:
         pcdata = getattr(char, "pcdata", None)
         bamfout = getattr(pcdata, "bamfout", None) if pcdata else None
         if bamfout:
-            _act_room(old_room, char, bamfout)
+            _act_room_invis_gated(old_room, char, bamfout)
         else:
-            _act_room(old_room, char, "$n leaves in a swirling mist.")
+            _act_room_invis_gated(old_room, char, "$n leaves in a swirling mist.")
 
     # Move character
     _char_from_room(char)
     _char_to_room(char, location)
 
-    # Announce arrival (bamfin)
+    # Announce arrival (bamfin) — same invis_level gate, ROM src/act_wiz.c:984-994.
     pcdata = getattr(char, "pcdata", None)
     bamfin = getattr(pcdata, "bamfin", None) if pcdata else None
     if bamfin:
-        _act_room(location, char, bamfin)
+        _act_room_invis_gated(location, char, bamfin)
     else:
-        _act_room(location, char, "$n appears in a swirling mist.")
+        _act_room_invis_gated(location, char, "$n appears in a swirling mist.")
 
     # Show room
     from mud.commands.inspection import do_look
@@ -478,6 +480,30 @@ def _act_room(room, char: Character, message: str) -> None:
     for person in getattr(room, "people", []):
         if person is not char:
             _send_to_char(person, formatted)
+
+
+def _act_room_invis_gated(room, char: Character, message: str) -> None:
+    """Bamf departure/arrival announce for wiz-invis-aware teleports.
+
+    Mirrors ROM ``src/act_wiz.c:969-994`` (``do_goto``; ``do_violate`` shares
+    the pattern): the bamfout/bamfin line — custom (``$t``) or default
+    swirling-mist (``$n``) — is delivered via ``act(..., rch, TO_VICT)`` ONLY
+    to room occupants where ``get_trust(rch) >= ch->invis_level``. A wiz-invis
+    immortal's departure/arrival is therefore suppressed ENTIRELY for sub-trust
+    witnesses (gated on ``invis_level`` only, not full ``can_see``) rather than
+    name-masked. The actor never sees their own line (ROM's TO_VICT skips
+    ``to == ch``). WIZ-045.
+    """
+    invis_level = int(getattr(char, "invis_level", 0) or 0)
+    char_name = getattr(char, "name", "Someone")
+    formatted = message.replace("$n", char_name)
+
+    for person in getattr(room, "people", []):
+        if person is char:
+            continue
+        if get_trust(person) < invis_level:  # ROM: get_trust(rch) >= ch->invis_level
+            continue
+        _send_to_char(person, formatted)
 
 
 # DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.
