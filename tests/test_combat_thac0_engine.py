@@ -57,7 +57,9 @@ def test_thac0_path_hit_and_miss(monkeypatch):
     atk.hitroll = 0
     vic.hit = 50  # Increase HP to be consistent
     out = deliver_kill(atk, "vic")
-    assert out == "{2You miss Vic.{x"
+    # FIGHT-028: setup_thac0_env sets dam_type=BASH → attack_dt != TYPE_HIT, so
+    # ROM dam_message renders the attack noun even on a miss (src/fight.c:2200-2211).
+    assert out == "{2Your slice misses Vic.{x"
 
 
 def test_weapon_skill_influences_thac0(monkeypatch):
@@ -116,4 +118,6 @@ def test_weapon_skill_influences_thac0(monkeypatch):
     atk.level = 32
     vic.hit = 10
     out = deliver_kill(atk, "vic")
-    assert out == "{2You miss Vic.{x"
+    # FIGHT-028: setup_thac0_env sets dam_type=BASH → attack_dt != TYPE_HIT, so
+    # ROM dam_message renders the attack noun even on a miss (src/fight.c:2200-2211).
+    assert out == "{2Your slice misses Vic.{x"

@@ -189,17 +189,12 @@ def dam_message(
     # `render_for()` substitutes per-recipient through ROM PERS().
     # ROM colour codes (`{3...{x` etc.) are doubled so str.format()
     # leaves them intact (DAMMSG-001/002/003).
-    if int(percent) <= 0 and not immune:
-        # Mirror ROM miss output
-        if self_inflicted:
-            room_msg = "{{3{attacker} " + vp + " " + _reflexive_pronoun(attacker) + punct + "{{x"
-            attacker_msg = "{{2You " + vs + " yourself" + punct + "{{x"
-            return DamageMessages(attacker_msg, None, room_msg, True)
-        room_msg = "{{3{attacker} " + vp + " {victim}" + punct + "{{x"
-        attacker_msg = "{{2You " + vs + " {victim}" + punct + "{{x"
-        victim_msg = "{{4{attacker} " + vp + " you" + punct + "{{x"
-        return DamageMessages(attacker_msg, victim_msg, room_msg, False)
-
+    # ROM src/fight.c:2157 chooses the template purely on `dt == TYPE_HIT`
+    # vs not — `dam == 0` (a miss) only swaps vs/vp to "miss"/"misses" via
+    # `_severity_terms`. A miss (or a low-damage hit that rounds to percent 0)
+    # with a resolved attack noun must still render the noun template
+    # ("$n's beating misses you"), so the no-noun output is keyed on
+    # `attack is None` below, never on damage/percent (FIGHT-028 / FINDING-011).
     if immune:
         if self_inflicted:
             poss = _possessive_pronoun(attacker)

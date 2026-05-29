@@ -498,7 +498,9 @@ def test_kick_command_failure(monkeypatch: pytest.MonkeyPatch) -> None:
 
         out = process_command(attacker, "kick")
 
-        assert out == "{2You miss Victim.{x"
+        # FIGHT-028: dt=gsn_kick != TYPE_HIT, so ROM dam_message renders the
+        # skill noun even on a miss (src/fight.c:2200-2211): "Your kick misses".
+        assert out == "{2Your kick misses Victim.{x"
         assert victim.hit == 100
         assert attacker.wait == 12
         assert attacker.cooldowns.get("kick") == 0
@@ -656,7 +658,9 @@ def test_ac_influences_hit_chance(monkeypatch):
     victim.hit = 50
     victim.armor = [-200, -200, -200, -200]
     out = deliver_kill(attacker, "victim")
-    assert out == "{2You miss Victim.{x"
+    # FIGHT-028: dam_type=BASH → attack_dt = TYPE_HIT + dam_type != TYPE_HIT, so
+    # ROM dam_message renders the attack noun even on a miss (src/fight.c:2200-2211).
+    assert out == "{2Your slice misses Victim.{x"
 
 
 def test_visibility_and_position_modifiers(monkeypatch):
