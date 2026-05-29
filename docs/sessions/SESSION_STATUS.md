@@ -1,57 +1,59 @@
-# Session Status — 2026-05-29 — MAGIC-002 bless message fixed; MAGIC-003 / CAST-002 filed
+# Session Status — 2026-05-29 — CAST-002 fixed (do_cast self-default); CAST-003 filed
 
 ## Current State
 
-- **Active mode**: closing the MAGIC-002 affect-message family (affect spells
-  silent / wrong-channel on success when cast through `do_cast`). `armor`
-  (2.11.20) and now `bless` (2.11.21) are done.
+- **Active mode**: closing out the MAGIC-002 affect-message family. `armor`
+  (2.11.20), `bless` (2.11.21), and now **CAST-002** (2.11.22 — the family's
+  only player-facing bug) are done. Two low-value residuals remain
+  (CAST-003, MAGIC-003).
 - **Last completed** (this session):
-  - **`MAGIC-002` (bless instance)** ✅ FIXED (master 2.11.21, `47d6ce53`) — ROM
-    `spell_bless` (`src/magic.c:836-865`) sends "You feel righteous." (TO_VICT) +
-    `act("You grant $N the favor of your god.")` (TO_CHAR cross-target) on success,
-    and "You are already blessed." / `act("$N already has divine favor.")` on the
-    already-affected branch (which ROM also takes when the victim is fighting,
-    `src/magic.c:840`). The Python `bless` handler was the one *genuinely silent*
-    affect buff; it now mirrors ROM messaging. Object-target branch deferred
-    (unreachable). Tests: `tests/integration/test_magic_002_bless_message.py` (5).
-  - **Corrected the audit doc's premise** — most affect-buff handlers already use
-    canonical `_send_to_char`; the "bless + shield sweep" was overstated. `bless`
-    was the only truly-silent one.
-  - **Filed `MAGIC-003`** (🔄 OPEN) — `shield`/`sanctuary`/`weaken`/`blindness`
-    deliver via the divergent `char.messages.append` channel (wrong-channel, not
-    silent; INV-001 family). Needs a connected-PC test.
-  - **Filed `CAST-002`** (🔄 OPEN) — `do_cast` maps `character_or_object` to the
-    offensive default, so the defensive `TAR_OBJ_CHAR_DEF` spells `bless` /
-    `invisibility` / `remove curse` wrongly error "Cast the spell on whom?" on a
-    no-arg self-cast instead of defaulting to self.
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-29_MAGIC_002_BLESS_MESSAGE.md](SESSION_SUMMARY_2026-05-29_MAGIC_002_BLESS_MESSAGE.md)
+  - **`CAST-002`** ✅ FIXED (master 2.11.22, `835755b3`) — a no-arg
+    `cast bless` / `cast invis` / `cast 'remove curse'` errored
+    `"Cast the spell on whom?"` instead of self-casting. ROM splits the two
+    object/char target types by no-arg default (`TAR_OBJ_CHAR_DEF` → self,
+    `src/magic.c:514-519`; `TAR_OBJ_CHAR_OFF` → fighting victim, `:466-473`),
+    but the skill-converter collapsed both into one `"character_or_object"`
+    string and `do_cast` applied the offensive default to all five. Fix splits
+    the JSON vocabulary into `defensive_`/`offensive_character_or_object`
+    (restoring ROM's 1:1 `TAR_*` mapping); `do_cast` routes defensive→self,
+    offensive→fighting (byte-identical; `curse`/`poison` unchanged). Tests:
+    `tests/test_skills_spells_cast_listing.py` (defensive self-default + offensive guard).
+  - **Converter hardening note** (`86eee6ef`) — `convert_skills_to_json.py` is
+    lossy (emits 132 of `data/skills.json`'s 134 skills, dropping the
+    hand-added `cancellation`/`harm`); added a `⚠️ LOSSY` docstring warning and
+    the regenerate-to-scratch-and-`diff` workflow. CAST-002's JSON edit was
+    applied by spell name in place, not regenerated.
+  - **Filed `CAST-003`** (🔄 OPEN) — offensive obj/char no-fight error should be
+    `"Cast the spell on whom or what?"` (`src/magic.c:471`), not
+    `"Cast the spell on whom?"`. Left byte-identical in CAST-002 to keep that a
+    clean single-gap commit.
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-29_CAST_002_TARGET_DISPATCH.md](SESSION_SUMMARY_2026-05-29_CAST_002_TARGET_DISPATCH.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.11.21 |
-| Tests | 4963 passed, 4 skipped (full suite, parallel, ~147s) |
+| Version | 2.11.22 |
+| Tests | 4965 passed, 4 skipped (full suite, serial, ~568s) |
 | ROM C files audited | 43 / 43 (per-file pass complete; differential + cross-file invariants active) |
-| Active focus | MAGIC-002 affect-message family (armor + bless done; MAGIC-003 / CAST-002 open) |
+| Active focus | MAGIC-002 affect-message family residuals (CAST-003 + MAGIC-003 open) |
 
 ## Next Intended Task
 
-Close **`CAST-002`** (`MAGIC_C_AUDIT.md`) — the only player-facing bug in the
-residual set: a no-arg `cast bless` / `cast invis` / `cast 'remove curse'`
-currently errors `"Cast the spell on whom?"` instead of defaulting to self, because
-`do_cast` maps the `character_or_object` target string to the offensive default and
-does not distinguish ROM's defensive `TAR_OBJ_CHAR_DEF` (no-arg → self,
-`src/magic.c:514-519`) from offensive `TAR_OBJ_CHAR_OFF`. The fix likely splits the
-skills.json target vocabulary (defensive vs offensive `character_or_object`) and
-dispatches the defensive case to self. **Touches `do_cast` — run `gitnexus_impact`
-first** (blast radius = every spell) and lean on the existing CAST-001 tests.
+Close **`CAST-003`** (`MAGIC_C_AUDIT.md`) — trivial: give `do_cast`'s offensive
+object/char branch its own no-fight error string `"Cast the spell on whom or
+what?"` (`src/magic.c:471`) so `curse`/`poison` match ROM, then update the
+`test_do_cast_offensive_obj_char_no_target_no_fight_still_errors` guard (which
+currently asserts on the `whom` substring to survive this change).
 
-Then **`MAGIC-003`** — migrate `shield`/`sanctuary`/`weaken`/`blindness` room/self
-messages off `char.messages.append` onto canonical `_send_to_char`/`broadcast_room`;
-write a **connected-PC** delivery test (mailbox-only tests pass before the fix).
+Then **`MAGIC-003`** — migrate `shield`/`sanctuary`/`weaken`/`blindness`
+room/self messages off `char.messages.append` onto canonical
+`_send_to_char`/`broadcast_room`; write a **connected-PC** delivery test
+(mailbox-only tests pass before the fix). INV-001 SINGLE-DELIVERY family.
 
-Also pending (carried): seed RNG in the `test_combat_death.py` unit death tests to
-kill the xdist ordering flake; `SHOP-PET-002` (RNG-stream pet re-roll); the
+Lower priority / carried: harden `convert_skills_to_json.py` to merge-not-replace
+(currently lossy); `SHOP-PET-002` (RNG-stream pet re-roll); seed RNG in the
+`test_combat_death.py` unit death tests to kill the xdist ordering flake; the
 diff-harness `affect_flags` case-normalization (fix with the first flag-setting
-affect scenario).
+affect scenario). The per-file audit tracker is exhausted — cross-file
+invariants (`CROSS_FILE_INVARIANTS_TRACKER.md`) remains the standing pass.
