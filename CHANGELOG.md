@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.13]
+
+### Fixed
+- **`FIGHT-023` / FINDING-009 (facet 2) — mob `dam_type` was a DamageType class, not the ROM attack_table index, so NPCs rendered the wrong attack noun (CRITICAL).** ROM stores `ch->dam_type = attack_lookup(word)` — an **attack_table index** (`src/db2.c:270`, `src/handler.c:165`); `one_hit`/`dam_message` render the noun as `attack_table[ch->dam_type].noun` (`src/fight.c:2176`) and derive the damage *class* separately via `attack_table[ch->dam_type].damage` (`src/fight.c:431`). `mud/spawning/templates.py::_resolve_damage_type` collapsed the index into a DamageType class (`int(DamageType.BASH) == 1`), but `mud/combat/engine.py` reads `attacker.dam_type` as an attack-table index — so the drunk #3064 (damtype "beating" → index 13) rendered `attack_table[1].noun == "slice"` instead of "beating". The random-default block also assigned DamageType values (`3/1/2`) where ROM `create_mobile` (`src/db.c:2086-2099`) assigns attack-table indices `3/7/11` (slash/pound/pierce). `_resolve_damage_type` now returns the attack-table index throughout (dropping the DamageType-enum-name fallback, which could resolve a damtype word like "fire" to a nonzero class and silently suppress ROM's `number_range(1,3)` default roll — a combat-stream desync); the random default assigns ROM's literal `3/7/11`. The damage class is still derived at hit time via `attack_damage_type(index)` in `one_hit` (unchanged), so the drunk now correctly resolves class DAM_BASH (was DAM_SLASH) — fixing its AC-index/THAC0/RIV as well as the noun. **Surfaced by the differential testing harness** (`tools/diff_harness/FINDINGS.md` FINDING-009 `combat_melee_rounds` step 5: `the drunk's slice` vs ROM `The drunk's beating`). Regression: `tests/integration/test_fight_023_mob_dam_type_attack_index.py`.
+
+### Changed
+- Re-baselined `tests/test_spawning.py::test_spawned_mob_without_damage_type_rolls_rom_defaults` and `::test_spawned_mob_translates_attack_index_damage_type`: both asserted the old conflated `dam_type == int(DamageType.BASH) == 1`; the ROM-faithful value is the attack-table index `7` ("pound") — the random-default roll 2 maps to index 7 (`src/db.c:2086-2099`), and a proto damtype of `7` is preserved as index 7 (ROM does not translate it to a class). The damage class is derived at hit time. No production behavior change beyond FIGHT-023 itself.
+
 ## [2.11.12]
 
 ### Fixed

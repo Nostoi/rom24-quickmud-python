@@ -16,7 +16,6 @@ from mud.models.constants import (
     ActFlag,
     AffectFlag,
     CommFlag,
-    DamageType,
     ImmFlag,
     MAX_STATS,
     OffFlag,
@@ -30,7 +29,6 @@ from mud.models.constants import (
     STAT_STR,
     STAT_WIS,
     VulnFlag,
-    attack_damage_type,
     attack_lookup,
     convert_flags_from_letters,
 )
@@ -173,44 +171,38 @@ def _roll_dice(dice_tuple: tuple[int, int, int]) -> int:
 
 
 def _resolve_damage_type(value: object) -> int | None:
-    """Translate ROM attack indices, enum names, or direct values to DamageType."""
+    """Resolve a mob damtype spec to a ROM attack_table INDEX (``ch->dam_type``).
+
+    ROM stores ``pMobIndex->dam_type = attack_lookup(word)`` — an attack_table
+    index, NOT a DamageType class (`src/db2.c:270`, `src/handler.c:165`). The
+    damage *class* is derived at hit time from ``attack_table[index].damage``
+    (`src/fight.c:431`) and the attack noun from ``attack_table[index].noun``
+    (`src/fight.c:2176`). Collapsing the index to a class here was the
+    FINDING-009 facet-2 bug (the drunk #3064 rendered "slice" instead of
+    "beating"). Returns ``None`` when the spec is unusable so the caller can
+    fall through to its next candidate.
+    """
 
     if value is None:
         return None
 
-    if isinstance(value, DamageType):
-        return int(value)
-
+    # An int is already an attack-table index (0 = none/unset). Mob protos never
+    # carry a DamageType here (proto.dam_type is an int, proto.damage_type is the
+    # raw .are word), so no DamageType special-casing is needed.
     if isinstance(value, int):
-        if value == 0:
-            return 0
-        damage_enum = attack_damage_type(value)
-        if damage_enum is not None:
-            return int(damage_enum)
-        try:
-            enum_value = DamageType(value)
-        except ValueError:
-            return None
-        return int(enum_value)
+        return value
 
     if isinstance(value, str):
         normalized = value.strip().lower()
         if not normalized:
             return None
-        if normalized in {"0", "none", "hit"}:
-            return 0
-        if normalized.isdigit():
-            return _resolve_damage_type(int(normalized))
-        attack_index = attack_lookup(normalized)
-        if attack_index:
-            damage_enum = attack_damage_type(attack_index)
-            if damage_enum is not None:
-                return int(damage_enum)
-        try:
-            enum_value = DamageType[normalized.upper()]
-        except KeyError:
-            return None
-        return int(enum_value)
+        # attack_lookup mirrors ROM: numeric strings return the index if in
+        # range, name prefixes match the table, and anything unmatched (incl.
+        # "none"/"hit"/"fire") returns 0 — which drives create_mobile's random
+        # damtype roll. Do NOT fall back to DamageType[name]: a word that names a
+        # DamageType but not an attack would resolve nonzero and silently
+        # suppress the ROM number_range(1,3) roll (combat RNG-stream desync).
+        return attack_lookup(normalized)
 
     return None
 
@@ -392,15 +384,18 @@ class MobInstance:
         # 2. HP dice, 3. mana dice (src/db.c:2074-2082)
         max_hit = _roll_dice(hit_tuple)
         max_mana = _roll_dice(mana_tuple)
-        # 4. random damtype when unset (src/db.c:2085-2097)
+        # 4. random damtype when unset (src/db.c:2086-2099). ROM assigns
+        # attack-table INDICES 3/7/11 (slash/pound/pierce), NOT DamageType
+        # classes — ch->dam_type is an attack_table index throughout, and
+        # one_hit derives the damage class from attack_table[index].damage.
         if dam_type_value == 0:
             roll = rng_mm.number_range(1, 3)
             if roll == 1:
-                dam_type_value = int(DamageType.SLASH)
+                dam_type_value = 3  # attack_table[3] = "slash" (DAM_SLASH)
             elif roll == 2:
-                dam_type_value = int(DamageType.BASH)
+                dam_type_value = 7  # attack_table[7] = "pound" (DAM_BASH)
             else:
-                dam_type_value = int(DamageType.PIERCE)
+                dam_type_value = 11  # attack_table[11] = "pierce" (DAM_PIERCE)
         # 5. random sex (src/db.c:2107) — drawn LAST, deferred from the parse above
         if sex == Sex.EITHER:
             sex = Sex(rng_mm.number_range(int(Sex.MALE), int(Sex.FEMALE)))

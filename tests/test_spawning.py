@@ -240,7 +240,11 @@ def test_spawned_mob_without_damage_type_rolls_rom_defaults(monkeypatch):
 
     mob = MobInstance.from_prototype(proto)
 
-    assert mob.dam_type == int(DamageType.BASH)
+    # FIGHT-023: dam_type is the ROM attack_table INDEX, not a DamageType class.
+    # ROM create_mobile (src/db.c:2086-2099) maps the random roll 2 → index 7
+    # ("pound", DAM_BASH); the damage class is derived at hit time. (Pre-FIGHT-023
+    # this asserted the conflated int(DamageType.BASH) == 1.)
+    assert mob.dam_type == 7
     assert calls == [(1, 3)]
 
 
@@ -261,10 +265,12 @@ def test_spawned_mob_translates_attack_index_damage_type(raw_value):
 
     mob = MobInstance.from_prototype(proto)
 
-    assert mob.dam_type == int(DamageType.BASH)
-
-
-def test_resets_populate_world():
+    # FIGHT-023: dam_type is the ROM attack_table INDEX. A proto damtype of 7
+    # (int or "7") is attack_table index 7 ("pound") and is preserved as-is —
+    # ROM does NOT translate the index to its DamageType class here (the class
+    # is derived at hit time via attack_table[7].damage == DAM_BASH). Pre-FIGHT-023
+    # this asserted the conflated int(DamageType.BASH) == 1.
+    assert mob.dam_type == 7
     room_registry.clear()
     area_registry.clear()
     mob_registry.clear()
