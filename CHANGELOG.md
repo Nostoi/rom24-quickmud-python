@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.24]
+
+### Fixed
+- **`MAGIC-003` — `shield`/`sanctuary`/`blindness`/`weaken` delivered their success and room-broadcast lines via the divergent `char.messages.append` mailbox instead of the canonical single-delivery channel (INV-001 SINGLE-DELIVERY family).** ROM `spell_shield` (`src/magic.c:4326-4327`), `spell_sanctuary` (`:4296-4297`), `spell_blindness` (`:888-889`), and `spell_weaken` (`:4580-4581`) each send a victim line (`send_to_char` TO_VICT) and a room broadcast (`act` TO_ROOM). The Python handlers (`mud/skills/handlers.py`) applied the affect correctly but appended these lines straight to `target.messages` / `occupant.messages`. Per `mud/utils/messaging.py` (DUPL-002) and AGENTS.md "Message Delivery", `char.messages` is a fallback for disconnected characters and tests only — a connected PC must receive via the async `send_to_char` task fired by `push_message`, so the line reaches the live prompt immediately (mirroring ROM `write_to_buffer`). A raw `.append` stranded the line in the mailbox until the next command drained it, so a connected bystander saw a room broadcast (e.g. "X is surrounded by a force shield.") late. Each leg now routes through `_send_to_char` (self/victim + the already-affected branch + the per-occupant room loop), mirroring the existing `fly`/`giant_strength` handlers; the mailbox fallback for disconnected/test chars is preserved, so the existing mailbox-reading affect tests stay green. Regression: `tests/integration/test_magic_003_affect_message_channel.py` (connected-PC async-channel delivery + disconnected mailbox fallback). See `docs/parity/MAGIC_C_AUDIT.md`.
+
 ## [2.11.23]
 
 ### Fixed

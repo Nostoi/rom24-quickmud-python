@@ -1556,8 +1556,10 @@ def blindness(caster: Character, target: Character | None = None) -> bool:
     if not applied:
         return False
 
-    if hasattr(target, "messages"):
-        target.messages.append("You are blinded!")
+    # mirroring ROM src/magic.c:888-889 — send_to_char TO_VICT, then act TO_ROOM.
+    # MAGIC-003: deliver via the canonical single-delivery channel (_send_to_char)
+    # so a connected PC receives immediately, not via the char.messages mailbox.
+    _send_to_char(target, "You are blinded!")
 
     room = getattr(target, "room", None)
     if room is not None:
@@ -1568,8 +1570,7 @@ def blindness(caster: Character, target: Character | None = None) -> bool:
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is target:
                 continue
-            if hasattr(occupant, "messages"):
-                occupant.messages.append(room_message)
+            _send_to_char(occupant, room_message)
 
     return True
 
@@ -7105,9 +7106,9 @@ def sanctuary(caster, target=None):
         raise ValueError("sanctuary requires a target")
 
     if target.has_affect(AffectFlag.SANCTUARY) or target.has_spell_effect("sanctuary"):
+        # mirroring ROM src/magic.c:4288-4291 — send_to_char (self) / act TO_CHAR.
         message = "You are already in sanctuary." if target is caster else f"{target.name} is already in sanctuary."
-        if hasattr(caster, "messages"):
-            caster.messages.append(message)
+        _send_to_char(caster, message)
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -7121,20 +7122,21 @@ def sanctuary(caster, target=None):
     if not applied:
         return False
 
-    if hasattr(target, "messages"):
-        target.messages.append("You are surrounded by a white aura.")
+    # mirroring ROM src/magic.c:4296-4297 — act TO_ROOM + send_to_char TO_VICT.
+    # MAGIC-003: canonical single-delivery channel, not the char.messages mailbox.
+    _send_to_char(target, "You are surrounded by a white aura.")
 
     room = getattr(target, "room", None)
     if room is not None:
+        room_message = (
+            f"{target.name} is surrounded by a white aura."
+            if target.name
+            else "Someone is surrounded by a white aura."
+        )
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is target:
                 continue
-            if hasattr(occupant, "messages"):
-                occupant.messages.append(
-                    f"{target.name} is surrounded by a white aura."
-                    if target.name
-                    else "Someone is surrounded by a white aura."
-                )
+            _send_to_char(occupant, room_message)
 
     return True
 
@@ -7147,13 +7149,13 @@ def shield(caster, target=None):
         raise ValueError("shield requires a target")
 
     if target.has_spell_effect("shield"):
+        # mirroring ROM src/magic.c:4312-4316 — send_to_char (self) / act TO_CHAR.
         message = (
             "You are already shielded from harm."
             if target is caster
             else f"{target.name} is already protected by a shield."
         )
-        if hasattr(caster, "messages"):
-            caster.messages.append(message)
+        _send_to_char(caster, message)
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -7167,20 +7169,21 @@ def shield(caster, target=None):
     if not applied:
         return False
 
-    if hasattr(target, "messages"):
-        target.messages.append("You are surrounded by a force shield.")
+    # mirroring ROM src/magic.c:4326-4327 — act TO_ROOM + send_to_char TO_VICT.
+    # MAGIC-003: canonical single-delivery channel, not the char.messages mailbox.
+    _send_to_char(target, "You are surrounded by a force shield.")
 
     room = getattr(target, "room", None)
     if room is not None:
+        room_message = (
+            f"{target.name} is surrounded by a force shield."
+            if target.name
+            else "Someone is surrounded by a force shield."
+        )
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is target:
                 continue
-            if hasattr(occupant, "messages"):
-                occupant.messages.append(
-                    f"{target.name} is surrounded by a force shield."
-                    if target.name
-                    else "Someone is surrounded by a force shield."
-                )
+            _send_to_char(occupant, room_message)
 
     return True
 
@@ -7961,6 +7964,9 @@ def weaken(caster: Character, target: Character | None = None) -> bool:
     if not applied:
         return False
 
+    # mirroring ROM src/magic.c:4580-4581 — send_to_char TO_VICT + act TO_ROOM.
+    # MAGIC-003: the room leg now uses the canonical single-delivery channel
+    # (the self leg above already did), not the char.messages mailbox.
     _send_to_char(target, "You feel your strength slip away.")
     room = getattr(target, "room", None)
     if room is not None:
@@ -7968,8 +7974,7 @@ def weaken(caster: Character, target: Character | None = None) -> bool:
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is target:
                 continue
-            if hasattr(occupant, "messages"):
-                occupant.messages.append(message)
+            _send_to_char(occupant, message)
 
     return True
 
