@@ -8,11 +8,13 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-015 — affect spells emit no ROM success message when cast through `do_cast` — ⏳ OPEN (armor fix pending master land)
+## FINDING-015 — affect spells emit no ROM success message when cast through `do_cast` — ✅ RESOLVED (armor; bless/shield sweep open)
 
-**Status:** ⏳ OPEN. Surfaced 2026-05-29 by the new `affect_armor` scenario (an L10 mage
-self-casts `armor`). Gated in `KNOWN_DIVERGENCES` until the Python fix lands on master and
-the diff goes clean. Tracked as a per-file gap at `docs/parity/MAGIC_C_AUDIT.md` **MAGIC-002**.
+**Status:** ✅ RESOLVED 2026-05-29 (master v2.11.20, `a3476e33`) — the `armor` handler now
+delivers ROM's success messaging, so `affect_armor` converges end-to-end and the
+`KNOWN_DIVERGENCES` entry self-cleared. Surfaced by the new `affect_armor` scenario (an L10
+mage self-casts `armor`). The broader bless/shield/… sweep remains open under
+`docs/parity/MAGIC_C_AUDIT.md` **MAGIC-002**.
 
 **Scenario:** `affect_armor` — `__seed=777`, `__learn=armor`, `cast armor` (level 10 so a
 mage clears armor's `skill_level[mage]==7` gate; armor is −20 AC regardless of level, so the
