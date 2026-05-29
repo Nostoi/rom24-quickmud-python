@@ -105,7 +105,23 @@ ROM applies the same safety contract by routing attack variants through `damage(
 
 - **`ACT-CAP-001` — non-combat act() output not capitalized.** ROM `act_new` capitalizes *all* act() output, but FIGHT-025 only fixed the combat chokepoint `render_for`. `mud/net/protocol.py:broadcast_room` and `mud/utils/act.py:act_format` (wiznet) do not apply the `act_new` first-char capitalization. Scoped out of FIGHT-025 (much wider test surface — many existing tests assert lowercase room/broadcast strings). Fix: apply `_capitalize_act` at those chokepoints and re-baseline the affected assertions.
 
-- **`SHOP-PET-001` — shop pet `dam_type` bypasses `from_prototype` resolution.** `mud/commands/shop.py:193` sets `pet.dam_type = _coerce(getattr(template, "dam_type", 0))` from the `MobIndex` proto, whose `dam_type` the loader leaves at 0 (the `.are` word lands in `proto.damage_type`, not `proto.dam_type`). So a bought pet gets `dam_type == 0` → attack-table index 0 → noun "hit", where ROM would `attack_lookup` the pet's damtype word. Pre-existing (not introduced by FIGHT-023); the drunk-only differential can't exercise it. Fix: resolve the pet's dam_type via the same attack-index path as `from_prototype`.
+- **`SHOP-PET-001` — ❌ N/A (premise-incorrect, verified 2026-05-29).** Original
+  claim: `mud/commands/shop.py:193` `pet.dam_type = _coerce(getattr(template, "dam_type", 0))`
+  reads `proto.dam_type` (which the loader leaves at 0), so a bought pet gets
+  `dam_type == 0` → attack-table index 0 → noun "hit". **The premise is factually
+  wrong:** `template` is not the proto — it is the kennel `MobInstance` returned by
+  `_find_pet_template` (iterating `room.people`). In gameplay that instance is created
+  by `apply_resets` → `spawn_mob` → `MobInstance.from_prototype`, which already resolves
+  the damtype word to a non-zero attack-table index on the *instance* (the `.are` word
+  on `proto.damage_type` → `attack_lookup`, FIGHT-023; ROM does this on the proto at
+  load, `src/db2.c:270`). So `getattr(template, "dam_type", 0)` reads the resolved
+  index, and `_clone_pet_character` copies it. Verified end-to-end: a bought pet of a
+  proto with damtype "beating" gets `dam_type == 13` and renders noun "beating", never 0/"hit".
+  Regression guard: `tests/integration/test_shop_pet_001_dam_type_resolution.py`.
+  Reclassified N/A — no code change (cf. ARITH-110 N/A precedent). The *real* residual
+  divergence is filed as SHOP-PET-002 below.
+
+- **`SHOP-PET-002` — 🔴 OPEN — `_clone_pet_character` clones the template instead of `create_mobile(pIndexData)`.** ROM `do_buy` (`src/act_obj.c:2613`) does `pet = create_mobile(pet->pIndexData)` — a **fresh** mobile re-rolled from the index, not a copy of the kennel template. Python's `mud/commands/shop.py:_clone_pet_character` instead copies the template `MobInstance`'s runtime fields (HP, mana, gold, the already-rolled dam_type, etc.). Divergences: (a) the random-default dam_type for a **no-word proto** is *cloned* from the template, where ROM re-rolls `number_range(1,3)` per `create_mobile` (so a bought pet of a no-word proto can never differ from its kennel template, unlike ROM); (b) the bought pet does **not advance the spawn RNG stream** the way `create_mobile` does (ROM draws gold→hp→mana→damtype→sex, `src/db.c:2047-2113`), so any RNG consumer ordered after a pet purchase is desynced vs ROM; (c) HP/mana/gold are inherited from the template rather than freshly rolled. `_clone_pet_character` carries no ROM-citing comment justifying the clone, so this is an undocumented divergence, not a deliberate one. Surfaced 2026-05-29 while verifying SHOP-PET-001. Fix: re-create the pet via `from_prototype` (the `create_mobile` equivalent) and reconcile the existing pet-shop tests' gold/stat assertions, which currently bake in the clone semantics.
 
 - **NPC `do_X` RNG-draw fidelity unverified.** `_mob_offensive_skill` invokes the real command handlers on mobs, but whether each handler's success roll + downstream draws (e.g. `do_trip`'s `number_percent`/`number_range`, daze/position/damage) match ROM `get_skill`-driven NPC behavior is unverified. The treat-as-100 NPC skill value (mirrors existing `do_kick`/`do_berserk`) may diverge from ROM's `get_skill` NPC value, changing success→downstream branching and hence draw count. The differential can't catch this — the drunk #3064 (the only differential mob) has no `OFF_` flags, so nothing exercises the dispatch.
 - **`do_backstab("")` bails for NPC callers** where ROM passes a target (`do_backstab` returns "Backstab whom?" on empty args). Flagged-mob backstab fidelity gap; no crash.
