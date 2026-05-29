@@ -27,19 +27,13 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES: dict[str, str] = {
-    # combat_melee_rounds + movement_get_drop converge end-to-end (no entry).
-    # FINDING-012 (saving_throw crash) and FINDING-013 (spurious "You cast" line)
-    # are both fixed on master, advancing the spell_combat first divergence to
-    # step 6 (FINDING-014).
-    "spell_combat": (
-        "FINDING-014 — wait-state ('lag') is enforced inside command handlers, not "
-        "the game loop. ROM do_cast only sets WAIT_STATE (src/magic.c:547); the wait "
-        "gate lives in the game loop (src/comm.c:619-621/:820-822), which silently "
-        "defers input — ROM never rejects a cast for wait>0 nor sends 'You are still "
-        "recovering.'. Python do_cast (mud/commands/combat.py:827) checks char.wait>0 "
-        "and rejects, so the second consecutive cast diverges (step 6). Architectural "
-        "fix: move the wait gate to dispatch/loop. See FINDINGS.md FINDING-014."
-    ),
+    # Empty — all three scenarios converge end-to-end:
+    #   movement_get_drop, combat_melee_rounds, spell_combat.
+    # spell_combat surfaced FINDING-012 (saving_throw crash) + FINDING-013 (spurious
+    # "You cast" line), both fixed on master (v2.11.18/.19). The step-6 wait-state
+    # gap (FINDING-014) is an architectural divergence (sync pulse-loop vs async),
+    # NOT a parity bug — the replay now drives ordinary commands below the wait gate
+    # (char.wait = 0), mirroring the C shim's direct interpret(). See FINDINGS.md.
     # When a divergence is resolved the diff goes clean, the xfail flips to XPASS,
     # and its entry should be removed here (self-cleaning).
 }
@@ -125,6 +119,17 @@ def test_python_matches_c_golden(scen_path):
             violence_tick(do_combat=True)
             response = ""
         else:
+            # Drive ordinary commands BELOW the wait-state gate, mirroring the C
+            # shim, which calls interpret() directly (src/diff_shim/diffmain.c) —
+            # ROM's wait gate lives in the comm.c input loop (src/comm.c:619-621/
+            # :820-822), which the shim bypasses, so a WAIT_STATE'd C actor still
+            # executes a directly-driven command. Python enforces wait inside the
+            # command handlers (do_cast etc.), so without this the second
+            # consecutive cast would be rejected where C's executes. This is the
+            # synchronous-loop-vs-async architectural divergence FINDING-014 (akin
+            # to MESSAGE_DELIVERY) — not a parity bug, and `wait` is not in the
+            # snapshot schema, so clearing it changes nothing under comparison.
+            char.wait = 0
             response = process_command(char, command) or ""
         drained = list(char.messages)
         char.messages.clear()

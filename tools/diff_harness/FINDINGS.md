@@ -8,10 +8,27 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-014 — wait-state ("lag") is enforced inside command handlers, not the game loop — 🔴 OPEN
+## FINDING-014 — wait-state ("lag") enforcement: synchronous pulse-loop vs async — ✅ RESOLVED (architectural divergence)
 
-**Status:** 🔴 OPEN (surfaced 2026-05-29 by `spell_combat` step 6, once FINDING-013
-unblocked the step-5 render). Gated in `KNOWN_DIVERGENCES`.
+**Status:** ✅ RESOLVED 2026-05-29 as a **documented architectural divergence** (class of
+`docs/divergences/MESSAGE_DELIVERY.md`), **not a parity bug** — no production change. The
+replay now drives ordinary commands below the wait gate (`char.wait = 0` before
+`process_command`), mirroring the C shim's direct `interpret()`. With that, **`spell_combat`
+converges end-to-end** (all 7 steps; removed from `KNOWN_DIVERGENCES`).
+
+**Why it is not a bug:** in real ROM you *cannot* cast twice with zero intervening pulses —
+`WAIT_STATE` from cast 1 makes the comm.c loop defer cast 2 until `wait` decrements. The C
+golden shows both casts firing *only* because the diffshim calls `interpret()` directly,
+**bypassing ROM's own comm-loop gate** (`src/comm.c:619-621`/`:820-822`). So the back-to-back
+casts are an **instrument artifact, not real ROM behavior** — Python's handler-level wait
+enforcement (`do_cast` etc.) is actually the *more* faithful end-state. Two corroborations:
+the snapshot schema has **no `wait` field** (wait was never under comparison), and the C side
+has wait **set-but-unchecked**; the harness drives *below* the gate on C and *above* it on
+Python — that asymmetry *is* the finding. A real input-loop wait gate for Python (like
+comm.c, above `process_command`) is a worthwhile *separate* project but would not converge
+the differential by itself (the replay must still drive below the gate).
+
+Symptom (step 6, the second consecutive `cast 'magic missile' drunk`, before the replay fix):
 
 Symptom (step 6, the second consecutive `cast 'magic missile' drunk`):
 ```
@@ -32,11 +49,14 @@ command handlers (`do_cast` `mud/commands/combat.py:827`, plus `do_kick`/`do_res
 but *executes* in C. (The doubled py line is `do_cast` both `return`-ing and appending the
 message to `char.messages`.)
 
-**Blast radius / fix shape:** the wait gate belongs in Python's command dispatch / game
-loop (defer input under wait, like ROM `comm.c`), not in each handler; the synthetic
-"You are still recovering." message has no ROM source. ~5 combat commands carry the
-in-handler check, and the dispatch/loop wait semantics need design (does Python's loop
-defer or drop input under wait?). Architectural — file as its own gap before closing.
+**Optional separate project (not required for parity):** if Python's input model is ever made
+to enforce wait at the loop level like ROM `comm.c` (defer input under wait, above
+`process_command`), the ~5 in-handler `char.wait > 0` checks (`do_cast`
+`mud/commands/combat.py:827`, plus `do_kick`/`do_rescue`/`do_backstab`/`do_berserk`/`do_bash`
+at :178/:236/:349/:402/:537) and the synthetic "You are still recovering." message (no ROM
+source) would move there. This is an async-architecture improvement, deliberately out of
+scope here — the handler-level enforcement is the more faithful behavior today, and the
+replay drives below the gate to keep the scenario exercising interpret-level parity.
 
 ---
 
