@@ -8,11 +8,76 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-009 — combat-tick round diverges at `__tick` (violence_update) — 🟡 PARTIAL (facets 1+3 closed, 2+4 open)
+## FINDING-010 — combat-tick round-2 damage amount diverges (severity verb) — 🔴 OPEN
 
-**Status:** 🟡 PARTIAL — surfaced 2026-05-28 the moment FINDING-008 was fully closed;
-**probed + root-caused, and facets 1+3 closed 2026-05-28 (this session).** With the
-step-4 `kill drunk` first strike matching (FIGHT-019 + FIGHT-020 + colour/`fighting`-key
+**Status:** 🔴 OPEN — surfaced 2026-05-29 the moment FINDING-009 (all 4 facets)
+was fully closed. With FIGHT-021/022/023/024/025 + the worktree `reversed()`
+merged from master, the `combat_melee_rounds` first divergence advanced from
+step 5 to **step 6** (the *second* `__tick`/`violence_update` round); **step 5
+now converges fully on both engines.**
+
+Symptom (step 6, second combat round):
+```
+step 6 (command='__tick') · output ·
+  C  = ["The drunk's beating scratches you.", 'You scratch the drunk.']
+  py = ["The drunk's beating hits you.",      'You scratch the drunk.']
+        └ damage SEVERITY differs: C "scratches" (≤5% tier) vs py "hits" (≤15% tier)
+```
+
+Line 2 (the PC's swing) is identical. The capitalization ("The"), damtype noun
+("beating"), and message order all match — **FINDING-009 facets 1–4 are
+confirmed closed end-to-end.** The only diff is the drunk's **damage amount** to
+the player landing in a different `_DAMAGE_TIERS` bucket: C deals ≤5% of the
+player's `max_hit` (20) ≈ ≤1 dmg → "scratches"; Python deals (5%,15%] ≈ 2–3 dmg
+→ "hits".
+
+**Notable:** round 1 (step 5) drunk swing is "beating hits you" in *both*
+engines (damage matched), but round 2 (step 6) diverges — so the streams/state
+agree for one round and drift by the next.
+
+**Root cause UNKNOWN — including whether this is pre-existing or a regression
+introduced by the FINDING-009 fixes. Rule out regression FIRST:** step 6 was
+*never compared* before this session (py diverged at step 5), so "pre-existing"
+is unproven. FIGHT-023 changed the drunk's damage class SLASH→BASH (reasoned
+inert for the differential char — uniform AC `[100,100,100,100]`, no RIV — but
+unverified at round 2), and FIGHT-021/022 changed `mob_hit`'s per-round draw set.
+Either could shift round-2 damage.
+
+Candidates to probe:
+- **Round-2 RNG draw-count residual.** Step-5 convergence proves round *1*, not
+  steady state. If draw *counts* diverge by round 2, facet 1 isn't fully closed
+  at steady state — OR the inter-round wait/daze burn in `violence_tick`
+  diverges from ROM and re-gates `mob_hit`'s `wait==0` checks differently on the
+  second round (the FIGHT-022 `number_range(0,2)`/`(0,8)` draws are gated on
+  `ch->wait`). The unit tests pin the drunk's *single-round* draw count, so this
+  wait-state/round-2 path is the more likely culprit than the count itself.
+- **Damage-formula divergence** (damroll / STR damage app / position or AC delta
+  between rounds) that round 1's tier happened to mask.
+
+Distinct from FINDING-009's 4 rendering/draw-order facets. `combat_melee_rounds`
+stays in `KNOWN_DIVERGENCES` (xfail) under FINDING-010 until round-2 damage
+converges. **Discriminating probe:** dump the per-round draw *sequence* +
+damage components (dice value, damroll, STR app, RIV, **and the drunk's
+wait-state between rounds**) for both engines at step 6. Draw counts diverge →
+facet-1/wait-state residual (rule out regression); draws match but damage differs
+→ formula bug. File the root cause as a FIGHT-NNN gap once isolated.
+
+---
+
+## FINDING-009 — combat-tick round diverges at `__tick` (violence_update) — ✅ RESOLVED (all 4 facets)
+
+**Status:** ✅ RESOLVED 2026-05-29 — all four facets closed; step 5 (`__tick`)
+converges fully on both engines and the first divergence advanced to **step 6**
+(round-2 damage amount, now tracked as **FINDING-010**). Surfaced 2026-05-28 the
+moment FINDING-008 was fully closed; probed + root-caused into four facets, all
+now fixed on master:
+- **Facet 1** (`multi_hit`/`mob_hit` RNG draw-count desync) — FIGHT-021 (`79c4d7f7`, v2.11.9) + FIGHT-022 (`4d9fb5c3`, v2.11.10).
+- **Facet 2** (mob `dam_type` attack-table index → noun "beating") — FIGHT-023 (`027eee0f`, v2.11.13).
+- **Facet 3** (combat-tick iteration order — `violence_tick` reversed) — FIGHT-024 (`863f8734`, v2.11.12).
+- **Facet 4** (act() first-char capitalization "The") — FIGHT-025 (`b8878785`, v2.11.14).
+- Plus **FIGHT-026** (`850662b5`, v2.11.11) — a latent crash facet 3's reorder exposed (NPC `do_dirt`/`do_trip`/`do_disarm` on `mob_hit` dispatch).
+
+With the step-4 `kill drunk` first strike matching (FIGHT-019 + FIGHT-020 + colour/`fighting`-key
 normalization), the `combat_melee_rounds` first divergence advanced to **step 5
 `__tick`** — the `violence_update` combat round that resolves both combatants' swings.
 
@@ -34,7 +99,7 @@ step 5 (command='__tick') · output ·   (after facet-3 reversed() + FIGHT-021 +
         └ f4: The/the · f2: beating/slice    └ line 2 IDENTICAL — facets 1+3 closed ✓
 ```
 
-### Facet 3 — message order — ✅ FIXED (worktree `reversed()`, master gap pending)
+### Facet 3 — message order — ✅ FIXED (master FIGHT-024, v2.11.12)
 
 ROM `violence_update` (`src/fight.c:72`) walks `char_list` **head-first**, and ROM
 inserts every new char at the HEAD of `char_list` (`src/db.c:2256-2257`
@@ -91,7 +156,7 @@ against a ROM golden stream. Master gap-closer(s); likely two rows (the uncondit
 2nd/3rd draw, and a faithful `mob_hit` port). Note `engine.py` + `game_loop.py` are on
 the 32KB gitnexus-gap list — `gitnexus_impact` under-reports; grep + integration suite.
 
-### Facet 2 — mob attack noun ("beating" → "slice") — 🔴 OPEN (real)
+### Facet 2 — mob attack noun ("beating" → "slice") — ✅ FIXED (master FIGHT-023, v2.11.13)
 
 C `beating`, Python `slice`. ROM `ch->dam_type` is an **attack_table index**
 (`src/const.c`: index 13 = `{"beating", "beating", DAM_BASH}`, index 0 =
@@ -107,7 +172,7 @@ parity bug** — bigger than cosmetic: the correct index also fixes the damage *
 `_parse_damage_type` first — confirm whether it string-matches "beating" to anything
 and whether `proto.dam_type` is ever set numerically).
 
-### Facet 4 — act() sentence-initial capitalization ("the" → "The") — 🔴 OPEN (real rendering)
+### Facet 4 — act() sentence-initial capitalization ("the" → "The") — ✅ FIXED (master FIGHT-025, v2.11.14)
 
 C `The drunk's …`, Python `the drunk's …`. ROM `act_new` (`src/comm.c`) uppercases the
 first rendered character (`buf[0] = UPPER(buf[0])`). Python's act/`dam_message` render
@@ -115,9 +180,12 @@ path does not. **Real rendering gap.** Fix at Python's single act/`dam_message`
 chokepoint (capitalize once — do NOT sprinkle `.capitalize()`). Candidate INV
 (act-render contract) or a per-file act row. Master gap-closer.
 
-**Gated:** `combat_melee_rounds` stays in `KNOWN_DIVERGENCES` (xfail) under FINDING-009
-until facets 1, 2, 4 land on master (facet 3's `reversed()` is staged in the worktree).
-The diff goes clean — and the xfail auto-clears — only when all four are resolved.
+**Resolved:** all four facets landed on master (FIGHT-021/022/023/024/025, plus the
+FIGHT-026 crash fix) and merged into the worktree. Step 5 now converges on both
+engines — verified end-to-end via `pytest tests/test_differential_smoke.py -k
+combat_melee`. The first divergence advanced to **step 6** (round-2 damage amount),
+so `combat_melee_rounds` remains in `KNOWN_DIVERGENCES` (xfail) but now under
+**FINDING-010**, not FINDING-009.
 
 ---
 

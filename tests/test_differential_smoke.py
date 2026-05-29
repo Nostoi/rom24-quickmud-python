@@ -27,14 +27,16 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES = {
-    # FINDING-009: FINDING-008 (step-4 `kill drunk` first strike) is fully resolved
-    # — hit/miss via FIGHT-019, double-delivery via FIGHT-020, color + `fighting`-key
-    # via harness normalization. The first divergence advanced to step 5 `__tick`
-    # (the violence_update round): C=["The drunk's beating hits you.", 'You miss the
-    # drunk.'] vs py=['You scratch the drunk.', "the drunk's slice hits you."] — a
-    # combat-tick RNG draw-order/count desync + mob damtype word + message order +
-    # act() leading-cap. See FINDINGS.md FINDING-009.
-    "combat_melee_rounds": "FINDING-009 — combat-tick round diverges at `__tick` (violence_update): PC hit/miss, mob damtype, message order, act() capitalization",
+    # FINDING-010: FINDING-009's four step-5 facets are all resolved — RNG draw-count
+    # desync (FIGHT-021/022), mob damtype attack-index → noun (FIGHT-023), combat-tick
+    # iteration order (FIGHT-024), act() first-char capitalization (FIGHT-025), plus the
+    # FIGHT-026 crash the reorder exposed. Step 5 now converges; the first divergence
+    # advanced to step 6 (the *second* __tick round): C=["The drunk's beating scratches
+    # you.", 'You scratch the drunk.'] vs py=["The drunk's beating hits you.", 'You
+    # scratch the drunk.'] — round-2 damage amount lands in a different severity tier
+    # ("scratches" ≤5% vs "hits" ≤15%). A new, deeper divergence (damage amount), not a
+    # FINDING-009 rendering/draw-order facet. See FINDINGS.md FINDING-010.
+    "combat_melee_rounds": "FINDING-010 — combat-tick round-2 damage amount diverges (severity verb): C 'scratches' (≤5%) vs py 'hits' (≤15%)",
 }
 
 
