@@ -215,7 +215,11 @@ def test_do_cast_offensive_no_target_defaults_to_fighting_victim():
 
     result = do_cast(caster, "'magic missile'")  # no target arg
 
-    assert result == "You cast magic missile.", result
+    # ROM do_cast is silent on a successful cast (FINDING-013, src/magic.c:553-563);
+    # the spell's own damage message is delivered via char.messages, not a
+    # "You cast <spell>." confirmation line. The meaningful assertions below
+    # (fighting victim takes damage, caster unharmed) prove the cast resolved.
+    assert result == "", result
     assert victim.hit < victim_initial_hp, (
         f"fighting victim should take damage; got victim.hit={victim.hit}"
     )

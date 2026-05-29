@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.19]
+
+### Fixed
+- **`FINDING-013` — `do_cast` emitted a spurious "You cast <spell>." line ROM never sends.** ROM `do_cast` (`src/magic.c:553-563`) is silent on a *successful* cast — it deducts mana, calls the spell function, and `check_improve`, sending nothing itself; all player-facing output comes from the spell function (e.g. `damage()` → "Your magic missile maims the drunk."). Python's `do_cast` returned `f"You cast {skill.name}."`, which the command dispatcher sends to the player (`mud/net/connection.py`), so the player saw an extra confirmation line above the spell's own message. `do_cast` now returns `""` on success; the spell handler already delivers its messages via `char.messages`. **Surfaced by the differential testing harness** (`tools/diff_harness` `spell_combat` scenario, step 5: C `['Your magic missile maims the drunk.']` vs py `['You cast magic missile.', 'Your magic missile maims the drunk.']`). Regression: `tests/integration/test_finding_013_cast_silent_on_success.py`. (`skill_registry.cast`'s separate `_default_success_message` "You cast X." fallback — used by mob/item casting and returning a result object — is a distinct path the differential did not exercise; left unchanged.)
+
+### Changed
+- Re-baselined `tests/test_skills_spells_cast_listing.py::test_do_cast_offensive_no_target_defaults_to_fighting_victim`: it asserted `do_cast` returns `"You cast magic missile."`; ROM is silent on success (FINDING-013), so the return is now `""`. The test's meaningful assertions (the fighting victim takes damage, the caster is unharmed) are unchanged. Per AGENTS.md, a test asserting non-ROM behavior is the test's bug.
+
 ## [2.11.18]
 
 ### Fixed

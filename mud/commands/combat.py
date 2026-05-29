@@ -894,7 +894,12 @@ def do_cast(char: Character, args: str) -> str:
         return f"Spell cast failed: {exc}"
 
     skill_registry._check_improve(char, skill, skill.name, success)
-    return f"You cast {skill.name}."
+    # ROM src/magic.c:553-563 — do_cast is silent on a successful cast: it deducts
+    # mana, calls spell_fun, and check_improve, sending nothing itself. All
+    # player-facing output comes from the spell function (e.g. damage() →
+    # "Your magic missile maims the drunk."). Returning a "You cast <spell>."
+    # confirmation here produced a line ROM never sends (FINDING-013).
+    return ""
 
 
 def do_dirt(char: Character, args: str) -> str:
