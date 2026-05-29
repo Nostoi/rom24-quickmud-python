@@ -283,7 +283,7 @@ class TestGroupCombatMechanics:
 class TestGroupExperienceSharing:
     """Test group XP distribution mechanics."""
 
-    def test_group_xp_split_between_members(self, create_test_character, create_test_mob):
+    def test_group_xp_split_between_members(self, create_test_character, create_test_mob, monkeypatch):
         """
         Test: Group XP is split between all group members.
 
@@ -293,6 +293,15 @@ class TestGroupExperienceSharing:
         When: Mob dies
         Then: Each member gets ~333 XP (1000 / 3)
         """
+        # Pin the ROM THAC0 / number_bits(5) attack roll to nat-19 (always hits)
+        # so the group deterministically fells the 50-hp mob within the tick
+        # budget regardless of the combat RNG stream position. This test verifies
+        # XP *split*, not hit chance; a high hitroll alone is not enough (nat-0
+        # still misses), so under parallel execution the unseeded stream position
+        # — resequenced by the FIGHT-024 tick reorder / FIGHT-022 mob_hit draws —
+        # could leave the mob alive at the 60-tick budget and grant no XP.
+        monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
+
         leader = create_test_character("Leader", level=10)
         follower1 = create_test_character("Follower1", level=10)
         follower2 = create_test_character("Follower2", level=10)

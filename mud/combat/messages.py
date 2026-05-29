@@ -34,6 +34,23 @@ class DamageMessages:
     self_inflicted: bool = False
 
 
+def _capitalize_act(text: str) -> str:
+    """Capitalize the first rendered character, ROM `act_new` style.
+
+    Mirrors ROM src/comm.c:2373-2379 — every act() line has its first character
+    upper-cased, accounting for a leading `{X` colour code::
+
+        if (buf[0] == '{') buf[2] = UPPER(buf[2]); else buf[0] = UPPER(buf[0]);
+
+    So `{4the drunk's beating hits you.{x` is sent as `{4The drunk's ...`.
+    """
+    if not text:
+        return text
+    if text[0] == "{" and len(text) > 2:
+        return text[:2] + text[2].upper() + text[3:]
+    return text[0].upper() + text[1:]
+
+
 def render_for(
     template: str | None,
     attacker: object,
@@ -46,13 +63,17 @@ def render_for(
     looker)` and `$N` through `PERS(victim, looker)`. The observer
     is the recipient of the message; for TO_NOTVICT this is iterated
     per room occupant, for TO_CHAR this is the attacker, for TO_VICT
-    this is the victim.
+    this is the victim. The rendered line's first character is upper-cased
+    like ROM `act_new` (`_capitalize_act`, src/comm.c:2373-2379) so an
+    NPC-initiated swing reads "The drunk's beating ..." not "the drunk's ...".
     """
     if template is None:
         return None
-    return template.format(
-        attacker=pers(attacker, observer),
-        victim=pers(victim, observer),
+    return _capitalize_act(
+        template.format(
+            attacker=pers(attacker, observer),
+            victim=pers(victim, observer),
+        )
     )
 
 

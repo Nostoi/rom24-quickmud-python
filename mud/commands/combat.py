@@ -293,6 +293,25 @@ def _character_skill_percent(char: Character, skill_name: str) -> int:
         return 0
 
 
+def _npc_off_flags(char: Character) -> OffFlag:
+    """Resolve an NPC's ``off_flags`` to an ``OffFlag``, mirroring the inline
+    coercion in ``do_kick``/``do_berserk`` (ROM stores the flags as letters in
+    the .are file; runtime instances may hold either the raw string or an int).
+    NPCs have no ``skills`` dict — ROM gates these offensive skills on the
+    matching ``OFF_`` flag, not a learned percent (`src/fight.c` do_trip/do_dirt/
+    do_disarm: `if (IS_NPC(ch)) { if (!IS_SET(ch->off_flags, OFF_*)) return; }`).
+    """
+    off_flags_value = getattr(char, "off_flags", 0) or 0
+    if isinstance(off_flags_value, str):
+        off_flags = convert_flags_from_letters(off_flags_value, OffFlag)
+        char.off_flags = int(off_flags)
+        return off_flags
+    try:
+        return OffFlag(off_flags_value)
+    except ValueError:
+        return OffFlag(0)
+
+
 def do_backstab(char: Character, args: str) -> str:
     target_name = (args or "").strip()
     if not target_name:
@@ -886,10 +905,15 @@ def do_dirt(char: Character, args: str) -> str:
     """
     target_name = (args or "").strip()
 
-    # Check if character has the skill
-    skill_level = char.skills.get("dirt kicking", 0)
-    if skill_level == 0:
-        return "You get your feet dirty."
+    # Check if character has the skill. ROM src/fight.c do_dirt: NPCs gate on
+    # OFF_KICK_DIRT (no skills dict), PCs on the learned percent.
+    if getattr(char, "is_npc", False):
+        if not _npc_off_flags(char) & OffFlag.KICK_DIRT:
+            return ""
+    else:
+        skill_level = _character_skill_percent(char, "dirt kicking")
+        if skill_level == 0:
+            return "You get your feet dirty."
 
     # Find target
     if not target_name:
@@ -927,10 +951,18 @@ def do_trip(char: Character, args: str) -> str:
     """
     target_name = (args or "").strip()
 
-    # Check if character has the skill
-    skill_level = char.skills.get("trip", 0)
-    if skill_level == 0:
-        return "Tripping? What's that?"
+    # Check if character has the skill. ROM src/fight.c do_trip: NPCs gate on
+    # OFF_TRIP (no skills dict), PCs on the learned percent. For an NPC ROM's
+    # get_skill returns a nonzero value; mirror the do_kick/do_berserk NPC
+    # pattern and treat the skill as fully learned (100).
+    if getattr(char, "is_npc", False):
+        if not _npc_off_flags(char) & OffFlag.TRIP:
+            return ""
+        skill_level = 100
+    else:
+        skill_level = _character_skill_percent(char, "trip")
+        if skill_level == 0:
+            return "Tripping? What's that?"
 
     # Find target
     if not target_name:
@@ -970,13 +1002,13 @@ def do_trip(char: Character, args: str) -> str:
     if char_size < victim_size:
         chance += (char_size - victim_size) * 10
 
-    # Dex modifier
-    char_dex = skill_handlers._coerce_int(
-        getattr(char, "perm_stat", [13] * 5)[1] if isinstance(getattr(char, "perm_stat", []), list) else 13
-    )
-    victim_dex = skill_handlers._coerce_int(
-        getattr(victim, "perm_stat", [13] * 5)[1] if isinstance(getattr(victim, "perm_stat", []), list) else 13
-    )
+    # Dex modifier — ROM src/fight.c do_trip uses get_curr_stat(STAT_DEX). The
+    # canonical accessor is bounds-safe for NPC callers and for characters with
+    # an unpopulated perm_stat (returns None → 0), unlike a raw perm_stat[DEX]
+    # index which IndexErrors on the empty-list default. (FIGHT-026: the NPC
+    # mob_hit dispatch can route a flagged mob into do_trip.)
+    char_dex = char.get_curr_stat(Stat.DEX) or 0
+    victim_dex = victim.get_curr_stat(Stat.DEX) or 0
     chance += char_dex - victim_dex * 3 // 2
 
     # Level modifier
@@ -1008,10 +1040,14 @@ def do_disarm(char: Character, args: str) -> str:
 
     ROM Reference: src/fight.c do_disarm (lines 3145-3220)
     """
-    # Check if character has the skill
-    skill_level = char.skills.get("disarm", 0)
-    if skill_level == 0:
-        return "You don't know how to disarm opponents."
+    # Check if character has the skill. ROM src/fight.c do_disarm relies on
+    # get_skill returning nonzero for NPCs (no skills dict); the mob_hit dispatch
+    # already gates the NPC path (OFF_DISARM or an armed warrior/thief). PCs gate
+    # on the learned percent.
+    if not getattr(char, "is_npc", False):
+        skill_level = _character_skill_percent(char, "disarm")
+        if skill_level == 0:
+            return "You don't know how to disarm opponents."
 
     # Must be fighting
     victim = getattr(char, "fighting", None)
@@ -1020,7 +1056,7 @@ def do_disarm(char: Character, args: str) -> str:
 
     # Attacker must have a weapon, or meet ROM hand-to-hand / NPC OFF_DISARM exception.
     caster_weapon = get_wielded_weapon(char)
-    hth_skill = char.skills.get("hand to hand", 0)
+    hth_skill = _character_skill_percent(char, "hand to hand")
     if caster_weapon is None and hth_skill == 0:
         return "You must wield a weapon to disarm."
 

@@ -1320,7 +1320,17 @@ def violence_tick(*, do_combat: bool = False) -> None:
     """
     from mud.combat.engine import multi_hit, stop_fighting
 
-    for ch in list(character_registry):
+    # ROM src/fight.c:76 — violence_update walks `char_list` head-first. ROM
+    # inserts every new char at the HEAD of char_list (src/db.c:2256-2257
+    # create_mobile, src/nanny.c:757-758 PC login), so the list is in
+    # reverse-creation order: the most-recently-loaded actor swings first.
+    # Python's `character_registry` is append-order (creation order), so we
+    # iterate it reversed to match ROM's swing order — load-bearing for the
+    # combat-tick RNG draw sequence (who consumes the shared stream first),
+    # not just message ordering (FINDING-009 facet 3). `list(reversed(...))`
+    # snapshots so mid-tick removals (deaths extracting from the registry)
+    # can't perturb iteration, mirroring ROM's `ch_next = ch->next` guard.
+    for ch in list(reversed(character_registry)):
         # mirroring ROM src/comm.c:616-620 — connected players burn wait/daze
         # one pulse at a time in the descriptor input loop.
         # mirroring ROM src/fight.c:192-196 — descriptor-less actors burn
