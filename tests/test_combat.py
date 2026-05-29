@@ -759,6 +759,10 @@ def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.dice", lambda number, size: number * size)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+    # FIGHT-019 resolves the hit through the THAC0 `number_bits(5)` roll. Pin it
+    # to nat-19 (always hits) so this damage-tier assertion is deterministic and
+    # does not depend on the unseeded RNG stream position (xdist-grouping flake).
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     out = deliver_kill(attacker, "victim")
 

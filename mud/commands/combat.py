@@ -605,10 +605,14 @@ def do_surrender(char: Character, args: str) -> str:
         if not mobprog.mp_surr_trigger(opponent, char):
             # No mobprog or mobprog didn't handle it - NPC ignores and attacks
             messages.append(f"{opponent_name} seems to ignore your cowardly act!")
-            # ROM: multi_hit(mob, ch, TYPE_UNDEFINED)
-            attack_messages = multi_hit(opponent, char)
-            if attack_messages:
-                messages.extend(attack_messages)
+            # ROM: multi_hit(mob, ch, TYPE_UNDEFINED) — void; combat output is
+            # delivered via _push_message (TO_VICT to the surrendering PC,
+            # TO_NOTVICT to the room). Discard the return: it is the NPC
+            # attacker's TO_CHAR-perspective line, and returning it would (a)
+            # double-deliver to the PC on top of the TO_VICT push and (b) leak
+            # the wrong perspective ("You hit …" from the NPC's POV). Same
+            # SINGLE-DELIVERY contract as do_kill (FIGHT-020 / INV-001).
+            multi_hit(opponent, char)
 
     return "\n".join(messages) if len(messages) > 1 else messages[0]
 

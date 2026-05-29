@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.7]
+
+### Fixed
+- **INV-001 — `do_surrender` leaked the NPC counterattack to the surrendering player (SINGLE-DELIVERY + wrong perspective).** When a PC surrenders to an NPC that ignores it (no `TRIG_SURR`), `mud/commands/combat.py::do_surrender` ran `attack_messages = multi_hit(opponent, char)` and folded the result into its own return value — which the connection loop sends to the surrendering PC. So the PC received the NPC's counterattack **twice**: once correctly via the TO_VICT `_push_message` ("the brute hits you", `{4…{x`), and once as the returned **attacker-perspective** line ("You hit …", `{2…{x`) — a return-value double-send plus a wrong-perspective leak. ROM `do_surrender` (`src/fight.c:3239-3240`) calls `multi_hit(mob, ch, TYPE_UNDEFINED)` as a void statement (output flows through `act()`/`send_to_char`), so the return is now discarded like `do_kill` (FIGHT-020). This closes the last open INV-001 follow-up (b). Regression: `tests/integration/test_surrender_single_delivery.py`.
+
 ## [2.11.6]
 
 ### Fixed
