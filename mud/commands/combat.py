@@ -863,6 +863,12 @@ def do_cast(char: Character, args: str) -> str:
         else:
             fighting = getattr(char, "fighting", None)
             if fighting is None:
+                # CAST-003: the two offensive target types use distinct no-fight
+                # error wording — TAR_OBJ_CHAR_OFF (curse/poison) appends "or what?"
+                # because an object is also a legal operand (src/magic.c:471),
+                # whereas TAR_CHAR_OFFENSIVE is char-only (src/magic.c:376).
+                if skill_target_type == "offensive_character_or_object":
+                    return "Cast the spell on whom or what?"
                 return "Cast the spell on whom?"
             target = fighting
     elif skill_target_type in {"friendly", "defensive_character_or_object"}:

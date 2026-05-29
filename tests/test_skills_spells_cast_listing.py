@@ -273,11 +273,13 @@ def test_do_cast_defensive_obj_char_no_target_defaults_to_self():
 
 
 def test_do_cast_offensive_obj_char_no_target_no_fight_still_errors():
-    """CAST-002 guard — ``TAR_OBJ_CHAR_OFF`` (``curse`` / ``poison``,
-    src/const.c) keeps the offensive fighting-default after the vocabulary
-    split: a no-arg cast with no ``ch->fighting`` errors and does NOT self-cast.
-    (The exact error wording for this branch is tracked separately as CAST-003;
-    asserting on the 'whom' substring keeps this guard stable across that fix.)"""
+    """CAST-002 guard + CAST-003 — ``TAR_OBJ_CHAR_OFF`` (``curse`` / ``poison``,
+    src/const.c) keeps the offensive fighting-default after the vocabulary split:
+    a no-arg cast with no ``ch->fighting`` errors and does NOT self-cast. ROM's
+    error wording for this target type is distinct from ``TAR_CHAR_OFFENSIVE``:
+    ``"Cast the spell on whom or what?"`` (src/magic.c:471) — the trailing
+    "or what?" reflects that an object is also a legal operand — versus
+    ``TAR_CHAR_OFFENSIVE``'s ``"Cast the spell on whom?"`` (src/magic.c:376)."""
 
     caster = _make_mage(level=24, mana=200, skills={"curse": 100})
     caster.messages = []
@@ -285,5 +287,6 @@ def test_do_cast_offensive_obj_char_no_target_no_fight_still_errors():
 
     result = do_cast(caster, "curse")
 
-    assert "whom" in result.lower(), result  # offensive: errors, no self-default
+    # CAST-003: TAR_OBJ_CHAR_OFF errors "whom or what?", not "whom?".
+    assert result == "Cast the spell on whom or what?", result
     assert not caster.has_spell_effect("curse"), "offensive spell must not self-cast"

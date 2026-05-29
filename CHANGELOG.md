@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.23]
+
+### Fixed
+- **`CAST-003` — offensive object/character spell (`curse`/`poison`) no-target cast used the wrong ROM error wording when not fighting.** ROM's `do_cast` gives `TAR_OBJ_CHAR_OFF` its own no-fight message, "Cast the spell on whom or what?" (`src/magic.c:471`) — the trailing "or what?" reflects that an object is also a legal operand — distinct from `TAR_CHAR_OFFENSIVE`'s char-only "Cast the spell on whom?" (`src/magic.c:376`). Python's `do_cast` (`mud/commands/combat.py`) routed `offensive_character_or_object` (`TAR_OBJ_CHAR_OFF` — `curse`, `poison`) through the same no-fight error branch as `victim` (`TAR_CHAR_OFFENSIVE`), so both emitted "Cast the spell on whom?". The offensive object/char branch now returns ROM's distinct "Cast the spell on whom or what?". Surfaced while de-conflating the two `TAR_OBJ_CHAR_*` types for CAST-002 (left byte-identical there to keep that a clean single-gap commit). Regression: `tests/test_skills_spells_cast_listing.py::test_do_cast_offensive_obj_char_no_target_no_fight_still_errors` (tightened from a `whom` substring check to assert the exact wording). See `docs/parity/MAGIC_C_AUDIT.md`.
+
 ## [2.11.22]
 
 ### Fixed
