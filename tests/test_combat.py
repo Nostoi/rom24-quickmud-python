@@ -227,6 +227,9 @@ def test_attack_damages_but_not_kill(monkeypatch: pytest.MonkeyPatch) -> None:
     victim.max_hit = 10
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so this damage-tier assertion
+    # is deterministic and not subject to the unseeded RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
     out = deliver_kill(attacker, "victim")
     # ROM unarmed damage for level 1: base 5 + damroll 3 = 8 total
     # Damage tier should match ROM's *** DEVASTATE *** verb (80% of max HP)
@@ -248,6 +251,8 @@ def test_attack_kills_target(monkeypatch: pytest.MonkeyPatch) -> None:
     victim.max_hit = 5
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: low)
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so the kill is deterministic.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
     out = deliver_kill(attacker, "victim")
     # The killer's combat line is the killing-blow dam_message (pushed before
     # the death branch). ROM (src/fight.c:859-862) sends the killer NOTHING on
@@ -270,6 +275,9 @@ def test_attack_misses_target(monkeypatch):
     victim.hit = 10
     # Guarantee miss deterministically
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 100)
+    # FIGHT-019 THAC0 roll: pin nat-0 (always misses) so this miss assertion is
+    # deterministic regardless of the unseeded RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 0)
     out = deliver_kill(attacker, "victim")
     assert out == "{2You miss Victim.{x"
     assert victim.hit == 10
@@ -350,11 +358,14 @@ def test_shield_block_requires_shield(monkeypatch: pytest.MonkeyPatch) -> None:
     assert_attack_message(out)
 
 
-def test_multi_hit_single_attack():
+def test_multi_hit_single_attack(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     victim.hit = 10
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so the damage assertion is
+    # deterministic regardless of the unseeded RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     # No extra attack skills - should only get one attack
     results = combat_engine.multi_hit(attacker, victim)
@@ -389,12 +400,15 @@ def test_multi_hit_with_haste(monkeypatch):
     assert victim.hit == 8  # 20 - (6 + 6) = 8
 
 
-def test_multi_hit_second_attack():
+def test_multi_hit_second_attack(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 1
     attacker.second_attack_skill = 100  # 50% chance (100/2)
     victim.hit = 20  # Increase HP to survive multiple attacks
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so both swings land and the
+    # damage assertion is deterministic regardless of RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     # Initialize fighting state
     combat_engine.set_fighting(attacker, victim)
@@ -581,12 +595,15 @@ def test_multi_hit_with_slow():
     # Second attack chance halved, third attack prevented
 
 
-def test_multi_hit_victim_dies_early():
+def test_multi_hit_victim_dies_early(monkeypatch):
     attacker, victim = setup_combat()
     attacker.hitroll = 100  # guarantee hit
     attacker.damroll = 5
     attacker.second_attack_skill = 100  # Would normally get second attack
     victim.hit = 3  # Dies on first hit
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so the first swing lands and
+    # kills (deterministic regardless of RNG stream position).
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     results = combat_engine.multi_hit(attacker, victim)
     assert len(results) == 1
@@ -697,6 +714,9 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
         captured.append(d)
 
     monkeypatch.setattr(combat_engine, "on_hit_effects", on_hit)
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so on_hit_effects fires and
+    # the captured damage is deterministic regardless of RNG stream position.
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda *_: 19)
 
     # With damroll=0, we get base unarmed damage + 0 damroll bonus
     # Then RIV resistance should reduce it by 1/3
@@ -841,6 +861,9 @@ def test_poison_weapon_applies_affect(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(rng_mm, "number_range", lambda low, high: low)
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
     monkeypatch.setattr(combat_engine, "saves_spell", lambda *args, **kwargs: False)
+    # FIGHT-019 THAC0 roll: pin nat-19 (always hits) so the weapon-poison on-hit
+    # effect fires deterministically regardless of RNG stream position.
+    monkeypatch.setattr(rng_mm, "number_bits", lambda *_: 19)
 
     combat_engine.attack_round(attacker, victim)
 

@@ -118,7 +118,23 @@ Recent verification locked by
 `tests/integration/test_fight_c_safe_room_damage_gate.py`, and
 `tests/integration/test_character_advancement.py::test_player_kill_applies_rom_death_penalty`.
 
-## Notes — test fragility (candidate hardening pass)
+## Notes — test fragility (✅ hardening pass DONE, 2.11.8)
+
+**Resolved 2026-05-28 (2.11.8).** After a clean parallel full-suite run flaked
+`test_one_hit_uses_equipped_weapon`, the unseeded hit/miss-outcome tests in
+`tests/test_combat.py` were hardened by pinning the ROM `number_bits(5)` attack
+roll per test: `lambda *_: 19` (nat-19, always hits) for hit-/damage-/kill-
+asserting tests, `lambda *_: 0` (nat-0, always misses) for `test_attack_misses_target`.
+Tests hardened: `test_one_hit_uses_equipped_weapon`, `test_attack_damages_but_not_kill`,
+`test_attack_kills_target`, `test_attack_misses_target`, `test_multi_hit_single_attack`,
+`test_multi_hit_second_attack`, `test_multi_hit_victim_dies_early`,
+`test_riv_scaling_applies_before_side_effects`, `test_poison_weapon_applies_affect`
+(plus `test_multi_hit_with_haste`, already pinned). Tests whose only assertion is
+`assert_attack_message` (which holds for both hit and miss messages) or that count
+attacks rather than hits were left as-is — they are not outcome-brittle. Verified:
+`tests/test_combat.py` 32/32 across 3 serial runs + clean full parallel suite.
+
+### Historical (the gap this pass closed)
 
 Surfaced while closing FIGHT-019: the unseeded combat tests in
 `tests/test_combat.py` assert **exact** hit/miss and damage outcomes

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.8]
+
+### Changed
+- **Combat-test determinism: pinned the ROM `number_bits(5)` attack roll in the unseeded outcome-asserting tests in `tests/test_combat.py`.** After FIGHT-019 made THAC0 the only hit model, these tests resolved hits via the unseeded `number_bits` stream and passed only by RNG-stream position — they could flake on the nat-0/nat-19 edge depending on xdist worker grouping (a clean parallel run flaked `test_one_hit_uses_equipped_weapon`). Each outcome-brittle test now pins `number_bits` to nat-19 (always hits) or nat-0 (`test_attack_misses_target`, always misses), making them deterministic under the ROM model. Tests whose only assertion is `assert_attack_message` (true for both hit and miss) or that count attacks rather than hits were left unchanged (not outcome-brittle). No production behavior change. Verified: `test_combat.py` 32/32 across 3 serial runs + clean full parallel suite (4934 passed).
+
 ## [2.11.7]
 
 ### Fixed
