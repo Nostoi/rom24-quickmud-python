@@ -427,13 +427,21 @@ PERS/can_see. Line-suppression is per-command (`do_goto`/`do_violate` → WIZ-04
   (1) PC emote fires TRIG_ACT on listening NPC,
   (2) `disable_mobtrigger()` context suppresses dispatch,
   (3) NPC emoter does not self-fire its own TRIG_ACT.
+  **Position-command room broadcasts closed in 2.11.50**: the shared
+  `mud/commands/position.py:_broadcast` helper used by `do_stand`/`do_rest`/
+  `do_sit`/`do_sleep` now calls `mp_act_trigger_room` after `broadcast_room`,
+  matching ROM `act_move.c` room `act(..., TO_ROOM)` lines feeding
+  `src/comm.c:2384` TRIG_ACT dispatch. Regression:
+  `tests/integration/test_inv025_mobprog_act_trigger_dispatch.py::test_position_act_room_broadcast_fires_act_trigger_on_listening_npc`.
   **Follow-up sweep** (not yet scoped as an INV row — the contract is
   locked): remaining ROM act() callsites in Python that should also feed
   `mp_act_trigger_room`. Closed so far (one-callsite-per-commit): `do_give`,
   `do_drop`, `do_get`, `do_put`, `do_sacrifice`,
   `do_wear`/`do_remove`/`do_wield`/`do_hold`, position-transition
   broadcasts (`mud/combat/engine.py:apply_position_change` →
-  `_broadcast_pos_change`), and **combat `dam_message`**
+  `_broadcast_pos_change`), position commands (`do_stand`/`do_rest`/
+  `do_sit`/`do_sleep` via `mud/commands/position.py:_broadcast`), and
+  **combat `dam_message`**
   (`mud/combat/engine.py:_broadcast_damage_messages`, closed as `FIGHT-018`
   in 2.9.90 — every combat hit fires TRIG_ACT on room NPCs, ROM
   `src/fight.c:2215-2226`, no `MOBtrigger` wrap). Still open: the broader

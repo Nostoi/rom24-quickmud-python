@@ -28,6 +28,7 @@ from __future__ import annotations
 import pytest
 
 from mud.commands.communication import do_emote
+from mud.commands.position import do_stand
 from mud.models.character import Character, character_registry
 from mud.models.constants import Position
 from mud.models.mob import MobIndex
@@ -212,3 +213,33 @@ def test_act_trigger_skipped_when_emoter_is_npc():
     assert fired == [], (
         f"emoter must not self-fire its own TRIG_ACT; fired: {fired}"
     )
+
+
+def test_position_act_room_broadcast_fires_act_trigger_on_listening_npc():
+    """ROM src/act_move.c:1062 / src/comm.c:2384 — stand act() fires TRIG_ACT."""
+    import mud.mobprog as mobprog
+
+    room = _make_room()
+    pc = _make_pc(room)
+    pc.position = Position.RESTING
+    _make_listener(room)
+
+    fired: list[tuple[str, str]] = []
+    original = mobprog.mp_act_trigger
+
+    def _probe(argument, mob, ch, *args, **kwargs):
+        fired.append((getattr(mob, "name", "?"), str(argument)))
+        return original(argument, mob, ch, *args, **kwargs)
+
+    mobprog.mp_act_trigger = _probe
+    try:
+        do_stand(pc, "")
+    finally:
+        mobprog.mp_act_trigger = original
+
+    assert len(fired) == 1, (
+        f"expected exactly one mp_act_trigger fire for the stand room act(); "
+        f"got: {fired}"
+    )
+    assert fired[0][0] == "listener"
+    assert "stands" in fired[0][1]

@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import AffectFlag, FurnitureFlag, ItemType, Position
 from mud.net.protocol import broadcast_room
 from mud.utils.act import act_format
@@ -90,6 +91,8 @@ def _broadcast(ch: Character, fmt: str, obj=None) -> None:
         return
     msg = act_format(fmt, recipient=None, actor=ch, arg1=obj)
     broadcast_room(room, msg, exclude=ch)
+    # ROM src/comm.c:2384 — position-command act(TO_ROOM) lines fire TRIG_ACT.
+    mp_act_trigger_room(msg, room, ch, arg1=obj)
 
 
 def _to_char(fmt: str, ch: Character, obj=None) -> str:
