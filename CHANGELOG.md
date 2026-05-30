@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **Test stabilization — `attack_round` RNG seed fix for `test_combat_death.py`.** After FIGHT-019 (ROM THAC0 hit model), `attack_round` uses `number_bits(5)` for the hit roll instead of the legacy `number_percent`. Eleven tests that called `attack_round` only patched `number_percent` and `number_range`, making the hit roll nondeterministic in xdist. Added `monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)` (ROM auto-hit) to all `attack_round`-using tests in `test_combat_death.py`, eliminating the flake.
+
+### Fixed
 - **CAST-007 — `do_cast` now enforces PK safety gates (`is_safe`/`is_safe_spell`, `check_killer`) and the AFF_CHARM master gate for offensive spell targets.** ROM `src/magic.c:395-413` (`TAR_CHAR_OFFENSIVE`) and `:481-495` (`TAR_OBJ_CHAR_OFF`) call `is_safe`/`is_safe_spell` and `check_killer` for non-NPC casters before the `AFF_CHARM` master gate; all three were missing from the Python `do_cast` path. Fixed: after target resolution and before mana deduction, (1) `is_safe`/`is_safe_spell` blocks the cast with "Not on that target." for PC casters targeting a safe room / shopkeeper / healer / etc. (self-target exemption mirrors ROM); (2) `check_killer` flags clan-member PCs as KILLER for attacking innocent PCs, and strips charm on charmed PCs whose resolved victim is a non-NPC (mirroring ROM `stop_follower` side effect); (3) the AFF_CHARM master gate blocks any caster from targeting their own master ("You can't do that on your own follower."). Object targets bypass all three gates per ROM. Defensive spells (`TAR_CHAR_DEFENSIVE` / `TAR_OBJ_CHAR_DEF`) have no PK gates per ROM. Regression: `tests/integration/test_do_cast_pk_gates.py` (17 tests).
 
 ### Changed

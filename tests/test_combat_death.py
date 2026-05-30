@@ -137,6 +137,7 @@ def test_raw_kill_awards_group_xp_and_creates_corpse(monkeypatch: pytest.MonkeyP
     monkeypatch.setattr(xp_module, "xp_compute", fake_xp_compute)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
 
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
@@ -191,6 +192,7 @@ def test_auto_flags_trigger_and_wiznet_logs(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
 
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
@@ -239,6 +241,7 @@ def test_autosacrifice_removes_empty_corpse(monkeypatch: pytest.MonkeyPatch) -> 
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
     monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
@@ -278,6 +281,7 @@ def test_autosacrifice_autosplit_shares_silver(monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
     monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
@@ -310,6 +314,7 @@ def test_autosacrifice_autosplit_solo_messages(monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
     monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
@@ -338,6 +343,7 @@ def test_autosacrifice_requires_visibility(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
     monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
@@ -375,6 +381,7 @@ def test_autosacrifice_skips_no_sac_corpse(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
     monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
@@ -415,6 +422,7 @@ def test_autosacrifice_extracts_corpse(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
     monkeypatch.setattr("mud.combat.engine.check_dodge", lambda *args, **kwargs: False)
@@ -612,6 +620,7 @@ def test_player_kill_clears_pk_flags(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
 
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
@@ -651,6 +660,7 @@ def test_player_death_dismisses_pet(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
 
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
@@ -703,6 +713,7 @@ def test_player_kill_resets_state(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(xp_module, "xp_compute", lambda *args, **kwargs: 0)
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 1)
     monkeypatch.setattr("mud.utils.rng_mm.number_range", lambda low, high: high)
+    monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)
     monkeypatch.setattr("mud.combat.engine.calculate_weapon_damage", lambda *args, **kwargs: 50)
 
     monkeypatch.setattr("mud.combat.engine.check_parry", lambda *args, **kwargs: False)
@@ -730,6 +741,7 @@ def test_player_kill_resets_state(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_corpse_looting_owner_can_loot_own_corpse(movable_char_factory) -> None:
     """Test that owner can loot their own corpse (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
+
     pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
@@ -747,6 +759,7 @@ def test_corpse_looting_owner_can_loot_own_corpse(movable_char_factory) -> None:
 def test_corpse_looting_non_owner_cannot_loot(movable_char_factory) -> None:
     """Test that non-owner cannot loot someone else's corpse (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
+
     pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
@@ -769,6 +782,7 @@ def test_corpse_looting_non_owner_cannot_loot(movable_char_factory) -> None:
 def test_corpse_looting_group_member_can_loot(movable_char_factory) -> None:
     """Test that group members can loot each other's corpses (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
+
     pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
@@ -790,6 +804,7 @@ def test_corpse_looting_group_member_can_loot(movable_char_factory) -> None:
 def test_corpse_looting_canloot_flag_allows_looting(movable_char_factory) -> None:
     """Test that PLR_CANLOOT flag allows anyone to loot (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
+
     pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
@@ -810,6 +825,7 @@ def test_corpse_looting_canloot_flag_allows_looting(movable_char_factory) -> Non
 def test_corpse_looting_no_owner_allows_looting(movable_char_factory) -> None:
     """Test that corpses without owner can be looted by anyone (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
+
     pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
@@ -827,6 +843,7 @@ def test_corpse_looting_no_owner_allows_looting(movable_char_factory) -> None:
 def test_corpse_looting_npc_corpse_always_lootable(movable_char_factory) -> None:
     """Test that NPC corpses are always lootable (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
+
     pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
@@ -844,6 +861,7 @@ def test_corpse_looting_npc_corpse_always_lootable(movable_char_factory) -> None
 def test_corpse_looting_immortal_can_loot_anything(movable_char_factory) -> None:
     """Test that immortals can loot any corpse (ROM src/act_obj.c:61-89)."""
     from mud.commands.inventory import do_get
+
     pass  # ObjIndex and Object already imported at module level
 
     _ensure_world()
