@@ -355,8 +355,11 @@ class TestPositionChangeBroadcastPers:
                 f"POS_DEAD broadcast not delivered: {observer.messages!r}"
             )
             msg = observer.messages[-1]
-            # (a) PERS render — invisible victim → "someone".
-            assert "someone is DEAD!!" in msg, (
+            # (a) PERS render — invisible victim → "someone" (INV-027), then ROM
+            # act_new's `{`-kludge caps buf[2] (the char after the {R colour
+            # code) → "Someone" (FIGHT-031 / src/comm.c:2376-2379). The mask
+            # still holds; only the first letter is upper-cased.
+            assert "Someone is DEAD!!" in msg, (
                 f"PERS render missing for invisible victim: {msg!r}"
             )
             assert "Aliceee" not in msg, (

@@ -159,8 +159,10 @@ def test_weapon_flaming_fire_damage(mock_apply_damage, mock_number_range, attack
     # Should apply fire damage
     mock_apply_damage.assert_called_once_with(attacker, victim, 3, DamageType.FIRE, show=False)
 
-    # Should include fire message
-    assert "test weapon sears your flesh." in messages
+    # Should include fire message. FIGHT-031: ROM act_new (src/comm.c:2376)
+    # caps the first char of the TO_CHAR line "$p sears your flesh."
+    # (src/fight.c:655), so a lowercase weapon name renders capitalized.
+    assert "Test weapon sears your flesh." in messages
 
 
 @patch("mud.combat.engine.rng_mm.number_range")
@@ -226,10 +228,12 @@ def test_multiple_weapon_flags(mock_apply_damage, mock_number_range, mock_saves_
 
     messages = process_weapon_special_attacks(attacker, victim)
 
-    # Should trigger all three effects
+    # Should trigger all three effects. The poison ("You feel...") and vampiric
+    # ("You feel...") lines are already capital (no-op); FIGHT-031 caps the
+    # flaming TO_CHAR line whose weapon name ($p) leads (src/fight.c:655).
     assert "You feel poison coursing through your veins." in messages
     assert "You feel test weapon drawing your life away." in messages
-    assert "test weapon sears your flesh." in messages
+    assert "Test weapon sears your flesh." in messages
 
     # Should call apply_damage twice (vampiric + flaming)
     assert mock_apply_damage.call_count == 2

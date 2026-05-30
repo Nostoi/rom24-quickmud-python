@@ -44,6 +44,7 @@ from mud.models.social import expand_placeholders
 from mud.models.weapon_table import weapon_skill_name_for_type
 from mud.skills import check_improve
 from mud.utils import rng_mm
+from mud.utils.act import capitalize_act_line
 from mud.wiznet import WiznetFlag, wiznet
 from mud.world.vision import can_see_object
 
@@ -861,15 +862,21 @@ def _broadcast_pos_change(victim: Character, template: str, **extra: object) -> 
     for listener in list(getattr(room, "people", [])):
         if listener is victim:
             continue
-        message = template.format(name=pers(victim, listener), **extra)
+        # ROM src/comm.c:2376-2379 — act_new caps the first visible char of the
+        # per-recipient buffer (INV-029 / FIGHT-031). PERS can render a different
+        # name token per listener ("the orc" vs "someone"), so each rendered line
+        # is capitalized individually, exactly as ROM caps each recipient's buf.
+        message = capitalize_act_line(template.format(name=pers(victim, listener), **extra))
         writer = getattr(listener, "connection", None)
         if writer is not None:
             asyncio.create_task(_send(listener, message))
         if hasattr(listener, "messages"):
             listener.messages.append(message)
     # ROM src/fight.c:837-861 / src/comm.c:2384 — position-transition act()
-    # calls have no MOBtrigger wrap; TRIG_ACT dispatches per recipient.
-    canonical = template.format(name=getattr(victim, "name", "Someone"), **extra)
+    # calls have no MOBtrigger wrap; TRIG_ACT dispatches per recipient against
+    # the already-capitalized buffer (the cap at :2376 precedes the trigger
+    # dispatch at :2384, so the mob ACT-prog matches the capped line).
+    canonical = capitalize_act_line(template.format(name=getattr(victim, "name", "Someone"), **extra))
     mp_act_trigger_room(canonical, room, victim, exclude=victim)
 
 
@@ -1561,7 +1568,9 @@ def check_shield_block(attacker: Character, victim: Character) -> bool:
     attacker_name = getattr(attacker, "name", "Someone")
     victim_name = getattr(victim, "name", "Someone")
     _push_message(victim, f"You block {attacker_name}'s attack with your shield.")
-    _push_message(attacker, f"{victim_name} blocks your attack with a shield.")
+    # ROM src/fight.c:1345 act("$N blocks your attack with a shield.", TO_CHAR) —
+    # the defender's name leads, so ROM act_new caps it (src/comm.c:2376, FIGHT-031).
+    _push_message(attacker, capitalize_act_line(f"{victim_name} blocks your attack with a shield."))
     check_improve(victim, "shield block", True, 6)
     return True
 
@@ -1602,7 +1611,9 @@ def check_parry(attacker: Character, victim: Character) -> bool:
     attacker_name = getattr(attacker, "name", "Someone")
     victim_name = getattr(victim, "name", "Someone")
     _push_message(victim, f"You parry {attacker_name}'s attack.")
-    _push_message(attacker, f"{victim_name} parries your attack.")
+    # ROM src/fight.c:1318 act("$N parries your attack.", TO_CHAR) — defender name
+    # leads → ROM act_new caps (src/comm.c:2376, FIGHT-031).
+    _push_message(attacker, capitalize_act_line(f"{victim_name} parries your attack."))
     check_improve(victim, "parry", True, 6)
     return True
 
@@ -1635,7 +1646,9 @@ def check_dodge(attacker: Character, victim: Character) -> bool:
     attacker_name = getattr(attacker, "name", "Someone")
     victim_name = getattr(victim, "name", "Someone")
     _push_message(victim, f"You dodge {attacker_name}'s attack.")
-    _push_message(attacker, f"{victim_name} dodges your attack.")
+    # ROM src/fight.c:1370 act("$N dodges your attack.", TO_CHAR) — defender name
+    # leads → ROM act_new caps (src/comm.c:2376, FIGHT-031).
+    _push_message(attacker, capitalize_act_line(f"{victim_name} dodges your attack."))
     check_improve(victim, "dodge", True, 6)
     return True
 
@@ -1841,7 +1854,10 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     # WEAPON_FLAMING - ROM src/fight.c L651-659
     if weapon_flags & WEAPON_FLAMING:
         dam = rng_mm.number_range(1, weapon_level // 4 + 1)
-        _push_message(victim, f"{weapon_name} sears your flesh.")
+        # ROM src/fight.c:655 act("$p sears your flesh.", victim, wield, NULL,
+        # TO_CHAR) — the weapon ($p) leads, so ROM act_new caps the first char
+        # (src/comm.c:2376, FIGHT-031).
+        _push_message(victim, capitalize_act_line(f"{weapon_name} sears your flesh."))
         if room is not None:
             # mirroring ROM src/fight.c:654 — `act("$n is burned by
             # $p.", victim, wield, NULL, TO_ROOM)`. PERS on $n
@@ -1853,7 +1869,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
             )
         fire_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.FIRE, show=False)
-        messages.append(f"{weapon_name} sears your flesh.")
+        messages.append(capitalize_act_line(f"{weapon_name} sears your flesh."))
 
     # WEAPON_FROST - ROM src/fight.c L661-670
     if weapon_flags & WEAPON_FROST:
