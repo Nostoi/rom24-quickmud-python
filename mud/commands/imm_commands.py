@@ -280,9 +280,14 @@ def do_transfer(char: Character, args: str) -> str:
     _act_room(location, victim, "$n arrives from a puff of smoke.")
 
     if char is not victim:
-        # Notify victim
-        char_name = getattr(char, "name", "Someone")
-        _send_to_char(victim, f"{char_name} has transferred you.")
+        # WIZ-048 / INV-027: ROM notifies the moved victim via
+        # act("$n has transferred you.", ch, NULL, victim, TO_VICT) — $n is the
+        # immortal (ch), rendered through PERS(ch, victim) → "someone" when the
+        # victim cannot can_see the (invisible/wiz-invis) immortal. Mirroring
+        # ROM src/act_wiz.c:874-875.
+        from mud.world.vision import pers  # function-local: avoid import cycle
+
+        _send_to_char(victim, f"{pers(char, victim)} has transferred you.")
 
     # Make victim look
     from mud.commands.inspection import do_look

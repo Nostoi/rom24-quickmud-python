@@ -6,10 +6,10 @@ import pytest
 
 from mud import registry as global_registry
 from mud.commands.imm_admin import do_snoop
-from mud.commands.imm_commands import do_goto
+from mud.commands.imm_commands import do_goto, do_transfer
 from mud.commands.imm_server import do_protect, do_violate
 from mud.models.character import Character, character_registry
-from mud.models.constants import ActFlag, CommFlag
+from mud.models.constants import ActFlag, AffectFlag, CommFlag, Sector
 from mud.models.room import Room
 from mud.registry import room_registry
 from mud.world import create_test_character
@@ -1792,3 +1792,52 @@ def test_violate_bamf_visible_to_all_when_not_wizinvis() -> None:
     do_violate(admin, str(target.vnum))
 
     assert any("swirling mist" in m for m in witness.messages)
+
+
+def test_transfer_masks_invisible_immortal_name_for_nonseeing_victim() -> None:
+    # mirrors ROM src/act_wiz.c:874-875 — do_transfer notifies the moved victim
+    # via act("$n has transferred you.", ch, NULL, victim, TO_VICT); $n is the
+    # IMMORTAL (ch), rendered through PERS(ch, victim) -> "someone" when the
+    # victim cannot can_see the (invisible/wiz-invis) immortal. WIZ-048.
+    # NOTE: ROM act() also upper-cases buf[0] (src/comm.c:2376-2379) so the real
+    # ROM render is "Someone has transferred you." (capital S). The Python
+    # act-family does NOT replicate buf[0] capitalization — a separate,
+    # cross-cutting divergence (ACT-FIRST-LETTER-CAP, OPEN; see
+    # docs/parity/ACT_WIZ_C_AUDIT.md). We assert lowercase "someone" to match the
+    # current Python convention + the WIZ-047 sibling; both assertions move in
+    # lockstep when ACT-FIRST-LETTER-CAP is closed.
+    src = _room(9150, name="Wizard Hall")
+    src.sector_type = int(Sector.INSIDE)  # INSIDE is never dark -> only invis governs visibility
+    dst = _room(9151, name="Target Hall")
+    dst.sector_type = int(Sector.INSIDE)
+
+    ghost = _imm("Spectre", src.vnum, trust=60)
+    ghost.add_affect(AffectFlag.INVISIBLE)
+
+    victim = _imm("Pawn", dst.vnum, trust=5)  # no detect-invis -> cannot see ghost
+    victim.messages.clear()
+
+    do_transfer(ghost, "Pawn")  # no location arg -> location = ghost.room
+
+    assert any("someone has transferred you." in m for m in victim.messages)
+    assert not any("Spectre has transferred you." in m for m in victim.messages)
+
+
+def test_transfer_shows_immortal_name_to_seeing_victim() -> None:
+    # Regression guard: a victim with detect-invis CAN see the invisible
+    # immortal, so PERS(ch, victim) returns the real name. ROM src/act_wiz.c:874-875.
+    src = _room(9152, name="Wizard Hall")
+    src.sector_type = int(Sector.INSIDE)
+    dst = _room(9153, name="Target Hall")
+    dst.sector_type = int(Sector.INSIDE)
+
+    ghost = _imm("Wraithlord", src.vnum, trust=60)
+    ghost.add_affect(AffectFlag.INVISIBLE)
+
+    victim = _imm("Seer", dst.vnum, trust=5)
+    victim.add_affect(AffectFlag.DETECT_INVIS)  # can_see -> real name
+    victim.messages.clear()
+
+    do_transfer(ghost, "Seer")
+
+    assert any("Wraithlord has transferred you." in m for m in victim.messages)

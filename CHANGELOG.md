@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.36]
+
+### Fixed
+- **`WIZ-048` — `do_transfer` leaked the transferring immortal's name to the moved victim, the TO_VICT sibling of WIZ-047.** After moving the victim, ROM `do_transfer` (`src/act_wiz.c:874-875`) notifies it via `act("$n has transferred you.", ch, NULL, victim, TO_VICT)` — `$n` is the **immortal** (`ch`), rendered through `PERS(ch, victim)` → `"someone has transferred you."` when the victim cannot `can_see` the (invisible / wiz-invis) immortal. Python (`mud/commands/imm_commands.py:282-290`) used the immortal's real name unconditionally, leaking a wiz-invis immortal's identity to every transferred victim. Now the notify line renders `$n` per-recipient via `mud/world/vision.py:pers(char, victim)` (the same helper the WIZ-047 / `act_format._pers` enforcement uses). Distinct from WIZ-047 (TO_ROOM mushroom-cloud/puff-of-smoke, `$n`=victim); this is the TO_VICT notify, `$n`=ch. `gitnexus_impact` = LOW (`do_transfer` only reachable via `do_teleport`). Regression: `tests/integration/test_act_wiz_command_parity.py::test_transfer_masks_invisible_immortal_name_for_nonseeing_victim` + `::test_transfer_shows_immortal_name_to_seeing_victim`. While closing this, a **third** sibling in the same family surfaced and is filed OPEN as **WIZ-049**: `do_force`'s four TO_VICT `"$n forces you to '<cmd>'."` lines (`src/act_wiz.c:4205,4228,4251,4274,4316`, `$n`=the forcer) likewise render the raw name (`imm_commands.py:327,342,357,387`), leaking a wiz-invis immortal's identity to forced victims. Also noted: ROM `act()` upper-cases the first letter of every rendered line (`src/comm.c:2376-2379`), so the true ROM render is `"Someone …"` (capital S); the Python act-family does not replicate this `buf[0]` capitalization — a cross-cutting divergence (ACT-FIRST-LETTER-CAP) filed in `docs/parity/ACT_WIZ_C_AUDIT.md`, to be promoted to INV-028. The WIZ-047/048 tests assert lowercase `"someone"` to match current behavior and move in lockstep when that is closed. See `docs/parity/ACT_WIZ_C_AUDIT.md` (WIZ-048 ✅ FIXED, WIZ-049 ❌ OPEN) and `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-027.
+
 ## [2.11.35]
 
 ### Fixed
