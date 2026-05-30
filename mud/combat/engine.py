@@ -1876,7 +1876,9 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
     # WEAPON_FROST - ROM src/fight.c L661-670
     if weapon_flags & WEAPON_FROST:
         dam = rng_mm.number_range(1, weapon_level // 6 + 2)
-        _push_message(victim, "The cold touch surrounds you with ice.")
+        # ROM src/fight.c:664 act("The cold touch of $p surrounds you with ice.",
+        # victim, wield, NULL, TO_CHAR) — $p is the weapon name. FIGHT-033.
+        _push_message(victim, capitalize_act_line(f"The cold touch of {weapon_name} surrounds you with ice."))
         if room is not None:
             # mirroring ROM src/fight.c:663 — `act("$p freezes $n.",
             # victim, wield, NULL, TO_ROOM)`. ROM places the weapon
@@ -1891,12 +1893,14 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
             )
         cold_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.COLD, show=False)
-        messages.append("The cold touch surrounds you with ice.")
+        messages.append(capitalize_act_line(f"The cold touch of {weapon_name} surrounds you with ice."))
 
     # WEAPON_SHOCKING - ROM src/fight.c L672-681
     if weapon_flags & WEAPON_SHOCKING:
         dam = rng_mm.number_range(1, weapon_level // 5 + 2)
-        _push_message(victim, "You are shocked by the weapon.")
+        # ROM src/fight.c:675 act("You are shocked by $p.", victim, wield, NULL,
+        # TO_CHAR) — $p is the weapon name. FIGHT-033.
+        _push_message(victim, capitalize_act_line(f"You are shocked by {weapon_name}."))
         if room is not None:
             # mirroring ROM src/fight.c:673-674 — `act("$n is struck
             # by lightning from $p.", victim, wield, NULL, TO_ROOM)`.
@@ -1908,6 +1912,6 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
             )
         shock_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.LIGHTNING, show=False)
-        messages.append("You are shocked by the weapon.")
+        messages.append(capitalize_act_line(f"You are shocked by {weapon_name}."))
 
     return messages

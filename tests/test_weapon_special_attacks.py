@@ -184,8 +184,8 @@ def test_weapon_frost_cold_damage(mock_apply_damage, mock_number_range, attacker
     # Should apply cold damage
     mock_apply_damage.assert_called_once_with(attacker, victim, 5, DamageType.COLD, show=False)
 
-    # Should include cold message
-    assert "The cold touch surrounds you with ice." in messages
+    # Should include cold message — ROM src/fight.c:664 "The cold touch of $p surrounds you with ice."
+    assert "The cold touch of test weapon surrounds you with ice." in messages
 
 
 @patch("mud.combat.engine.rng_mm.number_range")
@@ -207,8 +207,8 @@ def test_weapon_shocking_lightning_damage(mock_apply_damage, mock_number_range, 
     # Should apply lightning damage
     mock_apply_damage.assert_called_once_with(attacker, victim, 6, DamageType.LIGHTNING, show=False)
 
-    # Should include lightning message
-    assert "You are shocked by the weapon." in messages
+    # Should include lightning message — ROM src/fight.c:675 "You are shocked by $p."
+    assert "You are shocked by test weapon." in messages
 
 
 @patch("mud.combat.engine.saves_spell")
