@@ -83,14 +83,29 @@ def test_buy_pet_delivers_enjoy_line_once_to_connected_pc() -> None:
             # value, let any fire-and-forget push tasks fire, then drain the mailbox.
             response = do_buy(buyer, "companion")
             assert response == "Enjoy your pet."
+            for _ in range(5):
+                await asyncio.sleep(0)
+            follow_before_drain = list(conn.sent)
+            mailbox_before_drain = list(buyer.messages)
             await send_to_char(buyer, response)
             for _ in range(5):
                 await asyncio.sleep(0)
             while buyer.messages:
                 await send_to_char(buyer, buyer.messages.pop(0))
-            return conn.sent
+            return follow_before_drain, mailbox_before_drain, conn.sent
 
-        sent = asyncio.run(scenario())
+        follow_before_drain, mailbox_before_drain, sent = asyncio.run(scenario())
+
+        follow_lines = [s for s in follow_before_drain if "now follows you" in s]
+        assert len(follow_lines) == 1, (
+            "`add_follower` must deliver `$n now follows you.` through the connected "
+            f"PC's immediate channel before mailbox drain (ROM src/act_comm.c:1602-1603); "
+            f"sent before drain={follow_before_drain!r}, mailbox before drain={mailbox_before_drain!r}"
+        )
+        assert not any("now follows you" in s for s in mailbox_before_drain), (
+            "`add_follower` must not strand `$n now follows you.` in a connected PC mailbox "
+            f"(INV-001 wrong-channel cousin); mailbox before drain={mailbox_before_drain!r}"
+        )
 
         enjoy = [s for s in sent if "Enjoy your pet." in s]
         assert len(enjoy) == 1, (

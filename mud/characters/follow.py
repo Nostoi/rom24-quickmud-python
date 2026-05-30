@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.constants import AffectFlag
+from mud.utils.messaging import push_message
 
 if TYPE_CHECKING:  # pragma: no cover - import for type checkers only
     from mud.models.character import Character
 
 
-def _display_name(character: "Character" | None) -> str:
+def _display_name(character: Character | None) -> str:
     if character is None:
         return "Someone"
     name = getattr(character, "name", None)
@@ -20,7 +21,7 @@ def _display_name(character: "Character" | None) -> str:
     return "Someone"
 
 
-def add_follower(follower: "Character", master: "Character") -> None:
+def add_follower(follower: Character, master: Character) -> None:
     """Attach ``follower`` to ``master`` mirroring ROM ``add_follower``."""
     # mirroring ROM src/act_comm.c:1591-1607
     from mud.world.vision import can_see_character
@@ -35,17 +36,15 @@ def add_follower(follower: "Character", master: "Character") -> None:
 
     # ROM lines 1602-1603: TO_VICT gated on can_see(master, ch).
     if can_see_character(master, follower):
-        master_messages = getattr(master, "messages", None)
-        if isinstance(master_messages, list):
-            master_messages.append(f"{_display_name(follower)} now follows you.")
+        # mirroring ROM src/act_comm.c:1602-1603 — act(..., TO_VICT)
+        # writes immediately to the descriptor; mailbox is fallback only.
+        push_message(master, f"{_display_name(follower)} now follows you.")
 
     # ROM line 1605: TO_CHAR is unconditional.
-    follower_messages = getattr(follower, "messages", None)
-    if isinstance(follower_messages, list):
-        follower_messages.append(f"You now follow {_display_name(master)}.")
+    push_message(follower, f"You now follow {_display_name(master)}.")
 
 
-def stop_follower(follower: "Character") -> None:
+def stop_follower(follower: Character) -> None:
     """Detach ``follower`` from its master and clear charm effects."""
     # mirroring ROM src/act_comm.c:1612-1636
     from mud.world.vision import can_see_character
@@ -77,7 +76,7 @@ def stop_follower(follower: "Character") -> None:
     follower.leader = None
 
 
-def die_follower(char: "Character") -> None:
+def die_follower(char: Character) -> None:
     """Detach a dying character from its group and followers.
 
     Mirrors ROM ``src/act_comm.c:1658-1680``:

@@ -1,17 +1,10 @@
 """Shop command handlers."""
 
-from mud.math.c_compat import c_div, c_mod
 from mud.characters.follow import add_follower
 from mud.handler import deduct_cost
+from mud.math.c_compat import c_div, c_mod
 from mud.models.character import Character
 from mud.models.constants import (
-    ActFlag,
-    AffectFlag,
-    CommFlag,
-    ItemType,
-    LEVEL_IMMORTAL,
-    RoomFlag,
-    WearLocation,
     ITEM_GLOW,
     ITEM_HAD_TIMER,
     ITEM_INVENTORY,
@@ -19,6 +12,13 @@ from mud.models.constants import (
     ITEM_NODROP,
     ITEM_SELL_EXTRACT,
     ITEM_VIS_DEATH,
+    LEVEL_IMMORTAL,
+    ActFlag,
+    AffectFlag,
+    CommFlag,
+    ItemType,
+    RoomFlag,
+    WearLocation,
 )
 from mud.models.object import Object, create_object
 from mud.registry import room_registry, shop_registry
@@ -27,6 +27,7 @@ from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.time import time_info
 from mud.utils import rng_mm
+from mud.utils.messaging import push_message
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
 from mud.world.vision import room_is_dark
 
@@ -537,7 +538,10 @@ def _handle_pet_shop_purchase(char: Character, args: str) -> str:
             # cost ≥ 0. ARITH-110 reclassed N/A (2.9.73).
             discount = (cost // 2) * roll // 100
             cost = max(0, cost - discount)
-            char.messages.append(f"You haggle the price down to {cost} coins.")
+            # INV-001 wrong-channel cousin: ROM src/act_obj.c:2606-2607 sends
+            # this directly to the descriptor, with mailbox fallback only when
+            # disconnected.
+            push_message(char, f"You haggle the price down to {cost} coins.")
             check_improve(char, "haggle", True, 4)
 
     if total_wealth < cost:
@@ -756,7 +760,7 @@ def do_buy(char: Character, args: str) -> str:
         # BUY-003b: level check uses keeper voice (ROM line 2702-2706)
         if hasattr(char, "reply"):
             char.reply = keeper
-        return _keeper_says(keeper, char, f"You can't use $p yet.", obj=selected_obj)
+        return _keeper_says(keeper, char, "You can't use $p yet.", obj=selected_obj)
 
     current_number = int(getattr(char, "carry_number", 0) or 0)
     if current_number + quantity > can_carry_n(char):
@@ -799,8 +803,9 @@ def do_buy(char: Character, args: str) -> str:
             # refunds the player (ROM src/handler.c:2410). Do not floor at 0.
             unit_price = unit_price - discount
             total_cost = unit_price * quantity
-            if hasattr(char, "messages"):
-                char.messages.append("You haggle with the shopkeeper.")
+            # INV-001 wrong-channel cousin: ROM src/act_obj.c:2728 delivers
+            # the TO_CHAR act line immediately.
+            push_message(char, "You haggle with the shopkeeper.")
             check_improve(char, "haggle", True, 4)
 
     # ROM src/act_obj.c:2734-2745 — broadcast `$n buys $p[N].` or `$n buys $p.`
@@ -912,8 +917,9 @@ def do_sell(char: Character, args: str) -> str:
             if buy_price > 0:
                 price = min(price, (95 * buy_price) // 100)
             price = min(price, total_wealth)
-            if hasattr(char, "messages"):
-                char.messages.append("You haggle with the shopkeeper.")
+            # INV-001 wrong-channel cousin: ROM src/act_obj.c:2929 sends this
+            # directly to the descriptor.
+            push_message(char, "You haggle with the shopkeeper.")
             check_improve(char, "haggle", True, 4)
 
     room = getattr(char, "room", None)
