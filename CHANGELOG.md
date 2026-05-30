@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **`VISION-002` (dark-gate same-room divergence) — ✅ FIXED.** ROM `can_see` (`src/handler.c:2638`) checks `room_is_dark(ch->in_room)` unconditionally — no same-room guard. Python's dark gate had an extra `observer_room is target_room` conjunction that let a character in a dark room see targets in lit rooms (cross-room), diverging from ROM. Fixed by removing the same-room check so the dark gate fires on the observer's room alone. Test: `tests/integration/test_vision_002_dark_gate.py` (5).
+
 ## [2.11.44]
 
 ### Fixed

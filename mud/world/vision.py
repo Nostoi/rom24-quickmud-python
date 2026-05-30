@@ -185,7 +185,10 @@ def can_see_character(observer: Character, target: Character | None) -> bool:
     if observer.has_affect(AffectFlag.BLIND):
         return False
 
-    if observer_room is target_room and room_is_dark(observer_room):
+    # mirroring ROM src/handler.c:2638 — room_is_dark(ch->in_room) fires
+    # unconditionally; no same-room guard.  An observer in a dark room cannot
+    # see anyone (including cross-room targets) without infrared/dark-vision.
+    if room_is_dark(observer_room):
         if not (
             _has_holylight(observer)
             or observer.has_affect(AffectFlag.INFRARED)
