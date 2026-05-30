@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **CAST-007 — `do_cast` now enforces PK safety gates (`is_safe`/`is_safe_spell`, `check_killer`) and the AFF_CHARM master gate for offensive spell targets.** ROM `src/magic.c:395-413` (`TAR_CHAR_OFFENSIVE`) and `:481-495` (`TAR_OBJ_CHAR_OFF`) call `is_safe`/`is_safe_spell` and `check_killer` for non-NPC casters before the `AFF_CHARM` master gate; all three were missing from the Python `do_cast` path. Fixed: after target resolution and before mana deduction, (1) `is_safe`/`is_safe_spell` blocks the cast with "Not on that target." for PC casters targeting a safe room / shopkeeper / healer / etc. (self-target exemption mirrors ROM); (2) `check_killer` flags clan-member PCs as KILLER for attacking innocent PCs, and strips charm on charmed PCs whose resolved victim is a non-NPC (mirroring ROM `stop_follower` side effect); (3) the AFF_CHARM master gate blocks any caster from targeting their own master ("You can't do that on your own follower."). Object targets bypass all three gates per ROM. Defensive spells (`TAR_CHAR_DEFENSIVE` / `TAR_OBJ_CHAR_DEF`) have no PK gates per ROM. Regression: `tests/integration/test_do_cast_pk_gates.py` (17 tests).
+
 ### Changed
 - **Group-command lint cleanup (2.11.51).** Removed two stale unused imports from `mud/commands/group_commands.py` (`Position` and the inner `character_registry` import in `do_group`) so the module passes targeted Ruff checks without changing command behavior. Verification: `ruff check mud/commands/group_commands.py`; `pytest -n0 tests/integration/test_group_combat.py tests/integration/test_do_group_notification.py tests/integration/test_do_follow_master_notification.py tests/integration/test_act_comm_gaps.py -q`.
 

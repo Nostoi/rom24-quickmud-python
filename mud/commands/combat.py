@@ -3,6 +3,7 @@ from mud import mobprog
 from mud.characters import is_clan_member, is_same_group
 from mud.combat import multi_hit
 from mud.combat.engine import apply_damage, check_killer, get_wielded_weapon, stop_fighting
+from mud.combat.safety import is_safe, is_safe_spell
 from mud.config import get_pulse_violence
 from mud.math.c_compat import c_div
 from mud.models.character import Character
@@ -925,6 +926,33 @@ def do_cast(char: Character, args: str) -> str:
     else:
         # TAR_CHAR_SELF / TAR_IGNORE — caster is the operand.
         target = char
+
+    # ROM src/magic.c:395-413 (TAR_CHAR_OFFENSIVE) and :481-495
+    # (TAR_OBJ_CHAR_OFF). Offensive PK gates: is_safe / is_safe_spell,
+    # check_killer, and the AFF_CHARM master gate.  These gates apply only
+    # when a character target was resolved (target_obj is None).
+    if skill_target_type in {"victim", "offensive_character_or_object"} and target_obj is None:
+        if not getattr(char, "is_npc", False):
+            # ROM src/magic.c:400-404 (TAR_CHAR_OFFENSIVE) uses is_safe;
+            # src/magic.c:484-488 (TAR_OBJ_CHAR_OFF) uses is_safe_spell.
+            if skill_target_type == "victim":
+                if is_safe(char, target) and target is not char:
+                    return "Not on that target."
+            else:
+                if is_safe_spell(char, target, area=False) and target is not char:
+                    return "Not on that target."
+            # mirroring ROM src/magic.c:406 and :490 (check_killer after
+            # safety passes).
+            check_killer(char, target)
+
+        # ROM src/magic.c:408-412 (TAR_CHAR_OFFENSIVE) and :490-495
+        # (TAR_OBJ_CHAR_OFF). Charm gate: cannot cast offensively at master.
+        if (
+            hasattr(char, "has_affect")
+            and char.has_affect(AffectFlag.CHARM)
+            and getattr(char, "master", None) is target
+        ):
+            return "You can't do that on your own follower."
 
     char.mana -= mana_cost
     skill_registry._apply_wait_state(char, get_pulse_violence())
