@@ -81,7 +81,7 @@ def test_shout_003_invisible_shouter_renders_as_someone_to_listener() -> None:
     do_shout(shouter, "boo")
     delivered = [_strip(m) for m in listener.messages if "shouts" in m]
     assert delivered, f"listener received no shout; messages={listener.messages}"
-    assert any("someone shouts 'boo'" in m for m in delivered), (
+    assert any("Someone shouts 'boo'" in m for m in delivered), (
         f"PERS missing for invisible shouter; got {delivered!r}"
     )
     assert not any("Shoutghost" in m for m in delivered), (
@@ -106,7 +106,7 @@ def test_yell_001_invisible_yeller_renders_as_someone_to_listener() -> None:
     do_yell(yeller, "boo")
     delivered = [_strip(m) for m in listener.messages if "yells" in m]
     assert delivered, f"listener received no yell; messages={listener.messages}"
-    assert any("someone yells 'boo'" in m for m in delivered), (
+    assert any("Someone yells 'boo'" in m for m in delivered), (
         f"PERS missing for invisible yeller; got {delivered!r}"
     )
     assert not any("Yellghost" in m for m in delivered), (

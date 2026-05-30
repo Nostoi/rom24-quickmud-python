@@ -16,7 +16,7 @@ implementation surfaced six divergences:
 - TELL-005 — Both lines wrapped with `{k...{K...{k...{x` charcoal
   colour codes. Python emits no codes.
 - TELL-006 — Buffered tells (linkdead/AFK/note-writing) call
-  `buf[0] = UPPER(buf[0])` to capitalize. (Deferred — minor.)
+  `buf[0] = UPPER(buf[0])` to capitalize. (✅ FIXED 2.11.42 — ACT-CAP-003.)
 
 ROM C reference:
     act ("{kYou tell $N '{K$t{k'{x", ch, argument, victim, TO_CHAR);
@@ -98,7 +98,7 @@ def test_tell_003_invisible_sender_renders_as_someone_to_target() -> None:
     do_tell(sender, f"{target.name} boo")
     delivered = [_strip(m) for m in target.messages if "tells you" in m]
     assert delivered, f"target received no tell; messages={target.messages}"
-    assert any("someone tells you 'boo'" in m for m in delivered), (
+    assert any("Someone tells you 'boo'" in m for m in delivered), (
         f"PERS missing for invisible sender; got {delivered!r}"
     )
     assert not any("Tellghost" in m for m in delivered), (

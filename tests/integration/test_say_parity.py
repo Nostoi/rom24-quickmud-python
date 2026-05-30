@@ -184,10 +184,11 @@ def test_say_002_invisible_speaker_renders_as_someone_to_unaided_listener() -> N
 
     process_command(speaker, "say boo")
 
-    # Listener must see "someone says 'boo'", NOT "Sayghost says 'boo'".
+    # Listener must see "Someone says 'boo'", NOT "Sayghost says 'boo'".
+    # ACT-CAP-003: capitalize_act_line caps the '{6' prefix → 'S' per ROM act_new.
     delivered = [_strip_rom_colors(m) for m in listener.messages if "says" in m and "boo" in m]
     assert delivered, f"listener received no say broadcast; messages={listener.messages}"
-    assert any("someone says 'boo'" in m for m in delivered), (
+    assert any("Someone says 'boo'" in m for m in delivered), (
         f"PERS substitution missing for invisible speaker; got {delivered!r}"
     )
     assert not any("Sayghost" in m for m in delivered), (

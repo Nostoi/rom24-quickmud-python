@@ -321,23 +321,25 @@ the cross-file work is tracked here.
     there — no mid-sentence concatenation exists. Test
     `tests/integration/test_inv029_act_first_letter_cap.py`; full suite 5002
     passed / 0 failed.
-    - **Tracked cousins (direct-f-string `act()` sites that bypass `act_format`,
-      same INV-001-idiom "enforce-the-chokepoint, track-the-cousins" pattern):**
-      the **combat** sites are now CLOSED — `render_for` (dam_message, FIGHT-025)
-      and `_broadcast_pos_change` + parry/dodge/shield-block + flaming victim
-      (FIGHT-031, 2.11.39, `tests/integration/test_fight_031_combat_act_capitalization.py`);
-      and **`mud/net/protocol.py:broadcast_room`** is now CLOSED (ACT-CAP-001,
-      2.11.40, `tests/integration/test_act_cap_001_broadcast_room.py`).
-      **Still uncapped:** `do_say` / `do_tell` (`mud/commands/communication.py`
-      build `"{6$n says…"` / `"{k$n tells you…"` f-strings); `broadcast_global`
-      (deferred — mixed channels-vs-weather); and the **ACT-CAP-002** parallel
-      primitives (`Room.broadcast`, `game_loop._message_room`, and the TO_ALL
-      caster legs in object-spell handlers). ROM caps these too; close each by
-      routing through `capitalize_act_line` with its own failing-first test.
-      Also: the wiznet
-      `WIZ_PREFIX` `"{Z--> "` path caps the inner message before the prefix is
-      prepended (Python) vs ROM capping `buf[2]`=`-` (a no-op) — a minor
-      divergence in the prefix-on case only; no test exercises it.
+- **Tracked cousins (direct-f-string `act()` sites that bypass `act_format`,
+       same INV-001-idiom "enforce-the-chokepoint, track-the-cousins" pattern):**
+       the **combat** sites are now CLOSED — `render_for` (dam_message, FIGHT-025)
+       and `_broadcast_pos_change` + parry/dodge/shield-block + flaming victim
+       (FIGHT-031, 2.11.39, `tests/integration/test_fight_031_combat_act_capitalization.py`);
+       and **`mud/net/protocol.py:broadcast_room`** is now CLOSED (ACT-CAP-001,
+       2.11.40, `tests/integration/test_act_cap_001_broadcast_room.py`);
+       and **`Room.broadcast` + `_message_room` + TO_ALL caster legs** are now CLOSED
+       (ACT-CAP-002, 2.11.41, `tests/integration/test_act_cap_002_room_broadcast.py`);
+       and **`do_say` / `do_tell` / `do_shout` / `do_yell` / `do_emote`** are now
+       CLOSED (ACT-CAP-003, 2.11.42, `tests/integration/test_act_cap_003_communication_capitalize.py`);
+       and **`broadcast_global` channel callers** are now CLOSED (ACT-CAP-004, 2.11.43,
+       `tests/integration/test_act_cap_004_broadcast_global_capitalize.py`).
+       **Still uncapped:** the `broadcast_global` **weather** path
+       (`mud/game_loop.py:weather_tick` / `time_tick`) is correctly NOT capped — ROM
+       delivers weather via `send_to_char` (no `act_new` cap). Also: the wiznet
+       `WIZ_PREFIX` `"{Z--> "` path caps the inner message before the prefix is
+       prepended (Python) vs ROM capping `buf[2]`=`-` (a no-op) — a minor
+       divergence in the prefix-on case only; no test exercises it.
 
 <details><summary>Original (incorrect) framing — retained for the audit trail</summary>
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-
 from typing import TYPE_CHECKING, cast
 
 from mud import mobprog
@@ -9,13 +8,13 @@ from mud.characters import is_clan_member, is_same_clan
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
 from mud.net.protocol import broadcast_global, broadcast_room, send_to_char
-from mud.mobprog import mp_speech_trigger
+from mud.utils.act import capitalize_act_line
 
 if TYPE_CHECKING:
     from mud.net.session import Session
 
 
-def _get_session(char: Character) -> "Session | None":
+def _get_session(char: Character) -> Session | None:
     """Return the active session backing *char* when connected."""
 
     desc = getattr(char, "desc", None)
@@ -80,7 +79,7 @@ def _handle_buffered_tell(sender: Character, target: Character, message: str) ->
     from mud.world.vision import pers
 
     sender_name = pers(sender, target)
-    formatted = f"{{k{sender_name} tells you '{{K{message}{{k'{{x"
+    formatted = capitalize_act_line(f"{{k{sender_name} tells you '{{K{message}{{k'{{x")
 
     if _is_player_linkdead(target):
         _queue_personal_message(target, formatted)
@@ -159,7 +158,7 @@ def do_say(char: Character, args: str) -> str:
             if listener is char:
                 continue
             speaker_name = pers(char, listener)
-            per_message = f"{{6{speaker_name} says '{{7{args}{{6'{{x"
+            per_message = capitalize_act_line(f"{{6{speaker_name} says '{{7{args}{{6'{{x")
             writer = getattr(listener, "connection", None)
             if writer is not None:
                 asyncio.create_task(send_to_char(listener, per_message))
@@ -177,7 +176,7 @@ def do_say(char: Character, args: str) -> str:
                 if getattr(mob, "position", default_pos) != default_pos:
                     continue
                 mobprog.mp_speech_trigger(args, mob, char)
-    return f"{{6You say '{{7{args}{{6'{{x"
+    return capitalize_act_line(f"{{6You say '{{7{args}{{6'{{x")
 
 
 def do_tell(char: Character, args: str) -> str:
@@ -238,7 +237,7 @@ def do_tell(char: Character, args: str) -> str:
     from mud.world.vision import pers
 
     target_name = pers(target, char)
-    return f"{{kYou tell {target_name} '{{K{message}{{k'{{x"
+    return capitalize_act_line(f"{{kYou tell {target_name} '{{K{message}{{k'{{x")
 
 
 def do_reply(char: Character, args: str) -> str:
@@ -289,7 +288,7 @@ def do_shout(char: Character, args: str) -> str:
         if "shout" in getattr(victim, "muted_channels", set()):
             continue
         speaker_name = pers(char, victim)
-        per_message = f"{speaker_name} shouts '{cleaned}'"
+        per_message = capitalize_act_line(f"{speaker_name} shouts '{cleaned}'")
         writer = getattr(victim, "connection", None)
         if writer:
             asyncio.create_task(send_to_char(victim, per_message))
@@ -297,7 +296,7 @@ def do_shout(char: Character, args: str) -> str:
             victim.messages.append(per_message)
     # mirroring ROM src/act_comm.c:824 — `act("You shout '$T'", ...)`.
     # No comma between `shout` and the open quote (SHOUT-001).
-    return f"You shout '{cleaned}'"
+    return capitalize_act_line(f"You shout '{cleaned}'")
 
 
 def _check_channel_blockers(char: Character, toggle_flag: CommFlag) -> str | None:
@@ -332,12 +331,12 @@ def do_auction(char: Character, args: str) -> str:
         return True
 
     broadcast_global(
-        f"{{a{char.name} auctions '{{A{cleaned}{{a'{{x",
+        capitalize_act_line(f"{{a{char.name} auctions '{{A{cleaned}{{a'{{x"),
         channel="auction",
         exclude=char,
         should_send=_should_receive,
     )
-    return f"{{aYou auction '{{A{cleaned}{{a'{{x"
+    return capitalize_act_line(f"{{aYou auction '{{A{cleaned}{{a'{{x")
 
 
 def do_gossip(char: Character, args: str) -> str:
@@ -364,12 +363,12 @@ def do_gossip(char: Character, args: str) -> str:
         return True
 
     broadcast_global(
-        f"{{d{char.name} gossips '{{t{cleaned}{{d'{{x",
+        capitalize_act_line(f"{{d{char.name} gossips '{{t{cleaned}{{d'{{x"),
         channel="gossip",
         exclude=char,
         should_send=_should_receive,
     )
-    return f"{{dYou gossip '{{t{cleaned}{{d'{{x"
+    return capitalize_act_line(f"{{dYou gossip '{{t{cleaned}{{d'{{x")
 
 
 def do_grats(char: Character, args: str) -> str:
@@ -396,12 +395,12 @@ def do_grats(char: Character, args: str) -> str:
         return True
 
     broadcast_global(
-        f"{{t{char.name} grats '{cleaned}'{{x",
+        capitalize_act_line(f"{{t{char.name} grats '{cleaned}'{{x"),
         channel="grats",
         exclude=char,
         should_send=_should_receive,
     )
-    return f"{{tYou grats '{cleaned}'{{x"
+    return capitalize_act_line(f"{{tYou grats '{cleaned}'{{x")
 
 
 def do_quote(char: Character, args: str) -> str:
@@ -428,12 +427,12 @@ def do_quote(char: Character, args: str) -> str:
         return True
 
     broadcast_global(
-        f"{{h{char.name} quotes '{{H{cleaned}{{h'{{x",
+        capitalize_act_line(f"{{h{char.name} quotes '{{H{cleaned}{{h'{{x"),
         channel="quote",
         exclude=char,
         should_send=_should_receive,
     )
-    return f"{{hYou quote '{{H{cleaned}{{h'{{x"
+    return capitalize_act_line(f"{{hYou quote '{{H{cleaned}{{h'{{x")
 
 
 def do_question(char: Character, args: str) -> str:
@@ -460,12 +459,12 @@ def do_question(char: Character, args: str) -> str:
         return True
 
     broadcast_global(
-        f"{{q{char.name} questions '{{Q{cleaned}{{q'{{x",
+        capitalize_act_line(f"{{q{char.name} questions '{{Q{cleaned}{{q'{{x"),
         channel="question",
         exclude=char,
         should_send=_should_receive,
     )
-    return f"{{qYou question '{{Q{cleaned}{{q'{{x"
+    return capitalize_act_line(f"{{qYou question '{{Q{cleaned}{{q'{{x")
 
 
 def do_answer(char: Character, args: str) -> str:
@@ -492,12 +491,12 @@ def do_answer(char: Character, args: str) -> str:
         return True
 
     broadcast_global(
-        f"{{f{char.name} answers '{{F{cleaned}{{f'{{x",
+        capitalize_act_line(f"{{f{char.name} answers '{{F{cleaned}{{f'{{x"),
         channel="question",
         exclude=char,
         should_send=_should_receive,
     )
-    return f"{{fYou answer '{{F{cleaned}{{f'{{x"
+    return capitalize_act_line(f"{{fYou answer '{{F{cleaned}{{f'{{x")
 
 
 def do_music(char: Character, args: str) -> str:
@@ -524,12 +523,12 @@ def do_music(char: Character, args: str) -> str:
         return True
 
     broadcast_global(
-        f"{{e{char.name} MUSIC: '{{E{cleaned}{{e'{{x",
+        capitalize_act_line(f"{{e{char.name} MUSIC: '{{E{cleaned}{{e'{{x"),
         channel="music",
         exclude=char,
         should_send=_should_receive,
     )
-    return f"{{eYou MUSIC: '{{E{cleaned}{{e'{{x"
+    return capitalize_act_line(f"{{eYou MUSIC: '{{E{cleaned}{{e'{{x")
 
 
 def do_clantalk(char: Character, args: str) -> str:
@@ -558,9 +557,9 @@ def do_clantalk(char: Character, args: str) -> str:
             return False
         return True
 
-    message = f"{char.name} clans, '{cleaned}'"
+    message = capitalize_act_line(f"{char.name} clans, '{cleaned}'")
     broadcast_global(message, channel="clan", exclude=char, should_send=_should_receive)
-    return f"You clan '{cleaned}'"
+    return capitalize_act_line(f"You clan '{cleaned}'")
 
 
 def do_immtalk(char: Character, args: str) -> str:
@@ -586,7 +585,7 @@ def do_immtalk(char: Character, args: str) -> str:
             return False
         return True
 
-    formatted = f"{{i[{{I{char.name}{{i]: {cleaned}{{x"
+    formatted = capitalize_act_line(f"{{i[{{I{char.name}{{i]: {cleaned}{{x")
     payload = f"{formatted}\n\r"
     broadcast_global(payload, channel="immtalk", exclude=char, should_send=_should_receive)
     return payload
@@ -622,7 +621,7 @@ def do_emote(char: Character, args: str) -> str:
         for listener in list(char.room.people):
             if listener is char:
                 continue
-            per_message = f"{pers(char, listener)} {args}"
+            per_message = capitalize_act_line(f"{pers(char, listener)} {args}")
             writer = getattr(listener, "connection", None)
             if writer is not None:
                 asyncio.create_task(send_to_char(listener, per_message))
@@ -641,7 +640,7 @@ def do_emote(char: Character, args: str) -> str:
     # mirroring ROM src/act_comm.c:1092 — `act("$n $T", ..., TO_CHAR)`.
     # ROM act() substitutes `$n` to "You" on the TO_CHAR branch so the
     # actor sees `"You <args>"` rather than their own name (EMOTE-002).
-    return f"You {args}"
+    return capitalize_act_line(f"You {args}")
 
 
 def do_pose(char: Character, args: str) -> str:
@@ -724,14 +723,14 @@ def do_yell(char: Character, args: str) -> str:
             from mud.world.vision import pers as _pers
 
             yeller_name = _pers(char, victim)
-            victim_message = f"{yeller_name} yells '{args}'"
+            victim_message = capitalize_act_line(f"{yeller_name} yells '{args}'")
             writer = getattr(victim, "connection", None)
             if writer is not None:
                 asyncio.create_task(send_to_char(victim, victim_message))
                 continue
             _queue_personal_message(victim, victim_message)
 
-    return f"You yell '{args}'"
+    return capitalize_act_line(f"You yell '{args}'")
 
 
 def do_cgossip(char: Character, args: str) -> str:

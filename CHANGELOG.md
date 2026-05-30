@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.43]
+
+### Fixed
+- **`ACT-CAP-003` (do_say / do_tell / do_shout / do_yell / do_emote capitalization) — ✅ FIXED; INV-029 cousin for the communication surface.** ROM `act_new` caps the first visible letter of every `act()` line. `do_say`/`do_tell`/`do_shout`/`do_yell`/`do_emote` build per-listener f-strings that bypassed `capitalize_act_line`. Fixed by applying `capitalize_act_line` to all six output sites (do_say per-listener + TO_CHAR, `_handle_buffered_tell` TO_VICT + do_tell TO_CHAR, do_shout per-listener + TO_CHAR, do_yell per-listener + TO_CHAR, do_emote per-listener + TO_CHAR). TELL-006 (buffered tell cap) closed. Re-baselined 4 stale lowercase assertions. Test: `tests/integration/test_act_cap_003_communication_capitalize.py` (6).
+- **`ACT-CAP-004` (broadcast_global channel capitalization) — ✅ FIXED; the final INV-029 cousin.** All nine `broadcast_global` channel callers (auction, gossip, grats, quote, question, answer, music, clan, immtalk) route through ROM `act_new()` which caps. Each now applies `capitalize_act_line` to both the `broadcast_global` message and the TO_CHAR return. Weather messages remain uncapped (matching ROM `send_to_char`). Test: `tests/integration/test_act_cap_004_broadcast_global_capitalize.py` (6). With ACT-CAP-001/002/003/004, INV-029's `act_new` first-letter-cap is enforced across all delivery surfaces.
+
+## [2.11.42]
+
+### Fixed
+- **`ACT-CAP-003` (communication command capitalization — do_say, do_tell, do_reply, do_shout, do_yell, do_emote) — ✅ FIXED; closes the INV-029 cousin for the `mud/commands/communication.py` surface.** ROM `act_new` (`src/comm.c:2376-2379`) upper-cases the first visible letter of every `act()` line (with the `{`-colour-code kludge). `do_say`/`do_tell`/`do_shout`/`do_yell`/`do_emote` build per-listener f-strings that bypassed `capitalize_act_line`, so an invisible speaker's `"someone says…"` rendered lowercase where ROM renders `"Someone says…"`. Fixed by applying `capitalize_act_line` at all six output sites: `do_say` per-listener + TO_CHAR, `_handle_buffered_tell` (TO_VICT for all three paths — live/AFK/linkdead) + `do_tell` TO_CHAR, `do_shout` per-listener + TO_CHAR, `do_yell` per-listener + TO_CHAR, `do_emote` per-listener + TO_CHAR. PERS (`pers()`) rendering unchanged — only the capitalization layer added. TELL-006 (buffered tell cap) closed. Regression: `tests/integration/test_act_cap_003_communication_capitalize.py` (6 — say visible + invisible, tell visible + invisible, reply, shout). Re-baselined 4 stale lowercase assertions (`test_tell_parity`, `test_say_parity`, `test_shout_yell_parity`, `test_emote_parity` — "someone" → "Someone"). Full suite 5024 passed / 0 failed. **Remaining open:** `broadcast_global` (per-channel treatment needed — mixed: channels are `act()`, weather is `send_to_char`). See `docs/parity/FIGHT_C_AUDIT.md` ACT-CAP-003 and `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-029.
+
 ## [2.11.41]
 
 ### Fixed

@@ -56,7 +56,7 @@ def test_emote_001_invisible_emoter_renders_as_someone_to_unaided_listener() -> 
 
     delivered = [_strip(m) for m in listener.messages if "waves" in m]
     assert delivered, f"listener received no emote broadcast; messages={listener.messages}"
-    assert any("someone waves" in m for m in delivered), (
+    assert any("Someone waves" in m for m in delivered), (
         f"PERS substitution missing for invisible emoter; got {delivered!r}"
     )
     assert not any("Emoghost" in m for m in delivered), (
