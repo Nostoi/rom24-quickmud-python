@@ -9,11 +9,11 @@ Continuation picking up **Next Task #1** from `SESSION_STATUS.md`: close
 changelog → version → single commit). One sibling leak surfaced while reading
 `do_transfer` and was filed durably as **WIZ-048** (OPEN) rather than folded in.
 
-One commit landed: `2b330c1c`.
+One code commit landed: `d7f88228` (plus a separate docs-handoff commit).
 
 ## Outcome
 
-### `WIZ-047` — ✅ FIXED (2.11.35, `2b330c1c`)
+### `WIZ-047` — ✅ FIXED (2.11.35, `d7f88228`)
 
 - **Python**: `mud/commands/imm_commands.py:_act_room` (line 475).
 - **ROM C**: `src/act_wiz.c:870,873` — `do_transfer` announces the mushroom-cloud
@@ -44,7 +44,7 @@ One commit landed: `2b330c1c`.
   test confirmed to fail for the right reason before the fix (non-seeing witness
   received `"Wraith arrives..."` instead of `"someone arrives..."`).
 
-### `WIZ-048` — ❌ FILED OPEN (2.11.35 doc, `2b330c1c`)
+### `WIZ-048` — ❌ FILED OPEN (2.11.35 doc, `d7f88228`)
 
 - **Python**: `mud/commands/imm_commands.py:282-285`.
 - **ROM C**: `src/act_wiz.c:874-875` — after moving the victim, `do_transfer`
@@ -63,7 +63,7 @@ One commit landed: `2b330c1c`.
   `"someone has transferred you."`; with detect-invis → `"<Name> ..."`), then
   render via `pers(char, victim)`.
 
-## Files Modified (commit `2b330c1c`)
+## Files Modified (code commit `d7f88228`)
 
 - `mud/commands/imm_commands.py` — `_act_room` renders `$n` per-recipient via `pers`.
 - `tests/integration/test_wiz047_transfer_pers_name_masking.py` — new (2 tests).
@@ -81,17 +81,20 @@ working-tree change predates this session and was left untouched.)
 
 - `tests/integration/test_wiz047_transfer_pers_name_masking.py` — 2/2 passing
   (and confirmed failing first, for the right reason).
-- **Full suite** (parallel): **4989 passed, 2 failed, 4 skipped**. The 2 failures
-  are `tests/integration/test_combat_death.py::test_multi_hit_stops_on_death` and
-  a `test_skill_combat_rom_parity.py` combat test — **both pre-existing xdist
-  RNG-ordering flakes** (carried-open list), **confirmed to pass in isolation**
-  (`pytest -n0 <both>` → 2 passed), in files this session never touched. Math
-  reconciles: 4989 baseline-passed + 2 new WIZ-047 tests = 4991 testable; this
-  run = 4989 passed + 2 flaked. My new tests passed; zero regression.
-- `ruff check` on `imm_commands.py`, the new test, `vision.py` — clean.
-- Scope confirmed via `git status` (MCP `detect_changes` channel was
-  non-responsive this session — buffering); commit `2b330c1c` contains exactly
-  the 6 intended files.
+- **Full suite** (parallel, on the committed tree with the fix in place):
+  **4991 passed, 4 skipped, 0 failed** (~124s wall-clock). Math reconciles:
+  4989 baseline-passed (2.11.34) + 2 new WIZ-047 tests = 4991. Zero failures,
+  zero regression. (A mid-session partial run during a `git stash`/`pop` dance
+  briefly showed 2 combat-test failures; that was the fix temporarily reverted
+  by the stash, not a real flake — the authoritative full run on the committed
+  tree is clean.)
+- `ruff check` on `imm_commands.py`, the new test — clean. (`mud/world/vision.py`
+  carries 3 pre-existing ruff findings — I001 import-sort + 2× UP038
+  `isinstance` tuple — untouched by this gap; not introduced here.)
+- Scope confirmed via `gitnexus_detect_changes` (LOW risk; changed symbols =
+  `imm_commands._act_room` + `formatted` local + the two doc Sections;
+  `affected_processes: []`). Code commit `d7f88228` contains the 5 gap files;
+  the docs-handoff commit (`SESSION_SUMMARY` + `SESSION_STATUS`) is separate.
 
 ## Next Steps
 
@@ -112,9 +115,10 @@ Cross-file invariants remains the standing pass (per-file audit tracker has no
 ## Outstanding / carried-open
 
 - **`WIZ-048`** (NEW, OPEN) — see above.
-- Known **xdist flakes**: `test_combat_death.py::test_multi_hit_stops_on_death`,
-  `test_skill_combat_rom_parity.py` combat test, `test_backstab_uses_position_and_weapon`
-  — pass in isolation, fail under some parallel worker groupings (RNG ordering).
+- Known **xdist flakes** (documented carried-open): `test_combat_death.py`,
+  `test_backstab_uses_position_and_weapon` — pass in isolation, can flake under
+  some parallel worker groupings (RNG ordering). This session's full run had
+  **zero** failures (4991 passed); they did not surface.
 - pet-shop haggle / "now follows you" wrong-channel (INV-001 family, mailbox-only);
   `Character.pet` stale type annotation; `do_cast` object-targeting legs;
   converter hardening.

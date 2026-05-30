@@ -7,7 +7,7 @@
   **WIZ-047** (the remaining `imm_commands._act_room` half of INV-027) and filed
   the one sibling leak that surfaced (**WIZ-048**) durably as OPEN.
 - **Last completed** (this session):
-  - **`WIZ-047`** ✅ FIXED (master 2.11.35, `2b330c1c`) —
+  - **`WIZ-047`** ✅ FIXED (master 2.11.35, `d7f88228`) —
     `mud/commands/imm_commands.py:_act_room` now renders `$n` per-recipient via
     `mud/world/vision.py:pers(char, person)`, mirroring ROM `do_transfer`'s
     `act(..., TO_ROOM)` PERS masking (`src/act_wiz.c:870,873`). An invisible /
@@ -17,7 +17,7 @@
     `tests/integration/test_wiz047_transfer_pers_name_masking.py` (2). This is
     the remaining `_act_room` half of the INV-027 (ACT-PERS-NAME-MASKING)
     contract; the `act_format._pers` half was enforced in 2.11.34.
-  - **`WIZ-048`** ❌ FILED OPEN (master 2.11.35 doc, `2b330c1c`) — `do_transfer`'s
+  - **`WIZ-048`** ❌ FILED OPEN (master 2.11.35 doc, `d7f88228`) — `do_transfer`'s
     `"$n has transferred you."` (ROM `src/act_wiz.c:874-875`, TO_VICT, `$n` = the
     immortal) is sent with the immortal's real name unconditionally
     (`imm_commands.py:282-285`), leaking a wiz-invis immortal's identity to the
@@ -31,7 +31,7 @@
 | Metric | Value |
 |--------|-------|
 | Version | 2.11.35 |
-| Tests | 4989 passed, 2 failed (pre-existing combat xdist flakes — pass in isolation), 4 skipped (full parallel suite); the 2 new WIZ-047 tests pass |
+| Tests | 4991 passed, 4 skipped, 0 failed (full parallel suite, ~124s, on the committed tree); includes the 2 new WIZ-047 tests |
 | ROM C files audited | 43 / 43 (per-file pass complete; differential + cross-file invariants active) |
 | Active focus | Cross-file invariants (INV-027: WIZ-047 FIXED; WIZ-048 + VISION-002 OPEN) |
 
@@ -58,10 +58,10 @@ rough priority:
    position transitions, mob script triggers, group/follower chain).
 
 Carried-open items (see the summary's Outstanding section): known **xdist
-flakes** (`test_combat_death.py::test_multi_hit_stops_on_death`,
-`test_skill_combat_rom_parity.py` combat test,
-`test_backstab_uses_position_and_weapon` — pass in isolation, flake under some
-parallel worker groupings); pet-shop haggle/"now follows you" wrong-channel
+flakes** (`test_combat_death.py`, `test_backstab_uses_position_and_weapon` —
+documented carried-open; pass in isolation, can flake under some parallel worker
+groupings; this session's full run had **zero** failures); pet-shop
+haggle/"now follows you" wrong-channel
 (INV-001 family, mailbox-only); `Character.pet` stale type annotation; `do_cast`
 object-targeting legs; converter hardening. Non-blocking (ROM-faithful, not a
 gap): `_pers`/`_act_room`→`can_see_character` consumes an RNG draw on the sneak
