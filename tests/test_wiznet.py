@@ -4,7 +4,8 @@ import mud.net.connection as net_connection
 from mud import registry as global_registry
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character, character_registry
-from mud.models.constants import LEVEL_IMMORTAL, Sex
+from mud.models.constants import LEVEL_IMMORTAL, Sector, Sex
+from mud.models.room import Room
 from mud.net.connection import announce_wiznet_login, announce_wiznet_logout
 from mud.wiznet import WiznetFlag, wiznet
 
@@ -18,6 +19,17 @@ def setup_function(_):
 
 def _connected_character(**kwargs) -> Character:
     character = Character(**kwargs)
+    # INV-027: act_format now gates $n/$N through can_see_character, which reads
+    # the looker's room (the dark check dereferences it). Production wiznet
+    # recipients are always roomed immortals, so place each mock in a LIT room
+    # (Sector.INSIDE is never dark) — otherwise a roomless looker hits the
+    # defensive observer_room-None bail and renders "someone". The masking
+    # contract itself is locked by tests/integration/test_inv027_act_pers_name_masking.py.
+    if getattr(character, "room", None) is None:
+        room = Room(vnum=49000, name="Wiznet Test Hall", sector_type=int(Sector.INSIDE))
+        room.people = []
+        room.people.append(character)
+        character.room = room
     descriptor = SimpleNamespace(character=character, connected=1, original=None, host=None)
     character.desc = descriptor
     global_registry.descriptor_list.append(descriptor)

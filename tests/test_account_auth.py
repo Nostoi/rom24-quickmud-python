@@ -94,6 +94,26 @@ TELNET_GA = 249
 TELNET_TELOPT_ECHO = 1
 
 
+def _give_lit_room(char):
+    """Place a mock wiznet recipient in its own lit room.
+
+    INV-027: ``act_format`` now gates ``$n``/``$N`` through
+    ``can_see_character``, which requires the looker (recipient) to have a room
+    (the dark check dereferences it). Production wiznet recipients are always
+    roomed immortals, so a roomless mock listener hits the defensive
+    ``observer_room is None`` bail and renders ``"someone"``. Each listener gets
+    its **own** lit room (default sector INSIDE is never dark), kept separate
+    from any broadcast room so it does not also receive room-scoped broadcasts.
+    The masking contract is locked by
+    ``tests/integration/test_inv027_act_pers_name_masking.py``.
+    """
+    room = Room(vnum=49100, name="Wiz Listener Hall")
+    room.people = []
+    char.room = room
+    room.people.append(char)
+    return char
+
+
 class _ConnProto(Protocol):
     """Structural subset of TelnetStream used by test doubles.
 
@@ -1860,6 +1880,10 @@ def test_new_player_triggers_wiznet_newbie_alert(monkeypatch):
                     low_trust_listener,
                 ]
             )
+            # INV-027: newbie_listener receives the "$N sighted" line, whose $N
+            # routes through can_see_character — give it a room so the roomless
+            # newbie subject (VISION-001) renders its real name, not "someone".
+            _give_lit_room(newbie_listener)
 
             recorded_calls: list[tuple[str, str | None, int]] = []
             real_announce = net_connection.announce_wiznet_new_player
@@ -2520,6 +2544,12 @@ def test_reconnect_announces_wiz_links(monkeypatch):
     imm_blocked.connection = SimpleNamespace()
     imm_plain.connection = SimpleNamespace()
     reconnecting.connection = SimpleNamespace(peer_host="midgaard.example")
+    # INV-027: the WIZ_LINKS "$N groks ..." line routes $N through
+    # can_see_character; give each immortal recipient its own lit room (separate
+    # from Limbo) so the reconnecting subject renders "Hero", not "someone".
+    _give_lit_room(imm_receives)
+    _give_lit_room(imm_blocked)
+    _give_lit_room(imm_plain)
     character_registry.extend([imm_receives, imm_blocked, imm_plain])
 
     logged: list[str] = []
@@ -2605,6 +2635,10 @@ def test_reconnect_skips_login_announcements(monkeypatch):
     )
     link_listener.connection = SimpleNamespace()
     login_listener.connection = SimpleNamespace()
+    # INV-027: link_listener receives the "$N groks ..." line — room it so $N
+    # renders the real reconnecting name via can_see_character.
+    _give_lit_room(link_listener)
+    _give_lit_room(login_listener)
 
     character_registry.extend([link_listener, login_listener])
 
@@ -2655,6 +2689,9 @@ def test_reconnect_announces_note_reminder(monkeypatch):
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LINKS),
     )
     link_listener.connection = SimpleNamespace()
+    # INV-027: link_listener receives the "$N groks ..." line — room it so $N
+    # renders the real reconnecting name via can_see_character.
+    _give_lit_room(link_listener)
 
     character_registry.append(link_listener)
 

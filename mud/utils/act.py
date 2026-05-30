@@ -56,14 +56,18 @@ def _possessive_pronoun(sex: Sex | None) -> str:
 def _pers(target: Any | None, viewer: Any | None) -> str:
     """Return ROM-style perspective aware names.
 
-    NOTE (INV-027, ACT-PERS-NAME-MASKING): ROM ``PERS(ch, looker)``
-    (``src/merc.h:2145``) masks ``$n``/``$N`` to ``"someone"`` when
-    ``can_see(looker, ch)`` is false. This helper does **not** apply that gate
-    yet — see ``docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`` INV-027 for why
-    the obvious fix (route through ``vision.can_see_character``) over-masks
-    Python's roomless synthetic wiznet actors (e.g. the
-    ``announce_wiznet_new_player`` placeholder) and is blocked on a prerequisite
-    ``can_see_character`` room-None reconciliation.
+    INV-027 (ACT-PERS-NAME-MASKING): ROM ``PERS(ch, looker)``
+    (``src/merc.h:2145``) renders an ``act()`` ``$n``/``$N`` substitution as
+    ``"someone"`` when ``can_see(looker, ch)`` is false. This gate fires only
+    when there is a concrete ``viewer`` (recipient): the broadcast-once
+    ``recipient=None`` path (the ``docs/divergences/MESSAGE_DELIVERY.md``
+    architectural divergence) has no viewer to evaluate visibility against and
+    must keep the name, or every room broadcast would render ``"someone"``.
+
+    The prerequisite that unblocked this (VISION-001) aligned
+    ``can_see_character`` with ROM ``can_see`` so a roomless synthetic wiznet
+    subject (the ``announce_wiznet_new_player`` newbie alert) is no longer
+    over-masked — see ``docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`` INV-027.
     """
 
     if target is None:
@@ -71,6 +75,13 @@ def _pers(target: Any | None, viewer: Any | None) -> str:
 
     if viewer is not None and target is viewer:
         return "You"
+
+    # INV-027: per-recipient PERS name-masking. Mirrors mud/world/vision.py:pers.
+    if viewer is not None:
+        from mud.world.vision import can_see_character
+
+        if not can_see_character(viewer, target):
+            return "someone"
 
     name = getattr(target, "name", None)
     if name:

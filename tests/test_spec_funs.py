@@ -231,6 +231,20 @@ def test_mob_spec_fun_invoked():
         spec_fun_registry.update(prev)
 
 
+def _no_affect(*_args, **_kwargs) -> bool:
+    """has_affect stub for lightweight SimpleNamespace char doubles.
+
+    INV-027: ``act_format`` now gates ``$n``/``$N`` through
+    ``can_see_character``, which calls ``has_affect`` on both the looker and the
+    target. These doubles carry no affects, so a stub that always returns False
+    keeps them fully visible in their (lit) room — matching production, where the
+    NPC and its observers see each other and the act line renders the real name.
+    The masking contract itself is locked by
+    ``tests/integration/test_inv027_act_pers_name_masking.py``.
+    """
+    return False
+
+
 def test_spec_janitor_collects_trash() -> None:
     room = Room(vnum=4000, name="Trash Heap")
     janitor = SimpleNamespace(
@@ -240,8 +254,9 @@ def test_spec_janitor_collects_trash() -> None:
         inventory=[],
         messages=[],
         is_npc=True,
+        has_affect=_no_affect,
     )
-    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False)
+    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False, has_affect=_no_affect)
     room.people = [janitor, observer]
 
     trash = SimpleNamespace(
@@ -267,8 +282,9 @@ def test_spec_fido_eats_npc_corpses() -> None:
         position=int(Position.STANDING),
         messages=[],
         is_npc=True,
+        has_affect=_no_affect,
     )
-    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False)
+    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False, has_affect=_no_affect)
     room.people = [fido, observer]
 
     loot = SimpleNamespace(
@@ -319,13 +335,15 @@ def test_spec_poison_bites_current_target(monkeypatch) -> None:
         fighting=None,
         level=20,
         messages=[],
+        has_affect=_no_affect,
     )
     victim = SimpleNamespace(
         name="Explorer",
         room=room,
         messages=[],
+        has_affect=_no_affect,
     )
-    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False)
+    observer = SimpleNamespace(name="Watcher", room=room, messages=[], is_npc=False, has_affect=_no_affect)
     room.people = [snake, victim, observer]
     snake.fighting = victim
     victim.fighting = snake
@@ -499,8 +517,8 @@ def test_spec_mayor_opens_and_closes_gate(monkeypatch) -> None:
     walkway.exits[Direction.EAST.value] = gate_exit
     outside.exits[Direction.WEST.value] = reverse_gate
 
-    clerk = SimpleNamespace(name="Clerk", room=office, messages=[], is_npc=False)
-    guard = SimpleNamespace(name="Guard", room=walkway, messages=[], is_npc=False)
+    clerk = SimpleNamespace(name="Clerk", room=office, messages=[], is_npc=False, has_affect=_no_affect)
+    guard = SimpleNamespace(name="Guard", room=walkway, messages=[], is_npc=False, has_affect=_no_affect)
     office.people.append(clerk)
     walkway.people.append(guard)
 
@@ -511,6 +529,7 @@ def test_spec_mayor_opens_and_closes_gate(monkeypatch) -> None:
         messages=[],
         fighting=None,
         is_npc=True,
+        has_affect=_no_affect,
     )
     office.people.append(mayor)
 

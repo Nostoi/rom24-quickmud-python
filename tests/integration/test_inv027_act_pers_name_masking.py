@@ -20,8 +20,6 @@ boundary.
 
 from __future__ import annotations
 
-import pytest
-
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, Sector
 from mud.models.room import Room
@@ -43,18 +41,6 @@ def _char(name: str, room: Room) -> Character:
     return char
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "INV-027 not yet enforced: act_format._pers lacks the ROM PERS can_see "
-        "gate. The naive fix (route through vision.can_see_character) over-masks "
-        "Python's roomless synthetic wiznet actors (announce_wiznet_new_player "
-        "placeholder) because can_see_character bails room-None — ROM can_see has "
-        "no victim-room check. Blocked on a can_see_character room-None "
-        "reconciliation (see CROSS_FILE_INVARIANTS_TRACKER.md INV-027). Remove "
-        "this marker when the prerequisite lands."
-    ),
-)
 def test_act_pers_masks_invisible_actor_name_for_nonseeing_recipient() -> None:
     # ROM PERS (src/merc.h:2145) → can_see(looker, ch) ? name : "someone".
     room = _lit_room()

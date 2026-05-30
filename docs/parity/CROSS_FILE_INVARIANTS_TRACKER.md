@@ -146,7 +146,9 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**Open: INV-027 candidate — ACT-PERS-NAME-MASKING (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; still OPEN). See the "Probe outcome (2026-05-29)" bullet below.**
+**✅ ENFORCED: INV-027 — ACT-PERS-NAME-MASKING (per-recipient subset)** (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; **prerequisite VISION-001 landed 2.11.33 and enforcement landed 2.11.34**). Per-recipient `$n`/`$N` masking now routes through `can_see_character`; the broadcast-once `recipient=None` path stays the documented MESSAGE_DELIVERY.md divergence. See the "Enforcement outcome (2026-05-29)" bullet below.
+
+**Enforcement point**: `mud/utils/act.py:_pers` (gated on `viewer is not None`). **Test**: `tests/integration/test_inv027_act_pers_name_masking.py` (masking + `recipient=None` boundary). **Prerequisite**: VISION-001 (`docs/parity/HANDLER_C_AUDIT.md`).
 
 > **⚠️ CORRECTION (2026-05-29).** The original framing of this candidate
 > (below, struck) claimed `act()` *suppresses the whole line* for sub-trust
@@ -250,6 +252,38 @@ the cross-file work is tracked here.
     pointing here. **Status stays OPEN** — the per-recipient subset is the only part
     that could be enforced, and even it is blocked; broadcast-once stays divergent by
     MESSAGE_DELIVERY architecture.
+- **Enforcement outcome (2026-05-29) — ✅ ENFORCED (per-recipient subset).** The
+  pinned blocker was cleared by **VISION-001** (2.11.33,
+  `docs/parity/HANDLER_C_AUDIT.md` "Stable-ID Divergences — `can_see()`"):
+  `can_see_character` no longer bails when the **target** is roomless, matching ROM
+  `can_see` (`src/handler.c:2618-2664`, which never checks `victim->in_room`). A
+  28-direct-caller census confirmed no descriptor/registry/`room.people` iterator can
+  observe a roomless target except the intentional synthetic wiznet subjects, so the
+  loosen is safe (full suite green). With that prerequisite in place (2.11.34):
+  - `mud/utils/act.py:_pers` now routes `$n`/`$N` through `can_see_character` when
+    `viewer is not None and target is not viewer` (returns `"someone"` on failure).
+    The `recipient=None` broadcast-once path keeps the name (no viewer to gate
+    against — the MESSAGE_DELIVERY.md divergence; the boundary test pins it).
+  - `announce_wiznet_new_player` (`mud/net/connection.py`) now builds a **real
+    roomless `Character`** as the newbie-alert subject instead of a `SimpleNamespace`,
+    so `$N` renders the real name via VISION-001 (ROM `nanny.c:547` passes the real
+    roomless `ch`) and `can_see_character`'s `has_affect`/`invis_level` reads don't
+    raise.
+  - The 15 previously-regressing tests were the predicted set (`test_wiznet` ×7,
+    `test_account_auth` ×4, `test_spec_funs` ×4). Root cause: their mock recipients
+    were roomless real `Character`s (→ masked) or bare `SimpleNamespace` without
+    `has_affect` (→ AttributeError once VISION-001 removed the early bail). Fixed by
+    rooming the mock listeners in lit rooms / adding a no-affect `has_affect` stub —
+    matching production (real roomed immortals). Expected strings unchanged (real
+    names), so the tests still assert the production scenario; the dedicated INV-027
+    test (real `Character`s) locks the masking contract.
+  - The `xfail` marker on `test_act_pers_masks_invisible_actor_name_for_nonseeing_recipient`
+    is removed; it is now a passing test. Full suite: 4989 passed, 4 skipped, 0 xfailed.
+  - **Scope**: the per-recipient subset is ENFORCED. The broadcast-once
+    (`recipient=None`) path remains the documented MESSAGE_DELIVERY.md architectural
+    divergence (pinned by the boundary test). The two `_act_room` helpers
+    (`imm_commands.py` vs `imm_display.py`) are not part of this enforcement — their
+    PERS reconciliation, if pursued, is separate.
 
 <details><summary>Original (incorrect) framing — retained for the audit trail</summary>
 

@@ -204,7 +204,15 @@ def announce_wiznet_new_player(
     if not normalized:
         return
 
-    placeholder = SimpleNamespace(name=normalized, sex=sex)
+    # INV-027 / VISION-001: ROM nanny.c:547 passes the real new-player `ch`
+    # (roomless at CON_GET_NEW_CLASS) as the wiznet subject, so `$N` renders the
+    # real name via PERS→can_see (which never checks victim->in_room). Use a real
+    # roomless Character rather than a bare SimpleNamespace: act_format now routes
+    # `$n`/`$N` through can_see_character, which calls `has_affect`/reads
+    # `invis_level` on the subject — attributes a SimpleNamespace lacks.
+    from mud.models.character import Character
+
+    placeholder = Character(name=normalized, sex=int(sex) if sex is not None else 0, is_npc=False)
 
     wiznet(
         "Newbie alert!  $N sighted.",
