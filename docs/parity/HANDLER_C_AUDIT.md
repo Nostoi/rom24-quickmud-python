@@ -174,9 +174,21 @@ Create tests for end-to-end handler workflows
 | `is_room_owner()` | ✅ `mud/world/movement.py:_is_room_owner()` (line 231) | ✅ **Audited** | Room ownership check (ROM ref: handler.c:2553-2559) - **VERIFIED Jan 3, 2026** |
 | `room_is_private()` | ✅ `mud/world/movement.py:_room_is_private()` (line 239) + `mud/commands/imm_commands.py:_room_is_private()` | ✅ **Audited** | Private room check (ROM ref: handler.c:2564-2584) - **VERIFIED Jan 3, 2026** |
 | `can_see_room()` | ✅ `mud/world/vision.py:can_see_room()` | ✅ **Audited** | Visibility check for rooms - **VERIFIED Jan 3, 2026** |
-| `can_see()` | ✅ `mud/world/vision.py:can_see_character()` + multiple `_can_see()` | ✅ **Audited** | Can see character (multiple versions) - **VERIFIED Jan 3, 2026** |
+| `can_see()` | ✅ `mud/world/vision.py:can_see_character()` + multiple `_can_see()` | ✅ **Audited** | Can see character (multiple versions) - **VERIFIED Jan 3, 2026**; see **VISION-001** (roomless-target policy, FIXED) and **VISION-002** (dark-gate same-room divergence, OPEN) below |
 | `can_see_obj()` | ✅ `mud/world/vision.py:can_see_object()` + `mud/skills/handlers.py:_can_see_object()` | ✅ **Audited** | Can see object - **VERIFIED Jan 3, 2026** |
 | `can_drop_obj()` | ✅ `mud/commands/obj_manipulation.py:_can_drop_obj()` (line 443) + `mud/commands/shop.py:_can_drop_object()` | ✅ **Audited** | Can drop object check - **VERIFIED Jan 3, 2026** |
+
+#### Stable-ID Divergences — `can_see()` (`mud/world/vision.py:can_see_character`)
+
+`can_see` was marked Audited (Jan 3, 2026) at the function level, but two
+behavioral divergences from `src/handler.c:2618-2664` surfaced during the
+INV-027 (ACT-PERS-NAME-MASKING) cross-file pass (2026-05-29). Tracked here with
+stable IDs.
+
+| ID | Divergence | ROM C | Status | Test |
+|----|-----------|-------|--------|------|
+| **VISION-001** | `can_see_character` returned `False` whenever the **target** was roomless (`target_room is None`). ROM `can_see` never NULL-checks nor dereferences `victim->in_room`; only the **looker's** room matters. The bail over-masked the legitimate roomless-subject case (the new player passed to `wiznet("Newbie alert! $N sighted.", ...)` at `src/nanny.c:547`, whose `in_room` is NULL at `CON_GET_NEW_CLASS`), blocking INV-027 enforcement. **Fix:** drop the `target_room is None` bail; keep `observer_room is None → False` (defensive — ROM's looker always has a room and the dark gate dereferences `ch->in_room`). Caller census (28 direct callers, CRITICAL blast radius) confirmed no descriptor/registry/`room.people` iterator can observe a roomless target except the intentional synthetic wiznet subjects: `do_who` iterates `SESSIONS` (roomed by construction — room set at `connection.py:1879` before `SESSIONS` registration at `:1903`), `do_where` and `do_whois` carry their own room/`CON_PLAYING` guards, and room transitions are synchronous (no `await` between `room=None` and re-placement/extract). | `src/handler.c:2618-2664` (no `victim->in_room` check) | ✅ **FIXED** (2026-05-29) | `tests/test_vision_roomless_target.py` |
+| **VISION-002** | The dark gate (`vision.py`) reads `observer_room is target_room and room_is_dark(observer_room)`. ROM (`handler.c:2638`) masks on `room_is_dark(ch->in_room)` **unconditionally** — no same-room guard — so a roomless or different-room target viewed from a dark looker room renders **visible** in Python where ROM would mask to `"someone"`. Deferred (separate, larger scope: changing the dark gate to key off the observer's room regardless of same-room could shift cross-room/scan visibility). Does **not** block INV-027 (the INV-027 / VISION-001 tests place the observer in a LIT room so the dark gate is not exercised). | `src/handler.c:2638` (`room_is_dark(ch->in_room)`, no same-room guard) | ❌ **OPEN** | — (file failing test before closing) |
 
 ### Flag Name Functions (5 functions)
 

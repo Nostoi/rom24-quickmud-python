@@ -160,7 +160,14 @@ def can_see_character(observer: Character, target: Character | None) -> bool:
 
     observer_room = getattr(observer, "room", None)
     target_room = getattr(target, "room", None)
-    if observer_room is None or target_room is None:
+    # VISION-001: ROM can_see (src/handler.c:2618-2664) never NULL-checks nor
+    # dereferences victim->in_room — a roomless *target* (e.g. the new player
+    # passed to wiznet("Newbie alert! $N sighted.", ...) at src/nanny.c:547,
+    # whose in_room is NULL at CON_GET_NEW_CLASS) is still visible. Only the
+    # *observer* needs a room: the dark gate dereferences ch->in_room, and ROM's
+    # looker always has one. So we keep observer_room is None → False (defensive)
+    # but no longer bail solely because target_room is None. Unblocks INV-027.
+    if observer_room is None:
         return False
 
     trust = _get_trust(observer)

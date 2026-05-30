@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.33]
+
+### Fixed
+- **`VISION-001` — `can_see_character` masked any roomless *target*, diverging from ROM `can_see` and blocking INV-027.** ROM `can_see` (`src/handler.c:2618-2664`) only ever dereferences the **looker's** room (`room_is_dark(ch->in_room)` and the incog comparison `ch->in_room != victim->in_room`); it **never** NULL-checks `victim->in_room`. Python's `can_see_character` (`mud/world/vision.py`) carried a non-ROM `target_room is None → False` bail that over-masked the legitimate roomless-subject case — the new player passed to `wiznet("Newbie alert! $N sighted.", ...)` (`src/nanny.c:547`), whose `in_room` is NULL at `CON_GET_NEW_CLASS`. **Fix:** drop the `target_room is None` bail; keep `observer_room is None → False` (defensive — ROM's looker always has a room, and the dark gate dereferences `ch->in_room`). A 28-direct-caller census (CRITICAL blast radius) confirmed no descriptor/registry/`room.people` iterator can observe a roomless target except the intentional synthetic wiznet subjects: `do_who` iterates `SESSIONS` (roomed by construction — room set at `connection.py:1879` before `SESSIONS` registration at `:1903`); `do_where`/`do_whois` carry their own room / `CON_PLAYING` guards; room transitions are synchronous (no `await` between `room=None` and re-placement/extract). No mortal-facing behavior change (the only newly-visible targets are the roomless wiznet subjects, which INV-027 enforcement will route through this gate). Unblocks INV-027 (ACT-PERS-NAME-MASKING). Regression: `tests/test_vision_roomless_target.py` (roomed observer in a LIT room sees a roomless non-invisible target; still masks an invisible roomless target without detect-invis; roomless observer still cannot see). The deferred dark-gate same-room divergence is filed as **VISION-002** (OPEN). See `docs/parity/HANDLER_C_AUDIT.md` "Stable-ID Divergences — `can_see()`".
+
 ## [2.11.32]
 
 ### Changed
