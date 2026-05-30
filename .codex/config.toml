@@ -2,7 +2,7 @@
 # This file should be created in your home directory
 
 # Model configuration
-model = "gpt-5-codex"  # Use the coding-optimized model
+# model = "gpt-5-codex"  # Use the coding-optimized model
 # model = "o1-mini"     # Alternative for complex reasoning
 
 # Approval and sandbox settings
