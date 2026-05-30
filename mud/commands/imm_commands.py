@@ -473,13 +473,25 @@ def _char_to_room(char: Character, room) -> None:
 
 
 def _act_room(room, char: Character, message: str) -> None:
-    """Send action message to room (except actor)."""
-    char_name = getattr(char, "name", "Someone")
-    formatted = message.replace("$n", char_name)
+    """Send action message to room (except actor), masking ``$n`` per recipient.
+
+    WIZ-047 / INV-027: ``$n`` is rendered per-recipient through ROM ``PERS``
+    (``src/merc.h:2145`` → ``can_see``), so an invisible / wiz-invis subject's
+    real name is masked to ``"someone"`` for witnesses who cannot see them —
+    mirroring ROM ``act(..., TO_ROOM)`` in ``do_transfer``
+    (``src/act_wiz.c:870,873``). The line is still delivered to every witness;
+    ROM masks the name, it does not suppress the line (contrast
+    ``_act_room_invis_gated`` / WIZ-045-046, which gate the whole line on
+    ``invis_level``).
+    """
+    from mud.world.vision import pers  # function-local: avoid import cycle
 
     for person in getattr(room, "people", []):
-        if person is not char:
-            _send_to_char(person, formatted)
+        if person is char:
+            continue
+        # ROM PERS(ch=char, looker=person): src/act_wiz.c:870,873 act(...,TO_ROOM)
+        formatted = message.replace("$n", pers(char, person))
+        _send_to_char(person, formatted)
 
 
 def _act_room_invis_gated(room, char: Character, message: str) -> None:

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.35]
+
+### Fixed
+- **`WIZ-047` — `imm_commands._act_room` leaked an invisible/wiz-invis transferred immortal's name to non-seeing witnesses (`do_transfer`); the remaining `_act_room` half of the INV-027 PERS contract.** ROM `do_transfer` (`src/act_wiz.c:870,873`) announces the mushroom-cloud / puff-of-smoke lines via `act("$n ...", victim, NULL, NULL, TO_ROOM)`, so `$n` (the transferred victim) is rendered per-recipient through `PERS(victim, witness)` → `"someone"` for any witness who cannot `can_see` the (invisible / wiz-invis) victim — the line is still delivered, only the name is masked. Python's `mud/commands/imm_commands.py:_act_room` did `message.replace("$n", char.name)` once and sent the same string to every occupant, with no PERS masking. Now `_act_room` renders `$n` per-recipient via `mud/world/vision.py:pers(char, person)` (the same helper the 2.11.34 `act_format._pers` enforcement and the combat path use), masking to `"someone"` for non-seeing witnesses while still delivering the line; the actor is skipped (ROM `act()` TO_ROOM does not echo to the subject). Distinct from WIZ-045/046, which gate the *whole* bamf line on `invis_level` for `do_goto`/`do_violate` via `_act_room_invis_gated` (already correct). `gitnexus_impact` = LOW (1 direct caller `do_transfer`, transitive `do_teleport`). Regression: `tests/integration/test_wiz047_transfer_pers_name_masking.py` (non-seeing witness → `"someone arrives..."`, seeing witness → real name; visible-subject regression guard). While closing this, a sibling TO_VICT leak surfaced and is filed as **WIZ-048** (OPEN): `do_transfer`'s `"$n has transferred you."` (`src/act_wiz.c:874-875`, `$n` = the immortal) is sent with the immortal's real name unconditionally (`imm_commands.py:282-285`), leaking a wiz-invis immortal's identity to the transferred victim. See `docs/parity/ACT_WIZ_C_AUDIT.md` (WIZ-047 ✅ FIXED, WIZ-048 ❌ OPEN) and `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-027.
+
 ## [2.11.34]
 
 ### Fixed
