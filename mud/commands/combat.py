@@ -865,48 +865,65 @@ def do_cast(char: Character, args: str) -> str:
         return None
 
     skill_target_type = (getattr(skill, "target", "ignore") or "ignore").lower()
+    target_obj = None
 
-    if skill_target_type in {"victim", "offensive_character_or_object"}:
+    if skill_target_type == "object":
+        # ROM src/magic.c:449-465 (TAR_OBJ_INV) — object-only spells
+        # (create water, detect poison, enchant armor, enchant weapon,
+        # fireproof, identify, recharge). Requires an explicit target name;
+        # finds it via get_obj_carry(char, name).
+        if not target_name:
+            return "What should the spell be cast upon?"
+        from mud.world.obj_find import get_obj_carry as _get_obj_carry
+
+        target_obj = _get_obj_carry(char, target_name)
+        if target_obj is None:
+            return "You are not carrying that."
+        target = char
+    elif skill_target_type in {"victim", "offensive_character_or_object"}:
         # ROM src/magic.c:371-387 (TAR_CHAR_OFFENSIVE) and :466-512
-        # (TAR_OBJ_CHAR_OFF) — offensive spells default victim to ch->fighting
-        # and error when not fighting. TAR_OBJ_CHAR_OFF's object-targeting leg
-        # (src/magic.c:502-506) is deferred until do_cast routes objects, so a
-        # named target resolves char-only here.
+        # (TAR_OBJ_CHAR_OFF). Offensive spells default victim to ch->fighting
+        # and error when not fighting. CAST-003: TAR_OBJ_CHAR_OFF has the
+        # distinct no-fight wording "whom or what?".
         if target_name:
             target = _find_in_room(char, target_name)
-            if target is None:
+            if target is None and skill_target_type == "offensive_character_or_object":
+                # ROM src/magic.c:502-506 — object fallback for TAR_OBJ_CHAR_OFF.
+                from mud.world.obj_find import get_obj_here as _get_obj_here
+
+                target_obj = _get_obj_here(char, target_name)
+                if target_obj is None:
+                    return "You don't see that here."
+            elif target is None:
                 return "They aren't here."
         else:
             fighting = getattr(char, "fighting", None)
             if fighting is None:
-                # CAST-003: the two offensive target types use distinct no-fight
-                # error wording — TAR_OBJ_CHAR_OFF (curse/poison) appends "or what?"
-                # because an object is also a legal operand (src/magic.c:471),
-                # whereas TAR_CHAR_OFFENSIVE is char-only (src/magic.c:376).
                 if skill_target_type == "offensive_character_or_object":
                     return "Cast the spell on whom or what?"
                 return "Cast the spell on whom?"
             target = fighting
     elif skill_target_type in {"friendly", "defensive_character_or_object"}:
         # ROM src/magic.c:419-435 (TAR_CHAR_DEFENSIVE) and :514-519
-        # (TAR_OBJ_CHAR_DEF) — defensive spells default to ch (self) on a no-arg
-        # cast. CAST-002: do_cast previously lumped TAR_OBJ_CHAR_DEF in with the
-        # offensive default, so a no-arg `cast bless` / `cast invis` /
-        # `cast 'remove curse'` wrongly errored "Cast the spell on whom?" instead
-        # of self-casting. TAR_OBJ_CHAR_DEF's object-carry leg (src/magic.c:525-529)
-        # and its distinct "You don't see that here." not-found message (:532) are
-        # deferred until do_cast routes object targets; a named target resolves
-        # char-only here, returning the TAR_CHAR_DEFENSIVE "They aren't here.".
+        # (TAR_OBJ_CHAR_DEF). Defensive spells default to ch (self) on a
+        # no-arg cast. CAST-002: no-arg `cast bless` / `cast invis` /
+        # `cast 'remove curse'` defaults to self. Object fallback via
+        # get_obj_carry for TAR_OBJ_CHAR_DEF.
         if target_name:
             target = _find_in_room(char, target_name)
-            if target is None:
+            if target is None and skill_target_type == "defensive_character_or_object":
+                # ROM src/magic.c:525-529 — object fallback for TAR_OBJ_CHAR_DEF.
+                from mud.world.obj_find import get_obj_carry as _get_obj_carry
+
+                target_obj = _get_obj_carry(char, target_name)
+                if target_obj is None:
+                    return "You don't see that here."
+            elif target is None:
                 return "They aren't here."
         else:
             target = char
     else:
-        # TAR_CHAR_SELF / TAR_IGNORE / TAR_OBJ_INV — caster is the operand.
-        # Object-targeted spells are not yet routed through this command surface
-        # (TODO: object targeting); fall back to self as the default operand.
+        # TAR_CHAR_SELF / TAR_IGNORE — caster is the operand.
         target = char
 
     char.mana -= mana_cost
@@ -923,8 +940,9 @@ def do_cast(char: Character, args: str) -> str:
     if not callable(spell_func):
         return f"The spell '{skill.name}' is not fully implemented yet."
 
+    spell_arg = target_obj if target_obj is not None else target
     try:
-        spell_func(char, target)
+        spell_func(char, spell_arg)
     except Exception as exc:
         return f"Spell cast failed: {exc}"
 
