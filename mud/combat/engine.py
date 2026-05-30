@@ -46,7 +46,7 @@ from mud.skills import check_improve
 from mud.utils import rng_mm
 from mud.utils.act import capitalize_act_line
 from mud.wiznet import WiznetFlag, wiznet
-from mud.world.vision import can_see_object
+from mud.world.vision import can_see_object, pers
 
 HAND_TO_HAND_SKILL = "hand to hand"
 
@@ -854,7 +854,6 @@ def _broadcast_pos_change(victim: Character, template: str, **extra: object) -> 
     """
     from mud.mobprog import mp_act_trigger_room
     from mud.net.protocol import send_to_char as _send
-    from mud.world.vision import pers
 
     room = getattr(victim, "room", None)
     if room is None:
@@ -1565,12 +1564,13 @@ def check_shield_block(attacker: Character, victim: Character) -> bool:
     if rng_mm.number_percent() >= chance:
         return False
 
-    attacker_name = getattr(attacker, "name", "Someone")
-    victim_name = getattr(victim, "name", "Someone")
-    _push_message(victim, f"You block {attacker_name}'s attack with your shield.")
-    # ROM src/fight.c:1345 act("$N blocks your attack with a shield.", TO_CHAR) —
-    # the defender's name leads, so ROM act_new caps it (src/comm.c:2376, FIGHT-031).
-    _push_message(attacker, capitalize_act_line(f"{victim_name} blocks your attack with a shield."))
+    # ROM src/fight.c:1343-1346 — act("You block $n's attack with your shield.", …, TO_VICT)
+    # and act("$N blocks your attack with a shield.", …, TO_CHAR). Both route $n/$N through
+    # PERS(ch/victim, looker), which masks invisible actors to "someone" and uses short_descr
+    # for NPCs. FIGHT-032.
+    _push_message(victim, f"You block {pers(attacker, victim)}'s attack with your shield.")
+    # ROM src/fight.c:1346 — the defender name leads, so ROM act_new caps it (FIGHT-031).
+    _push_message(attacker, capitalize_act_line(f"{pers(victim, attacker)} blocks your attack with a shield."))
     check_improve(victim, "shield block", True, 6)
     return True
 
@@ -1608,12 +1608,13 @@ def check_parry(attacker: Character, victim: Character) -> bool:
     if rng_mm.number_percent() >= chance:
         return False
 
-    attacker_name = getattr(attacker, "name", "Someone")
-    victim_name = getattr(victim, "name", "Someone")
-    _push_message(victim, f"You parry {attacker_name}'s attack.")
-    # ROM src/fight.c:1318 act("$N parries your attack.", TO_CHAR) — defender name
-    # leads → ROM act_new caps (src/comm.c:2376, FIGHT-031).
-    _push_message(attacker, capitalize_act_line(f"{victim_name} parries your attack."))
+    # ROM src/fight.c:1316-1318 — act("You parry $n's attack.", …, TO_VICT)
+    # and act("$N parries your attack.", …, TO_CHAR). Both route $n/$N through
+    # PERS(ch/victim, looker), masking invisible actors and using short_descr for NPCs.
+    # FIGHT-032.
+    _push_message(victim, f"You parry {pers(attacker, victim)}'s attack.")
+    # ROM src/fight.c:1318 — defender name leads, ROM act_new caps it (FIGHT-031).
+    _push_message(attacker, capitalize_act_line(f"{pers(victim, attacker)} parries your attack."))
     check_improve(victim, "parry", True, 6)
     return True
 
@@ -1643,12 +1644,13 @@ def check_dodge(attacker: Character, victim: Character) -> bool:
     if rng_mm.number_percent() >= chance:
         return False
 
-    attacker_name = getattr(attacker, "name", "Someone")
-    victim_name = getattr(victim, "name", "Someone")
-    _push_message(victim, f"You dodge {attacker_name}'s attack.")
-    # ROM src/fight.c:1370 act("$N dodges your attack.", TO_CHAR) — defender name
-    # leads → ROM act_new caps (src/comm.c:2376, FIGHT-031).
-    _push_message(attacker, capitalize_act_line(f"{victim_name} dodges your attack."))
+    # ROM src/fight.c:1362-1370 — act("You dodge $n's attack.", …, TO_VICT)
+    # and act("$N dodges your attack.", …, TO_CHAR). Both route $n/$N through
+    # PERS(ch/victim, looker), masking invisible actors and using short_descr for NPCs.
+    # FIGHT-032.
+    _push_message(victim, f"You dodge {pers(attacker, victim)}'s attack.")
+    # ROM src/fight.c:1370 — defender name leads, ROM act_new caps it (FIGHT-031).
+    _push_message(attacker, capitalize_act_line(f"{pers(victim, attacker)} dodges your attack."))
     check_improve(victim, "dodge", True, 6)
     return True
 

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.44]
+
+### Fixed
+- **`FIGHT-032` (defense TO_CHAR/TO_VICT PERS masking) — ✅ FIXED.** ROM `check_parry`/`check_shield_block`/`check_dodge` (`src/fight.c:1317-1370`) deliver their lines via `act("$N parries your attack.", ch, NULL, victim, TO_CHAR)` / `act("You parry $n's attack.", ..., TO_VICT)`, where `$n`/`$N` resolve through `PERS(ch/victim, looker)`. An invisible actor renders as "someone"; an NPC renders its `short_descr`. Python used `getattr(x, "name", "Something")` f-strings — no `can_see` masking and no `short_descr` for NPCs. Fixed by routing all six defense messages through `pers()` per recipient (matching `_broadcast_pos_change` / `render_for` pattern). Cross-ref INV-027. Test: `tests/integration/test_fight_032_defense_pers.py` (7 — parry invisible attacker/defender/NPC, shield_block invisible attacker/defender, dodge invisible attacker/defender).
+
 ## [2.11.43]
 
 ### Fixed
