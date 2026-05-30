@@ -56,8 +56,9 @@ def test_act_pers_masks_invisible_actor_name_for_nonseeing_recipient() -> None:
 
     assert seen == "Wraith grins slyly."
     # The line is still delivered to the non-seeing witness — only the name is
-    # masked (ROM masks, it does not suppress).
-    assert masked == "someone grins slyly."
+    # masked (ROM masks, it does not suppress). INV-029: ROM act_new then caps
+    # the first letter, so the masked "someone" renders "Someone".
+    assert masked == "Someone grins slyly."
 
 
 def test_act_pers_does_not_mask_broadcast_once_recipient_none() -> None:

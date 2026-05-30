@@ -84,7 +84,8 @@ def test_stop_idling_broadcast_uses_rom_act_format():
         _stop_idling(wraith)
 
         assert wraith.room is home
-        assert watcher.messages[-1] == "the wraith has returned from the void."
+        # INV-029: ROM act_new caps the first letter (src/comm.c:2376-2379).
+        assert watcher.messages[-1] == "The wraith has returned from the void."
     finally:
         room_registry.clear()
         room_registry.update(original_rooms)

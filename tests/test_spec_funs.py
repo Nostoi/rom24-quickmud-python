@@ -133,7 +133,8 @@ def test_spec_cast_adept_casts_support_spells(monkeypatch) -> None:
         result = spec_module.spec_cast_adept(adept)
         assert result is True
         assert cast_calls == [(adept, player, "armor")]
-        assert "a helpful adept utters the word 'abrazak'." in player.messages
+        # INV-029: ROM act_new caps the first letter (src/comm.c:2376-2379).
+        assert "A helpful adept utters the word 'abrazak'." in player.messages
     finally:
         if adept in room.people:
             room.people.remove(adept)
@@ -1305,7 +1306,8 @@ def test_spec_nasty_steals_gold_and_alerts_room(monkeypatch) -> None:
         assert victim.gold == 900
         assert assassin.gold == 150
         assert victim.messages == [
-            "a nasty assassin rips apart your coin purse, spilling your gold!",
+            # INV-029: ROM act_new caps the first letter (src/comm.c:2376-2379).
+            "A nasty assassin rips apart your coin purse, spilling your gold!",
         ]
         assert assassin.messages == [
             "You slash apart Hero's coin purse and gather his gold.",
@@ -1365,7 +1367,8 @@ def test_spec_nasty_flees_when_cornered(monkeypatch) -> None:
         assert int(assassin.position) == int(Position.STANDING)
         assert assassin.room is safe_room
         assert victim.room is room
-        assert "a nasty assassin has fled!" in victim.messages
+        # INV-029: ROM act_new caps the first letter (src/comm.c:2376-2379).
+        assert "A nasty assassin has fled!" in victim.messages
     finally:
         if assassin in room.people:
             room.people.remove(assassin)
@@ -1419,7 +1422,8 @@ def test_spec_troll_member_attacks_ogres(monkeypatch) -> None:
         result = spec_module.spec_troll_member(troll)
         assert result is True
         assert calls == [(troll, ogre)]
-        expected = "a nasty troll says 'What's slimy Ogre trash like you doing around here?'"
+        # INV-029: ROM act_new caps the first letter (src/comm.c:2376-2379).
+        expected = "A nasty troll says 'What's slimy Ogre trash like you doing around here?'"
         assert ogre.messages == [expected]
         assert observer.messages == [expected]
     finally:
@@ -1474,7 +1478,8 @@ def test_spec_ogre_member_attacks_trolls(monkeypatch) -> None:
         result = spec_module.spec_ogre_member(ogre)
         assert result is True
         assert calls == [(ogre, troll)]
-        expected = "a snarling ogre cracks his knuckles and says 'Do ya feel lucky?'"
+        # INV-029: ROM act_new caps the first letter (src/comm.c:2376-2379).
+        expected = "A snarling ogre cracks his knuckles and says 'Do ya feel lucky?'"
         assert troll.messages == [expected]
         assert observer.messages == [expected]
     finally:

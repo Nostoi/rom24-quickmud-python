@@ -61,7 +61,9 @@ def test_act_room_masks_invisible_subject_name_for_nonseeing_witness() -> None:
     # when the recipient has no `connection`). _act_room sends the string WITHOUT
     # a trailing \n\r, so substring-match.
     assert any("Wraith arrives from a puff of smoke." in m for m in seer.messages)
-    assert any("someone arrives from a puff of smoke." in m for m in blindspot.messages)
+    # INV-029 (ACT-FIRST-LETTER-CAP, src/comm.c:2376-2379): ROM act_new caps the
+    # rendered line's first letter, so the masked "someone" renders "Someone".
+    assert any("Someone arrives from a puff of smoke." in m for m in blindspot.messages)
     # The subject never receives their own line (ROM act() TO_ROOM skips the actor).
     assert all("puff of smoke" not in m for m in wraith.messages)
 

@@ -222,27 +222,25 @@ Python now:
 | `WIZ-048` | MEDIUM | `src/act_wiz.c:874-875` (`do_transfer` `act("$n has transferred you.", ch, NULL, victim, TO_VICT)`, PERS name-masking) | `mud/commands/imm_commands.py:282-285` | **INV-027-class name leak (TO_VICT subset), sibling of WIZ-047.** After moving the victim, ROM `do_transfer` notifies the victim via `act(..., victim, TO_VICT)` where `$n` is **`ch`** (the immortal performing the transfer); ROM renders it through `PERS(ch, victim)` → `"someone has transferred you."` when the victim cannot `can_see` the (wiz-invis / invisible) immortal. Python unconditionally uses the immortal's real name: `char_name = getattr(char, "name", "Someone"); _send_to_char(victim, f"{char_name} has transferred you.")`. So a wiz-invis immortal's identity leaks to the transferred victim. Distinct line from WIZ-047 (that masks the TO_ROOM mushroom-cloud/puff-of-smoke `$n` = victim; this masks the TO_VICT `$n` = ch). Surfaced 2026-05-29 while closing WIZ-047. Note ROM also omits the trailing `\n\r` here — Python already omits it, matching. | ✅ **FIXED** — `do_transfer` now renders the notify line as `f"{pers(char, victim)} has transferred you."` (`mud/world/vision.py:pers`, target=immortal, observer=victim) → `"someone"` for a victim who cannot see the wiz-invis/invisible immortal, real name otherwise. `tests/integration/test_act_wiz_command_parity.py::test_transfer_masks_invisible_immortal_name_for_nonseeing_victim` + `::test_transfer_shows_immortal_name_to_seeing_victim`. Cross-ref: `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-027. **Capitalization caveat (lowercase "someone")**: see the ACT-FIRST-LETTER-CAP note below + the new WIZ-049 sibling (`do_force`'s four TO_VICT `$n` lines, same leak, still OPEN). |
 | `WIZ-049` | MEDIUM | `src/act_wiz.c:4201,4253-4254,4276,4316-4319` (`do_force` builds `sprintf(buf, "$n forces you to '%s'.", argument)` then delivers via `act(buf, ch, NULL, vch, TO_VICT)`, PERS name-masking) | `mud/commands/imm_commands.py:327,342,357,387` (`do_force`) | **INV-027-class name leak (TO_VICT subset), third sibling in the `do_transfer`/`do_force` family.** ROM `do_force` renders the forcer's identity through `act()` `$n` = `PERS(ch, vch)` on every branch (`force all`, `force players`, `force gods`, single target), so a wiz-invis / invisible immortal forcing a sub-trust victim shows `"someone forces you to '<cmd>'."` to a victim who cannot `can_see` them. Python uses the raw name unconditionally at all four sites: `_send_to_char(vch, f"{char.name} forces you to '{command}'.\n\r")`. So a wiz-invis immortal's identity leaks to every forced victim. Distinct from WIZ-047 (TO_ROOM, `$n`=victim) and WIZ-048 (`do_transfer` TO_VICT, `$n`=ch): this is `do_force`'s four TO_VICT lines, `$n`=ch. Surfaced 2026-05-29 by the advisor's "grep the family for a third leak" check while closing WIZ-048. | ✅ **FIXED** — `do_force` now renders `$n` per-recipient via `mud/world/vision.py:pers(char, vch)` (single-target: `pers(char, victim)`) at **all four** TO_VICT sites (`imm_commands.py:339,354,369,399`, function-local `pers` import), masking to `"someone forces you to '<cmd>'."` for a victim who cannot see the wiz-invis/invisible forcer, real name otherwise. `tests/integration/test_act_wiz_command_parity.py::test_force_masks_invisible_immortal_name_for_nonseeing_victim` + `::test_force_shows_immortal_name_to_seeing_victim` (single-target branch; the all/players/gods branches share the identical `pers(char, vch)` call). Cross-ref: `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-027. **Capitalization caveat (lowercase "someone")**: ROM `act()` upper-cases the first letter (`src/comm.c:2376-2379`) → ROM render is `"Someone forces you to..."`; the Python act-family does NOT replicate buf[0] capitalization — the cross-cutting ACT-FIRST-LETTER-CAP divergence (→ INV-029) below; the WIZ-047/048/049 tests assert lowercase and move in lockstep when it is closed. |
 
-> **ACT-FIRST-LETTER-CAP (cross-cutting, OPEN, not yet a stable ID).** ROM
-> `act_new` (`src/comm.c:2373-2379`) capitalizes the first letter of every
+> **ACT-FIRST-LETTER-CAP — ✅ CLOSED, promoted to INV-029, ENFORCED (2.11.38).** ROM
+> `act_new` (`src/comm.c:2376-2379`) capitalizes the first letter of every
 > rendered act() line (`buf[0] = UPPER(buf[0])`, or `buf[2]` past a `{` color
-> code). The Python act-family — `mud/utils/act.py:act_format`,
-> `mud/commands/imm_commands.py:_act_room` (WIZ-047), and the WIZ-048/049 notify
-> fixes — does NOT do this. For unmasked names (already capitalized) and "You"
-> there is no visible divergence; it bites ONLY when `$n`/`$N` masks to
-> `"someone"` at sentence start, where ROM emits `"Someone ..."` but Python emits
-> `"someone ..."`. This affects every masked act line, so the right fix is a
-> capitalization step at each act-render boundary. **Blast radius re-probed
-> 2026-05-30 — wider than "single-point":** the faithful chokepoint `act_format`
-> has ~80 call sites (capping its return flips every act line's first letter —
-> mostly no-ops, but `$p` object-led lines like "a sword dissolves" change per
-> ROM), AND the `imm_commands` `pers()`-built f-strings (`do_force` ×4,
-> `do_transfer`, `_act_room`, bamf) do NOT route through `act_format`, so both
-> boundaries need the cap plus a full-suite assertion sweep (do NOT land blind).
-> Filed here as a finding while closing WIZ-048; promote to a stable cross-file ID
-> (INV-029 ACT-SENTENCE-CASE — ⚠️ NOT INV-028, already LIGHT-SLOT-KEY-COHERENCE)
-> when picked up. The WIZ-047/048/049 tests assert
-> lowercase `"someone"` deliberately to match current Python behavior — those
-> assertions will need updating in lockstep when ACT-FIRST-LETTER-CAP is closed.
+> code; `UPPER` flips ASCII `a`–`z` only). The Python act-family did NOT do this;
+> it bit when `$n`/`$N` masked to `"someone"` at sentence start (ROM `"Someone ..."`
+> vs Python `"someone ..."`) and on any lowercase-led line (`$p` object short_descrs
+> like `"a sword dissolves..."`). **Closed** via a shared
+> `mud/utils/act.py:capitalize_act_line` helper (replicating the `{`-kludge) applied
+> at both render boundaries: `act_format`'s return (the ~113-call-site `act_new`
+> equivalent) and the `imm_commands` `pers()`-built f-strings (`do_force` ×4
+> `:339,354,369,399`, `do_transfer` `:290`, `_act_room`, `_act_room_invis_gated`).
+> A full-suite assertion sweep flipped 15 now-stale lowercase assertions (incl. the
+> WIZ-047/048/049 `"someone"` → `"Someone"` lockstep). Test
+> `tests/integration/test_inv029_act_first_letter_cap.py`; full suite 5002 passed /
+> 0 failed. **Tracked cousins (still uncapped, direct-f-string `act()` sites that
+> bypass `act_format`):** `do_say`/`do_tell` (`mud/commands/communication.py`) and
+> the combat damage messages (`mud/combat/messages.py`/`engine.py`); close each with
+> its own failing-first test. See `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`
+> INV-029 for the canonical row.
 
 ## Phase 4 — Closures
 

@@ -1799,13 +1799,9 @@ def test_transfer_masks_invisible_immortal_name_for_nonseeing_victim() -> None:
     # via act("$n has transferred you.", ch, NULL, victim, TO_VICT); $n is the
     # IMMORTAL (ch), rendered through PERS(ch, victim) -> "someone" when the
     # victim cannot can_see the (invisible/wiz-invis) immortal. WIZ-048.
-    # NOTE: ROM act() also upper-cases buf[0] (src/comm.c:2376-2379) so the real
-    # ROM render is "Someone has transferred you." (capital S). The Python
-    # act-family does NOT replicate buf[0] capitalization — a separate,
-    # cross-cutting divergence (ACT-FIRST-LETTER-CAP, OPEN; see
-    # docs/parity/ACT_WIZ_C_AUDIT.md). We assert lowercase "someone" to match the
-    # current Python convention + the WIZ-047 sibling; both assertions move in
-    # lockstep when ACT-FIRST-LETTER-CAP is closed.
+    # INV-029 (ACT-FIRST-LETTER-CAP, src/comm.c:2376-2379): ROM act_new upper-cases
+    # buf[0] of the rendered line, so the masked "someone" renders "Someone".
+    # Enforced via mud.utils.act.capitalize_act_line at both act render boundaries.
     src = _room(9150, name="Wizard Hall")
     src.sector_type = int(Sector.INSIDE)  # INSIDE is never dark -> only invis governs visibility
     dst = _room(9151, name="Target Hall")
@@ -1819,7 +1815,7 @@ def test_transfer_masks_invisible_immortal_name_for_nonseeing_victim() -> None:
 
     do_transfer(ghost, "Pawn")  # no location arg -> location = ghost.room
 
-    assert any("someone has transferred you." in m for m in victim.messages)
+    assert any("Someone has transferred you." in m for m in victim.messages)
     assert not any("Spectre has transferred you." in m for m in victim.messages)
 
 
@@ -1849,7 +1845,8 @@ def test_force_masks_invisible_immortal_name_for_nonseeing_victim() -> None:
     # act(buf, ch, NULL, victim, TO_VICT); $n is the forcer (ch), rendered
     # through PERS(ch, victim) -> "someone" when the victim cannot can_see the
     # (invisible/wiz-invis) immortal. WIZ-049 (single-target branch).
-    # Lowercase "someone" per the ACT-FIRST-LETTER-CAP convention (see WIZ-048).
+    # INV-029 (ACT-FIRST-LETTER-CAP, src/comm.c:2376-2379): ROM act_new caps the
+    # rendered line's first letter, so the masked "someone" renders "Someone".
     room = _room(9160, name="Force Hall")
     room.sector_type = int(Sector.INSIDE)  # INSIDE never dark -> only invis governs
 
@@ -1861,7 +1858,7 @@ def test_force_masks_invisible_immortal_name_for_nonseeing_victim() -> None:
 
     do_force(ghost, "Thrall smile")
 
-    assert any("someone forces you to 'smile'." in m for m in victim.messages)
+    assert any("Someone forces you to 'smile'." in m for m in victim.messages)
     assert not any("Tyrant forces you to" in m for m in victim.messages)
 
 

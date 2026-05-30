@@ -273,11 +273,14 @@ def test_song_update_jukebox_visibility_uses_per_viewer_object_rendering(music_w
 
     try:
         song_update()
-        assert seer.messages[-1] == "the jukebox starts playing The Band, Anthem."
-        assert occluded.messages[-1] == "something starts playing The Band, Anthem."
+        # INV-029: ROM act_new caps the first letter (src/comm.c:2376-2379);
+        # the $p object name leads the line, so "the jukebox"/"something" cap.
+        assert seer.messages[-1] == "The jukebox starts playing The Band, Anthem."
+        assert occluded.messages[-1] == "Something starts playing The Band, Anthem."
 
         song_update()
-        assert seer.messages[-1] == "the jukebox bops: 'Line one'"
-        assert occluded.messages[-1] == "something bops: 'Line one'"
+        # INV-029: ROM act_new caps the first letter (src/comm.c:2376-2379).
+        assert seer.messages[-1] == "The jukebox bops: 'Line one'"
+        assert occluded.messages[-1] == "Something bops: 'Line one'"
     finally:
         object_registry.remove(jukebox)

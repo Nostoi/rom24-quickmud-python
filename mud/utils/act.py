@@ -115,6 +115,31 @@ def _object_name(obj: Any | None, viewer: Any | None = None) -> str:
     return str(obj)
 
 
+def capitalize_act_line(text: str) -> str:
+    """Capitalize the first visible letter of a rendered ``act()`` line.
+
+    INV-029 (ACT-FIRST-LETTER-CAP). Mirrors ROM ``act_new``
+    (``src/comm.c:2376-2379``): after the per-recipient buffer is formatted,
+    ROM upper-cases ``buf[0]`` — with a kludge for a leading ``{`` colour code,
+    where it caps ``buf[2]`` (the char after the 2-char ``{X`` code) instead.
+    ``UPPER`` (``src/merc.h``) flips ASCII ``a``–``z`` only; digits, punctuation,
+    and non-ASCII characters are left untouched.
+    """
+
+    if not text:
+        return text
+
+    def _upper(c: str) -> str:
+        return chr(ord(c) - 32) if "a" <= c <= "z" else c
+
+    if text[0] == "{":
+        # ROM caps buf[2]; a bare 2-char colour code has nothing to cap.
+        if len(text) >= 3:
+            return text[:2] + _upper(text[2]) + text[3:]
+        return text
+    return _upper(text[0]) + text[1:]
+
+
 def act_format(
     format_str: str,
     *,
@@ -190,4 +215,6 @@ def act_format(
             # Preserve unknown tokens verbatim for easier debugging.
             result.append(f"${token}")
 
-    return "".join(result)
+    # INV-029 (ACT-FIRST-LETTER-CAP): ROM act_new caps the first visible letter
+    # of the formatted buffer before delivery (src/comm.c:2376-2379).
+    return capitalize_act_line("".join(result))

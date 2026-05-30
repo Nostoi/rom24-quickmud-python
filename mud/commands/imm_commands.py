@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 
 from mud.models.character import Character
 from mud.models.constants import RoomFlag
+from mud.utils.act import capitalize_act_line
 
 if TYPE_CHECKING:
     pass
@@ -287,7 +288,8 @@ def do_transfer(char: Character, args: str) -> str:
         # ROM src/act_wiz.c:874-875.
         from mud.world.vision import pers  # function-local: avoid import cycle
 
-        _send_to_char(victim, f"{pers(char, victim)} has transferred you.")
+        # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
+        _send_to_char(victim, capitalize_act_line(f"{pers(char, victim)} has transferred you."))
 
     # Make victim look
     from mud.commands.inspection import do_look
@@ -336,7 +338,8 @@ def do_force(char: Character, args: str) -> str:
             if getattr(desc, "connected", 0) != 0:
                 continue
             if get_trust(vch) < get_trust(char):
-                _send_to_char(vch, f"{pers(char, vch)} forces you to '{command}'.\n\r")
+                # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
+                _send_to_char(vch, capitalize_act_line(f"{pers(char, vch)} forces you to '{command}'.\n\r"))
                 from mud.commands import process_command
                 process_command(vch, command)
 
@@ -351,7 +354,8 @@ def do_force(char: Character, args: str) -> str:
 
         for vch in list(getattr(registry, "char_list", [])):
             if not getattr(vch, "is_npc", False) and get_trust(vch) < get_trust(char) and getattr(vch, "level", 1) < LEVEL_HERO:
-                _send_to_char(vch, f"{pers(char, vch)} forces you to '{command}'.\n\r")
+                # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
+                _send_to_char(vch, capitalize_act_line(f"{pers(char, vch)} forces you to '{command}'.\n\r"))
                 from mud.commands import process_command
                 process_command(vch, command)
 
@@ -366,7 +370,8 @@ def do_force(char: Character, args: str) -> str:
 
         for vch in list(getattr(registry, "char_list", [])):
             if not getattr(vch, "is_npc", False) and get_trust(vch) < get_trust(char) and getattr(vch, "level", 1) >= LEVEL_HERO:
-                _send_to_char(vch, f"{pers(char, vch)} forces you to '{command}'.\n\r")
+                # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
+                _send_to_char(vch, capitalize_act_line(f"{pers(char, vch)} forces you to '{command}'.\n\r"))
                 from mud.commands import process_command
                 process_command(vch, command)
 
@@ -396,7 +401,8 @@ def do_force(char: Character, args: str) -> str:
     if not getattr(victim, "is_npc", False) and get_trust(char) < MAX_LEVEL - 3:
         return "Not at your level!\n\r"
 
-    _send_to_char(victim, f"{pers(char, victim)} forces you to '{command}'.\n\r")
+    # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
+    _send_to_char(victim, capitalize_act_line(f"{pers(char, victim)} forces you to '{command}'.\n\r"))
     from mud.commands import process_command
     process_command(victim, command)
 
@@ -502,7 +508,8 @@ def _act_room(room, char: Character, message: str) -> None:
         if person is char:
             continue
         # ROM PERS(ch=char, looker=person): src/act_wiz.c:870,873 act(...,TO_ROOM)
-        formatted = message.replace("$n", pers(char, person))
+        # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
+        formatted = capitalize_act_line(message.replace("$n", pers(char, person)))
         _send_to_char(person, formatted)
 
 
@@ -520,7 +527,8 @@ def _act_room_invis_gated(room, char: Character, message: str) -> None:
     """
     invis_level = int(getattr(char, "invis_level", 0) or 0)
     char_name = getattr(char, "name", "Someone")
-    formatted = message.replace("$n", char_name)
+    # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
+    formatted = capitalize_act_line(message.replace("$n", char_name))
 
     for person in getattr(room, "people", []):
         if person is char:

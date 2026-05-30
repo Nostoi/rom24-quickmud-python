@@ -236,7 +236,9 @@ def test_wiznet_requires_specific_flag():
     # After subscribing to WIZ_TICKS, should receive.
     imm.wiznet |= int(WiznetFlag.WIZ_TICKS)
     wiznet("tick2", WiznetFlag.WIZ_TICKS)
-    assert any(msg == _wiznet_payload("tick2") for msg in imm.messages)
+    # INV-029: ROM act_new caps the rendered line's first visible letter
+    # (src/comm.c:2376-2379) — here buf[2], the char after the "{Z" colour code.
+    assert any(msg == _wiznet_payload("Tick2") for msg in imm.messages)
 
 
 def test_wiznet_secure_flag_gating():
@@ -255,7 +257,8 @@ def test_wiznet_secure_flag_gating():
     # After subscribing to WIZ_SECURE, message should be delivered
     imm.wiznet |= int(WiznetFlag.WIZ_SECURE)
     wiznet("secure2", WiznetFlag.WIZ_SECURE)
-    assert any(msg == _wiznet_payload("secure2") for msg in imm.messages)
+    # INV-029: ROM act_new caps buf[2] (the char after the "{Z" colour code).
+    assert any(msg == _wiznet_payload("Secure2") for msg in imm.messages)
 
 
 def test_wiznet_status_command():
@@ -515,7 +518,8 @@ def test_wiznet_min_level_blocks_low_trust_listeners():
         50,
     )
 
-    assert high_trust.messages == [_wiznet_payload("rare artifact arrives.")]
+    # INV-029: ROM act_new caps buf[2] (the char after the "{Z" colour code).
+    assert high_trust.messages == [_wiznet_payload("Rare artifact arrives.")]
     assert low_trust.messages == []
 
     character_registry.clear()
@@ -549,7 +553,8 @@ def test_wiznet_trust_allows_secure_options():
 
     trusted.messages.clear()
     wiznet("secure notice", None, None, WiznetFlag.WIZ_SECURE, None, 60)
-    assert trusted.messages == [_wiznet_payload("secure notice")]
+    # INV-029: ROM act_new caps buf[2] (the char after the "{Z" colour code).
+    assert trusted.messages == [_wiznet_payload("Secure notice")]
 
     # Base level without additional trust should not see or toggle secure.
     show_low = process_command(low_trust, "wiznet show")
