@@ -146,7 +146,7 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**✅ ENFORCED: INV-027 — ACT-PERS-NAME-MASKING (per-recipient subset)** (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; **prerequisite VISION-001 landed 2.11.33 and enforcement landed 2.11.34**). Per-recipient `$n`/`$N` masking now routes through `can_see_character`; the broadcast-once `recipient=None` path stays the documented MESSAGE_DELIVERY.md divergence. See the "Enforcement outcome (2026-05-29)" bullet below.
+**✅ ENFORCED: INV-027 — ACT-PERS-NAME-MASKING (per-recipient `act_format` subset; `imm_commands._act_room` remainder OPEN as WIZ-047)** (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; **prerequisite VISION-001 landed 2.11.33 and enforcement landed 2.11.34**). Per-recipient `$n`/`$N` masking now routes through `can_see_character`; the broadcast-once `recipient=None` path stays the documented MESSAGE_DELIVERY.md divergence. See the "Enforcement outcome (2026-05-29)" bullet below.
 
 **Enforcement point**: `mud/utils/act.py:_pers` (gated on `viewer is not None`). **Test**: `tests/integration/test_inv027_act_pers_name_masking.py` (masking + `recipient=None` boundary). **Prerequisite**: VISION-001 (`docs/parity/HANDLER_C_AUDIT.md`).
 
@@ -279,11 +279,20 @@ the cross-file work is tracked here.
     test (real `Character`s) locks the masking contract.
   - The `xfail` marker on `test_act_pers_masks_invisible_actor_name_for_nonseeing_recipient`
     is removed; it is now a passing test. Full suite: 4989 passed, 4 skipped, 0 xfailed.
-  - **Scope**: the per-recipient subset is ENFORCED. The broadcast-once
-    (`recipient=None`) path remains the documented MESSAGE_DELIVERY.md architectural
-    divergence (pinned by the boundary test). The two `_act_room` helpers
-    (`imm_commands.py` vs `imm_display.py`) are not part of this enforcement — their
-    PERS reconciliation, if pursued, is separate.
+  - **Scope**: the per-recipient **`act_format`** subset is ENFORCED. The
+    broadcast-once (`recipient=None`) path remains the documented MESSAGE_DELIVERY.md
+    architectural divergence (pinned by the boundary test).
+  - **Remaining (OPEN) — `imm_commands._act_room` `$n` leak → WIZ-047.** This
+    enforcement deliberately scoped the code fix to `mud/utils/act.py:_pers` and did
+    **not** touch the two `_act_room` helpers. `mud/commands/imm_commands.py:_act_room`
+    (line 475) still does `message.replace("$n", char_name)` **unconditionally** (no
+    PERS masking), so `do_transfer` leaks an invisible/wiz-invis immortal's real name
+    to non-seeing witnesses — the same INV-027 PERS contract on a different
+    enforcement point. The original INV-027 writeup listed "reconcile the two
+    `_act_room` helpers onto the same PERS semantics" as in-scope; that half is now
+    tracked as a durable OPEN gap **WIZ-047** in `docs/parity/ACT_WIZ_C_AUDIT.md`
+    (Phase 3 — Gaps). INV-027's `act_format` enforcement does **not** cover it; close
+    WIZ-047 with its own failing test to fully retire the PERS-masking contract.
 
 <details><summary>Original (incorrect) framing — retained for the audit trail</summary>
 
