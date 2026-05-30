@@ -146,7 +146,7 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**✅ ENFORCED: INV-027 — ACT-PERS-NAME-MASKING (`act_format` subset 2.11.34; `imm_commands.do_transfer` PERS closed via WIZ-047 2.11.35 + WIZ-048 2.11.36; `do_force` remainder OPEN as WIZ-049)** (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; **prerequisite VISION-001 landed 2.11.33 and enforcement landed 2.11.34**). Per-recipient `$n`/`$N` masking now routes through `can_see_character`; the broadcast-once `recipient=None` path stays the documented MESSAGE_DELIVERY.md divergence. See the "Enforcement outcome (2026-05-29)" bullet below.
+**✅ ENFORCED: INV-027 — ACT-PERS-NAME-MASKING (`act_format` subset 2.11.34; `imm_commands.do_transfer` PERS closed via WIZ-047 2.11.35 + WIZ-048 2.11.36; `do_force` PERS closed via WIZ-049 2.11.37; only the cross-cutting ACT-FIRST-LETTER-CAP/INV-028 capitalization divergence remains)** (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; **prerequisite VISION-001 landed 2.11.33 and enforcement landed 2.11.34**). Per-recipient `$n`/`$N` masking now routes through `can_see_character`; the broadcast-once `recipient=None` path stays the documented MESSAGE_DELIVERY.md divergence. See the "Enforcement outcome (2026-05-29)" bullet below.
 
 **Enforcement point**: `mud/utils/act.py:_pers` (gated on `viewer is not None`). **Test**: `tests/integration/test_inv027_act_pers_name_masking.py` (masking + `recipient=None` boundary). **Prerequisite**: VISION-001 (`docs/parity/HANDLER_C_AUDIT.md`).
 
@@ -293,11 +293,16 @@ the cross-file work is tracked here.
     `src/act_wiz.c:874-875`) now renders via `pers(char, victim)`
     (`imm_commands.py:282-290`; `tests/integration/test_act_wiz_command_parity.py::test_transfer_masks_invisible_immortal_name_for_nonseeing_victim`
     + `::test_transfer_shows_immortal_name_to_seeing_victim`).
-  - **Remaining (OPEN) — WIZ-049.** The same PERS leak in `do_force`'s four
+  - **WIZ-049 — ✅ FIXED (2.11.37).** The same PERS leak in `do_force`'s four
     TO_VICT `"$n forces you to '<cmd>'."` lines (`src/act_wiz.c:4205,4228,4251,4274,4316`,
-    `$n`=the forcer) — Python uses the raw name at `imm_commands.py:327,342,357,387`.
-    Filed as **WIZ-049** in `docs/parity/ACT_WIZ_C_AUDIT.md`; `rom-gap-closer`-able,
-    one gap = one test = one commit. Surfaced 2026-05-29 while closing WIZ-048.
+    `$n`=the forcer) — now renders via `mud/world/vision.py:pers(char, vch)`
+    (single-target: `pers(char, victim)`) at all four sites
+    (`imm_commands.py:339,354,369,399`). Tests:
+    `tests/integration/test_act_wiz_command_parity.py::test_force_masks_invisible_immortal_name_for_nonseeing_victim`
+    + `::test_force_shows_immortal_name_to_seeing_victim`. **The INV-027 PERS-masking
+    contract is now fully enforced** across `act_format` (`$n`/`$N`), `_act_room`
+    (TO_ROOM), `do_transfer` (TO_VICT), and `do_force` (TO_VICT) — no known
+    PERS-leak sites remain. Only the cross-cutting capitalization item below is open.
   - **Cross-cutting (OPEN) — ACT-FIRST-LETTER-CAP (→ INV-028).** ROM `act_new`
     upper-cases the first letter of every rendered line (`src/comm.c:2376-2379`),
     so a masked `$n` at sentence start is `"Someone …"` in ROM but `"someone …"`

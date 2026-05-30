@@ -6,7 +6,7 @@ import pytest
 
 from mud import registry as global_registry
 from mud.commands.imm_admin import do_snoop
-from mud.commands.imm_commands import do_goto, do_transfer
+from mud.commands.imm_commands import do_force, do_goto, do_transfer
 from mud.commands.imm_server import do_protect, do_violate
 from mud.models.character import Character, character_registry
 from mud.models.constants import ActFlag, AffectFlag, CommFlag, Sector
@@ -1841,3 +1841,43 @@ def test_transfer_shows_immortal_name_to_seeing_victim() -> None:
     do_transfer(ghost, "Seer")
 
     assert any("Wraithlord has transferred you." in m for m in victim.messages)
+
+
+def test_force_masks_invisible_immortal_name_for_nonseeing_victim() -> None:
+    # mirrors ROM src/act_wiz.c:4205,4316 — do_force builds
+    # sprintf(buf, "$n forces you to '%s'.", argument) and delivers it via
+    # act(buf, ch, NULL, victim, TO_VICT); $n is the forcer (ch), rendered
+    # through PERS(ch, victim) -> "someone" when the victim cannot can_see the
+    # (invisible/wiz-invis) immortal. WIZ-049 (single-target branch).
+    # Lowercase "someone" per the ACT-FIRST-LETTER-CAP convention (see WIZ-048).
+    room = _room(9160, name="Force Hall")
+    room.sector_type = int(Sector.INSIDE)  # INSIDE never dark -> only invis governs
+
+    ghost = _imm("Tyrant", room.vnum, trust=60)
+    ghost.add_affect(AffectFlag.INVISIBLE)
+
+    victim = _imm("Thrall", room.vnum, trust=5)  # no detect-invis -> cannot see ghost
+    victim.messages.clear()
+
+    do_force(ghost, "Thrall smile")
+
+    assert any("someone forces you to 'smile'." in m for m in victim.messages)
+    assert not any("Tyrant forces you to" in m for m in victim.messages)
+
+
+def test_force_shows_immortal_name_to_seeing_victim() -> None:
+    # Regression guard: a victim with detect-invis CAN see the invisible forcer,
+    # so PERS(ch, victim) returns the real name. ROM src/act_wiz.c:4205,4316.
+    room = _room(9161, name="Force Hall")
+    room.sector_type = int(Sector.INSIDE)
+
+    ghost = _imm("Despot", room.vnum, trust=60)
+    ghost.add_affect(AffectFlag.INVISIBLE)
+
+    victim = _imm("Watcher", room.vnum, trust=5)
+    victim.add_affect(AffectFlag.DETECT_INVIS)  # can_see -> real name
+    victim.messages.clear()
+
+    do_force(ghost, "Watcher smile")
+
+    assert any("Despot forces you to 'smile'." in m for m in victim.messages)

@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.37]
+
+### Fixed
+- **`WIZ-049` — `do_force` leaked the forcing immortal's name to forced victims across all four branches; the third (and final) PERS-leak sibling in the `do_transfer`/`do_force` family.** ROM `do_force` (`src/act_wiz.c:4205`) builds `sprintf(buf, "$n forces you to '%s'.", argument)` and delivers it via `act(buf, ch, NULL, vch, TO_VICT)` at `:4228` (force all), `:4251` (force players), `:4274` (force gods), `:4316` (single target) — `$n` is the **forcer** (`ch`), rendered through `PERS(ch, vch)` → `"someone forces you to '<cmd>'."` when the victim cannot `can_see` the (invisible / wiz-invis) immortal. Python (`mud/commands/imm_commands.py:do_force`) used the raw name unconditionally at all four sites, leaking a wiz-invis immortal's identity to every forced victim. Now each site renders `$n` per-recipient via `mud/world/vision.py:pers(char, vch)` (single-target: `pers(char, victim)`) — the same helper the WIZ-047/048 and `act_format._pers` enforcements use. `gitnexus_impact` = LOW. Regression: `tests/integration/test_act_wiz_command_parity.py::test_force_masks_invisible_immortal_name_for_nonseeing_victim` + `::test_force_shows_immortal_name_to_seeing_victim` (single-target branch; the all/players/gods branches share the identical `pers(char, vch)` call). **With WIZ-049 closed, the INV-027 (ACT-PERS-NAME-MASKING) contract is fully enforced** across `act_format`, `_act_room` (TO_ROOM), `do_transfer` (TO_VICT), and `do_force` (TO_VICT) — no known PERS-leak sites remain. The only open INV-027-adjacent item is the cross-cutting **ACT-FIRST-LETTER-CAP** divergence (ROM `act()` upper-cases `buf[0]`, `src/comm.c:2376-2379`, so the masked render is `"Someone …"`; the Python act-family does not — filed to become INV-028; the WIZ-047/048/049 tests assert lowercase `"someone"` and move in lockstep when it is closed). See `docs/parity/ACT_WIZ_C_AUDIT.md` (WIZ-049 ✅ FIXED) and `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-027.
+
 ## [2.11.36]
 
 ### Fixed

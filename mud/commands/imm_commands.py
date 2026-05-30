@@ -299,6 +299,13 @@ def do_transfer(char: Character, args: str) -> str:
 
 def do_force(char: Character, args: str) -> str:
     # mirrors ROM src/act_wiz.c:4183-4322
+    # WIZ-049 / INV-027: ROM builds sprintf(buf, "$n forces you to '%s'.", argument)
+    # (src/act_wiz.c:4205) and delivers via act(buf, ch, NULL, vch, TO_VICT) at
+    # :4228/4251/4274/4316, so $n is the forcer (ch) rendered through
+    # PERS(ch, vch) → "someone" for a victim who cannot can_see the
+    # (invisible/wiz-invis) immortal. Mask per-recipient at every delivery site.
+    from mud.world.vision import pers  # function-local: avoid import cycle
+
     if not args or not args.strip():
         # mirroring ROM src/act_wiz.c:4191-4194
         return "Force whom to do what?\n\r"
@@ -329,7 +336,7 @@ def do_force(char: Character, args: str) -> str:
             if getattr(desc, "connected", 0) != 0:
                 continue
             if get_trust(vch) < get_trust(char):
-                _send_to_char(vch, f"{char.name} forces you to '{command}'.\n\r")
+                _send_to_char(vch, f"{pers(char, vch)} forces you to '{command}'.\n\r")
                 from mud.commands import process_command
                 process_command(vch, command)
 
@@ -344,7 +351,7 @@ def do_force(char: Character, args: str) -> str:
 
         for vch in list(getattr(registry, "char_list", [])):
             if not getattr(vch, "is_npc", False) and get_trust(vch) < get_trust(char) and getattr(vch, "level", 1) < LEVEL_HERO:
-                _send_to_char(vch, f"{char.name} forces you to '{command}'.\n\r")
+                _send_to_char(vch, f"{pers(char, vch)} forces you to '{command}'.\n\r")
                 from mud.commands import process_command
                 process_command(vch, command)
 
@@ -359,7 +366,7 @@ def do_force(char: Character, args: str) -> str:
 
         for vch in list(getattr(registry, "char_list", [])):
             if not getattr(vch, "is_npc", False) and get_trust(vch) < get_trust(char) and getattr(vch, "level", 1) >= LEVEL_HERO:
-                _send_to_char(vch, f"{char.name} forces you to '{command}'.\n\r")
+                _send_to_char(vch, f"{pers(char, vch)} forces you to '{command}'.\n\r")
                 from mud.commands import process_command
                 process_command(vch, command)
 
@@ -389,7 +396,7 @@ def do_force(char: Character, args: str) -> str:
     if not getattr(victim, "is_npc", False) and get_trust(char) < MAX_LEVEL - 3:
         return "Not at your level!\n\r"
 
-    _send_to_char(victim, f"{char.name} forces you to '{command}'.\n\r")
+    _send_to_char(victim, f"{pers(char, victim)} forces you to '{command}'.\n\r")
     from mud.commands import process_command
     process_command(victim, command)
 
