@@ -193,7 +193,15 @@ class Room:
         characters receive the message immediately via fire-and-forget
         asyncio task.  The queue fallback exists for tests.
         See docs/divergences/MESSAGE_DELIVERY.md.
+
+        ACT-CAP-002 / INV-029: ROM act_new (src/comm.c:2376-2379) caps the first
+        visible char of every delivered line. Room.broadcast is an act(TO_ROOM)
+        delivery boundary that receives a baked string — cap once at entry,
+        matching the broadcast_room pattern (ACT-CAP-001).
         """
+        from mud.utils.act import capitalize_act_line
+
+        message = capitalize_act_line(message)
         for char in self.people:
             if char is exclude:
                 continue

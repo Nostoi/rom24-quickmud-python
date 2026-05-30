@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.11.41]
+
+### Fixed
+- **`ACT-CAP-002` (Room.broadcast + _message_room + TO_ALL caster legs) — ✅ FIXED; closes the parallel room-broadcast half of INV-029.** Three uncapped `act()`-equivalent delivery surfaces left by ACT-CAP-001 (`broadcast_room`): **(a)** `mud/models/room.py:Room.broadcast` — the ~20-caller `act(TO_ROOM)`-equivalent terminal delivery primitive, now caps at entry via `capitalize_act_line` (same pattern as `broadcast_room`). **(b)** `mud/game_loop.py:_message_room` — the object wear-off room broadcast (`$p fades into view.` etc.), now caps at entry; the delegation to `Room.broadcast` gets a double-cap, but `capitalize_act_line` is idempotent on already-capped text. **(c)** the **TO_ALL caster legs** in object-spell handlers: ROM `act("$p fades out of sight.", …, TO_ALL)` caps for everyone including the caster, but the Python handlers split into `_send_to_char(caster, message)` (uncapped) + `broadcast_room(room, message, exclude=caster)` (capped), producing a lowercase caster leg. Fixed by capping the shared `message` at each build site (`invis`, `poison`, `remove_curse`, `continual_light` object-glow, `create_food`) so both legs match ROM `act(..., TO_ALL)`. **`broadcast_global` is still NOT capped** — it is mixed (channels are `act()`, ROM weather is `send_to_char`); needs per-channel treatment. Regression: `tests/integration/test_act_cap_002_room_broadcast.py` (8 — Room.broadcast × 4 + _message_room × 2 + invis caster + remove_curse caster). Full-suite sweep re-baselined 8 stale lowercase assertions (`test_skills_buffs` invis ×2 + wear-off, `test_skills_debuffs` poison, `test_skills_conjuration` mushroom + continual-light, `test_skills_healing` remove_curse, `test_spell_creation_rom_parity` mushroom + continual-light, `test_game_loop` torch-out + corpse-decay + container-spill). Full suite 5014 passed / 0 failed. See `docs/parity/FIGHT_C_AUDIT.md` ACT-CAP-002 and `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-029.
+
 ## [2.11.40]
 
 ### Fixed

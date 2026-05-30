@@ -147,10 +147,10 @@ def test_poison_envenoms_weapon_and_messages(monkeypatch: pytest.MonkeyPatch) ->
     assert effect.bitvector == int(WeaponFlag.POISON)
     assert getattr(effect, "wear_off_message") == "The poison on $p dries up."
 
-    # ACT-CAP-001: broadcast_room caps the room leg. ROM act("$p is coated with
-    # deadly venom.", ch, obj, NULL, TO_ALL) caps for all; the Python caster leg
-    # uses the still-uncapped _send_to_char path (ACT-CAP-002), so it stays lowercase.
-    assert caster.messages[-1] == "serrated dagger is coated with deadly venom."
+    # ACT-CAP-002: ROM act("$p is coated with
+    # deadly venom.", ch, obj, NULL, TO_ALL) caps for all including caster.
+    # Both legs now capitalize the shared message at the build site.
+    assert caster.messages[-1] == "Serrated dagger is coated with deadly venom."
     assert witness.messages[-1] == "Serrated dagger is coated with deadly venom."
 
     caster.messages.clear()

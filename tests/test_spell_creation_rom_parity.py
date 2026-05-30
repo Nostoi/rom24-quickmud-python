@@ -132,8 +132,9 @@ def test_create_food_creates_mushroom_in_room_and_messages() -> None:
     assert mushroom.location is room
 
     # ROM-style messaging uses short_descr.
-    assert caster.messages[-1] == "a mushroom suddenly appears."
-    assert "a mushroom suddenly appears." in observer.messages
+    # ACT-CAP-002: both TO_CHAR and TO_ROOM legs are capped via act_new.
+    assert caster.messages[-1] == "A mushroom suddenly appears."
+    assert "A mushroom suddenly appears." in observer.messages
 
 
 def test_create_food_sets_value_slots_from_level_and_preserves_rest() -> None:
@@ -396,7 +397,7 @@ def test_continual_light_adds_glow_flag_to_target_and_blocks_duplicate() -> None
 
     assert continual_light(caster, amulet) is True
     assert amulet.extra_flags & int(ExtraFlag.GLOW)
-    assert caster.messages[-1] == "a silver amulet glows with a white light."
+    assert caster.messages[-1] == "A silver amulet glows with a white light."
 
     caster.messages.clear()
     assert continual_light(caster, amulet) is False

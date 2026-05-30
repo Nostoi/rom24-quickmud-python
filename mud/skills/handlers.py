@@ -76,6 +76,7 @@ from mud.skills.metadata import ROM_SKILL_METADATA, ROM_SKILL_NAMES_BY_INDEX
 from mud.skills.registry import check_improve
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
+from mud.utils.act import capitalize_act_line
 from mud.world.look import look
 from mud.world.movement import _get_random_room
 from mud.world.vision import can_see_object, can_see_room, room_is_dark
@@ -2424,6 +2425,8 @@ def continual_light(
 
         target.extra_flags = extra_flags | int(ExtraFlag.GLOW)
         message = f"{_object_short_descr(target)} glows with a white light."
+        # ACT-CAP-002: ROM act("$p glows with a white light.", ch, light, NULL, TO_ALL)
+        message = capitalize_act_line(message)
         _send_to_char(caster, message)
 
         room = getattr(caster, "room", None)
@@ -2497,6 +2500,9 @@ def create_food(caster: Character, target: Object | None = None) -> Object | Non
 
     room.add_object(mushroom)
     message = f"{_object_short_descr(mushroom)} suddenly appears."
+    # ACT-CAP-002: ROM act("$p suddenly appears.", ch, mushroom, NULL, TO_ROOM)
+    # plus TO_CHAR — both legs cap the first char via act_new.
+    message = capitalize_act_line(message)
     room.broadcast(message, exclude=caster)
     _send_to_char(caster, message)
     return mushroom
@@ -5524,6 +5530,10 @@ def invis(caster: Character, target: Character | Object | None = None) -> bool:
 
         obj.extra_flags = extra_flags | int(ExtraFlag.INVIS)
         message = f"{_object_short_descr(obj)} fades out of sight."
+        # ACT-CAP-002: ROM act("$p fades out of sight.", ch, obj, NULL, TO_ALL)
+        # caps for everyone including the caster. Cap the shared message so both
+        # the _send_to_char caster leg and broadcast_room room leg are capitalized.
+        message = capitalize_act_line(message)
         _send_to_char(caster, message)
 
         caster_room = getattr(caster, "room", None)
@@ -6459,6 +6469,8 @@ def poison(
             obj.weapon_flags = new_flags
 
             message = f"{_object_short_descr(obj)} is coated with deadly venom."
+            # ACT-CAP-002: ROM act("$p is coated with deadly venom.", ch, obj, NULL, TO_ALL)
+            message = capitalize_act_line(message)
             _send_to_char(caster, message)
             room = getattr(caster, "room", None)
             if room is not None:
@@ -6987,6 +6999,8 @@ def remove_curse(
         obj.extra_flags = base_flags
 
         message = f"{_object_short_descr(obj)} glows blue."
+        # ACT-CAP-002: ROM act("$p glows blue.", ch, obj, NULL, TO_ALL)
+        message = capitalize_act_line(message)
         _send_to_char(caster, message)
         room = getattr(caster, "room", None)
         if room is not None:

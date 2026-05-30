@@ -147,8 +147,8 @@ def test_remove_curse_dispels_affect_and_object_flags(monkeypatch: pytest.Monkey
     assert skill_handlers.remove_curse(caster, cursed_weapon) is True
     assert cursed_weapon.extra_flags & int(ExtraFlag.NODROP) == 0
     assert cursed_weapon.extra_flags & int(ExtraFlag.NOREMOVE) == 0
-    # ACT-CAP-001: broadcast_room caps the room leg. ROM act("$p glows blue.",
-    # TO_ALL) caps for all; the caster leg uses the uncapped _send_to_char path
-    # (ACT-CAP-002), so it stays lowercase here.
-    assert caster.messages[-1] == "cursed sword glows blue."
+    # ACT-CAP-002: ROM act("$p glows blue.",
+    # TO_ALL) caps for all including the caster. The shared message is now
+    # capitalized at the build site so both legs match ROM.
+    assert caster.messages[-1] == "Cursed sword glows blue."
     assert observer.messages[-1] == "Cursed sword glows blue."

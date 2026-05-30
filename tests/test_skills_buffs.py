@@ -578,11 +578,10 @@ def test_invis_handles_objects_and_characters() -> None:
 
     assert skill_handlers.invis(caster, obj) is True
     assert obj.extra_flags & int(ExtraFlag.INVIS)
-    # ACT-CAP-001: broadcast_room caps the room-leg act() line. ROM
-    # act("$p fades out of sight.", ch, obj, NULL, TO_ALL) caps for everyone,
-    # but the Python caster leg uses the still-uncapped _send_to_char path
-    # (ACT-CAP-002), so the caster line stays lowercase here until that closes.
-    assert caster.messages[-1] == "mysterious gem fades out of sight."
+    # ACT-CAP-002: ROM act("$p fades out of sight.", ch, obj, NULL, TO_ALL) caps
+    # for everyone including the caster. Both _send_to_char and broadcast_room
+    # get the capped message now.
+    assert caster.messages[-1] == "Mysterious gem fades out of sight."
     assert witness.messages[-1] == "Mysterious gem fades out of sight."
 
     caster.messages.clear()
@@ -615,8 +614,8 @@ def test_invis_object_wears_off() -> None:
     try:
         assert skill_handlers.invis(caster, obj) is True
         assert obj.extra_flags & int(ExtraFlag.INVIS)
-        # ACT-CAP-001: room leg capped; caster leg uncapped (ACT-CAP-002).
-        assert caster.messages[-1] == "mysterious gem fades out of sight."
+        # ACT-CAP-002: caster leg now capped (shared message capitalized at build site).
+        assert caster.messages[-1] == "Mysterious gem fades out of sight."
         assert witness.messages[-1] == "Mysterious gem fades out of sight."
 
         caster.messages.clear()
@@ -629,9 +628,8 @@ def test_invis_object_wears_off() -> None:
 
         assert not (obj.extra_flags & int(ExtraFlag.INVIS))
         # Wear-off reappear is broadcast by game_loop._broadcast_object_wear_off
-        # via _message_room (NOT protocol.broadcast_room), so it stays uncapped
-        # here — tracked under ACT-CAP-002.
-        assert witness.messages[-1] == "mysterious gem fades into view."
+        # via _message_room, which now caps at entry (ACT-CAP-002).
+        assert witness.messages[-1] == "Mysterious gem fades into view."
     finally:
         if obj in object_registry:
             object_registry.remove(obj)

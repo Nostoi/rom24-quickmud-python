@@ -566,7 +566,7 @@ def test_light_decay_extinguishes_worn_torch():
     assert torch not in object_registry
     assert room.light == 1
     assert "bronze torch flickers and goes out." in hero.messages
-    assert "bronze torch goes out." in watcher.messages
+    assert "Bronze torch goes out." in watcher.messages
 
 
 def test_char_update_extracts_out_of_zone_mob(monkeypatch):
@@ -629,7 +629,7 @@ def test_obj_update_decays_corpse():
 
     assert corpse not in object_registry
     assert corpse not in room.contents
-    assert "orc corpse decays into dust." in observer.messages
+    assert "Orc corpse decays into dust." in observer.messages
 
 
 def test_obj_update_spills_floating_container():
@@ -665,4 +665,4 @@ def test_obj_update_spills_floating_container():
     assert chest not in room.contents
     assert gem in room.contents
     assert gem.in_room is room
-    assert "drifting chest flickers and vanishes, spilling its contents on the floor." in observer.messages
+    assert "Drifting chest flickers and vanishes, spilling its contents on the floor." in observer.messages

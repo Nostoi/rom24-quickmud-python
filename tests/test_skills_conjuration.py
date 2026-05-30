@@ -58,8 +58,9 @@ def test_create_food_conjures_mushroom_with_level_values():
         assert conjured.location is room
         assert conjured.value[0] == 6  # level // 2 using C division semantics
         assert conjured.value[1] == 12
-        assert caster.messages[-1] == "a mushroom suddenly appears."
-        assert "a mushroom suddenly appears." in observer.messages
+        # ACT-CAP-002: TO_ALL caps the shared message for both caster and room.
+        assert caster.messages[-1] == "A mushroom suddenly appears."
+        assert "A mushroom suddenly appears." in observer.messages
     finally:
         obj_registry.clear()
 
@@ -129,7 +130,7 @@ def test_continual_light_glows_object_in_inventory() -> None:
     assert continual_light(caster, amulet) is True
     assert amulet.extra_flags & int(ExtraFlag.GLOW)
 
-    glow_message = "a silver amulet glows with a white light."
+    glow_message = "A silver amulet glows with a white light."
     assert caster.messages[-1] == glow_message
     assert glow_message in observer.messages
 

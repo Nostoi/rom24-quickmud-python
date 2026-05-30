@@ -38,6 +38,7 @@ from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs
 from mud.time import time_info
 from mud.utils import rng_mm
+from mud.utils.act import capitalize_act_line
 from mud.wiznet import WiznetFlag, wiznet
 
 _AUTOSAVE_ROTATION = 0
@@ -334,6 +335,13 @@ from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: 
 def _message_room(room, message: str, exclude: Character | None = None) -> None:
     if room is None:
         return
+
+    # ACT-CAP-002 / INV-029: ROM act_new (src/comm.c:2376-2379) caps the first
+    # visible char of every delivered line. Cap at entry so both the
+    # Room.broadcast delegation path (already capped) and the direct
+    # _send_to_char fallback path deliver a capitalized line.
+    # capitalize_act_line is idempotent on already-capped text.
+    message = capitalize_act_line(message)
 
     if hasattr(room, "broadcast"):
         room.broadcast(message, exclude=exclude)
