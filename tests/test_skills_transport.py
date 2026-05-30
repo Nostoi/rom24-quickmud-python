@@ -140,12 +140,15 @@ def test_portal_conjures_warp_stone_gateway(portal_prototype: ObjIndex) -> None:
         assert caster.equipment.get(int(WearLocation.HOLD)) is None
         assert warp_stone not in caster.inventory
 
+        # The caster TO_CHAR line ("$p rises up before you.") uses the uncapped
+        # _send_to_char leg (ACT-CAP-002); the TO_ROOM observer line is capped by
+        # broadcast_room (ACT-CAP-001).
         assert caster.messages[:3] == [
             "You draw upon the power of a glittering warp stone.",
             "It flares brightly and vanishes!",
             "a shimmering portal rises up before you.",
         ]
-        assert observer.messages[-1] == "a shimmering portal rises up from the ground."
+        assert observer.messages[-1] == "A shimmering portal rises up from the ground."
     finally:
         _restore_room(origin.vnum, previous_origin)
         _restore_room(destination.vnum, previous_destination)
@@ -285,13 +288,15 @@ def test_nexus_creates_bidirectional_portals(portal_prototype: ObjIndex) -> None
         assert returning.timer == 1 + c_div(caster.level, 10)
         assert caster.equipment.get(int(WearLocation.HOLD)) is None
 
+        # Caster TO_CHAR leg uncapped (ACT-CAP-002); both room-leg lines capped by
+        # broadcast_room (ACT-CAP-001).
         assert caster.messages[:3] == [
             "You draw upon the power of a radiant warp stone.",
             "It flares brightly and vanishes!",
             "a shimmering portal rises up before you.",
         ]
-        assert observer.messages[-1] == "a shimmering portal rises up from the ground."
-        assert target.messages[-1] == "a shimmering portal rises up from the ground."
+        assert observer.messages[-1] == "A shimmering portal rises up from the ground."
+        assert target.messages[-1] == "A shimmering portal rises up from the ground."
     finally:
         _restore_room(origin.vnum, previous_origin)
         _restore_room(destination.vnum, previous_destination)

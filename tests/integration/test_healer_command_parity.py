@@ -72,7 +72,9 @@ def test_heal_mana_uses_total_wealth_rom_formula_and_room_utterance(test_room, t
     assert test_player.gold == 0
     assert test_player.silver == 0
     assert test_player.mana == 5 + expected_gain
-    assert any("a healer utters the words 'energizer'." in msg for msg in observer.messages)
+    # ACT-CAP-001: broadcast_room caps the room-leg act("$n utters the words
+    # '...'", TO_ROOM) line; the NPC healer short_descr "a healer" → "A healer".
+    assert any("A healer utters the words 'energizer'." in msg for msg in observer.messages)
 
 
 def test_heal_refresh_uses_spell_refresh_not_full_restore(test_room, test_player):

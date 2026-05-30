@@ -147,9 +147,11 @@ def test_poison_envenoms_weapon_and_messages(monkeypatch: pytest.MonkeyPatch) ->
     assert effect.bitvector == int(WeaponFlag.POISON)
     assert getattr(effect, "wear_off_message") == "The poison on $p dries up."
 
-    success_message = "serrated dagger is coated with deadly venom."
-    assert caster.messages[-1] == success_message
-    assert witness.messages[-1] == success_message
+    # ACT-CAP-001: broadcast_room caps the room leg. ROM act("$p is coated with
+    # deadly venom.", ch, obj, NULL, TO_ALL) caps for all; the Python caster leg
+    # uses the still-uncapped _send_to_char path (ACT-CAP-002), so it stays lowercase.
+    assert caster.messages[-1] == "serrated dagger is coated with deadly venom."
+    assert witness.messages[-1] == "Serrated dagger is coated with deadly venom."
 
     caster.messages.clear()
     assert skill_handlers.poison(caster, weapon) is False
@@ -184,9 +186,9 @@ def test_poison_taints_food_and_messages() -> None:
     assert skill_handlers.poison(caster, food) is True
     assert food.value[3] == 1
 
-    taint_message = "loaf of bread is infused with poisonous vapors."
-    assert caster.messages[-1] == taint_message
-    assert witness.messages[-1] == taint_message
+    # ACT-CAP-001: room leg capped; caster leg uncapped (ACT-CAP-002).
+    assert caster.messages[-1] == "loaf of bread is infused with poisonous vapors."
+    assert witness.messages[-1] == "Loaf of bread is infused with poisonous vapors."
 
     caster.messages.clear()
     food.extra_flags = int(ExtraFlag.BLESS)

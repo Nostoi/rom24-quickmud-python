@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from mud.models.character import Character, character_registry
 from mud.net.ansi import render_ansi
 from mud.net.session import Session
+from mud.utils.act import capitalize_act_line
 
 if TYPE_CHECKING:
     from mud.net.connection import TelnetStream
@@ -60,6 +61,13 @@ def broadcast_room(
     message: str,
     exclude: Character | None = None,
 ) -> None:
+    # ROM delivers room broadcasts via act(..., TO_ROOM); act_new caps the first
+    # visible char of every such line (src/comm.c:2376-2379, ACT-CAP-001 / INV-029).
+    # broadcast_room is the terminal act(TO_ROOM) delivery boundary — its argument
+    # IS the delivered line (one baked string for all recipients, not a
+    # per-recipient PERS render) — so cap once here. Idempotent on an
+    # already-capital / already-capped line.
+    message = capitalize_act_line(message)
     for char in list(getattr(room, "people", [])):
         if char is exclude:
             continue
