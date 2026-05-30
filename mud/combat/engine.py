@@ -39,8 +39,7 @@ from mud.models.constants import (
     WearFlag,
     WearLocation,
     attack_damage_type,
-)
-from mud.models.social import expand_placeholders
+ )
 from mud.models.weapon_table import weapon_skill_name_for_type
 from mud.skills import check_improve
 from mud.utils import rng_mm
@@ -1205,12 +1204,22 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
     attacker.silver = current_silver + share + remainder
     _push_message(attacker, f"You split {silver_reward} silver coins. Your share is {share + remainder} silver.")
 
-    split_message = f"$n splits {silver_reward} silver coins. Your share is {share} silver."
+    # ROM src/act_comm.c:1946-1962 — per-member act("$n splits %d silver coins. Your
+    # share is %d silver.", ch, NULL, gch, TO_VICT). $n resolves through PERS(ch, gch)
+    # per recipient (masking invisible actors) and act_new caps the first letter
+    # (src/comm.c:2376). FIGHT-034.
+    from mud.net.protocol import send_to_char as _send_split
     for member in group_members:
         if member is attacker:
             continue
         member.silver = max(0, int(getattr(member, "silver", 0) or 0)) + share
-        _push_message(member, expand_placeholders(split_message, attacker, member))
+        # Per-recipient PERS + capitalize, matching ROM act(TO_VICT).
+        member_msg = capitalize_act_line(f"{pers(attacker, member)} splits {silver_reward} silver coins. Your share is {share} silver.")
+        writer = getattr(member, "connection", None)
+        if writer is not None:
+            asyncio.create_task(_send_split(member, member_msg))
+        if hasattr(member, "messages"):
+            member.messages.append(member_msg)
 
 
 def _handle_auto_actions(attacker: Character, corpse) -> None:

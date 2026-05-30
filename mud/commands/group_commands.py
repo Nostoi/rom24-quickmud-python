@@ -457,21 +457,11 @@ def do_split(char: Character, args: str) -> str:
         )
 
     # Build the per-member broadcast (ROM lines 1946-1962).
-    if share_gold == 0:
-        member_msg_template = (
-            f"{char.name} splits {amount_silver} silver coins. "
-            f"Your share is {share_silver} silver."
-        )
-    elif share_silver == 0:
-        member_msg_template = (
-            f"{char.name} splits {amount_gold} gold coins. "
-            f"Your share is {share_gold} gold."
-        )
-    else:
-        member_msg_template = (
-            f"{char.name} splits {amount_silver} silver and {amount_gold} "
-            f"gold coins, giving you {share_silver} silver and {share_gold} gold."
-        )
+    # ROM uses act(buf, ch, NULL, gch, TO_VICT) which resolves $n through
+    # PERS(ch, gch) per recipient and caps the first letter via act_new
+    # (src/comm.c:2376). FIGHT-034: per-recipient PERS + capitalize.
+    from mud.utils.act import capitalize_act_line
+    from mud.world.vision import pers
 
     # Distribute to other non-charmed group members in the room.
     for occupant in getattr(room, "people", []):
@@ -482,11 +472,28 @@ def do_split(char: Character, args: str) -> str:
             continue
         occupant.silver = int(getattr(occupant, "silver", 0) or 0) + share_silver
         occupant.gold = int(getattr(occupant, "gold", 0) or 0) + share_gold
+
+        # Per-recipient PERS substitution + capitalize (ROM act_new caps buf).
+        splitter_name = pers(char, occupant)
+        if share_gold == 0:
+            member_msg = capitalize_act_line(
+                f"{splitter_name} splits {amount_silver} silver coins. "
+                f"Your share is {share_silver} silver."
+            )
+        elif share_silver == 0:
+            member_msg = capitalize_act_line(
+                f"{splitter_name} splits {amount_gold} gold coins. "
+                f"Your share is {share_gold} gold."
+            )
+        else:
+            member_msg = capitalize_act_line(
+                f"{splitter_name} splits {amount_silver} silver and {amount_gold} "
+                f"gold coins, giving you {share_silver} silver and {share_gold} gold."
+            )
+
+        _send_to_char_sync(occupant, member_msg)
         if hasattr(occupant, "messages"):
-            try:
-                occupant.messages.append(member_msg_template)
-            except Exception:
-                pass
+            occupant.messages.append(member_msg)
 
     return "\n".join(out_lines) if out_lines else ""
 
