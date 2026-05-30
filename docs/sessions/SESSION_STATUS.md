@@ -65,3 +65,6 @@ Carried-open items (see the summary's Next Steps): pet-shop haggle/"now follows
 you" wrong-channel (INV-001 family, mailbox-only); `Character.pet` stale type
 annotation; `do_cast` object-targeting legs; converter hardening; the
 `test_backstab_uses_position_and_weapon` / `test_combat_death.py` xdist flakes.
+Non-blocking (ROM-faithful, not a gap): `_pers`→`can_see_character` now consumes
+an RNG draw on the sneak branch (most reachable via a sneaking player moving) —
+findability note only, in case a future seeded `act_format`-downstream assertion flakes.

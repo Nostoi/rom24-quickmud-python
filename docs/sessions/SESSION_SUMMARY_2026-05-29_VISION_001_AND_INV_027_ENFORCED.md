@@ -131,3 +131,11 @@ Carried-open (unchanged): pet-shop haggle/"now follows you" wrong-channel
 (INV-001 family, mailbox-only); `Character.pet` stale type annotation; `do_cast`
 object-targeting legs; converter hardening; the
 `test_backstab_uses_position_and_weapon` / `test_combat_death.py` xdist flakes.
+
+Non-blocking note (not a gap — ROM-faithful): routing `_pers` through
+`can_see_character` means `$n`/`$N` rendering now consumes an RNG draw on the
+sneak branch (AFF_SNEAK + not-fighting + observer lacks detect-hidden; ROM
+`can_see` does the same, `src/handler.c:2646-2656`). The most reachable trigger
+is a *sneaking player moving* (movement's per-occupant `act_format`). The suite
+passes seeded, so nothing hits it today — recorded here only so it's findable if
+a future seeded assertion downstream of an `act_format` call ever flakes.
