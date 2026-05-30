@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Group-command lint cleanup (2.11.51).** Removed two stale unused imports from `mud/commands/group_commands.py` (`Position` and the inner `character_registry` import in `do_group`) so the module passes targeted Ruff checks without changing command behavior. Verification: `ruff check mud/commands/group_commands.py`; `pytest -n0 tests/integration/test_group_combat.py tests/integration/test_do_group_notification.py tests/integration/test_do_follow_master_notification.py tests/integration/test_act_comm_gaps.py -q`.
+
 ### Fixed
 - **`INV-025` follow-up — position-command room `act()` lines now dispatch `TRIG_ACT` to listening NPCs.** ROM `do_stand`/`do_rest`/`do_sit`/`do_sleep` (`src/act_move.c:999-1449`) emits room-visible position changes through `act(..., TO_ROOM)`, so `comm.c:2384` fires `mp_act_trigger` on NPC recipients. Python's shared `mud/commands/position.py:_broadcast` delivered those lines via `broadcast_room` only. It now calls `mp_act_trigger_room` after the broadcast, preserving delivery while matching ROM mobprog dispatch. Regression: `tests/integration/test_inv025_mobprog_act_trigger_dispatch.py::test_position_act_room_broadcast_fires_act_trigger_on_listening_npc`.
 - **`INV-001` wrong-channel cousin — shop haggle success lines now deliver immediately to connected players.** ROM `do_buy`/`do_sell` (`src/act_obj.c:2606-2607`, `:2728`, `:2929`) sends successful haggle text via `send_to_char` / `act(TO_CHAR)`. The pet-buy, item-buy, and sell branches appended those lines to `char.messages`, so connected PCs saw them late on mailbox drain. All three branches now use `push_message`, preserving disconnected mailbox fallback. Regression: `tests/integration/test_shop_haggle_delivery_channel.py` (3).

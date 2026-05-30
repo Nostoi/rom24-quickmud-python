@@ -7,7 +7,7 @@ ROM Reference: src/act_comm.c (follow, group, order, gtell, split)
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import AffectFlag, PlayerFlag, Position
+from mud.models.constants import AffectFlag, PlayerFlag
 from mud.world.char_find import get_char_room
 
 
@@ -203,8 +203,6 @@ def do_group(char: Character, args: str) -> str:
     - group - Show group status
     - group <target> - Add/remove target from group
     """
-    from mud.models.character import character_registry
-
     args = args.strip()
 
     # No argument - show group status
