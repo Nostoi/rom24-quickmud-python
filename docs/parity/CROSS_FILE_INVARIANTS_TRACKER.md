@@ -146,7 +146,7 @@ the cross-file work is tracked here.
 
 ## Watch list
 
-**✅ ENFORCED: INV-027 — ACT-PERS-NAME-MASKING (`act_format` subset 2.11.34; `imm_commands.do_transfer` PERS closed via WIZ-047 2.11.35 + WIZ-048 2.11.36; `do_force` PERS closed via WIZ-049 2.11.37; only the cross-cutting ACT-FIRST-LETTER-CAP/INV-028 capitalization divergence remains)** (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; **prerequisite VISION-001 landed 2.11.33 and enforcement landed 2.11.34**). Per-recipient `$n`/`$N` masking now routes through `can_see_character`; the broadcast-once `recipient=None` path stays the documented MESSAGE_DELIVERY.md divergence. See the "Enforcement outcome (2026-05-29)" bullet below.
+**✅ ENFORCED: INV-027 — ACT-PERS-NAME-MASKING (`act_format` subset 2.11.34; `imm_commands.do_transfer` PERS closed via WIZ-047 2.11.35 + WIZ-048 2.11.36; `do_force` PERS closed via WIZ-049 2.11.37; only the cross-cutting ACT-FIRST-LETTER-CAP/INV-029 capitalization divergence remains — ⚠️ INV-028 is LIGHT-SLOT-KEY-COHERENCE, not this)** (surfaced 2026-05-27 during the BCAST wiz/imm probe as "ACT-INVIS-TRUST-GATE"; ROM mechanism CORRECTED + re-scoped 2026-05-29; PROBED 2026-05-29 — violation confirmed, enforcement attempted + reverted, blocker pinned on a `can_see_character` room-None reconciliation; **prerequisite VISION-001 landed 2.11.33 and enforcement landed 2.11.34**). Per-recipient `$n`/`$N` masking now routes through `can_see_character`; the broadcast-once `recipient=None` path stays the documented MESSAGE_DELIVERY.md divergence. See the "Enforcement outcome (2026-05-29)" bullet below.
 
 **Enforcement point**: `mud/utils/act.py:_pers` (gated on `viewer is not None`). **Test**: `tests/integration/test_inv027_act_pers_name_masking.py` (masking + `recipient=None` boundary). **Prerequisite**: VISION-001 (`docs/parity/HANDLER_C_AUDIT.md`).
 
@@ -303,13 +303,33 @@ the cross-file work is tracked here.
     contract is now fully enforced** across `act_format` (`$n`/`$N`), `_act_room`
     (TO_ROOM), `do_transfer` (TO_VICT), and `do_force` (TO_VICT) — no known
     PERS-leak sites remain. Only the cross-cutting capitalization item below is open.
-  - **Cross-cutting (OPEN) — ACT-FIRST-LETTER-CAP (→ INV-028).** ROM `act_new`
-    upper-cases the first letter of every rendered line (`src/comm.c:2376-2379`),
-    so a masked `$n` at sentence start is `"Someone …"` in ROM but `"someone …"`
-    in the Python act-family. Only visible on the masked-name case; single-point
-    fix at the act-render boundary. The WIZ-047/048 tests assert lowercase
-    deliberately and move in lockstep when this is closed. Filed in
-    `docs/parity/ACT_WIZ_C_AUDIT.md`.
+  - **Cross-cutting (OPEN) — ACT-FIRST-LETTER-CAP (candidate → INV-029; ⚠️ NOT
+    INV-028 — that ID is already LIGHT-SLOT-KEY-COHERENCE, never reuse).** ROM
+    `act_new` upper-cases the **first letter of every rendered `act()` line**
+    (`src/comm.c:2376-2379`), with a color-code kludge: if `buf[0] == '{'`
+    (ASCII 123) it caps `buf[2]` (the char after the `{X` code), else `buf[0]`.
+    So a masked `$n` at sentence start is `"Someone …"` in ROM but `"someone …"`
+    in the Python act-family. **Blast radius is WIDER than first scoped** — the
+    earlier "single-point fix / only visible on masked names" framing was wrong
+    (re-probed 2026-05-30): the faithful chokepoint is `mud/utils/act.py:act_format`
+    (the `act_new` equivalent), which has **~80 call sites** across `spec_funs`,
+    `movement`, `give`, `inventory`, `magic_items`, `consumption`, `liquids`,
+    `equipment`, `obj_manipulation`, `position`, `communication`, `music`,
+    `connection`, `wiznet`. Capping its return caps **every** act line's first
+    letter — most are no-ops (lines starting with a name-`$n` or `"You"`), but a
+    real subset start with `$p` object short_descrs (e.g. `"$p dissolves into
+    smoke."`, music `"$p"`) which are lowercase → they legitimately become
+    uppercase per ROM and **break every existing test that asserts the lowercase
+    form**. A **second render path** must also be covered: `mud/commands/imm_commands.py`
+    builds f-strings directly via `mud/world/vision.py:pers()` (NOT through
+    `act_format`) — `do_force` ×4 (`:339,354,369,399`), `do_transfer` (`:282-290`),
+    `_act_room`, bamf. Faithful close = a shared `capitalize_act_line` helper in
+    `mud/utils/act.py` (honoring the `{`-kludge) applied at `act_format`'s return
+    + the imm pers-string sites, then a **full-suite assertion sweep** to flip
+    every now-stale lowercase assertion (incl. the WIZ-047/048/049 `"someone"` →
+    `"Someone"` cases, which assert lowercase deliberately and move in lockstep).
+    **Do NOT land blind** — needs a reliable channel to run the full suite and
+    fix the fan-out of broken assertions. Filed in `docs/parity/ACT_WIZ_C_AUDIT.md`.
 
 <details><summary>Original (incorrect) framing — retained for the audit trail</summary>
 

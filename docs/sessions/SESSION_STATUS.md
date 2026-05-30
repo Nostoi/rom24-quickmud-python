@@ -21,7 +21,8 @@
   - **INV-027 milestone**: PERS masking now enforced across `act_format` (2.11.34),
     `_act_room`/TO_ROOM (WIZ-047), `do_transfer`/TO_VICT (WIZ-048), `do_force`/TO_VICT
     (WIZ-049). The only INV-027-adjacent item left open is the cross-cutting
-    **ACT-FIRST-LETTER-CAP** capitalization divergence (→ INV-028).
+    **ACT-FIRST-LETTER-CAP** capitalization divergence (→ INV-029; ⚠️ NOT
+    INV-028 — that ID is already LIGHT-SLOT-KEY-COHERENCE).
 - **Pointer to latest summary**: [SESSION_SUMMARY_2026-05-30_WIZ-049_FIXED.md](SESSION_SUMMARY_2026-05-30_WIZ-049_FIXED.md)
 
 ## Project Status (snapshot)
@@ -31,7 +32,7 @@
 | Version | 2.11.37 |
 | Tests | 4995 passed, 4 skipped, 0 failed (full parallel suite); includes the 2 new WIZ-049 tests |
 | ROM C files audited | 43 / 43 (per-file pass complete; differential + cross-file invariants active) |
-| Active focus | Cross-file invariants (INV-027 PERS fully enforced; ACT-FIRST-LETTER-CAP/INV-028 + VISION-002 OPEN) |
+| Active focus | Cross-file invariants (INV-027 PERS fully enforced; ACT-FIRST-LETTER-CAP/INV-029 + VISION-002 OPEN) |
 
 ## Next Intended Task
 
@@ -39,15 +40,24 @@ The per-file audit tracker has no ⚠️ Partial / ❌ Not Audited rows, so
 **cross-file invariants remains the standing pass**. Concrete next options, in
 rough priority:
 
-1. **`ACT-FIRST-LETTER-CAP` → INV-028** — ROM `act_new` upper-cases `buf[0]` of
-   every rendered line (`src/comm.c:2376-2379`); the Python act-family does not.
-   Only visible when a masked `$n` lands at sentence start (ROM `"Someone …"`,
-   Python `"someone …"`). Promote to a stable cross-file ID; add the single
-   capitalization step at the act-render boundary (`mud/utils/act.py` + the
-   `imm_commands` `_act_room`/notify/force paths, or a shared render helper); flip
-   the WIZ-047/048/049 lowercase `"someone"` assertions to `"Someone"` in lockstep.
-   This is the natural completion of the act-rendering parity now that every PERS
-   site masks.
+1. **`ACT-FIRST-LETTER-CAP` → INV-029** (⚠️ NOT INV-028 — that ID is already
+   LIGHT-SLOT-KEY-COHERENCE; next free is 029) — ROM `act_new` upper-cases the
+   first letter of every rendered line (`src/comm.c:2376-2379`), with the `{`
+   colour-code kludge (`buf[0]=='{'` → cap `buf[2]`, else `buf[0]`); the Python
+   act-family does not. **Blast radius re-probed 2026-05-30 — wider than the
+   earlier "single-point / masked-names-only" framing:** the faithful chokepoint
+   `mud/utils/act.py:act_format` has **~80 call sites**, so capping its return
+   flips the first letter of *every* act line — mostly no-ops (name-`$n` / "You"
+   openers) but `$p` object-led lines (e.g. "a sword dissolves") legitimately
+   become uppercase per ROM and break any test asserting the lowercase form.
+   A **second render path** must also be covered: the `imm_commands` `pers()`-built
+   f-strings (`do_force` ×4 `:339,354,369,399`, `do_transfer` `:282-290`,
+   `_act_room`, bamf) do NOT route through `act_format`. Faithful close = a shared
+   `capitalize_act_line` helper applied at both boundaries + a **full-suite
+   assertion sweep** (incl. flipping the WIZ-047/048/049 `"someone"` → `"Someone"`
+   cases in lockstep). **Do NOT land blind — needs a reliable channel to run the
+   full suite.** Expanded scope: `CROSS_FILE_INVARIANTS_TRACKER.md` (INV-027
+   watch-list) + `ACT_WIZ_C_AUDIT.md`.
 2. **`VISION-002`** — the dark-gate same-room divergence (`vision.py` vs
    `src/handler.c:2638`: ROM masks on `room_is_dark(ch->in_room)` with no
    same-room guard). Larger scope (could shift cross-room/scan visibility); write

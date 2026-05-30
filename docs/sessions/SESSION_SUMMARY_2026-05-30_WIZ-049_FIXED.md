@@ -58,7 +58,7 @@ With WIZ-049 closed, the ACT-PERS-NAME-MASKING contract is enforced everywhere a
 The only INV-027-adjacent item left open is the cross-cutting **ACT-FIRST-LETTER-CAP**
 divergence (below).
 
-### `ACT-FIRST-LETTER-CAP` — carried OPEN (→ future INV-028)
+### `ACT-FIRST-LETTER-CAP` — carried OPEN (→ future INV-029; ⚠️ NOT INV-028 = LIGHT-SLOT-KEY-COHERENCE)
 
 ROM `act_new` upper-cases `buf[0]` of every rendered line (`src/comm.c:2376-2379`);
 the Python act-family does not. Invisible for already-capitalized names and "You";
@@ -97,7 +97,7 @@ session and was left untouched.)
 
 Cross-file invariants remains the standing pass. Concrete next options, in priority:
 
-1. **`ACT-FIRST-LETTER-CAP` → INV-028** — promote to a stable cross-file ID; add
+1. **`ACT-FIRST-LETTER-CAP` → INV-029** (⚠️ NOT INV-028 — taken by LIGHT-SLOT-KEY-COHERENCE; next free is 029) — promote to a stable cross-file ID; add
    the single act-render-boundary `buf[0]` capitalization step (`mud/utils/act.py`
    + the `imm_commands` `_act_room`/notify paths, or a shared render helper); flip
    the WIZ-047/048/049 lowercase `"someone"` assertions to `"Someone"` in lockstep.
@@ -110,7 +110,7 @@ Cross-file invariants remains the standing pass. Concrete next options, in prior
 
 ## Outstanding / carried-open
 
-- **`ACT-FIRST-LETTER-CAP`** (OPEN, → INV-028) — see above.
+- **`ACT-FIRST-LETTER-CAP`** (OPEN, → INV-029; NOT INV-028) — see above.
 - **`VISION-002`** (OPEN) — dark-gate same-room divergence.
 - Known **xdist flakes**: `test_combat_death.py`, `test_backstab_uses_position_and_weapon`
   — pass in isolation, can flake under some parallel worker groupings (RNG ordering);
