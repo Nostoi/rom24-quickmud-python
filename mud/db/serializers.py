@@ -236,6 +236,34 @@ class PetAffectSave:
 
 
 @dataclass
+class PetSpellEffectSave:
+    """Serializable snapshot of a pet's spell-cast buff (GL-031).
+
+    ROM saves pet affects from ``pet->affected`` by SN (``src/save.c:508-517``);
+    the Python port instead stores spell-cast pet buffs as ``SpellEffect`` in
+    ``MobInstance.spell_effects`` (the integer-SN ``PetSave.affects`` list only
+    carries raw ``affect_to_char``-style affects). This dataclass persists those
+    so a charmed pet keeps armor/sanctuary/giant-strength across save/reload.
+
+    ``affect_flag`` is stored as the raw ``AffectFlag`` int (or ``None``).
+    ``stat_modifiers`` is stored as a list of ``[stat_int, delta]`` pairs so it
+    round-trips cleanly through JSON (which can't key a dict by int).
+    """
+
+    name: str
+    duration: int = 0
+    level: int = 0
+    ac_mod: int = 0
+    hitroll_mod: int = 0
+    damroll_mod: int = 0
+    saving_throw_mod: int = 0
+    affect_flag: int | None = None
+    wear_off_message: str | None = None
+    stat_modifiers: list[list[int]] = field(default_factory=list)
+    sex_delta: int = 0
+
+
+@dataclass
 class PetSave:
     """Serializable snapshot of a pet/follower (ROM save.c:fwrite_pet lines 449-523).
 
@@ -277,6 +305,9 @@ class PetSave:
     perm_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
     mod_stat: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
     affects: list[PetAffectSave] = field(default_factory=list)
+    # GL-031: spell-cast buffs stored in MobInstance.spell_effects (separate from
+    # the integer-SN `affects` list above). ROM saves these by SN on pet->affected.
+    spell_effects: list[PetSpellEffectSave] = field(default_factory=list)
 
 
 # ---------------------------------------------------------------------------
@@ -423,6 +454,31 @@ def _serialize_pet(pet: Any) -> PetSave | None:
             )
         )
 
+    # GL-031: serialize spell-cast buffs (MobInstance.spell_effects). ROM saves
+    # these by SN on pet->affected (src/save.c:508-517); the Python port keeps
+    # them in a separate SpellEffect dict, so they need their own save path.
+    pet_spell_effects: list[PetSpellEffectSave] = []
+    for effect in (getattr(pet, "spell_effects", {}) or {}).values():
+        affect_flag = getattr(effect, "affect_flag", None)
+        pet_spell_effects.append(
+            PetSpellEffectSave(
+                name=effect.name,
+                duration=_safe_int(getattr(effect, "duration", 0)),
+                level=_safe_int(getattr(effect, "level", 0)),
+                ac_mod=_safe_int(getattr(effect, "ac_mod", 0)),
+                hitroll_mod=_safe_int(getattr(effect, "hitroll_mod", 0)),
+                damroll_mod=_safe_int(getattr(effect, "damroll_mod", 0)),
+                saving_throw_mod=_safe_int(getattr(effect, "saving_throw_mod", 0)),
+                affect_flag=int(affect_flag) if affect_flag is not None else None,
+                wear_off_message=getattr(effect, "wear_off_message", None),
+                stat_modifiers=[
+                    [int(stat), int(delta)]
+                    for stat, delta in (getattr(effect, "stat_modifiers", {}) or {}).items()
+                ],
+                sex_delta=_safe_int(getattr(effect, "sex_delta", 0)),
+            )
+        )
+
     # Only save fields that differ from prototype (ROM C pattern)
     pet_race = None
     if getattr(pet, "race", None) != mob_index.race:
@@ -480,6 +536,7 @@ def _serialize_pet(pet: Any) -> PetSave | None:
         perm_stat=_normalize_int_list(pet.perm_stat, 5),
         mod_stat=_normalize_int_list(getattr(pet, "mod_stat", [0] * 5), 5),
         affects=pet_affects,
+        spell_effects=pet_spell_effects,
     )
 
 
@@ -623,6 +680,37 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
 
     # Store affects on pet (MobInstance doesn't have affected by default)
     setattr(pet, "affected", pet_affects)
+
+    # GL-031: restore spell-cast buffs (MobInstance.spell_effects). ROM's
+    # fread_pet (src/save.c:1544-1573) links each affect straight onto
+    # pet->affected WITHOUT calling affect_modify — the saved ACs/Hit/AMod lines
+    # already fold in the affect bonuses. So restore data-only: re-register the
+    # SpellEffect and mirror its shadow AffectData (so char_update ticks/wears it
+    # off), but do NOT re-apply stat modifiers (apply_spell_effect would
+    # double-count against the already-modified saved stats).
+    from mud.models.character import SpellEffect, sync_spell_effect_to_affected
+    from mud.models.constants import AffectFlag, Stat
+
+    for se in getattr(snapshot, "spell_effects", []) or []:
+        if isinstance(se, dict):
+            se = dataclass_from_dict(PetSpellEffectSave, se)
+        affect_flag = AffectFlag(se.affect_flag) if se.affect_flag is not None else None
+        stat_modifiers = {Stat(int(pair[0])): int(pair[1]) for pair in se.stat_modifiers}
+        effect = SpellEffect(
+            name=se.name,
+            duration=se.duration,
+            level=se.level,
+            ac_mod=se.ac_mod,
+            hitroll_mod=se.hitroll_mod,
+            damroll_mod=se.damroll_mod,
+            saving_throw_mod=se.saving_throw_mod,
+            affect_flag=affect_flag,
+            wear_off_message=se.wear_off_message,
+            stat_modifiers=stat_modifiers,
+            sex_delta=se.sex_delta,
+        )
+        pet.spell_effects[effect.name] = effect
+        sync_spell_effect_to_affected(pet, effect)
 
     # Set owner relationship (MobInstance might not have master/leader by default)
     setattr(pet, "master", owner)
