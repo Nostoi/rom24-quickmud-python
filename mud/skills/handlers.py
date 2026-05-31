@@ -1483,33 +1483,119 @@ def berserk(
     return caster.apply_spell_effect(effect)
 
 
-def bless(caster: Character, target: Character | None = None) -> bool:
-    """ROM spell_bless for characters: +hitroll, -saving_throw.
+def bless(caster: Character, target: Character | Object | None = None) -> bool:
+    """ROM spell_bless for characters and objects.
 
-    Mirrors ROM src/magic.c:836-865 (character branch) — on success sends
-    "You feel righteous." to the victim (and ``act("You grant $N the favor of
-    your god.")`` to the caster for a cross-target cast). The already-affected
-    branch — which ROM also takes when the victim is fighting
-    (``victim->position == POS_FIGHTING``, src/magic.c:840, a deliberate quirk)
-    — sends "You are already blessed." (self) / ``act("$N already has divine
-    favor.")`` (cross-target).
+    Object branch mirrors src/magic.c:788-834:
+    1. ITEM_BLESS → "already blessed", return
+    2. ITEM_EVIL → try saves_dispel; success removes Evil + curse affect;
+       failure rejects
+    3. Clean object → affect_to_obj with TO_OBJECT/APPLY_SAVES/-1/ITEM_BLESS;
+       if worn, carrier gets saving_throw -= 1
 
-    The object-target branch (``TARGET_OBJ``, src/magic.c:788-834) is not ported
-    here: do_cast does not yet route object targets — it falls back to the caster
-    as a placeholder (see MAGIC_C_AUDIT.md Scope Notes) — so that branch is
-    currently unreachable.
+    Character branch mirrors src/magic.c:836-865:
+    POS_FIGHTING is treated as already-blessed (ROM quirk). Affect: +hitroll,
+    -saving_throw.
+
+    INV-030: cross-file contract (do_cast routes Object targets to this
+    handler via defensive_character_or_object; bless must handle both).
     """
+    if caster is None:
+        raise ValueError("bless requires a caster")
     target = target or caster
     if target is None:
         raise ValueError("bless requires a target")
 
+    # ROM src/magic.c:788-834 — object branch (TARGET_OBJ)
+    if isinstance(target, Object):
+        obj = target
+        extra_flags = _coerce_int(getattr(obj, "extra_flags", 0))
+
+        # ROM :792-795 — already blessed
+        if extra_flags & int(ExtraFlag.BLESS):
+            _send_to_char(caster, f"{_object_short_descr(obj)} is already blessed.")
+            return False
+
+        # ROM :798-817 — evil object: try dispel
+        if extra_flags & int(ExtraFlag.EVIL):
+            level = max(int(getattr(caster, "level", 0) or 0), 0)
+            obj_level = _object_level(obj)
+
+            # Find the curse affect on the object (ROM :802 affect_find)
+            curse_affect = None
+            affects = getattr(obj, "affected", None) or []
+            for af in affects:
+                if hasattr(af, "spell_name") and af.spell_name == "curse":
+                    curse_affect = af
+                    break
+
+            if not saves_dispel(level, obj_level if curse_affect is None else getattr(curse_affect, "level", obj_level), 0):
+                # ROM :806-810 — dispel succeeded: remove curse affect, remove EVIL flag
+                if curse_affect is not None:
+                    from mud.handler import affect_remove_obj
+                    affect_remove_obj(obj, curse_affect)
+                obj.extra_flags = _coerce_int(getattr(obj, "extra_flags", 0)) & ~int(ExtraFlag.EVIL)
+                message = f"{_object_short_descr(obj)} glows a pale blue."
+                message = capitalize_act_line(message)
+                _send_to_char(caster, message)
+                room = getattr(caster, "room", None)
+                if room is not None:
+                    broadcast_room(room, message, exclude=caster)
+                return True
+            else:
+                # ROM :813-816 — dispel failed
+                message = f"The evil of {_object_short_descr(obj)} is too powerful for you to overcome."
+                message = capitalize_act_line(message)
+                _send_to_char(caster, message)
+                return False
+
+        # ROM :820-829 — clean object: add bless affect
+        level = max(int(getattr(caster, "level", 0) or 0), 0)
+
+        from mud.handler import affect_to_obj as _affect_to_obj
+
+        _APPLY_SAVES = 20
+        affect = Affect(
+            where=_TO_OBJECT,
+            type=0,
+            level=level,
+            duration=6 + level,
+            location=_APPLY_SAVES,
+            modifier=-1,
+            bitvector=int(ExtraFlag.BLESS),
+        )
+        affect.spell_name = "bless"
+        _affect_to_obj(obj, affect)
+
+        # ROM :829 — "$p glows with a holy aura." TO_ALL
+        message = f"{_object_short_descr(obj)} glows with a holy aura."
+        message = capitalize_act_line(message)
+        _send_to_char(caster, message)
+        room = getattr(caster, "room", None)
+        if room is not None:
+            broadcast_room(room, message, exclude=caster)
+
+        # ROM :831-832 — if worn, saving_throw -= 1
+        wear_loc = getattr(obj, "wear_loc", -1)
+        if wear_loc is not None and wear_loc != int(WearLocation.NONE):
+            current = int(getattr(caster, "saving_throw", 0) or 0)
+            caster.saving_throw = current - 1
+
+        return True
+
+    if not isinstance(target, Character):
+        raise TypeError("bless target must be Character or Object")
+
+    # ROM src/magic.c:836-865 — character branch
+    victim = target
+
     # mirroring ROM src/magic.c:840-846 — POS_FIGHTING is treated as
     # already-blessed even with no bless affect on the victim.
-    if target.position == Position.FIGHTING or target.has_spell_effect("bless"):
-        if target is caster:
+    if victim.position == Position.FIGHTING or victim.has_spell_effect("bless"):
+        if victim is caster:
             _send_to_char(caster, "You are already blessed.")
         else:
-            _send_to_char(caster, f"{_character_name(target)} already has divine favor.")
+            _send_to_char(caster, f"{_character_name(victim)} already has divine favor.")
         return False
 
     level = max(getattr(caster, "level", 0), 0)
@@ -1521,15 +1607,15 @@ def bless(caster: Character, target: Character | None = None) -> bool:
         hitroll_mod=modifier,
         saving_throw_mod=-modifier,
     )
-    applied = target.apply_spell_effect(effect)
+    applied = victim.apply_spell_effect(effect)
     if not applied:
         return False
 
     # mirroring ROM src/magic.c:861-864 — send_to_char TO_VICT, then act
     # TO_CHAR only when ch != victim.
-    _send_to_char(target, "You feel righteous.")
-    if caster is not target:
-        _send_to_char(caster, f"You grant {_character_name(target)} the favor of your god.")
+    _send_to_char(victim, "You feel righteous.")
+    if caster is not victim:
+        _send_to_char(caster, f"You grant {_character_name(victim)} the favor of your god.")
     return True
 
 

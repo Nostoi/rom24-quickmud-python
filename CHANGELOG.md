@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **INV-030 — `bless` Object branch (ROM `src/magic.c:788-834`).** `bless()` now handles Object targets: already-blessed rejection, evil-dispel branch (removes ITEM_EVIL via `affect_remove_obj` on success), clean-object affect application (TO_OBJECT / APPLY_SAVES / -1 / ITEM_BLESS via `affect_to_obj`), and `saving_throw -= 1` side effect for worn objects. Matches ROM `spell_bless` TARGET_OBJ branch byte-for-byte. `do_cast` already routes `defensive_character_or_object` Object targets through `get_obj_carry`. Regression: `tests/integration/test_inv030_bless_object_branch.py` (7 tests).
+
 ### Fixed
 - **Test stabilization — `attack_round` RNG seed fix for `test_combat_death.py`.** After FIGHT-019 (ROM THAC0 hit model), `attack_round` uses `number_bits(5)` for the hit roll instead of the legacy `number_percent`. Eleven tests that called `attack_round` only patched `number_percent` and `number_range`, making the hit roll nondeterministic in xdist. Added `monkeypatch.setattr("mud.utils.rng_mm.number_bits", lambda bits: 19)` (ROM auto-hit) to all `attack_round`-using tests in `test_combat_death.py`, eliminating the flake.
 
