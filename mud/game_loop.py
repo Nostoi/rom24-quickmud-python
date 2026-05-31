@@ -38,7 +38,7 @@ from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs
 from mud.time import time_info
 from mud.utils import rng_mm
-from mud.utils.act import capitalize_act_line
+from mud.utils.act import act_format, capitalize_act_line
 from mud.wiznet import WiznetFlag, wiznet
 
 _AUTOSAVE_ROTATION = 0
@@ -353,6 +353,39 @@ def _message_room(room, message: str, exclude: Character | None = None) -> None:
         _send_to_char(occupant, message)
 
 
+def _act_to_room(
+    room: object | None,
+    format_str: str,
+    actor: Character,
+    *,
+    arg1: object | None = None,
+    arg2: object | None = None,
+    exclude: Character | None = None,
+) -> None:
+    """Deliver a ROM act(TO_ROOM)-style message with per-recipient formatting."""
+
+    if room is None:
+        return
+
+    people = getattr(room, "people", None)
+    if not people:
+        return
+
+    # Mirroring ROM src/comm.c:2233-2385: TO_ROOM skips the actor, formats
+    # $n/$N through PERS for each recipient, then dispatches TRIG_ACT to NPCs.
+    import mud.mobprog as mobprog
+
+    for recipient in list(people):
+        if recipient is actor or recipient is exclude:
+            continue
+
+        message = act_format(format_str, recipient=recipient, actor=actor, arg1=arg1, arg2=arg2)
+        _send_to_char(recipient, message)
+
+        if getattr(recipient, "is_npc", False) and getattr(mobprog, "MOBtrigger", True):
+            mobprog.mp_act_trigger(message, recipient, actor, arg1, arg2, mobprog.Trigger.ACT)
+
+
 def _find_equipped_light(character: Character) -> tuple[object | None, object | None]:
     """Locate the descriptor slot and object for a worn light."""
 
@@ -580,9 +613,7 @@ def _char_update_tick_effects(character: Character) -> bool:
         if room is None:
             return False
 
-        _message_room(
-            room, f"{getattr(character, 'name', 'Someone')} writhes in agony as plague sores erupt from their skin."
-        )
+        _act_to_room(room, "$n writhes in agony as plague sores erupt from $s skin.", character)
         _send_to_char(character, "You writhe in agony from the plague.\r\n")
 
         # Find the plague affect to get its level
@@ -619,7 +650,7 @@ def _char_update_tick_effects(character: Character) -> bool:
                     if saves_spell(spread_level - 2, vch, int(DamageType.DISEASE)):
                         continue
                     _send_to_char(vch, "You feel hot and feverish.\r\n")
-                    _message_room(room, f"{getattr(vch, 'name', 'Someone')} shivers and looks very ill.", exclude=vch)
+                    _act_to_room(room, "$n shivers and looks very ill.", vch)
                     if hasattr(vch, "add_affect"):
                         from mud.models.character import AffectData
 
