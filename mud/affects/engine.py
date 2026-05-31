@@ -56,9 +56,16 @@ def tick_spell_effects(character: Character) -> list[str]:
             duration = int(getattr(affect, "duration", 0) or 0)
             if duration > 0:
                 affect.duration = duration - 1
+                # ROM src/update.c:768 — `if (number_range(0,4) == 0 && paf->level > 0)`.
+                # C `&&` is left-to-right short-circuit and number_range advances MM
+                # state as a side effect, so the roll is consumed UNCONDITIONALLY for
+                # every duration>0 affect; `level > 0` is only tested afterwards. The
+                # operands must NOT be swapped (`level > 0 and number_range(...)` skips
+                # the roll at level 0, desyncing the global RNG stream — GL-026).
+                fades = rng_mm.number_range(0, 4) == 0
                 level = int(getattr(affect, "level", 0) or 0)
-                if level > 0 and rng_mm.number_range(0, 4) == 0:
-                    affect.level = level - 1  # mirroring ROM src/update.c:765-768
+                if fades and level > 0:
+                    affect.level = level - 1
                 spell_name = getattr(affect, "type", None)
                 if isinstance(spell_name, str) and spell_name in effects:
                     touched_names.add(spell_name)
