@@ -8,7 +8,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.models.constants import AffectFlag, ItemType, Position
+from mud.mobprog import mp_act_trigger_room
+from mud.models.constants import AffectFlag, ItemType
 from mud.net.protocol import broadcast_room
 from mud.utils.act import act_format
 from mud.utils.rng_mm import number_fuzzy
@@ -67,6 +68,8 @@ def do_eat(ch: Character, args: str) -> str:
     if room is not None:
         room_message = act_format("$n eats $p.", recipient=None, actor=ch, arg1=obj)
         broadcast_room(room, room_message, exclude=ch)
+        # mirroring ROM src/act_obj.c:1317 / src/comm.c:2384 - act() dispatches TRIG_ACT.
+        mp_act_trigger_room(room_message, room, ch, arg1=obj)
 
     obj_name = getattr(obj, "short_descr", "something")
     messages = [f"You eat {obj_name}."]
@@ -113,6 +116,8 @@ def do_eat(ch: Character, args: str) -> str:
             if room is not None:
                 choke_msg = act_format("$n chokes and gags.", recipient=None, actor=ch, arg1=None)
                 broadcast_room(room, choke_msg, exclude=ch)
+                # mirroring ROM src/act_obj.c:1342 / src/comm.c:2384.
+                mp_act_trigger_room(choke_msg, room, ch)
             messages.append("You choke and gag.")
 
             # EAT-005: apply poison flag; store ROM-correct affect metadata on ch.affects
@@ -162,7 +167,7 @@ def do_drink(ch: Character, args: str) -> str:
     DRINK-009: immortal bypasses "too full" check
     """
     from mud.characters.conditions import gain_condition
-    from mud.models.constants import Condition, LIQUID_TABLE
+    from mud.models.constants import LIQUID_TABLE, Condition
     from mud.world.obj_find import get_obj_here
 
     args = args.strip()
@@ -246,6 +251,8 @@ def do_drink(ch: Character, args: str) -> str:
             arg2=liq.name,
         )
         broadcast_room(room, room_msg, exclude=ch)
+        # mirroring ROM src/act_obj.c:1238-1241 / src/comm.c:2384 - act() dispatches TRIG_ACT.
+        mp_act_trigger_room(room_msg, room, ch, arg1=obj, arg2=liq.name)
 
     messages = [f"You drink {liq.name} from {obj_short}."]
 
@@ -275,6 +282,8 @@ def do_drink(ch: Character, args: str) -> str:
         if room is not None:
             choke_msg = act_format("$n chokes and gags.", recipient=None, actor=ch, arg1=None)
             broadcast_room(room, choke_msg, exclude=ch)
+            # mirroring ROM src/act_obj.c:1263 / src/comm.c:2384.
+            mp_act_trigger_room(choke_msg, room, ch)
         messages.append("You choke and gag.")
 
         if hasattr(ch, "add_affect"):

@@ -1,39 +1,41 @@
-# Session Status — 2026-05-31 — GL-033 mob stat floor (2.12.12)
+# Session Status — 2026-05-31 — INV-025 consumption ACT triggers (2.12.13)
 
 ## Current State
 
 - **Active mode**: cross-file invariants (per-file audit tracker exhausted).
-- **Last completed (this session, 2.12.12)**:
-  - **GL-033 — CLOSED**. `MobInstance.get_curr_stat` clamped raw effective
-    stats to a minimum of `0`, while ROM `get_curr_stat`
-    (`src/handler.c:868-874`) uses `URANGE(3, perm_stat + mod_stat, max)` for
-    both PCs and NPCs. After GL-032 added NPC `mod_stat`, negative stat affects
-    made the divergence reachable for live mobs; directly-constructed zero-stat
-    fixtures also skewed bash/disarm/dirt-kick expectations. Raised the NPC
-    floor to 3 and re-derived the affected combat chances against ROM.
+- **Last completed (this session, 2.12.13)**:
+  - **INV-025 consumption sweep — CLOSED**. ROM `do_eat` / `do_drink`
+    room-visible lines are `act(..., TO_ROOM)` producers (`src/act_obj.c:1238-1241,
+    1263, 1317, 1342`), so `src/comm.c:2384` dispatches `TRIG_ACT` to NPC
+    recipients. `mud/commands/consumption.py` now calls `mp_act_trigger_room`
+    after the existing `broadcast_room` for eat, drink, and poisoned choke room
+    lines.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-31_GL033_MOB_STAT_FLOOR.md](SESSION_SUMMARY_2026-05-31_GL033_MOB_STAT_FLOOR.md)
+  [SESSION_SUMMARY_2026-05-31_INV025_CONSUMPTION_ACT_TRIGGER.md](SESSION_SUMMARY_2026-05-31_INV025_CONSUMPTION_ACT_TRIGGER.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.12 |
-| Targeted tests | `test_get_curr_stat_floor_three.py`: 23 passed; `test_skill_combat_rom_parity.py`: 104 passed |
+| Version | 2.12.13 |
+| Targeted tests | `test_inv025_consumption_act_trigger_dispatch.py`: 2 passed; `test_consumables.py`: 51 passed |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 24 enforced |
-| Open correctness gaps | None currently filed in `UPDATE_C_AUDIT` after GL-033 closure. |
+| Open correctness gaps | None currently filed in `UPDATE_C_AUDIT`; INV-025 sweep remains an active follow-up class, not a new gap ID. |
 | Active focus | cross-file invariants probe pass |
 
 ## Next Intended Task
 
-Resume the cross-file-invariants probe pass. Remaining candidates from the prior
-status:
+Continue the broader **INV-025** sweep for non-combat room narrations where the
+matching ROM site uses `act()` and Python currently only calls `broadcast_room`
+or another delivery primitive.
 
-1. **Position transitions**.
-2. **Group/follower chain**.
-3. **Broader INV-025 sweep** — non-combat `_push_message`/`broadcast_room`
-   narration where the matching ROM site uses `act()`.
+Likely next targets:
+
+1. `mud/commands/magic_items.py` (`quaff` / `recite` / `brandish` / `zap`
+   room narrations).
+2. `mud/commands/liquids.py` (`fill` / `pour` room narrations).
+3. `mud/commands/thief_skills.py` and immortal command room narrations.
 
 Method: probe-then-scope (read ROM C contract → read Python equivalent →
-one failing test for the contract → close as a gap or file as next INV-NNN).
+one failing ACT-trigger test → wire only genuine ROM `act()` producers).
