@@ -120,6 +120,17 @@ membership, prompt-render-after-`raw_kill` ordering, and so on. Three
 production bugs shipped this year against files marked ≥95% audited
 because the broken contract lived in code outside the audited file.
 
+**ALWAYS re-verify a written ✅ / status / "verified-as-of-vX" claim — in an
+audit doc, tracker row, or load-bearing warning — against the ROM C source (or
+an empirical run on the *installed* tool version) before relying on or relaying
+it. A ✅ records when someone last checked, not that it is still true.**
+Anti-pattern: relaying "the audit says X is ROM-correct" or "the warning says
+tool Y is broken" without re-checking source/version. Three 2026-05-31 bugs
+traced to stale doc claims — CAST-008 (hidden behind a `do_cast` "immediately
+deducted mana" audit note), NANNY-015/TRAIN-002 (false-✅ audit rows asserting
+the buggy behavior was ROM-correct), and the GitNexus 32 KB warning (stale since
+1.6.5). All four were caught by reading ROM C / an empirical run, not the docs.
+
 These contracts are tracked in
 [`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`](docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md)
 with stable IDs (INV-NNN) and one enforcement test each.
