@@ -233,6 +233,11 @@ def _find_trainer(char: Character):
     for occupant in getattr(room, "people", []):
         if occupant is char:
             continue
+        # mirroring ROM src/act_move.c:1648 — IS_NPC(mob) && IS_SET(mob->act,
+        # ACT_TRAIN). The NPC guard matters because PC `act` holds PlayerFlag
+        # bits that can alias ACT_TRAIN (0x200).
+        if not getattr(occupant, "is_npc", False):
+            continue
         if not _has_train_flag(occupant):
             continue
         return occupant
@@ -249,12 +254,11 @@ def do_train(char: Character, args: str) -> str:
     if char.is_npc:
         return ""
 
-    # Check for trainer (ROM C lines 1643-1656)
-    # TODO: Re-enable trainer check when trainer mobs exist in world data
-    # ROM C requires ACT_TRAIN mob in room, but test data doesn't have trainers yet
-    # trainer = _find_trainer(char)
-    # if trainer is None:
-    #     return "You can't do that here."
+    # Check for trainer (ROM C lines 1643-1656) — an ACT_TRAIN NPC must be
+    # present in the room, else "You can't do that here." This gate precedes
+    # both the no-arg session display and any stat/resource handling. TRAIN-003.
+    if _find_trainer(char) is None:
+        return "You can't do that here."
 
     # No argument: show training sessions (ROM C lines 1658-1663)
     if not args:

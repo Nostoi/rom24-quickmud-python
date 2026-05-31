@@ -85,6 +85,13 @@ def train_test_setup():
     char.ch_class = 0
     room.people.append(char)
 
+    # ROM do_train (src/act_move.c:1643-1656) requires an ACT_TRAIN NPC in the
+    # room (TRAIN-003); place one so the trainer-presence gate passes.
+    from mud.models.constants import ActFlag
+
+    trainer = Character(name="adept", short_descr="an adept", is_npc=True, act=int(ActFlag.TRAIN), room=room)
+    room.people.append(trainer)
+
     yield char, room
 
     room_registry.pop(8010, None)
@@ -324,3 +331,31 @@ def test_train_nonprime_stat_costs_one_session(train_test_setup):
         "never sets cost=2"
     )
     assert "constitution increases" in result.lower()
+
+
+def test_train_without_trainer_in_room_fails():
+    """TRAIN-003 — do_train requires an ACT_TRAIN mob present in the room.
+
+    ROM src/act_move.c:1643-1656 loops `ch->in_room->people` for an
+    `IS_NPC(mob) && IS_SET(mob->act, ACT_TRAIN)` mob; if none is found it
+    sends "You can't do that here." and returns BEFORE any stat/session
+    handling. QuickMUD had this check commented out (stale "no trainer
+    mobs exist yet" TODO), letting a player train from any room.
+    """
+    from mud.models.character import Character, PCData
+    from mud.models.constants import Position
+    from mud.models.room import Room
+
+    room = Room(vnum=8011, name="No Trainer Here", description="An empty room.", room_flags=0, sector_type=0)
+    room.people = []
+    room.contents = []
+    char = Character(
+        name="Lonely", level=10, room=room, is_npc=False, train=5, position=Position.STANDING
+    )
+    char.pcdata = PCData()
+    room.people.append(char)
+
+    # mirrors ROM src/act_move.c:1652-1655 — no ACT_TRAIN mob in the room
+    assert do_train(char, "hp") == "You can't do that here."
+    # the trainer gate precedes the no-arg session display too (ROM order)
+    assert do_train(char, "") == "You can't do that here."

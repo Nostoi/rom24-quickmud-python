@@ -496,11 +496,26 @@ def test_practice_lists_known_skills_with_percentages():
     assert "acid blast" not in msg
 
 
+def _place_with_trainer(char):
+    """Give *char* a room with an ACT_TRAIN NPC so do_train's trainer-presence
+    gate (ROM src/act_move.c:1643-1656, TRAIN-003) passes."""
+    from mud.models.constants import ActFlag
+
+    room = Room(vnum=9100, name="Trainer Room", description="A training hall.", room_flags=0, sector_type=0)
+    room.people = []
+    char.room = room
+    room.people.append(char)
+    trainer = Character(name="adept", short_descr="an adept", is_npc=True, act=int(ActFlag.TRAIN), room=room)
+    room.people.append(trainer)
+    return room
+
+
 def test_train_command_increases_stats():
     from mud.models.character import PCData
 
     char = Character(practice=0, train=1, is_npc=False)
     char.pcdata = PCData()
+    _place_with_trainer(char)
     msg = do_train(char, "hp")
     assert char.train == 0
     assert char.max_hit > 0
@@ -517,6 +532,7 @@ def test_train_lists_available_stats_without_crash():
     trainable stat tokens."""
 
     char = Character(practice=0, train=5, is_npc=False, perm_stat=[15, 15, 15, 15, 15])
+    _place_with_trainer(char)
 
     msg = do_train(char, "magic")  # unrecognized → listing branch
 
@@ -532,6 +548,7 @@ def test_train_lists_only_unmaxed_stats():
 
     # STR = 22 (maxed), others below max
     char = Character(practice=0, train=5, is_npc=False, perm_stat=[22, 15, 15, 15, 15])
+    _place_with_trainer(char)
 
     msg = do_train(char, "magic")
 

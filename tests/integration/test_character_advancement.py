@@ -325,6 +325,13 @@ def test_train_command_increases_stats(test_character):
     char.level = 5
     char.train = 5
 
+    # ROM do_train (src/act_move.c:1643-1656) requires an ACT_TRAIN NPC in the
+    # room (TRAIN-003); place one so the trainer-presence gate passes.
+    from mud.models.constants import ActFlag
+
+    trainer = Character(name="adept", short_descr="an adept", is_npc=True, act=int(ActFlag.TRAIN), room=char.room)
+    char.room.people.append(trainer)
+
     result = process_command(char, "train hp")
 
     # ROM C lines 1759: "Your durability increases!"
