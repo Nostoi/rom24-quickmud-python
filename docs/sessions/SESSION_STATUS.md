@@ -88,7 +88,7 @@
 | Tests | 5126 passed, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 24 enforced — INV-025 now records the MOBtrigger *suppression* leg (EMOTE-003 correction); producer leg anchored at `do_stand` |
-| Open correctness gaps | **None** — GL-027 + GL-029 closed (2.12.8). Non-blocking follow-up: verify charmed-pet affect save/reload round-trip (new `MobInstance.affected`) |
+| Open correctness gaps | GL-027 + GL-029 closed (2.12.8). Newly filed (pre-existing, not yet fixed): **VISIBLE-001** (`ACT_MOVE_C_AUDIT` — `do_visible` strips `"invisibility"`/`"mass invisibility"` but spells register `"invis"`/`"mass invis"`, so cast invis lingers in `spell_effects` after going visible). Non-blocking follow-up: verify charmed-pet affect save/reload round-trip (new `MobInstance.affected`) |
 | Active focus | cross-file invariants probe pass (affect-ticks) |
 
 ## Next Intended Task
