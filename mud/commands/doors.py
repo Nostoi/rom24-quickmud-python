@@ -6,27 +6,41 @@ ROM Reference: src/act_move.c
 
 from __future__ import annotations
 
+from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import (
-    Direction,
-    ExtraFlag,
-    ItemType,
-    ContainerFlag,
-    EX_ISDOOR,
     EX_CLOSED,
+    EX_ISDOOR,
     EX_LOCKED,
-    EX_PICKPROOF,
     EX_NOCLOSE,
     EX_NOLOCK,
+    EX_PICKPROOF,
+    ContainerFlag,
+    Direction,
+    ItemType,
 )
 from mud.net.protocol import broadcast_room
-from mud.world.obj_find import get_obj_here, get_obj_carry
+from mud.world.obj_find import get_obj_here
 
 
 def _door_keyword(pexit) -> str:
     """ROM ``$d`` substitution uses the first word of ``pexit->keyword``."""
     keyword = (getattr(pexit, "keyword", "") or "").strip()
     return keyword.split()[0] if keyword else "door"
+
+
+def _broadcast_act_to_room(
+    room,
+    message: str,
+    ch: Character,
+    *,
+    arg1: object | None = None,
+    arg2: object | None = None,
+) -> None:
+    """Broadcast a ROM act(TO_ROOM) line and dispatch TRIG_ACT."""
+    broadcast_room(room, message, exclude=ch)
+    # mirroring ROM src/comm.c:2384-2385 — act() dispatches TRIG_ACT to NPC recipients.
+    mp_act_trigger_room(message, room, ch, arg1=arg1, arg2=arg2)
 
 
 # Direction name mapping
@@ -137,7 +151,7 @@ def do_open(char: Character, args: str) -> str:
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # mirroring ROM src/act_move.c:384 — act("$n opens $p.", ch, obj, NULL, TO_ROOM)
             actor_name = getattr(char, "name", None) or "someone"
-            broadcast_room(room, f"{actor_name} opens {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} opens {obj_name}.", char, arg1=obj)
             return f"You open {obj_name}."
 
         # Container
@@ -153,7 +167,7 @@ def do_open(char: Character, args: str) -> str:
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # mirroring ROM src/act_move.c:412 — act("$n opens $p.", ch, obj, NULL, TO_ROOM)
             actor_name = getattr(char, "name", None) or "someone"
-            broadcast_room(room, f"{actor_name} opens {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} opens {obj_name}.", char, arg1=obj)
             return f"You open {obj_name}."
 
         return "That's not a container."
@@ -176,7 +190,7 @@ def do_open(char: Character, args: str) -> str:
     pexit.exit_info = exit_info & ~EX_CLOSED
     # mirroring ROM src/act_move.c:436 — act("$n opens the $d.", ch, NULL, pexit->keyword, TO_ROOM)
     actor_name = getattr(char, "name", None) or "someone"
-    broadcast_room(room, f"{actor_name} opens the {_door_keyword(pexit)}.", exclude=char)
+    _broadcast_act_to_room(room, f"{actor_name} opens the {_door_keyword(pexit)}.", char, arg2=_door_keyword(pexit))
 
     # Open the other side
     to_room = getattr(pexit, "to_room", None)
