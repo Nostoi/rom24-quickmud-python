@@ -248,7 +248,7 @@ def do_close(char: Character, args: str) -> str:
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # mirroring ROM src/act_move.c:492 — act("$n closes $p.", ch, obj, NULL, TO_ROOM)
             actor_name = getattr(char, "name", None) or "someone"
-            broadcast_room(room, f"{actor_name} closes {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} closes {obj_name}.", char, arg1=obj)
             return f"You close {obj_name}."
 
         # Container
@@ -262,7 +262,7 @@ def do_close(char: Character, args: str) -> str:
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # mirroring ROM src/act_move.c:515 — act("$n closes $p.", ch, obj, NULL, TO_ROOM)
             actor_name = getattr(char, "name", None) or "someone"
-            broadcast_room(room, f"{actor_name} closes {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} closes {obj_name}.", char, arg1=obj)
             return f"You close {obj_name}."
 
         return "That's not a container."
@@ -283,7 +283,7 @@ def do_close(char: Character, args: str) -> str:
     pexit.exit_info = exit_info | EX_CLOSED
     # mirroring ROM src/act_move.c:534 — act("$n closes the $d.", ch, NULL, pexit->keyword, TO_ROOM)
     actor_name = getattr(char, "name", None) or "someone"
-    broadcast_room(room, f"{actor_name} closes the {_door_keyword(pexit)}.", exclude=char)
+    _broadcast_act_to_room(room, f"{actor_name} closes the {_door_keyword(pexit)}.", char, arg2=_door_keyword(pexit))
 
     # Close the other side
     to_room = getattr(pexit, "to_room", None)
@@ -364,7 +364,7 @@ def do_lock(char: Character, args: str) -> str:
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # mirroring ROM src/act_move.c:622 — act("$n locks $p.", ch, obj, NULL, TO_ROOM)
             actor_name = getattr(char, "name", None) or "someone"
-            broadcast_room(room, f"{actor_name} locks {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} locks {obj_name}.", char, arg1=obj)
             return f"You lock {obj_name}."
 
         # Container (ROM C lines 627-656)
@@ -384,7 +384,7 @@ def do_lock(char: Character, args: str) -> str:
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # mirroring ROM src/act_move.c:655 — act("$n locks $p.", ch, obj, NULL, TO_ROOM)
             actor_name = getattr(char, "name", None) or "someone"
-            broadcast_room(room, f"{actor_name} locks {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} locks {obj_name}.", char, arg1=obj)
             return f"You lock {obj_name}."
 
         return "That's not a container."
@@ -414,7 +414,7 @@ def do_lock(char: Character, args: str) -> str:
     # ROM does NOT broadcast to the linked room on lock (line 697 silently
     # SET_BITs pexit_rev->exit_info), so neither do we.
     actor_name = getattr(char, "name", None) or "someone"
-    broadcast_room(room, f"{actor_name} locks the {_door_keyword(pexit)}.", exclude=char)
+    _broadcast_act_to_room(room, f"{actor_name} locks the {_door_keyword(pexit)}.", char, arg2=_door_keyword(pexit))
 
     # Lock the other side
     to_room = getattr(pexit, "to_room", None)
@@ -472,7 +472,7 @@ def do_unlock(char: Character, args: str) -> str:
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # mirroring ROM src/act_move.c:757 — act("$n unlocks $p.", ch, obj, NULL, TO_ROOM)
             actor_name = getattr(char, "name", None) or "someone"
-            broadcast_room(room, f"{actor_name} unlocks {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} unlocks {obj_name}.", char, arg1=obj)
             return f"You unlock {obj_name}."
 
         # Container (ROM C lines 761-791)
@@ -492,7 +492,7 @@ def do_unlock(char: Character, args: str) -> str:
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # mirroring ROM src/act_move.c:790 — act("$n unlocks $p.", ch, obj, NULL, TO_ROOM)
             actor_name = getattr(char, "name", None) or "someone"
-            broadcast_room(room, f"{actor_name} unlocks {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} unlocks {obj_name}.", char, arg1=obj)
             return f"You unlock {obj_name}."
 
         return "That's not a container."
@@ -522,7 +522,7 @@ def do_unlock(char: Character, args: str) -> str:
     # ROM does NOT broadcast to the linked room on unlock (line 832 silently
     # REMOVE_BITs pexit_rev->exit_info), so neither do we. Symmetric to lock.
     actor_name = getattr(char, "name", None) or "someone"
-    broadcast_room(room, f"{actor_name} unlocks the {_door_keyword(pexit)}.", exclude=char)
+    _broadcast_act_to_room(room, f"{actor_name} unlocks the {_door_keyword(pexit)}.", char, arg2=_door_keyword(pexit))
 
     # Unlock the other side
     to_room = getattr(pexit, "to_room", None)
@@ -617,7 +617,7 @@ def do_pick(char: Character, args: str) -> str:
             # BCAST-034: TO_ROOM mirroring ROM src/act_move.c:907 —
             # act("$n picks the lock on $p.", ch, obj, NULL, TO_ROOM).
             actor_name = getattr(char, "name", None) or "Someone"
-            broadcast_room(room, f"{actor_name} picks the lock on {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} picks the lock on {obj_name}.", char, arg1=obj)
             return f"You pick the lock on {obj_name}."
 
         # Container (ROM C lines 916-947)
@@ -637,7 +637,7 @@ def do_pick(char: Character, args: str) -> str:
             # BCAST-034: TO_ROOM mirroring ROM src/act_move.c:945 —
             # act("$n picks the lock on $p.", ch, obj, NULL, TO_ROOM).
             actor_name = getattr(char, "name", None) or "Someone"
-            broadcast_room(room, f"{actor_name} picks the lock on {obj_name}.", exclude=char)
+            _broadcast_act_to_room(room, f"{actor_name} picks the lock on {obj_name}.", char, arg1=obj)
             return f"You pick the lock on {obj_name}."
 
         return "That's not a container."
@@ -687,6 +687,6 @@ def do_pick(char: Character, args: str) -> str:
     # act("$n picks the $d.", ch, NULL, pexit->keyword, TO_ROOM).
     # ROM ``$d`` substitution is the first word of pexit->keyword.
     actor_name = getattr(char, "name", None) or "Someone"
-    broadcast_room(room, f"{actor_name} picks the {_door_keyword(pexit)}.", exclude=char)
+    _broadcast_act_to_room(room, f"{actor_name} picks the {_door_keyword(pexit)}.", char, arg2=_door_keyword(pexit))
 
     return "*Click*"
