@@ -6,7 +6,7 @@ ROM Reference: src/act_move.c
 
 from __future__ import annotations
 
-from mud.mobprog import mp_act_trigger_room
+from mud.mobprog import mp_act_trigger_room, mp_reverse_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import (
     EX_CLOSED,
@@ -206,10 +206,11 @@ def do_open(char: Character, args: str) -> str:
                     pexit_rev.exit_info = rev_info & ~EX_CLOSED
                     # mirroring ROM src/act_move.c:447-448 — per-person TO_CHAR
                     # "The $d opens." in the linked room (no exclude — actor isn't there).
-                    broadcast_room(
-                        to_room,
-                        f"The {_door_keyword(pexit_rev)} opens.",
-                    )
+                    rev_msg = f"The {_door_keyword(pexit_rev)} opens."
+                    broadcast_room(to_room, rev_msg)
+                    # ROM act(..., rch, ..., TO_CHAR) makes each NPC its own actor;
+                    # src/comm.c:2384 still dispatches TRIG_ACT (no MOBtrigger wrap).
+                    mp_reverse_act_trigger_room(rev_msg, to_room, arg2=_door_keyword(pexit_rev))
 
     return "Ok."
 
@@ -299,10 +300,11 @@ def do_close(char: Character, args: str) -> str:
                     pexit_rev.exit_info = rev_info | EX_CLOSED
                     # mirroring ROM src/act_move.c:545-547 — per-person TO_CHAR
                     # "The $d closes." in the linked room.
-                    broadcast_room(
-                        to_room,
-                        f"The {_door_keyword(pexit_rev)} closes.",
-                    )
+                    rev_msg = f"The {_door_keyword(pexit_rev)} closes."
+                    broadcast_room(to_room, rev_msg)
+                    # ROM act(..., rch, ..., TO_CHAR) makes each NPC its own actor;
+                    # src/comm.c:2384 still dispatches TRIG_ACT (no MOBtrigger wrap).
+                    mp_reverse_act_trigger_room(rev_msg, to_room, arg2=_door_keyword(pexit_rev))
 
     return "Ok."
 

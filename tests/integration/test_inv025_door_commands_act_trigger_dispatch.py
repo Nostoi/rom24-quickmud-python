@@ -13,8 +13,9 @@ matching `TRIG_ACT` mobprog must receive `mp_act_trigger`:
 Python previously routed these through plain `broadcast_room`, so listening
 NPCs silently no-opped (the do_open follow-up gap, now closed for the family).
 
-The reverse-side ("The $d closes." in the linked room) broadcast stays a plain
-`broadcast_room`, matching the deliberate do_open precedent (line 209).
+The reverse-side ("The $d closes." in the linked room) broadcast is covered
+separately by `test_inv025_reverse_door_act_trigger_dispatch.py` — ROM dispatches
+TRIG_ACT there too via `act(..., rch, ..., TO_CHAR)` with each NPC as its own actor.
 """
 
 from __future__ import annotations

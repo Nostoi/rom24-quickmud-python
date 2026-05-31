@@ -1448,6 +1448,45 @@ def mp_act_trigger_room(
     return fired
 
 
+def mp_reverse_act_trigger_room(
+    message: str,
+    room: object | None,
+    *,
+    arg1: object | None = None,
+    arg2: object | None = None,
+) -> int:
+    """Dispatch TRIG_ACT for a reverse-side ``act(..., rch, ..., TO_CHAR)`` loop.
+
+    Mirrors ROM ``src/act_move.c:447-448`` (do_open) and ``:545-547`` (do_close):
+
+        for (rch = to_room->people; rch != NULL; rch = rch->next_in_room)
+            act("The $d opens.", rch, NULL, pexit_rev->keyword, TO_CHAR);
+
+    Because the actor handed to ``act()`` is ``rch`` itself and ``TO_CHAR``
+    collapses the recipient set to ``{rch}``, the ``src/comm.c:2384`` dispatch
+    fires ``mp_act_trigger(buf, to=rch, ch=rch, ...)`` — the listening NPC is
+    *both* recipient and actor.  Unlike ``mp_act_trigger_room`` there is no
+    ``ch`` to exclude (the original actor is in the other room), and the actor
+    threaded into each trigger is the recipient itself.
+
+    Returns the number of NPCs the trigger fired on (callers may ignore).
+    """
+    if not MOBtrigger:
+        return 0
+    if room is None:
+        return 0
+    people = getattr(room, "people", None)
+    if not people:
+        return 0
+    fired = 0
+    for recipient in list(people):
+        if not getattr(recipient, "is_npc", False):
+            continue
+        if mp_act_trigger(message, recipient, recipient, arg1, arg2, Trigger.ACT):
+            fired += 1
+    return fired
+
+
 def mp_act_trigger(
     argument: str,
     mob: Character,

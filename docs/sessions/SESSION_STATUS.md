@@ -25,10 +25,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.3 |
+| Version | 2.12.4 |
 | Tests | 5116 passed, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
-| Cross-file invariants | 24 enforced — INV-025 follow-up sweep extended to the door-command family |
+| Cross-file invariants | 24 enforced — INV-025 follow-up sweep now covers the full door family incl. reverse-side broadcasts |
 | Open correctness gaps | none |
 | Active focus | cross-file invariants probe pass |
 
@@ -36,12 +36,14 @@
 
 No open correctness gaps. Resume the **cross-file invariants probe pass**:
 
-1. **INV-025 reverse-side door broadcasts** (uniform open follow-up): close
-   `do_open:209` ("The $d opens.") + `do_close:302` ("The $d closes.") together
-   — ROM's `act(..., rch, TO_CHAR)` loop in the linked room
-   (`src/act_move.c:447-448`/`:545-547`) dispatches TRIG_ACT to a far-room NPC
-   via `src/comm.c:2384`. Left untouched this session to stay symmetric with
-   the `do_open` precedent. (lock/unlock/pick have no reverse-side broadcast.)
+1. ~~INV-025 reverse-side door broadcasts~~ **closed 2.12.4** — `do_open` /
+   `do_close` reverse-side linked-room loops now dispatch TRIG_ACT via the new
+   `mud/mobprog.py:mp_reverse_act_trigger_room` (actor == recipient, mirroring
+   ROM's `act("The $d opens.", rch, NULL, ..., TO_CHAR)` self-dispatch at
+   `src/act_move.c:447-448`/`:545-547`). Test:
+   `tests/integration/test_inv025_reverse_door_act_trigger_dispatch.py`.
+   The INV-025 door family is now fully wired (lock/unlock/pick have no
+   reverse-side broadcast — ROM flips the bit silently).
 2. Broader INV-025 sweep: remaining non-combat `_push_message`/`broadcast_room`
    narration surfaces where the matching ROM site uses `act()`.
 3. Other probe candidates: affect ticks, position transitions, mob script
