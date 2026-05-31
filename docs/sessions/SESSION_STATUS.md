@@ -1,4 +1,4 @@
-# Session Status — 2026-05-31 — affect-tick parity (GL-026/GL-027/GL-028/GL-029) + EMOTE-003
+# Session Status — 2026-05-31 — affect-tick parity (GL-026–GL-030) + VISIBLE-001 + EMOTE-003
 
 ## Current State
 
@@ -41,9 +41,21 @@
   suite green (5126 passed, 4 skipped). Tests:
   `tests/integration/test_gl027_mob_affect_tick_parity.py` (3:
   RNG-stream, decrement-and-stay, flag-only-orphan guard).
-  **To verify next (advisor minor, non-blocking):** a charmed pet with an
-  active affect round-tripping through save/reload — `MobInstance.affected`
-  is new; confirm `AffectData` serializes (or is acceptably transient).
+- **VISIBLE-001 (2.12.9) — CLOSED** (commit `0cbdb013`). `do_visible` stripped
+  `"invisibility"`/`"mass invisibility"` but the spells register `"invis"`/
+  `"mass invis"`, so cast invis lingered in `spell_effects` after going visible
+  (spurious later wear-off). Now routes through `remove_spell_effect("invis")`/
+  `("mass invis")`. Test: `tests/integration/test_visible001_strip_cast_invis.py`.
+- **GL-030 (2.12.9) — CLOSED** (commit `535e10c3`). The pet round-trip check
+  surfaced a crash GL-027 introduced: `_serialize_pet` did `if affect.type < 0`
+  on the new string-keyed shadow `AffectData` → `"bless" < 0` `TypeError`, so
+  saving a buffed/debuffed charmed pet crashed the character save. Guarded with
+  `isinstance(affect_type, int)`. Test: `tests/test_pet_save_affect_roundtrip.py`.
+- **GL-031 (OPEN, pre-existing)** — a charmed pet's spell-cast buffs aren't
+  persisted across save/reload (`MobInstance.spell_effects` was never
+  serialized; GL-030 correctly skips the string-named shadows). ROM `fwrite_pet`
+  saves pet affects by SN. Fix: serialize `pet.spell_effects` + restore via
+  `apply_spell_effect`. See `UPDATE_C_AUDIT` GL-031.
 - **Prior this session (2.12.5)**:
   - **EMOTE-003 / INV-025 correction** — `do_emote` no longer fires NPC
     act-triggers. ROM `do_emote` (`src/act_comm.c:1090-1093`) wraps its
@@ -84,11 +96,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.8 |
-| Tests | 5126 passed, 4 skipped |
+| Version | 2.12.9 |
+| Tests | 5130 passed, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 24 enforced — INV-025 now records the MOBtrigger *suppression* leg (EMOTE-003 correction); producer leg anchored at `do_stand` |
-| Open correctness gaps | GL-027 + GL-029 closed (2.12.8). Newly filed (pre-existing, not yet fixed): **VISIBLE-001** (`ACT_MOVE_C_AUDIT` — `do_visible` strips `"invisibility"`/`"mass invisibility"` but spells register `"invis"`/`"mass invis"`, so cast invis lingers in `spell_effects` after going visible). Non-blocking follow-up: verify charmed-pet affect save/reload round-trip (new `MobInstance.affected`) |
+| Open correctness gaps | GL-027 + GL-029 + GL-030 + VISIBLE-001 all closed (2.12.8/2.12.9). One open gap filed (pre-existing, deferred): **GL-031** (`UPDATE_C_AUDIT` — a charmed pet's spell-cast buffs don't persist across save/reload; `MobInstance.spell_effects` was never serialized) |
 | Active focus | cross-file invariants probe pass (affect-ticks) |
 
 ## Next Intended Task
