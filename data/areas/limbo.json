@@ -13,7 +13,7 @@
       "name": "The Void",
       "description": "You are floating in nothing.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 12,
       "exits": {},
       "extra_descriptions": [],
       "area": 0
@@ -23,7 +23,7 @@
       "name": "Limbo",
       "description": "You are floating in a formless void, detached from all sensation of physical\nmatter, surrounded by swirling glowing light, which fades into the relative\ndarkness around you without any trace of edges or shadow.\n   There is a \"No Tipping\" notice pinned to the darkness.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 3001,

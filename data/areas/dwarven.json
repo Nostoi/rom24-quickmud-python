@@ -117,7 +117,7 @@
       "name": "Narrow Path",
       "description": "This is a narrow path leading to the Dwarven Kingdom.  It looks less\ntravelled than the others, and it is very creepy.  The path opens up\nto the south, and continues to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6506,
@@ -160,7 +160,7 @@
       "name": "Bend in Narrow Path",
       "description": "This is a narrow path that bends to the east here.  The trees hang over\nthe path, and it is very overgrown.  The narrow path continues to the\nsouth and to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6507,
@@ -186,7 +186,7 @@
       "name": "Narrow path",
       "description": "This path is very narrow, and it continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6508,
@@ -207,7 +207,7 @@
       "name": "Narrow north-south path",
       "description": "This path leads to the north and south.  To the north you can see a\ndoor, and to the south the path continues.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6509,
@@ -228,7 +228,7 @@
       "name": "Door to Kingdom",
       "description": "Here the path turns to the west.  You can see a door in front of you,\nand the path continues to the west and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6510,
@@ -255,7 +255,7 @@
       "name": "Path to the Castle",
       "description": "You are on a path that will eventually lead to the castle.  It\ncontinues north to the castle, and there is a door on the western wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6511,
@@ -277,7 +277,7 @@
       "name": "Still on the path to the Castle",
       "description": "You are still on the path to the castle, or back to the\nDwarven village, whichever way you wish to go.  The path\ncontinues to the north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6512,
@@ -298,7 +298,7 @@
       "name": "Door to Castle",
       "description": "Here there is a door to the castle to the east.  The castle\nis elegantly designed, and looks much like a roll of toilet paper\nstanding on end.  A sign says:\n\n              ******************************************\n              *  WELCOME TO THE CASTLE OF STRANGELOVE  *\n              *      Here, celibacy is uninvited       *\n              ******************************************\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6525,
@@ -320,7 +320,7 @@
       "name": "Inside the entrance",
       "description": "Everything here is covered in soot and very grimy.  The path continues\nto the east and north, and there is a door to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6514,
@@ -350,7 +350,7 @@
       "name": "Path",
       "description": "You are on a path in the dwarven village which leads north to the shops\nand south to the corner of the area.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6515,
@@ -371,7 +371,7 @@
       "name": "Turn in road",
       "description": "You are on a path that leads to a Hide & Tooth shop to the west, and the\npath continues to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 6514,
@@ -393,7 +393,7 @@
       "name": "Hide & Tooth Shop",
       "description": "You are in the Hide & Tooth shop.  Here you may buy the finest in Dwarven\nweapons and armors. The path continues to the north and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6517,
@@ -414,7 +414,7 @@
       "name": "Path to the north of shop",
       "description": "You are on a path to the north of the Hide & Tooth shop.  The path continues\nto the north, and there is Granite Head's bakery to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6518,
@@ -440,7 +440,7 @@
       "name": "North of Shops",
       "description": "Here the path bends to the east towards the barracks. To the\nsouth you can see the shops.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6519,
@@ -461,7 +461,7 @@
       "name": "Path by Hospital",
       "description": "Here the path passes by the Hospital to the north.  It continues\nto the east to the barracks, and to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6534,
@@ -487,7 +487,7 @@
       "name": "Path next to barracks",
       "description": "Here the path continues west, and east to the barracks.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6521,
@@ -508,7 +508,7 @@
       "name": "Entrance to barracks",
       "description": "Here there is an entrance to the barracks to the south, and\nthe path continues to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 6523,
@@ -530,7 +530,7 @@
       "name": "Guard House",
       "description": "You are in the guard house to the west of the entrance\nto the castle.  There are nude posters covering the walls.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6509,
@@ -551,7 +551,7 @@
       "name": "First Barrack room",
       "description": "Here is the first of two main rooms of barracks.  The\nbarracks continue to the south, and you can leave the room\nto the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6521,
@@ -573,7 +573,7 @@
       "name": "Back of Barracks",
       "description": "Here is the back of the dwarven barracks.  There are rows\nof beds here, and there is a stench that is unbearable.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6523,
@@ -595,7 +595,7 @@
       "name": "Inside of Castle Strangelove",
       "description": "You are just inside the castle.  It is very tubular in shape,\nand it is very featureless.  There is a set of stairs that lead\nup, and the door leads out of the castle to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 6512,
@@ -617,7 +617,7 @@
       "name": "A store room",
       "description": "There is a layer of dust on the floor at least 3 inches thick!  It is\nprobable that not many people have been in here for many months.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6513,
@@ -644,7 +644,7 @@
       "name": "Wine cellar",
       "description": "This room smells like wine, and you can only assume it used to be\na wine cellar at one time.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 6526,
@@ -666,7 +666,7 @@
       "name": "Stairs in castle",
       "description": "The stairs continue to circle up and down here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 6529,
@@ -687,7 +687,7 @@
       "name": "Stairs",
       "description": "You are still circling around on the stairs.  You are starting to\nget dizzy from going around and around and around and around and\naround.  The stairs continue up and down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 6530,
@@ -708,7 +708,7 @@
       "name": "Top of stairs",
       "description": "You are at the top of the stairs in the castle.  There is an exit\nto the east, and the stairs lead down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6531,
@@ -729,7 +729,7 @@
       "name": "Queen's waiting room",
       "description": "This is the Queen's waiting room.  Here the men literally\n'wait' for the queen.  You've heard that the queen really likes\nto get to 'know' her people, in the biblical sense.  The queen's\nbedroom is to the north, and you can see stairs to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6532,
@@ -751,7 +751,7 @@
       "name": "Bedroom",
       "description": "This is the Queen's bedroom.  The bed is all ruffled, and there\nis a stack of dirty sheets piled in the corner.\n\nA note has been scrawled in lipstick on the mirror:\n\n    I'm out looking for my birth control pills.\n    Why don't you slip into something comfortable while you're waiting?\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 6531,
@@ -768,7 +768,7 @@
       "name": "Hospital",
       "description": "You are inside the Dwarven Hospital.  It smells like rubbing\nalcohol, and there is blood all over the walls.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 6519,
@@ -784,7 +784,7 @@
       "name": "Granite Head's Bakery",
       "description": "The aroma coming from this room is sensuous.  You can almost taste\nthe pastries dissolving in your mouth.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6517,
@@ -800,7 +800,7 @@
       "name": "Dark path",
       "description": "This path is very well worn, and there is an entrance to the mines to the\neast, while the path continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6504,
@@ -827,7 +827,7 @@
       "name": "Mine entrance",
       "description": "The little path here leads down toward the mines, while the worn path\ncontinues to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 6540,
@@ -849,7 +849,7 @@
       "name": "Inside the mine",
       "description": "There are holes everywhere from the places that the workers blew\naway the rock to get to whatever they were looking for.  A path leads\ndown and up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 6541,
@@ -870,7 +870,7 @@
       "name": "Path in the mine",
       "description": "You are deep inside the mine, and you feel very uncomfortable.  The\npath continues to the east, and leads to the mineshaft to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6544,
@@ -891,7 +891,7 @@
       "name": "Mine crossroad",
       "description": "You are at a crossroad in the mine.  There is a door to the north,\nand the path continues to the south, east, and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6546,
@@ -923,7 +923,7 @@
       "name": "Coal Room",
       "description": "You are inside the storage area for the raw materials\nthat are found down here.  The room is very unsturdy as the\nsupports are very rickety.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 6544,
@@ -939,7 +939,7 @@
       "name": "Mine Maze",
       "description": "You have entered the maze of the mines.  To the east you\ncan see some inscriptions, and you can exit to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6547,
@@ -961,7 +961,7 @@
       "name": "Maze inscription",
       "description": "You are inside the maze, but not far enough in that you could get lost.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6548,
@@ -982,7 +982,7 @@
       "name": "Maze",
       "description": "You are in a maze.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6549,
@@ -1003,7 +1003,7 @@
       "name": "Maze",
       "description": "You are in a maze.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6550,
@@ -1024,7 +1024,7 @@
       "name": "Maze",
       "description": "You are in a maze.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 6549,
@@ -1045,7 +1045,7 @@
       "name": "Mining equipment room",
       "description": "This is the storage room for equipment used by the\nDwarven miners.  It is very small, and you can tell that\nnot many miners actually use any equipment.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6544,
@@ -1061,7 +1061,7 @@
       "name": "Solved the Maze.",
       "description": "You have solved the maze.  You can tell by the last few moves\nthat there is no way that a dumb worker could have figured that\nout.  It seems pretty desolate here.  To the south is a bleak room.\nTo the north, you see the maze.  There is a sign above the south exit:\n\n    Those who enter, plan on a timely death.\n    Especially if you're loyal to the queen.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6550,
@@ -1082,7 +1082,7 @@
       "name": "The Mazekeeper's Room",
       "description": "You have entered the Mazekeeper's room.  There are pictures of\nthe Queen with darts thrown in it.  Spray-painted on the wall are\nthings like 'the queen shall suffer' and 'Catholics Rule'.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6552,
@@ -1098,7 +1098,7 @@
       "name": "Bottom of mineshaft",
       "description": "You are at the bottom of the mineshaft.  The air here is very sooty, and\nit is very hard to breath.  The mineshaft leads up and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6543,

@@ -13,7 +13,7 @@
       "name": "Inside a Tavern",
       "description": "You are inside a dimly-lit room.  The atmosphere makes you feel uncomfortable.\nIn front of you stands a mysterious gypsy.  She whispers 'Your fate and\ndestiny lie beyond this world.'  You are still wondering what she means when\nyou suddenly notice the crystal ball ... it glows fiercely and displays the\nUniverse!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1306,
@@ -186,7 +186,7 @@
       "name": "On the Bridge of Nebulae",
       "description": "This bridge, like the other, was made as a memorial.  The nebulae had to\nmake one just to show that they are as capable as the stars.  North lies\na throne room.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9310,
@@ -212,7 +212,7 @@
       "name": "The Throne Room of the Nebula King",
       "description": "You can only faintly make out that it is a throne room as it is too\ndark in here.  In the middle is an empty throne.  You wonder where\nthe King has gone, maybe he is hiding from you?\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9309,
@@ -348,7 +348,7 @@
       "name": "Very Near to a Gigantic Star",
       "description": "You are very near to a gigantic red star.  While you are still fascinated\nby its beauty, the star keeps on growing ... suddenly you realize that you'd\nbetter leave.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 9320,
@@ -379,7 +379,7 @@
       "name": "Too Bright to Tell",
       "description": "Indeed it is too bright to tell.  Because what you are witnessing is the\nrare event of a Supernova, how a star explodes itself into galactic dust.\nYou may find yourself lucky to witness this rare event but even luckier,\nyou have finally got out of this galaxy as your body turns into dust.\nThat really HURTS!  \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 6,
       "exits": {},
       "extra_descriptions": [],
       "area": 9300
@@ -389,7 +389,7 @@
       "name": "The Star Cluster",
       "description": "You are inside the home of the stars.  All you can see around you are stars\nand nothing else.  You eyes become pretty hurt as you look at them.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9322,
@@ -462,7 +462,7 @@
       "name": "Lost in Space",
       "description": "You are now lost in space.  Compasses don't work here, sorry.  What's more\nyou can sense darkness engulfing you.  You'd better get out quick.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9325,
@@ -488,7 +488,7 @@
       "name": "Black Hole",
       "description": "Well you have chosen the wrong path, sorry.  Nothing can escape from this\nmonster, not even light.\nPANIC!  You can't escape!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 7,
       "exits": {},
       "extra_descriptions": [],
       "area": 9300
@@ -875,7 +875,7 @@
       "name": "Inside a Luxurious Bedroom",
       "description": "A peaceful feeling overtakes you.  You see a magnificent four-poster bed.\nIt's a double bed and there is only room for one more!  Well, what now ... ?\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9348,
@@ -891,7 +891,7 @@
       "name": "The Supreme Court",
       "description": "You are standing inside the dock of a court.  You feel an overwhelming\nsense of guilt and you want to protest your innocence!  You fear retribution\nand feel yourself exposed, just like the trees in Autumn.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9347,
@@ -1031,7 +1031,7 @@
       "name": "On the Draco",
       "description": "You realize you are standing on scaly ground.  As you wonder what the ground\nis made of, you feel the ground move.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9356,
@@ -1052,7 +1052,7 @@
       "name": "Tail of the Draco",
       "description": "At last you realize that you are on a giant snake-like dragon called the\nDraco, the guardian of the inner galaxy.  You realize that the Draco is\nactually flying now! \n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9357,
@@ -1073,7 +1073,7 @@
       "name": "Path of the Draco",
       "description": "As you struggle along this scaly creature you realize that the only way\nyou can reach to the inner galaxy is by going all the way to the head.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9358,
@@ -1094,7 +1094,7 @@
       "name": "Near the Legs of Draco",
       "description": "You are approaching the leg part of this creature.  You look around and see\nthat the surrounding is all dark except for some faint lights from the\ndistant stars.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9359,
@@ -1115,7 +1115,7 @@
       "name": "On the Back of Draco",
       "description": "At last you are half way through this long, weary journey. You can see\nthe wings are to the east but it seems that another forcefield is in the way.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9360,
@@ -1138,7 +1138,7 @@
       "name": "Between the Wings of Draco",
       "description": "You hear some giant flapping sounds nearby.  You desperately try to get hold\nof something as the forceful gusts sweep you away.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9361,
@@ -1159,7 +1159,7 @@
       "name": "Near the Arms of Draco",
       "description": "From above you can faintly make out the gigantic arms which extend far\nbeyond into the darkness.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "south": {
           "to_room": 9362,
@@ -1180,7 +1180,7 @@
       "name": "On the Neck of Draco",
       "description": "Your journey is now approaching the end.  However, this neck seems to be\nendless.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9361,
@@ -1201,7 +1201,7 @@
       "name": "Approaching the Head of Draco",
       "description": "You have come to the end of Draco, but you can't find the head!\nYou see a forcefield to the south, some distance away, beyond reach.\nIf only the head were here ...\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9362,

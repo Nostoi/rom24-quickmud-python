@@ -501,7 +501,7 @@
       "name": "Dark Cave",
       "description": "You notice a path winding east among some huge boulders.  You feel a powerful\nsource of energy from that direction.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9221,
@@ -522,7 +522,7 @@
       "name": "Darker Caves",
       "description": "You can barely see your way even with a light source.  The rocks of the cave\nare even darker than the darkness.  You hear a powerful humming all around\nyou.  Cave paths go south and east roughly, its hard to tell exactly when you\ncan't see where you are going.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9222,
@@ -548,7 +548,7 @@
       "name": "Darker Caves",
       "description": "You can barely see your way even with a light source.  The rocks of the cave\nare even darker than the darkness.  You hear a powerful humming all around\nyou.  Cave paths go south and west roughly; it's hard to tell exactly when you\ncan't see where you are going.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9224,
@@ -569,7 +569,7 @@
       "name": "Darker Caves",
       "description": "You can barely see your way even with a light source.  The rocks of the cave\nare even darker than the darkness.  You hear a powerful humming all around you.\nCave paths go north, south and east roughly; it's hard to tell exactly when\nyou can't see where you are going.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9221,
@@ -595,7 +595,7 @@
       "name": "Darker Caves",
       "description": "You can barely see your way even with a light source.  The rocks of the cave\nare even darker than the darkness.  You hear a powerful humming all around you.\nCave paths go north, south and west roughly, it's hard to tell exactly when you\ncan't see where you are going.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9222,
@@ -621,7 +621,7 @@
       "name": "Darkest Caves",
       "description": "Your light doesn't even seem to work here.  Even magical light sources seem\nonly to illuminate about a foot ahead of you.  You suddenly realize that the\npath has descended quite a bit but you didn't notice before because of the\ndarkness.  You sense a great presence off to the east aways.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9223,
@@ -642,7 +642,7 @@
       "name": "Darkest Caves",
       "description": "Your light doesn't even seem to work here.  Even magical light sources seem\nonly to illuminate about a foot ahead of you.  You suddenly realize that the\npath has descended quite a bit but you didn't notice before because of the\ndarkness.  You sense a great presence directly to the east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9224,
@@ -668,7 +668,7 @@
       "name": "Earth Chamber",
       "description": "This is the abode of the Earth Ruler.  He decides about earthquakes,\nlandslides, and avalanches.  The Earth Ruler sits upon a huge marble throne\ncarved into the wall.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 9226,
@@ -877,7 +877,7 @@
       "name": "Water Chamber",
       "description": "This chamber was magically created here on the floor of the bay.  It looks\nlike it's been here for a long, long time.  Though you are 'under water' there\nis no difficulty breathing normally, and oddly you do not feel the pressure of\nthe water above you.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 9235,
@@ -1108,7 +1108,7 @@
       "name": "Lightning Chamber",
       "description": "There is some sort of control panel here. Apparently the Lightning Ruler\nobserves and controls electric forces from here.  A set of steps carved into\nthe hill lead down to a causeway.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 9251,
@@ -1301,7 +1301,7 @@
       "name": "Air Chamber",
       "description": "Tiny tornadoes come and go and dance along the ground here.  At the back\nof the chamber you notice a huge throne made of swirling clouds.\nA tunnel leads west.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9259,

@@ -46,7 +46,7 @@
       "name": "Stairwell into Darkness",
       "description": "You sense even more danger coming from below but are urged onward ...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 3449,
@@ -67,7 +67,7 @@
       "name": "The Acolyte's Bedroom",
       "description": "This is why you were not welcomed at the entrance by the tomb's faithful\nservants ... blood and gore is ankle deep in here.\nOh NO! the door shut behind you!  It's a trap!\nA bloodied corpse of an acolyte is lying here ...\nA bloodied corpse of an acolyte is lying here ...\nA bloodied corpse of an acolyte is lying here ...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 13,
       "exits": {},
       "extra_descriptions": [
         {
@@ -82,7 +82,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3415,
@@ -101,7 +101,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3410,
@@ -116,7 +116,7 @@
       "name": "The Grand Hall of Kings",
       "description": "You are at the west end of the Grand Hall of Kings.  There is a doorway to the\nsouth with something strange written above it.  Also on the floor are dried\nblood stains, but their color seems a little wrong.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3417,
@@ -147,7 +147,7 @@
       "name": "The Shrine of Shohan",
       "description": "BLOOD EVERYWHERE!\nThe walls are coated with blood, bits of bloody flesh lie at your feet,\nand torn clothing is scattered about.  It wouldn't disturb you in the least\nexcept that it is all FRESH!  What ever used to pass as an altar here,\nlies overturned and smashed.  Doors lead to the south and to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3412,
@@ -170,7 +170,7 @@
       "name": "The Tomb of Shohan",
       "description": "Once beautiful, this place has been turned into a slaughterhouse by the hands\nof evil beings ... even more blood and dead, rotting flesh.  This place looks\nlike the feeding grounds of beasts and monsters.  The overturned sarcophagus\nof the once powerful King Shohan lies here.  A door leads to the north and a\ndoorway has been hewn to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3413,
@@ -195,7 +195,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3420,
@@ -218,7 +218,7 @@
       "name": "Entrance to the Lower Chambers",
       "description": "You can tell that this area wasn't a part of the original construction.\nThe walls have been hewn by a mighty force look as though they were CLAWED.\nThe passage slopes upward here and also continues to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3415,
@@ -244,7 +244,7 @@
       "name": "The Grand Hall of Kings",
       "description": "This is the western wing of the Grand Hall of Kings.  Your only exits are to\nthe east and west in this gloomy hallway.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3422,
@@ -263,7 +263,7 @@
       "name": "The Shrine of Cristis",
       "description": "Different than the rest, this place has not been desecrated.  An altar still\nstands here and the walls show scenes from the life of Cristis the Kind,\na ruler of the outlying regions west of Midgaard.  There is a stone staircase\nleading down.  The Ghost of Cristis the Kind stands here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 3419,
@@ -293,7 +293,7 @@
       "name": "The Tomb of Cristis",
       "description": "Everything here has simply been destroyed.   Exits lead north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3418,
@@ -312,7 +312,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3425,
@@ -331,7 +331,7 @@
       "name": "Entrance Chamber to the Grand Hall of Kings",
       "description": "Whoever built this place must have been very rich indeed!  Though you did\nenter through a rather small door this place has enough room to hold several\nscore of people.  The floor has a beautifully woven carpet, and the walls are\ncovered in finely crafted tapestries. You can tell that these things must have\nbeen worth much but they have not lasted well throughout the ages.  Massive\ndoors lead off to the south and a large stone staircase leads up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 3422,
@@ -377,7 +377,7 @@
       "name": "The Grand Hall of Kings",
       "description": "A long hallway stretches east and west.  On the southern side of the hall\nthere are many doors, each with the name of a king who has died and is\nentombed here.  The hallway is beautiful yet chilling.  Even though the area\nhas been kept well by acolytes, there remains a stench of the undead.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3421,
@@ -409,7 +409,7 @@
       "name": "The Shrine of Crotus",
       "description": "Mostly rubble, this place used to be the shrine of the famous king Crotus,\nwho saved the northern regions from being overrun by the goblin hordes of\n100 years ago.  If not for him, Midgaard of course would have eventually been\nconquered as well.  Though Crotus was a goodly king, it was rumored that he\nturned to the dark ways in his dying years ... and died an evil man.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3422,
@@ -430,7 +430,7 @@
       "name": "The Tomb of Crotus",
       "description": "A sarcophagus lies in the middle of the room and seems undisturbed.\nA hole has been knocked into the east wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3423,
@@ -449,7 +449,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "south": {
           "to_room": 3426,
@@ -468,7 +468,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3425,
@@ -487,7 +487,7 @@
       "name": "The Grand Hall of Kings",
       "description": "You are in the western part of the Grand Hall of Kings.  To the south is a\ndoor and to the east and west the hall continues.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3432,
@@ -512,7 +512,7 @@
       "name": "The Shrine of Mitnar",
       "description": "Mitnar was a gruesome beast of a man ... he loved battle ... and nothing\nelse.  Warriors did love Mitnar, and all fighting men honored him.\nOn the wall is depicted battle after battle after battle.\nA small opening has been shaped carefully to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3427,
@@ -537,7 +537,7 @@
       "name": "The Tomb of Mitnar",
       "description": "The wall paintings show men and women warriors alike bowing down to Mitnar,\nprisoners of war being put to the sword by Mitnar, and great heaps of gold\nand weapons under the feet of Mitnar.  Where his coffin was, there is now\nonly a rectangular blemish on the floor of the dusty room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3428,
@@ -556,7 +556,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3435,
@@ -579,7 +579,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3430,
@@ -598,7 +598,7 @@
       "name": "The Grand Hall of Kings",
       "description": "You are still walking through the gloomy hallway.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3437,
@@ -617,7 +617,7 @@
       "name": "The Shrine of Frath",
       "description": "Little chunks of dried meat are spattered throughout this room.  The walls\nare covered in gore.  Almost as if they were painted ... ICK!  You can\nalmost make out the design!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3438,
@@ -636,7 +636,7 @@
       "name": "The Tomb of Frath",
       "description": "UGH!  The sarcophagus is opened up and the mummified body lies out in the\nopen, ripped to pieces.  Gnawed pieces of flesh and bone are strewn here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "down": {
           "to_room": 3439,
@@ -651,7 +651,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3440,
@@ -674,7 +674,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3435,
@@ -697,7 +697,7 @@
       "name": "The Grand Hall of Kings",
       "description": "You are at the western end of the Grand Hall of Kings.  There is a\ndoor leading north and the hallway continues west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3409,
@@ -718,7 +718,7 @@
       "name": "The Shrine of Jubal",
       "description": "This was once beautiful.  Now the huge tapestries have been torn down and the\ncarpeting pulled up ... the paintings on the ceiling are unreadable and the\naltar is crumbled.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 3439,
@@ -737,7 +737,7 @@
       "name": "The Tomb of Jubal",
       "description": "The smell coming off of the opened sarcophagus is nauseating.  The floor is\nslightly crumpled and walls are raked ... but the worst part is the mummy ...\nJubal the Benevolent is missing his head!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3438,
@@ -756,7 +756,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3445,
@@ -779,7 +779,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3440,
@@ -802,7 +802,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3447,
@@ -821,7 +821,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3442,
@@ -840,7 +840,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3443,
@@ -859,7 +859,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "south": {
           "to_room": 3446,
@@ -878,7 +878,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3445,
@@ -901,7 +901,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3446,
@@ -924,7 +924,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "This room has been totally hollowed out and smoothed, and a pit has been\ndrilled in the center of the floor.  There are extensive gruesome paintings\nof beasts and monsters terrorizing the countryside; vampires sucking the\nblood of beasts and humans alike.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3447,
@@ -944,7 +944,7 @@
       "name": "The Lower Chambers and Tombs of the Undead",
       "description": "The stench of death is heavy in these caverns.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3408,
@@ -965,7 +965,7 @@
       "name": "Entrance to the Forbidden Catacombs",
       "description": "You have entered the forbidden catacombs.  This cave system must have been\nbuilt long ago.  The air is dank and smells of something dead ...  or maybe\nundead.  Enter here at your own risk ... something evil abides.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3451,
@@ -1005,7 +1005,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3455,
@@ -1028,7 +1028,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3461,
@@ -1050,7 +1050,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3450,
@@ -1067,7 +1067,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3450,
@@ -1084,7 +1084,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "south": {
           "to_room": 3456,
@@ -1106,7 +1106,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3455,
@@ -1129,7 +1129,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "south": {
           "to_room": 3458,
@@ -1151,7 +1151,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3457,
@@ -1178,7 +1178,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3458,
@@ -1201,7 +1201,7 @@
       "name": "Den of the Vampire",
       "description": "Your mind whirls in the hideous madness of this place.  The stench\nis horrendous and dead bodies, sucked of life, lay all over.  One coffin\nlies in the center of the room ... waiting for YOU!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3459,
@@ -1225,7 +1225,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3462,
@@ -1246,7 +1246,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "south": {
           "to_room": 3463,
@@ -1267,7 +1267,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 3462,
@@ -1288,7 +1288,7 @@
       "name": "The Catacombs",
       "description": "Stone walls, musty air ... the earth seems to moan softly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 3470,
@@ -1316,7 +1316,7 @@
       "name": "The Gilded Hallway",
       "description": "Wow!  Although this hallway is quite filthy and dusty, it is noticeably\ndifferent than the rest of the catacombs ... but you don't feel safe yet.\nThe walls faintly show ancient detailed etchings in gold and silver of\nancient rituals ... not all of which seem pleasant.  The hallway continues\nnorth into the catacombs and further south as long as you can see.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3464,
@@ -1342,7 +1342,7 @@
       "name": "The Gilded Hallway",
       "description": "Ancient etchings and writing in intricate gold and silver designs fill these\nwalls.  You are tempted to linger and examine them closely.  Your light source\nflickers off the walls showing you exits north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3465,
@@ -1368,7 +1368,7 @@
       "name": "The Gilded Hallway",
       "description": "Ancient etchings and writing in intricate gold and silver designs fill these\nwalls.  You are tempted to linger and examine them closely.  Your light source\nflickers off the walls showing you exits north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3466,
@@ -1394,7 +1394,7 @@
       "name": "The Gilded Hallway",
       "description": "Ancient etchings and writing in intricate gold and silver designs fill these\nwalls.  You are tempted to linger and examine them closely.  Your light source\nflickers off the walls showing you exits north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3467,
@@ -1420,7 +1420,7 @@
       "name": "The Gilded Hallway",
       "description": "Ancient etchings and writing in intricate gold and silver designs fill these\nwalls.  You are tempted to linger and examine them closely.  Your light source\nflickers off the walls showing you exits north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3468,
@@ -1441,7 +1441,7 @@
       "name": "A Secret Passageway",
       "description": "A secret passage!  You wonder where it may lead!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 3471,
@@ -1462,7 +1462,7 @@
       "name": "A Secret Passageway",
       "description": "A secret passage!  You wonder where it may lead!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3470,
@@ -1478,7 +1478,7 @@
       "name": "The Short Way to Hell ...",
       "description": "You fall ...\n            hmm .... it's getting really HOT!\nYou fall ...\n                        you fall ...\n     Slowly you are cooking as you fall further ... your skin is burning and\nyour hair evaporates ...\n\n                                           you fall ...\n\n                 and fall ...\n\n                                     and STOP...!!\n\nWelcome to HELL!\n\nBut even in Hell we give you another chance.\n\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 10401,
@@ -1494,7 +1494,7 @@
       "name": "Inside the coffin",
       "description": "You are inside a coffin.  It seems rather cramped in here.  You can climb\nup out of the coffin, or you can wait for here the real occupant to join you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3460,

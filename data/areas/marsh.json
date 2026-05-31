@@ -69,7 +69,7 @@
       "name": "Marshy Forest",
       "description": "This area is by no means a forest, but for those who dwell in these sparse\ntrees it is one.  Occasionally you see a whole humanoid form floating face down\nin the water, but mostly you only find pieces.  You hear a loud bellow in the\ndistance.  And feel fear creep into your heart.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 8305,
@@ -101,7 +101,7 @@
       "name": "On a hill.",
       "description": "You stand atop a hill on the northwestern side of the evil swamp. Dark\nclouds whip around you and the wind raises its voice and assails you.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 8302,
@@ -130,7 +130,7 @@
       "name": "An Oozing Bog",
       "description": "You stand in an oozing quagmire.  A creaking beat fills the air, \naccompanied by groans and soughing of the air.  Several large winged\nbeasts flap over you and send chilling glares your way.  You feel out\nof place, and feel that the occupants of this realm will soon \nhave you for a feast.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 8306,
@@ -158,7 +158,7 @@
       "name": "An Oozing Bog",
       "description": "The ground here is soft and oozing.  You feel slimy water seeping into your\nboots.  Better stop and check for leeches when you get out of here.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "west": {
           "to_room": 8305,
@@ -181,7 +181,7 @@
       "name": "Swamp Thing's Lair",
       "description": "A horrible swamp thing resides here.  Mutilated corpses suffuse the air with\nthe overwhelming stench of putrid flesh.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "west": {
           "to_room": 8308,
@@ -203,7 +203,7 @@
       "name": "Pool of Quick Sand",
       "description": "You stand by a large oozing pool of quick sand.  Luckily only a complete\nklutz could not avoid it.  Dancing lights fly about you and one seems to\nbe taunting you towards the pool.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 8307,
@@ -241,7 +241,7 @@
       "name": "A Dark Pool.",
       "description": "You stand beside a large dark pond.  The water boils not with heat, but with\nmotion, as if it is alive.  A creaking beat pulses through the air, leaving\nyou with a cold sweat and fear in your heart.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 8308,
@@ -275,7 +275,7 @@
       "name": "Gloomy Path Through the Marsh.",
       "description": "To the north lies a hill, shrouded in dark clouds, and to the south lies\na huge patch of vegetation.  You sense an evil presence and notice \na beast flying overhead to the south east, towards what looks to be a \nhuge fortress, half buried in the marsh.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 8304,
@@ -315,7 +315,7 @@
       "name": "Cloud of Darkness.",
       "description": "As you travel through this cloud of darkness, a fear such as you have never\nknown before assails you.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 8309,
@@ -338,7 +338,7 @@
       "name": "Near Vegetation from Hell.",
       "description": "You stand near some of the strangest plant life you have ever seen, a mixture\nof tumescent vegetables, evil-smelling fruit trees, and malignant ferns.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 8310,
@@ -366,7 +366,7 @@
       "name": "By the Monolith.",
       "description": "You are standing near a monolith which protrudes some 20 feet from the\nmarsh into the air.  Its black obsidian surface shines darkly in the \nstrange, almost unearthly light that enters through the clouds above.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 8311,
@@ -400,7 +400,7 @@
       "name": "Murky Bog.",
       "description": "A murky bog surrounds you.  To the east a black monolith juts forth from the\nground.  Far to the north lies a huge pool of quicksand.  Snarls can be heard\nechoing as if from a great distance.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 8308,
@@ -434,7 +434,7 @@
       "name": "Northern Lake Side.",
       "description": "Floating on this boiling lake is not what you would consider an enjoyable \nexperience.  Many a creature bumps the bottom of your boat, and glares \nat you through unblinking eyes from the waters below.  The southern \nportion of the lake looks calm and serene compared to this wild place.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "south": {
           "to_room": 8316,
@@ -457,7 +457,7 @@
       "name": "Southern Lake Side.",
       "description": "You are floating on a calm section of blue crystal water.  You feel much more\nat ease then you were before in this area.  Then a wave of fear passes over\nyou.  You are not alone.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 8315,
@@ -485,7 +485,7 @@
       "name": "Beach",
       "description": "You are on a sandy shore.  Marsh life creeps across the surface.  To the west\nlies an evil fortress.  You see figures walking along the battlements.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 8316,
@@ -513,7 +513,7 @@
       "name": "Before the Great Gates.",
       "description": "You stand before the gates of a huge fortress.  The drawbridge is up, the\ngates closed, and the portcullis down.  This place looks very dangerous,\nand you decide not to continue onward.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 8317,

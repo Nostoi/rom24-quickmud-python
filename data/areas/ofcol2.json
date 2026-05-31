@@ -13,7 +13,7 @@
       "name": "Granny's Still Room",
       "description": "You are in Granny Jenkins' still room.  The smell of whiskey is heady, and\nthe bottles of it on the floor make your mouth water and your mind swirl.  You\nalso see a very large still.  So THIS is why there are so many grain fields!\nThe exit is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 616,
@@ -93,7 +93,7 @@
       "name": "The Blacksmith",
       "description": "You are in a black and smelly room.  Pieces of metal are strewn all over\nthe floor, and a wave of heat from a big furnace hits you.  An anvil sits on \none side of the room, and on the other side is a workbench.  The exit is east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 602,
@@ -109,7 +109,7 @@
       "name": "The Leather Shop",
       "description": "You are in a brown and smelly room.  Pieces of leather are strewn all over\nthe floor.  The smell of burnt hide assaults your nose.  You can tell by the\nlooks that the tanning is done VERY CLOSE to here!   A table is near the\nentrance.  The exit is west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 602,
@@ -156,7 +156,7 @@
       "name": "The Pawn Shop.",
       "description": "You are in a little shop filled with a lot of knick knacks and semi-\nvaluable goods.  There is a display case full of little treasures that you are\nsure that you or any other little kid would like to touch!  The exit is east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 605,
@@ -172,7 +172,7 @@
       "name": "The Meat Store",
       "description": "You are in a meat store.  Hanging on hooks are meats of many kinds of\nanimals.  In the background, you can hear the sound of blade against flesh.\nIt smells like meat here (which is not a good smell).  The exit is west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 605,
@@ -219,7 +219,7 @@
       "name": "Nyles' House of Ale",
       "description": "This is a very busy bar, with everyone holding homemade bottles of\nale.  You see even the more gentile persons here, laughing along with\nNyles, who offers you a quart of ale too.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 608,
@@ -235,7 +235,7 @@
       "name": "Farmer's Market",
       "description": "You see many carts filled with fruits and vegetables.  Many farmers are\nall trying to sell you their produce, each saying their's is better.  The exit\nis west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 608,
@@ -371,7 +371,7 @@
       "name": "The Shed",
       "description": "You are in the storage shed.  Bales of wheat, corn and hay are piled\nagainst the wall, and some vegetables are in carts.  You see a small door\nto the west.  The main exit is south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 612,
@@ -394,7 +394,7 @@
       "name": "Slaughterhouse",
       "description": "You are in the slaughterhouse, where all the animals are slaughtered so\nthat they can be sold or their skins be tanned.  The scream of dying animals\nmakes your stomach churn.  The exit is to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 668,
@@ -443,7 +443,7 @@
       "name": "Chicken Coop",
       "description": "You are in the chicken coop.  The smell of chickens and chicken droppings\nmakes you gasp.  The exit is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 618,
@@ -460,7 +460,7 @@
       "name": "Barn",
       "description": "You are in a barn.  There are some cows here, munching on mounds of hay.\nMilk is milked and bottled here.  You see the exit west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 618,
@@ -590,7 +590,7 @@
       "name": "Big House",
       "description": "You are in a big house.  Evidently, the owners of this house are richer\nthan the average citizen, since there is more than one room to this house.  A\ndoor leads to the kitchen east, and a bedroom is upstairs.  The exit is to the\nwest.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 628,
@@ -618,7 +618,7 @@
       "name": "Bedroom",
       "description": "You are in the bedroom.  There isn't much of interest except for a bed and\na closet.  The stairs lead back down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 626,
@@ -634,7 +634,7 @@
       "name": "Kitchen",
       "description": "You are in a kitchen.  There isn't much of interest here.  The main room\nis west of here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 626,
@@ -650,7 +650,7 @@
       "name": "Big House",
       "description": "You are in a big house.  Evidently, the owners of this house are richer\nthan the average citizen, since there is more than one room to this house.  A\ndoor leads to the kitchen west, and a bedroom is upstairs.  The exit is to the\neast.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 625,
@@ -678,7 +678,7 @@
       "name": "Bedroom",
       "description": "You are in the bedroom.  There isn't much of interest except for a bed and\na closet.  The stairs lead back down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 629,
@@ -694,7 +694,7 @@
       "name": "Kitchen",
       "description": "You are in a kitchen.  There isn't much of interest here.  The main room\nis east of here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 629,
@@ -745,7 +745,7 @@
       "name": "House",
       "description": "You are in a house.  The living room and kitchen are all bundled into\nthis room.  There is a bedroom south of here.  The exit is west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 634,
@@ -768,7 +768,7 @@
       "name": "Bedroom",
       "description": "You are in a bedroom.  There isn't much of interest here except for a bed\nand a dresser.  The main room of the house is north of here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 633,
@@ -784,7 +784,7 @@
       "name": "House",
       "description": "You are in a house.  The living room and kitchen are all bundled into\nthis room.  There is a bedroom south of here.  The exit is east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 632,
@@ -807,7 +807,7 @@
       "name": "Bedroom",
       "description": "You are in a bedroom.  There isn't much of interest here except for a bed\nand a dresser.  The main room of the house is north of here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 635,
@@ -858,7 +858,7 @@
       "name": "House",
       "description": "You are in a house.  The living room and kitchen are all bundled into\nthis room.  There is a bedroom south of here.  The exit is west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 639,
@@ -881,7 +881,7 @@
       "name": "Bedroom",
       "description": "You are in a bedroom.  There isn't much of interest here except for a bed\nand a dresser.  The main room of the house is north of here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 638,
@@ -897,7 +897,7 @@
       "name": "House",
       "description": "You are in a house.  The living room and kitchen are all bundled into\nthis room.  There is a bedroom south of here.  The exit is east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 637,
@@ -920,7 +920,7 @@
       "name": "Bedroom",
       "description": "You are in a bedroom.  There isn't much of interest here except for a bed\nand a dresser.  The main room of the house is north of here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 640,
@@ -969,7 +969,7 @@
       "name": "Big House",
       "description": "You are in a big house.  Evidently, the owners of this house are richer\nthan the average citizen, since there is more than one room to this house.  A\ndoor leads to the kitchen north, and a bedroom is upstairs.  The exit is to \nthe south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 645,
@@ -997,7 +997,7 @@
       "name": "Bedroom",
       "description": "You are in the bedroom.  There isn't much of interest except for a bed \nand a closet.  The stairs lead back down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 643,
@@ -1013,7 +1013,7 @@
       "name": "Kitchen",
       "description": "You are in a kitchen.  There isn't much of interest here.  The main room\nis east of here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 643,
@@ -1215,7 +1215,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 646,
@@ -1231,7 +1231,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 646,
@@ -1247,7 +1247,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 647,
@@ -1263,7 +1263,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 647,
@@ -1279,7 +1279,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 648,
@@ -1295,7 +1295,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 648,
@@ -1311,7 +1311,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 648,
@@ -1327,7 +1327,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 649,
@@ -1343,7 +1343,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 649,
@@ -1359,7 +1359,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 650,
@@ -1375,7 +1375,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 650,
@@ -1391,7 +1391,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 651,
@@ -1407,7 +1407,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 651,
@@ -1423,7 +1423,7 @@
       "name": "Small House",
       "description": "You are in a small house, owned by a commoner of Ofcol.  There isn't much\nof value here to you, but you'd bet that the owner really cherishes the pile\nof stuff here.  The exit is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 651,
@@ -1507,7 +1507,7 @@
       "name": "The Temple of Ofcol",
       "description": "You are in the Temple of Ofcol.  Golden tiles cover the floor, and solid\ngold columns reach the twelve foot ceiling of this vast chamber.  Servants in\ngolden livery wander this place, making even the raggiest messenger boy look\nricher than you are.  Exits lead to the anterooms in the cardinal directions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 670,
@@ -1534,7 +1534,7 @@
       "name": "The Anteroom to the Temple of Ofcol",
       "description": "You are in an anteroom to the Temple of Ofcol.  Gold tiles cover the\nfloor, and servants in golden livery pass you by peaceably.  The temple is to\nthe south, and to the north is a hallway.  A stairways leads up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 675,
@@ -1557,7 +1557,7 @@
       "name": "The Anteroom to the Temple of Ofcol",
       "description": "You are in an anteroom to the Temple of Ofcol.  Gold tiles cover the\nfloor, and servants in golden livery pass you by peaceably.  The temple is to\nthe east, and to the west is a hallway.  A stairways leads up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 669,
@@ -1580,7 +1580,7 @@
       "name": "The Anteroom to the Temple of Ofcol",
       "description": "You are in an anteroom to the Temple of Ofcol.  Gold tiles cover the\nfloor, and servants in golden livery pass you by peaceably.  The temple is to\nthe west, and to the east is a hallway.  A stairways leads up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 680,
@@ -1603,7 +1603,7 @@
       "name": "The Anteroom to the Temple of Ofcol",
       "description": "You are in an anteroom to the Temple of Ofcol.  Gold tiles cover the\nfloor, and servants in golden livery pass you by peaceably.  The temple is to\nthe north, and to the south is a hallway.  A stairways leads up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 669,
@@ -1626,7 +1626,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 675,
@@ -1645,7 +1645,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead east, west, and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 676,
@@ -1668,7 +1668,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead west and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 678,
@@ -1687,7 +1687,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 674,
@@ -1706,7 +1706,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 676,
@@ -1725,7 +1725,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead to the cardinal directions, with the east leading\ntoward the Temple of Ofcol, and west leading toward the City of Ofcol.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 677,
@@ -1752,7 +1752,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead west, north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 678,
@@ -1775,7 +1775,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 679,
@@ -1794,7 +1794,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 680,
@@ -1813,7 +1813,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead north and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 681,
@@ -1832,7 +1832,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead east, west, and north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 673,
@@ -1855,7 +1855,7 @@
       "name": "A Hallway of the Golden Citadel",
       "description": "You are in a hallway of the Golden Citadel.  Gold tiles cover the floors,\nand rich golden tapestries drape the walls.  Servants in golden livery pass you\nby peaceably.  Exits lead west and north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 682,
@@ -1874,7 +1874,7 @@
       "name": "An Upper Chamber of the Golden Citadel",
       "description": "You are in one of the upper chambers of the Golden Citadel.  The decora-\ntions of this place surpass even those of the first floor.  Gold tiles etched\nwith platinum cover the floor, walls and the ceiling.  The lights from numerous\ntorches reflect from these shimmering planes, giving the illusion that you are\nstanding in a gem.  Stairways lead up and down, and the hall leads south. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 688,
@@ -1897,7 +1897,7 @@
       "name": "An Upper Chamber of the Golden Citadel",
       "description": "You are in one of the upper chambers of the Golden Citadel.  The decora-\ntions of this place surpass even those of the first floor.  Gold tiles etched\nwith platinum cover the floor, walls and the ceiling.  The lights from numerous\ntorches reflect from these shimmering planes, giving the illusion that you are\nstanding in a gem.  Stairways lead up and down, and the hall leads east. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 688,
@@ -1920,7 +1920,7 @@
       "name": "The Hall of the DragonLords",
       "description": "You are in a vast hall, filled with the commanders of the Golden Citadel.\nGolden tiles etched with platinum cover the floors, and weapons of all types\nare mounted on the walls of this meeting hall.  Surrounding a solid gold table\nare four sons of the Keeper of the Golden Citadel.  They smile at you and ask \nyou to join them in lunch.  Exits lead to the cardinal directions. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 686,
@@ -1947,7 +1947,7 @@
       "name": "An Upper Chamber of the Golden Citadel",
       "description": "You are in one of the upper chambers of the Golden Citadel.  The decora-\ntions of this place surpass even those of the first floor.  Gold tiles etched\nwith platinum cover the floor, walls and the ceiling.  The lights from numerous\ntorches reflect from these shimmering planes, giving the illusion that you are\nstanding in a gem.  Stairways lead up and down, and the hall leads west. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 688,
@@ -1970,7 +1970,7 @@
       "name": "An Upper Chamber of the Golden Citadel",
       "description": "You are in one of the upper chambers of the Golden Citadel.  The decora-\ntions of this place surpass even those of the first floor.  Gold tiles etched\nwith platinum cover the floor, walls and the ceiling.  The lights from numerous\ntorches reflect from these shimmering planes, giving the illusion that you are\nstanding in a gem.  Stairways lead up and down, and the hall leads north. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 688,
@@ -1993,7 +1993,7 @@
       "name": "A Top Chamber of the Golden Citadel",
       "description": "You are in one of the top chambers of the Golden Citadel.  The decorations\nof this room looks like a dragon's hoard.  The whole room is carved out of pure\ngold, and gems of all types glitter from the walls, ceiling, even the floor.\nIt is obvious that this room was not meant for you to intrude upon.  A stair-\ncase leads back down, and a doorway leads south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 693,
@@ -2012,7 +2012,7 @@
       "name": "A Top Chamber of the Golden Citadel",
       "description": "You are in one of the top chambers of the Golden Citadel.  The decorations\nof this room looks like a dragon's hoard.  The whole room is carved out of pure\ngold, and gems of all types glitter from the walls, ceiling, even the floor.\nIt is obvious that this room was not meant for you to intrude upon.  A stair-\ncase leads back down, and a doorway leads east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 693,
@@ -2031,7 +2031,7 @@
       "name": "The Dragon Chamber",
       "description": "You are in a vast chamber carved from gold and platinum.  Gems the size of\na man's fist protrude from the walls, ceiling, and the floor, making your step\npainful.  A vast open sky-light lets fresh air come in from the top.  In the\ncenter of this chamber, you see a great wealth of coins, and on top of that\npile of coins, you see a golden dragon squinting at you.  Exits lead to the\ncardinal directions to the anterooms.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 691,
@@ -2062,7 +2062,7 @@
       "name": "A Top Chamber of the Golden Citadel",
       "description": "You are in one of the top chambers of the Golden Citadel.  The decorations\nof this room looks like a dragon's hoard.  The whole room is carved out of pure\ngold, and gems of all types glitter from the walls, ceiling, even the floor.\nIt is obvious that this room was not meant for you to intrude upon.  A stair-\ncase leads back down, and a doorway leads west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 693,
@@ -2081,7 +2081,7 @@
       "name": "A Top Chamber of the Golden Citadel",
       "description": "You are in one of the top chambers of the Golden Citadel.  The decorations\nof this room looks like a dragon's hoard.  The whole room is carved out of pure\ngold, and gems of all types glitter from the walls, ceiling, even the floor.\nIt is obvious that this room was not meant for you to intrude upon.  A stair-\ncase leads back down, and a doorway leads north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 693,
@@ -2100,7 +2100,7 @@
       "name": "Above the Dragon Chamber",
       "description": "You are above the Dragon Chamber.  You curiously note that this shaft that\nconnects the chamber to the sky is wide enough that even a dragon can fit\nthrough.  This shaft leads up and down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 697,
@@ -2119,7 +2119,7 @@
       "name": "In the Shaft from the Dragon Chamber",
       "description": "You are in the shaft leading from the Dragon Chamber.  Below you lies the\nDragon Chamber of the Golden Citadel.  Above you, you see the sky, but \ncurrently, the way out is sealed by a layer of diamond that looks impenetrable.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 696,
@@ -2134,7 +2134,7 @@
       "name": "Inside the Entrance to the Golden Citadel",
       "description": "You are inside the entrance to the Golden Citadel.  Rich golden tapestries\nline the walls, and golden tiles cover the floors.  The exit to this citadel is\nto the west, while the citadel itself is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 679,

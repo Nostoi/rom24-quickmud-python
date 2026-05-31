@@ -13,7 +13,7 @@
       "name": "On the spider web",
       "description": "You are balancing carefully on the giant sticky threads that holds the giant\nweb in place.  To the south leads a strand to a cave-like structure made from\nmany layers of a spider web.  Another silky strand continues to the north.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6203,
@@ -39,7 +39,7 @@
       "name": "On the spider web",
       "description": "You are balancing carefully on the giant sticky threads that holds the giant\nweb in place.  To the north leads a strand to a cave-like structure made from\nmany layers of a spider web.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6134,
@@ -60,7 +60,7 @@
       "name": "On the spider web",
       "description": "You are balancing carefully on the giant sticky threads that holds the giant\nweb in place.  To the east leads a strand to a cave-like structure made from\nmany layers of a spider web.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6134,
@@ -81,7 +81,7 @@
       "name": "On the spider web",
       "description": "You are balancing carefully on the giant sticky threads that holds the giant\nweb in place. A single silky strand lead to the south, while another leads\noff into the northern direction.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6301,
@@ -107,7 +107,7 @@
       "name": "Webbed Entrance",
       "description": "Sticky, sticky, sticky!  The ground is cluttered with leaves, decayed\nremains of webbed crickets, beetle, rats, dogs (?), and even humans.\nYou begin to wonder about what lies ahead.  The air is damp here,\nand even the little light that shines through the canopy seems\nabsorbed into the webbing.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 6302,
@@ -1099,7 +1099,7 @@
       "name": "Mahatma's Inescapable Trap",
       "description": "Mahatma, that silly thief, is here, and he steals everything you\nhave.  He says, 'Here, have a quick trip to the Temple of Midgaard.'\nHe plunges a black dagger into your back ...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 4,
       "exits": {},
       "extra_descriptions": [],
       "area": 6200
@@ -1151,7 +1151,7 @@
       "name": "The Great Door",
       "description": "Before you you see a large, web-like door.  Various designs\nof ancient runes and names of Midgaard heroes are etched into\nthe webwork.  Perhaps lists of victims?  You can't tell.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6399,

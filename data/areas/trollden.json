@@ -13,7 +13,7 @@
       "name": "Wastedump",
       "description": "This room is filled with bone shards and fragments.  Something (or things)\nvery big lives here.  A small plaque is on the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6124,
@@ -39,7 +39,7 @@
       "name": "Troll's Larder",
       "description": "This room has blood and grime all over the walls.  You see maggots and other\ninsects crawling up them.  The resident is definitely uncivilized.  Half-eaten\nand rotting body parts scatter the floor, each having its own colony of flies,\nworms, and maggots.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 2803,
@@ -60,7 +60,7 @@
       "name": "Troll's Living Room",
       "description": "This small cave opens to the north, south, east, and west.  You are\novercome by the stench and consider turning around.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 2801,
@@ -91,7 +91,7 @@
       "name": "The Playpen",
       "description": "The walls are covered with blood (and body parts!?!?).  Plastered on the far\nwall you see what looks like a human arm.  A half-eaten body lies here with\nits chest ripped out.  The predator seems disinterested in it.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 2803,
@@ -112,7 +112,7 @@
       "name": "Troll's Bedroom",
       "description": "Obviously something REALLY big lives here.  The stench is quite unbearable.\nThere are piles and piles of rotten and half-eaten body parts of animals,\norcs, (and humans?) strewn across the floor.  There is a larger, more\nprominent pile of rotten parts over in a corner.  It seems to have been\nflattened by something.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "north": {
           "to_room": 2803,

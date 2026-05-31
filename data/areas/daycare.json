@@ -13,7 +13,7 @@
       "name": "The Dwarven Drop Off",
       "description": "This is where the dwarven mommies and daddies come to drop off their\nannoying little brats.  You have the urge to leave.  There is a sign here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 6500,
@@ -40,7 +40,7 @@
       "name": "Day Care Center",
       "description": "You are in the north-east corner of the main part of the center.  Toys and\ntoddlers are all over the room.  There is a kitchen to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6601,
@@ -75,7 +75,7 @@
       "name": "Day Care Center",
       "description": "You are in the north-west corner of the main part of the center.  Toys and\ntoddlers are all over the room.  There is a bathroom to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6602,
@@ -104,7 +104,7 @@
       "name": "Day Care Center",
       "description": "You are in the south-east corner of the main part of the center.  Toys and\ntoddlers are all over the room.  There is a playground to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6602,
@@ -133,7 +133,7 @@
       "name": "Day Care Center",
       "description": "You are in the south-west corner of the main part of the center.  Toys and\ntoddlers are all over the room.  There is a staircase to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 6603,
@@ -162,7 +162,7 @@
       "name": "The Messy Bathroom",
       "description": "You hold your nose as you realize you have made the worst mistake of your\nlife.  The air is rancid and the walls are stained.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6603,
@@ -179,7 +179,7 @@
       "name": "The Staircase",
       "description": "You stand on top of a staircase leading down, and wonder what mystery could\nlie down under.  Beware!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 6605,
@@ -300,7 +300,7 @@
       "name": "Entrance to the Mini-Maze",
       "description": "You stand in the entrance to a small, but confusing maze.  You really hope\nthat you don't get lost.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "east": {
           "to_room": 6613,
@@ -322,7 +322,7 @@
       "name": "Mini-Maze",
       "description": "You are in a small passage that looks just like every other one.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6614,
@@ -348,7 +348,7 @@
       "name": "Mini-Maze",
       "description": "You are in a small passage that looks just like every other one.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 6616,
@@ -369,7 +369,7 @@
       "name": "Mini-Maze",
       "description": "You are in a small passage that looks just like every other one.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6613,
@@ -390,7 +390,7 @@
       "name": "Mini-Maze",
       "description": "You are in a small passage that looks just like every other one.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6614,
@@ -416,7 +416,7 @@
       "name": "End of the Mini-Maze",
       "description": "You stand at the end of your journey.  There is a big sign here and you had\nbetter read it!\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6616,
@@ -442,7 +442,7 @@
       "name": "Messy Kitchen",
       "description": "You stand in the kitchen and eating area of the day care center.  Pots and\npans are everywhere, while the toddlers continue to create chaos.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 6602,
@@ -459,7 +459,7 @@
       "name": "The End?",
       "description": "You have reached the final lair.  It is dominated by a huge five headed\ndragon (actually an overgrown brat with a Halloween mask).\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6624,

@@ -13,7 +13,7 @@
       "name": "A fluffy white cloud.",
       "description": "You find yourself standing on a small cloud.  The cloud feels kind\nof spongy beneath your feet.  You find it hard to see anything in\nthe distance as wisps of cloud blow over your face.\n\nA floating sign says:\n\n\"Scubdu's Area--Tread carefully! Only high levels should attempt\nthis place. Leave messages on the board if you have problems.\"\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 7900,
@@ -489,7 +489,7 @@
       "name": "Dank, dark, smelly hole.",
       "description": "This hole must have been used as a lair or nest.  There are\nfeathers and bones everywhere and the floor is covered with\nsomething disgusting.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 9120,
@@ -531,7 +531,7 @@
       "name": "Absolutely disgusting lair.",
       "description": "The stench in here is quite foul.  There are feathers, bones and\nrotting carcasses everywhere.  This place is absolutely gross and\nyou have to strain yourself not to lose your lunch.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9122,
@@ -548,7 +548,7 @@
       "name": "Absolutely disgusting lair.",
       "description": "The stench in here is quite foul.  There are feathers, bones and\nrotting carcasses everywhere.  This place is absolutely gross and\nyou have to strain yourself not to lose your lunch.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9122,
@@ -893,7 +893,7 @@
       "name": "Cold, damp cloud.",
       "description": "Your mood grows grumpy as you find yourself cold and wet from this\ndismal cloud.  You notice a rock outcropping above you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9136,
@@ -915,7 +915,7 @@
       "name": "Mysterious rock outcropping.",
       "description": "This rock outcropping just seems to hang in midair.  To the north\nyou see a house and if you ease yourself down, you can land on a\nrather damp, dismal cloud.  The door to the house is closed.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 5,
       "exits": {
         "north": {
           "to_room": 9139,
@@ -938,7 +938,7 @@
       "name": "Foyer.",
       "description": "Shadows play tricks on your eyes.  Everytime you think you see\nsomething in a corner and turn to get a better look, nothing is\nthere.  The place is very dark.  Even with a torch, you have\ntrouble making out the room to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9140,
@@ -959,7 +959,7 @@
       "name": "Tower.",
       "description": "You are in a musty old tower.  The smell of mold and mildew is\nalmost overpowering.  You hear strange creaks and groans ... is it\nthe wind or did someone (something?) make that noise.  To the west\nis the house and there is a stairway leading up into the tower.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 9139,
@@ -980,7 +980,7 @@
       "name": "Witches Tower",
       "description": "Here you see strange things of arcane value.  There is a cauldron in the\ncorner bubbling madly, belching a foul brew that must have come from hell.\nOn shelves lie jars of strange creatures you have never seen before, or\nhope to again.  A picture of a familiar temple hangs on the east wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8205,
       "exits": {
         "east": {
           "to_room": 3001,
@@ -1052,7 +1052,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "north": {
           "to_room": 9148,
@@ -1073,7 +1073,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "south": {
           "to_room": 9133,
@@ -1100,7 +1100,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "north": {
           "to_room": 9147,
@@ -1121,7 +1121,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "east": {
           "to_room": 9148,
@@ -1142,7 +1142,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "south": {
           "to_room": 9144,
@@ -1168,7 +1168,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "north": {
           "to_room": 9152,
@@ -1195,7 +1195,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "north": {
           "to_room": 9151,
@@ -1221,7 +1221,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "south": {
           "to_room": 9150,
@@ -1242,7 +1242,7 @@
       "name": "Raging hurricane.",
       "description": "You are buffeted and knocked about by the almost godlike strength\nof the raging hurricane.  It is hard to see and hear anything.\nYour only thought is to seek refuge from the storm.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 8193,
       "exits": {
         "east": {
           "to_room": 9151,
@@ -1368,7 +1368,7 @@
       "name": "Dark hidden cloud.",
       "description": "This cloud looks like the perfect place to hide.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9157,
@@ -1405,7 +1405,7 @@
       "name": "Front gate",
       "description": "There is a gate here.  It is huge, towering over you.  It creaks\nas it sways in the breeze.  To the south you see a huge lawn.\nThere is a rope ladder leading down.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "south": {
           "to_room": 9161,
@@ -1728,7 +1728,7 @@
       "name": "Dirty, dusty tunnel.",
       "description": "This dirty dusty tunnel must lead somewhere.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9175,
@@ -1749,7 +1749,7 @@
       "name": "Basement.",
       "description": "This seems like your average basement.  Old Christmas decorations,\nsuitcases, bicycles litter your way.  You hear the squeaking of\nrats in the corners.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9176,
@@ -1770,7 +1770,7 @@
       "name": "Bottom of the stairs.",
       "description": "You stand at the bottom of a long staircase leading up to the main\nhouse.  To the south you can barely make out the accumulated\nclutter gathered throughout the years.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9175,
@@ -1791,7 +1791,7 @@
       "name": "Foyer.",
       "description": "\"Magnificent\" does not even begin to describe the foyer.  Lavishly\ndecorated, yet elegant, it gives an impression of indescribable\nwealth.  Paintings and tapestries line the walls depicting scenes\nfrom throughout history.  Antiques furnitures and oriental rugs are\ntastefully placed in ideal spots.  The door is at least 10 feet\nhigh and is made of oak.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9166,
@@ -1824,7 +1824,7 @@
       "name": "Elegant hallway.",
       "description": "You are in a long, sprawling hallway connecting the eastern and\nwestern wings of the house.  There are several chairs and sofas in\nthe hallway and some gorgeous, handwoven drapes.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9177,
@@ -1850,7 +1850,7 @@
       "name": "Library",
       "description": "You are overwhelmed by the sheer volumes of books here.  The\nshelves stretch all the way to the ceiling and are on every wall,\neven above the doorway.  There are chairs for sitting and reading\nand a desk for more intense studies.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9178,
@@ -1866,7 +1866,7 @@
       "name": "Arboretum.",
       "description": "A small indoor garden so that the residents don't have to go\noutside to enjoy plants and commune with nature.  There are several\ntrees, a small pond and flowers of every kind.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "east": {
           "to_room": 9178,
@@ -1887,7 +1887,7 @@
       "name": "Western tower.",
       "description": "You are in the bottom part of a tower.  A draft brings a chill to\nyour spine and causes creaks and groans.  Curtains flutter in the\nwind, causing quite a distraction.  When you go to shut the window,\nyou see that the window is closed.  An old, wooden staircase leads\nup into darkness.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9180,
@@ -1908,7 +1908,7 @@
       "name": "Western tower.",
       "description": "The tower creaks and groans, almost as if it were muttering to\nitself.  There are windows displaying a full moon, reigning over\nthe night sky.  The room is dark and there is almost a musty odor\nto it.  You are surprised that you can't detect any dust or dirt,\nalthough there are a couple of cobwebs in the corner.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "down": {
           "to_room": 9181,
@@ -1924,7 +1924,7 @@
       "name": "Elegant hallway.",
       "description": "You are in a long, sprawling hallway connecting the eastern and\nwestern wings of the house.  There are several chairs and sofas in\nthe hallway and some gorgeous, handwoven drapes.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9185,
@@ -1950,7 +1950,7 @@
       "name": "Conservatory",
       "description": "Here was the rehearsal and recital room for the residents of the\nestate.  There is a Steinway piano in the corner and various gilded\ninstruments are on display in a glass cabinet.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9183,
@@ -1966,7 +1966,7 @@
       "name": "Office",
       "description": "You find yourself in a lavish office.  The desk is absolutely huge,\nat least ten feet by five feet and made of ebony and inlaid with\nmother of pearl.  A grandfather clock towers over the room,\nmechanically ticking and tocking the hours away.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9186,
@@ -1987,7 +1987,7 @@
       "name": "Eastern tower.",
       "description": "You are in the bottom part of a tower.  A draft brings a chill to\nyour spine and causes creaks and groans.  Curtains flutter in the\nwind, causing quite a distraction.  When you go to shut the window,\nyou see that the window is closed.  An old, wooden staircase leads\nup into darkness.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9185,
@@ -2008,7 +2008,7 @@
       "name": "Eastern tower.",
       "description": "The tower creaks and groans, almost as if it were muttering to\nitself.  There are windows displaying a full moon, reigning over\nthe night sky.  The room is dark and there is almost a musty odor\nto it.  You are surprised that you can't detect any dust or dirt,\nalthough there are a couple of cobwebs in the corner.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "down": {
           "to_room": 9186,
@@ -2024,7 +2024,7 @@
       "name": "Mid-Air.",
       "description": "You slide down the moisture covered rock, gaining speed as you\napproach the cliff.  Realizing your foolish error, you madly claw\nat the rock, vainly trying to get a precious hold and save your\nworthless hide.  Next time, heed your conscience.\n\nYou've fallen, and you can't get up!!!\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 4,
       "exits": {},
       "extra_descriptions": [],
       "area": 9100

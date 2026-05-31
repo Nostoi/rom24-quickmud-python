@@ -273,7 +273,7 @@
       "name": "Davies Alley",
       "description": "You are in a very dark and seedy alley.  This is just the right place for\na bite fight.  Bite fighting is an illegal activity where both combatants\ncan only use their sharpened teeth as weapons.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 8017,
@@ -494,7 +494,7 @@
       "name": "Pustule Palace Cafe",
       "description": "A scabrous hole.  Run by Ernie Ramirez, an ex-perp, it is a meeting place\nfor the low-life in the area.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8003,
@@ -510,7 +510,7 @@
       "name": "Rietzik's Shuggy Hall",
       "description": "A sleazy dive and the meeting place of a lot of perps.  Shuggy is a\ntwenty-second Century version of pool, played on a hilly table, usually\nwith large side bets.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8005,
@@ -526,7 +526,7 @@
       "name": "Bazza's Home for the Terminally Sarky",
       "description": "This is an experimental psychiatric home.  Named after a 20th Century\nvid-critic, the home attempts, by various methods, to readjust the\nsocially unacceptable attitudes of the inmates.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8006,
@@ -542,7 +542,7 @@
       "name": "Nu Phisog Parlour",
       "description": "Opened as a direct rival to the New You Face Parlour chain to offer quick\nand cheap face-changing facilities to the general public.  However,\nsince the closure of Sump's Ugly clinics, the craze for face-changing has\ndied down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8007,
@@ -558,7 +558,7 @@
       "name": "Ziggi Piggi's Home for the Semi-Stiff",
       "description": "The only suspended animation parlour in the area.  It has a high turnover\nrate.  It is rumored that the patrons are being used in body sharking and\norgan legging activities.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8009,
@@ -574,7 +574,7 @@
       "name": "Throt & Gleep's Megger Store",
       "description": "This place promises to provide everything that the citizens don't need,\nwith the utmost discourtesy.  Of course, something as crazy as this was\nbound to succeed.  There is a door to the north with a slot next to it.\nThere is also a sign next to the slot.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8027,
@@ -601,7 +601,7 @@
       "name": "Stockroom of Throt & Gleep's Megger Store",
       "description": "Many useless items stock the shelves of this stockroom.  A door leads\nsouth and large vault door is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8028,
@@ -629,7 +629,7 @@
       "name": "Throt & Gleep's Vault",
       "description": "The vault is musty with a slight smell of ozone in the air.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 8027,

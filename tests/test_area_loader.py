@@ -191,6 +191,43 @@ def test_room_exit_lock_codes_map_to_rom_exit_bits(tmp_path):
     area_registry.clear()
 
 
+def test_room_loader_decodes_room_flag_letters(tmp_path):
+    # mirrors ROM src/db.c:1158-1163 load_rooms — the room header line is
+    # `<area-number(discard)> <room_flags via fread_flag> <sector_type>`. The
+    # middle token is a letter bitvector (e.g. "ADR" = DARK|INDOORS|NEWBIES_ONLY),
+    # not the discarded area-number field. DB-001: the loader was reading
+    # int(tokens[0]) (always 0) and dropping every room flag game-wide.
+    room_registry.clear()
+    area_registry.clear()
+    content = (
+        "#AREA\n"
+        "darkroom.are~\n"
+        "Dark~\n"
+        "Credits~\n"
+        "3720 3721\n"
+        "#ROOMS\n"
+        "#3720\n"
+        "The Darkened Room~\n"
+        "A purposefully darkened room.~\n"
+        "0 ADR 0\n"
+        "S\n"
+        "#0\n"
+        "#$\n"
+    )
+    path = tmp_path / "darkroom.are"
+    path.write_text(content, encoding="latin-1")
+
+    load_area_file(str(path))
+    room = room_registry[3720]
+
+    expected = int(RoomFlag.ROOM_DARK | RoomFlag.ROOM_INDOORS | RoomFlag.ROOM_NEWBIES_ONLY)
+    assert room.room_flags == expected
+    assert room.sector_type == 0
+
+    room_registry.clear()
+    area_registry.clear()
+
+
 def test_read_string_tilde_stops_at_first_tilde_and_discards_suffix():
     tokenizer = BaseTokenizer(["description line~ROOMS", "0 CDS 0"])
 

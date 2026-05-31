@@ -188,7 +188,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3606,
@@ -239,7 +239,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3608,
@@ -290,7 +290,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3610,
@@ -337,7 +337,7 @@
       "name": "In a shed on the Graveyard",
       "description": "You are in a small shed that looks as if it is used to store all sorts of\ngardening equipment.  The only exit appears to be through a door to the east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 3612,
@@ -388,7 +388,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3614,
@@ -439,7 +439,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3616,
@@ -490,7 +490,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3618,
@@ -541,7 +541,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3638,
@@ -592,7 +592,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3640,
@@ -643,7 +643,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3642,
@@ -694,7 +694,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3644,
@@ -745,7 +745,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3646,
@@ -796,7 +796,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3648,
@@ -847,7 +847,7 @@
       "name": "In a dusty Tomb",
       "description": "You are in a dark burial chamber beneath a large tomb stone.\nThe only exit appears to be up.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 3650,

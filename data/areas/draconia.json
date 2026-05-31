@@ -13,7 +13,7 @@
       "name": "The Tower Gates",
       "description": "You are at the entrance to a tall tower.  Lightning flashes periodically and\nit is raining.  You think it might be a good idea to turn back into the grove.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 2202,
@@ -41,7 +41,7 @@
       "name": "The Foyer",
       "description": "This is the entrance to the Tower.  The hallway continues to the north,\nleading towards a staircase.  You notice a grim painting on the wall,  and \nquickly look away.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 2203,
@@ -69,7 +69,7 @@
       "name": "Hallway",
       "description": "This hallway seems to stretch on forever.  You notice a stairway in  \nthe distance. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2204,
@@ -92,7 +92,7 @@
       "name": "Hallway",
       "description": "You trudge down the hallway.  You notice doors to the east and west. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2207,
@@ -138,7 +138,7 @@
       "name": "Nursery",
       "description": "It looks like a tornado has been through here.  Toys are scattered everywhere,\nand a small group of dragon hatchlings are fighting over a bone. \n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2223,
@@ -162,7 +162,7 @@
       "name": "Storage Room",
       "description": "This room is covered with dust, it looks as if no one has been here in ages.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2204,
@@ -191,7 +191,7 @@
       "name": "End of the Hallway",
       "description": "You have finally reached the end of the hallway.  A huge staircase leads up.\nYou see a sign at the base of the staircase. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2204,
@@ -219,7 +219,7 @@
       "name": "Guardian's Room",
       "description": "You climb down the rickety stairs and find yourself face to face with a \ngargantuan hydra.  How fast can you climb UP stairs? \n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2209,
@@ -244,7 +244,7 @@
       "name": "The Treasure Room",
       "description": "You have made it past the hydra into the vault.  You are astounded by \nthe treasure here.  Not only are you now rich, you can probably rest here\nsafely.  The west wall seems to have a large door made entirely of ruby.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 2208,
@@ -269,7 +269,7 @@
       "name": "The Second Floor",
       "description": "You have made it up to the second floor.  You hear hissing and see several\ndragon men rushing you.  You wonder how long you will be staying here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2211,
@@ -292,7 +292,7 @@
       "name": "The Court",
       "description": "You have entered what seems to be a large court.  The people guarding it\ndon't seem happy to see you ...\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2210,
@@ -322,7 +322,7 @@
       "name": "Hall O' Pleasure",
       "description": "You stop dead in your tracks as you enter this ornately decorated room - it\nis populated with the king's harem.  \n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 2211,
@@ -376,7 +376,7 @@
       "name": "The Library",
       "description": "You have entered a huge room, filled with books.  A peaceful man is\nsitting at a table, studying.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 2213,
@@ -394,7 +394,7 @@
       "name": "The Sanctum",
       "description": "This small room is modestly decorated with small dragon icons.  Its sole\noccupant is deep in thought.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2213,
@@ -412,7 +412,7 @@
       "name": "The Court Ends",
       "description": "You have reached the end of the court.  A huge Draconian is sitting in a\nchair here.  As you enter, he motions with his hand and you are rushed by three\nof his bodyguards.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2213,
@@ -435,7 +435,7 @@
       "name": "bedroom",
       "description": "This is the personal room of the draconian king.  It is not empty.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 2216,
@@ -452,7 +452,7 @@
       "name": "Entrance to the Crypt",
       "description": "You have entered a large room which smells heavily of reptile.  You wonder\nwhat awaits you here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2209,
@@ -476,7 +476,7 @@
       "name": "Crypt",
       "description": "You are in a large room which continues to the west.  You notice many\ncoffins here.  Open coffins reveal remains of something other than man.  \nThe smell of reptile is very strong here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2218,
@@ -499,7 +499,7 @@
       "name": "The Lair",
       "description": "You have entered a large room dominated by a great white dragon.  It growls\nat you before it attacks.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2235,
@@ -515,7 +515,7 @@
       "name": "A Lair",
       "description": "You have entered a large room dominated by a great black dragon.  It looks\nas though it is amused by your presence.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2241,
@@ -531,7 +531,7 @@
       "name": "The Crypt Ends",
       "description": "You have come to the end of the Crypt.  It seems deserted.  There is a \nstrange coffin lying against the wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2219,
@@ -558,7 +558,7 @@
       "name": "Entrance to the Great Hall",
       "description": "You have entered a huge hall.  It has been carefully decorated with\nbeautiful tapestries depicting a great battle between dragons and men.  The\ndragons appear to be the victors.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2224,
@@ -582,7 +582,7 @@
       "name": "The Great Hall",
       "description": "You are working your way down the Hall.  To the north, you notice a smaller\npassageway, while the main hall continues to the east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2225,
@@ -605,7 +605,7 @@
       "name": "A Narrow Passageway",
       "description": "This Passageway branches off from the main hall and leads somewhere ... where?\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2226,
@@ -628,7 +628,7 @@
       "name": "Lair",
       "description": "You have entered a large lair with bones strewn about the ground.  You\nnotice the source of these as you come face to face with a rather large red\ndragon.  You notice a trap door in the floor.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2225,
@@ -652,7 +652,7 @@
       "name": "Underground Tunnel",
       "description": "You have entered an underground tunnel.  It is dark and dirty, and you find\nyourself wishing you were back in Midgaard.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 2228,
@@ -676,7 +676,7 @@
       "name": "Underground Tunnel",
       "description": "This tunnel has come to a dead end.  You feel nervous about being trapped here.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "south": {
           "to_room": 2227,
@@ -693,7 +693,7 @@
       "name": "The Great Hall Ends.",
       "description": "You have come to the end of the great hall.  You see before you a huge\ngolden door, it must be at least twenty feet tall!  It has beautiful etchings\nof dragons.  You see a sign on the door.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2230,
@@ -722,7 +722,7 @@
       "name": "THE Lair",
       "description": "You have entered a huge lair.  You feel that something big lives here or at least did.  The golden door lies back to the west.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 2229,
@@ -740,7 +740,7 @@
       "name": "The End...",
       "description": "You have reached the final lair.  It is dominated by a huge five headed\ndragon.  You suddenly realize that you have SERIOUS problems...\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2243,
@@ -757,7 +757,7 @@
       "name": "Stairwell",
       "description": "This is an old decrepit stairwell that leads to the wine cellar.  It looks\nlike it hasn't been used for decades.  Well, at least not by anything living.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2222,
@@ -778,7 +778,7 @@
       "name": "Wine cellar",
       "description": "This is the old wine cellar of the Dragon Tower.  The shelves are empty.\nNothing living has been in here for a long time.  You see a tunnel leading\noff to the east and boy does it smell bad.  Kinda of like rotting flesh.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 2234,
@@ -799,7 +799,7 @@
       "name": "Tunnel",
       "description": "This tunnel seems to stretch for miles.  You try to distinguish the end but\nyour eyes soon tire from the strain.  The smell here has increased two fold.\nThe tunnel continues to go to the east.  The wine cellar lies back to the \nwest.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 257,
       "exits": {
         "north": {
           "to_room": 2235,
@@ -825,7 +825,7 @@
       "name": "A cave opening",
       "description": "You stand at the opening of a giant cave.  There are many bones strewn across\nthe room.  Some human, some indistinguishable.  It smells very bad in here.\nYou can hear movement in the cave to the north.  The tunnel goes back to the\nsouth.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 257,
       "exits": {
         "north": {
           "to_room": 2220,
@@ -846,7 +846,7 @@
       "name": "The End of the tunnel",
       "description": "You have finally come to the end of the tunnel.  Back to the west lies\nthe miles of tunnels you have walked through.  You see the faint outline of\na trapdoor above you.  A bridge over an underground river lies to the south.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 257,
       "exits": {
         "south": {
           "to_room": 2237,
@@ -872,7 +872,7 @@
       "name": "The Bridge",
       "description": "You are walking along an old wooden bridge.  Its not that secure.  You \nmight want to hurry along.  To the south, on the other side of the bridge,\nlies a small opening.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 2236,
@@ -893,7 +893,7 @@
       "name": "A small opening",
       "description": "You are standing in a small opening.  To the north lies the old wooden\nbridge.  To your south the you can see a clearing.  You can see sunlight\nagain.  What a welcome relief!\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 2237,
@@ -1045,7 +1045,7 @@
       "name": "Well",
       "description": "O\n h\n   !\n\n     N\n      o\n       !\n\n   I warned you!  You have fallen into the bottomless pit.  You life flashes\nright before your eyes.  Pretty pathetic isn't it?  Next time you'll know\nto listen to the God of Laughs.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 6,
       "exits": {},
       "extra_descriptions": [],
       "area": 2200

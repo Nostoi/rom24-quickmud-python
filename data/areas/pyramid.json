@@ -292,7 +292,7 @@
       "name": "Climbing the Great Pyramid",
       "description": "Here the elements have carved away at the sides of the pyramid quite a \nbit.  You aren't so sure of your footing anymore...\n\nSuddenly the wind picks up, and you lose your balance!\nYou tumble down the side of the pyramid, and fall to your death!\n\nSPLAT.\n",
       "sector_type": "desert",
-      "flags": 0,
+      "flags": 4,
       "exits": {},
       "extra_descriptions": [],
       "area": 8700
@@ -302,7 +302,7 @@
       "name": "A Ladder",
       "description": "You are climbing an ancient ladder that leads down into the depths of\nthe pyramid.  The air around is thick with layers of dust and a strange\nmusty smell.  Above you you see tiny beams of light coming through the\nstones of the ceiling.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "up": {
           "to_room": 8706,
@@ -331,7 +331,7 @@
       "name": "A Musty Chamber",
       "description": "You are standing in a dank, musty chamber just inside the pyramid. \nFootprints and other strange marks are set into the dusty floor here.\nIt would seem that some of the tenants of this monument are still alive.\n   Exits lead in all directions.   The door to the west is covered with\ninscriptions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8712,
@@ -382,7 +382,7 @@
       "name": "The Fire Pool",
       "description": "This room is dominated by a massive raised pool that is filled with\nnot water but flames of intense heat.  The multicoloured flames lick out\nat you, searching for things to burn.\n   The pool proceeds to the west into a small chamber.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "east": {
           "to_room": 8709,
@@ -406,7 +406,7 @@
       "name": "The Chamber of the Efreet",
       "description": "You make your way across the fire pool, and into a small stone chamber.\nHere the flames are nearly as high as your head, singeing your face and \nevaporating your sweat instantaneously.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8710,
@@ -423,7 +423,7 @@
       "name": "A Tiny Crawlway",
       "description": "You have to go down onto your hands and knees to fit inside this tiny\nspace.  The crawlway is thick with sand and dust, and markings of the\npassage of other creatures.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 8713,
@@ -452,7 +452,7 @@
       "name": "A Tiny Crawlway",
       "description": "You are on your hands and knees, inside a small crawlway that winds\nthrough the inside of the pyramid.  The crawlway is thick with sand, dust, \nand markings of the passage of other creatures.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 8712,
@@ -475,7 +475,7 @@
       "name": "A Tiny Crawlway",
       "description": "You are on your hands and knees, inside a small crawlway that winds\nthrough the inside of the pyramid.  The crawlway is thick with sand, dust, \nand markings of the passage of other creatures.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 8713,
@@ -498,7 +498,7 @@
       "name": "A Tightening in the Crawlway",
       "description": "Here you are forced to slide on your belly through a particularly tight\nsection of the crawlway, as the stones of the pyramid close together\nabout you.  Below you is a small, slippery-looking hole that plummets into\nblackness.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 8714,
@@ -527,7 +527,7 @@
       "name": "The Crawlway's End",
       "description": "The crawlway shrinks away to nothing as the sandy stones of the pyramid\nclose together into a space through which only a snake could fit.   There is\nbarely enough space to turn around and make your way back through the tiny\ncrawlway to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 8715,
@@ -544,7 +544,7 @@
       "name": "A Slippery Hole",
       "description": "The sides of this hole are slippery-smooth.  You lower yourself in, and \nproceed to move downward... when suddenly you lose your purchase!\n\nYou fall for what seems like an eternity, and smash into the stones below...\n\nUnder the Hole\n   You are in a small chamber underneath the slippery hole, far below\nthe pyramid now.   The floor is strewn with bones.  To the south is a\nsmall rocky crevasse.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "south": {
           "to_room": 8719,
@@ -570,7 +570,7 @@
       "name": "Under the Hole",
       "description": "You are in a small chamber underneath the slippery hole, far below\nthe pyramid now.   The floor is strewn with bones.  To the south is a\nsmall rocky crevasse.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 8719,
@@ -596,7 +596,7 @@
       "name": "A Rough Crevasse",
       "description": "You are now exploring deep within a strange rocky crevasse that plunges\ndown into the rock on which the pyramid was constructed.  To the south you\nsee the flickering light of a fire, and the crevasse proceeds downward.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8718,
@@ -630,7 +630,7 @@
       "name": "A Small Fire",
       "description": "Here a small fire burns in a nook in the rocks, providing some warmth and\ncomforting light in the cold, dark, dry air.\n\nStanding here is a strange-looking old man, who stares at you balefully.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8719,
@@ -652,7 +652,7 @@
       "name": "Down the Crevasse",
       "description": "The crevasse proceeds downward into the dark depths of the earth.\nThe air about you is now cold and quite dry, and your light source\ngutters in a cool breeze that wafts up from below.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 8719,
@@ -675,7 +675,7 @@
       "name": "At the Crevasse's End",
       "description": "Here the crevasse comes to an abrupt end.  A chilling wind howls\nat your face from a black shape to the south, but the light from your\nsource is too dim to see exactly what it is.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 8723,
@@ -708,7 +708,7 @@
       "name": "The Vault of the Lamp",
       "description": "The jaws of the massive stone tiger part wide to reveal a great vault.\nAn arched ceiling lies far above your head... and all about you is a low\nguttural rumbling noise and a chill wind.\n\nGiant heaps of ancient treasure, gold coins, and valuables surround you\non all sides.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 8722,
@@ -730,7 +730,7 @@
       "name": "A Crack in the Wall",
       "description": "You exhale, and squeeze yourself into the narrow crack in the wall.\nDust fills your eyes as you disturb it, and chunks of mortar and stone\nmixed with a touch of sand fall on you as you scrape your way through.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 8709,
@@ -753,7 +753,7 @@
       "name": "A Looted Tomb",
       "description": "The floor of this small tomb is littered with the lids of \nsmashed sarcophagi, bits of treasure dropped by thieves and\nlooters, and corpses pulled from their resting places.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8724,
@@ -782,7 +782,7 @@
       "name": "A Demolished Tomb",
       "description": "This tomb has been utterly destroyed by thieves and looters in search of\nthe treasures of the pharoahs.  Nothing of interest remains in this room,\nexcept a large stone coffin that leans against the western wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8725,
@@ -815,7 +815,7 @@
       "name": "A Stairway",
       "description": "You stand now at the head of a stairway that goes down into darkness.\nThe steps and walls are smooth sandy stone, covered with a thick layer\nof dust.  Some inscriptions are carved into the wall here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 8726,
@@ -848,7 +848,7 @@
       "name": "A Stairway",
       "description": "You are on a stairway that disappears into darkness in both directions.\nThe smooth, uneven steps of the stairway have not been travelled in what\nappears to be centuries.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 8727,
@@ -871,7 +871,7 @@
       "name": "A Stairway",
       "description": "You stand now at the base of the uneven stairway.  The walls, floor,\nand ceiling of this small landing are covered with strange hieroglyphics.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 8730,
@@ -900,7 +900,7 @@
       "name": "The Ancient Hall",
       "description": "Here the air is deathly still, motes of dust thickly obscuring your\nvision.  Several stone statues line the walls of the hall, depicting the \ngods of an ancient society.  Strange glyphs and sigils cover the walls, a \npeculiar pictorial form of written language that you don't understand.\n   Some steps lead to a raised dais to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 8729,
@@ -929,7 +929,7 @@
       "name": "A Raised Dais",
       "description": "You are at the southern end of the ancient hall, the dust and darkness\nabsorbing your light so that you cannot see past the steps of the dais.\nA low pedestal rests here.  You see something written into the face of it.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 8730,
@@ -958,7 +958,7 @@
       "name": "The Tomb of Ramses",
       "description": "You stand in an empty tomb, a cubicle no more then ten feet to a side.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 8731,
@@ -976,7 +976,7 @@
       "name": "A Ransacked Tomb",
       "description": "This tomb has been completely ransacked and destroyed by the actions\nof pyramid thieves and looters.  The floor is littered with junk.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8734,
@@ -999,7 +999,7 @@
       "name": "A Tunnel",
       "description": "The low-ceilinged tunnel runs east-west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 8735,
@@ -1022,7 +1022,7 @@
       "name": "A Fork in the Tunnel",
       "description": "Here the tunnel forks off through a gaping hole down in the\nsouthern wall, continuing onward to the east and west as well.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 8736,
@@ -1056,7 +1056,7 @@
       "name": "A Tunnel",
       "description": "The low-ceilinged tunnel makes a turn to the west and ends\nto the north as it spills out into a dusty hallway.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 8742,
@@ -1079,7 +1079,7 @@
       "name": "A Dank Chamber",
       "description": "This chamber has a dank, dusty, musty smell to it.  Small footprints\nin the dust betray the recent passage of some sort of creatures.  A hole \nin the floor lies to the west and a stairway is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8738,
@@ -1102,7 +1102,7 @@
       "name": "A Spiral Stairway",
       "description": "Some dusty, broken stone stairs here spiral slowly in a constricted\nspace down towards a dusty hallway.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 8737,
@@ -1125,7 +1125,7 @@
       "name": "A Dust-Covered Hallway",
       "description": "This hallway is covered with dust that has accumulated over the\ncenturies that the pyramid has stood.  Small markings and footprints\nin the dust betray the recent passage of others -- perhaps thieves?\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8740,
@@ -1148,7 +1148,7 @@
       "name": "A Smelly Chamber",
       "description": "This small chamber has a sickly putrescent smell to it, the\nsmell of formaldehyde and other ointments used to preserve the\ncorpses of those who died ages ago.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8741,
@@ -1171,7 +1171,7 @@
       "name": "A Dust-Covered Hallway",
       "description": "This hallway is covered with a thick, choking dust that rises\nup to obscure your light source and sting your eyes.  Small marks\nand footprints in the dust betray the recent passage of others.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8742,
@@ -1200,7 +1200,7 @@
       "name": "A Turn in the Hallway",
       "description": "You are standing in an elbow turn in a dust-covered stone hallway,\nthat dead ends to the north and continues on to the west.  To the south\nthe stones of the pyramid have been torn asunder by thieves, making\na low-ceilinged tunnel.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8743,
@@ -1229,7 +1229,7 @@
       "name": "A Dead End",
       "description": "The dust-covered hallway has come to an abrupt end at a stony,\nfeatureless wall.  Here and there are signs of the recent passage\nof others in the dust.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 8742,
@@ -1258,7 +1258,7 @@
       "name": "The Tomb Entrance",
       "description": "You are in a small, dark chamber that has stood undisturbed for\nmany years.  To the north stands a massive stone tomb, which is\ncovered in hieroglyphics and gold-lined carvings that mark it as the\nfinal resting place of the mighty pharoahs of this land.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "north": {
           "to_room": 8745,
@@ -1292,7 +1292,7 @@
       "name": "The Tomb of the Pharoahs",
       "description": "Great golden sarcophogai line the walls of this massive tomb.  It has\nwithstood the passage of time intact, untouched by the hands of thieves\nand looters.  The treasures taken by the pharoahs to their graves still\nlie before your feet.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 8744,
@@ -1315,7 +1315,7 @@
       "name": "A Rubble-Strewn Hallway",
       "description": "This hallway formerly had a beautiful arch to the ceiling, now\ncollapsed under the weight of the slowly settling stones of the\npyramid.  Now, a massive pile of rubble leads up into a hole high \nin the northern portion of the hallway.  To the south, through the \nrubble and fallen stones you see a sandstone crypt.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "south": {
           "to_room": 8747,
@@ -1338,7 +1338,7 @@
       "name": "A Sandstone Crypt",
       "description": "This small crypt is lit by a hole in the wall to the south, through\nwhich sand pours from the desert outside.  A hot wind blows in from the\ndesert, drying your skin instantly.  To the east and north the arched\nhallway continues.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8746,
@@ -1367,7 +1367,7 @@
       "name": "An Arched Hall",
       "description": "This hallway has a beautiful arch to it, formed painstakingly and\nexquisitely out of the sandy stones of the pyramid.  The dust that\ncovers most of the rest of the pyramid interior is not present here,\nscoured away by the blowing of the desert winds that howl about\nyour ears.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8749,
@@ -1390,7 +1390,7 @@
       "name": "An Arched Hall",
       "description": "This hallway has a beautiful arch to it, formed painstakingly and\nexquisitely out of the sandy stones of the pyramid.  To the east is\na small, golden-coloured crypt, and the hall proceeds to the south\nand north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8748,
@@ -1419,7 +1419,7 @@
       "name": "A Golden Crypt",
       "description": "You stand inside a small crypt with walls and ceiling made of\ngolden bricks that obscure the large sandy stones of the pyramid.\nSmall rugs and tapestries are scattered about the floor here, and\nthey appear to have been used recently.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 8749,
@@ -1445,7 +1445,7 @@
       "name": "An Arched Hall",
       "description": "This hallway has a beautiful arch to it, formed painstakingly and\nexquisitely out of the sandy stones of the pyramid.  The arched\nhall proceeds to the north and ends to the south in a small vault.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8749,
@@ -1468,7 +1468,7 @@
       "name": "A Shining Vault",
       "description": "The stones of the pyramid here take on a strange, twinkling quality,\nalmost seeming to shine with an internal light.  As you look closer you\nsee tiny glass-like glittery particles within the stones, that reflect\nthe light from your light source so perfectly that they seem to shine.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8751,
@@ -1490,7 +1490,7 @@
       "name": "A Massive Sand Dune",
       "description": "You stand now on a massive sand dune on the southern side of\nthe pyramid.  At the foot of the sand dune to the north you see a\nsmall hole where the stones of the pyramid have collapsed.  Not\nfar to the south is a massive roiling sandstorm; the wind from the\nstorm howls and bites at your face even here.\n",
       "sector_type": "desert",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 8747,
@@ -1715,7 +1715,7 @@
       "name": "Through the Hole in the Sand",
       "description": "You squeeze through the small hole in the sand and land in a small\nwhite chamber.  Above you is a small hole, reachable by climbing up\nthe small sandy slope down which you slid.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "up": {
           "to_room": 8753,

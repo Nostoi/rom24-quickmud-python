@@ -13,7 +13,7 @@
       "name": "The dark woods",
       "description": "You are travelling through woods that are as dark as night. The trees above\nblock all light and wind. The air is stagnant and smells of death and decay.\nThe lack of sounds and other signs of life make your skin crawl and you feel\nvery much like turning back and heading for safer areas. The path leads north\ninto more open lands while it also leads south into the darkness of the forest.\nA small sign is posted here.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 5280,
@@ -38,7 +38,7 @@
       "name": "The dark woods",
       "description": "You wearily travel through the darkness of the forest. Huge skeletal trees\nline the edges of the path and tower above you. Errant rays of light spear\ndown through the gaps in the canopy above and provide small spots of light\nthat seem to attract what little foliage can grow on the dark forest floor.\nThe path winds north and south into darkness.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 5,
       "exits": {
         "north": {
           "to_room": 2300,
@@ -108,7 +108,7 @@
       "name": "In the dense forest",
       "description": "You walk along a small path leading through a dark forest. No sounds can be\nheard and little light penetrates the canopy of trees above you. The air here\nsmells musty and you long for a fresh breath. You see an intersection of paths\nto the west. The path you are on leads south into the darkening woods.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "south": {
           "to_room": 2305,
@@ -127,7 +127,7 @@
       "name": "The dark forest path",
       "description": "You continue on through darkness and gloom. The path below you has become a\nwet quagmire. It is difficult to walk, and you make squishing sounds as you\nmove on. Looking east, you see a swampy path. The main path leads north and\nsouth into darkness.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 2304,
@@ -151,7 +151,7 @@
       "name": "A turn in the path",
       "description": "The forest path turns here towards the north and west. To the north, you see\nthat the ground has become dank and swampy, while the western path appears\nto be entering a hilly area. You hear sounds of swamp creatures to the north\neast.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 2305,
@@ -170,7 +170,7 @@
       "name": "The bloody intersection",
       "description": "This is a small intersection. Paths lead east, west, and south. You are struck\nby the carnage here when you enter the clearing. There appears to have been a\ngreat battle here. Blood is everywhere and the ground is all torn up. Pieces\nof beaten armour and broken blades lie all around. Examining the tracks here\nlead you to believe that the dead and wounded were dragged off in two \ndirections, south and east.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 2306,
@@ -231,7 +231,7 @@
       "name": "Up the rocky hillside",
       "description": "You are climbing on a rocky hillside. As you scramble about, loose rocks and\nsmall boulders bounce and fall down below you. Looking to the east and west,\nyou see more stable ground. The hillside itself goes on higher to the south\nand it drops away to the north.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 2307,
@@ -373,7 +373,7 @@
       "name": "Inside the horrid cave",
       "description": "The stench is overwhelming. You can hardly breathe as you enter the cave.\nLooking around, you realize that some bizarre and horrible creature uses this\ncave as a home. Skeletal remains lie all over. Several half-eaten corpses are\nrotting away slowly in the gloomy darkness. In the back of the cave, you see a\nlarge pile of rotting cloth, fur, and plant matter. Light and safety is\ntowards the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 2315,
@@ -613,7 +613,7 @@
       "name": "Floating in blue light",
       "description": "You seem to be floating in blue weightlessness. You tumble head over heels and\nfinally right yourself. Gaining your bearings, you notice that there are two\n\"windows\" in the sea of blue here. One to the south shows an image of a snowy\nplain. Another window the the north shows an image of a rocky shore.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 2324,
@@ -633,7 +633,7 @@
       "name": "The swampy path",
       "description": "This damp path seems to lead into a deep, dark swamp. The trees above block\nout all light and stifle the wind. You smell swamp gas and hear damp squashing\nsounds all around you. The path leads east deeper into the swamp. You also see\na dark forest to the west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "east": {
           "to_room": 2328,
@@ -652,7 +652,7 @@
       "name": "The swampy path",
       "description": "You tread lightly in a wet, swampy path. All around you, you see pools of\nquicksand and rotting vegetation. Unlike the forest to the west, the swamp is\nteeming with life. Some of it is harmless, some is not. The path leads east\nand west into more swamp.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 2329,
@@ -671,7 +671,7 @@
       "name": "The swampy path",
       "description": "You weave your way through the treacherous swamp. Gas rises all around you and\na damp mist covers the ground, making it impossible to travel safely, without\ncarefully picking your way around obstacles. Large, gnarled trees rise above\nyou. Their moss covered branches block out all traces of the sun. The path\nhere leads east and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 2330,
@@ -691,7 +691,7 @@
       "name": "The turn in the swampy path",
       "description": "You come upon a bend in the swampy path. The ground here is fairly sturdy,\nas this place is elevated above the rest of the swamp. Looking around, you see\na dark, mist filled swamp. Small paths lead south and west into the mist.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 2331,
@@ -710,7 +710,7 @@
       "name": "The swampy path",
       "description": "You tread lightly through the mirky water and sludge that makes up the path\nyou follow. To the east, there is a thick wall of mist. You can see nothing\nwithin it. Harder ground rises to the north.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 2330,
@@ -729,7 +729,7 @@
       "name": "Lost in the Mist",
       "description": "You wander, hopelessly lost. Swirling mist obscures your vision and clouds\nyour mind. You lose all concept of direction. Small, silent giggles can be\nheard all around. You can wander in any direction.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 2337,
@@ -756,7 +756,7 @@
       "name": "Lost in the Mist",
       "description": "You are in a thick misty area. The mist swirls around you, seeming to taunt\nyou and dare you to escape. You feel a slight electric charge in the mist. It\nalmost caresses your body as it floats about you. You can wander in any\ndirection.......\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 2333,
@@ -783,7 +783,7 @@
       "name": "Lost in the Mist",
       "description": "You try to peer through the mist......You see nothing. It swirls about you,\ncovering you in a damp sheen. There is no sound, all light is eagerly devoured\nby the mist. You feel totally and hopelessly lost.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 2338,
@@ -810,7 +810,7 @@
       "name": "Lost in the Mist",
       "description": "You stumble through the marsh here. The swamp seems to have swallowed you up\nand denied you exit. This mist is your jailor. You cannot tell where you are.\nYou hear quiet laughter all about you.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 2332,
@@ -837,7 +837,7 @@
       "name": "Lost in the Mist",
       "description": "You wander, lost, for what seems an eternity. Then....From nowhere....You see\nwhat appears to be trees and hills to the east. The mist itself thickens to\nthe west, while it grows thin to the east.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 2334,
@@ -864,7 +864,7 @@
       "name": "Lost in the Mist",
       "description": "You wander through the thick mist. It swirls all about you and makes it hard\nto breathe. The ground below you makes a soft squishing sound as you trudge\non, but this noise is absorbed by the mist and does not travel. You can wander\nin any direction.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 2335,
@@ -891,7 +891,7 @@
       "name": "Lost in the Mist",
       "description": "You wander, lost hopelessly. The mist swirls all about you. You can discern no\ndirection. You stumble blindly through the mist, oblivious to your\nsurroundings.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 2336,
@@ -937,7 +937,7 @@
       "name": "A forested path",
       "description": "The path here leads north through a thick forest. High bushes and forest\nundergrowth line both sides of the trail. Looking north, you see a thin line\nof smoke rising up above the tree line. You also notice a crude wooden gate\nfarther north on the trail. The trail itself leads south into murky territory.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 2341,
@@ -1107,7 +1107,7 @@
       "name": "The entryway to the lodge",
       "description": "You are at the entry hall to a large lodge. Animal pelts and other trophies\nline the walls here. Large chests on either side of the door appear to be\nlocked. The lodge stretches north, while the doors to the south provide an\nexit into the village.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2349,
@@ -1129,7 +1129,7 @@
       "name": "The throne room",
       "description": "You stand in a large, crudely decorated throne room. A huge throne adorned\nwith humanoid skulls sits against the west wall. A crude, blood stained altar\nis against the east wall. A doorway is directly to the north, long strands of\nbeads blocking the view of the other side. Crude torches light the hall and \nsmoke clings to the ceiling.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2350,
@@ -1148,7 +1148,7 @@
       "name": "The chieftain's room",
       "description": "This appears to be the ogre chieftain's private quarters. A huge pile of furs\nis in the far corner. Large chests fill the room. All of them have heavy pad\nlocks. The room is filled with trophies of dead enemies. It is quite lavishly\ndecorated for such a crude inhabitant as an ogre. A beaded doorway is to the\nsouth.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2349,
@@ -1220,7 +1220,7 @@
       "name": "The Glacier Temple",
       "description": "You are in a small temple. It appears to be built entirely from ice. The ice\nwalls are frosted and are opaque. There is a small blue portal here. You can\ngo north, to enter the portal. Looking south, you see a world of white outside\nthe open doorway. Swirling snow and bright light obscure your view.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2326,
@@ -1401,7 +1401,7 @@
       "name": "The edge of the frigid wastes",
       "description": "You stand at the base of a steep rocky cliff. To the north, a vast arctic\nwasteland stretches out. The snow falls lightly here and the wind is not\nvery fierce. You can climb up the rocky cliff or head north into the arctic\nwastes.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 2358,
@@ -1420,7 +1420,7 @@
       "name": "On the cliffside",
       "description": "You cling to the side of the cliff. Looking down, you are terrified by the\nsheer distance to the ground below. You can climb up higher into the cliffs,\nbut the area above is obscured by clouds and you cannot tell what lies waiting\nabove.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "up": {
           "to_room": 2362,
@@ -1623,7 +1623,7 @@
       "name": "The Inn of the Broken Horn",
       "description": "You enter a warm tavern. The room is lit mainly by two huge fireplaces at each\nend of the room. Small tables and a large bar furnish the room. The\ninhabitants of the inn are all minotaurs of varying size and disposition. Most\nseem to regard you with suspicion. Few approach you. A large door leads\nnorth, out of the bar and back out into the cold.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2366,
@@ -1638,7 +1638,7 @@
       "name": "The Mahn-Tor Equipment Shop",
       "description": "You are in a crude equipment shop. The store is filled with racks of various\nitems that adventurers could use. Large fireplaces light and heat the room.\nA large desk occupies the back of the room. The door to the shop lies to the\nnorth.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2367,
@@ -1653,7 +1653,7 @@
       "name": "The Mahn-Tor General Store",
       "description": "You enter a small store that is dark and cold. Old empty shelves line the\nwalls and snow blows across the dirty stone floor. It is evident that this\nstore was once used, but it is no more. A small doorway leads north out into\nthe chilling snow and wind.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2368,
@@ -1668,7 +1668,7 @@
       "name": "Gorak's Training Room",
       "description": "This room is full of all sorts of weapons and armours. Pieces of old targets\nand practice dummies lie all around. The walls are chipped and scored from\nweapon blows. This is obviously the room of an avid warrior. A red door leads\neast.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2388,
@@ -1690,7 +1690,7 @@
       "name": "Darkoth's Dark Study",
       "description": "This room is dark. It reeks of death and evil. Arcane symbols and a small\naltar fill the room. Blood runs from the altar. It is evident that this room\nis used for unholy purposes. A black door leads east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 2389,
@@ -1712,7 +1712,7 @@
       "name": "Tyrgoth's Inner Sanctum",
       "description": "Idols to the gods of good fill the room. White furniture and decorations give\nthe room a holy appearance. It is evident that some being of supreme goodness\nlives here. A white door leads east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2392,
@@ -1734,7 +1734,7 @@
       "name": "The road to the Keep of Mahn-Tor",
       "description": "You walk up a steep rocky road. It leads up a steep grade to the east. At the\nend of this steep road, you see a huge keep. Snow swirls all about you and you\nfeel your breath freeze as it leaves your lungs. Blurry lights to the east and\nwest are all you can see from here.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "east": {
           "to_room": 2377,
@@ -1753,7 +1753,7 @@
       "name": "A small guard house",
       "description": "You enter a small guard house. A huge fireplace lights and warms the room.\nLooking around, you see that the room is fairly well furnished. Thick rugs\nand curtains help insulate the room and the beds themselves look quite warm.\nA table in the center of the room has the remnants of a card game strewn\nacross it. A small door leads south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2377,
@@ -1797,7 +1797,7 @@
       "name": "A small guard house",
       "description": "You enter a small, but warm, guard house. Deep rugs and thick curtains\ninsulate the room. A huge fireplace lights and warms the room. Outside, you\nhear the roar of the freezing wind. A small door leads north out into the cold.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2377,
@@ -1812,7 +1812,7 @@
       "name": "The entryway to the Keep of Mahn-Tor",
       "description": "You are at the entry hall to the huge keep. The high vaulted ceiling is carved\nfrom solid stone. Huge stone pillars rise up from the floor to meet the\nceiling far above. The architecture appears to be dwarven. A huge pair of\ngates stand to the west, protecting the keep from the harsh cold outside. A\nlarge hall leads east, deeper into the keep.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2380,
@@ -1833,7 +1833,7 @@
       "name": "The Hall",
       "description": "You are in a huge hall. Large tapestries line the walls and huge statues of\nvarious make and appearance are spread about. The ceiling above supports huge\ncandelabras, which light the room. To the east, you see a bright light and\nhear sounds of inhabitation. Looking west, you see the entry gates to the keep.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2381,
@@ -1852,7 +1852,7 @@
       "name": "The Grand Hall",
       "description": "You are in the main hall of the Keep of Mahn-Tor. This hall is huge. The wide\nfloor of the hall is an expanse of marble. It shimmers in the light thrown\noff by the torches that line the walls. To the east, you see what appears to\nbe a huge golden throne. The hall itself stretches south and a smaller hall\nleads to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2383,
@@ -1875,7 +1875,7 @@
       "name": "The Great Hall",
       "description": "You stand in the great hall of the keep. Huge pillars rise up to the vaulted\nceiling and torch light glimmers off the marble floor here. You are amazed at\nthe sheer size of the hall. The hall itself leads north and east. You notice a\nsmaller hall leading south, deeper into the keep.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2381,
@@ -1900,7 +1900,7 @@
       "name": "Standing before the throne",
       "description": "You stand before the throne of Mahn-Tor. This golden throne is so huge that it\ntakes up almost the entire wall, stretching far above the floor. Sitting upon\nit, you feel small and feeble. It is evident that this throne is more of a\ndecoration than anything else. Only the largest of kings could sit upon it.\nThe hall leads south and west into other parts of the keep.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2385,
@@ -1929,7 +1929,7 @@
       "name": "The Great Hall",
       "description": "You are in a great hall. Huge torches light the room and their light shimmers\noff the marble floor below you. To the north, you see a huge golden throne.\nLooking up, you grow dizzy at the height to which the vaulted ceiling rises.\nThe hall itself leads north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2383,
@@ -1948,7 +1948,7 @@
       "name": "The secret hallway",
       "description": "You are in a small, torch lit hall. It leads from east to west. A large gold\ndoor is to the west. To the east, you see a heavy stone door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2386,
@@ -1979,7 +1979,7 @@
       "name": "Entry to the Royal Chambers",
       "description": "You are at the entrance to the royal chambers of the keep. A plush shag rug\ncovers the stone floor. Large candelabras hang from the ceiling, lighting the\nroom. A huge fireplace warms the room. Beaded doorways lead south and east. A\nhuge stone door stands in the west wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2395,
@@ -2009,7 +2009,7 @@
       "name": "The Guard Post",
       "description": "The hall here has been built into a guard post of sorts. It appears as though\nit would be quite easy to defend in times of emergency. Obviously, something\nimportant lies beyond. A small hall leads south, while the main hall can be\nseen to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2382,
@@ -2028,7 +2028,7 @@
       "name": "The guarded hall",
       "description": "You walk down a torch lit hallway. It has been carved out of pure stone. It is\nvery quiet in this hall. You notice rows of colored doors on each wall. To\nyour east, you see a yellow door. To your west, you see a red door. The hall\nitself leads south and north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2387,
@@ -2068,7 +2068,7 @@
       "name": "The guarded hall",
       "description": "You walk down a small, quiet, torch lit hallway. Doors of different colors are\nin each wall. To your east, you see a maroon door. To your west, you see a\nblack door. The hall itself leads north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2388,
@@ -2108,7 +2108,7 @@
       "name": "Sumaron's Sanctum",
       "description": "You enter a temple of sorts. A small altar is here and relics of many\nreligions lie around. It is evident that this is the room of a studying cleric.\nA yellow door leads west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 2388,
@@ -2130,7 +2130,7 @@
       "name": "Amyrok's Arcane Study",
       "description": "This room is full of shelves which hold various spell components. The center\nof the room is occupied by a huge pentagram. The entire room smells of smoke\nand incense. The room is obviously used extensively by a practicing mage. A\nmaroon door leads west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 2389,
@@ -2152,7 +2152,7 @@
       "name": "The guarded hall",
       "description": "You walk down a quiet hall. The stone walls here are wet with moisture.\nColored doors can be seen in the walls here. To your east, you see a green\ndoor. To your west, you see a white door. The hall itself leads north and\nsouth.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2389,
@@ -2192,7 +2192,7 @@
       "name": "The Harem Room",
       "description": "This appears to be the harem room of the Keep. Huge piles of furs and beds\nfill the room. The lighting is dim, but the room is very warm. You can hear\nmusic playing quietly from somewhere. Beaded doorways lead north and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2386,
@@ -2211,7 +2211,7 @@
       "name": "Nasturn's Humble Abode",
       "description": "This room is filled with all types of natural items. Trees and plants have\nbeen lovingly cultivated and grown by hand, in large pots. The room is like an\nindoor garden. A green door leads west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 2392,
@@ -2233,7 +2233,7 @@
       "name": "The main living room",
       "description": "This room is decorated with sturdy stone furniture that is carved and gilded.\nLarge candles light the room. A thick rug covers the floor. Thick furs and\ntapestries decorate the walls. Beaded doorways lead south and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 2396,
@@ -2252,7 +2252,7 @@
       "name": "The Master Bedroom",
       "description": "This appears to be the master bedroom. A huge bed fills the rooms. Piles of\nfurs and other rich furnishings adorn the room. Candles are everywhere and\nthey help a huge fireplace light the room. The lavishness of the room\noverwhelms you. Beaded doorways lead north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 136,
       "exits": {
         "north": {
           "to_room": 2395,
@@ -2271,7 +2271,7 @@
       "name": "The end of the guarded hall",
       "description": "You are at the end of the hall. Colored doors line the walls to the north. To\nyour west, you see a brown door. To your east, you see a grey door. The hall\nitself leads north back along the rows of doors.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 2392,
@@ -2307,7 +2307,7 @@
       "name": "Dorgar's Dismal Domicile",
       "description": "This room is dirty and unkempt. Odds and ends of different items lie all over.\nIt is apparent that some type of pack-rat lives here. It appears as though\nnothing has ever entered this room and ever left again. A grey door leads west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 2397,
@@ -2329,7 +2329,7 @@
       "name": "Belrak's Green Room",
       "description": "This room is full of green. The furniture and all other items show the color\nof nature. The room smells of pine and forest odors. From the items here, it\nappears as though a woodsman of some sorts lives here. A brown door leads east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 2397,

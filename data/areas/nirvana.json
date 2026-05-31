@@ -180,7 +180,7 @@
       "name": "In the Tower of Nirvana",
       "description": "Entering the tower, there seems to be enough light to see by, but no source is \nvisible.  The hall continues to the east, while a door lies to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9010,
@@ -204,7 +204,7 @@
       "name": "A hallway in the Tower of Nirvana",
       "description": "You are in a east-west hallway in the tower.  to the west, the hall continues \nand a door lies to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9012,
@@ -228,7 +228,7 @@
       "name": "An east-west hallway in the Tower of Nirvana",
       "description": "The hallway continues to the east, and stretches to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9008,
@@ -251,7 +251,7 @@
       "name": "An east-west passage in the Tower of Nirvana",
       "description": "",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9011,
@@ -274,7 +274,7 @@
       "name": "An intersection in the Tower of Nirvana",
       "description": "You are at an intersection where the east-west passage continues, but a large \npassage leads to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9023,
@@ -418,7 +418,7 @@
       "name": "Dead End",
       "description": "You stand at a dead end where the only exit appears to be west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9018,
@@ -435,7 +435,7 @@
       "name": "Dead End",
       "description": "You are at what appears to be a dead end.  The only exit is back east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9019,
@@ -452,7 +452,7 @@
       "name": "A Tertain's lair",
       "description": "You quite possibly have made a terrible mistake coming in here.\nExits lead east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9016,
@@ -475,7 +475,7 @@
       "name": "A Tertian's lair",
       "description": "You might have made a terrible mistake coming into here.\nExits lead east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9020,
@@ -498,7 +498,7 @@
       "name": "The Lair of Primus",
       "description": "You are in a large hall, with a massive pool of what appears to be pure energy \nin the center of the room.  Exits lead in all the cardinal directions.  From \nthe pool rises the master of the Plane of Nirvana....\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9024,
@@ -533,7 +533,7 @@
       "name": "A Tertian's lair",
       "description": "Maybe coming here wasn't such a hot idea.  You feel very unwelcome here.  \nExits lead north and south\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9020,
@@ -556,7 +556,7 @@
       "name": "The office of a Quinton",
       "description": "You have stumbled upon the office of a page to Primus.\nScrolls lie about the room along with many strange objects...you can't imagine \nwhat kind of creature would use them.  Exits lead in all the cardinal \ndirections.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9021,
@@ -591,7 +591,7 @@
       "name": "A wide north-south passageway",
       "description": "you find yourself in a passage where the exits are north and south\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9022,
@@ -614,7 +614,7 @@
       "name": "A Tertian's lair",
       "description": "You find yourself in a lair of a Tertian.  Exits lead north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9025,
@@ -637,7 +637,7 @@
       "name": "A north south tunnel",
       "description": "You are in a passage where the only exits are north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9026,
@@ -660,7 +660,7 @@
       "name": "An intersection of passages",
       "description": "You stand at an intersection.  Exits lead off to the east and south. \nA door lies to the north\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9031,
@@ -810,7 +810,7 @@
       "name": "A Junction in the passage",
       "description": "Here, passages lead off in all cardinal directions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9033,
@@ -845,7 +845,7 @@
       "name": "The office of the Octon",
       "description": "you are in a small room, the only exit is south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9032,
@@ -862,7 +862,7 @@
       "name": "A small room",
       "description": "The only exit is north\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9032,
@@ -879,7 +879,7 @@
       "name": "A passageway",
       "description": "Exits lead in all cardinal directions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9036,
@@ -914,7 +914,7 @@
       "name": "Lair of a Hexton",
       "description": "You are in a room that is in complete disrepair.  Items are thrown throughout \nthe room making them worthless piles of junk.\nThe only exit is back south\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9035,
@@ -931,7 +931,7 @@
       "name": "Office of a Hexton",
       "description": "A makeshift desk forms the center of this room.  The only exit is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9035,
@@ -948,7 +948,7 @@
       "name": "Office of a Secundus",
       "description": "You are standing in a office of one of the Viceroys of the Plane of Nirvana.  \nThe occupant doesn't look real thrilled with your presence.  The only exits is \nwest.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9035,
@@ -965,7 +965,7 @@
       "name": "A Junction in the hallway",
       "description": "Your are standing in a junction, exits lead in all the cardinal directions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9040,
@@ -1000,7 +1000,7 @@
       "name": "Office of an Octon",
       "description": "You see a messy room with papers scattered everywhere.\nThe only exit leads back to the south\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9039,
@@ -1017,7 +1017,7 @@
       "name": "Office of a Septon",
       "description": "A neat and tidy room, it appear to be inhabited my a neatenss freak.  The only \nexit lies to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9039,
@@ -1034,7 +1034,7 @@
       "name": "An east-west passage",
       "description": "In east west passage is here with exits in all of the cardinal directions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9043,
@@ -1069,7 +1069,7 @@
       "name": "The Barracks",
       "description": "A dusty room, with a almost untolerable odor, the barracks are being inspected \nby a Hexton and his personal enterage.\nThe only exit lies to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9042,
@@ -1086,7 +1086,7 @@
       "name": "The Commander's Post",
       "description": "You have stumbled on to the office of the Commander of the forces in the Plane \nOf Nirvana.  The room is well furnished and a sense of courage and bravery \novertakes you as you enter the room.  The only exit lies to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9042,
@@ -1103,7 +1103,7 @@
       "name": "The chamber of the second Secundus",
       "description": "This huge room is furnished with the finest, and a personal legion guards the \nSecundus. the only exit is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9042,
@@ -1120,7 +1120,7 @@
       "name": "A Passageway",
       "description": "You are in a well lit passage.  A sense of forboding danger envelopes you.  \nExits lead in all cardinal directions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9047,
@@ -1155,7 +1155,7 @@
       "name": "Chamber of the Octon",
       "description": "A small room, sparsely furnished, it leaves you with a sense of fear.  The \nonly exit is to the south\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9046,
@@ -1172,7 +1172,7 @@
       "name": "Chamber of the Nonaton",
       "description": "You have entered the chamber of the principal law and order overseers.  The \nonly exit lies to the north\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9046,
@@ -1189,7 +1189,7 @@
       "name": "End of the passageway",
       "description": "You have reached the end of a long east-west passage.  The passage contiues to \nthe west, and rooms lie to the north, south, and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9050,
@@ -1224,7 +1224,7 @@
       "name": "Chamber of a Hexton",
       "description": "You have entered the chamber of a Hexton.  Trophies adorn the walls, some of \nwhich are human. the only exit is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9049,
@@ -1241,7 +1241,7 @@
       "name": "Chamber of a Hexton",
       "description": "You have entered a room where you are not very popular. The only exit lies \nnorthbound.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9049,
@@ -1258,7 +1258,7 @@
       "name": "Chamber of the Secudus",
       "description": "A large canvernous room, this chamber serves as the sleeping quarters for the \nthird Secudus, Viceroy to Primus. The only exit lies to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9049,
@@ -1275,7 +1275,7 @@
       "name": "A passageway",
       "description": "You are in a passagway where you may go in any cardinal direction.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9054,
@@ -1310,7 +1310,7 @@
       "name": "A small chamber",
       "description": "You are in a small cramped chamber.  The only exit lies to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9053,
@@ -1327,7 +1327,7 @@
       "name": "A cramped room",
       "description": "You are in a small, crowded room.  The only exit appears to lie to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9053,
@@ -1344,7 +1344,7 @@
       "name": "A large room",
       "description": "You have entered a room where you are not wanted.  The only exit lies to the \nsouth.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9059,
@@ -1361,7 +1361,7 @@
       "name": "A room",
       "description": "You have entered a room where there was obviously a hurried move going on.  \nThe only exit lies to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9059,
@@ -1378,7 +1378,7 @@
       "name": "Chamber of The First Secundus",
       "description": "You have disturbed the rest of the First Viceroy to Primus the Prime, The \nSecundus.  He does not look like a happy camper. The only exit lies to the \neast.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9059,
@@ -1395,7 +1395,7 @@
       "name": "Junction in the hallway",
       "description": "Exits lead off in all of the cardinal directions\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9056,

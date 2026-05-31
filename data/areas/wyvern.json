@@ -154,7 +154,7 @@
       "name": "House of Pancakes",
       "description": "The moment you enter this room, the ceiling descends and crushes you\ninto a pancake.  Don't you hate it when that happens?\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 6,
       "exits": {},
       "extra_descriptions": [],
       "area": 1600
@@ -164,7 +164,7 @@
       "name": "Old Store Room",
       "description": "You have entered what appears to be an old storeroom. Most of the items\nthat were in here appear to have been ruined long ago.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1606,
@@ -179,7 +179,7 @@
       "name": "Empty Room",
       "description": "This room appears to be completely empty. The only exit seems to be the\nway you came.  There are some scratches around the floor.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 1606,
@@ -199,7 +199,7 @@
       "name": "Minotaur's Room",
       "description": "You have entered a secret chamber under the empty room. In this room is\nthe worn but cared-for gear and trappings of some large humanoid.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "up": {
           "to_room": 1609,
@@ -271,7 +271,7 @@
       "name": "Tower Foyer",
       "description": "You are on a foyer on the west side of the structure. The moat is west of \nhere. There is also a large door eastward into the structure.  You notice that\nthe walls are ornately decorated with very life-like stone gargoyles.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1624,
@@ -290,7 +290,7 @@
       "name": "The Grand Lobby",
       "description": "You have entered a vast lobby. This lobby appears to have once been very\nornately furnished, but now everything is decayed and moldering.  A highly\nornate balcony surrounds the lobby. To the east, below the balcony, is an\nopening. The door leading out is west.  You notice that the balcony is\ncovered in highly ornate and life-like stone gargoyles.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1625,
@@ -309,7 +309,7 @@
       "name": "Base of the Western Tower",
       "description": "You stand in the center of the Western tower's base. Torch brackets occupy\nthe four corners of this huge room. Above each torch is a lifelike ornate\nstone gargoyle.  There are doors north and south, and passages east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1627,
@@ -336,7 +336,7 @@
       "name": "The Musty Corridor",
       "description": "You are walking along a musty east-west corridor joining the two towers.\nThere are room on each side of the corridor, and openings at each end.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1629,
@@ -363,7 +363,7 @@
       "name": "Kitchen",
       "description": "You have entered what must once have been a kitchen. The rusting remains of\nvarious utensils lie on countertops. There is also an old wash basin and a\npot-belly stove.  There is a door south, and a serving hatch east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 1625,
@@ -378,7 +378,7 @@
       "name": "Conservatory",
       "description": "You are in the tower's private conservatory. However, through years of neglect,\nthe plants have grown into a hideous jungle.  The only exit is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1625,
@@ -393,7 +393,7 @@
       "name": "The Dining Hall",
       "description": "You have entered a fabulous dining hall.  The wrecked remains of a long table\ndominate the room. A horrible odor pervades the room, like some foul-smelling\nbeast has been eating and shitting in here.  There is a serving hatch west and\na door south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 1626,
@@ -408,7 +408,7 @@
       "name": "Art Gallery",
       "description": "You are in the ruined remains of an art gallery. Everything appears to\nhave been stolen long ago, however.  The only exit is north.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1626,
@@ -423,7 +423,7 @@
       "name": "Base of the Eastern Tower",
       "description": "You stand in the center of the Eastern tower's base. Torch brackets occupy the\nfour corners of this huge room.  Above each torch is a lifelike ornate stone\ngargoyle.  There are are open doors to the north and south, and passages east\nand west.  In addition, a spiral staircase leads up to the next level of this\ntower.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1632,
@@ -451,7 +451,7 @@
       "name": "The Common Room",
       "description": "You are in what must once have been a common room for all residents of the\ntower. There is a huge fire pit with a chimney in the center, and the smashed\nremains of a great many table and chairs.  The exit is south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1631,
@@ -472,7 +472,7 @@
       "name": "Servant's Quarters",
       "description": "You are in what once was the servant's quarters, as evidenced by the shabby\nbelongings and decor. What little remains is rotting and of little value\nanyway.  The only exit is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1631,
@@ -487,7 +487,7 @@
       "name": "A Large Murky Cellar",
       "description": "You are in a large, murky cellar. An almost tangible air of horror pervades\nthe room.  A thin layer of nitre covers the walls and ceiling.  Rotting\nfurniture looms obliquely about the room.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 1632,
@@ -503,7 +503,7 @@
       "name": "On the First Staircase",
       "description": "You are on a Spiral staircase connecting the first and second levels of\nthe eastern tower. You can go up or down.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 1636,
@@ -522,7 +522,7 @@
       "name": "Second Level of the Eastern Tower",
       "description": "You are in the center of the second level of the Eastern tower. This large\nroom appears quite empty, except for the candle abras firmly fixed to the\nwalls.  An opening leads westward, and a spiral staircase leads down.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 1637,
@@ -541,7 +541,7 @@
       "name": "The Elegant Hall",
       "description": "You are in what was once a elegant hall, although everything is moldering now.\nThe rotted remains of a plush carpet covers the floor, while several moldy\ntapestries adorn the each side of the hall.  There are door north and south,\nand openings east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1638,
@@ -568,7 +568,7 @@
       "name": "The Shaman's Room",
       "description": "You have entered an elegantly furnished room that looks to be still in use!\nCostly paintings and pieces of furniture are tastefully situated.  On the\nnorth wall is an altar to Knar, the ghastly patron of Gargoyles.  The only\nexit is south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1637,
@@ -583,7 +583,7 @@
       "name": "The Library",
       "description": "This room appears to have been a library.  Empty book shelves line each wall.\nThe only exit is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1637,
@@ -598,7 +598,7 @@
       "name": "Second Level of the Western Tower",
       "description": "You are in the center of the western tower's second floor.  A large spiral \nstaircase of 29 steps connects this level with the third.  There are doors\nto the east and west.  Except for a torch bracket in each corner, the \nroom is barren.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1637,
@@ -622,7 +622,7 @@
       "name": "On the Balcony",
       "description": "You are on the balcony overlooking the Grand lobby.  You have a fabulous\nview of the entire room.  The only exit is the way you came in.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1640,
@@ -637,7 +637,7 @@
       "name": "The Spiral Stairs",
       "description": "You are on a large spiral staircase of 29 steps, leading between the \nsecond and third floors.  You can go up or down.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 1643,
@@ -656,7 +656,7 @@
       "name": "Third Level of Western Tower",
       "description": "You stand in the center of the western tower's third floor.  This large room\nglows mysteriously with a strange light all its own.  From a door to the east\ncomes a strange inky blackness.  A spiral staircase leads down.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1644,
@@ -676,7 +676,7 @@
       "name": "It's too dark to see anything!",
       "description": "",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1645,
@@ -707,7 +707,7 @@
       "name": "The Armory",
       "description": "In this room, which has somehow evaded the ravages of time, are neatly stored\nracks of common weapons.  They appear to be quite ordinary; however, a chest\nin one corner catches your eye.  The only exit is the way you came in.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 1644,
@@ -723,7 +723,7 @@
       "name": "The Officer's Quarters",
       "description": "You have entered a lavish but functional room decked out in a military style.\nMurals on the wall show battle scenes in gargoyles, minotaurs, and huge,\nflying snake-like reptiles with poisonous tails fight humans and dwarves.\nVarious objects in the room give evidence that it is occupied by individuals\nof authority.  The only door is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1644,
@@ -739,7 +739,7 @@
       "name": "Third Level of Eastern Tower",
       "description": "You are in the center of the Eastern Tower's third floor.  The room you are in\nglows with a mysterious light that has no source.  In the center of the room a\nladder climbs up to a hatchway in the ceiling.  The hatchway is a strange\nlooking keyhole.  There is also a door to the west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1644,
@@ -802,7 +802,7 @@
       "name": "Turret of the Western Tower",
       "description": "You are in the turret of the western tower.  You feel very strange here.\nScattered about this room are a great many coins and valuable articles.\nYet you can't get rid of a feeling of dread!  A mirror-like portal is in the\nwestern wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1649,
@@ -856,7 +856,7 @@
       "name": "Main Eastern Road",
       "description": "You are on the old Eastern Road.  The crossroads to the east joins ANOTHER\nnorthern route to this road, which continues east.  South of the crossroads is\nan old building.  The area around here is lightly timbered.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "east": {
           "to_room": 1702,
@@ -906,7 +906,7 @@
       "name": "Trading Post",
       "description": "You are in a trading post just south of the crossroads, where rangers,\ntrappers and hunters from the surrounding area come to buy, sell, and\nbarter goods.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1702,
@@ -1115,7 +1115,7 @@
       "name": "A Centaur's Hut",
       "description": "You are inside a smallish hut, the home of a family of Centaurs.  The hut\nis sparsely furnished, mostly the trappings of survival.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1710,
@@ -1131,7 +1131,7 @@
       "name": "A Centaur's Hut",
       "description": "You are inside a smallish hut, the home of a family of Centaurs.  The hut\nis sparsely furnished, mostly the trappings of survival.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1710,
@@ -1147,7 +1147,7 @@
       "name": "A Centaur's Hut",
       "description": "You are inside a smallish hut, the home of a family of Centaurs.  The hut\nis sparsely furnished, mostly the trappings of survival.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1711,
@@ -1163,7 +1163,7 @@
       "name": "A Centaur's Hut",
       "description": "You are inside a smallish hut, the home of a family of Centaurs.  The hut\nis sparsely furnished, mostly the trappings of survival.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1711,
@@ -1179,7 +1179,7 @@
       "name": "Entrance to a Large Hut",
       "description": "You are in the entry foyer of a large hut.  A curtain separates this section\nof the hut from the next section to the west.  To the east is an opening out\nonto the clearing.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1711,
@@ -1200,7 +1200,7 @@
       "name": "Back of a Large Hut",
       "description": "You are in the back of a large hut.  A curtain separates this section from\nthe front of the hut to the east.  This room is finely decorated, if\nsomewhat primitive.  The decor suggests someone of authority lives here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1716,

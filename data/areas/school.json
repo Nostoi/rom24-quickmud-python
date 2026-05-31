@@ -13,7 +13,7 @@
       "name": "Entrance to Mud School",
       "description": "This is the entrance to the Merc Mud School.  Go north to go through mud\nschool.  If you have been here before and want to go directly to the arena,\ngo south.\n\nA sign warns 'You may not pass these doors once you have passed level 5.'\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 3757,
@@ -41,7 +41,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The exits are west and south.  A small plaque is on the\nwall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "south": {
           "to_room": 3757,
@@ -73,7 +73,7 @@
       "name": "The Center Room",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  Exits lead in ALL directions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "north": {
           "to_room": 3703,
@@ -119,7 +119,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  Exits lead north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "north": {
           "to_room": 3709,
@@ -146,7 +146,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The only exit is east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "east": {
           "to_room": 3702,
@@ -167,7 +167,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The only exit is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "north": {
           "to_room": 3702,
@@ -188,7 +188,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The only exit is up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "up": {
           "to_room": 3702,
@@ -209,7 +209,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The only exit is down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "down": {
           "to_room": 3702,
@@ -230,7 +230,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  Exits reach west and down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "west": {
           "to_room": 3711,
@@ -257,7 +257,7 @@
       "name": "The Blob Cage",
       "description": "You are in a smelly cage.  Strangely, the walls are still clean!\nYou see a sign here.  The only exit is up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131080,
       "exits": {
         "up": {
           "to_room": 3709,
@@ -278,7 +278,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "east": {
           "to_room": 3709,
@@ -304,7 +304,7 @@
       "name": "The Cage Room",
       "description": "You are in the cage room.  All around are 4 cages.  Light fluoresces off the\nceiling in soft white tones.  Of course, there is a big sign on the wall.\nExits lead into the cardinal directions plus down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "north": {
           "to_room": 3713,
@@ -350,7 +350,7 @@
       "name": "A Cage",
       "description": "You are in a cage.  Blood and gore are everywhere.  The keepers must be lax\nin the upkeep here!  There is a sign on the wall.  The only exit is south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131080,
       "exits": {
         "south": {
           "to_room": 3712,
@@ -372,7 +372,7 @@
       "name": "A Cage",
       "description": "You are in a cage.  Blood and gore are everywhere.  The keepers must be lax\nin the upkeep here!  There is a sign on the wall.  The only exit is east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131080,
       "exits": {
         "east": {
           "to_room": 3712,
@@ -394,7 +394,7 @@
       "name": "A Cage",
       "description": "You are in a cage.  Blood and gore are everywhere.  The keepers must be lax\nin the upkeep here!  There is a sign on the wall.  The only exit is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131080,
       "exits": {
         "north": {
           "to_room": 3712,
@@ -416,7 +416,7 @@
       "name": "A Cage",
       "description": "You are in a cage.  Blood and gore are everywhere.  The keepers must be lax\nin the upkeep here!  There is a sign on the wall.  The only exit is west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131080,
       "exits": {
         "west": {
           "to_room": 3712,
@@ -438,7 +438,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  Find your own exit here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "east": {
           "to_room": 3719,
@@ -472,7 +472,7 @@
       "name": "The Store in Mud School",
       "description": "You are in a cramped room.  Stacked neatly on shelves everywhere are items\nand packages.  Light fluoresces off the ceiling in soft white tones.  Of\ncourse, there is a sign on the wall.  The only exit is north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131080,
       "exits": {
         "north": {
           "to_room": 3717,
@@ -493,7 +493,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a square white room.  The walls are all blank, with no windows.\nLight fluoresces off the ceiling in soft white tones.  Of course, there is a\nsign on the wall.  The exits are north and west, with a door to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "north": {
           "to_room": 3720,
@@ -528,7 +528,7 @@
       "name": "The Darkened Room",
       "description": "This room was purposefully darkened so that you would need to hold on to a\nlight source to go through.  The walls are, of course, blank, and white.\nThe only exit is south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131081,
       "exits": {
         "south": {
           "to_room": 3719,
@@ -544,7 +544,7 @@
       "name": "The End of Mud School!",
       "description": "This is a very bright room, with a marble pedestal in the center.  Behind\nthe pedestal stands a person cloaked in Silver.  Tapestries flow from every\nwall, and you feel very happy to be here right now.  There is a big sign here.\nThe only exit is on the other side of the gate north of you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 131080,
       "exits": {
         "north": {
           "to_room": 3722,
@@ -567,7 +567,7 @@
       "name": "South Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3729,
@@ -595,7 +595,7 @@
       "name": "South Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3728,
@@ -623,7 +623,7 @@
       "name": "South West Corner of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3727,
@@ -647,7 +647,7 @@
       "name": "South Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3730,
@@ -675,7 +675,7 @@
       "name": "South East Corner of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3731,
@@ -699,7 +699,7 @@
       "name": "West Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3732,
@@ -727,7 +727,7 @@
       "name": "Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3733,
@@ -759,7 +759,7 @@
       "name": "Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3734,
@@ -791,7 +791,7 @@
       "name": "Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3735,
@@ -823,7 +823,7 @@
       "name": "East Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3736,
@@ -851,7 +851,7 @@
       "name": "West Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3737,
@@ -879,7 +879,7 @@
       "name": "Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3738,
@@ -911,7 +911,7 @@
       "name": "Center of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.  There is a BIG SIGN here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3739,
@@ -955,7 +955,7 @@
       "name": "Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3740,
@@ -987,7 +987,7 @@
       "name": "East Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3741,
@@ -1015,7 +1015,7 @@
       "name": "West Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3742,
@@ -1043,7 +1043,7 @@
       "name": "Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3743,
@@ -1075,7 +1075,7 @@
       "name": "Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3744,
@@ -1107,7 +1107,7 @@
       "name": "Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3745,
@@ -1139,7 +1139,7 @@
       "name": "East Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3746,
@@ -1167,7 +1167,7 @@
       "name": "North West Corner of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 3743,
@@ -1191,7 +1191,7 @@
       "name": "North Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  You can barely see the ceiling.  You feel as if you are being watched\nby some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 3744,
@@ -1219,7 +1219,7 @@
       "name": "North Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 3745,
@@ -1247,7 +1247,7 @@
       "name": "North Wall of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 3746,
@@ -1275,7 +1275,7 @@
       "name": "North East Corner of Arena",
       "description": "You are in the Arena.  Remember, if you wish to get out of this Arena, just\ngo up.  Ceilings can barely be seen in this huge Arena.  You feel as if you are\nbeing watched by some divine being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 3741,
@@ -1299,7 +1299,7 @@
       "name": "The Center of the Dungeon",
       "description": "You are in the center of a large room.  A faint light from above shows that\nthe floors are all covered with slime.  A feeling of dread comes over you as\nyou notice that this is NOT a great place to go.  Exits go in all directions.\nOf special note is the one that brings you back up!!!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3750,
@@ -1337,7 +1337,7 @@
       "name": "The North West Corner of the Dungeon",
       "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3750,
@@ -1358,7 +1358,7 @@
       "name": "The North Wall of the Dungeon",
       "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 3751,
@@ -1384,7 +1384,7 @@
       "name": "The North East Corner of the Dungeon",
       "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 3753,
@@ -1405,7 +1405,7 @@
       "name": "The West Wall of the Dungeon",
       "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3749,
@@ -1431,7 +1431,7 @@
       "name": "The East Wall of the Dungeon",
       "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3751,
@@ -1457,7 +1457,7 @@
       "name": "The South West Corner of the Dungeon",
       "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3752,
@@ -1478,7 +1478,7 @@
       "name": "The South Wall of the Dungeon",
       "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3748,
@@ -1504,7 +1504,7 @@
       "name": "The South East Corner of the Dungeon",
       "description": "You are against a wall in the dungeon.  It is quite dark here.  The lack of\nany windows in the area explains the smell around you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 3753,
@@ -1525,7 +1525,7 @@
       "name": "A Room in Mud School",
       "description": "You are in a room in Mud School.  Paintings of the heroic graduates of mud\nschool adorn the walls. To the west is Furey's Training Room, and to the east\nis Zump's Guild Room.  North of you is the next Station of Mud School.\nThere is a sign on the wall (type 'LOOK SIGN' to read it).\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "north": {
           "to_room": 3701,
@@ -1561,7 +1561,7 @@
       "name": "Furey's Training Room",
       "description": "You are in Furey's Training Room.  Around you are all sorts of physical\nand mental training tools.  The whole room is filled with magic, holiness, \nand sweat.  There is a sign on the wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "east": {
           "to_room": 3757,
@@ -1582,7 +1582,7 @@
       "name": "Zump's Guild Room",
       "description": "You are in a room filled with weapons, books, and many combat dummies, some\ncut and stabbed many times, others burnt to a crisp.  The room is filled with\nsweat and an aura of magic.  There is a sign on the wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 131084,
       "exits": {
         "west": {
           "to_room": 3757,
@@ -1603,7 +1603,7 @@
       "name": "A Safe Room",
       "description": "You are in a safe room, away from all the mean rabbits and snails of the Arena.\nYou can rest here, and go up to go back to the Temple of Midgaard.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "up": {
           "to_room": 3001,

@@ -65,7 +65,7 @@
       "name": "A clearing in the woods",
       "description": "You are standing in a clearing in the light woods. Somehow, this place\nseems powerfully DIFFERENT from the rest of the forest, as if something is\nseverely strained in the fabric of reality here.  There is a small tablet \non one of the trees.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 5378,
@@ -99,7 +99,7 @@
       "name": "The holy grove",
       "description": "You are standing amidst the ancient oaks and poplars in the holy grove. You\nfeel calm and relaxed here, as if great burdens have been lifted from Your\nshoulders. From here, pleasant-looking paths lead east, north and south. To\nthe west, through the trees, You can see a faint trail leading towards the\neastern road.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 8901,
@@ -237,7 +237,7 @@
       "name": "The sunny field",
       "description": "You are standing in the middle of a wide, summery, sunlit field. There is a\nfragrance of spring in the air, a sound of summer and a feeling of eternal\nSaturday afternoon. To the south is a clear, sparkling lake, and to the north\nand west is the holy grove. In the wood's edge, to the east, is a stately man-\nsion, shimmering softly through the colors of the rainbow. You feel as if You\ncould spend the rest of your life here, lying on your back and looking at the\npatterns of the clouds as they gently drift across the sky.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8905,
@@ -271,7 +271,7 @@
       "name": "The croquet lawn",
       "description": "You are standing on a immaculately manicured green lawn, the kind you only\nget after 200 years of meticulous work. There is a winding stone path leading\nfrom the wood's edge to the north, to the softly shimmering, rainbow-colored\nmansion to the south. This place enjoys a perpetual cool, sunny summers after-\nnoon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 8906,
@@ -300,7 +300,7 @@
       "name": "The foyer",
       "description": "You are standing in the foyer of Dragon's mansion. The wide double door to\nthe croquet lawn is to the north, flanked by large windows. The walls are\npanelled in oak and hung with strange paintings.  There is door in the south\nwall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 8909,
@@ -329,7 +329,7 @@
       "name": "The hallway",
       "description": "You are in the north end of a connecting hallway, tastefully decorated with\noak paneling and the coat-of-arms of various famous nobles hung on the walls.\nThe hallway leads south, and there is a door in the eastern wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8910,
@@ -357,7 +357,7 @@
       "name": "The blue room",
       "description": "You are in the blue room, one of the guest rooms in Dragon's mansion. The\nwalls are (surprise!) blue, and the rest of the room is decorated in similar\nshades, producing a very nice, cool effect. There is a large bed and a\nmatching set of sofas, easy-chairs and a coffee table. Through the venetian\nblinds in front of the large east window you can see the edge of the grove.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 520,
       "exits": {
         "west": {
           "to_room": 8911,
@@ -374,7 +374,7 @@
       "name": "The hallway",
       "description": "You are standing in the south end of the hallway. There are doors in the\nelegant oak-panelled walls to the south, east and west. Many different\ncoat-of-arms adorn the walls here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8911,
@@ -408,7 +408,7 @@
       "name": "The red room",
       "description": "You are in the red room, one of the guest rooms in Dragon's mansion. The\nwalls are wallpapered a deep warm red, and dark mahogany panelling nicely com-\nplements them. There is a large, warm waterbed and a sofa group in dark wood\nwith leather upholstery, including a coffee table. Heavy brown curtains are\npulled away from the wide windows, to reveal a nice view towards the grove.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 520,
       "exits": {
         "west": {
           "to_room": 8913,
@@ -425,7 +425,7 @@
       "name": "The kitchen",
       "description": "You are standing in the middle of Dragon's kitchen. Contrary to popular\nbelief, He *doesn't* eat virgins, which is amply demonstrated by the large\nvariety of foodstuffs found here on the shelves. There are numerous cans of\ntomatoes, peas, corn etc., vines of garlic, a *Huge* array of small spice jars\nalong several shelves and a large combo refrigerator/freezer. A big oven and\nstove is lurking in a corner. There is some proof here that Dragon is a less\nthan meticulous housekeeper... There are doors to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8913,
@@ -448,7 +448,7 @@
       "name": "The ballroom",
       "description": "You are standing in the middle of a vast palisander floor. This is where\nDragon entertains large number of guests, but the cloth-covered chairs\nstanding forlornly in a corner suggests that this does not happen often.\nThere are doors in the south and east walls, while to the west there is a\nshort corridor to the greenhouse.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 8913,
@@ -476,7 +476,7 @@
       "name": "The greenhouse",
       "description": "This is Dragons' greenhouse. Green light filters in slantwise through the\nplants, giving the room a subtropical ambience. It is not really hot in here,\nthough, rather a pleasantly warm temperature. The walls are all windows, except \nthe eastern one joining the greenhouse to the main building, but it is hard to \nsee out for all the greenery here. There is a set of easy-chairs and a glass\ncoffee table. To the south, there is a wide double door out to a sunlit \nterrace.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 520,
       "exits": {
         "east": {
           "to_room": 8916,
@@ -498,7 +498,7 @@
       "name": "The dining hall",
       "description": "This is Dragons' dining hall. There is a large long solid oak table,\nseating at least 24, with heavy, wooden chairs to match. The oak panel walls\nare filled with paintings. There are doors to the north and east, and to the\nwest there is a wide double door opening out onto the sunlit terrace.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 8916,
@@ -532,7 +532,7 @@
       "name": "The terrace",
       "description": "You are standing on a sunlit terrace in front of Dragon's mansion. To the\nwest, there is a splendid view over the field down over the lake. To the north\nis the greenhouse, its large windowpanes shimmering with weird and wonderful\ncolors, while a double door leads into the house proper to the east. It is\nwarm and calm here. There is a white-painted table with a parasol here,\ntogether with a matched set of chairs.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 8917,
@@ -606,7 +606,7 @@
       "name": "The fog",
       "description": "You are in a grey fog, falling, screaming in pain as you realize\nthat you are being torn to nothing, atom by atom, falling and falling \nand falling ...\n...\n.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 4,
       "exits": {},
       "extra_descriptions": [],
       "area": 8900

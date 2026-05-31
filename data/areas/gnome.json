@@ -13,7 +13,7 @@
       "name": "Entrance to Gnome Village",
       "description": "You stand on a dusty path that leads north and east.  To the east you hear\nthe sounds of a small village.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 3526,
@@ -262,7 +262,7 @@
       "name": "A Small Gnome House",
       "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1502,
@@ -279,7 +279,7 @@
       "name": "A Small Gnome House",
       "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1505,
@@ -296,7 +296,7 @@
       "name": "A Small Gnome House",
       "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1505,
@@ -313,7 +313,7 @@
       "name": "A Small Gnome House",
       "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1504,
@@ -330,7 +330,7 @@
       "name": "A Small Gnome House",
       "description": "This is a small suburban house made from quality wood.  You can see the\nexpert workmanship that went into making it, but it lacks creativity.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1504,
@@ -347,7 +347,7 @@
       "name": "A Gnome Shop",
       "description": "You are in one of the several shops of this fine town.  The wares look fine,\nbut unfortunately the gnomes don't do business with outsiders.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1507,
@@ -364,7 +364,7 @@
       "name": "A Gnome Shop",
       "description": "You are in one of the several shops of this fine town.  The wares look fine,\nbut unfortunately the gnomes don't do business with outsiders.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1508,
@@ -381,7 +381,7 @@
       "name": "A Gnome Shop",
       "description": "You are in one of the several shops of this fine town.  The wares look fine,\nbut unfortunately the gnomes don't do business with outsiders.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1508,
@@ -398,7 +398,7 @@
       "name": "Path by a Stream",
       "description": "You are on a small path leading north and west, that is surrounded on the\nother two sides by a small stream.  The water looks mighty cold.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 1508,
@@ -470,7 +470,7 @@
       "name": "A Small Hut",
       "description": "The hut is a mess!  Blood has stained the grass walls into a dark rich\ncrimson color.  Torn clothes and trash lie all around, and you think you\nsee a skeleton in the corner.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1518,
@@ -567,7 +567,7 @@
       "name": "The Dark Cave",
       "description": "The cave gleams as your light reflects off of it.  As you squint your eyes\nand try to look ahead, you think you see something move.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 1524,
@@ -589,7 +589,7 @@
       "name": "Darker Cave",
       "description": "The cave gets even darker as your terror grows stronger.  You fear for your\nlife as something emerges out of the shadows.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "south": {
           "to_room": 1523,
@@ -605,7 +605,7 @@
       "name": "A Dusty Path",
       "description": "You are on a well traveled path that leads in many directions.  To the north\nis a large house, and to the west is a fortress.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 1558,
@@ -662,7 +662,7 @@
       "name": "A Long Hallway",
       "description": "You are now inside of the fortress; you must be lucky that the guards \nhaven't killed you.  As you glance around, you notice that the walls and\nfloors are spotlessly cleaned.  The barracks are to the north and a\nstorage room is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1530,
@@ -697,7 +697,7 @@
       "name": "A Long Hallway",
       "description": "You are now inside of the fortress; you must be lucky that the guards \nhaven't killed you.  As you glance around, you notice that the walls and\nfloors are spotlessly cleaned.  A mess hall is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1528,
@@ -726,7 +726,7 @@
       "name": "The Barracks",
       "description": "You now stand in the sleeping quarters of the gnome guards.  Every bed is\nmade perfectly, and not single article of clothing is on the floor.  There\nis a small storage room to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1531,
@@ -749,7 +749,7 @@
       "name": "A Small Storage Room",
       "description": "This is where the gnomes store all their spare clothing and armor.\nThere is not much here, but you might come up with something.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1530,
@@ -766,7 +766,7 @@
       "name": "A Small Storage Room",
       "description": "This is where the gnomes store all their spare weapons.  A door leads off\nto the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1528,
@@ -789,7 +789,7 @@
       "name": "A Small Storage Room",
       "description": "This is yet another room for storing gnome stuff.  Maps and battle plans\nare stored in neat stacks on the shelves.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1532,
@@ -806,7 +806,7 @@
       "name": "The Mess Hall",
       "description": "You are in the room where the guards come to get their grub.  The benches \nand tables are neatly cleaned and straightened, while shiny plates line\nthe walls.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1529,
@@ -823,7 +823,7 @@
       "name": "A Small Room",
       "description": "This is a small plain room.  Its only interesting feature is a ladder down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1529,
@@ -846,7 +846,7 @@
       "name": "A Small Unused Room",
       "description": "You stand in a small room in an unused section of the fortress.  The whole\nroom is coated with dust and cobwebs.  The ladder leads back up, and\na rusty door is to the east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1537,
@@ -870,7 +870,7 @@
       "name": "Dark Hallway",
       "description": "You find yourself in a very old section of the fortress.  You must be the\nfirst person to pass through here in years.  The hallway continues south\nand a door leads off to the east.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1538,
@@ -898,7 +898,7 @@
       "name": "Torture Chamber",
       "description": "This is a room that was once used to extract lies out of helpless victims.\nThe machines look unused, but could still work.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 1537,
@@ -919,7 +919,7 @@
       "name": "Dark Hallway",
       "description": "The hall continues in a north-south direction.  The floor is coated with\nsome kind of molded slime.  Doors lead east and west.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1537,
@@ -950,7 +950,7 @@
       "name": "Dark Hallway",
       "description": "The hall continues in a north-south direction.  The floor is coated with\nsome kind of molded slime.  Doors lead east and west.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1539,
@@ -981,7 +981,7 @@
       "name": "Prison Cell",
       "description": "You are in a dark and nasty prison cell.  Bodies lying on the floor give off\nan unbearable stench.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1539,
@@ -997,7 +997,7 @@
       "name": "Prison Cell",
       "description": "You are in a dark and nasty prison cell.  Bodies lying on the floor give off\nan unbearable stench.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 1539,
@@ -1013,7 +1013,7 @@
       "name": "Prison Cell",
       "description": "You are in a dark and nasty prison cell.  Bodies lying on the floor give off\nan unbearable stench.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1540,
@@ -1029,7 +1029,7 @@
       "name": "Prison Cell",
       "description": "You are in a dark and nasty prison cell.  Bodies lying on the floor give off\nan unbearable stench.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 1540,
@@ -1045,7 +1045,7 @@
       "name": "End of the Dark Hallway",
       "description": "You have reached the end of the dark hallway and maybe the end of your puny\nlife.  Something lumbers its way out of the shadows.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1540,
@@ -1068,7 +1068,7 @@
       "name": "A Ladder",
       "description": "You have come into a vertical tunnel with a ladder.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 1545,
@@ -1091,7 +1091,7 @@
       "name": "Lair",
       "description": "You have entered a new lair in the fortress.  Anything could be lurking\naround the corner.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 1548,
@@ -1112,7 +1112,7 @@
       "name": "A Damp Hallway",
       "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 1547,
@@ -1138,7 +1138,7 @@
       "name": "A Damp Hallway",
       "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "south": {
           "to_room": 1550,
@@ -1159,7 +1159,7 @@
       "name": "A Damp Hallway",
       "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 1549,
@@ -1180,7 +1180,7 @@
       "name": "A Damp Hallway",
       "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 1548,
@@ -1201,7 +1201,7 @@
       "name": "A Damp Hallway",
       "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 1551,
@@ -1222,7 +1222,7 @@
       "name": "A Damp Hallway",
       "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 1552,
@@ -1243,7 +1243,7 @@
       "name": "A Damp Hallway",
       "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 1556,
@@ -1269,7 +1269,7 @@
       "name": "A Damp Hallway",
       "description": "You are wandering in a dark, damp, twisting hallway.  The temperature\nseems to be greater here, as well as your fear.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "north": {
           "to_room": 1550,
@@ -1290,7 +1290,7 @@
       "name": "The End of the Hallway",
       "description": "You make your way out of the hallway, just to find yourself in greater\ndanger.  Before you looms the source of the great heat.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "east": {
           "to_room": 1557,
@@ -1311,7 +1311,7 @@
       "name": "The Altar",
       "description": "You finally reach the end of the maze.  There is a great altar here in the\nshape of a bat.  A passageway leads off to the west.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8201,
       "exits": {
         "west": {
           "to_room": 1556,
@@ -1327,7 +1327,7 @@
       "name": "The Chief's House",
       "description": "You enter into a large and luxurious house.  The floor is coated with carpets\nand the walls are covered in paintings.  You feel privileged just for stepping\ninside.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1526,
@@ -1344,7 +1344,7 @@
       "name": "The Unused Path",
       "description": "You are now on a fairly unused path that leads east out of the village.  \nYou wonder what could be out this way.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "east": {
           "to_room": 1560,
@@ -1413,7 +1413,7 @@
       "name": "Entrance to the Mine Shaft",
       "description": "As you enter the mine shaft, you get a sudden fear of the walls closing\nin on you.  You are surprised to notice that you don't need a light.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1563,
@@ -1436,7 +1436,7 @@
       "name": "Mine Shaft",
       "description": "This mine shaft looks stable, at least in this area.  The wooden supports are\nthick and strong.  Torches line the walls.  Exits lead in all directions.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1582,
@@ -1471,7 +1471,7 @@
       "name": "Mine Shaft",
       "description": "This mine shaft looks stable, at least in this area.  The wooden supports are\nthick and strong.  Torches line the walls.  Exits lead in all directions.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1583,
@@ -1506,7 +1506,7 @@
       "name": "Mine Shaft",
       "description": "This mine shaft looks stable, at least in this area.  The wooden supports are\nthick and strong.  Torches line the walls.  Exits lead in all directions\nexcept north.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1566,
@@ -1535,7 +1535,7 @@
       "name": "Walkway",
       "description": "You are on a well built path in the middle of a mountain.  You sense something\ngreat up ahead, considering the hard work that must have gone into creating\nthis passage.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1567,
@@ -1558,7 +1558,7 @@
       "name": "Walkway",
       "description": "You are on a well built path in the middle of a mountain.  You sense something\ngreat up ahead, considering the hard work that must have gone into creating\nthis passage.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1566,
@@ -1581,7 +1581,7 @@
       "name": "The Grand Hall",
       "description": "You have stepped into the Grand Hall of the hobgoblin kingdom; your luck\nmust be running low by now.  Golden pillars span the hallway, and you\nnotice a red carpet beneath your feet.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1567,
@@ -1604,7 +1604,7 @@
       "name": "The Throne Room",
       "description": "This is large bright room filled with Hobgoblins.  To the south there is\na large golden throne against the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1568,
@@ -1621,7 +1621,7 @@
       "name": "The Treasury",
       "description": "You are inside the hobgoblin's treasury.  Your eyes are almost blinded by the\ngold, silver and copper coins.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1571,
@@ -1638,7 +1638,7 @@
       "name": "Guarded Room",
       "description": "You are inside a well guarded room.  The place is slightly better built than\nthe mine shafts, and is lit by lanterns.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1572,
@@ -1661,7 +1661,7 @@
       "name": "Guarded Room",
       "description": "You are inside a well guarded room.  The place is slightly better built than\nthe mine shafts, and is lit by lanterns.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1565,
@@ -1684,7 +1684,7 @@
       "name": "Hobgoblin Armory",
       "description": "The guards store their spare weapons and armor here.  There are rusty swords\non rotting shelves, and armor hanging from hooks or laying on the floor.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1564,
@@ -1701,7 +1701,7 @@
       "name": "Mine Shaft",
       "description": "You enter a part of the mine shaft where the torches have grown dim\nand are almost ready to go out.  From what you can see, there are plenty\nof cobwebs on the walls and rats at your feet.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1563,
@@ -1724,7 +1724,7 @@
       "name": "Entrance to a Dungeon",
       "description": "The floor dips slightly as you walk into this dark and nasty place.  Your\nskin crawls as you look at the filth on the walls and see it move.  Most\nof the exits lead into jail cells.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1574,
@@ -1759,7 +1759,7 @@
       "name": "A Dungeon",
       "description": "You are in the deepest and darkest part of the mine shafts.  The light from\nthe torches barely reaches to where you are.  Most directions from here\nlead to jail cells.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1575,
@@ -1794,7 +1794,7 @@
       "name": "A Jail Cell",
       "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1575,
@@ -1811,7 +1811,7 @@
       "name": "The Jail Cell",
       "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1576,
@@ -1828,7 +1828,7 @@
       "name": "The Jail Cell",
       "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1576,
@@ -1845,7 +1845,7 @@
       "name": "The Jail Cell",
       "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1576,
@@ -1862,7 +1862,7 @@
       "name": "The Jail Cell",
       "description": "You are in a musty, dark jail cell.  Wet and dirty straw covers the floor.\nThe walls glisten with slime.  You see something stir in the straw.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 1575,
@@ -1879,7 +1879,7 @@
       "name": "Small Mine Shaft",
       "description": "You are in a small extension of the mine shaft.  The dust on the floor is\nundisturbed by footprints.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1588,
@@ -1902,7 +1902,7 @@
       "name": "Hobgoblin Barracks",
       "description": "You are suddenly surrounded by a small army of hobgoblin guards.  The room\nitself is a mess with clothes and armor everywhere.  The beds are unmade and\nstained.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1584,
@@ -1931,7 +1931,7 @@
       "name": "Hobgoblin Barracks",
       "description": "Yech!  As you continue forward, the smell just keeps getting worse.\nWhat are you DOING here?\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1583,
@@ -1948,7 +1948,7 @@
       "name": "Mess Hall",
       "description": "You stand in the hobgoblin eating area.  There are a few rotting tables\nand many broken dishes scattered around the room.  You almost slip on a\nrotten piece of meat, but catch yourself just in time.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1586,
@@ -1977,7 +1977,7 @@
       "name": "A Store Room",
       "description": "You stand in a small room filled with flour, grain, fruit, and bat droppings.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1585,
@@ -1994,7 +1994,7 @@
       "name": "The Kitchen",
       "description": "This kitchen hasn't been cleaned since the creation of humans.  The trash and\nspoiled food laying on the floor reach up to your knees.  Off to the side a\npot is boiling over.  A human hand floats in it.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 1585,
@@ -2011,7 +2011,7 @@
       "name": "A Small Mine Shaft",
       "description": "You come to a place in the mine shaft where a tunnel leads down.  The\nsmall passage continues north and south.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 1589,
@@ -2040,7 +2040,7 @@
       "name": "Hermit's Lair",
       "description": "You are in a small section where the mine wall has collapsed to reveal a\ntiny one-room cave.  The area is barely lit, but you can make out something\nmoving towards you.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 1588,
@@ -2057,7 +2057,7 @@
       "name": "A Hole",
       "description": "You are in a hole.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 1588,

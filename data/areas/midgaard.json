@@ -13,7 +13,7 @@
       "name": "The Temple Of Mota",
       "description": "You are in the southern end of the temple hall in the Temple of Mota.\nThe temple has been constructed from giant marble blocks, eternal in\nappearance, and most of the walls are covered by ancient wall paintings\npicturing gods, giants and peasants.\n   Large steps lead down through the grand temple gate, descending the huge\nmound upon which the temple is built and ends on the temple square below.\n   Equally large steps lead UP through a small door into the ENTRANCE to MUD \nSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "north": {
           "to_room": 3054,
@@ -46,7 +46,7 @@
       "name": "Cleric's Inner Sanctum",
       "description": "This is the inner sanctum.  A picture of the mighty Mota is hanging on\nthe wall, just above the altar which is set against the western wall.  A well\nin the middle of the floor leads down into darkness.  Vile smells waft from\nthe depths.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "east": {
           "to_room": 3003,
@@ -69,7 +69,7 @@
       "name": "Cleric's Bar",
       "description": "The bar is one of the finest in the land, lucky it is members only.  Fine\nfurniture is set all around the room.  A small sign is hanging on the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "south": {
           "to_room": 3004,
@@ -97,7 +97,7 @@
       "name": "Entrance to Cleric's Guild",
       "description": "The entrance hall is a small modest room, reflecting the true nature of\nthe Clerics.  The exit leads east to the temple square.  A small entrance to\nthe bar is in the northern wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3003,
@@ -120,7 +120,7 @@
       "name": "The Temple Square",
       "description": "You are standing on the temple square.  Huge marble steps lead up to the\ntemple gate.  The entrance to the Clerics Guild is to the west, and the old\nGrunting Boar Inn, is to the east.  Just south of here you see the market\nsquare, the center of Midgaard.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3001,
@@ -161,7 +161,7 @@
       "name": "Entrance to the Grunting Boar Inn",
       "description": "You are standing in the entrance hall of the Grunting Boar Inn.  The hall\nhas been wisely decorated with simple but functional furniture.  A small\nstaircase leads up to the defunct reception room and the bar is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "east": {
           "to_room": 3007,
@@ -190,7 +190,7 @@
       "name": "The Grunting Boar",
       "description": "You are standing in the bar.  The bar is set against the northern wall, old\narchaic writing, carvings and symbols cover its top.  A fireplace is built into\nthe western wall, and through the southeastern windows you can see the temple\nsquare.  This place makes you feel like home.\nA small sign with big letters is fastened to the bar.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "west": {
           "to_room": 3006,
@@ -216,7 +216,7 @@
       "name": "The Defunct Reception",
       "description": "You are standing in a dusty, defunct reception.  The staircase leads\ndown to the entrance hall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "down": {
           "to_room": 3006,
@@ -233,7 +233,7 @@
       "name": "The Bakery",
       "description": "You are standing inside the small bakery.  A sweet scent of Danish and\nfine bread fills the room.  The bread and Danish are arranged in fine order\non the shelves, and seem to be of the finest quality.\nA small sign is on the counter.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "south": {
           "to_room": 3013,
@@ -259,7 +259,7 @@
       "name": "The General Store",
       "description": "You are inside the general store.  All sorts of items are stacked on shelves\nbehind the counter, safely out of your reach.\nA small note hangs on the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "south": {
           "to_room": 3015,
@@ -281,7 +281,7 @@
       "name": "The Weapon Shop",
       "description": "You are inside the weapon shop.  There is a small note on the counter.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "south": {
           "to_room": 3016,
@@ -303,7 +303,7 @@
       "name": "Main Street",
       "description": "You are at the end of the main street of Midgaard.  South of here is the\nentrance to the Guild of Magic Users.  The street continues east towards the\nmarket square.  The magic shop is to the north and to the west is the city\ngate.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3033,
@@ -338,7 +338,7 @@
       "name": "Main Street",
       "description": "You are on the main street passing through the City of Midgaard.  South of\nhere is the entrance to the Armoury, and the bakery is to the north.  East of\nhere is the market square.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3009,
@@ -373,7 +373,7 @@
       "name": "Market Square",
       "description": "You are standing on the market square, the famous Square of Midgaard.\nA large, peculiar looking statue is standing in the middle of the square.\nRoads lead in every direction, north to the temple square, south to the\ncommon square, east and westbound is the main street.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3005,
@@ -413,7 +413,7 @@
       "name": "The Main Street",
       "description": "You are on Main Street crossing through town.  To the north is the general\nstore, and the main street continues east.  To the west you see and hear the\nmarket place and to the south is the Jeweller's Shop.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3010,
@@ -448,7 +448,7 @@
       "name": "The Main Street",
       "description": "The main street, to the north is the weapon shop and to the south is the\nGuild of Swordsmen.  To the east you leave town and to the west the street\nleads to the market square.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3011,
@@ -483,7 +483,7 @@
       "name": "Entrance to Mage's Guild",
       "description": "The entrance hall is a small, poor lighted room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3012,
@@ -506,7 +506,7 @@
       "name": "Mage's Bar",
       "description": "The bar is one of the wierdest in the land.  Mystical images float around\nthe air.  Illusions of fine furniture appear all around the room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "north": {
           "to_room": 3017,
@@ -529,7 +529,7 @@
       "name": "Mage's Laboratory",
       "description": "This is the Magical Experiments Laboratory.  Dark smoke-stained stones\narch over numerous huge oaken tables, most of these cluttered with strange-\nlooking pipes and flasks.  The floor is covered with half-erased pentagrams\nand even weirder symbols, and a blackboard in a dark corner has only been\npartially cleaned, some painful-looking letters faintly visible.  A well in\nthe middle of the floor leads down into darkness.  Vile smells waft from the\ndepths.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "west": {
           "to_room": 3018,
@@ -552,7 +552,7 @@
       "name": "The Armoury",
       "description": "The armoury with all kinds of armours on the walls and in the window.  You\nsee helmets, shields and chain mails.  To the north is the main street.\nOn the wall is a small note.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3013,
@@ -574,7 +574,7 @@
       "name": "Entrance Hall to the Guild of Swordsmen",
       "description": "The entrance hall to the Guild of Swordsmen.  A place where one has to be\ncareful not to say something wrong (or right).  To the east is the bar and to\nthe north is the main street.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3016,
@@ -597,7 +597,7 @@
       "name": "The Bar of Swordsmen",
       "description": "The bar of swordsmen, once upon a time beautifully furnished.  But now the\nfurniture is all around you in small pieces.  To the south is the yard, and\nto the west is the entrance hall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "south": {
           "to_room": 3023,
@@ -620,7 +620,7 @@
       "name": "The Tournament and Practice Yard",
       "description": "The practice yard of the fighters.  To the north is the bar.  A well leads\ndown into darkness.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "north": {
           "to_room": 3022,
@@ -643,7 +643,7 @@
       "name": "Eastern End of Poor Alley",
       "description": "You are at the poor alley. South of here is the Grubby Inn and to the\neast you see common square. Melancholy's map shop is north. The alley continues \nfurther west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3160,
@@ -678,7 +678,7 @@
       "name": "The Common Square",
       "description": "The common square, people pass you, talking to each other.  To the west is\nthe poor alley and to the east is the dark alley.  To the north, this square\nis connected to the market square.  From the south you notice a nasty smell.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3014,
@@ -713,7 +713,7 @@
       "name": "The Dark Alley",
       "description": "The dark alley, to the west is the common square and to the south is the\nGuild of Thieves.  Grebe's Tavern, the famous sailor's dive, is north.\nThe alley continues east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3352,
@@ -753,7 +753,7 @@
       "name": "Entrance Hall to the Guild of Thieves",
       "description": "The entrance hall to the thieves' and assassins' guild.  A place where you\ncan lose both your life and your money, if you are not careful.  To the north\nis the dark alley and to the east is the thieves' bar.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3026,
@@ -776,7 +776,7 @@
       "name": "The Thieves Bar",
       "description": "The bar of the thieves.  Once upon a time this place was beautifully\nfurnished, but now it seems almost empty.  To the south is the yard, and to\nthe west is the entrance hall.\n   (Maybe the furniture has been stolen?!)\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "south": {
           "to_room": 3029,
@@ -804,7 +804,7 @@
       "name": "The Secret Yard",
       "description": "The secret practice yard of thieves and assassins.  To the north is the\nbar.  A well leads down into darkness.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {
         "north": {
           "to_room": 3028,
@@ -827,7 +827,7 @@
       "name": "The Dump",
       "description": "The dump, where the people from the city drop their garbage.  Through the\ngarbage you can see a large junction of pipes, looks like the entrance to the\nsewer system.  South of here you see the river and to the north is the common\nsquare.  A rickety old bridge leads south to the promenade.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 262148,
       "exits": {
         "north": {
           "to_room": 3025,
@@ -856,7 +856,7 @@
       "name": "The Pet Shop",
       "description": "The Pet Shop is a small crowded store, full of cages and animals of\nvarious sorts and sizes.  There is a sign on the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 266248,
       "exits": {
         "south": {
           "to_room": 3045,
@@ -878,7 +878,7 @@
       "name": "Pet Shop Store",
       "description": "This is the small dark room in which the Pet Shop Boy keeps his pets.\nIt is vital that this room be immediately after the pet shop.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262156,
       "exits": {},
       "extra_descriptions": [],
       "area": 3000
@@ -888,7 +888,7 @@
       "name": "The Magic Shop",
       "description": "You are in a small room that smells of rare chemicals and spices.\nDividing the room in two is a large desk, and on the wall behind it are\nnumerous shelves crammed with jars, bottles, books and scrolls of all\nsorts and sizes.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "south": {
           "to_room": 3012,
@@ -918,7 +918,7 @@
       "name": "The Jeweller's Shop",
       "description": "You are in a small, beautifully furnished room.  The warm light emanating\nfrom the small oil lamps on the walls is reflected in the hard, polished\nsurface of the big mahogany desk that stands in the centre of the room.\nA small sign with golden letters stands on the desk.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3015,
@@ -948,7 +948,7 @@
       "name": "The Leather Shop",
       "description": "An acrid smell fills this large room.  Along the walls are numerous\nshelves containing all sorts of animal hide and in the crackling fireplace\nhangs a big iron pot with boiling water.  In the middle of the room is a\nlarge oak table.\nA wooden sign is hanging above the fireplace.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "south": {
           "to_room": 3044,
@@ -982,7 +982,7 @@
       "name": "Inside the West Gate of Midgaard",
       "description": "You are by two small towers that have been built into the city wall and\nconnected with a footbridge across the heavy wooden gate.  Main Street leads\neast and Wall Road leads both north and south from here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3257,
@@ -1035,7 +1035,7 @@
       "name": "Inside the East Gate of Midgaard",
       "description": "You are by two small towers that have been built into the city wall and\nconnected with a footbridge across the heavy wooden gate.  Main Street leads\nwest from here.  Wall road crosses the street, heading north and south along\nthe city wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3267,
@@ -1087,7 +1087,7 @@
       "name": "Wall Road",
       "description": "You are walking next to the western city wall.  The road continues further\nsouth and the city gate is just north of here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3040,
@@ -1115,7 +1115,7 @@
       "name": "Wall Road",
       "description": "You are walking next to the western city wall.  Wall Road continues further\nnorth and south.  A small, poor alley leads east.\nSome letters have been written on the wall here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3042,
@@ -1153,7 +1153,7 @@
       "name": "Poor Alley",
       "description": "You are in narrow and dirty alley leading east and west.  The leather shop\nis to the north.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3035,
@@ -1188,7 +1188,7 @@
       "name": "Alley at Levee",
       "description": "You are standing in the alley which continues east and west.  South of\nhere you see the levee.  North is the Pet Shop.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3031,
@@ -1222,7 +1222,7 @@
       "name": "Eastern end of Alley",
       "description": "You are standing at the eastern end of the alley,  near the city walls.  \nWall road loops around the city to your east, and you can see an old \nthree-story warehouse to the south.  The Fountain of Youth Apothecary is \nnorth.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3056,
@@ -1256,7 +1256,7 @@
       "name": "Wall Road",
       "description": "You are standing on the road next to the western city wall which\ncontinues north.  South of here is a bridge across the river.  To the east,\nyou see an odd looking building painted bright orange with purple trim...\nit must be the Mob Factory!\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3043,
@@ -1290,7 +1290,7 @@
       "name": "Grubby Inn",
       "description": "You are inside the old Grubby Inn.  This place has not been cleaned for\nseveral decades, vile smells make you dizzy.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3024,
@@ -1307,7 +1307,7 @@
       "name": "Levee",
       "description": "You are at the levee.  South of here you see the river gently flowing west.\nThe river bank is very low making it possible to enter the river.  Directly\nacross the river you can see a small boat landing built off of Kate's Diner.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3045,
@@ -1330,7 +1330,7 @@
       "name": "Abandoned Warehouse",
       "description": "You are inside the only room in the old warehouse.  The place is very dusty\nand appears to have been unused for many years.  The skylight spills\nviolet-tinged light.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3046,
@@ -1352,7 +1352,7 @@
       "name": "On the Bridge",
       "description": "You are standing on the stone bridge crosses the river.  The bridge is\nbuilt out from the western city wall and the river flows west through an\nopening in the wall ten feet below the bridge.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3047,
@@ -1388,7 +1388,7 @@
       "name": "Outside the West Gate of Midgaard",
       "description": "You are by two small towers that have been built into the city wall and\nconnected with a footbridge across the heavy wooden gate.  To the west you\ncan see the edge of a big forest. A small dusty trail leads north along the\nwall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3900,
@@ -1435,7 +1435,7 @@
       "name": "Outside the East Gate of Midgaard",
       "description": "You are by two small towers that have been built into the city wall and\nconnected with a footbridge across the heavy wooden gate.  To the east the\nplains stretch out in the distance. To the north a small dusty trail follow\nthe city wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3908,
@@ -1482,7 +1482,7 @@
       "name": "By the Temple Altar",
       "description": "You are by the temple altar in the northern end of the Temple of Mota.\nA huge altar made from white polished marble is standing in front of you and\nbehind it is a ten foot tall sitting statue of Odin, the King of the Gods.\nThe back of the altar opens into a a beautiful atrium, above which can be\nseen a rainbow.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 263176,
       "exits": {
         "south": {
           "to_room": 3001,
@@ -1516,7 +1516,7 @@
       "name": "The Fountain of Youth Apothecary",
       "description": "An old man putters around behind the counter, making strange love potions\nand curative philtres.  He turns as you enter, and looks on with avarice.\nJudging from the furnishings, he's been made very wealthy by his trade.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "south": {
           "to_room": 3046,
@@ -1533,7 +1533,7 @@
       "name": "In the air...",
       "description": "WOW you can fly!  You are floating in the air above Temple Square of Midgaard.\n",
       "sector_type": "air",
-      "flags": 0,
+      "flags": 262148,
       "exits": {
         "up": {
           "to_room": 1017,
@@ -1554,7 +1554,7 @@
       "name": "Northwest end of Concourse",
       "description": "You are at the concourse, the city wall is just west.  A small promenade\ngoes east, and the bridge is just north of here.  The concourse continues\nsouth along the city wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3051,
@@ -1583,7 +1583,7 @@
       "name": "Promenade",
       "description": "The river gently flows west just north of here.  The promenade continues\nfurther east and to the west you see the city wall.  Park Road leads south\nfrom here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3102,
@@ -1612,7 +1612,7 @@
       "name": "Promenade",
       "description": "The river gently flows west just north of here.  The promenade continues\nboth east and west.  A rickety bridge crosses the river to the north, towards\nthe city dump (fortunately, the wind is blowing towards the dump today). \nSouth of here you see the entrance to the park, and a small building seems\nto be just west of the entrance.  Austral Square, home of Kate's Diner, lies\nto your east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3254,
@@ -1647,7 +1647,7 @@
       "name": "Austral Square",
       "description": "The Promenade opens here onto Austral Square, on the south bank of the\nMidgaard River.  All around you is the bustle of Southern Midgaard--\nshopkeepers on break, a town gossip or two prattling away.  You hear the\nriver lapping at the pilings of the dock by Kate's Diner, which is to your\nnorth.  Emerald Avenue begins to the south, the Promenade continues west,\nand the concourse ends to your east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3150,
@@ -1682,7 +1682,7 @@
       "name": "Northeast end of Concourse",
       "description": "You are at the Concourse.  The city wall is just east and Austral Square,\nhome of Kate's Diner, is west.  Looking across the river you see an old  \nwarehouse.  A strong stone bridge crosses the river to the north, where the\nconcourse becomes wall road.  The Concourse continues south along the wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3253,
@@ -1716,7 +1716,7 @@
       "name": "Park Entrance",
       "description": "You are standing just inside the small park of Midgaard.  To the north is\nthe promenade and a small path leads south into the park.  To your east is\nthe famous Park Cafe.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262148,
       "exits": {
         "north": {
           "to_room": 3102,
@@ -1745,7 +1745,7 @@
       "name": "Park Cafe",
       "description": "You are inside Park Cafe, a very well lighted, cosy place. The cafe\nis built from large logs. Through the windows in the northern wall you\nsee the river, and through the southern window you see many vigorous\ncolorful plants.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "west": {
           "to_room": 3105,
@@ -1762,7 +1762,7 @@
       "name": "Small path through the park",
       "description": "You are walking along a small path through the park.  The path continues\nsouth and east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3108,
@@ -1783,7 +1783,7 @@
       "name": "Small path in the park",
       "description": "You are standing on a small path inside the park.  The park entrance is\njust north of here, and Park Cafe is just east of the entrance.  The path\nleads further east and west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3105,
@@ -1810,7 +1810,7 @@
       "name": "Small path in the park",
       "description": "You are on a small path running through the park.  It continues west and\nsouth and just north of here you see the southern wall of Park Cafe.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "south": {
           "to_room": 3115,
@@ -1831,7 +1831,7 @@
       "name": "Cityguard Head Quarters",
       "description": "You are inside a tidy office.  A big desk made from dark wood is standing\nin the centre of the room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "east": {
           "to_room": 3111,
@@ -1856,7 +1856,7 @@
       "name": "Park Road",
       "description": "The road continues north and south.  A building is just west of here, you\nnotice a sign on the door.  The park entrance is to the east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3131,
@@ -1895,7 +1895,7 @@
       "name": "Western Park Entrance",
       "description": "You are standing at the western end of the park.  A small path leads east\ninto the park and going west through the entrance you will reach Park Road.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262148,
       "exits": {
         "east": {
           "to_room": 3113,
@@ -1916,7 +1916,7 @@
       "name": "A path in the park",
       "description": "You are in the park.  The paths lead north and west.  Westwards is the\npark entrance and to the east you see a small pond.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3107,
@@ -1944,7 +1944,7 @@
       "name": "The Pond",
       "description": "You are swimming around in the pond, feeling rather stupid.  You can get\nback on the path from the eastern and western end of the pond.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3115,
@@ -1965,7 +1965,7 @@
       "name": "A path in the park",
       "description": "You are in the park.  The paths lead north and east.  Eastwards is the\npark entrance and to the west you see a small pond.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3109,
@@ -1991,7 +1991,7 @@
       "name": "Eastern Park Entrance",
       "description": "You are standing at the eastern end of the park.  A small path leads west\ninto the park.  Going east through the entrance you will reach Emerald\nAvenue.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262148,
       "exits": {
         "east": {
           "to_room": 3117,
@@ -2012,7 +2012,7 @@
       "name": "Emerald Avenue",
       "description": "You are at Emerald Avenue which continues north and south.  To the west is\nthe park entrance and to the east is the not very big Town Hall of Midgaard.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3132,
@@ -2043,7 +2043,7 @@
       "name": "Park Road",
       "description": "You are on Park Road which leads north and south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3111,
@@ -2064,7 +2064,7 @@
       "name": "Emerald Avenue",
       "description": "You are standing at a bend on Emerald Avenue.  The road leads north and west.\nTo the east, you see some run-down slums...it looks like the bad part of\ntown.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3117,
@@ -2091,7 +2091,7 @@
       "name": "Road Crossing",
       "description": "You are in the middle of the road cross.  Roads lead in all directions.\nA huge black iron chain as thick as a tree trunk is fastened into the ground\nat the centre of the road cross.  Its other end leads directly upwards towards\nthe sky.\nA road sign is here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3133,
@@ -2137,7 +2137,7 @@
       "name": "Emerald Avenue",
       "description": "You are standing at a bend on Emerald Avenue.  The road leads south and\neast.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3134,
@@ -2158,7 +2158,7 @@
       "name": "Park Road",
       "description": "You are on Park Road which leads south and north.  Elm Street is east of\nhere.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3136,
@@ -2184,7 +2184,7 @@
       "name": "Elm Street",
       "description": "You are on Elm street.  Park Road is to the west and Elm Street continues\nin eastward direction.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3124,
@@ -2205,7 +2205,7 @@
       "name": "Elm Street",
       "description": "You near the end of Elm Street.  An old elm tree grows here.  A heavy\niron grating is south, surrounding the city's graveyard.  You can see a sign\nhanging on the grate.  The concourse joins Elm Street to the east, and the\nstreet ends to the north near a run-down neighborhood.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3144,
@@ -2253,7 +2253,7 @@
       "name": "Emerald Avenue",
       "description": "You are on Emerald Avenue which continues north.\nThe Concourse is south of here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3121,
@@ -2274,7 +2274,7 @@
       "name": "Park Road",
       "description": "You are on Park Road which continues north.  The Concourse is south of here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3122,
@@ -2295,7 +2295,7 @@
       "name": "On the Concourse",
       "description": "You are at the southwest corner of the city wall.  The Concourse leads\nboth north and east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3271,
@@ -2316,7 +2316,7 @@
       "name": "On the Concourse",
       "description": "You are walking around the scenic concourse as it continues its path around\nthe city of Midgaard.  The south gate of the city lies to your east, and the \nsouthwestern corner of the city wall is west.  Emerald Avenue stretches out\nto the north.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3125,
@@ -2344,7 +2344,7 @@
       "name": "On the Concourse",
       "description": "The concourse continues its path around the city.  The southern gates of the\ncity are west of here, and park road lies north.  The northeastern corner of\nthe city wall is east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262145,
       "exits": {
         "north": {
           "to_room": 3126,
@@ -2371,7 +2371,7 @@
       "name": "On the Concourse",
       "description": "You are at the southeast corner of the city wall.  The Concourse leads\nboth north and west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3273,
@@ -2392,7 +2392,7 @@
       "name": "Park Road",
       "description": "You are at Park Road which continues north and south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3101,
@@ -2413,7 +2413,7 @@
       "name": "Emerald Avenue",
       "description": "You are standing on the north end of Emerald Avenue.  To the north is \nAustral Square and Kate's Diner, to the east is the small street Penny Lane.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3103,
@@ -2439,7 +2439,7 @@
       "name": "Emerald Avenue",
       "description": "You are standing at a bend on Emerald Avenue.  To the east the road goes on\nand to the south is the Road Crossing.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3119,
@@ -2460,7 +2460,7 @@
       "name": "Emerald Avenue",
       "description": "You are standing at a bend on Emerald Avenue.  To the west the road goes on\nand to the north is the Road Crossing.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3120,
@@ -2481,7 +2481,7 @@
       "name": "Park Road",
       "description": "You are at a bend on Park Road.  To the north the road goes on and to the\neast is the Road Crossing.  To the south, the ancient cliffs rise from deep\nunder the ground, forming a wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3118,
@@ -2502,7 +2502,7 @@
       "name": "Park Road",
       "description": "You are at a bend on Park Road.  To the south the road goes on and to the\nwest is the Road Crossing.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "south": {
           "to_room": 3122,
@@ -2523,7 +2523,7 @@
       "name": "The Waiting Room",
       "description": "You are standing in the waiting room at the town hall.  Wooden chairs stand\nalong the walls and a long desk is placed in the middle of the room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "east": {
           "to_room": 3138,
@@ -2546,7 +2546,7 @@
       "name": "The Mayor's Office",
       "description": "You are in the not very big office of the Mayor of Midgaard.  A large and\npolished but completely empty desk is standing in front of an armchair that\nlooks so comfortable that it most of all resembles a bed with the head end\nraised slightly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "west": {
           "to_room": 3137,
@@ -2568,7 +2568,7 @@
       "name": "Penny Lane",
       "description": "You are on Penny Lane.  Emerald Avenue is to the west and Penny Lane\ncontinues in eastward direction.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3140,
@@ -2589,7 +2589,7 @@
       "name": "Penny Lane",
       "description": "You are on Penny Lane.  The narrow road continues north and west, and\nthe concourse intersects this street to the east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3141,
@@ -2616,7 +2616,7 @@
       "name": "The end of Penny Lane",
       "description": "You are at the end of Penny Lane.  The only exit appears to be south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "south": {
           "to_room": 3140,
@@ -2632,7 +2632,7 @@
       "name": "Captain's Office",
       "description": "You are in the Office of the Captain of the Guard.  The Midgaard Coat of\nArms is hanging on the north wall and a heavy steel door is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "east": {
           "to_room": 3110,
@@ -2662,7 +2662,7 @@
       "name": "The Jail",
       "description": "You are in a dark and humid jail.  The dark stone walls are hard and cold\nto the touch.  A heavy steel door is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3142,
@@ -2685,7 +2685,7 @@
       "name": "The end of Elm Street",
       "description": "Elm street ends here, next to a dangerous-looking run down neighborhood.\nYou can enter the slums to the east, or head towards the graveyard to the\nsouth.  It occurs to you that this isn't the happiest section of town.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 2160,
@@ -2708,7 +2708,7 @@
       "name": "Kate's Diner",
       "description": "  The smells of baking bread and simmering stew lead you dancing through\nthe doorway of the diner.  No greasy spoons to be seen here-- the\nbooth walls are covered in casual paisleys; the chairs are carved wood,\nrescued from garage sales.  Most tables have chess or backgammon boards\ncarved and painted on their fingertip-smooth tops.  The refrain of some\nmusical or other from the 1930's blends with the dusty golden light and the\nwonderful smells to put you completely at ease.  A huge picture window\nlooks out over the Midgaard River, and a doorway leads north onto the dock\nand the South Bank river landing, while the main entrance to the south\nreturns you to Austral Square.\nOn most days you will find Kate here, testing a batch of stew or brewing\na special pot of cinnamon coffee, eerily just in time for your arrival\nPull up a chair, perhaps play a game, and take time out to talk.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 263176,
       "exits": {
         "north": {
           "to_room": 3203,
@@ -2742,7 +2742,7 @@
       "name": "Melancholy's Maps",
       "description": "As you walk in, a sudden gust of wind enters the shop and sends several\nscraps of paper fly around the room.  You blink as the dust you've stirred \nup stings your eyes, and take a look around the shop.  This shop is cluttered \nwith old pieces of parchment, stacks of books, and odd scraps.  A desk with \nslightly less clutter than the rest of the shop is in front of you.  A scroll \ncase full of scrolls is behind the desk.  A bookcase is to the right of you, \nand to the left is a window overlooking the Common Square.  A small door, \nhalf hidden by a stack of books, leads to a room in the back of the shop.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262150,
       "exits": {
         "north": {
           "to_room": 3161,
@@ -2775,7 +2775,7 @@
       "name": "Melancholy's Room",
       "description": "A faint smell of incense teases your nose as you enter this room.  You \nstep onto a soft bearskin rug and look around.  A simple bed lies against\nthe far wall.  At the foot of it is a sturdy, ironbound chest, most likely\nfull of Melancholy's trappings from her adventuring days.  On a small table\nunder a window to the east is a vase with a single white rose.  Other than\nthat, the room is quite bare.  \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262662,
       "exits": {
         "south": {
           "to_room": 3160,
@@ -2803,7 +2803,7 @@
       "name": "Temple Of Stupid",
       "description": "As you enter the abandoned warehouse your eyes blink violently to\nadjust to the almost total darkness.  You wonder where the windows are\nas you step into a mud puddle in the middle of the floor.  As your eyes\nadjust, you realize that there are mud puddles all around the room, and\nthis is some weird version of windows.  In a flash of revelation, you\nrealize that you've entered the Temple of Stupid.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3044,
@@ -2830,7 +2830,7 @@
       "name": "Under the Bridge",
       "description": "The arch under the bridge is covered by seaweed for one foot above the\nsurface of the river.  The water gently flows through an opening in the lower\npart of the city wall.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3201,
@@ -2857,7 +2857,7 @@
       "name": "On the River",
       "description": "North of here you see the miserable buildings of the poor alley.  The\nriver flows west towards the bridge.  The riverbanks are too steep to climb.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3202,
@@ -2878,7 +2878,7 @@
       "name": "On the River",
       "description": "North of here you see the dump.  The river flows from east to west.  The\nriverbanks are too steep to climb.  A bridge passes overhead, connecting the\ndump to the promenade.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3203,
@@ -2899,7 +2899,7 @@
       "name": "On the River",
       "description": "The levee is directly north of here, and a small boat landing for Kate's\nDiner is to the south.  The river flows in an east west direction.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 262148,
       "exits": {
         "north": {
           "to_room": 3049,
@@ -2931,7 +2931,7 @@
       "name": "On the River",
       "description": "You see the warehouse on the northern riverbank.  East of here the river\npasses under the eastern bridge and through the city wall. The banks of the \nlevee are west, in the direction of the current.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3205,
@@ -2952,7 +2952,7 @@
       "name": "On the River",
       "description": "The river enters from a hole in the eastern city wall.  The hole has been\nblocked by several vertically positioned iron bars set into the wall. Overhead\nyou can see the stone buttresses of the eastern bridge.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 5001,
@@ -2974,7 +2974,7 @@
       "name": "Wall Road",
       "description": "Wall road extends north and south along the eastern walls of the city.\nThe east gate is north of you, south is an intersection with a dark alley. You\ncheck to make sure you still have your wallet.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3041,
@@ -2997,7 +2997,7 @@
       "name": "Wall Road",
       "description": "You are walking along the eastern wall of the city, on a road extending \nbetween the east gate and a bridge to the south.  A dark, dirty alley lies west \nof here.  You step carefully around a pool of liquid...who knows what it could \nbe in a place this foul...\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3250,
@@ -3026,7 +3026,7 @@
       "name": "Wall Road",
       "description": "The walls of Midgaard tower above you to the east, keeping the city safe\nfrom its enemies...you hope.  An intersection with a dark alley lies north,\nand a bridge over the Midgaard river is south.  Beyond the bridge wall road \nturns in the concourse.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3251,
@@ -3049,7 +3049,7 @@
       "name": "On the Bridge",
       "description": "You are crossing a strong stone bridge, which spans the Midgaard river.\nBelow you, the river flows into an opening in the city wall, sealed with\nstrong metal bars.  North of you is wall road, south of here the concourse\nloops around the inside of the city walls.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3252,
@@ -3077,7 +3077,7 @@
       "name": "The South Bridge",
       "description": "You are standing on a small, rickety bridge leading from the Midgaard\nCity Dump to the much more attractive promenade of the southern parts of \nMidgaard.  You can smell the stench of the dump to the north, the fresher\nair of the promenade seems preferable.  Below you are the swift-moving \ncurrents of the Midgaard river.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3030,
@@ -3099,7 +3099,7 @@
       "name": "Inside the South Gate of Midgaard",
       "description": "Two strong stone towers surround a heavy wooden gate set into the city wall,\nto guard against the goblins that lurk in the southern forests.  You can exit\nthe city to the south, if you dare, or walk down the concourse to the east\nor west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3129,
@@ -3128,7 +3128,7 @@
       "name": "Outside the South Gate of Midgaard",
       "description": "You are standing outside the strong wooden gate on the southern walls of\nMidgaard.  Guards eye you suspiciously from the two towers on either side of\nthe gate, as they stand watch to protect the city from the goblins of this\nforest.  The trees and goblins of the Miden'nir are south, the gate back to \nMigaard lies north.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3255,
@@ -3151,7 +3151,7 @@
       "name": "Wall Road",
       "description": "You are walking along wall road, just north of the west gate of Midgaard.  \nThe road continues along the western wall to the north, towards an intersection\nwith a busy Clan street.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3258,
@@ -3174,7 +3174,7 @@
       "name": "Wall Road",
       "description": "Wall road intersects with a crowded Clan Road here, filled with shops and\nartisans.  The street stretches off to the east, towards the far wall of the\ncity.  Wall road continues to the north and south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3259,
@@ -3203,7 +3203,7 @@
       "name": "Wall Road",
       "description": "You are walking along wall road, which extends along the inside of the western\nwall of Midgaard.  To the south, you can see an intersection with a crowded\nClan street.  The northwestern corner of the city wall lies ahead to the\nnorth.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3260,
@@ -3226,7 +3226,7 @@
       "name": "The Northwest Corner",
       "description": "You are standing beneath the northwestern corner of the city wall, on a turn\nin wall road.  You can head south, towards the west gate, or east, to the \nnorth gate.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3261,
@@ -3249,7 +3249,7 @@
       "name": "Wall Road",
       "description": "The city walls tower over you as walk down wall road, between the northwestern\ncorner of the wall to the west, and the northern gate of Midgaard to the east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3262,
@@ -3272,7 +3272,7 @@
       "name": "Inside the North Gate of Midgaard",
       "description": "Two small towers surround a strong wooden gate, connected by a small stone\nbridge set with murder holes.  This gate is not as heavily guarded as the \nothers, as the plains outside are safe to travel.  You can leave midgaard to\nthe north, or continues along wall road to the west and east.  A teeming clan\nstreet is visible to the south, and beyond that the graceful spires of the\nTemple of Mota, but there is no way to reach them from here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3268,
@@ -3301,7 +3301,7 @@
       "name": "Wall Road",
       "description": "You are walking along wall road, between the northern gate of the city and the\nnortheastern corner of the city walls.  You can see bloodstains on the road...\nbetter be on guard for thieves.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3264,
@@ -3324,7 +3324,7 @@
       "name": "The Northeast Corner",
       "description": "Wall road turns the corner here, as you pass by the northeastern edge of the\ncity wall.  The north gate lies to your west, and the road south leads to the\neastern gate of Midgaard.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "south": {
           "to_room": 3265,
@@ -3347,7 +3347,7 @@
       "name": "Wall Road",
       "description": "Just south of you is an intersection with a crowded clan street.  The \neastern wall of Midgaard is beside you, and to the north you can see the \nnortheast corner of the city wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3264,
@@ -3370,7 +3370,7 @@
       "name": "Wall Road",
       "description": "Here, wall road meets up with a busy clan street heading off towards the \nwest, and the far wall of the city.  You can smell spices, perfume, freshly\ncured hide, and other strange scents, all mingle together in one heady aroma.\nWall road continues to the north and south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3265,
@@ -3399,7 +3399,7 @@
       "name": "Wall Road",
       "description": "You are near the center of wall road, just north of the east gate of the city.\nTo the north, you can see an intersection with a crowded clan street.\nThe guards at the gate eye you suspiciously from afar.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3266,
@@ -3422,7 +3422,7 @@
       "name": "Outside the North Gate of Midgaard",
       "description": "You stand outside the north gate of the walled city of Midgaard.  A dusty \ntrail is visibile to the north, it stretches around the walls of the city.  \nFurther north are the wide expanses of the northern plains, leading to the \nvillage of Ofcol.  You can return to Midgaard to the south.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3904,
@@ -3445,7 +3445,7 @@
       "name": "On the Concourse",
       "description": "The strong stone walls of Midgaard rise up to the west, keeping evil at bay.\nThe concourse heads towards a bridge to the north, and continues south \nalongside a beautiful park.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3100,
@@ -3468,7 +3468,7 @@
       "name": "On the Concourse near the park",
       "description": "You are walking down the Concoruse, along the western wall of Midgaard.  To\nthe north, the road passes by a beautiful park, to the south, you can see\nthe southwest corner of the city wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3270,
@@ -3491,7 +3491,7 @@
       "name": "On the Concourse at Penny Lane",
       "description": "You are on a road leading around the inner walls of Midgaard.  To the north,\nthe concourse heads towards a bridge into northern Midgaard.  To the south, \nyou can see an intersection with Elm Street.  The quaint paved streets of\nPenny Lane lie west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3104,
@@ -3520,7 +3520,7 @@
       "name": "On the Concourse at Elm Street",
       "description": "The air grows chill as you pass near the Elm Street graveyard.  The walls of\nMidgaard are to the east, and the concourse continues to the north and south.\nTo your west, you see Elm Street at the graveyard entrance.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "north": {
           "to_room": 3272,
@@ -3549,7 +3549,7 @@
       "name": "Clan Road",
       "description": "You are standing on the western end of Clan Road.  The traffic here  \nis light.  This is a quieter section of Midgaard.  You can hear the sound of\nhaggling coming from the east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3302,
@@ -3572,7 +3572,7 @@
       "name": "Clan Road",
       "description": "You are walking along Clan Road.  To the south of you is the money changer.  \nClan Road continues on to the east and the west.  \n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3303,
@@ -3601,7 +3601,7 @@
       "name": "Clan Road",
       "description": "The shops on this stretch of Clan road are long-closed and boarded up.\nNot much traffic passes through this part, as there is nothing to buy.  \n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3314,
@@ -3624,7 +3624,7 @@
       "name": "Clan Road",
       "description": "Noise and light abound on this part of Clan Road.  Clan road continues off\nto the east and west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3315,
@@ -3647,7 +3647,7 @@
       "name": "Clan Road",
       "description": "Clan Road seems to widen here slightly, allowing more traffic to \ntravel through the area.  To the south is another entrance to the busy\npub.  This door is also open wide and spilling forth the sounds of\nhappy patrons.  Clan Road continues to the east and west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3316,
@@ -3676,7 +3676,7 @@
       "name": "Clan Road",
       "description": "You are at the eastern end of Clan Road.  To the east of you, the  \ntall wall around the city looms up before you and casts its shadow on\nyou.  Clan Road continues to the west.  \n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 262144,
       "exits": {
         "east": {
           "to_room": 3266,
@@ -3699,7 +3699,7 @@
       "name": "A Money Changer's Room",
       "description": "A few strategically placed lanterns keep this place well-lit in the \nabsence of any windows.  The room is surprisingly well appointed with  \ntapestries hanging on the walls.  You'd wager your life the moneylender's\nguards are behind them, as there are none here.  The moneylender himself\nworks from behind a large desk, no doubt holding a fortune in gold and silver.\nA smallish sign hangs on the wall, lettered in common.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3302,
@@ -3725,7 +3725,7 @@
       "name": "Grebe's Tavern",
       "description": "Dive.  That's all you can say about this place; its a\ndive.  You step carefully over the dead and/or drunk sailors\non the floor toward the center of the room.  There's no\ndecorations on the wall; they've all been ripped down in anger\nor for use as weapons at one time or another.  Looking around,\nyou search vainly for a clean table to sit at, and then give up.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "south": {
           "to_room": 3026,
@@ -3750,7 +3750,7 @@
       "name": "Andy's Pub",
       "description": "The busy pub is filled with patrons.  People are laughing and singing.\nA minstrel plays his lute in another part of the pub, and a few people\nare even dancing.  Andy, the pubs owner, wanders around and checks to see\nthat the needs of his customers are met.  The bar is to your south.  East\nof you is another section of the pub.  You know that there are rooms to\nbe had somewhere around here...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "east": {
           "to_room": 3356,
@@ -3773,7 +3773,7 @@
       "name": "A Room in the Pub",
       "description": "This part of the pub is filled with dancing and singing.  A wandering\nminstrel is on a chair in a corner with his lute.  A busty red headed\nwoman is standing near him and singing a tale of comedic heroism. Drunk\nmen sit laughing at their tables and busy bar maids weave through the\ncrowd with full mugs and horns of ale and mead.  Another part of the pub\nis located to your west. The bar is to the south.  A set of steps occupy\nin a corner of the room.  They lead up to the inn section of this\nprosperous establishment.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3315,
@@ -3808,7 +3808,7 @@
       "name": "The Bar",
       "description": "A long mahogany bar is set in the back of the pub.  Mugs line a shelf\nbehind the bar.  Bottles of strong, nasty looking liquids decorate one\nof the lower shelves.  A large cask rests on a table behind the bar.  A\nstrong but friendly-looking bartender stands next to the cask polishing\nglasses.  A couple of the bar maids stand in a corner and throw the most\ninviting glances your way.\nA sign is on the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3355,
@@ -3830,7 +3830,7 @@
       "name": "The Bar",
       "description": "A long mahogany bar is set in the back of the pub.  Mugs line a shelf\nbehind the bar.  Bottles of strong, nasty looking liquids decorate one\nof the lower shelves.  A large cask rests on a table behind the bar.  A\nstrong but friendly looking bartender stands next to the cask polishing\nglasses.  A couple of the bar maids stand in a corner and throw the most\ninviting glances your way.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "north": {
           "to_room": 3356,
@@ -3852,7 +3852,7 @@
       "name": "The Inn",
       "description": "You are standing upstairs from Andy's Pub at Andy's Inn.  A few chairs\nand a couple of end tables give the room a `homey' atmosphere.  A large\nstone fireplace burns brightly against one wall and warms the room.  A\nlarge oak desk is nestled in one corner of the room.  A small man with\nwire-framed glasses sits behind the desk working dilligently on his books.\nHe looks up as you enter the room.  He looks at you quizzically.  He is\nprobably waiting for you to ask him for a room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 262152,
       "exits": {
         "down": {
           "to_room": 3356,

@@ -13,7 +13,7 @@
       "name": "Stone Archway",
       "description": "This is a ancient stone archway. Various faces of demons and other grim\npictures are painted onto it. Stone gargoyles and demons glare down at\nyou from atop the arch.\nThere is a bronze plaque above the archway.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 3472,
@@ -41,7 +41,7 @@
       "name": "Ancient Room",
       "description": "You are standing in a large stone room - feels like a crypt.  Ancient murals\nof Hell and punishment cover the walls.  In the middle of the room are stairs\nthat lead down into the darkness.  From the stairway you can smell brimstone\nand sulfur.\nTo the west, there appears to be a shrine.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10401,
@@ -70,7 +70,7 @@
       "name": "Dark Stairway",
       "description": "You are standing at the bottom of long dark stairway.  The smells of brimstone\nand sulfur choke you.  Screams of pain and terror fill the air.\nStone faces carved into the walls seem to laugh at you.\nMaybe this is not such a good idea after all....\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 10404,
@@ -93,7 +93,7 @@
       "name": "Landing",
       "description": "This landing has been scorched as if a large brushfire had swept through it.\nBits of ash and burnt vegetation cover everything.  The walls and floor are\nflawlessly smooth, and the ceiling is covered with carved faces and ancient\nsymbols and runes.\nLarge, black iron gates tower over you to the west.\nYou see a large gateway to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10403,
@@ -122,7 +122,7 @@
       "name": "Gateway to Hell",
       "description": "You stand next to the very gateway of Hell. You are surrounded by \nthe sounds of torture and pain. Screams pierce the air and rattle your\nnerves. Displays of the treats of Hell are in all directions.\nA large black iron gates tower over you to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10416,
@@ -163,7 +163,7 @@
       "name": "Hall of the Damned",
       "description": "This hallway is a monument to the millions of damned souls in Hell.\nThe walls are made up of various body parts and other, unidentifiable\nthings. Many of the faces that make up the wall scream out to you for\nhelp. Their arms desperately grasp at your clothing as you pass.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10415,
@@ -198,7 +198,7 @@
       "name": "Hall of the Damned",
       "description": "This hallway is a monument to the millions of damned souls in Hell.\nThe walls are made up of various body parts and other, unidentifiable\nthings. Many of the faces that make up the wall scream out to you for\nhelp. Their arms desperately grasp at your clothing as you pass.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10414,
@@ -233,7 +233,7 @@
       "name": "Hall of the Damned",
       "description": "This hallway is a monument to the millions of damned souls in Hell.\nThe walls are made up of various body parts and other, unidentifiable\nthings. Many of the faces that make up the wall scream out to you for\nhelp. Their arms desperately grasp at your clothing as you pass.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10413,
@@ -268,7 +268,7 @@
       "name": "Hall of the Damned",
       "description": "This hallway is a monument to the millions of damned souls in Hell.\nThe walls are made up of various body parts and other, unidentifiable\nthings. Many of the faces that make up the wall scream out to you for\nhelp. Their arms desperately grasp at your clothing as you pass.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10412,
@@ -310,7 +310,7 @@
       "name": "Hall of the Damned",
       "description": "This hallway is a monument to the millions of damned souls in Hell.\nThe walls are made up of various body parts and other, unidentifiable\nthings. Many of the faces that make up the wall scream out to you for\nhelp. Their arms desperately grasp at your clothing as you pass.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10411,
@@ -333,7 +333,7 @@
       "name": "Mural of the Dead",
       "description": "You stand before a large mural. The mural depicts mountains of dead\nbodies piled up to the sky. The mural covers the whole north wall from\nfloor to ceiling. You can smell the stench of decaying flesh.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10412,
@@ -356,7 +356,7 @@
       "name": "Living Walls",
       "description": "The walls here actually consist of greying and sinewy flesh - faces, hands,\nbroken bones, feet, and toes jutting from the surface. You hear low moans\nof horror, pain, and sorrow issuing from within.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10413,
@@ -385,7 +385,7 @@
       "name": "Trapped souls",
       "description": "There are many souls trapped behind the walls of this room, almost as though \nthey were trapped beneath the surface of a frozen lake. Even the floor and \nceiling show the screaming faces behind them.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10414,
@@ -414,7 +414,7 @@
       "name": "Tortured Beings",
       "description": "This room is filled with instruments of torture. Beings of all shapes and\nsizes are being brought to the thresholds of pain and beyond. Some are\nbeing sliced into thousands of pieces.  Others are being stretched as though\nthey were made of rubber.  All are caught in an unending play of agony.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10415,
@@ -443,7 +443,7 @@
       "name": "Gluttony",
       "description": "Before you is a room filled with all sorts of food. The smells of pastries and\nhamburger assault your senses. All sorts of food lay everywhere you look.\nCookies, twinkies, steak, prime rib, almost anything you can think of, call\nout to you. You suddenly feel VERY hungry.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10416,
@@ -472,7 +472,7 @@
       "name": "Greed",
       "description": "What luck! A room full of treasure. Gold, diamonds, riches beyond\nimagination! Wait! You suddenly feel as if it were all slowly disappearing.\nSomeone is taking your treasure. They have no right! It is yours! You\nfound it first. Let them go get their own treasures!\nYou see a door to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10417,
@@ -502,7 +502,7 @@
       "name": "Bedroom.",
       "description": "This is a small bedroom. It is well furnished and is a drastic change from\nthe room you just stepped out of. A bed stands against the far wall.\nUpon the headboard of the bed are carved two cherub-like figures, with the\nthe words 'DEE & DEE' written below them.\nThe door to the bedroom is to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 10416,
@@ -520,7 +520,7 @@
       "name": "Ancient Shrine",
       "description": "This is an ancient, abandoned shrine of some unknown god. It has been\nvandalized and torn apart. What used to be the shrine has been reduced to\na large pile of stone and other debris. Various runes and demonic faces\nhave been spray-painted on the walls and floor.  Nailed to the ceiling are\nan assortment of skeletons.  All seem to have been dead for a very long\ntime. All surfaces of the room are covered with dried blood and dust. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10402,
@@ -537,7 +537,7 @@
       "name": "Room full of Body Parts.",
       "description": "The room is filled with piles of arms, legs, heads, and other, unidentifiable\nparts of many different creatures. The stench is overwhelming. The body\nparts seem to wiggle and scream as you get closer. They are still alive!!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10420,
@@ -560,7 +560,7 @@
       "name": "Fountain of Blood.",
       "description": "This room is made of a rough black stone. The walls seem to ooze black\nsludge. In the middle of the room stands a stone fountain of a demon spitting\nblood.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10430,
@@ -583,7 +583,7 @@
       "name": "Bloody Stairway.",
       "description": "You are standing on a very slippy stairway. The walls and stairs are\ncovered with blood and gore. Pieces of goo and ooze drip from the\nceiling overhead. You almost slip a couple times on the stairway.\nThe stench here is overwhelming.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 10409,
@@ -606,7 +606,7 @@
       "name": "Ancient Room",
       "description": "This is a very old and dusty room. It looks empty except for a few shards\nor bone and flesh.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10409,
@@ -629,7 +629,7 @@
       "name": "Room of Lost Souls",
       "description": "This looks like a waiting room or sorts. Dust and cobwebs are everywhere.\nWooden benches line the walls. A digital number sign is posted on the wall.\nIt currently reads, 'Now Serving Number 1'.\nA ticket dispenser is bolted to the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10408,
@@ -663,7 +663,7 @@
       "name": "Room of Lost Souls",
       "description": "This looks like a waiting room or sorts. Dust and cobwebs are everywhere.\nWooden benches line the walls. A digital number sign is posted on the wall.\nIt currently reads, 'Now Serving Number 1'.\nA ticket dispenser is bolted to the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10407,
@@ -697,7 +697,7 @@
       "name": "Pit of Fire",
       "description": "You enter a plain stone room with a large fire pit in the center of it.\nAs you look closer at the pit you realize that hundreds of people are being\nburned inside it. They Scream out to you. The noise is deafening. Several\nminor imps and workers push more people into the pit, whistling while\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 10406,
@@ -726,7 +726,7 @@
       "name": "Blackened Hallway",
       "description": "This dark hallway looks as if it was made by a lavaworm...All the surfaces\nin it are melted and burnt. The smell of brimstone and sulfur fill the air.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10405,
@@ -755,7 +755,7 @@
       "name": "Blackened Hallway",
       "description": "This dark hallway looks as if it was made by a lavaworm...All the surfaces\nin it are melted and burnt. The smell of brimstone and sulfur fill the air.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10428,
@@ -778,7 +778,7 @@
       "name": "Blood Room",
       "description": "You enter the room and are immediately assaulted by the smell of rotting\nflesh and blood. The walls are covered with the crimson fluid as it runs\ndown from the ceiling.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10429,
@@ -801,7 +801,7 @@
       "name": "Living Walls",
       "description": "The walls here actually consist of greying and sinewy flesh - faces, hands,\nbroken bones, feet, and toes jutting from the surface. You hear low moans\nof horror, pain, and sorrow issuing from the walls.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10419,
@@ -830,7 +830,7 @@
       "name": "Skeleton Factory",
       "description": "This is probably where they make all the skeletons for nightmares and\ngraveyards. The room is simply littered with bones. A poster on the\nwall reads, \"Remember ....the head bone is connected to the neck bone..\"\nThe poster continues on...but it seems to get very technical and boring..\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10420,
@@ -853,7 +853,7 @@
       "name": "Bottom of Stairway",
       "description": "You are standing at the bottom of a bloody stairway. Or at least you\nthought it was a stairway. It seems to be just a painting the the wall.\nThis roughly carved room with evil runes carved  in to the stone floor.\nThere is a hallway to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10432,
@@ -870,7 +870,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hall continues to the south and the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10442,
@@ -893,7 +893,7 @@
       "name": "Cell",
       "description": "The cell is very damp and very musty. The walls are covered with moisture\nand dirt. The smell of urine is very potent here.\nThe steel bars to the cell are to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10443,
@@ -911,7 +911,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway continues to the east and the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10435,
@@ -934,7 +934,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nTo the south you see the steel bars of a cell.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10436,
@@ -964,7 +964,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the south and the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10446,
@@ -987,7 +987,7 @@
       "name": "Cell",
       "description": "The cell is very damp and very musty. The walls are covered with moisture\nand dirt. The smell of urine is very potent here.\nThe steel bars to the cell are to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10447,
@@ -1005,7 +1005,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the west and the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10439,
@@ -1028,7 +1028,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10440,
@@ -1065,7 +1065,7 @@
       "name": "Cell",
       "description": "The cell is very damp and very musty. The walls are covered with moisture\nand dirt. The smell of urine is very potent here.\nThe steel bars to the cell are to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 10439,
@@ -1083,7 +1083,7 @@
       "name": "Hidden Room",
       "description": "This is a long forgotten room. Ancient torture equipment stands around\ncollecting dust. Most of this stuff was probably replace with modern\nhi tech torture devices and for sentimental reasons wasn't thrown away.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10451,
@@ -1100,7 +1100,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the north and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10432,
@@ -1123,7 +1123,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the east and west.\nThe bars to a cell are to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10433,
@@ -1153,7 +1153,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10434,
@@ -1176,7 +1176,7 @@
       "name": "Cell",
       "description": "The cell is very damp and very musty. The walls are covered with moisture\nand dirt. The smell of urine is very potent here.\nThe steel bars to the cell are to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10435,
@@ -1194,7 +1194,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the north and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10436,
@@ -1217,7 +1217,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the east and west.\nYou see bars to a cell to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10437,
@@ -1247,7 +1247,7 @@
       "name": "Stone Hall",
       "description": "This is a roughly carved hallway. The air here is damp and musty. You \nhear the sound of something dripping in the distance. Your footsteps\necho down the hall as you walk. There is a strange and deathly silence\nthat fills these halls...\nThe hallway contines to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10438,
@@ -1270,7 +1270,7 @@
       "name": "Cell",
       "description": "The cell is very damp and very musty. The walls are covered with moisture\nand dirt. The smell of urine is very potent here.\nThe steel bars to the cell are to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10439,
@@ -1288,7 +1288,7 @@
       "name": "Hot Stairs",
       "description": "You are standing on a long stairway. The air around you is heavy and hot.\nThe stone walls are hot to the touch and your sweat sizzles as it hits the\nground. Cool air flows out from a crack in the wall to the east.\nThe smell of brimstone and smoke is all around you.\nThe stairs continue down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 10439,
@@ -1311,7 +1311,7 @@
       "name": "Crack in Wall",
       "description": "This is a rather large crack in the wall. On closer inspection it appears to be\na passageway that was closed off long ago. It was probably reopened by\nan earthquake or something.\nAn ancient passageway continues to the north.\nHot gusts of air come from the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10441,
@@ -1334,7 +1334,7 @@
       "name": "Stone Arch",
       "description": "Before you stands the a large stone arch decorated with many runes you\ncannot decifer. It looks as though it has been closed up for a long time.\nTo the east is a hallway of fire.\nTo the south you see a large metal door with the words, 'FOREMAN'\nwritten on the door.\nThere is a dark stairway down in the corner of the room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10453,
@@ -1363,7 +1363,7 @@
       "name": "Hall of Fire",
       "description": "You are standing in a hallway made of fire. The walls are ablaze with\nyellow and blue flames. The smell of the hot air and sulfur burn your\nlungs as you inhale, and dry your mouth as you exhale. The stone floor\nburns at your feet and hungrily drinks up every drop of sweat as they\nfall from your body.\nThe hall of fire continues to the east.\nYou see a stone archway to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10454,
@@ -1386,7 +1386,7 @@
       "name": "Hall of Fire",
       "description": "You are standing in a hallway made of fire. The walls are ablaze with\nyellow and blue flames. The smell of the hot air and sulfur burn your\nlungs as you inhale, and dry your mouth as you exhale. The stone floor\nburns at your feet and hungrily drinks up every drop of sweat as they\nfall from your body.\nThe hall of fire continues to the south and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10464,
@@ -1409,7 +1409,7 @@
       "name": "Construction Area",
       "description": "This part of Hell seems to be under repair. Workers are fixing and replacing\nwhat look like various gas mains and other pipework. You can see many\ngas lines and electrical conduits within the dismantled walls. Partially\nhidden fire sprinklers are being installed in the ceilings.\nYou see more contruction to the east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10456,
@@ -1432,7 +1432,7 @@
       "name": "Construction Area",
       "description": "This part of Hell seems to be under repair. Workers are fixing and replacing\nwhat look like various gas mains and other pipework. You can see many\ngas lines and electrical conduits within the dismantled walls. Partially\nhidden fire sprinklers are being installed in the ceilings.\nYou see more contruction to the east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10457,
@@ -1455,7 +1455,7 @@
       "name": "Construction Area",
       "description": "This part of Hell seems to be under repair. Workers are fixing and replacing\nwhat look like various gas mains and other pipework. You can see many\ngas lines and electrical conduits within the dismantled walls. Partially\nhidden fire sprinklers are being installed in the ceilings.\nYou see more contruction to the south and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10467,
@@ -1478,7 +1478,7 @@
       "name": "Hall of Fire",
       "description": "You are standing in a hallway made of fire. The walls are ablaze with\nyellow and blue flames. The smell of the hot air and sulfur burn your\nlungs as you inhale, and dry your mouth as you exhale. The stone floor\nburns at your feet and hungrily drinks up every drop of sweat as they\nfall from your body.\nThe hall of fire continues to the east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10459,
@@ -1501,7 +1501,7 @@
       "name": "Hall of Fire",
       "description": "You are standing in a hallway made of fire. The walls are ablaze with\nyellow and blue flames. The smell of the hot air and sulfur burn your\nlungs as you inhale, and dry your mouth as you exhale. The stone floor\nburns at your feet and hungrily drinks up every drop of sweat as they\nfall from your body.\nThe hall of fire continues to the west.\nA room full of fire pits lies to the east.\nA wall of fire crackles merrily to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10460,
@@ -1530,7 +1530,7 @@
       "name": "Fire Pits of Hades",
       "description": "This room is filled with many small fire pits. Countless damned souls are\nbeing burnt and roasted within the the white flames that erupt from the\nmany pits. Wailing and screams of pain chill your bones in this hot room.\nTo the south you see a lake of fire.\nA fire hall lies to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10470,
@@ -1553,7 +1553,7 @@
       "name": "Fire Mural",
       "description": "Apon all the walls of this room is an enormous mural. Pictures of burning\nbodies and tortured souls seem to be the main theme of the art. Bright reds\nand hot blues are enphasized throughout the mural. As you stare at it the\ncharacters within it seem to move and struggle in pain. The hot air around\nyou smells of sulfur and methane. To the south you see a stone hallway.\nHot air blows in at you from the doorway. The air stirs up the methane and\nsteals your breath. You choke and gag...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10471,
@@ -1570,7 +1570,7 @@
       "name": "Foreman's Office",
       "description": "You stand in a crudly constructed office. Blueprints and change orders are\nscattered everywhere. A metal filing cabinet stands in the corner. Before\nyou stands a stone table covered with blueprints. On the wall is a \nconstruction plaque that reads, \"4th DEMONsion Contruction\"\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10452,
@@ -1587,7 +1587,7 @@
       "name": "Cold Stairway",
       "description": "You stand apon a cold stone stairway. Hot air blows down on you from\nhigher up the stairwell. From below you a freezing gusts bite at your skin\nand make you shiver. Icicles drip slowly from the ceiling onto the frosted\nstone floor.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 10452,
@@ -1610,7 +1610,7 @@
       "name": "Hall of Fire",
       "description": "You are standing in a hallway made of fire. The walls are ablaze with\nyellow and blue flames. The smell of the hot air and sulfur burn your\nlungs as you inhale, and dry your mouth as you exhale. The stone floor\nburns at your feet and hungrily drinks up every drop of sweat as they\nfall from your body.\nThe hall of fire continues to the north and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10454,
@@ -1633,7 +1633,7 @@
       "name": "Construction Area",
       "description": "This part of Hell seems to be under repair. Workers are fixing and replacing\nwhat look like various gas mains and other pipework. You can see many\ngas lines and electrical conduits within the dismantled walls. Partially\nhidden fire sprinklers are being installed in the ceilings.\nYou see more contruction to the north and east.\nA hall of fire is to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10455,
@@ -1662,7 +1662,7 @@
       "name": "Construction Area",
       "description": "This part of Hell seems to be under repair. Workers are fixing and replacing\nwhat look like various gas mains and other pipework. You can see many\ngas lines and electrical conduits within the dismantled walls. Partially\nhidden fire sprinklers are being installed in the ceilings.\nYou see more contruction to the east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10467,
@@ -1685,7 +1685,7 @@
       "name": "Construction Area",
       "description": "This part of Hell seems to be under repair. Workers are fixing and replacing\nwhat look like various gas mains and other pipework. You can see many\ngas lines and electrical conduits within the dismantled walls. Partially\nhidden fire sprinklers are being installed in the ceilings.\nYou see more contruction to the north and west.\nA hall of fire lies to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10457,
@@ -1714,7 +1714,7 @@
       "name": "Hall of Fire",
       "description": "You are standing in a hallway made of fire. The walls are ablaze with\nyellow and blue flames. The smell of the hot air and sulfur burn your\nlungs as you inhale, and dry your mouth as you exhale. The stone floor\nburns at your feet and hungrily drinks up every drop of sweat as they\nfall from your body.\nThe hall of fire continues to the north.\nThere are loud noises of contruction to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10458,
@@ -1737,7 +1737,7 @@
       "name": "Wall of Fire",
       "description": "This large room is cut in into sections by small walls of fire. The walls\nto move slowly changing the layout of the room. As you examine the room\nfurther you notice various posts around the room to which people are\nchained. The firewalls seem to move in patterns that leave the poor\npeople directly in the path of the oncoming fire. The walls seem to creep\never so slowly towards them. The people blister and scream as the fire gets\ncloser. Their deaths seem like minutes of agony and pain, and even as they\nburst into flames they seem incapable of grasping the merciful attention of\ndeath...\nTo the north you see a hall of fire.\nTo the east you see a lake of fire.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10459,
@@ -1760,7 +1760,7 @@
       "name": "Lake of Fire",
       "description": "You stand one the shore of a large lake of fire. The smoke and heat fill this\nenormous room. You can barely make out shapes of something moving\nwithing the dancing flames of blue and gold..\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10460,
@@ -1789,7 +1789,7 @@
       "name": "Hot Hall",
       "description": "The stone floor below you heats your feet uncomfortably. The ceiling and\nwalls glow a dull red and you sweat uncomfortably under the heat.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10461,
@@ -1812,7 +1812,7 @@
       "name": "Icy Landing",
       "description": "This landing is made entirely of ice. Its walls bear carvings of battle and\nhunting scenes in bas-relief. These carved scenes show ice devils slaying\nangels, hunting mortals and other gruesome pictures.\nTo the east you see a room of ice.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10541,
@@ -1829,7 +1829,7 @@
       "name": "Ice Room",
       "description": "You are standing in a room of ice. Icicles of every size hang from the\nceiling. Some shake with every sound. Your reflection off the ice walls\nseems to dance and wiggle as you move about.\nTo the south you see more of the frozen room.\nTo the west you see an Icy landing.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10483,
@@ -1852,7 +1852,7 @@
       "name": "Meat Locker",
       "description": "You are standing in what looks like a meat locker. Rows of beef and other\nmeats hang from large steel hooks. You also notice that many of the\nthings hanging from the hooks are corpses of people. They reach out to\nyou as you pass them as if to plead for help from their frozen mouths. \nThe meat locker continues to the east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10475,
@@ -1875,7 +1875,7 @@
       "name": "Meat Locker",
       "description": "Rows of beef and other meats hang from large steel hooks. You notice that \nmany of the things hanging from the hooks are corpses of people. They \nreach out to you as you pass them as if to plead for help from their frozen \nmouths. \nThe meat locker continues to the south and west.\nThere is a freezer door to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10476,
@@ -1899,7 +1899,7 @@
       "name": "Penguin Room",
       "description": "This is what appears to be a replica of an iceberg. Penguins waddle about\nthe room pecking at many poor souls half trapped in the icy floor. You\nseem to be outside, as the walls are painted to seem as if you are standing\non a vast icy slab with nothing but ocean around you. \nThe iceberg continues to the south and east.\nThere is a freezer door to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10477,
@@ -1929,7 +1929,7 @@
       "name": "Penguin Room",
       "description": "This is what appears to be a replica of an iceberg. Penguins waddle about\nthe room pecking at many poor souls half trapped in the icy floor. You\nseem to be outside, as the walls are painted to seem as if you are standing\non a vast icy slab with nothing but ocean around you. \nThe iceberg continues to the south and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10487,
@@ -1952,7 +1952,7 @@
       "name": "Ice Creamery",
       "description": "You appear to be standing in a ice-creamery. Many ice-cream workers run\nfrantically around tending to the various machines.\nThe factory continues to the east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10479,
@@ -1975,7 +1975,7 @@
       "name": "Ice Creamery",
       "description": "You appear to be standing in a ice-creamery. There seems to be a\ngroup of people here shouting into containers and then quickly covering \nthem. How odd...\nThe factory continues to the south and west.\nThere is a steel door to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10480,
@@ -2005,7 +2005,7 @@
       "name": "White Marble Hall",
       "description": "You are standing in a white marble hallway. It is dry and clean. Many\nportraits of demons and devils in business suits adorn the walls on either\nside of you.\nThe hall continues to the south.\nTo the west is a steel door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10490,
@@ -2029,7 +2029,7 @@
       "name": "Refrigerator Room",
       "description": "This room is filled with giant refrigerators. All of them have no doors and\ntheir contents have spilled onto the floor.\nThe only exit is east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10482,
@@ -2046,7 +2046,7 @@
       "name": "Ice Room",
       "description": "You are standing in a room of ice. Icicles of every size hang from the\nceiling. Some shake with every sound. Your reflection off the ice walls\nseems to dance and wiggle as you move about.\nTo the north and east you see more of the frozen room.\nTo the west you see a room full of refrigerators.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10541,
@@ -2075,7 +2075,7 @@
       "name": "Ice Room",
       "description": "You are standing in a room of ice. Icicles of every size hang from the\nceiling. Some shake with every sound. Your reflection off the ice walls\nseems to dance and wiggle as you move about.\nTo the north and west you see more of the frozen room.\nTo the east you see a freezer door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10473,
@@ -2105,7 +2105,7 @@
       "name": "Meat Locker",
       "description": "You stand in a large meat locker. Chunks of meat hang on the wall and \nlarger corpses hang from steel hooks. Frozen blood and other \nunrecognizable pieces are littered on the floor.\nThe meat locker continues to the north and east.\nThere is a freezer door to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10474,
@@ -2135,7 +2135,7 @@
       "name": "Meat Locker",
       "description": "Rows of beef and other meats hang from large steel hooks. \nThe meat locker continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10475,
@@ -2158,7 +2158,7 @@
       "name": "Penguin Room",
       "description": "This is what appears to be a replica of an iceberg. Penguins waddle about\nthe room pecking at many poor souls half trapped in the icy floor. You\nseem to be outside, as the walls are painted to seem as if you are standing\non a vast icy slab with nothing but ocean around you. \nThe iceberg continues to the north and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10476,
@@ -2181,7 +2181,7 @@
       "name": "Penguin Room",
       "description": "This is what appears to be a replica of an iceberg. Penguins waddle about\nthe room pecking at many poor souls half trapped in the icy floor. You\nseem to be outside, as the walls are painted to seem as if you are standing\non a vast icy slab with nothing but ocean around you. \nThe iceberg continues to the north and west.\nYou can hear sounds of machinery to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10477,
@@ -2204,7 +2204,7 @@
       "name": "Ice-Creamery",
       "description": "You walk into part of an ice-cream factory. Many different types of\nice-cream and other deserts are made by these machines. Above one\nof the machines a sign reads, 'Eye Spleen I Screamery'.\nThe factory continues to the north and east.\nYou can hear sounds of penguins to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10478,
@@ -2233,7 +2233,7 @@
       "name": "Ice-Creamery",
       "description": "You stand amidst dozens of ice-cream machines. Workers rush about\nfor machine to machine, adjusting dials and checking gauges.\nThe factory continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10479,
@@ -2256,7 +2256,7 @@
       "name": "Marble Hall",
       "description": "You are walking down a white marble hallway. Large portraits of demons\nand devils adorn the walls on either side of you. As you look again you\nrealize that they aren't demons and devils after all, but lawyers....well ok...\ndepends on your point of view...\nThe hallway continues to the north.\nThere is an office to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10480,
@@ -2279,7 +2279,7 @@
       "name": "Records Hall",
       "description": "This Hallway is actually an enourmous records library. Millions of records\nare kept here detailing the status of peoples lives. These are confidential\nfiles and only authorized personnel are allowed to view them.\nThe records room continues to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10492,
@@ -2296,7 +2296,7 @@
       "name": "Records Hall",
       "description": "This Hallway is actually an enourmous records library. Millions of records\nare kept here detailing the status of peoples lives. These are confidential\nfiles and only authorized personnel are allowed to view them.\nThe records room continues to the east and west.\nThere is another hallway to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10493,
@@ -2325,7 +2325,7 @@
       "name": "Records Hall",
       "description": "This Hallway is actually an enourmous records library. Millions of records\nare kept here detailing the status of peoples lives. These are confidential\nfiles and only authorized personnel are allowed to view them.\nThe records room continues to the east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10494,
@@ -2348,7 +2348,7 @@
       "name": "Records Hall",
       "description": "This Hallway is actually an enourmous records library. Millions of records\nare kept here detailing the status of peoples lives. These are confidential\nfiles and only authorized personnel are allowed to view them.\nThe records room continues to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 10493,
@@ -2365,7 +2365,7 @@
       "name": "Small Altar",
       "description": "This is the private prayer room of the high priest. a small altar stands\nagainst the west wall. Evil symbols and pictures are plastered everywhere.\nThe new propaganda posters for Hell are posted behind the altar.\nYou see a blackened hall to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10496,
@@ -2387,7 +2387,7 @@
       "name": "Blackened Hall",
       "description": "This hall looks as if it was burned out recently. The walls are charred and\nsmoking. Ashes and bits of burnt timber crunch under your feet as you \nwalk down the hall. A sign on the wall reads, 'No Non-smoking Please'. \nThe hall continues to the south.\nThere is a stone door to the east and a prayer room to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10497,
@@ -2417,7 +2417,7 @@
       "name": "Office of the High Priest",
       "description": "This is the office of the High Priest of Hell. A black stone desk stands\nbefore you. The office is lavishly furnished with gold, gems and many\nantiques. A large portrait of a demons face is on the wall behind his desk.\nYou see a stone door to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 10496,
@@ -2435,7 +2435,7 @@
       "name": "Blackened Hall",
       "description": "This hall looks as if it was burned out recently. The walls are charred and\nsmoking. Ashes and bits of burnt timber crunch under your feet as you \nwalk down the hall. A sign on the wall reads, 'No Non-smoking Please'. \nThe hall continues to the east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10499,
@@ -2458,7 +2458,7 @@
       "name": "Blackened Hall",
       "description": "This hall looks as if it was burned out recently. The walls are charred and\nsmoking. Ashes and bits of burnt timber crunch under your feet as you \nwalk down the hall. A sign on the wall reads, 'No Non-smoking Please'.\nThe hall continues to the west.\nA glass door is to the east. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10500,
@@ -2482,7 +2482,7 @@
       "name": "Administration of Hell",
       "description": "This is the entrance to the Administration offices of Hell. The secretaries\ndesk sits quietly in the middle of the room. To the south is a metal door\nlabeled, 'Authorized Personnel Only'\nTo the west is a large glass door.\nThere is a stairway down on the opposite side of the room.\nThere is a sign posted next to the stairs.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10490,
@@ -2525,7 +2525,7 @@
       "name": "Halls of Judgement",
       "description": "You are standing in the Halls of Judgement. There are many alcoves \nwhich contain different methods of torture. Each more grotesque than\nthe one before it. On the wall a plaque reads, 'If you are here...You are\nGuilty...You have been judged...sound fair? Too bad..'\nThe hall continues to the east.\nThe Courtroom is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10502,
@@ -2548,7 +2548,7 @@
       "name": "Halls of Judgement",
       "description": "You are standing in the Halls of Judgement. There are many alcoves \nwhich contain different methods of torture. Each more grotesque than\nthe one before it. \nThe hall continues to the east and west.\nThe hall of records is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10492,
@@ -2577,7 +2577,7 @@
       "name": "Halls of Judgement",
       "description": "You are standing in the Halls of Judgement. There are many alcoves \nwhich contain different methods of torture. Each more grotesque than\nthe one before it. \nThe hall continues to the east and west.\nThe Office of Complaints is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10504,
@@ -2606,7 +2606,7 @@
       "name": "Halls of Judgement",
       "description": "You are standing in the Halls of Judgement. There are many alcoves \nwhich contain different methods of torture. Each more grotesque than\nthe one before it. \nThe hall continues to the east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10505,
@@ -2629,7 +2629,7 @@
       "name": "Halls of Judgement",
       "description": "You are standing in the Halls of Judgement. There are many alcoves \nwhich contain different methods of torture. Each more grotesque than\nthe one before it. \nThe hall continues to the east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10506,
@@ -2652,7 +2652,7 @@
       "name": "Blackened Hall",
       "description": "This hall looks as if it was burned out recently. The walls are charred and\nsmoking. Ashes and bits of burnt timber crunch under your feet as you \nwalk down the hall. A sign on the wall reads, 'No Non-smoking Please'.\nThere are exits in all directions.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10496,
@@ -2687,7 +2687,7 @@
       "name": "Blackened Hall",
       "description": "This hall looks as if it was burned out recently. The walls are charred and\nsmoking. Ashes and bits of burnt timber crunch under your feet as you \nwalk down the hall. A sign on the wall reads, 'No Non-smoking Please'.\nThe hallway continues to the east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10508,
@@ -2710,7 +2710,7 @@
       "name": "Blackened Hall",
       "description": "This hall looks as if it was burned out recently. The walls are charred and\nsmoking. Ashes and bits of burnt timber crunch under your feet as you \nwalk down the hall. A sign on the wall reads, 'No Non-smoking Please'.\nThe hallway continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10498,
@@ -2733,7 +2733,7 @@
       "name": "Stairs to the Abyss",
       "description": "These dark stairs are made out of the bones of the damned. They rattle\nsoftly as you tread apon them as if to cry out in protest. The air is filled\nwith the wailing of lost souls and the blood curdling screams of the\npunished.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "down": {
           "to_room": 10518,
@@ -2750,7 +2750,7 @@
       "name": "Maintenance Walkway",
       "description": "This is a maintence accessway. You walk on a metal catwalk hundreds of \nfeet above the floor. The catwalk sways unsteadily as you walk on it.\nThe catwalk continues to the south.\nTo the north is a steel door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10500,
@@ -2774,7 +2774,7 @@
       "name": "Court Room",
       "description": "This is the Courts of Hell. Here you are convicted, sentenced and punished.\nAnd no...you don't get a trial. You don't deserve one. The courtroom is\nfilled with spectators and jury members. They seem to have no real reason\nto be here since there isn't going to be a trial. They jeer and boo you as you\nstand in the middle of the courtroom.\nTo the north is the Halls of Judgement.\nBehind the judges bench is a wooden door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10501,
@@ -2797,7 +2797,7 @@
       "name": "Lawyers Office",
       "description": "As you look around you, you realize you've entered a lawyers office. Now\nyou know you are in Hell....Everything in this office seems to be made of\nsnakeskin. This is the only lawyers office in Hell, so if you don't  like them\nyou're out of luck. But then again...if you are in Hell...you must've run\nout of luck a while ago.\nTo the east is the Office of Complaints.\nTo the south you see a courtyard.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10513,
@@ -2820,7 +2820,7 @@
       "name": "Office of Complaints",
       "description": "This is a relatively small office. There is a large hole in the wall where a \nclerk usually sits and takes complaints about Hell. As you peek behind\nthe counter you see a large paper shredder and alot of shredded complaints.\na sign over the clerks desk reads, 'Hours: 12:00am - 12:01am'\nTo the west is a lawyers office.\nTo the north you see the Halls of Judgement.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10503,
@@ -2843,7 +2843,7 @@
       "name": "Pawn Shop",
       "description": "You are standing in Hiramoto's Buy & Sell. This poor bastard has\nbeen damned to Hell to serve the public for eternity. He will buy most\nanything you have, since business is slow. Not many people visit\nHell. The store is filled with worthless junk. Piles of aluminum balls,\nand bottle cap collections fill the corners of the room. Junk of\nall kinds is scattered about the store.\nTo the east you see the Mall from Hell.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10515,
@@ -2860,7 +2860,7 @@
       "name": "Hallway of The Mall from Hell",
       "description": "This is definitely the Mall from Hell...there are no stores!\nOnly in Hell would they have a mall with no stores.\nTo the east you see the Mall from Hell.\nTo the west you see Hiramoto's Buy & Sell.\nThe hall continues to the east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10516,
@@ -2889,7 +2889,7 @@
       "name": "Hallway of The Mall from Hell",
       "description": "This is definitely the Mall from Hell...there are no stores!\nOnly in Hell would they have a mall with no stores.\nTo the north you see a blackened hallway.\nTo the east you see the office of Big Mouth.\nThe hallway continues to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10506,
@@ -2918,7 +2918,7 @@
       "name": "The Office of Big Mouth",
       "description": "This is the office of Big Mouth, head demon of Hell's Administration.\nThe room is decorated posters of naked women and autographed pictures\nof famous tortured souls. Behind a large oaken desk sleeps Big Mouth.\nThis mouth looks large enough to step into if it were open. You wonder\nwhat this guy eats...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 10516,
@@ -2942,7 +2942,7 @@
       "name": "Stairs to the Abyss",
       "description": "These dark stairs are made out of the bones of the damned. They rattle\nsoftly as you tread apon them as if to cry out in protest. The air is filled\nwith the wailing of lost souls and the blood curdling screams of the\npunished.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "down": {
           "to_room": 10527,
@@ -2959,7 +2959,7 @@
       "name": "Maintenance Walkway",
       "description": "This is a maintence accessway. You walk on a metal catwalk hundreds of \nfeet above the floor. The catwalk sways unsteadily as you walk on it.\nThe catwalk continues to the east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10520,
@@ -2982,7 +2982,7 @@
       "name": "Maintenance Walkway",
       "description": "This is a maintence accessway. You walk on a metal catwalk hundreds of \nfeet above the floor. The catwalk sways unsteadily as you walk on it.\nThe catwalk continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10510,
@@ -3005,7 +3005,7 @@
       "name": "Judge's Chambers",
       "description": "This is the private chambers of the High Judge of Hell. He has a cushy job\nand his office reflects that. Golden torches light the walls with dancing\nblue and yellow flames. The judge's black crystal desk sparkles in the \ntorchlight.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 10511,
@@ -3022,7 +3022,7 @@
       "name": "Courtyard",
       "description": "This courtyard is barren and neglected. Small weeds grow up in between\nthe concrete slabs. An old defunct fountain sputters with a grey-brown\nooze.\nA lawyers office is to the north.\nThe courtyard continues to the east and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10512,
@@ -3051,7 +3051,7 @@
       "name": "Courtyard",
       "description": "This courtyard is barren and neglected. Small weeds grow up in between\nthe concrete slabs. An old defunct fountain sputters with a grey-brown\nooze.\nThe courtyard continues to the west and south.\nStanley's Magical Steeds is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10524,
@@ -3080,7 +3080,7 @@
       "name": "Stanley's Magical Steeds",
       "description": "This is the shop of Stanly. He used to be an old mage selling cursed\ntrinkets at the town of Solace. He has recently set up shop in Hell selling\nmagical figurines. Each figurine is in the shape of some sort of steed.\nSome are recognizable and some are not. Rumor has it that Stanley made\na deal with a devil....so I guess his lease is up in seven years.....\nA courtyard is to the west.\nTo the south you see the Mall from Hell.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10534,
@@ -3103,7 +3103,7 @@
       "name": "Hallway of The Mall from Hell",
       "description": "This is definitely the Mall from Hell...there are no stores!\nOnly in Hell would they have a mall with no stores.\nThe hallway continues to the north and south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10515,
@@ -3126,7 +3126,7 @@
       "name": "Inside Big Mouth's Stomach",
       "description": "You are standing inside Big Mouth's stomach. It is roomy in here. Small\nanimals and other odds and ends lie about the stomach. Is that a dragon  \nyou see? Nah...couldn't be...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 10517,
@@ -3144,7 +3144,7 @@
       "name": "Stairs to the Abyss",
       "description": "These dark stairs are made out of the bones of the damned. They rattle\nsoftly as you tread apon them as if to cry out in protest. The air is filled\nwith the wailing of lost souls and the blood curdling screams of the\npunished.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "down": {
           "to_room": 10536,
@@ -3161,7 +3161,7 @@
       "name": "Reactor Control Room",
       "description": "This is the reactor control room of Hell. From here the workers control\nthe main reactor and power supply for all of Hell and the abyss. Workers\nstroll back and forth, from station to station monitoring the reactor core.\nA large glass window looks out onto the reactor floor below.\nThere are some stairs down to the reactor floor to the south.\nThere is a maintenance room to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10529,
@@ -3184,7 +3184,7 @@
       "name": "Maintenance Room",
       "description": "You are standing in the primary maintenance room of Hell. Tools of all\nshapes and sizes are neatly hung on the walls, each with its own painted-on\nsilhouette behind it.\nTo the west is the reactor control room.\nTo the east is the break room.\nTo the north is a maintenance walkway.\nTo the south is the secondary control room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10519,
@@ -3219,7 +3219,7 @@
       "name": "Break Room",
       "description": "This is the break room for the maintenance workers. tables are filled with\ndonuts and coffee. As a cruel joke, the cheif engineer has posted his guard\ndogs to guard the room so that no one can take a break.\nTo the west is the primary maintenance room.\nTo the south is the chief engineers office.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 10540,
@@ -3242,7 +3242,7 @@
       "name": "Hell's Kitchen",
       "description": "Welcome to Hell's kitchen, where everything is delicious....you just can't\nhave any....This is where the many foods of the world of Farside are made.\nThe chefs are usually very busy, but they always have extra time to torture\na guest....\nTo the east is a courtyard.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10532,
@@ -3259,7 +3259,7 @@
       "name": "Courtyard",
       "description": "This courtyard is barren and neglected. Small weeds grow up in between\nthe concrete slabs. An old defunct fountain sputters with a grey-brown\nooze.\nThe courtyard continues to the north and east.\nYou see a kitchen to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10522,
@@ -3288,7 +3288,7 @@
       "name": "Courtyard",
       "description": "This courtyard is barren and neglected. Small weeds grow up in between\nthe concrete slabs. An old defunct fountain sputters with a grey-brown\nooze.\nThe courtyard continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10523,
@@ -3311,7 +3311,7 @@
       "name": "Hallway of The Mall from Hell",
       "description": "This is definitely the Mall from Hell...there are no stores!\nOnly in Hell would they have a mall with no stores.\nThe hallway continues to the east.\nStanley's magic steeds are to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10524,
@@ -3334,7 +3334,7 @@
       "name": "Hallway of The Mall from Hell",
       "description": "This is definitely the Mall from Hell...there are no stores!\nOnly in Hell would they have a mall with no stores.\nThe hallway continues to the north and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10525,
@@ -3357,7 +3357,7 @@
       "name": "Stairs to the Abyss",
       "description": "These dark stairs are made out of the bones of the damned. They rattle\nsoftly as you tread apon them as if to cry out in protest. The air is filled\nwith the wailing of lost souls and the blood curdling screams of the\npunished. You can't seem to find the Abyss...you seem to recall a seeing a\nsign....now what did it say again?......\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 13,
       "exits": {},
       "extra_descriptions": [],
       "area": 10400
@@ -3367,7 +3367,7 @@
       "name": "Inside the Reactor Core",
       "description": "You are standing on the inside of the reactor core. Actually you seem to\nbe floating in the plasma energy of the reactor. You can see the core\nchamber fall off into the distance as it seems to be bottomless. Nuclear\nparticles and other strange things whiz by you at blinding speeds.\nYou see a maintenance hatch to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10538,
@@ -3385,7 +3385,7 @@
       "name": "Reactor Room Floor",
       "description": "The room is taken up almost entirely by the enormous reactor core. The\ncore pulses rhythmically as it generates the heat and power for the entire\nregion of Hell. Many workers in orange jumpsuits run frantically around\nwith geiger counters and plasma torches fixing breaches in the core.\nYou see a reactor core maintenance hatch to the west.\nA stairway to the control room is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10528,
@@ -3409,7 +3409,7 @@
       "name": "Secondary Control Room",
       "description": "This is the secondary control room for the reactor core. It is usually used in\nemergencies when the primary control room is contaminated or damaged.\nIt isn't used very often since the primary control room is in perfect \nworking order.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10529,
@@ -3426,7 +3426,7 @@
       "name": "Office of the Chief Engineer",
       "description": "This office belongs to the chief engineer of Hell. Blueprints and pencils \nare scattered about the room. The air is heavy with the smell of ammonia\nand sweat. A display of the reactor core is mounted into the wall.\nOne wall is completely filled with monitors, each showing various\nstatus reports for the reactor core.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 10530,
@@ -3443,7 +3443,7 @@
       "name": "Ice Room",
       "description": "You are standing in a room of ice. Icicles of every size hang from the\nceiling. Some shake with every sound. Your reflection off the ice walls\nseems to dance and wiggle as you move about.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 10473,

@@ -13,7 +13,7 @@
       "name": "The Chat Room",
       "description": "You are lounging in a quiet cosy parlour, warmed by a gentle magical fire\nwhich twinkles happily in a warm fireplace.  This is one of the many rooms\nwhere the heroes and gods come to socialize.  It is by far one of the most\ncomfortable! \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 66056,
       "exits": {
         "south": {
           "to_room": 1213,
@@ -30,7 +30,7 @@
       "name": "Moses' Hangout",
       "description": "You see here a cozy little room with a fireplace.  You can tell it is Moses'\nroom by the two stone tablets and a bible on a small ledge near the fireplace.\nThis room was designed for total relaxation.  You can watch television, listen\nto the stereo, even soak in a hot tub.\nThere is a bell here for the butler.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 65544,
       "exits": {
         "north": {
           "to_room": 1213,
@@ -47,7 +47,7 @@
       "name": "The Center of the Universe",
       "description": "You are at the centre of the universe, everything is filled with bright\nlight in all colors. You feel time and space no longer exist here.\nExits fill the room in all 42 dimensions, leading everywhere.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 66056,
       "exits": {
         "east": {
           "to_room": 1213,
@@ -64,7 +64,7 @@
       "name": "Valhalla",
       "description": "This is the huge Hall of Valhalla, where the Gods rule supreme.  The\ncavernous building stretches infinitely in all directions.  Valhalla \ncontinues to the east, and the gods make their homes north and south of\nthe halls.  The golden gates are to the west.  You know not what lies \nupward...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 32776,
       "exits": {
         "north": {
           "to_room": 1209,
@@ -107,7 +107,7 @@
       "name": "Priscilla's Pleasure Palace ",
       "description": "As you look around you, you see the largest collection of erotic toys\nin the world!!!  On a table in the middle of the room lies a book titled :\n\"All You Ever Wanted to Know About Sex..But Were Afraid to Ask\"\nThere are things here that you never even imagined in your wildest dreams!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 33288,
       "exits": {
         "north": {
           "to_room": 1218,
@@ -125,7 +125,7 @@
       "name": "The Eye of the Hurricane",
       "description": "The shrieking winds of a monstrous storm surround you, spinning you around\nin an endless web of fury. But then, in the middle of turmoil, you find a\nstrange calm. You find yourself hovering in the calm eye of a hurricane. All\naround you you can see the desruction caused by the powerful storm. White\nhot flashes of lightning flicker from the depths of the hurricane.  But\neverything is strangely peaceful in here, with the sun shining in from above\nand a flock of birds winging across the sky.  You stretch out and relax, this\nstorm is going to be here a while.\n",
       "sector_type": "air",
-      "flags": 0,
+      "flags": 25100,
       "exits": {},
       "extra_descriptions": [],
       "area": 1200
@@ -135,7 +135,7 @@
       "name": "Walking on the Moon",
       "description": "The proud and lonely silence of Mare Imbrium surrounds you, as you gaze upon\nthe sterile splendor of the moon.  All around is the velvet curtain of night,\nstudded with a thousand gleaming jewels.  Below you hangs the beautiful\nfields of Earth, looking fragile and far away, but full of hope.  A sense of\nwistful regret touches you, as you think about what might have been, and what\nwill be.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 25092,
       "exits": {},
       "extra_descriptions": [
         {
@@ -150,7 +150,7 @@
       "name": "The Satin Memorial Reading Room",
       "description": "Half read books lie everywhere: Yeats, Tennyson, Chandler, Barrie;\na battered paperback de Laclos; a dusty leather-bound Donne.  A\ndamp novel perches precariously on the edge of a large bathtub.\nAs your eyes travel beyond the steam rising to the air toward the\nrose-brambled balcony railing, you notice a well-creased printout\nof a poem sitting on a the velvet cushions of a rosewood chair\nthat has been set so as to see the stark black mountains\nfrom one angle, or the wine-dark sea from another.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 41480,
       "exits": {
         "south": {
           "to_room": 1217,
@@ -209,7 +209,7 @@
       "name": "A Sea Cave",
       "description": "You are in a small cave in a cliff next to a deep green sea.  Fine\ngold and pink sand blanket the floor.  Shells are scattered and strewn\nabout.  A blow hole in the roof of the cave allows beams of light to stream\nin and illuminate the cave.  The wind blows outside the entrance, but\nyou are protected from the weather in your cozy cave.  The foamy surf\nnever seems to quite reach your feet.  Several boulders here have been\nworn by time into a shape similar to a comfortable chair.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 33288,
       "exits": {
         "north": {
           "to_room": 1203,
@@ -227,7 +227,7 @@
       "name": "The Archmage's Workroom",
       "description": "This well-lit room is absolutely filled with clutter -- enchanting gear,\nreagents, spell components, ancient tomes, scrolls, braziers, exotic incense\nand countless other tools of the magical trade, all jumbled together with\nseemingly no attention paid to organization.  You have no doubts that Alander\ncan find whatever he needs without delay, however.  A heavy oak door stands\nbarred to the south, to discourage idle visitors, and Alander's quarters\nare east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 1032,
       "exits": {
         "south": {
           "to_room": 1203,
@@ -254,7 +254,7 @@
       "name": "Office",
       "description": "The first thing you notice about this office is the floor; it\nis a black & white checkerboard pattern, with 8 squares to a side.  The\nsouth wall is a HUGE picture window that produces a magnificent view of \nthe land.  In front of the window is a large desk.  Completely covering\nthe east wall is a bookshelf, that is crammed full.  In the northwest\ncorner, you notice a statue.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 33288,
       "exits": {
         "north": {
           "to_room": 1217,
@@ -285,7 +285,7 @@
       "name": "Arena of Judgement",
       "description": "The scene lain before you is one that gives you the feeling of being placed\nunder a higher authority.  The jury is out.  A statue of Pontius Pilate is\nin the aft of the Arena.  Staring balefully, the statue faces a distant\nhillside where many aged crosses still stand.  The Arena is set in a wide\npit-like field of trampled bloodstained grass, and is guarded by high walls\nof veinous marble.  A bloodstone seat awaits the true paragon of Romanity.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 33288,
       "exits": {
         "south": {
           "to_room": 1218,
@@ -308,7 +308,7 @@
       "name": "The Realm of the Dead",
       "description": "You are standing on an immense, grey stone floor that stretches as far as you\ncan see in all directions.  Rough winds plunging from the dark, starless sky\ntear savagely at your fragile body.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8200,
       "exits": {
         "north": {
           "to_room": 1212,
@@ -393,7 +393,7 @@
       "name": "The Room of Lost Souls",
       "description": "This is the room full of souls that never made it to Asgard.  They are \ntrapped here eternally, left to wander about in misery.  They were infidels\nand cowards.  Their cries of misery send a shiver down your spine.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 1219,
@@ -432,7 +432,7 @@
       "name": "The Entrance of Valhalla",
       "description": "The huge ornate entrance of Valhalla is before you.  It seems as though\natleast eight-hundred soldiers could walk abreast of one another through\nthese doors. You stare in awe at the sparkling mansion before you.  You\nwonder what secrets are held behind these doors and long to hear the stories\nof bravery and glory that you know are kept within the walls of Valhalla.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 32768,
       "exits": {
         "east": {
           "to_room": 1203,
@@ -455,7 +455,7 @@
       "name": "Valhalla",
       "description": "You are standing in the halls of Valhalla.  Pictures of Odin, Thor, Tyr,\nLoki, Freyr, Feyja, and Balder line the walls.  The cavernous hall extends\nto the east and west.  Rooms belonging to the gods lie to the north and \nsouth.  There appears to be an exit above you, but you do not know what is\nup there...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 32768,
       "exits": {
         "north": {
           "to_room": 1207,
@@ -498,7 +498,7 @@
       "name": "Valhalla",
       "description": "You are standing in the halls of Valhalla.  Tapestries of the gods line\nthe walls.  A statue of Odin is here.  The halls continue to the east and\nwest, and there are doors to the north and south of you.  There is some \nsort of exit above you, but you do not know where it leads...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 32768,
       "exits": {
         "north": {
           "to_room": 1211,
@@ -546,7 +546,7 @@
       "name": "Valhalla",
       "description": "You have reached the end of the halls of Valhalla.  There are heavy doors\non 3 walls.  They lead into the rooms of the gods.  The hall goes back to\nthe west, and there is some sort of an exit above you.  Torches sputter\nsoftly and the scent of incense is strong here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 32768,
       "exits": {
         "north": {
           "to_room": 3161,

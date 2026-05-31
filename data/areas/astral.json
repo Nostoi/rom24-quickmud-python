@@ -234,7 +234,7 @@
       "name": "Into the Astral Plane",
       "description": "You step through the gate, and into another reality...\n\n   You find yourself floating in a field of blackness, filled with tiny tendrils\nof silvery light and insubstantial shining motes of dust.  The weightlessness\nof this environment is very disorienting, although it is not too late to return\nthrough the gate to the south.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 7708,
@@ -1991,7 +1991,7 @@
       "name": "Inside the Githyanki Keep",
       "description": "You are standing just inside a nexial portal that leads out onto the\nAstral Plane.  It seems that you have found the lair of the Githyanki,\nthe once-human followers of Lord Gith.  Ahead of you stands a steel door\nleading into the keep hewn from stone.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 7751,
@@ -2020,7 +2020,7 @@
       "name": "A guard station",
       "description": "This is a small building just inside the keep.  Doors lead out to the east\nand west.  Some small weapons hang on hooks on the walls, for use in defense\nof the keep.\n   Doors stand in all directions save north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 7761,
@@ -2397,7 +2397,7 @@
       "name": "A small building",
       "description": "You have stepped inside a dimly lit building, which apparently serves as\nliving quarters for several githyanki gish.  The walls are heavy stone blocks, \ncovered with panels of strangely knotted and twisted wood.  A couple of candles\nburn dimly in sconces here and there.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 7753,
@@ -2420,7 +2420,7 @@
       "name": "A small building",
       "description": "You have stepped inside a dimly lit building, which apparently serves as\nliving quarters for several githyanki gish.  The walls are heavy stone blocks, \ncovered with panels of strangely knotted and twisted wood.  A couple of candles\nburn dimly in sconces here and there.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 7761,
@@ -2443,7 +2443,7 @@
       "name": "A large dwelling",
       "description": "You have stepped inside a dimly lit building with vaulted ceilings and high\nwindows.  The walls are heavy stone blocks that rise tens of feet above your\nhead, covered with panels of strangely knotted and twisted wood.  On the floor\nare charcoal stencils of pentagrams and various other ominous sigils.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 7756,
@@ -2466,7 +2466,7 @@
       "name": "The Githyanki Weaponry",
       "description": "A large chamber, full of weapons in various states of completion.  Strange\nglowing blocks of silvery metal are being pounded and rolled out into deadly \nrazor-sharp knives, daggers, and swords.\n   Sounds of hammering and blasts of heat and strange smells come from the open\ndoorway to the north.  An iron door stands to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 7766,
@@ -2495,7 +2495,7 @@
       "name": "The Forge",
       "description": "In the center of the room is a massive furnace which emits great gouts of\nheat and a strange smell which comes from the melting of the silvery metal used\nby the githyanki.  A large trough of icy water stands to the west, used for \nquenching hot metal.\n   Doorways stand to the north and south.  The furnace door lies to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 7767,
@@ -2530,7 +2530,7 @@
       "name": "The Githyanki Armoury",
       "description": "A large chamber, full of suits of armor in various states of completion.  In\nthis chamber the hard steels of the githyanki are shaped into ornately fashioned\nsuits of mail.\n   Sounds of hammering and blasts of heat and strange smells come from the open\ndoorway to the south.  An iron door stands to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 7766,
@@ -2559,7 +2559,7 @@
       "name": "Inside the furnace",
       "description": "You gasp for breath and choke on toxic sulphur and brimstone.  The sweat\non your forehead is instantly vaporized by the flames that surround you.  You\nbegin to feel faint and dizzy from the heat...\n\n... you'd better leave before you pass out and burn to a cinder!\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 7768,
@@ -2595,7 +2595,7 @@
       "name": "A guard station",
       "description": "You are standing in a small, fairly empty building that serves as the prison\nfor the keep.  The building is small because the githyanki do not make a habit \nof taking prisoners, and those that they do capture do not last long.\n   The cellblock lies to the west and the grey stone road is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 7753,
@@ -2624,7 +2624,7 @@
       "name": "The cellblock",
       "description": "A torch flickers in the western wall, providing some illumination for this\ndim corridor.  Some whips, manacles, and chains hang on the walls -- they seem\nto have been used recently.\n   Cell doors stand to the north and south.  The guard station is to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 7771,
@@ -2660,7 +2660,7 @@
       "name": "A cramped cell",
       "description": "You are in a tiny, cold, dank cell.\n  The only exit is back through the door to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 7770,
@@ -2683,7 +2683,7 @@
       "name": "A tiny cell",
       "description": "You are in a cold, dank, cramped cell.\n   The only exit is back through the door to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 7770,
@@ -2706,7 +2706,7 @@
       "name": "A large dwelling",
       "description": "You have stepped inside a dimly lit building with vaulted ceilings and high\nwindows.  The walls are heavy stone blocks that rise tens of feet above your\nhead, covered with panels of strangely knotted and twisted wood.  On the floor\nare charcoal stencils of pentagrams and various other ominous sigils.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 7757,
@@ -2729,7 +2729,7 @@
       "name": "South End of the Hall",
       "description": "This is a massive stone hall, lit by flaming blue stones set into the walls.\nMassive suits of armor line the walls, holding weapons fashioned from a strange\nsilvery metal.\n   The great hall continues to the north and ends in a pair of huge metal doors\nto the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 7775,
@@ -2766,7 +2766,7 @@
       "name": "North End of the Hall",
       "description": "This is a massive stone hall, lit by flaming blue stones set into the walls.\nMassive suits of armor line the walls, holding weapons fashioned from a strange\nsilvery metal.\n   The great hall continues to the south.  An archway leads into a dimly lit\nroom to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 7776,
@@ -2803,7 +2803,7 @@
       "name": "The Altar Chamber",
       "description": "Your eyes have trouble adjusting to the dim lighting.  All around you are\ncolumnar statues of githyanki turned towards the altar standing at the top\nof a series of steps.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 7777,
@@ -2832,7 +2832,7 @@
       "name": "Before the Altar",
       "description": "You have climbed the mighty steps of the altar chamber and stand before a\nhuge altar use to pay tribute to Lord Gish, long-dead ruler of the githyanki.\nThe altar is covered in blood and radiates unspeakable power that is absorbed\nby the horrible presence which stands before you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 7776,
@@ -2869,7 +2869,7 @@
       "name": "A Gateway to the Underworld",
       "description": "You step through the tiny hole in the altar, and stand before a swirling\nfield of blackness.  Through the field you can hear the howls of lost souls\nand long-dead beings.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "up": {
           "to_room": 7777,
@@ -2903,7 +2903,7 @@
       "name": "Utter darkness and despair",
       "description": "It is pitch black...\n\n  You are overwhelmed by the sensation of death and horrible pain as a shape\nbegins to coalesce before you.\n",
       "sector_type": "air",
-      "flags": 0,
+      "flags": 5,
       "exits": {},
       "extra_descriptions": [],
       "area": 7700

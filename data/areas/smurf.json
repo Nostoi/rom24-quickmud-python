@@ -36,7 +36,7 @@
       "name": "Dimly Lit Path",
       "description": "This section of the road is badly worn and frequently traversed.  There is\nfaint singing to the north.  The path back to the road lies to the south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 103,

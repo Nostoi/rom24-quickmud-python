@@ -849,7 +849,7 @@
       "name": "Hermit's hut",
       "description": "You are inside the hermit's hut. It is rather old, but serves it purpose.\nIt keeps its habitant from the rough winds and dangerous beasts of the\nplains and foothills. There is a small fireplace here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 330,
@@ -1084,7 +1084,7 @@
       "name": "Dark smelly tunnels",
       "description": "You are standing in a gloomy tunnel leading south and west, right under\nthe altar of G'harne.  The walls are covered with a smelly slime and small\nrotting pieces of a meat like substance, fills the air with an unbearable\nstench.  You might be able to force your way up into fresh air from here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 265,
       "exits": {
         "south": {
           "to_room": 341,
@@ -1116,7 +1116,7 @@
       "name": "Dead end of tunnel",
       "description": "The tunnel comes to an abrupt end here. It simply looks like it\nhasn't been excavated further.  North of here the tunnel makes a turn east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 265,
       "exits": {
         "north": {
           "to_room": 340,
@@ -1132,7 +1132,7 @@
       "name": "Dark smelly tunnels",
       "description": "You are standing in a gloomy tunnel leading east and west.\nThe walls are covered with a smelly slime and small rotting pieces of a\nmeat like substance, fills the air with an unbearable stench.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 265,
       "exits": {
         "east": {
           "to_room": 340,
@@ -1160,7 +1160,7 @@
       "name": "Dark smelly tunnels",
       "description": "You are standing in a small smelly tunnel under the plains.\nThe smell is growing stronger to the west, so is the density of the\nslime and other undeterminable substances ...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 256,
       "exits": {
         "east": {
           "to_room": 342,
@@ -1188,7 +1188,7 @@
       "name": "The Hall of G'harne",
       "description": "You stand in the hall of G'harne. The walls are dressed with strange\ncarving, symbolizing human sacrifice and people worshipping giant worms.\nDisgusting slime and gore are also very dominant in your view of this room.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 265,
       "exits": {
         "east": {
           "to_room": 343,
@@ -1210,7 +1210,7 @@
       "name": "Steep slope",
       "description": "You try to climb down the slope.\n>\nYou slip!\nYou fall and tumble.\nYou hit your head HARD.\nYou die.\n\nYou've fallen, and you can't get up!\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 4,
       "exits": {},
       "extra_descriptions": [],
       "area": 300

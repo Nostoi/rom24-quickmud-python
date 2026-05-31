@@ -13,7 +13,7 @@
       "name": "The Grand Gate of Thalos",
       "description": "You stand in the archway of a gigantic stone archway. The two\nsteel gates have been forced open and have rusted in place. A hollow\ngust of wind blows by you into the deserted, and seemingly destroyed,\ncity.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "east": {
           "to_room": 5256,
@@ -505,7 +505,7 @@
       "name": "The guild house",
       "description": "You are standing in what once was this city's ONLY guild house.\nTables and chairs have been smashed and broken weapons lie strewn about\nthe floor as if some massive battle had taken place here. Draped along\nthe back wall is a tattered, jet-black banner with the symbol of the\nDarkside set upon it.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 5213,
@@ -542,7 +542,7 @@
       "name": "The smithy",
       "description": "In here you find tools and anvils used to make various weapons\nand items. The walls have been stripped clean and only a few incomplete\npieces of armor and weaponry are left.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 5212,
@@ -648,7 +648,7 @@
       "name": "A ruined clay dwelling",
       "description": "This was once a very plain house with nothing more than a few chairs\nand a bed. A cold fireplace suggests that the city has been abandoned\nfor quite a while. Almost nothing remains of this humble abode.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 5210,
@@ -699,7 +699,7 @@
       "name": "An abandoned shop",
       "description": "From the outside this place looks like an ordinary pile of rubble,\nbut inside these cramped quarters you discover what used to be a shop\nfilled with armor, weapons, and various other goods. A small sign flutters\nin the wind.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 5214,
@@ -731,7 +731,7 @@
       "name": "South wing of the city hall",
       "description": "You stand in a large room attached to this end of the hallway which\nleads back north to the reception area.  Pedestals and columns have fallen\nand most of the valuable items have been taken, leaving worthless debris.\nA few chairs have survived, as well as a large curved desk. To the east\nis a vine-covered archway leading out into a private courtyard.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 5232,
@@ -751,7 +751,7 @@
       "name": "The city hall",
       "description": "This is the main reception area of Thalos' city hall. The walls have\nbeen charred and scored massively and debris is spread from wall to wall.\nA large gaping hole in the west wall allows you to see out to one of\nthe city's side streets. Obviously no one will be seeing you through today.\nHallways lead south and east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 5202,
@@ -781,7 +781,7 @@
       "name": "East wing of the city hall",
       "description": "Here lies the remnants of a fancy office, possibly the mayor's. A few\nwithered plants and broken pieces of furniture make this place anything\nbut fancy, though. The only thing remaining intact here is a large\nglass cabinet. A long hallway leads west back to the reception area and\nan ivy-covered archway leads south into a private courtyard.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 5234,
@@ -851,7 +851,7 @@
       "name": "A tall dwelling",
       "description": "This seems to be the tallest structure remaining in the city. At\none time this could have been an inn of some sort, but now it's just\na mess. The back wall as been completely knocked down revealing an\nentrance into another building through yet another collapsed wall.\nBetween the two buildings are a few blast craters and boulders. An old\nset of wooden steps leads up to a creaking second floor.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 5238,
@@ -876,7 +876,7 @@
       "name": "A small shack",
       "description": "This cramped dwelling could not have housed more than one person. Now\nwith the back wall missing, it could hold many more. Looking around you\nfind broken shelves and workbenches with various vials and pouches spilling\ncontents all across the floor. This was possibly the magic shop of the\ncity. The doorway to the east is blocked, making the only exit back west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 5237,
@@ -955,7 +955,7 @@
       "name": "A bath house",
       "description": "This was once the bath house for the commoners of the city. Hot\nsteamy water still wells up from a hole in the floor. Obviously there\nis a hot spring located under the city (making the decision to put\na city here seem much more reasonable). Closer inspection of the water\nyields a dead body floating around in it, skin melted away from months\nof floating in there. The west wall has collapsed revealing another\ncollapsed house.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 5243,
@@ -1000,7 +1000,7 @@
       "name": "An upright house",
       "description": "This home is practically the only one around that is still standing.\nExcept for the massive hole in the east wall, everything else looks\nintact, including the windows. Great amounts of steam issue forth from\nthe hole in the east wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 5242,
@@ -1020,7 +1020,7 @@
       "name": "On the second floor",
       "description": "The minute you step off onto this floor you realize it was a mistake.\nThe old rotted floorboards suddenly give way and you fall down, impaling\nyourself on jagged boards below.\n\nYou've fallen, and you can't get up!!!\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 4,
       "exits": {},
       "extra_descriptions": [],
       "area": 5200
@@ -1078,7 +1078,7 @@
       "name": "The Temple of Thalos",
       "description": "You stand within one of the most holy places in the realm. This\nstunning domed temple once housed the city's worshipers en masse.\nUnfortunately, it succumbed to the destruction brought on this city.\nLong benches lie toppled and the altar desecrated. Large chunks of stone\nhave fallen from the walls and roof, sending sunlight streaming in on\nyou. A few books lie about, conveying to you a holy message in a\nstrange tongue.\n     Wind gusts through the four archways and howls and screams can be\nheard from all parts of the city.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 136,
       "exits": {
         "north": {
           "to_room": 5205,
@@ -1362,7 +1362,7 @@
       "name": "The darker dwarf forest",
       "description": "You see a more dense foliage in these stunted trees.  The gloom caused\nby them is enhanced by a draft coming from all around.  The trail turns south\nfrom the west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "south": {
           "to_room": 5264,
@@ -1383,7 +1383,7 @@
       "name": "The darker dwarf forest",
       "description": "You see a more dense foliage in these stunted trees.  The gloom caused\nby them is enhanced by a draft coming from all around.  The trail turns east\nfrom the north.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 5263,
@@ -1404,7 +1404,7 @@
       "name": "The darker dwarf forest",
       "description": "You see a more dense foliage in these stunted trees.  The gloom caused\nby them is enhanced by a draft coming from all around.  The trail leads\neast and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 5266,
@@ -1425,7 +1425,7 @@
       "name": "The darker dwarf forest",
       "description": "You see a more dense foliage in these stunted trees.  The gloom caused\nby them is enhanced by a draft coming from all around.  The trail leads\ndown into a valley and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "west": {
           "to_room": 5265,
@@ -1446,7 +1446,7 @@
       "name": "A valley in the dark dwarf forest",
       "description": "You are in a valley in the dark dwarf forest.  Short black grass grows\naround you.  Trails lead in all directions.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 5271,
@@ -1481,7 +1481,7 @@
       "name": "A small ugly cave",
       "description": "You see a small cave.  Skeletons of many types of creatures litter the area.\nObviously, no fox lives here!  The oppression makes you want to leave and\nvomit.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 5267,
@@ -1509,7 +1509,7 @@
       "name": "A small ugly cave",
       "description": "You are in a small ugly cave.  More skeletons lie around.  It is obvious\nthat the owner doesn't want you here.  The exit north is still visible.\nSome writings are on this wall.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 5268,
@@ -1539,7 +1539,7 @@
       "name": "Down the path into a dead end",
       "description": "You are down the path.  There is no obvious exit in this place, exit the\none back up north.  All around you, you see skeletons.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "up": {
           "to_room": 5269,
@@ -1567,7 +1567,7 @@
       "name": "The Valley in the dark dwarf forest",
       "description": "You are in a valley in the forest.  To the north is a trail out of this\ndark valley.  South is more of this valley.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 5272,
@@ -1588,7 +1588,7 @@
       "name": "A dim trail in the dwarf forest",
       "description": "You are in a dim trail in the dwarf forest.  Not much light passes through\nhere.  To the south is a gloomy valley, while to the north the light grows\nbrighter.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 5273,

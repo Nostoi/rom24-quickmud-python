@@ -232,7 +232,7 @@
       "name": "The hills",
       "description": "You are on a small bewildered path winding its way between the hills in\nlack of better things to do. To the south you have a splendid view over the\nflat, vast, desolate plains. To the north the hills grow steadily darker and\nforeboding. This is the cause of no sunset, it is rather the power of evil\npenetrating these quiet hills. Glancing around you notice only a single bird.\nThe mountains of the dwarven kingdom rise up to your east, you can barely\nmake out the queen's mines from here.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 4001,
@@ -256,7 +256,7 @@
       "name": "The hills",
       "description": "You are surrounded by dark and sinister hills. Although they seemed fairly\nsmall from a distance you now get the feeling that they're closing in on you,\ntowering over you, overwhelming you ...  The small path seems to have second\nthoughts about these hills because it starts winding unnecessarily, turning\nseveral times around itself.  To the south the hills have a lighter hue of\ndark. To the north however, the hills have become nightblack holes in the\ndistant mountains.\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 4002,
@@ -275,7 +275,7 @@
       "name": "End of the path",
       "description": "At this point the path has had enough. With a terrified shudder it cowers\nto the ground, only staying here because you're standing on it. with a slight\nfeeling of unease you look around noticing only a few bushes and a large sign\ncarved into the mountain.  You feel you can hear the cry of help from a\nthousand silent voices all coming from an even darker hole in the mountain to\nthe north marking the entrance to a cave (or a grave :-).\n",
       "sector_type": "hills",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 4010,
@@ -303,7 +303,7 @@
       "name": "The cave",
       "description": "You are in a large cave. The ceiling is lost somewhere above the reach of\nyour light. The floor, however, is highly illuminated, your light flickering\nover several tombstones. Only one is whole, the rest have been shattered by\nsome savage blow. The remaining tombstone looks disturbingly new...\nA small breeze of fresh air enters from the south (probably lost too). Take a\ngood breath, it may be your last mouthful of air in a long, long time that\nothers haven't breathed before you.\nTo the north a small tunnel continues into the mountain.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4011,
@@ -327,7 +327,7 @@
       "name": "The tunnel",
       "description": "You squeeze your way through a small, narrow tunnel. The sharp-edged rocks\nprotruding from the walls threaten to scratch and cut you. \nTo the south you sense a freshness in the air which is rather unusual in these\ndamp, stuffy tunnels. To the north the tunnel continues.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4014,
@@ -346,7 +346,7 @@
       "name": "The tunnel",
       "description": "You are in a part of the tunnel that looks uncannily like the rest except\nthat it goes in a east-north direction. To the north the tunnel widens into\na cave.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4016,
@@ -365,7 +365,7 @@
       "name": "The tunnel",
       "description": "This tunnel, leading east-west, seems seldom used.  A thick layer of dust\ncovers the floor, making the air stuffy and dry. \n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4014,
@@ -384,7 +384,7 @@
       "name": "The tunnel",
       "description": "You are walking in a narrow tunnel. The walls are only roughly shaped,\nsharp rocks protruding everywhere, even from the floor making you stumble in\nthe flickering light. To the south the tunnel narrows even more making it\nalmost impossible to pass. To the north it slowly widens into a cave. There\nis a branch of the tunnel going west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4018,
@@ -411,7 +411,7 @@
       "name": "The tunnel",
       "description": "You are in a corner tunnel leading west and north.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4019,
@@ -430,7 +430,7 @@
       "name": "The large cave",
       "description": "You are in a large cave, the cave continues east and west, to the south\nyou notice a small tunnel.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4017,
@@ -453,7 +453,7 @@
       "name": "The large cave",
       "description": "You are in the east end of the large cave.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 4016,
@@ -468,7 +468,7 @@
       "name": "The cave",
       "description": "You are in the south end of a cave, to the south you see a tunnel. You\nnotice a large pile of bones in the corner.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4025,
@@ -492,7 +492,7 @@
       "name": "The tunnel",
       "description": "You are in a north-south leading tunnel.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4026,
@@ -511,7 +511,7 @@
       "name": "The hole",
       "description": "You are by a hole in the floor, you can leave down, or north.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "north": {
           "to_room": 4027,
@@ -530,7 +530,7 @@
       "name": "The hole",
       "description": "A hole in the floor leads down here.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "east": {
           "to_room": 4022,
@@ -549,7 +549,7 @@
       "name": "The damp tunnel",
       "description": "You are in a damp tunnel.  Your clothes feel wet.  The tunnel continues\nto the north; to the west you see a hole in the floor; and to the east\nthere is a large cave.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4023,
@@ -572,7 +572,7 @@
       "name": "The large cave",
       "description": "You are in the western part of the large cave, to the south you see\na damp tunnel.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4016,
@@ -591,7 +591,7 @@
       "name": "The damp tunnel",
       "description": "You are in a corner of a damp tunnel.  You can go west or south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 4059,
@@ -610,7 +610,7 @@
       "name": "The cave",
       "description": "You are in the north end of a cave.  To the east you see many tunnels.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4026,
@@ -629,7 +629,7 @@
       "name": "The many tunnels",
       "description": "You are at the intersection of many tunnels.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4028,
@@ -656,7 +656,7 @@
       "name": "The tunnel",
       "description": "You are in a north-south leading tunnel, you also notice a tunnel to\nthe west. From the north you sense the fresh air!\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4029,
@@ -679,7 +679,7 @@
       "name": "The smelly tunnel",
       "description": "You are in a north-south leading tunnel, you see a small light\nto the north. You notice a strange smell from the north..\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4030,
@@ -698,7 +698,7 @@
       "name": "The cave",
       "description": "You are in a cave that is filled with fresh air, you sense the\nwind blowing from the north. To the south you see a small tunnel\ncontinue into the mountain.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "north": {
           "to_room": 4031,
@@ -1004,7 +1004,7 @@
       "name": "The tunnel",
       "description": "The tunnel turns here, continuing to the east and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4051,
@@ -1023,7 +1023,7 @@
       "name": "The tunnel",
       "description": "You are in a narrow east-west tunnel.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4052,
@@ -1042,7 +1042,7 @@
       "name": "The tunnel",
       "description": "You are at a turn, the tunnel continues south and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 4100,
@@ -1061,7 +1061,7 @@
       "name": "The tunnel",
       "description": "You are at a turn, the tunnel continues north and east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4050,
@@ -1080,7 +1080,7 @@
       "name": "The light cave",
       "description": "You are in a cave, to south from you there is a large fire that lights\nthe entire cave, to the east and west tunnels leads off.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 4055,
@@ -1103,7 +1103,7 @@
       "name": "The maze",
       "description": "You are in a maze of small damp tunnels.  The only exit is west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 4054,
@@ -1118,7 +1118,7 @@
       "name": "The light cave",
       "description": "You are in a light cave, a large fire in front of you lights the room.\nThe cave continues to the north and south.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 4054,
@@ -1137,7 +1137,7 @@
       "name": "The maze",
       "description": "You are in a maze of small damp tunnels.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4058,
@@ -1156,7 +1156,7 @@
       "name": "The maze",
       "description": "You are in a maze of small damp tunnels.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 4063,
@@ -1175,7 +1175,7 @@
       "name": "The tunnel",
       "description": "You are in a tunnel, only exit is to the east. You sense that the\ntunnel leads slightly down.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "north": {
           "to_room": 4024,
@@ -1194,7 +1194,7 @@
       "name": "The tunnel",
       "description": "You are in a small tunnel, to the west the tunnel continues and \nto the east you see some light.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4061,
@@ -1213,7 +1213,7 @@
       "name": "The light cave",
       "description": "You are in the south end of a light cave.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 4056,
@@ -1232,7 +1232,7 @@
       "name": "The maze",
       "description": "You are in a maze of small damp tunnels.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4057,
@@ -1251,7 +1251,7 @@
       "name": "The maze",
       "description": "You are in a maze of small damp tunnels.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4058,
@@ -1270,7 +1270,7 @@
       "name": "The tunnel",
       "description": "You are at the eastern end of a tunnel.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 4063,
@@ -1289,7 +1289,7 @@
       "name": "The maze",
       "description": "You are in a maze of small damp tunnels.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4066,
@@ -1308,7 +1308,7 @@
       "name": "The maze",
       "description": "You are in a maze of small damp tunnels.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4067,
@@ -1331,7 +1331,7 @@
       "name": "The maze",
       "description": "You are in a maze of small damp tunnels.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 4066,
@@ -1346,7 +1346,7 @@
       "name": "The large cave",
       "description": "You are in the northwest end of a large cave.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4069,
@@ -1365,7 +1365,7 @@
       "name": "The large cave",
       "description": "You are in the northeast end of a large cave. To the north the\nis a small damp tunnel.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4066,
@@ -1388,7 +1388,7 @@
       "name": "The large cave",
       "description": "You are in the southwest end of a large cave.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4068,
@@ -1407,7 +1407,7 @@
       "name": "The large cave",
       "description": "You are in the southeast end of a large cave. To the east you\nnotice a small tunnel.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4069,
@@ -1430,7 +1430,7 @@
       "name": "The tunnel",
       "description": "You are in a narrow tunnel, which leads both to the east and the\nsouth. There is also an exit towards the west, where you see a large\ncave.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4073,
@@ -1453,7 +1453,7 @@
       "name": "End of tunnel",
       "description": "The tunnel stops here.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 4072,
@@ -1468,7 +1468,7 @@
       "name": "The hole",
       "description": "You are at a small hole in the floor, you can either leave north\nor try your luck and leave down into the unknown!\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4072,
@@ -1487,7 +1487,7 @@
       "name": "The tunnel",
       "description": "Suddenly you feel that the tunnel leads slightly down.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "north": {
           "to_room": 4052,
@@ -1506,7 +1506,7 @@
       "name": "The long tunnel",
       "description": "You are in a long east-west leading tunnel. The tunnel is quite\nwide at this point.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4100,
@@ -1525,7 +1525,7 @@
       "name": "The long tunnel",
       "description": "You are in a long east-west leading tunnel. The tunnel becomes\nnarrow to the west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4101,
@@ -1544,7 +1544,7 @@
       "name": "The long tunnel",
       "description": "You are in a long east-west leading tunnel. The tunnel is quite\nnarrow at this point. You notice a small hole leading south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4102,
@@ -1567,7 +1567,7 @@
       "name": "The long tunnel",
       "description": "You are in a long east-west leading tunnel. The tunnel starts sloping\ndown towards the west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4103,
@@ -1586,7 +1586,7 @@
       "name": "The golden cave",
       "description": "You are in a giant cave, all the walls are shining with a soft golden\nlight. The cave continues to the south and west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 4108,
@@ -1605,7 +1605,7 @@
       "name": "The golden cave",
       "description": "You are in a giant cave, all the walls are shining with a soft golden\nlight. The cave continues to the south and east, to the north is a narrow\ntunnel.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 4103,
@@ -1628,7 +1628,7 @@
       "name": "The passage",
       "description": "You are in a small passage, it leads south, to the west is a golden\ncave.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 4113,
@@ -1647,7 +1647,7 @@
       "name": "The golden cave",
       "description": "You are in a giant cave, all the walls are shining with a soft golden\nlight. The cave continues to the north and west, east from you there is\na small passage.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 4105,
@@ -1670,7 +1670,7 @@
       "name": "The golden cave",
       "description": "You are in a giant cave, all the walls are shining with a soft golden\nlight. The cave continues to the south, east and north.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 4106,
@@ -1693,7 +1693,7 @@
       "name": "The tunnel",
       "description": "You are at the end of the tunnel.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "west": {
           "to_room": 4111,
@@ -1708,7 +1708,7 @@
       "name": "The tunnel",
       "description": "You are in a small tunnel, it leads from east to the west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4110,
@@ -1727,7 +1727,7 @@
       "name": "The tunnel",
       "description": "You are in a larger tunnel, it leads from west to east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4111,
@@ -1746,7 +1746,7 @@
       "name": "The passage",
       "description": "You are in a passage that leads towards the south. To the east \nyou see a tunnel.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4107,
@@ -1769,7 +1769,7 @@
       "name": "The golden cave",
       "description": "You are in a giant cave, all the walls are shining with a soft golden\nlight. The cave continues to the north, to the west you see a dark \npassage.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 4109,
@@ -1788,7 +1788,7 @@
       "name": "The dark passage.",
       "description": "You are in a dark passage, that leads east. In the ceiling you notice\na small hole, just big enough to pass through.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4114,
@@ -1807,7 +1807,7 @@
       "name": "The passage",
       "description": "You are in a passage that leads north-south. You notice a small\nlight to the south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4113,
@@ -1826,7 +1826,7 @@
       "name": "The secret chamber",
       "description": "You are in a secret chamber.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 4122,
@@ -1841,7 +1841,7 @@
       "name": "The cave",
       "description": "You are in a light cave, from torches several feet above your\nhead fire lights the room. The cave continues to the west and south.\nTo the north a small hole leads to a tunnel.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 4123,
@@ -1860,7 +1860,7 @@
       "name": "The cave",
       "description": "You are in a light cave, from torches several feet above your\nhead fire lights the room. The cave continues to the east and south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 4118,
@@ -1883,7 +1883,7 @@
       "name": "The passage",
       "description": "You are in a north-south leading passage. To the south you see light.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4116,
@@ -1902,7 +1902,7 @@
       "name": "The secret tunnel",
       "description": "You are in a secret tunnel that leads west, you feel evilness\napproaching you as you continue west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4119,
@@ -1921,7 +1921,7 @@
       "name": "The secret chamber",
       "description": "You are in a secret chamber, the room is filled with an evil\nfeeling.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4117,
@@ -1940,7 +1940,7 @@
       "name": "The cave",
       "description": "You are in a light cave, from torches several feet above your\nhead fire lights the room. The cave continues to the north and west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 4118,
@@ -1959,7 +1959,7 @@
       "name": "The cave",
       "description": "You are in a light cave, from torches several feet above your\nhead fire lights the room. The cave continues to the east and north.\nTo the west a passage leads north.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 4119,
@@ -1982,7 +1982,7 @@
       "name": "The passage",
       "description": "You are in a passage, to the east you see a cave. Light from the\ncave lights up the passage. To the north the passage leads into\nthe darkness.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4120,
@@ -2001,7 +2001,7 @@
       "name": "The dark hole",
       "description": "You are standing at a hole, a small passage leads south. You see\nsome inscriptions on the wall, most of 'em the usual stuff, like:\n'Super Snude was here' and 'Why does the mayor likes secretaries with\nsmall hands?' - But one inscription gets your attention, it says:\nThe Balrog is ALIVE ...\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "south": {
           "to_room": 4151,
@@ -2016,7 +2016,7 @@
       "name": "The small passage",
       "description": "You are in a small passage, to the north you see a hole, and to\nthe south you see a large tunnel. The air is damp in this area.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4150,
@@ -2039,7 +2039,7 @@
       "name": "The tunnel",
       "description": "You suddenly feel that the tunnel leads down.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "east": {
           "to_room": 4104,
@@ -2058,7 +2058,7 @@
       "name": "The large tunnel",
       "description": "You are in a large tunnel leading from the south to the east. The\nair is damp in the area.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4152,
@@ -2081,7 +2081,7 @@
       "name": "The large tunnel",
       "description": "You are in a large east-west leading tunnel, the air is damp and\nthe floor is wet.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4155,
@@ -2100,7 +2100,7 @@
       "name": "The large tunnel",
       "description": "You are in a large tunnel, the tunnel leads west, and to the east\nyou notice a long tunnel. The air is damp in this area.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4151,
@@ -2119,7 +2119,7 @@
       "name": "The long tunnel",
       "description": "You are standing in a long north-south tunnel.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4151,
@@ -2138,7 +2138,7 @@
       "name": "The wet tunnel",
       "description": "You are in a wet, north-south leading tunnel, the floor is\npartly covered by water.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4153,
@@ -2161,7 +2161,7 @@
       "name": "The small maze",
       "description": "You are in a small maze, exits leads off to the east,  south\nand west. The floor is partly covered by water.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4159,
@@ -2184,7 +2184,7 @@
       "name": "The small maze",
       "description": "You are in a small maze, exits leads off only to the south\nand west. The air is damp in this maze.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 4163,
@@ -2203,7 +2203,7 @@
       "name": "In the tunnel at the inscription",
       "description": "You are in a north-south leading tunnel, the air is damp. On\nthe wall there is an inscription.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4156,
@@ -2227,7 +2227,7 @@
       "name": "The wet tunnel",
       "description": "You are in a north-south leading tunnel.  The floor is fully\ncovered by water.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4157,
@@ -2246,7 +2246,7 @@
       "name": "The small maze",
       "description": "You are in a small maze. The floor is mainly covered by\nwater, exits leads north, east and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4158,
@@ -2269,7 +2269,7 @@
       "name": "The small maze",
       "description": "You are in a small maze, where the air is damp. Exits\nleads to the north and east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4159,
@@ -2292,7 +2292,7 @@
       "name": "The entrance to the small maze",
       "description": "You are in a north-south leading tunnel, and the air is damp.\nTo the west you see a small maze.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4160,
@@ -2315,7 +2315,7 @@
       "name": "In the water",
       "description": "You are standing in water, the tunnel continues both to the\nnorth and south.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4161,
@@ -2334,7 +2334,7 @@
       "name": "The wet maze",
       "description": "You are in a part of the maze where the floor is fully covered\nby water. The maze continues to the north, east and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4162,
@@ -2357,7 +2357,7 @@
       "name": "The wet maze",
       "description": "You are in a small maze, the floor is covered by water, the\nmaze continues east, west and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 4168,
@@ -2380,7 +2380,7 @@
       "name": "The end of the tunnel",
       "description": "The tunnel suddenly stops here, only exit is to the west.\nThe air is damp here.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4164,
@@ -2399,7 +2399,7 @@
       "name": "In the water",
       "description": "You are standing in the water, exits leads both north and east.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4165,
@@ -2418,7 +2418,7 @@
       "name": "In the water",
       "description": "You are standing in the water, it continues east and west.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 4166,
@@ -2441,7 +2441,7 @@
       "name": "End of maze",
       "description": "You are at the end of the small maze which continues north.\nAbove you a hole leads up.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "north": {
           "to_room": 4167,
@@ -2460,7 +2460,7 @@
       "name": "At the sand bar",
       "description": "You are on a little sand bar in the water.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 4170,

@@ -13,7 +13,7 @@
       "name": "The Entrance to the Dancing Daemon Inn",
       "description": "You find yourself in an entrance foyer to the Dancing Daemon Inn. Chrome\nplated stairs spiral up to the reception area. To the south you hear the\nsounds of merriment and drinking and from the west you hear the bustling\nactivity of New Thalos.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9502,
@@ -42,7 +42,7 @@
       "name": "The Reception Area",
       "description": "You are now standing in the reception of New Thalos. A huge mahogany\ndesk is here along with two sofas and a coffee table covered in magazines.\nThe plush carpeting under your feet is a nice change from the rugged paths\nyou are used to travelling. A chrome stairway spirals downstairs to the\ntavern of the Dancing Daemon Inn, and your future adventures in New Thalos.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 124,
       "exits": {
         "down": {
           "to_room": 9500,
@@ -76,7 +76,7 @@
       "name": "The Dancing Daemon Inn",
       "description": "A huge circling wet-bar takes up most of the east end of the Daemon. An\nold mage reclines against the mirror behind the bar absentmindedly pouring\nseveral drinks at once with his refined telekinesis. The Lokettes, a local\nband, are playing their usual gig on the stage. The large booths along the\nwall are filled with people drinking and having a grand time. You feel like\npartying here.\nThe only obvious exit is to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9500,
@@ -915,7 +915,7 @@
       "name": "Cassandra's Catch of the Day",
       "description": "Nothing in your life has prepared you for the odor which fills your lungs.\nNot wanting to offend the beautiful shopkeeper you hold your tongue and\nquietly look over her selection.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 56,
       "exits": {
         "south": {
           "to_room": 9541,
@@ -1506,7 +1506,7 @@
       "name": "Underground",
       "description": "The small passage continues north and south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9578,
@@ -1548,7 +1548,7 @@
       "name": "Alley",
       "description": "The alley ends here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9558,
@@ -1711,7 +1711,7 @@
       "name": "Alley",
       "description": "Even with your light you cannot seem to penetrate the magical cloak of\ndarkness covering this alley.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9528,
@@ -1732,7 +1732,7 @@
       "name": "Alley",
       "description": "Even with your light you cannot seem to penetrate the magical cloak of\ndarkness covering this alley.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9565,
@@ -1758,7 +1758,7 @@
       "name": "Alley",
       "description": "Even with your light you cannot seem to penetrate the magical cloak of\ndarkness covering this alley.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9638,
@@ -1784,7 +1784,7 @@
       "name": "Alley",
       "description": "Even with your light you cannot seem to penetrate the magical cloak of\ndarkness covering this alley.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9567,
@@ -1805,7 +1805,7 @@
       "name": "Alley",
       "description": "This is a tiny corner in the alley.  The temple walls are North and West.\nYou notice a fair amount of footprints to the east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9570,
@@ -1831,7 +1831,7 @@
       "name": "Alley",
       "description": "This is a dead end to the tiny alley.  There is an unusual amount of wear\nappearent on the ground.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "west": {
           "to_room": 9569,
@@ -1854,7 +1854,7 @@
       "name": "Alley",
       "description": "You are in a tiny ally between the temple and Nabil's Exotic Animals. You hear\nsome shouting and general roadwork to the south.  The ground is rough and\nin need of repair.  In the road is a small pothole.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9569,
@@ -1880,7 +1880,7 @@
       "name": "Alley",
       "description": "You are on a small alley between the repair shop and the general store.\nNothing much here but small rodents and dust.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9525,
@@ -1901,7 +1901,7 @@
       "name": "Alley",
       "description": "This is a small corner in the alley behind the warehouses and the guild\nof warrior's. You notice  some small scrapings to the west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 9572,
@@ -1922,7 +1922,7 @@
       "name": "Alley",
       "description": "The alley ends here as do the footprints you had noticed earlier.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "west": {
           "to_room": 9573,
@@ -1945,7 +1945,7 @@
       "name": "Underground",
       "description": "You are in a small underground passage beneath the city. You see a small\nglint of light from above and the passage continues south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9576,
@@ -1967,7 +1967,7 @@
       "name": "Underground",
       "description": "The passage continues north and south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9575,
@@ -1988,7 +1988,7 @@
       "name": "Underground",
       "description": "The tunnel branches here going north, east, and west.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9576,
@@ -2014,7 +2014,7 @@
       "name": "Underground",
       "description": "The alley turns again here and heads south and west. You notice a small\nglint of light from above.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9557,
@@ -2041,7 +2041,7 @@
       "name": "Underground",
       "description": "The passage ends here and you hear some low chanting from the west.\nYou also notice the clearing of dust on the ground but can't seem to\nfind any door in that direction.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9577,
@@ -2057,7 +2057,7 @@
       "name": "Underground",
       "description": "The small passage continues north and south from here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9557,
@@ -2078,7 +2078,7 @@
       "name": "Underground",
       "description": "The small passage heads north and east from here. You here the sounds\nof the city above you.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9580,
@@ -2105,7 +2105,7 @@
       "name": "Underground",
       "description": "The tunnel continues you west and east. Hopefully you have a good sense\nof direction.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9592,
@@ -2241,7 +2241,7 @@
       "name": "Dark Passage",
       "description": "You seem to have stumbled into a small hand made passage. The wall to\nthe west  doesn't look quite right but searching it reveals no secret\ndoors. The only exit it seems is east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9589,
@@ -2257,7 +2257,7 @@
       "name": "Dark Passage",
       "description": "The small passage continues east and west from here. Again you notice\nsomething peculiar about the wall, this time to the north, but you\nfail to find any secret doors. Voices can be faintly heard from the north.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9590,
@@ -2278,7 +2278,7 @@
       "name": "Dark Passage",
       "description": "The small passage continues west and east from here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9591,
@@ -2304,7 +2304,7 @@
       "name": "Dark Passage",
       "description": "The small passage ends here for no apparent reason. Looking around you\nfind a small ladder half buried in the dirt. setting it up you find a\ntrap door in the ceiling. The passage continues west from here.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 9590,
@@ -2331,7 +2331,7 @@
       "name": "Underground",
       "description": "The small passage continues west and east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9593,
@@ -2357,7 +2357,7 @@
       "name": "Underground",
       "description": "The small passage continues west and east.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9600,
@@ -2378,7 +2378,7 @@
       "name": "Common Room of the Clan MacCleod",
       "description": "You have entered a large hall with passages leading off in all directions.\nA large table dominates the center of this hall with many chairs were\nthe clan gathers for feasting, merriment, and meetings. On the walls\nhang large tapestries paying homage to their leader Conner MacCleod.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 40,
       "exits": {
         "north": {
           "to_room": 9599,
@@ -2425,7 +2425,7 @@
       "name": "Zippoii's Room",
       "description": "Climbing up the staircase you enter the hovel of a curious mage. A small\nuncomfortable looking bed rests in the corner, surrounded by ancient\ntomes. On the worn desk next to the window candles burn low, casting\nstrange shadows on the walls. The only noticeable decor is the mounted\nhead of the Demi-Lich.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "down": {
           "to_room": 9594,
@@ -2442,7 +2442,7 @@
       "name": "Ice's Room",
       "description": "Brrrrrr, it's COLD in here. Must be 30 below. It would seem the cleric\nIce lives up to his name. Healing herbs and other such things line\nthe walls in racks, holy symbols and pictures cover the walls, and\nthe smiley face button stuck on his bedpost tells you he'll probably\nhelp you out all he can. As you turn to leave the room the mounted head\nof Kalas stares past you into emptiness.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "west": {
           "to_room": 9594,
@@ -2459,7 +2459,7 @@
       "name": "Naazgul's Room",
       "description": "Three Rings for the Elven-kings under the sky,\n  Seven for the Dwarf-lords in their halls of stone,\nNine for Mortal Men doomed to die,\n  One for the Dark Lord on his Dark Throne\nIn the Land of Mordor where Shadows lie.\n  One ring to rule them all, One ring to find them,\n  One ring to bring them all and in the darkness bind them\nIn the Land of Mordor where the Shadows lie.\n\nIf I have to explain, you wouldn't understand.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "north": {
           "to_room": 9710,
@@ -2481,7 +2481,7 @@
       "name": "Tank's Room",
       "description": "Now here's a room that is easy to understand. A bed, a dresser, and a\nrack for weapons and armor are all that occupy it. Some posters adorn\nthe walls, to add color, proclaiming things such as Live fast, Die Young,\nand a homemade one in the corner with a picture of Ice and under it the\ninscription, \"I LOVE the resurrection spell\". The only thing out of\nplace in this happy-go-lucky room is mounted head of Crimson Death.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "up": {
           "to_room": 9594,
@@ -2498,7 +2498,7 @@
       "name": "Inside the Castle of Clan MacCleod",
       "description": "You have entered the grand hall of the castle. A huge throne dominates a\nraised area in the northern part of then room. In front of this stands a\ndrafting table.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "south": {
           "to_room": 9594,
@@ -2515,7 +2515,7 @@
       "name": "Underground",
       "description": "The small passage continues west and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9601,
@@ -2536,7 +2536,7 @@
       "name": "Underground",
       "description": "The small passage continues west and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9602,
@@ -2557,7 +2557,7 @@
       "name": "Underground",
       "description": "The small passage continues west and east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9588,
@@ -2578,7 +2578,7 @@
       "name": "Cleric's Sanctum",
       "description": "You walk down the staircase into the silent inner sanctum. Here sits\nyour guildmaster ready to assist you when the time is right. The room\nis completely silent. The only obvious exit is back up the staircase\ninto the the Nectar.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 124,
       "exits": {
         "east": {
           "to_room": 9579,
@@ -2601,7 +2601,7 @@
       "name": "Chamber of the High Priest",
       "description": "You have entered the chamber of the most holy man in New Thalos. The\nHigh Priest advises the Sultan on all matters in the world of the sacred.\nFrom what you have heard however, this holy man has a bit of a temper,\nand he doesn't look very happy that you've disturbed his prayers.\nThe only obvious exit is south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9608,
@@ -2617,7 +2617,7 @@
       "name": "By the Altar",
       "description": "You are by the temple altar in the northern end of Temple of New\nThalos. A huge altar made of highly polished black onyx is standing\nin front of you. Behind this altar sits a twelve foot tall statue of\nLoki, the highest god in all the lands.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 76,
       "exits": {
         "south": {
           "to_room": 9609,
@@ -2638,7 +2638,7 @@
       "name": "The Weaver's Guild",
       "description": "Rows and rows of uncut cloth lie about waiting to be hemmed up into\ntailored clothes. Cotton is brought in from the countryside and\nspun up into cloth and dyed different colors. A young boy walks\nin, grabs a pile of clothing and leaves.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9561,
@@ -2654,7 +2654,7 @@
       "name": "The Craftsman's Guild",
       "description": "You have entered a busy workshop filled with people running amok\nwith various tools and materials.  The air is tense with the rush to\ncomplete various projects and creations.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9561,
@@ -2670,7 +2670,7 @@
       "name": "Inside the Temple",
       "description": "The temple continues here, but not on such a grand scale. The place\nstill looks immaculate. To the north you see the chamber of the High\nPriest and a sign on the door in BIG letters thats says DO NOT DISTURB.\nTo the south is the entrance to the Cleric's Guild.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9604,
@@ -2696,7 +2696,7 @@
       "name": "Inside the Temple",
       "description": "Huge marble pillars rise on either side of you and grab hold of the ceiling.\nBetween each of these, fine softstone frescoes have been carved depicting\nscenes from the religous history of New Thalos. Rows of pews face forward\ngiving their full attention to the pulpit rising high  above the ground. The\ndeep red carpeting underfoot shows not a speck of wear or dirt. It's obvious\nthat New Thalonians take religion seriously.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "north": {
           "to_room": 9605,
@@ -2727,7 +2727,7 @@
       "name": "Donation Room",
       "description": "This room is new to the temple.  It was created during the hard times\nthat have struck the city in recent decades.  Luckily for them the sultan\nhad been hoarding some of the basic necessities for just such an occasion.\nThese days the donation room depends on the generosity of wealthy\nadventureres, and a curse on any that walk in to get all.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9609,
@@ -2743,7 +2743,7 @@
       "name": "The Museum of the Greater Gods",
       "description": "Four large stone statues reside in the museum. They were constructed by\nthe people of New Thalos to pay homage to the saints they believe to\nhave saved all their lives.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9616,
@@ -2764,7 +2764,7 @@
       "name": "Entrance to the Guild of Clerics",
       "description": "This hall pales in comparison to that of the main hall, but is beautiful\nin its own right. Shaven heads and brown robes can be seen milling about\nquitely talking to each other. North is back inside the temple proper,\nand south is the entrance to the cleric's bar.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9608,
@@ -2811,7 +2811,7 @@
       "name": "Ahkeem's Stuff",
       "description": "You step into a shop swirling with smoke.  Ahkeem seems to have a liking for\nthings not of this world...very strange stuff indeed.  There is a large sign on\nthe wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "south": {
           "to_room": 9514,
@@ -2832,7 +2832,7 @@
       "name": "Vera's Veggies",
       "description": "This is a busy place.  Customers shuffle around, bartering for lower prices\non the wide selection of vegetables.  You can still hear your mother telling\nyou 'Eat your Veggies'.  That's probably why you're mudding right now and\nnot hanging out with mom.  But wait...Vera looks just like your mother!\nThere is a large poster, behind the counter, taped to the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "south": {
           "to_room": 9516,
@@ -2853,7 +2853,7 @@
       "name": "The Museum of the Greater Gods",
       "description": "This room is identical to the one north of it, but contains four differnt\nstatues.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9611,
@@ -2874,7 +2874,7 @@
       "name": "Base of the Tower",
       "description": "You walk into a cold room whose only feature is an old wooden staircase\nspirling up along the wall to a higher level. Up these stairs, you are\ntold, lies the old mage who may be able to help you advance in your\nstudies.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9618,
@@ -2923,7 +2923,7 @@
       "name": "Nectar of the Gods",
       "description": "You are startled by the lavishness of this place. From what you know of\nclerics they are supposed to be humble people, giving all their\nmaterial goods to their cause. Perhaps because only clerics are\nallowed to enter this bar they have condoned making it as comfortable\nas possible. In the corner stands a staircase leading down to the\nmeditaion chambers.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9612,
@@ -2944,7 +2944,7 @@
       "name": "The Temple Square",
       "description": "You are standing on the meeting grounds of those with holy intentions.\nMonks, bards, paladins and clerics mill around either preaching or\nlistening to their fellows preach. Huge marble steps lead up to the\ngates of the temple and Main Street lies to the south.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 32,
       "exits": {
         "north": {
           "to_room": 9613,
@@ -2970,7 +2970,7 @@
       "name": "Nabil's Exotic Animals",
       "description": "You stand in a large building decorated with black marble and red satin.\nA lavishly flourished sign details several exotics creatures and Nabil's\nsmiling face.  Cages crowd the room, some large, some small, and filled with\nanimals from the four corners of the world.  Various feeding and grooming\nsupplies fill the back half of the room, along with an assortment of \nleashes for everything from giant rats to minotaur lizards.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 4216,
       "exits": {
         "east": {
           "to_room": 9514,
@@ -2986,7 +2986,7 @@
       "name": "The Butchary",
       "description": "This shop has the aroma of freshly slaughterd beasts.  You feel right at home.\nYou see a fairly simple set up.  The corpses..er...selections hang on hooks,\nstill bleeding into catch pans that drain into a single underground vat.\nYou wonder where that leads....  Taped to the counter, almost obscured by\nblood, there is a barely readable sign.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "west": {
           "to_room": 9516,
@@ -3011,7 +3011,7 @@
       "name": "The Witch's Brew",
       "description": "The first thing you notice as you walk into this spacious shop is the\nhundreds of candles that line the shelves. The swirling mist that surrounds\nyour feet makes it seem that you have stepped into a gateway to another\nplane. A tall brunette stands behind her cluttered table unaware of\nyour entrance.  An ornately lettered sign floats above your head.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "south": {
           "to_room": 9529,
@@ -3032,7 +3032,7 @@
       "name": "Braheem's Magic Shop",
       "description": "You enter a shop crowded with bookshelves and clutterd with scrolls. The\nowner seems to be hard at work on his latest magical creation. You see a\nsmall sign on the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "south": {
           "to_room": 9530,
@@ -3053,7 +3053,7 @@
       "name": "Entrance to the Mage's Tower",
       "description": "The entrance hall is a small poorly lit room. It would seem its only\npurpose is to house the powerful sorcerer standing here guarding\nthe entrance.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9618,
@@ -3074,7 +3074,7 @@
       "name": "Entrance to the Guild of Warriors'",
       "description": "This small hall is merely a check point to keep the unwanted out.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9523,
@@ -3095,7 +3095,7 @@
       "name": "The Repair Shop",
       "description": "One of the most popular shops in New Thalos, this shop is always a hive\nof activity. It is almost inhuman the way one man can fix all the area's\narmor singlehandedly. If you have an item in need of repair simply give\nit to the man behind the counter.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9524,
@@ -3111,7 +3111,7 @@
       "name": "The General Store",
       "description": "The new found wealth of this beautiful city is apearant in the exotic items\nfor sale here.  You wonder what would happen if you typed....LIST...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "east": {
           "to_room": 9508,
@@ -3127,7 +3127,7 @@
       "name": "Abdul's Armor",
       "description": "The sound of hammering metal grows louder as you enter the armory.  Young\nboys run to and fro carrying buckets of water and coal.  A few dwarves work\non sections of armor in the back of the shop, their hammers working too fast\nto follow.  The walls are adorned with all of Abdul's prize creations.  Here\nyou can purchase suits of armor meant to keep monsters from hacking you into\nlittle pieces.\nA note on the wall beckons newbies.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "west": {
           "to_room": 9507,
@@ -3171,7 +3171,7 @@
       "name": "The Mercenary's Guild",
       "description": "This is the storage room for the mercenaries to be hired.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 4,
       "exits": {},
       "extra_descriptions": [],
       "area": 9500
@@ -3181,7 +3181,7 @@
       "name": "Entrance to the Thieves' Guild",
       "description": "This small, dark room has a single torch mounted in the wall for light.\nThere is a small wooden bench and a book lying on it. The assassin\nguarding the entrance from 'outsiders' stands as you walk in.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9639,
@@ -3203,7 +3203,7 @@
       "name": "The Whet Stone",
       "description": "Very large men with very large swords drink beer from very large mugs. Every-\nthing in this room is BIG. The large round tables are scuffed and nicked from\nthe numerous bar brawls that have sprung up. It might be a good idea to hold\nyour tounge for a while as you soak up the atmosphere. There is an exit to\nthe east where the master swordsman awaits pupils to train with.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9626,
@@ -3224,7 +3224,7 @@
       "name": "Tournament and Practice Yard",
       "description": "This is a wide expanse of grass filled with dummies, punching bags and\nswordpupils. To the north you see a man dressed in black robes, unlike\nhis iron clad comrades, who you assume to be your master.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 124,
       "exits": {
         "east": {
           "to_room": 9573,
@@ -3247,7 +3247,7 @@
       "name": "The Bread Stand",
       "description": "A small stand has been set up here, showing the shopkeep's humble\nselection. You notice he has added a few things to his list.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "north": {
           "to_room": 9508,
@@ -3263,7 +3263,7 @@
       "name": "Igor's Implements of Destruction",
       "description": "You can't help but shiver as you look at the selection of vicious weapons.\nHuge swords and wicked looking axes hang on pegs around the room.  A dwarf\nsits at a bench in the back hammering away on his latest creation.  It is\nhere you can buy rare and exotic items not found in other parts of the world.\nA note catches your eye.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 104,
       "exits": {
         "north": {
           "to_room": 9507,
@@ -3290,7 +3290,7 @@
       "name": "Ye Old Leather Shoppe",
       "description": "You are standing on a thick oriental rug surrounded on all sides by racks\nof numerous leather goods. A few women sit on leather cushions sewing in\nsome detail work on custom ordered jackets.  There is a note on the counter.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "east": {
           "to_room": 9566,
@@ -3311,7 +3311,7 @@
       "name": "Smuggler's Inn",
       "description": "You are inside a filthy inn, that seemingly hasn't  been cleaned in decades.\nPoker tables line the walls and everyone stares at you as you walk in.\nYou don't feel very welcome. The bar has numerous knife holes in it\nand the bartender leans over waiting for your order.  A large sign, pinned\nto the wall by a knife, awaits your inspection.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9567,
@@ -3332,7 +3332,7 @@
       "name": "The Filthy Unicorn",
       "description": "A draft chills your bones as you enter, though you see no open window or\ndoor. Hooded figures lurk around in the shadows and speak in low voices.\nA flash of steel lets you know that weapons are in great abundance\nin this crowd. As you quickly check your beltpouch you notice\na small staircase leading down.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9632,
@@ -3353,7 +3353,7 @@
       "name": "Warehouse",
       "description": "You are standing in a large room used to store merchandise made in the\ncity before it is shipped off. All the items here are made in New Thalos\nand shipped to other parts of the land.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9641,
@@ -3374,7 +3374,7 @@
       "name": "Warehouse",
       "description": "Men walk to and fro counting crates and writing down their findings. This\narea of the warehouse is used for storing the raw materials brought in\nfrom areas outside the city. These goods are then delivered to the various\nguilds. The export area of the warehouses is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9534,
@@ -3395,7 +3395,7 @@
       "name": "Shipwright",
       "description": "The wood under you feet creaks from years of being soaked in saltwater. An\nold man with a curly, grey beard stand behind a small counter waiting to\ntake your order. Behind him are mounted various model sailboats and large\nfish.  There is a large poster stapled to the counter.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "east": {
           "to_room": 9643,
@@ -3421,7 +3421,7 @@
       "name": "Drafting Room",
       "description": "The walls are covered with paper sketchings of hull designs. This room is\nused by the shipwright to build his creations on paper before making\na single cut in wood.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9642,
@@ -3437,7 +3437,7 @@
       "name": "The Forge",
       "description": "Very much like the weaponsmith this man deals in the molding of metal. It\nseems that most of his creations deal with horses. On the walls you see\nseveral horseshoes made of iron. The room is hot, hotter than the desert\njust south of here, and one wonders how the smithy can stand it.  Some\nletters have been burned into the wooden wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 124,
       "exits": {
         "south": {
           "to_room": 9537,
@@ -3458,7 +3458,7 @@
       "name": "The Royal Stables",
       "description": "Nothing you wouldn't expect is here. Several stalls hold the Sultan's\nchoice Arabian Stallions, and each has its own trough for drinking.\nA small boy wanders in sometimes with a shovel to remove the offensive\nby-product of such beasts.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9649,
@@ -3479,7 +3479,7 @@
       "name": "The Secret Yard",
       "description": "This is a hidden yard known to only a few people in New Thalos. Here you\nmay train in the arts of stealing, picking locks, and becoming almost\ninvisible. A small staircase leads back up to the unicorn.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9589,
@@ -3518,7 +3518,7 @@
       "name": "The Mage's Laboratory",
       "description": "You stand in the top of an old stone tower. Along the walls hundreds of\npotions, scroll, and wands lie in disarray. The man you see before you\nsits hunched over a small wooden table with two beakers of bubbling\nliquid in front of him. He looks up as you enter and smiles broadly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 9617,
@@ -3534,7 +3534,7 @@
       "name": "The Hay Loft",
       "description": "Not as big as the ones you see on farms in the country, this hay loft\nserves as a storage area for the horses in the stables. The young boy\nyou saw with the shovel seems to have taken up residence on the second\nstory.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9645,
@@ -3550,7 +3550,7 @@
       "name": "The Grand Entrance",
       "description": "Nowhere have you seen such an obscene display of wealth than in this\ncorridor. The shag carpeting under your feet makes it seem as if you are\nwalking on a cloud. Platinum candelabras hang delicately from the ceiling\ncasting light on the ancient tapestries adorning the walls. The crick\nin your neck tells you it's time to stop staring. To the west the\nnumerous halls of the palace begin and the gate lies to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9660,
@@ -3582,7 +3582,7 @@
       "name": "The Library",
       "description": "This building holds the vast collection of books and documents that\nhave been brought here by the committee appointed to recover the\nlost knowledge of Thalos.  Rows of shelves, filled with book in every\ncondition, lines the walls.  The air has the aroma of old parchment and\nglue.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9555,
@@ -3598,7 +3598,7 @@
       "name": "The Dance Hall",
       "description": "You seem to have missed a huge party.  The janitors are here cleaning up\nthe confetti and cigarette butts.  Hundreds of empty beer mugs on the\ntables surrounding the dance floor suggest that the citizens love their\ndrink.  There is still a banner on the wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9556,
@@ -3619,7 +3619,7 @@
       "name": "Jail",
       "description": "You are in jail. For some reason the god's feel you've screwed up\npretty bad and should be put away safely for a while.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 120,
       "exits": {
         "north": {
           "to_room": 9544,
@@ -3636,7 +3636,7 @@
       "name": "City Hall",
       "description": "You stand inside the administrative head of the city. Here the decisions\nregarding city policy are made. Although the Sultan's word is law, he\nusually spends his time on affairs outside the city wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9545,
@@ -3652,7 +3652,7 @@
       "name": "The Boyer/Fletcher's",
       "description": "The walls in this room are covered with pegs that hold various types of\nbows.  There are few people working here, lending to the fact that\nthe skills are rare to come by in the general populous.  A few boys are\nbusy in the corner preparing feathers for the fine shafts used in making\narrows.  Some Elven craftsmen are carefuly inspecting each bow as it is\nfinished.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9560,
@@ -3668,7 +3668,7 @@
       "name": "The Mason's",
       "description": "There is no doubt that the Dwarves here know what they're doing.  They\nhave been invaluable in the building of this beautiful city.  Here they\nare hard at work doing what they do best.  The hammers fly in a blur as\nthese talented craftsmen work the stone into ornate bricks, pillars, trim,\nand many other forms.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 9560,
@@ -3684,7 +3684,7 @@
       "name": "Guard House",
       "description": "You stand inside the southern of the two main guard houses. The stone\ninterior has a spartan look to it, only the bare neccesities. A few\nweapons are mounted on the walls in case they might be needed.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9650,
@@ -3722,7 +3722,7 @@
       "name": "North-West Tower",
       "description": "You stand on one of the four towers guarding the city. The view from here\nis great! To the west you see the tall mountains that make up the divide\nbetween here an Midgaard. The Ishtar river slowly flows from that direction.\nSouth you can see the entire city of New Thalos and the Sands of Sorrow \nto the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 9544,
@@ -3738,7 +3738,7 @@
       "name": "Guard House",
       "description": "You stand inside the northern of the two main guard houses. Strong\nguards are seated here, playing cards. The stone interior is clean\nbut bare walled save the weapons and armor mounted in the walls.\nThe only exit is south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9650,
@@ -3754,7 +3754,7 @@
       "name": "Kitchen",
       "description": "Your footsteps echo off the stone tiles of the kitchen. On the south wall\nyou see the large fireplace and a huge copper pot bubbling merrily. The\nchef is busy chopping up greens and other vegetables at the wooden table\nfor tonight's meal. Servants scurry about grabbing utensils and preparing\nfresh hares. A small door leads out into the hall northward and the door\nto the dining hall is west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9663,
@@ -3776,7 +3776,7 @@
       "name": "North-East Tower",
       "description": "You stand on one of the four towers guarding the city. To the north you\nsee the wide plains and then the forest. South of here you see the city\nand the great eastern desert beyond.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "down": {
           "to_room": 9554,
@@ -3792,7 +3792,7 @@
       "name": "Hall",
       "description": "You are at the eastern end of the southern hallway. A small servants'\nentrance give access to the kitchen and the hall continues west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9661,
@@ -3814,7 +3814,7 @@
       "name": "The Tanner's Guild",
       "description": "You first notice the pungent smell of freshly tanned leather goods as\nyou enter this strange place.  The next thing that grabs your attention\nis the many colors that these people have transformed the beautiful\nskins into.  The people are stretching the leather and cutting it into\nthe shapes they need.  You notice a small message on a wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9562,
@@ -3835,7 +3835,7 @@
       "name": "Hall",
       "description": "You have come to the eastern end of the northern hallway. The only exit\nis west except for the simple wooden door to the north. There is a\ngolden plaque above the door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9666,
@@ -3862,7 +3862,7 @@
       "name": "Shrine of Allah",
       "description": "As you step into this room you seem to leave the material plane. The\nwalls here are decorated with beautiful, multi-colored tiles. There\nis a strange stillness about the air. You sense the presence of an\nalmighty being.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9665,
@@ -3974,7 +3974,7 @@
       "name": "Grand Dining Hall",
       "description": "A long oaken table, coverd with silverware, plates, and a tablecloth\nwith gold trim, dominates the room. Although no diners occupy the room\nas of yet, servants sprint about setting the table and placing condiments.\nThe kitchen entrance is to the east, and two huge double doors open into\nthe hallway north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9672,
@@ -3995,7 +3995,7 @@
       "name": "Hall",
       "description": "You stand at a T-crossing in the long hallways. There are two\nlarge double doors to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9673,
@@ -4027,7 +4027,7 @@
       "name": "Hall",
       "description": "You stand at an intersection of the hallways. Wooden corridors lead off in\nall directions except west; the garden of the palace can be entered there.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9674,
@@ -4058,7 +4058,7 @@
       "name": "Hall",
       "description": "You have come to a T-crossing on the hallways. The wooden corridors\ncontinue east, west and south. There is a large iron door to the north.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9675,
@@ -4090,7 +4090,7 @@
       "name": "Entrance to the Dungeon",
       "description": "You enter a cold damp room with bare, roughly hewn stone walls. This\nroom seems very out of place compared to the splender of the rest of the\npalace. A large steel grating leads down into darkness, and an iron door\nreturns you to the hallway.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9674,
@@ -4113,7 +4113,7 @@
       "name": "Guest Room",
       "description": "This is a simple room used for visiting noblemen. A small dresser stands\non the east wall with a mirror hung right above it. A queen sized bed made\nup in satin sheets stands in the middle of the room against the south\nwall under a window. The only obvious exit is north back out into the\nhallway.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9677,
@@ -4138,7 +4138,7 @@
       "name": "Hall",
       "description": "The long hall continues here with a wooden door in the south wall. On the\nnorth wall hangs the picture of some forgotten nobleman who once ruled\nthe land.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9672,
@@ -4191,7 +4191,7 @@
       "name": "Hall",
       "description": "The long stretch of hallway continues east and west from here. The small\nred carpet covering the centerline is always underfoot and an occasional\nbench or potted plant lines the wall. There is a door here to the north\nwith a plaque mounted over it.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9680,
@@ -4223,7 +4223,7 @@
       "name": "Art Exhibit",
       "description": "You are standing in the Sultan's tribute to the finer virtues. Large\npaintings hang from the walls displaying nature scenes, nudes, and\nglorious victories in battle. Strange scupltures rest on pedestals\nat each corner of the room and mirrors are placed in strategic\nlocations so the viewer may see an entire sculpture at a glance. Your\neyes, however, are pulled towards a painting that dominates the far wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9679,
@@ -4240,7 +4240,7 @@
       "name": "Guest Room",
       "description": "This is another room made up for visiting nobles. There is a dresser up\nagainst the eastern wall with a mirror above it and a queen sized bed,\nmade up in satin sheets, against the south wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9682,
@@ -4256,7 +4256,7 @@
       "name": "Hall",
       "description": "You have reached the western end of the southern hallway. The only exit\nis east except for the doors in the southern and western walls.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9677,
@@ -4284,7 +4284,7 @@
       "name": "Garden Gazebo",
       "description": "Walking through the gardens you come across a small white wooden structure.\nThe sounds of birds, the smell of flowers, ahhh paradise. You believe\nyou have never been in a more peaceful setting.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9678,
@@ -4300,7 +4300,7 @@
       "name": "Hall",
       "description": "This is the western end of the northern hallway. Two doors are set in the\nwalls here, one to the north, another to the west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9685,
@@ -4328,7 +4328,7 @@
       "name": "Guard Room",
       "description": "You stand in a barren chamber lined with nothing but cots and footlockers.\nThe guards come here when off duty to sleep, for they may only leave the\npalace grounds with special permission. The only exit is to the south.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 9684,
@@ -4345,7 +4345,7 @@
       "name": "Guard Room",
       "description": "This is living quarters for the guards of the palace. Barren compared to\nthe rest of the palace, you see only cots and footlockers here. On the\nwalls you see pictures of well known knights who have given a proud name\nto the Sultan's Guard.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9687,
@@ -4361,7 +4361,7 @@
       "name": "Harem",
       "description": "This is the room where the Sultan keeps the beautiful women of his palace.\nThere are ten girls here lying about the room dressed in silks you can\nalmost see through. In the western end of the room stands a large mound\nof pillows and a beautiful young maiden sits perched atop. It is\nunfortunate for you that only the Sultan is allowed in here.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9688,
@@ -4388,7 +4388,7 @@
       "name": "Small room",
       "description": "This is secret chamber allowing the Sultan direct access to his harem\nat any time he chooses.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9689,
@@ -4409,7 +4409,7 @@
       "name": "Throne Room",
       "description": "You stand in the throne room of the mighty Sultan of New Thalos. Guards\nstand at attention near his side ready to make the ultimate sacrifice for\ntheir beloved leader. The gold inlaid throne studded with jewels stands\nupon a mable dias. The Sultan is not a man to be trifled with.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 9690,
@@ -4438,7 +4438,7 @@
       "name": "Treasure Room",
       "description": "You have somhow managed to gain access to the treaure vault of the Sultan.\nThe alarm sounding in the background tells you that you must have\ntripped off some kind of alarm system. It might be adviseable to grab\nas much stuff as you possibly can and run for the door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9685,
@@ -4459,7 +4459,7 @@
       "name": "Jailer's Room",
       "description": "Climbing down the old wooden ladder you enter a small cave-like\nroom. There is a small bench with some old magazines and a low\nburning candle sitting off to one side. A door is set into the\nstone on the east wall, and the steel grating opens up above.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 9692,
@@ -4482,7 +4482,7 @@
       "name": "Tunnel in the Dungeon",
       "description": "You stand in a roughly hewn stone tunnel with cells to the north and\nsouth. The tunnel continues east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9697,
@@ -4516,7 +4516,7 @@
       "name": "Tunnel in the Dungeon",
       "description": "You stand in a roughly hewn stone tunnel with cells to the north and\nsouth. The tunnel continues east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9698,
@@ -4549,7 +4549,7 @@
       "name": "Tunnel in the Dungeon",
       "description": "You stand in a roughly hewn stone tunnel with cells to the north and\nsouth. The tunnel continues east and west.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9699,
@@ -4582,7 +4582,7 @@
       "name": "Tunnel in the Dungeon",
       "description": "You stand in a roughly hewn stone tunnel with cells to the north and\nsouth. The tunnel continues west and you notice a small crack in the\nstone to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9700,
@@ -4616,7 +4616,7 @@
       "name": "Secret Cell",
       "description": "This room seems more like a lair than a cell. Small bits of hay lie\nstrewn about the floor covering bones of unkown origin. Spatterd blood\nand tufts of grey hair lie matted in one corner. As you turn to leave\nyou notice a pair of small red eyes peering at you from the darkness.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 9695,
@@ -4633,7 +4633,7 @@
       "name": "Cell",
       "description": "You are in a cold, cramped chamber with only one exit.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9692,
@@ -4650,7 +4650,7 @@
       "name": "Cell",
       "description": "You are in a cold, cramped chamber with only one exit.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9693,
@@ -4667,7 +4667,7 @@
       "name": "Cell",
       "description": "You are in a cold, cramped chamber with only one exit.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9694,
@@ -4684,7 +4684,7 @@
       "name": "Cell",
       "description": "You are in a cold, cramped chamber with only one exit.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 9695,
@@ -4701,7 +4701,7 @@
       "name": "Cell",
       "description": "You are in a cold, cramped chamber with only one exit.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9692,
@@ -4718,7 +4718,7 @@
       "name": "Cell",
       "description": "You are in a cold, cramped chamber with only one exit.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9693,
@@ -4735,7 +4735,7 @@
       "name": "Cell",
       "description": "You are in a cold, cramped chamber with only one exit.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9694,
@@ -4752,7 +4752,7 @@
       "name": "Cell",
       "description": "You are in a cold, cramped chamber with only one exit.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 9695,
@@ -4769,7 +4769,7 @@
       "name": "Hall",
       "description": "You stand in a large cedar wood hall leading east and west. On the floor\nlies a thin and narrow purple rug. The hall leads west inside the palace\nand east to the Grand Entrance.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 9650,
@@ -4800,7 +4800,7 @@
       "name": "Saska's Library",
       "description": "Fine, golden dust swirls and then settles as you enter Saska's\nlibrary. Leatherbound volumes of Shakespeare rest next to paperbacks by\nTom Robbins, and Toni Morrison's _Sula_ is open on the striking table: an\nantique birdbath of polished blond wood, with glass set over the waterwell\nto give the appearance of a perfectly still pool.  Trinkets, lightly\nlifted from the mantles of the wealthy whose chimneys she cleaned, line\nthe windowsills and create space between the different sections of books.\nA crystal oil lamp seems to float on the table; a piece of paper on the\nwall, written in Saska's own lingering script, reads: \"For what is your friend\nthat you would seek him with hours to kill?  Seek him always with hours to\nlive.  --Kahlil Gibran.\"\n    A cat purrs somewhere, though you cannot see the source, and you feel\nyourself tugged into the softened space. Have a seat in one of the enormous\npapasan chairs, and choose a title that strikes you.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "south": {
           "to_room": 9597,
@@ -5311,7 +5311,7 @@
       "name": "Igor's Secret Chamber",
       "description": "",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "up": {
           "to_room": 9636,
@@ -5349,7 +5349,7 @@
       "name": "On the Dark River",
       "description": "The river continues east and west meandering through the woods.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9772,
@@ -5370,7 +5370,7 @@
       "name": "On the Dark River",
       "description": "The river continues east and west meandering through the woods. You\nhear the sounds of chopping wood far off in the distance.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 6123,
@@ -5396,7 +5396,7 @@
       "name": "On the Dark River",
       "description": "The river continues east meandering through the woods.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9774,
@@ -5412,7 +5412,7 @@
       "name": "Freefall",
       "description": "As your fingers slowly slip from the handguides you feel a sudden\neuphoria as you freefall the 200 + feet to your death.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 6,
       "exits": {},
       "extra_descriptions": [],
       "area": 9500
@@ -5824,7 +5824,7 @@
       "name": "Under the dock",
       "description": "You are swimming underneath the dock. You can see the four wooden\npylons that support the structure. The murky water clouds your vision\nas you gaze westward, but you think you can make out an iron grating in\nthat direction.\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "west": {
           "to_room": 9799,
@@ -5846,7 +5846,7 @@
       "name": "Lair of the Ixitxachitl",
       "description": "Blood swirls around in the water as the Ixitxachitl devours the\nlast of its meal. Swirling around quickly as you intrude upon\nits meal the large sting ray attacks!\n",
       "sector_type": "water_noswim",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "east": {
           "to_room": 9798,

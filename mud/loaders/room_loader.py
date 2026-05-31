@@ -1,8 +1,27 @@
-from mud.models.constants import EX_ISDOOR, EX_NOPASS, EX_PICKPROOF
+from mud.models.constants import EX_ISDOOR, EX_NOPASS, EX_PICKPROOF, RoomFlag, convert_flags_from_letters
 from mud.models.room import Exit, ExtraDescr, Room
 from mud.registry import room_registry
 
 from .base_loader import BaseTokenizer
+
+
+def _parse_room_flag_field(token: str) -> int:
+    """Decode a ROM room-flag token (letters or number) into a bitmask.
+
+    Mirrors ROM ``src/db.c:2743 fread_flag``: a bitvector may be a plain
+    integer (``0``), a letter bitvector (``ADR``), or a mixed/``|``-joined
+    form. ``int()`` cannot decode letters, so try numeric first then fall
+    back to letter decoding.
+    """
+    normalized = token.replace("|", " ").strip()
+    if not normalized:
+        return 0
+    try:
+        return int(normalized, 0)
+    except ValueError:
+        pass
+    letters = "".join(normalized.split())
+    return int(convert_flags_from_letters(letters, RoomFlag))
 
 
 def _locks_to_exit_bits(locks: int) -> int:
@@ -38,8 +57,20 @@ def load_rooms(tokenizer: BaseTokenizer, area):
             while flags_line is not None and flags_line == "~":
                 flags_line = tokenizer.next_line()
             tokens = flags_line.split() if flags_line else []
-            room_flags = int(tokens[0]) if tokens else 0
-            sector_type = int(tokens[-1]) if tokens else 0
+            # ROM src/db.c:1158-1163 load_rooms: the room header line is
+            # `<area-number(discard)> <room_flags via fread_flag> <sector_type>`
+            # (always 3 fields). DB-001: the loader previously read
+            # int(tokens[0]) (the discarded area-number, always 0) and could not
+            # letter-decode ROM bitvectors, dropping every room flag game-wide.
+            assert len(tokens) == 3, f"room {vnum}: expected 3 header tokens, got {tokens!r}"
+            # /* Area number */ tokens[0] discarded
+            room_flags = _parse_room_flag_field(tokens[1])
+            sector_type = int(tokens[2])
+            # NB: ROM's "horrible hack" SET_BIT(ROOM_LAW) for vnum 3000-3399
+            # (src/db.c:1161-1162) is a *load-time* semantic applied at runtime
+            # by json_loader.py (the live path), not baked into the serialized
+            # .are flags here — the converter's job is to serialize the file's
+            # declared flags faithfully.
             room = Room(
                 vnum=vnum, name=name, description=desc, room_flags=room_flags, sector_type=sector_type, area=area
             )

@@ -82,7 +82,7 @@
       "name": "City Entrance",
       "description": "You stand on the outskirts of a large city - Midgaard; the capital of this\nland. The road leads east into the peace and quiet - and dangers - of the\nforest; and to the west it becomes the main street of the town; surrounded by\na confusion of shops, bars, and market places.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "east": {
           "to_room": 3502,
@@ -517,7 +517,7 @@
       "name": "Carnage",
       "description": "Here, you see a gruesome sight. Blood is everywhere... on the trees and\nsoaked into the ground. Two carcasses lie in front of you, seeming to look\nup at you. The forest is impassible to the south, but the other directions\nlook ok.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 3519,
@@ -820,7 +820,7 @@
       "name": "The Deep in the Forest of Miden'nir",
       "description": "The branches above you block out all direct sunlight, making the forest\nin this area very dark.  The forest continues west, but mountains block\nfurther exploration in all other directions, except south, where you notice a\nsmall tunnel dug into the mountainside.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "south": {
           "to_room": 3552,
@@ -841,7 +841,7 @@
       "name": "A Tunnel in the Mountains",
       "description": "The walls of this tunnel were carved out many years ago by the goblins of\nthis forest.  The floor is well worn, and continues south, into the\nmountain, or back north out into the forest.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 3551,
@@ -864,7 +864,7 @@
       "name": "A Tunnel in the Mountains",
       "description": "The tunnel gets lighter to the north, presumably leading out, while to\nthe south the passage gets smaller and smaller.  A small alcove has been\ncarved into the east wall.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 3552,
@@ -893,7 +893,7 @@
       "name": "A Small Alcove",
       "description": "A small alcove has been carved out here.  There are a bunch of twigs\nand leaves thrown into a pile here, probably serving as a bed.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "west": {
           "to_room": 3553,
@@ -915,7 +915,7 @@
       "name": "A Tunnel in the Mountains",
       "description": "As you explore further into the mountainside, the tunnel gets smaller and\nsmaller to the south.  You almost have to hunch over to make your way thru\nthis area.  A small archway to the south leads into a large chamber.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 3553,
@@ -938,7 +938,7 @@
       "name": "The Goblin Headquarters",
       "description": "The tunnel widens into a large (well, large for goblins) cavern that\nserves as the living quarters for the goblins of Miden'nir.  The bones of\nnumbers woodland creatures are strewn about the room, the remanents of a\nrecent meal.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 1,
       "exits": {
         "north": {
           "to_room": 3555,
@@ -1059,7 +1059,7 @@
       "name": "The Woodsman Inn",
       "description": "You are in the common room of the Woodsman Inn. A thin haze of smoke sits\nin the air here. The Inn is often empty, as the forest has become overrun by\ngoblins as of late, and it is no longer safe in these parts. The bar is just\nnorth of here. If you'd rather have your own table, one is empty to the\nsouth.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 12,
       "exits": {
         "north": {
           "to_room": 3576,
@@ -1126,7 +1126,7 @@
       "name": "The Bard's Table",
       "description": "You are in a darker corner in the Inn.  A large round table with a few\nwooden chairs sits here.  There is a large stain on the table, the remnants\nof a spilled drink.\n",
       "sector_type": "city",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "east": {
           "to_room": 3574,
@@ -1158,7 +1158,7 @@
       "name": "A Quieter Section of the Inn",
       "description": "There seems to be no one in this end of the Woodsman, probably a safe place\nto rest and lick your wounds ...\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "north": {
           "to_room": 3574,

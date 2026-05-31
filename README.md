@@ -170,9 +170,10 @@ python -m mud  # Start development server
 - **ROM C Source Audit**: ✅ **100% audit-bound coverage** — 40 of 40 applicable ROM C files are audited, with
   3 additional ROM files intentionally N/A (`recycle.c`, `mem.c`, `imc.c`). See
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
-- **Cross-file Invariants**: ✅ **8/8 enforced** — message delivery, prompt clamping, registry membership,
-  same-room combat, death/connection behavior, RNG determinism, and persistence coherence are locked by dedicated tests.
-- **Test Suite**: ✅ **5010 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
+- **Cross-file Invariants**: ✅ **24/24 enforced** — message delivery, prompt clamping, registry membership,
+  same-room combat, death/connection behavior, RNG determinism, persistence coherence, and room-flag
+  survival (`.are`→JSON→runtime) are locked by dedicated tests.
+- **Test Suite**: ✅ **5102 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
   integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
 - **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact output, boundary, and runtime-path tests on the highest-risk user-visible surfaces.
 - **Compatibility**: Python 3.10+, cross-platform
@@ -321,7 +322,7 @@ QuickMUD is a **production-ready ROM 2.4b MUD** with ✅ **100% behavioral parit
   skills, spells, movement, communication, world/db, save/load, mob programs,
   255/255 commands).
 - **ROM C Source Audit**: 40 of 40 applicable ROM files audited, plus 3 intentional N/A files.
-- **Cross-file Invariants**: 8 of 8 enforced by dedicated regression tests.
+- **Cross-file Invariants**: 24 of 24 enforced by dedicated regression tests.
 
 ### 🔧 Advanced Features
 

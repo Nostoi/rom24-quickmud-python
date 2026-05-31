@@ -13,7 +13,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8606,
@@ -54,7 +54,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8607,
@@ -95,7 +95,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8608,
@@ -136,7 +136,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8600,
@@ -177,7 +177,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8196,
       "exits": {
         "north": {
           "to_room": 8601,
@@ -218,7 +218,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8602,
@@ -259,7 +259,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8603,
@@ -300,7 +300,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8604,
@@ -341,7 +341,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8605,
@@ -382,7 +382,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8616,
@@ -423,7 +423,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8630,
@@ -464,7 +464,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8618,
@@ -505,7 +505,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8610,
@@ -546,7 +546,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8611,
@@ -587,7 +587,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8612,
@@ -628,7 +628,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8613,
@@ -669,7 +669,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8614,
@@ -710,7 +710,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8615,
@@ -751,7 +751,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8626,
@@ -792,7 +792,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8627,
@@ -833,7 +833,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8628,
@@ -874,7 +874,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8620,
@@ -915,7 +915,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8621,
@@ -956,7 +956,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8622,
@@ -997,7 +997,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8623,
@@ -1038,7 +1038,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8624,
@@ -1079,7 +1079,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 8192,
       "exits": {
         "north": {
           "to_room": 8625,
@@ -1273,7 +1273,7 @@
       "name": "The Void",
       "description": "You are suspended in cool electric space above a translucent plain.  You feel\nsynesthesia invading your nerves and reshuffling your senses.  The sky is the\nsame obsidian color as the ground and you can't find a horizon.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 2052,
       "exits": {},
       "extra_descriptions": [],
       "area": 8600

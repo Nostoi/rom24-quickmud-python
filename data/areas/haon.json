@@ -13,7 +13,7 @@
       "name": "The edge of the forest",
       "description": "You are standing at the eastern edge of a big forest.  To the east is the West\nGate of Midgaard and to the west is a narrow trail, leading in through the\nforest.  A dimly lit path leads north.\n",
       "sector_type": "field",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "north": {
           "to_room": 1100,
@@ -397,7 +397,7 @@
       "name": "Inside the cabin",
       "description": "You are inside a small one-room cabin made entirely from heavy logs.  It is\nvery sparsely furnished, containing only most basic housekeeping equipment,\nsuch as a bed, a chair and a table.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "south": {
           "to_room": 6009,
@@ -808,7 +808,7 @@
       "name": "Inside the cave",
       "description": "You are in a natural cave.  Various sorts of debris cover the stone floor,\nemitting a rather unpleasant smell that makes the air thick and hard to\nbreathe.  The only obvious exit is east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6021,
@@ -868,7 +868,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a narrow trail winding its way between the enormous, grey trunks.\nThe crowns of the trees must be very dense, as they leave the forest floor in\nutter darkness.  The trail leads east and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6004,
@@ -900,7 +900,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nwhose grey trunks remind you of ancient pillars in a enormous, deserted hall.\nTo the south, a frail path leads away from the trail.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6100,
@@ -942,7 +942,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nthat stand close on all sides.  Not a sound is to be heard - everything is\nominously quiet.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6101,
@@ -978,7 +978,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are where the dusty trail bends, as to avoid conflict with a colossal\ntrunk to the west.  Not a sound is to be heard - everything is ominously quiet.\nThe trail leads east and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6150,
@@ -1015,7 +1015,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  You feel as if\nthe ancient trees observe you in watchful silence.  The path continues north\nand south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6101,
@@ -1047,7 +1047,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Ancient grey\ntrees loom all around you.  The path continues north and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6104,
@@ -1079,7 +1079,7 @@
       "name": "A junction in the deep, dark forest",
       "description": "You are by a junction where three paths meet.  Ancient grey trees tower above\nyou on all sides.  Paths lead east, south and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6105,
@@ -1117,7 +1117,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Ancient grey\ntrees loom all around you.  The path continues north and east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6108,
@@ -1149,7 +1149,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way between huge, ancient trees\nstanding close on all sides.  The trail leads north and west and to the south,\na frail path leads away from the trail.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6103,
@@ -1191,7 +1191,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nthat stand close on all sides.  Not a sound is to be heard - everything is\nominously quiet.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6108,
@@ -1223,7 +1223,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way between huge, ancient trees that stand\nclose on all sides.  The trail leads east and south.  To the north, a narrow\npath leads away from the trail.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6144,
@@ -1265,7 +1265,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way north-south between huge, ancient\ntrees that loom ominously above you.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6110,
@@ -1297,7 +1297,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way between huge, ancient trees\nstanding close on all sides.  The trail leads north and west and to the east,\na frail path leads away from the trail.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6111,
@@ -1339,7 +1339,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Ancient grey\ntrees loom in all directions.  The path continues south and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 6114,
@@ -1371,7 +1371,7 @@
       "name": "A junction in the deep, dark forest",
       "description": "You are by a junction where three paths meet.  Ancient grey trees tower above\nyou on all sides.  Paths lead north, east and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6113,
@@ -1409,7 +1409,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  You feel as\nif the ancient trees observe you in watchful silence.  The path continues north\nand west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6116,
@@ -1441,7 +1441,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Giant, grey\ntrees loom ominously on all sides.  The path continues east and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6117,
@@ -1473,7 +1473,7 @@
       "name": "A junction in the deep, dark forest",
       "description": "You are by a junction where three paths meet.  Ancient, grey trees seem to\nobserve you silently you from all sides.  Paths lead north, east and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6106,
@@ -1511,7 +1511,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Ancient,\ngrey trees loom everywhere.  The path continues south and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 6119,
@@ -1543,7 +1543,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Huge, ancient\ntrees are on all sides.  The path continues north and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6118,
@@ -1575,7 +1575,7 @@
       "name": "On the river bank in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  To the south a\nfast river is flowing westwards through the forest.  Ancient grey trees loom on\nboth banks.  The path continues north and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6119,
@@ -1611,7 +1611,7 @@
       "name": "A dead end path on the river bank in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  The ancient\ntrees stand so close that the path disappears between the dusty roots.  To the\nsouth a dark river flows from east to west.  The only exit appears to be east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6120,
@@ -1641,7 +1641,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Giant, grey\ntrees loom ominously all around.  The path continues east and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6114,
@@ -1673,7 +1673,7 @@
       "name": "A junction on the river bank in the deep, dark forest",
       "description": "You are by a junction where three paths meet.  Ancient, grey trees seem to\nobserve you silently you from all around.  To the south a dark river flows from\neast to west through the forest.  Paths lead north, east and west. \n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6122,
@@ -1721,7 +1721,7 @@
       "name": "A dead end path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  The ancient\ntrees stand so close that the path disappears between the dusty roots.  To the\nsouth a dark river flows from east to west.  The only exit appears to be west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 2801,
@@ -1757,7 +1757,7 @@
       "name": "A small path on the river bank in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Ancient grey\ntrees loom everywhere.  To the south you smell marsh gas.  The path continues\nnorth and east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6126,
@@ -1799,7 +1799,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way between huge, ancient trees standing\nclose on all sides.  The trail leads north and west, and to the south a frail\npath leads away from the trail.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6127,
@@ -1841,7 +1841,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way between huge, ancient trees\nstanding close on all sides.  The trail leads east and south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6112,
@@ -1873,7 +1873,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nthat stand close on all sides.  Not a sound is to be heard - everything is\nominously quiet.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6126,
@@ -1905,7 +1905,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way east-west between huge, ancient trees\nthat stand close on all sides.  Not a sound is to be heard - everything is\nominously quiet.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6128,
@@ -1937,7 +1937,7 @@
       "name": "A narrow trail through the deep, dark forest",
       "description": "You are on a dusty trail winding its way westwards just below huge sticky\nwires suspended like ropes between the trees.  To the west the path seems to\nbe completely covered in a giant web made from huge threads covered with glue.\nThis place gives you the creeps.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6144,
@@ -1974,7 +1974,7 @@
       "name": "The spider web",
       "description": "You are walking along the narrow path, ducking under the sticky ropes as you\nadvance...\n\n>\nA huge, poisonous spider drops from above!\nA huge, poisonous spider drops from above!\nA huge, poisonous spider drops from above!\n\n>\nThe huge, poisonous spider stings you!  You resist the poison!\nThe huge, poisonous spider stings you!  You are poisoned!\nThe huge, poisonous spider stings you!  You are poisoned!\n\n>\nYou've fallen, and you can't get up!!!!!\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 12,
       "exits": {},
       "extra_descriptions": [],
       "area": 6000
@@ -1984,7 +1984,7 @@
       "name": "Up in the tree",
       "description": "You are hanging on the outside of a huge tree trunk covered in a sticky\nsubstance.  Directly to the west is an immense spider web suspended between\nnumerous of the giant trees including the one you are hanging on.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 13,
       "exits": {
         "west": {
           "to_room": 6133,
@@ -2012,7 +2012,7 @@
       "name": "On the spider web",
       "description": "You are balancing carefully on the giant sticky threads that holds the giant\nweb in place.  To the east is a giant tree trunk and to the west is an entrance\nto a cave-like structure made from many layers of spider web.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6200,
@@ -2050,7 +2050,7 @@
       "name": "The Den of the Queen Spider",
       "description": "You are inside a cave-like structure that seems to be made entirely from\ncountless layers of spider web.  Temperature and humidity is very high making\nit hard to breathe the foul air that lingers here.  The walls are covered with\nopen cocoons.\n",
       "sector_type": "water_swim",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6133,
@@ -2076,7 +2076,7 @@
       "name": "A dusty trail in the deep, dark forest",
       "description": "You are on a dusty trail leading through the deep, dark forest.  Ancient grey\ntrees loom all around you.  The trail continues north and east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6136,
@@ -2104,7 +2104,7 @@
       "name": "A dusty trail in the deep, dark forest",
       "description": "You are on a dusty trail leading through the deep, dark forest.  Ancient,\ngrey trees loom everywhere.  The trail continues south and west.  A broad\nirregular path leads eastwards away from the trail.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6142,
@@ -2146,7 +2146,7 @@
       "name": "At the end of the trail through the deep, dark forest",
       "description": "You are on a dusty trail leading through the deep, dark forest.  Ancient grey\ntrees loom all around you.  You see a dark grove north of you.\nThe only other exit is east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 1300,
@@ -2173,7 +2173,7 @@
       "name": "Outside a cave in the deep, dark forest",
       "description": "You are at the end of a broad, irregular path.  To the north is a very large\nominous-looking cave opening.  The trees here have many marks as if something\nwith huge claws has been tearing at them in rage.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6143,
@@ -2205,7 +2205,7 @@
       "name": "The cave of the Green Dragon",
       "description": "You are in a big natural cave.  The floor is littered with bones of all sorts\nand the stench is so massive that you could cut it with a knife.  The only exit\nis to the south.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 6142,
@@ -2227,7 +2227,7 @@
       "name": "A small path in the deep, dark forest",
       "description": "You are on a narrow path leading through the deep, dark forest.  Ancient,\ngrey trees loom everywhere.  The tree trunks here seem to be covered in some\nsticky substance.  The path continues south and west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 6110,
@@ -2263,7 +2263,7 @@
       "name": "The narrow trail.",
       "description": "This trail looks much spookier than any other thats you have seen.  The usual\nanimal claw marks and bites on the trees are getting far and few between. The\ntrail continues north.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6151,
@@ -2286,7 +2286,7 @@
       "name": "The narrow trail.",
       "description": "This area of the trail is also very peculiar.  You can see no signs of animal\nlife what so ever.  The structure of the surrounding trees forces the path to\nmake a sharp turn to the east.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6152,
@@ -2309,7 +2309,7 @@
       "name": "The circle of trees.",
       "description": "The trees here seem to form a circle around a HUGE tree that is in the center\nof them.  You notice a wooden door carved into the huge tree to the east.  The\ntrail that you followed to get here seems to end at the base of the tree.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "east": {
           "to_room": 6153,
@@ -2333,7 +2333,7 @@
       "name": "Inside the great tree.",
       "description": "You have stepped inside of this hollowed tree.  From here steps lead down into\ndarkness or you can exit the tree by going west.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "west": {
           "to_room": 6152,
@@ -2357,7 +2357,7 @@
       "name": "The underground hallway.",
       "description": "This hallway is apparently one of the roots of the tree hollowed out.  The hall\nleads south to a room where you hear strange noises or you can go up the steps.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "south": {
           "to_room": 6155,
@@ -2380,7 +2380,7 @@
       "name": "The cultist temple.",
       "description": "This temple is built to some god that you don't worship.  It is a nice place\nto visit but you feel very uncomfortable about spending much time here.\nThe wooden altar seems almost to glow as you enter the room.  The only exit is\nthe way you came in.\n",
       "sector_type": "forest",
-      "flags": 0,
+      "flags": 9,
       "exits": {
         "north": {
           "to_room": 6154,

@@ -13,7 +13,7 @@
       "name": "Outside Redferne's residence",
       "description": "A huge cloud forms the plateau on which you are now standing. The wind here\nis absolutely quiet and the sun is shining warmly upon you. From under the\ncloud you can hear the faint sounds of Midgaard. Right before you to the\nnorth lies the grand Mansion of Naris, the residence of the Greater God\nRedferne.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 516,
       "exits": {
         "north": {
           "to_room": 7901,
@@ -42,7 +42,7 @@
       "name": "The Southern end of the hall",
       "description": "You are standing in a vast hall that is dimly lit, but wherefrom the\nlight comes, is a mystery. The walls seem to radiate warmth and give\nthe pleasant feeling of being welcome here. A large portrait is hanging\non one of the walls. A large wooden staircase leads up into the tower.\nTo the east there is a high passage away from the hall. This ends\nshortly after by a tall oak door. The enormous hall extends further\nnorth from here. To the south you can see a huge, and VERY heavy-\nlooking iron-wrought door. It looks like this is the only exit from\nthis magnificent old house. To the west you can see a large ashen door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "north": {
           "to_room": 7904,
@@ -95,7 +95,7 @@
       "name": "Redferne's Library",
       "description": "This is truly a magnificent place! Books and scrolls lie together on every\nshelf. A large globe, with the map of the Mud-world upon it, stands in the\ndimly lit north-western corner of the room. Two large and comfortable-\nlooking leather arm-chairs adorn the center of the library together with\na huge oak desk. Dim light radiates from an enormous crystal chandelier\nhanging down from the ceiling approximately 10 feet off the floor. To the\neast there is a great old ashen door. A large glass window is set in the\nwest wall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "east": {
           "to_room": 7901,
@@ -138,7 +138,7 @@
       "name": "The Artifact room of Naris",
       "description": "This is gloomy and dark room with only a faint light radiating from the\nwalls. A bunch of funny-looking items fill the center of the room. There are\nno furniture here what-so-ever. The only way out seems to be west, through\nthe low steel door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "west": {
           "to_room": -1,
@@ -155,7 +155,7 @@
       "name": "The Northern end of the hall",
       "description": "You are standing in the northern end of the huge hall. This part is under\nthe grand wooden staircase so the light seems a little less bright here,\nbut this doesn't bother your sight at all. To the north lies the kitchen.\nTo the south lies the Southern end of the hall. To the east there is a huge\nmetal door. To the west there is a large aspenwood door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "north": {
           "to_room": 7906,
@@ -191,7 +191,7 @@
       "name": "The Sitting room of Naris",
       "description": "You are standing in the middle of a really comfortable place. The walls are\ndecorated with paintings of smiling Kings and Queens. The most attractive\npicture is one of a Prince in shiny armour. By one of the walls there is an\nold arm-chair. The only exit is through the aspenwood door to the east.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "east": {
           "to_room": 7904,
@@ -214,7 +214,7 @@
       "name": "The Kitchen of Naris",
       "description": "This must be the place of food and drink. You can hear the faint noise of \nrats feasting on meat and bread from somewhere undeterminable. The sound\nmakes you feel the agony of HUNGER. The only visible exit is south to the\nNorthern end of the hall. To the north there is a larder, and to the east\nstands a fridge.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "north": {
           "to_room": 7907,
@@ -245,7 +245,7 @@
       "name": "The Larder",
       "description": "You can see food all over. Among the heaps of food you notice HUGE rats\nscuttering around, nibbling pieces off the heaps here and there.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "south": {
           "to_room": 7906,
@@ -262,7 +262,7 @@
       "name": "The Fridge",
       "description": "This place is LOADED with drink, water and booze.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "west": {
           "to_room": 7906,
@@ -279,7 +279,7 @@
       "name": "On the stairs",
       "description": "You can see up and down the stairway. It seems to take forever, either going\nup OR down. It's just a seemingly insurmountable climb, either way. Up is the \nbedroom of Redferne, and Down leads to the Southern end of the hall.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "up": {
           "to_room": 7911,
@@ -300,7 +300,7 @@
       "name": "The Treasure room",
       "description": "This place is gloomy.  The only visible exit is west, through the oak door.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "east": {
           "to_room": -1,
@@ -324,7 +324,7 @@
       "name": "Redferne's Bedroom",
       "description": "This is a snugly set bedroom with all the necessities for a romantic evening.\nA large fireplace adorns the east wall, and sizzling away is the wood that\nis ablaze within.  The bed is enormous, covering at least HALF of this great\nroom.  This stretches at least 300 square feet, so can you imagine the BED?\nA large staircase leads down to the hall.  A couple of doors open up to a\nbroad balcony to the south. \n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 524,
       "exits": {
         "south": {
           "to_room": 7912,
@@ -347,7 +347,7 @@
       "name": "The Balcony of Redferne's Residence",
       "description": "You see a splendid view of the most of this world. The valleys stretch as far\nas the eye can see to the south. Down below you can see the entrance\nof this magnificent building. To the north are the doors to Redferne's Bedroom.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 516,
       "exits": {
         "north": {
           "to_room": 7911,
@@ -371,7 +371,7 @@
       "name": "The Monster Pen",
       "description": "This looks like the cage in which a large carnivore is being kept. Judging by\nthe state the walls are in, this could very well be a large AGGRESSIVE animal. \nThis makes you pretty insecure, this stating your feeling about the place, \nquite mildly.\n",
       "sector_type": "inside",
-      "flags": 0,
+      "flags": 8,
       "exits": {
         "west": {
           "to_room": 7904,
@@ -389,7 +389,7 @@
       "name": "On the Huge Chain",
       "description": "This place has quite a good view over Midgaard. Your possibilities of movement\nseems to extend only to up and down. Unless you want to let go of the secure\nand seemingly unmoveable chain, then those are the directions you should take\nfrom here.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "up": {
           "to_room": 7916,
@@ -412,7 +412,7 @@
       "name": "On the Great Chain of Naris",
       "description": "You are approximately on the middle of the treacherous Chain. One false step\nand death will come and collect you quickly. The chain leads upwards and down.\nNo way are you going to descend now ... you've only just begun your climb.\nBesides it could cost you your life.  Look down and you'll see why.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "up": {
           "to_room": 7918,
@@ -429,7 +429,7 @@
       "name": "The Mighty Chain of Naris",
       "description": "This place offers a splendid view of the WHOLE COUNTRY SIDE!!! A magnificent\nlight shines upon you and the way up through the clouds is opened. Up there\nyou can now see the Mansion of Naris, Residence of the Greater God Redferne.\nThe chain beneath you seems to evaporate in the mustering clouds that\nsurround you by now.\n",
       "sector_type": "mountain",
-      "flags": 0,
+      "flags": 4,
       "exits": {
         "up": {
           "to_room": 7900,
