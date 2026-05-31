@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **INV-031 — PC death preserves group/follower relationships.** ROM `raw_kill` calls `extract_char(victim, IS_NPC(victim))`; `die_follower` is gated behind `fPull=TRUE` (NPCs only), so PC death does NOT dissolve group/follower relationships. Python was calling `die_follower(victim)` unconditionally, incorrectly dissolving the group when a PC leader died. Now `die_follower` is called only for NPC victims. Also fixed `is_same_group` in `mud/commands/group_commands.py` to use `is` (identity) instead of `==` (field equality), matching ROM's pointer comparison. Regression: `tests/integration/test_inv031_pc_death_preserves_group.py` (4 tests).
+
 ### Added
 - **INV-030 — `bless` Object branch (ROM `src/magic.c:788-834`).** `bless()` now handles Object targets: already-blessed rejection, evil-dispel branch (removes ITEM_EVIL via `affect_remove_obj` on success), clean-object affect application (TO_OBJECT / APPLY_SAVES / -1 / ITEM_BLESS via `affect_to_obj`), and `saving_throw -= 1` side effect for worn objects. Matches ROM `spell_bless` TARGET_OBJ branch byte-for-byte. `do_cast` already routes `defensive_character_or_object` Object targets through `get_obj_carry`. Regression: `tests/integration/test_inv030_bless_object_branch.py` (7 tests).
 

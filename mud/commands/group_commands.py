@@ -125,16 +125,16 @@ def is_same_group(ach: Character, bch: Character) -> bool:
     """
     Check if two characters are in the same group.
 
-    ROM Reference: src/handler.c is_same_group
+    ROM Reference: src/act_comm.c:2018-2028 is_same_group — pointer
+    identity comparison, not field equality.
     """
     if ach is None or bch is None:
         return False
 
-    # Get leaders (use getattr for defensive programming)
     aleader = getattr(ach, "leader", None) or ach
     bleader = getattr(bch, "leader", None) or bch
 
-    return aleader == bleader
+    return aleader is bleader
 
 
 def do_follow(char: Character, args: str) -> str:
@@ -444,15 +444,9 @@ def do_split(char: Character, args: str) -> str:
     # Compose the actor's TO_CHAR feedback (ROM lines 1931-1944).
     out_lines: list[str] = []
     if share_silver > 0:
-        out_lines.append(
-            f"You split {amount_silver} silver coins. "
-            f"Your share is {share_silver + extra_silver} silver."
-        )
+        out_lines.append(f"You split {amount_silver} silver coins. Your share is {share_silver + extra_silver} silver.")
     if share_gold > 0:
-        out_lines.append(
-            f"You split {amount_gold} gold coins. "
-            f"Your share is {share_gold + extra_gold} gold."
-        )
+        out_lines.append(f"You split {amount_gold} gold coins. Your share is {share_gold + extra_gold} gold.")
 
     # Build the per-member broadcast (ROM lines 1946-1962).
     # ROM uses act(buf, ch, NULL, gch, TO_VICT) which resolves $n through
@@ -475,13 +469,11 @@ def do_split(char: Character, args: str) -> str:
         splitter_name = pers(char, occupant)
         if share_gold == 0:
             member_msg = capitalize_act_line(
-                f"{splitter_name} splits {amount_silver} silver coins. "
-                f"Your share is {share_silver} silver."
+                f"{splitter_name} splits {amount_silver} silver coins. Your share is {share_silver} silver."
             )
         elif share_silver == 0:
             member_msg = capitalize_act_line(
-                f"{splitter_name} splits {amount_gold} gold coins. "
-                f"Your share is {share_gold} gold."
+                f"{splitter_name} splits {amount_gold} gold coins. Your share is {share_gold} gold."
             )
         else:
             member_msg = capitalize_act_line(

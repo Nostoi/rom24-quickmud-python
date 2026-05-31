@@ -1,24 +1,28 @@
 """INV-020 — GROUP-LEADER-COHERENCE-ON-RAW-KILL.
 
-ROM ``src/fight.c:1718 raw_kill`` calls ``die_follower(ch)``
-(``src/act_comm.c:1658-1680``) before any extract. ``die_follower``
-walks ``char_list`` and resets every ``fch->leader == ch`` to
-``fch`` so survivors don't hold a dangling pointer at the extracted
-corpse — without that reset, ``src/handler.c:2018 is_same_group``
-would continue to report two unrelated survivors as same-group
-because both still pointed at the dead leader.
+ROM ``src/fight.c:1694-1722 raw_kill`` calls
+``extract_char(victim, IS_NPC(victim))`` — ``fPull=TRUE`` for NPCs,
+``fPull=FALSE`` for PCs.  ``src/handler.c:2120-2122`` gates
+``die_follower(ch)`` behind ``if (fPull)`` — so NPC death dissolves
+the group (leader-chain reset), but PC death does NOT (see INV-031).
+
+This file tests the NPC path: an NPC leader dies via the production
+``raw_kill`` path; ex-members must end up with ``leader is self``
+and ``is_same_group`` must return False.  The PC path (group
+preserved) is covered by INV-031.
 
 The contract spans three modules:
 
-- ``mud/combat/death.py:raw_kill`` (the death funnel) must call
-  ``die_follower(victim)`` BEFORE ``character_registry.remove(victim)``.
+- ``mud/combat/death.py:raw_kill`` must call ``die_follower(victim)``
+  for NPC victims AFTER ``_nuke_pets`` and BEFORE
+  ``character_registry.remove(victim)``.
 - ``mud/characters/follow.py:die_follower`` must walk the registry
   and reset every ``leader == ch`` to self.
-- ``mud/commands/group_commands.py:is_same_group`` (or wherever
-  the leader pointer is consulted) must compare leader pointers.
+- ``mud/commands/group_commands.py:is_same_group`` must compare
+  leader pointers via ``is`` (identity).
 
 A direct-call test exists at
-``tests/integration/test_die_follower_leader_chain.py``. This
+``tests/integration/test_die_follower_leader_chain.py``.  This
 file pins the full death-funnel chain: an NPC leader dies via the
 production ``raw_kill`` path; ex-members must end up with
 ``leader is self`` and ``is_same_group`` must return False.

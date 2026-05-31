@@ -563,7 +563,13 @@ def raw_kill(victim: Character) -> Object | None:
     # ROM Reference: src/fight.c:1136-1180 (mp_death_trigger called before raw_kill)
 
     _nuke_pets(victim, room=getattr(victim, "room", None))
-    die_follower(victim)
+
+    # mirroring ROM src/handler.c:2120-2122 — die_follower is gated behind
+    # fPull=TRUE (NPCs only).  ROM raw_kill calls extract_char(victim, IS_NPC),
+    # so PC death (fPull=FALSE) does NOT dissolve group/follower relationships.
+    if getattr(victim, "is_npc", False):
+        die_follower(victim)
+
     _stop_fighting(victim, True)
     death_cry(victim)
     corpse = make_corpse(victim)

@@ -527,13 +527,16 @@ class TestGroupLeadership:
 
     def test_group_disbands_when_leader_dies(self, create_test_character, create_test_mob):
         """
-        Test: Group disbands when leader dies.
+        Test: Group survives PC leader death per ROM extract_char(ch, FALSE).
 
-        ROM Parity: Mirrors ROM src/handler.c die_follower - group dissolves on leader death
+        ROM Parity: ROM src/fight.c:1694-1722 raw_kill calls
+        extract_char(victim, IS_NPC(victim)).  For PCs, fPull=FALSE,
+        so src/handler.c:2120-2122 die_follower is NOT called —
+        group/follower relationships are preserved.  INV-031.
 
-        Given: Group with leader and follower
-        When: Leader dies in combat
-        Then: Follower's leader and master references cleared
+        Given: Group with PC leader and follower
+        When: PC leader dies in combat
+        Then: Follower's leader and master references are preserved
         """
         from mud.combat.death import raw_kill
 
@@ -546,8 +549,8 @@ class TestGroupLeadership:
 
         raw_kill(leader)
 
-        assert follower.master is None, "Follower's master should be cleared when leader dies"
-        assert follower.leader is None, "Follower's leader should be cleared when leader dies"
+        assert follower.master is leader, "Follower's master must survive PC death — ROM extract_char(ch, FALSE) does not call die_follower"
+        assert follower.leader is leader, "Follower's leader must survive PC death — ROM extract_char(ch, FALSE) does not call die_follower"
 
 
 class TestGroupMovement:
