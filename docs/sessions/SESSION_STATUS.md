@@ -1,9 +1,35 @@
-# Session Status — 2026-05-31 — EMOTE-003 (INV-025 producer correction)
+# Session Status — 2026-05-31 — affect-tick parity (GL-026/GL-028) + EMOTE-003
 
 ## Current State
 
 - **Active mode**: cross-file invariants (per-file audit tracker exhausted).
-- **Last completed (this session, 2.12.5)**:
+- **Last completed (this session, affect-ticks probe → 2.12.6/2.12.7)**:
+  - **GL-026 (2.12.6)** — affect-tick level-fade RNG-consumption order.
+    ROM `if (number_range(0,4)==0 && paf->level>0)` (`src/update.c:768`)
+    consumes the roll **unconditionally** for every `duration>0` affect (C
+    `&&` left-operand-first); Python had the operands swapped
+    (`level>0 and number_range(...)`), skipping the roll at `level==0` — and
+    level reaches 0 via the fade mechanic on long-lived affects, desyncing
+    the global RNG stream for the same tick's plague/poison damage and
+    beyond. Reordered to roll first. Test:
+    `tests/integration/test_gl026_affect_tick_rng_consumption.py`.
+  - **GL-028 (2.12.7)** — an expiring spell effect on a mob crashed the
+    whole game tick. `MobInstance.apply_spell_effect` stores into
+    `spell_effects` without an `affected` mirror, so mobs tick through
+    `tick_spell_effects`' dict-only fallback, which calls
+    `remove_spell_effect` on expiry — a method `MobInstance` lacked →
+    `AttributeError` propagated out of the unguarded `char_update`/`game_tick`,
+    aborting the tick (all later characters + obj/idle/aggr updates skipped).
+    Added symmetric `MobInstance.remove_spell_effect`. Test:
+    `tests/integration/test_gl028_mob_spell_effect_tick.py` (real char_update
+    path).
+- **Open follow-up filed**: **GL-027** (⚠️ OPEN, `UPDATE_C_AUDIT`) — the same
+  dict-only fallback still (1) rolls zero RNG per mob affect and (2) expires
+  `duration==1` one tick early. Fix-direction decision pending: patch the
+  fallback to mirror ROM's loop, **or** give `MobInstance` a real `affected`
+  list + sync so mobs collapse onto the main GL-026 path and the fallback
+  retires. GL-028 unblocked exercising this.
+- **Prior this session (2.12.5)**:
   - **EMOTE-003 / INV-025 correction** — `do_emote` no longer fires NPC
     act-triggers. ROM `do_emote` (`src/act_comm.c:1090-1093`) wraps its
     `act()` in `MOBtrigger = FALSE`, and `src/comm.c:2384` dispatches
@@ -43,12 +69,12 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.5 |
-| Tests | 5118 passed, 4 skipped |
+| Version | 2.12.7 |
+| Tests | 5123 passed, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 24 enforced — INV-025 now records the MOBtrigger *suppression* leg (EMOTE-003 correction); producer leg anchored at `do_stand` |
-| Open correctness gaps | none |
-| Active focus | cross-file invariants probe pass |
+| Open correctness gaps | **GL-027** (mob affect-tick fallback: 0 RNG rolls + off-by-one expiry — fix-direction pending; see `UPDATE_C_AUDIT`) |
+| Active focus | cross-file invariants probe pass (affect-ticks) |
 
 ## Next Intended Task
 
@@ -67,10 +93,17 @@ No open correctness gaps. Resume the **cross-file invariants probe pass**:
    verified clean; the only divergence was the EMOTE-003 over-dispatch (closed).
    The MOBtrigger-suppression sweep is now complete (emote/pmote/give/mpasound
    all verified).
-3. Broader INV-025 sweep: remaining non-combat `_push_message`/`broadcast_room`
+3. **GL-027 (highest-value open gap)** — close the mob affect-tick fallback
+   divergence (0 RNG rolls + off-by-one). Decide fix direction first:
+   patch the dict-only fallback to mirror ROM's loop, **or** give
+   `MobInstance` a real `affected` list + sync (the ROM-correct end-state —
+   one affect list, one loop — but higher blast radius; not a tail-of-session
+   change). See `UPDATE_C_AUDIT` GL-027.
+4. ~~Affect ticks~~ **probed 2.12.6/2.12.7** — GL-026 (RNG order) + GL-028
+   (mob expiry crash) closed; GL-027 remains (see #3).
+5. Broader INV-025 sweep: remaining non-combat `_push_message`/`broadcast_room`
    narration surfaces where the matching ROM site uses `act()`.
-4. Other probe candidates: affect ticks, position transitions,
-   group/follower chain.
+6. Other probe candidates: position transitions, group/follower chain.
 
 Method: probe-then-scope (read ROM C contract → read Python equivalent →
 one failing test for the contract → close as a gap or file as next INV-NNN).
