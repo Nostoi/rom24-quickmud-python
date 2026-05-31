@@ -1,0 +1,124 @@
+# Session Summary — 2026-05-31 — GL-027 mob affect-tick path (+ GL-029/GL-030, VISIBLE-001)
+
+## Scope
+
+Cross-file-invariants primary pass (per-file audit tracker exhausted). Picked up
+from `SESSION_STATUS.md`'s "Next Intended Task" #3: close the highest-value open
+gap **GL-027** (mob affect ticks routed through a divergent dict-only fallback).
+Chose fix direction (b) — give `MobInstance` a real `affected` list so mobs
+collapse onto the main ROM affect loop ("one affect list, one loop"). The chosen
+direction's blast radius surfaced two follow-on gaps mid-flight, both caught by
+adversarial advisor review **before push**: a flag-only orphan/freeze regression
+(GL-029) and a charmed-pet save crash (GL-030). Also closed VISIBLE-001 (filed
+last session) and filed GL-031. Four gaps closed + one filed, failing-test-first,
+one commit each; pushed to `master` at 2.12.9.
+
+## Outcomes
+
+### `GL-027` — ✅ FIXED (2.12.8, commit e09cccff)
+
+- **ROM C**: `src/update.c:762-786` (`char_update` affect loop).
+- **Python**: `mud/spawning/templates.py:MobInstance.apply_spell_effect`/`remove_spell_effect`,
+  `mud/models/character.py:sync_spell_effect_to_affected` (new shared helper).
+- **Gap**: a spell cast on a mob resolved to `MobInstance.apply_spell_effect`,
+  which stored the effect in a `spell_effects` dict with no `affected` mirror, so
+  `char_update` → `tick_spell_effects` routed it through the **dict-only fallback**.
+  That fallback (1) rolled `number_range` **zero** times where ROM rolls one
+  `number_range(0,4)` unconditionally per `duration>0` affect (the GL-026
+  contract — total RNG-stream desync for mobs), and (2) expired a `duration==1`
+  affect one tick early instead of ROM's decrement-and-stay.
+- **Fix**: gave `MobInstance` a real `affected` list; extracted
+  `Character._sync_spell_effect_to_affected` into a shared module-level
+  `sync_spell_effect_to_affected` (PC and mob paths can't drift). `apply_spell_effect`
+  now mirrors shadow `AffectData` and adopts Character's remove-then-apply on
+  re-cast (fixing a latent hitroll/damroll double-apply); `remove_spell_effect`
+  drops the shadow. Mobs now tick on the main path — one roll/affect, decrement-and-stay.
+- **Tests**: `tests/integration/test_gl027_mob_affect_tick_parity.py` — 3 (RNG-stream,
+  decrement-and-stay, flag-only-orphan guard).
+
+### `GL-029` — ✅ FIXED (2.12.8, same commit e09cccff)
+
+- **ROM C**: `src/update.c:762-768`.
+- **Python**: `mud/models/character.py:sync_spell_effect_to_affected`.
+- **Gap (regression GL-027 introduced)**: the shared helper emitted a shadow only
+  for non-zero **numeric** modifiers, so a flag-only effect (sanctuary/sleep/fly/…)
+  produced none. With a modifier-bearing affect also active, the mob took the main
+  path (non-empty `affected`) but the flag-only effect — having no shadow — was
+  never decremented and **froze** (effectively permanent under sustained re-casts).
+  Pre-GL-027 the fallback decremented all `spell_effects` entries.
+- **Fix**: emit one base `AffectData` (`location=APPLY_NONE`, `modifier=0`,
+  `bitvector=flag`) when no modifier shadow was created — flag-only effects tick on
+  the main path for PCs and mobs. Every active `spell_effect` now mirrors ≥1
+  `AffectData`, so the dict-only fallback is unreachable via the normal apply path.
+  The "shifts PC RNG streams, defer it" rationale was an untested assumption —
+  full suite stayed green, so it closed in the same commit.
+- **Tests**: `..._gl027_...py::test_flag_only_affect_ticks_alongside_modifier_affect`.
+
+### `VISIBLE-001` — ✅ FIXED (2.12.9, commit 0cbdb013)
+
+- **ROM C**: `src/act_move.c:1549-1560` (`do_visible`).
+- **Python**: `mud/commands/thief_skills.py:do_visible`.
+- **Gap**: `do_visible` stripped `"invisibility"`/`"mass invisibility"`, but the
+  spells register `SpellEffect(name="invis")`/`"mass invis"` — names never matched,
+  so only the bare AFF bit cleared while `spell_effects["invis"]` (and, after
+  GL-029, its shadow) lingered, later firing a spurious "You fade back into
+  existence." wear-off.
+- **Fix**: route the spell-based strips through `char.remove_spell_effect("invis")`/
+  `("mass invis")` (symmetric across both stores + shadow); `sneak` still uses
+  `_strip_affect` (raw `affected`-only Affect).
+- **Tests**: `tests/integration/test_visible001_strip_cast_invis.py` — 2.
+
+### `GL-030` — ✅ FIXED (2.12.9, commit 535e10c3)
+
+- **ROM C**: `src/save.c:449-523` (`fwrite_pet`).
+- **Python**: `mud/db/serializers.py:_serialize_pet`.
+- **Gap (regression GL-027 introduced)**: GL-027's shadow `AffectData` are keyed by
+  spell **name** (`str`). `_serialize_pet` did `if affect.type < 0: continue` —
+  `"bless" < 0` raises `TypeError` in Python 3, so **saving any buffed/debuffed
+  charmed pet crashed the character save**. Found while verifying the pet round-trip.
+- **Fix**: guard with `if not isinstance(affect_type, int) or affect_type < 0:` —
+  string-named shadows skipped (regenerated by `apply_spell_effect`), integer-SN raw
+  affects still round-trip.
+- **Tests**: `tests/test_pet_save_affect_roundtrip.py` — 2.
+
+### `GL-031` — ⚠️ FILED (open, pre-existing)
+
+- **ROM C**: `src/save.c:449-523` (`fwrite_pet`).
+- **Gap**: a charmed pet's spell-cast buffs don't persist across save/reload —
+  `MobInstance.spell_effects` was never serialized (predates GL-027; GL-030 correctly
+  skips the string-named shadows). ROM saves pet affects by SN. Fix: serialize
+  `pet.spell_effects` + restore via `apply_spell_effect` on load.
+
+## Files Modified
+
+- `mud/models/character.py` — extracted shared `sync_spell_effect_to_affected`
+  (delegated from `Character._sync_spell_effect_to_affected`); added base-entry
+  branch for flag-only effects (GL-029).
+- `mud/spawning/templates.py` — `MobInstance.affected` field; `apply_spell_effect`
+  syncs shadows + remove-then-apply on re-cast; `remove_spell_effect` drops shadow.
+- `mud/commands/thief_skills.py` — `do_visible` strips by registered spell name.
+- `mud/db/serializers.py` — `_serialize_pet` guards non-int affect types.
+- `tests/integration/test_gl027_mob_affect_tick_parity.py` — new (3).
+- `tests/integration/test_visible001_strip_cast_invis.py` — new (2).
+- `tests/test_pet_save_affect_roundtrip.py` — new (2).
+- `docs/parity/UPDATE_C_AUDIT.md` — GL-027/GL-029/GL-030 → ✅ FIXED; GL-031 filed ⚠️ OPEN.
+- `docs/parity/ACT_MOVE_C_AUDIT.md` — VISIBLE-001 → ✅ FIXED.
+- `CHANGELOG.md` — Fixed entries for GL-027/GL-029/GL-030/VISIBLE-001.
+- `README.md` — version + test badges 2.11.40/5010 → 2.12.9/5130 (were stale).
+- `pyproject.toml` — 2.12.7 → 2.12.9.
+
+## Test Status
+
+- New gap tests: 7/7 passing (GL-027 ×3, VISIBLE-001 ×2, GL-030 ×2).
+- Full suite: **5130 passed, 4 skipped** (run twice — after GL-029 base-entry and
+  before push). `ruff` clean on changed files (zero new errors vs baseline).
+- `gitnexus_detect_changes`: low risk, 0 affected processes on every commit.
+
+## Next Steps
+
+Per-file audit tracker remains exhausted; cross-file-invariants pass continues.
+One open gap carries over: **GL-031** (serialize a charmed pet's `spell_effects`
+so spell-cast buffs persist across save/reload — ROM `fwrite_pet` saves pet affects
+by SN). Other standing probe candidates from `SESSION_STATUS.md`: broader INV-025
+non-combat `_push_message`/`broadcast_room` narration sweep, position transitions,
+group/follower chain. Affect-tick candidate is now exhausted (GL-026 through GL-031).

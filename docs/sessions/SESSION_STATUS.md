@@ -90,7 +90,7 @@
     via the existing `_broadcast_act_to_room` helper. The reverse-side
     linked-room broadcasts are left plain (uniform open follow-up; see summary).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-05-31_TRAIN004_AND_INV025_DOOR_COMMANDS.md](SESSION_SUMMARY_2026-05-31_TRAIN004_AND_INV025_DOOR_COMMANDS.md)
+  [SESSION_SUMMARY_2026-05-31_GL027_MOB_AFFECT_TICK_PATH.md](SESSION_SUMMARY_2026-05-31_GL027_MOB_AFFECT_TICK_PATH.md)
 
 ## Project Status (snapshot)
 
