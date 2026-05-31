@@ -503,6 +503,7 @@ def _idle_to_limbo(character: Character) -> None:
     # ROM src/update.c:741-744 — stop_fighting(ch, TRUE) to clean both sides
     if getattr(character, "fighting", None) is not None:
         from mud.combat.engine import stop_fighting
+
         stop_fighting(character, both=True)
 
     if int(getattr(character, "level", 0) or 0) > 1:
@@ -579,7 +580,9 @@ def _char_update_tick_effects(character: Character) -> bool:
         if room is None:
             return False
 
-        _message_room(room, f"{getattr(character, 'name', 'Someone')} writhes in agony as plague sores erupt from their skin.")
+        _message_room(
+            room, f"{getattr(character, 'name', 'Someone')} writhes in agony as plague sores erupt from their skin."
+        )
         _send_to_char(character, "You writhe in agony from the plague.\r\n")
 
         # Find the plague affect to get its level
@@ -612,12 +615,14 @@ def _char_update_tick_effects(character: Character) -> bool:
                     # saves_spell check — simplified: use level check
                     from mud.affects.saves import saves_spell
                     from mud.models.constants import DamageType
+
                     if saves_spell(spread_level - 2, vch, int(DamageType.DISEASE)):
                         continue
                     _send_to_char(vch, "You feel hot and feverish.\r\n")
                     _message_room(room, f"{getattr(vch, 'name', 'Someone')} shivers and looks very ill.", exclude=vch)
                     if hasattr(vch, "add_affect"):
                         from mud.models.character import AffectData
+
                         new_af = AffectData(
                             type="plague",
                             level=spread_level,
@@ -720,6 +725,7 @@ def char_update() -> None:
                     and rng_mm.number_percent() < 5
                 ):
                     from mud.mob_cmds import _extract_character
+
                     room_name = getattr(character, "short_descr", None) or getattr(character, "name", None) or "Someone"
                     _message_room(room, f"{room_name} wanders on home.")
                     _extract_character(character, fPull=True)
@@ -730,52 +736,50 @@ def char_update() -> None:
         if position == Position.STUNNED:
             update_pos(character)
 
-        # Spell affect duration ticks (wear-off messages)
+        if not getattr(character, "is_npc", False):
+            level = int(getattr(character, "level", 0) or 0)
+            if level < LEVEL_IMMORTAL:
+                # mirroring ROM src/update.c:721-758 — PC light decay, idle
+                # timer handling, and conditions run before affect ticks.
+                _decay_worn_light(character)
+
+                descriptor = getattr(character, "desc", None)
+                if descriptor is not None:
+                    character.timer = 0
+                    descriptor_id = getattr(descriptor, "descriptor_id", None)
+                    if descriptor_id is None:
+                        descriptor_id = id(descriptor)
+                    if descriptor_id % _AUTOSAVE_WINDOW == _AUTOSAVE_ROTATION:
+                        autosave_candidates.append(character)
+                else:
+                    character.timer = int(getattr(character, "timer", 0) or 0) + 1
+                    if (
+                        character.timer >= 12
+                        and getattr(character, "was_in_room", None) is None
+                        and getattr(character, "room", None) is not None
+                    ):
+                        _idle_to_limbo(character)
+                    if character.timer > 30:
+                        autoquit_candidates.append(character)
+
+                size = Size(int(getattr(character, "size", Size.MEDIUM) or Size.MEDIUM))
+                hunger_delta = -2 if size > Size.MEDIUM else -1
+                full_delta = -4 if size > Size.MEDIUM else -2
+
+                gain_condition(character, Condition.DRUNK, -1)
+                gain_condition(character, Condition.FULL, full_delta)
+                gain_condition(character, Condition.THIRST, -1)
+                gain_condition(character, Condition.HUNGER, hunger_delta)
+            else:
+                character.timer = 0
+
+        # Spell affect duration ticks (wear-off messages) — ROM src/update.c:762-786.
         for message in tick_spell_effects(character):
             _send_to_char(character, message)
 
         # Per-tick damage effects: plague, poison, incap, mortal (GL-011..GL-014)
         # ROM src/update.c:793-871
         _char_update_tick_effects(character)
-
-        if getattr(character, "is_npc", False):
-            continue
-
-        level = int(getattr(character, "level", 0) or 0)
-        if level < LEVEL_IMMORTAL:
-            _decay_worn_light(character)
-        if level >= LEVEL_IMMORTAL:
-            character.timer = 0
-            continue
-
-        size = Size(int(getattr(character, "size", Size.MEDIUM) or Size.MEDIUM))
-        hunger_delta = -2 if size > Size.MEDIUM else -1
-        full_delta = -4 if size > Size.MEDIUM else -2
-
-        gain_condition(character, Condition.DRUNK, -1)
-        gain_condition(character, Condition.FULL, full_delta)
-        gain_condition(character, Condition.THIRST, -1)
-        gain_condition(character, Condition.HUNGER, hunger_delta)
-
-        descriptor = getattr(character, "desc", None)
-        if descriptor is not None:
-            character.timer = 0
-            descriptor_id = getattr(descriptor, "descriptor_id", None)
-            if descriptor_id is None:
-                descriptor_id = id(descriptor)
-            if descriptor_id % _AUTOSAVE_WINDOW == _AUTOSAVE_ROTATION:
-                autosave_candidates.append(character)
-            continue
-
-        character.timer = int(getattr(character, "timer", 0) or 0) + 1
-        if (
-            character.timer >= 12
-            and getattr(character, "was_in_room", None) is None
-            and getattr(character, "room", None) is not None
-        ):
-            _idle_to_limbo(character)
-        if character.timer > 30:
-            autoquit_candidates.append(character)
 
     for candidate in autosave_candidates:
         try:
@@ -1377,8 +1381,9 @@ def violence_tick(*, do_combat: bool = False) -> None:
 
         # If awake and in same room, fight! Otherwise stop fighting
         # Use getattr to support both Character and MobInstance types.
-        if (getattr(ch, "position", Position.STANDING) > Position.SLEEPING
-                and getattr(ch, "room", None) == getattr(victim, "room", None)):
+        if getattr(ch, "position", Position.STANDING) > Position.SLEEPING and getattr(ch, "room", None) == getattr(
+            victim, "room", None
+        ):
             multi_hit(ch, victim, dt=None)
         else:
             stop_fighting(ch, both=False)

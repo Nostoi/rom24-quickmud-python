@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- **GL-025 — `char_update` now matches ROM light/timer/condition ordering before affect damage.** ROM `src/update.c:721-862` decays worn PC lights, advances idle timers, and applies hunger/thirst/full/drunk conditions before affect expiry and plague/poison/incap/mortal damage. Python ran the affect tick first, so a lethal poison/plague tick could move a one-tick light into the corpse before burnout, skipping `--room->light`, burnout messages, and object extraction. Regression: `tests/test_game_loop.py::test_char_update_decays_light_before_lethal_poison_tick`.
 - **INV-031 — PC death preserves group/follower relationships.** ROM `raw_kill` calls `extract_char(victim, IS_NPC(victim))`; `die_follower` is gated behind `fPull=TRUE` (NPCs only), so PC death does NOT dissolve group/follower relationships. Python was calling `die_follower(victim)` unconditionally, incorrectly dissolving the group when a PC leader died. Now `die_follower` is called only for NPC victims. Also fixed `is_same_group` in `mud/commands/group_commands.py` to use `is` (identity) instead of `==` (field equality), matching ROM's pointer comparison. Regression: `tests/integration/test_inv031_pc_death_preserves_group.py` (4 tests).
 
 ### Added

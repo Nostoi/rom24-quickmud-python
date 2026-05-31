@@ -15,10 +15,11 @@ from mud.game_loop import (
     weather_tick,
 )
 from mud.models.area import Area
-from mud.models.character import Character, PCData, SpellEffect, character_registry
+from mud.models.character import AffectData, Character, PCData, SpellEffect, character_registry
 from mud.models.constants import (
     ROOM_VNUM_LIMBO,
     ActFlag,
+    AffectFlag,
     ItemType,
     Position,
     RoomFlag,
@@ -567,6 +568,70 @@ def test_light_decay_extinguishes_worn_torch():
     assert room.light == 1
     assert "bronze torch flickers and goes out." in hero.messages
     assert "Bronze torch goes out." in watcher.messages
+
+
+def test_char_update_decays_light_before_lethal_poison_tick():
+    area = Area(name="Cavern")
+    room = Room(vnum=301, area=area, light=2)
+    room_registry[room.vnum] = room
+
+    hero = Character(
+        name="Poisoned",
+        level=5,
+        hit=1,
+        max_hit=1,
+        mana=1,
+        max_mana=1,
+        move=1,
+        max_move=1,
+        is_npc=False,
+        position=int(Position.STANDING),
+        pcdata=PCData(condition=[48, 48, 48, 48]),
+    )
+    room.add_character(hero)
+    character_registry.append(hero)
+
+    watcher = Character(
+        name="Watcher",
+        level=5,
+        is_npc=False,
+        position=int(Position.STANDING),
+        pcdata=PCData(condition=[48, 48, 48, 48]),
+    )
+    room.add_character(watcher)
+    character_registry.append(watcher)
+
+    torch = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.LIGHT), short_descr="brass lantern"),
+    )
+    torch.value = [0, 0, 1]
+    torch.wear_loc = int(WearLocation.LIGHT)
+    torch.carried_by = hero
+    object_registry.append(torch)
+    hero.equipment[int(WearLocation.LIGHT)] = torch
+
+    # mirrors ROM src/update.c:721-862 — worn-light decay runs before
+    # affect-tick poison damage, even when the poison tick is lethal.
+    hero.add_affect(AffectFlag.POISON)
+    hero.affected.append(
+        AffectData(
+            type="poison",  # type: ignore[arg-type]
+            level=120,
+            duration=-1,
+            location=0,
+            modifier=0,
+            bitvector=int(AffectFlag.POISON),
+        )
+    )
+
+    char_update()
+
+    assert room.light == 1
+    assert torch not in object_registry
+    assert "brass lantern flickers and goes out." in hero.messages
+    assert "Brass lantern goes out." in watcher.messages
+    assert "Poisoned shivers and suffers." in watcher.messages
 
 
 def test_char_update_extracts_out_of_zone_mob(monkeypatch):
