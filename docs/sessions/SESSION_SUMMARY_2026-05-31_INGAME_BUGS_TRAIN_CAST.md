@@ -123,9 +123,19 @@ of reading ROM C *operation order*, not just the operations.)
    (boot data, assert room 3720 is dark at runtime).
 2. **Exit/door flags** — likely the same loss; the converter only decodes the
    `locks` field via `_locks_to_exit_bits`. Verify during the DB-001 fix.
-3. **`get_max_train` hardcoded to 22** in `advancement.py` — ROM
-   `get_max_train` is race/class dependent (`src/handler.c`). Not yet filed;
-   candidate `TRAIN-004` in `ACT_MOVE_C_AUDIT.md`.
-4. **Pre-existing lint** in `tests/integration/test_spell_casting.py` (F401
-   unused `Room`/`room_registry`) and `test_recall_train_commands.py` (F841
-   unused `result`) — present on HEAD before this session, not introduced here.
+3. **`CAST-009`** (filed, OPEN, `MAGIC_C_AUDIT.md`) — `do_cast` failure branch
+   returns before `_check_improve`, so spells only improve on success; ROM calls
+   `check_improve(ch, sn, FALSE, 1)` in the failure branch (`magic.c:553`).
+   Surfaced by advisor review while closing CAST-008 (same function). One-line
+   fix: `_check_improve(..., False)` before the failure return.
+4. **`TRAIN-004`** (filed, OPEN, `ACT_MOVE_C_AUDIT.md`) — `do_train` caps stats
+   at a hardcoded 22; ROM `get_max_train` is race/class dependent (`src/handler.c`).
+5. **`TRAIN-005`** (filed, OPEN, `ACT_MOVE_C_AUDIT.md`) — bare `train` should
+   print the session count **and** fall through to the "You can train: …"
+   listing (ROM `argument = "foo"`); Python early-returns only the count.
+6. **Pre-existing lint** — `ruff check .` reports ~1829 errors repo-wide
+   (standing debt, mostly import-sorting/unused); **this session introduced
+   zero** (verified per touched file against HEAD). Notable in touched files:
+   F401 unused `Room`/`room_registry` in `test_spell_casting.py`, F841 unused
+   `result` in `test_recall_train_commands.py`. Not gated by CI as a blanket
+   check.
