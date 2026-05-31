@@ -24,6 +24,8 @@ import pytest
 
 from mud.models.character import Character, PCData
 from mud.models.constants import Stat
+from mud.models.mob import MobIndex
+from mud.spawning.templates import MobInstance
 
 
 def _make_pc() -> Character:
@@ -39,6 +41,19 @@ def _make_pc() -> Character:
     char.perm_stat = [13, 13, 13, 13, 13]
     char.mod_stat = [0, 0, 0, 0, 0]
     return char
+
+
+def _make_npc() -> MobInstance:
+    mob = MobInstance(
+        name="FloorMob",
+        level=1,
+        current_hp=20,
+        prototype=MobIndex(vnum=9901, short_descr="floor mob"),
+        max_hit=20,
+    )
+    mob.perm_stat = [13, 13, 13, 13, 13]
+    mob.mod_stat = [0, 0, 0, 0, 0]
+    return mob
 
 
 @pytest.mark.parametrize("stat", [Stat.STR, Stat.INT, Stat.WIS, Stat.DEX, Stat.CON])
@@ -89,3 +104,26 @@ def test_get_curr_stat_ceiling_still_at_twenty_five() -> None:
     char.mod_stat[int(Stat.STR)] = 10  # 28 raw → clamp 25
 
     assert char.get_curr_stat(Stat.STR) == 25
+
+
+@pytest.mark.parametrize("stat", [Stat.STR, Stat.INT, Stat.WIS, Stat.DEX, Stat.CON])
+def test_mob_get_curr_stat_floors_at_three_when_raw_total_is_lower(stat: Stat) -> None:
+    """NPCs use the same ROM floor as PCs.
+
+    # mirrors ROM src/handler.c:868-874 — get_curr_stat uses URANGE(3, ..., max)
+    # for IS_NPC(ch) too.
+    """
+
+    mob = _make_npc()
+    mob.mod_stat[int(stat)] = -15  # perm 13 + mod -15 = -2 raw
+
+    assert mob.get_curr_stat(stat) == 3
+
+
+def test_mob_get_curr_stat_floors_directly_constructed_zero_stat() -> None:
+    """Directly constructed test mobs still follow ROM's lower clamp."""
+
+    mob = _make_npc()
+    mob.perm_stat[int(Stat.STR)] = 0
+
+    assert mob.get_curr_stat(Stat.STR) == 3

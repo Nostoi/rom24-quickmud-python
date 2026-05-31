@@ -695,9 +695,10 @@ class TestBashRomParity:
         mob.level = 0
         mob.off_flags = 0
 
-        # +3: a PC's get_curr_stat(STR) floors to 3 (ROM URANGE(3,...,25), ARITH-105),
-        # so perm_stat=0 contributes +3, not 0. Mob DEX/AC floor to 0 and contribute 0.
-        expected_chance = 50 + (4 - 2) * 10 + 3
+        # +3: a PC's get_curr_stat(STR) floors to 3; -4 from the mob's DEX
+        # floor of 3 via C integer math ((3 * 4) / 3). ROM get_curr_stat floors
+        # both PCs and NPCs to 3 (src/handler.c:868-874).
+        expected_chance = 50 + (4 - 2) * 10 + 3 - 4
 
         def _bash_stub(caster: Character, target: Character | None = None, *, success=None, chance=None) -> str:
             assert success is True or success is False
@@ -867,9 +868,13 @@ class TestBashRomParity:
         victim.size = 0
         victim.off_flags = 0
 
+        # NPC zero-skill starts at 100, then STR 3 - ((DEX 3 * 4) / 3) = -1.
+        # Both effective stats use ROM's get_curr_stat floor of 3.
+        expected_chance = 99
+
         def _bash_stub(caster: Character, target: Character | None = None, *, success=None, chance=None) -> str:
             assert success is True or success is False
-            assert chance == 100
+            assert chance == expected_chance
             return "ok"
 
         with (
@@ -1407,10 +1412,10 @@ class TestDisarmRomParity:
         vict_weapon = 20
         ch_vict_weapon = 80
         diff_mod = ((ch_vict_weapon // 2) - vict_weapon) // 2
-        # ROM L3194-3197 also adds DEX(ch) - 2*STR(victim). With perm_stat=0 the
-        # PC caster's get_curr_stat(DEX) floors to 3 (ROM URANGE(3,...,25), ARITH-105)
-        # while the mob victim's get_curr_stat(STR) floors to 0, so the term is +3.
-        dex_str_mod = 3 - 2 * 0
+        # ROM L3194-3197 also adds DEX(ch) - 2*STR(victim). With perm_stat=0 both
+        # the PC caster's DEX and mob victim's STR floor to 3 (ROM src/handler.c:
+        # get_curr_stat uses URANGE(3, ..., max) for PCs and NPCs).
+        dex_str_mod = 3 - 2 * 3
         expected_chance = (60 * ch_weapon) // 100 + diff_mod + dex_str_mod
 
         def _weapon_sn(_who, _weapon=None):  # noqa: ANN001
@@ -2358,9 +2363,10 @@ class TestDirtKickingRomParity:
         room.sector_type = Sector.INSIDE
 
         # ROM dirt chance = skill% + DEX(ch) - 2*DEX(victim) + ... + terrain.
-        # PC caster get_curr_stat(DEX) floors to 3 (ROM URANGE(3,...,25), ARITH-105);
-        # mob victim DEX floors to 0. INSIDE terrain is -20. So 50 + 3 - 20 = 33.
-        expected_chance = 50 + 3 - 20
+        # Both PC caster DEX and mob victim DEX floor to 3 (ROM src/handler.c:
+        # get_curr_stat uses URANGE(3, ..., max) for PCs and NPCs). INSIDE
+        # terrain is -20, so 50 + 3 - (2 * 3) - 20 = 27.
+        expected_chance = 50 + 3 - (2 * 3) - 20
 
         applied_effects: list = []
         victim.apply_spell_effect = lambda effect: applied_effects.append(effect)

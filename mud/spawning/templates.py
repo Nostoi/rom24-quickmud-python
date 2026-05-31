@@ -498,9 +498,8 @@ class MobInstance:
 
         ROM Parity: mirrors ROM ``get_curr_stat`` (src/handler.c:868-874) —
         ROM uses one function for PCs and NPCs, so a buffed mob (GL-032) reads
-        ``perm_stat[stat] + mod_stat[stat]``. The lower clamp here is kept at
-        the pre-existing ``0`` (ROM uses ``URANGE(3, …)``); raising it to 3 is
-        a separate divergence tracked as GL-033 — see UPDATE_C_AUDIT.
+        ``perm_stat[stat] + mod_stat[stat]`` with the same lower clamp of 3
+        used for player characters (GL-033).
         """
         if not hasattr(self, "perm_stat") or not self.perm_stat:
             return 13
@@ -513,7 +512,9 @@ class MobInstance:
         mod_stat = getattr(self, "mod_stat", None)
         if mod_stat and 0 <= idx < len(mod_stat):
             mod = int(mod_stat[idx] or 0)
-        return max(0, min(25, self.perm_stat[idx] + mod))
+        # mirroring ROM src/handler.c:868-874 get_curr_stat: NPCs use
+        # URANGE(3, perm_stat + mod_stat, 25), not a Python-only zero floor.
+        return max(3, min(25, self.perm_stat[idx] + mod))
 
     @property
     def hit(self) -> int:
