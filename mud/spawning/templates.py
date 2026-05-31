@@ -297,6 +297,11 @@ class MobInstance:
     mprog_target: "Character" | None = None
     mprog_delay: int = 0
     perm_stat: list[int] = field(default_factory=lambda: [0] * MAX_STATS)
+    # GL-032: ROM stores affect stat modifiers in ch->mod_stat[] for PCs *and*
+    # NPCs (src/handler.c:1072-1086 affect_modify), and get_curr_stat returns
+    # perm_stat + mod_stat (src/handler.c:868-874). Mobs need their own mod_stat
+    # so a buffed pet (giant strength etc.) actually gains the stat.
+    mod_stat: list[int] = field(default_factory=lambda: [0] * MAX_STATS)
     comm: int = 0
     is_admin: bool = False
     is_npc: bool = True
@@ -491,8 +496,11 @@ class MobInstance:
         """
         Get current stat value for mob.
 
-        ROM Parity: Mirrors Character.get_curr_stat() for mobs
-        Mobs only have perm_stat (no mod_stat), clamped to ROM 0..25 range.
+        ROM Parity: mirrors ROM ``get_curr_stat`` (src/handler.c:868-874) —
+        ROM uses one function for PCs and NPCs, so a buffed mob (GL-032) reads
+        ``perm_stat[stat] + mod_stat[stat]``. The lower clamp here is kept at
+        the pre-existing ``0`` (ROM uses ``URANGE(3, …)``); raising it to 3 is
+        a separate divergence tracked as GL-033 — see UPDATE_C_AUDIT.
         """
         if not hasattr(self, "perm_stat") or not self.perm_stat:
             return 13
@@ -501,7 +509,11 @@ class MobInstance:
         if idx < 0 or idx >= len(self.perm_stat):
             return 13
 
-        return max(0, min(25, self.perm_stat[idx]))
+        mod = 0
+        mod_stat = getattr(self, "mod_stat", None)
+        if mod_stat and 0 <= idx < len(mod_stat):
+            mod = int(mod_stat[idx] or 0)
+        return max(0, min(25, self.perm_stat[idx] + mod))
 
     @property
     def hit(self) -> int:
@@ -547,11 +559,53 @@ class MobInstance:
             return
         self.affected_by |= bit
 
+    def _apply_stat_modifier(self, stat: int, delta: int) -> None:
+        """Apply a delta to the mob's temporary ``mod_stat`` list (GL-032).
+
+        Mirrors ``Character._apply_stat_modifier`` — ROM ``affect_modify``
+        does ``ch->mod_stat[stat] += mod`` uniformly for PCs and NPCs
+        (src/handler.c:1072-1086).
+        """
+        try:
+            idx = int(stat)
+        except (TypeError, ValueError):  # pragma: no cover - defensive guard
+            return
+        if delta == 0:
+            return
+        mod_stat = getattr(self, "mod_stat", None)
+        if not isinstance(mod_stat, list):
+            self.mod_stat = mod_stat = [0] * MAX_STATS
+        if len(mod_stat) < MAX_STATS:
+            mod_stat.extend([0] * (MAX_STATS - len(mod_stat)))
+        if idx < 0 or idx >= len(mod_stat):
+            return
+        mod_stat[idx] = int(mod_stat[idx] or 0) + delta
+
+    def _shift_sex(self, delta: int) -> None:
+        """Shift sex by ``delta``, clamped to the ROM ``Sex`` range (GL-032).
+
+        Mirrors ``Character`` sex handling — ROM ``affect_modify`` does
+        ``ch->sex += mod`` for APPLY_SEX (src/handler.c:1087-1088).
+        """
+        if not delta:
+            return
+        try:
+            current = int(self.sex)
+        except (TypeError, ValueError):
+            current = 0
+        new_sex = current + delta
+        # Store an int, matching Character sex handling (the reload path also sets
+        # pet.sex to an int from PetSave.sex), so live and reloaded pets agree.
+        try:
+            self.sex = int(Sex(new_sex))
+        except (ValueError, TypeError):
+            self.sex = max(0, min(new_sex, int(Sex.EITHER)))
+
     def remove_spell_effect(self, name: str) -> SpellEffect | None:
-        """Remove a spell effect, unwinding exactly the modifiers that
-        ``MobInstance.apply_spell_effect`` applied (hitroll / damroll /
-        affect_flag) — the mob model never applies ac/saving/stat/sex mods,
-        so this stays symmetric and does not over-unwind.
+        """Remove a spell effect, unwinding every modifier that
+        ``MobInstance.apply_spell_effect`` applied — ac / saving / stat / sex
+        (GL-032) as well as hitroll / damroll / affect_flag — symmetric with
+        ``Character.remove_spell_effect`` so the two paths never drift.
 
         GL-028: ``tick_spell_effects``'s dict-only fallback calls
         ``character.remove_spell_effect`` on expiry; ``MobInstance`` lacked
@@ -562,22 +616,37 @@ class MobInstance:
         effect = self.spell_effects.pop(name, None)
         if effect is None:
             return None
+        # GL-032: unwind APPLY_AC across all four armor classes (mirroring ROM
+        # affect_modify, src/handler.c:1113-1116). armor is a tuple — rebuild it.
+        if getattr(effect, "ac_mod", 0):
+            self.armor = tuple(ac - effect.ac_mod for ac in self.armor)
         if getattr(effect, "hitroll_mod", 0):
             self.hitroll -= effect.hitroll_mod
         if getattr(effect, "damroll_mod", 0):
             self.damroll -= effect.damroll_mod
+        if getattr(effect, "saving_throw_mod", 0):
+            self.saving_throw -= effect.saving_throw_mod
         if getattr(effect, "affect_flag", None) is not None:
             try:
                 self.affected_by &= ~int(effect.affect_flag)
             except Exception:
                 pass
+        stat_mods = getattr(effect, "stat_modifiers", None)
+        if isinstance(stat_mods, dict):
+            for stat, delta in stat_mods.items():
+                self._apply_stat_modifier(stat, -int(delta))
+        self._shift_sex(-int(getattr(effect, "sex_delta", 0) or 0))
         # GL-027: drop the shadow AffectData mirror so the main tick path
         # (mud/affects/engine.py) doesn't keep ticking a removed effect.
         self.affected = [paf for paf in self.affected if getattr(paf, "type", None) != name]
         return effect
 
     def apply_spell_effect(self, effect: "SpellEffect") -> bool:
-        """Apply spell effect to mob (simplified version matching Character interface)."""
+        """Apply a spell effect to a mob, at full parity with
+        ``Character.apply_spell_effect`` — every ROM ``affect_modify`` location
+        (ac / saving / stat / sex / hitroll / damroll / affect_flag), since ROM
+        applies them uniformly to NPCs and PCs (src/handler.c:1018-1164). GL-032.
+        """
         from dataclasses import replace
         from mud.math.c_compat import c_div
         from mud.models.character import sync_spell_effect_to_affected
@@ -590,23 +659,35 @@ class MobInstance:
         if existing is not None:
             combined.level = c_div(combined.level + existing.level, 2)
             combined.duration += existing.duration
+            combined.ac_mod += existing.ac_mod
             combined.hitroll_mod += existing.hitroll_mod
             combined.damroll_mod += existing.damroll_mod
+            combined.saving_throw_mod += existing.saving_throw_mod
             if combined.affect_flag is None:
                 combined.affect_flag = existing.affect_flag
+            for stat, delta in getattr(existing, "stat_modifiers", {}).items():
+                combined.stat_modifiers[stat] = combined.stat_modifiers.get(stat, 0) + int(delta)
+            combined.sex_delta += int(getattr(existing, "sex_delta", 0) or 0)
             # ROM affect_join replaces the prior affect: remove it (its applied
             # mods AND its shadow AffectData) before applying the merged one, so
-            # a re-cast neither double-applies hitroll/damroll nor leaves a
-            # duplicate shadow on self.affected. Mirrors Character.apply_spell_effect.
+            # a re-cast neither double-applies nor leaves a duplicate shadow on
+            # self.affected. Mirrors Character.apply_spell_effect.
             self.remove_spell_effect(effect.name)
 
-        # Apply stat modifications
+        # Apply every affect location (GL-032) — mirrors ROM affect_modify.
+        if combined.ac_mod:
+            self.armor = tuple(ac + combined.ac_mod for ac in self.armor)
         if combined.hitroll_mod:
             self.hitroll += combined.hitroll_mod
         if combined.damroll_mod:
             self.damroll += combined.damroll_mod
+        if combined.saving_throw_mod:
+            self.saving_throw += combined.saving_throw_mod
         if combined.affect_flag is not None:
             self.add_affect(combined.affect_flag)
+        for stat, delta in combined.stat_modifiers.items():
+            self._apply_stat_modifier(stat, int(delta))
+        self._shift_sex(combined.sex_delta)
 
         self.spell_effects[combined.name] = combined
         # GL-027: mirror shadow AffectData into self.affected so char_update ticks
