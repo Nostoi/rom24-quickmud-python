@@ -73,9 +73,16 @@ def do_visible(char: Character, args: str) -> str:
     
     ROM Reference: src/act_move.c do_visible (lines 1549-1560)
     """
-    # Strip spell-based invisibility
-    _strip_affect(char, "invisibility")
-    _strip_affect(char, "mass invisibility")
+    # ROM affect_strip(ch, gsn_invis/gsn_mass_invis/gsn_sneak) — remove the
+    # affects entirely (src/act_move.c:1550-1552). The invisibility spells
+    # register as "invis"/"mass invis" (mud/skills/handlers.py), NOT the display
+    # names — route them through remove_spell_effect so the spell_effects entry,
+    # its shadow AffectData, and the AFF bit all clear symmetrically (VISIBLE-001:
+    # the old "invisibility"/"mass invisibility" names matched nothing, leaving a
+    # lingering spell_effect that later fired a spurious wear-off). `sneak` is a
+    # raw affected-only Affect (do_sneak), so it still goes through _strip_affect.
+    char.remove_spell_effect("invis")
+    char.remove_spell_effect("mass invis")
     _strip_affect(char, "sneak")
     
     # Remove affect flags
