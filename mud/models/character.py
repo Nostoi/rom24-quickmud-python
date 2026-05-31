@@ -269,6 +269,126 @@ class AffectData:
     valid: bool = True  # Validity flag
 
 
+def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
+    """Mirror a :class:`SpellEffect` into ``target.affected`` as shadow
+    :class:`AffectData` entries (one per non-zero modifier).
+
+    The shadow entries exist so ``char_update`` ticks the spell through ROM's
+    main affect loop (``src/update.c:762-786`` — one ``number_range`` roll per
+    ``duration > 0`` affect, decrement-and-stay) and so ``do_affects`` can list
+    it; the actual stat application is done directly by the caller's
+    ``apply_spell_effect`` and unwound by ``remove_spell_effect`` (the tick
+    loop does a *bare* list removal for spell_effects-managed entries, so the
+    shadow's modifier is never affect_modify'd — no double-apply).
+
+    Shared by ``Character`` and ``MobInstance`` so the two affect-mirroring
+    paths never drift (GL-027).  A modifier-less / flag-only effect (e.g.
+    sanctuary, sleep) gets one base ``AffectData`` (``location=APPLY_NONE``,
+    ``modifier=0``, ``bitvector=flag``) so it too ticks on the main loop and
+    never freezes behind a modifier-bearing affect (GL-029).  Because every
+    active ``spell_effect`` now mirrors >=1 ``AffectData``, the dict-only
+    fallback in ``tick_spell_effects`` is no longer reachable via the normal
+    apply path.
+    """
+    # ROM C APPLY_* constants (src/merc.h)
+    APPLY_NONE = 0
+    APPLY_AC = 17
+    APPLY_HITROLL = 18
+    APPLY_DAMROLL = 19
+    APPLY_SAVES = 20
+
+    bitvector = int(effect.affect_flag) if effect.affect_flag else 0
+    # Use spell name as type (temporary until proper skill_table SN mapping available)
+    spell_type = effect.name
+
+    affected = target.affected  # type: ignore[attr-defined]
+    before = len(affected)
+
+    if effect.ac_mod:
+        affected.append(
+            AffectData(
+                type=spell_type,  # type: ignore - temporarily using string instead of int SN
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_AC,
+                modifier=effect.ac_mod,
+                bitvector=bitvector,
+            )
+        )
+
+    if effect.hitroll_mod:
+        affected.append(
+            AffectData(
+                type=spell_type,  # type: ignore
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_HITROLL,
+                modifier=effect.hitroll_mod,
+                bitvector=bitvector,
+            )
+        )
+
+    if effect.damroll_mod:
+        affected.append(
+            AffectData(
+                type=spell_type,  # type: ignore
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_DAMROLL,
+                modifier=effect.damroll_mod,
+                bitvector=bitvector,
+            )
+        )
+
+    if effect.saving_throw_mod:
+        affected.append(
+            AffectData(
+                type=spell_type,  # type: ignore
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_SAVES,
+                modifier=effect.saving_throw_mod,
+                bitvector=bitvector,
+            )
+        )
+
+    # Stat modifiers (APPLY_STR=1, APPLY_DEX=2, APPLY_INT=3, APPLY_WIS=4, APPLY_CON=5)
+    if effect.stat_modifiers:
+        for stat, modifier in effect.stat_modifiers.items():
+            stat_int = int(stat)  # Stat enum to int
+            if 0 <= stat_int <= 5:  # STR through CON
+                affected.append(
+                    AffectData(
+                        type=spell_type,  # type: ignore
+                        level=effect.level,
+                        duration=effect.duration,
+                        location=stat_int + 1,  # APPLY_STR=1, APPLY_DEX=2, etc.
+                        modifier=modifier,
+                        bitvector=bitvector,
+                    )
+                )
+
+    # Flag-only / modifier-less effect (e.g. sanctuary, sleep, fly, invis): no
+    # numeric shadow was created above, but ROM still puts one AFFECT_DATA on
+    # ch->affected (location APPLY_NONE, modifier 0, bitvector = the AFF bit) so
+    # the affect ticks down on the main char_update loop. Without this base entry
+    # the effect would be invisible to tick_spell_effects' main path and its
+    # duration would freeze whenever another affect kept ch->affected non-empty
+    # (GL-027 orphan regression). Emitting it also lets the dict-only fallback
+    # retire: every active spell_effect now mirrors >=1 AffectData.
+    if len(affected) == before:
+        affected.append(
+            AffectData(
+                type=spell_type,  # type: ignore
+                level=effect.level,
+                duration=effect.duration,
+                location=APPLY_NONE,
+                modifier=0,
+                bitvector=bitvector,
+            )
+        )
+
+
 @dataclass
 class Character:
     """Python representation of CHAR_DATA"""
@@ -727,87 +847,9 @@ class Character:
         return True
 
     def _sync_spell_effect_to_affected(self, effect: SpellEffect) -> None:
-        """
-        Convert a SpellEffect to AffectData entries in ch.affected list.
-
-        This maintains ROM C parity for the do_affects command while preserving
-        QuickMUD's SpellEffect system.
-        """
-        # Map ROM C APPLY_* constants
-        APPLY_AC = 17
-        APPLY_HITROLL = 18
-        APPLY_DAMROLL = 19
-        APPLY_SAVES = 20
-
-        # Get bitvector from affect_flag
-        bitvector = int(effect.affect_flag) if effect.affect_flag else 0
-
-        # Create AffectData for each modifier (ROM C allows multiple affects per spell)
-        # Use spell name as type (temporary until proper skill_table SN mapping available)
-        spell_type = effect.name
-
-        # AC modifier
-        if effect.ac_mod:
-            affect = AffectData(
-                type=spell_type,  # type: ignore - temporarily using string instead of int SN
-                level=effect.level,
-                duration=effect.duration,
-                location=APPLY_AC,
-                modifier=effect.ac_mod,
-                bitvector=bitvector,
-            )
-            self.affected.append(affect)
-
-        # Hitroll modifier
-        if effect.hitroll_mod:
-            affect = AffectData(
-                type=spell_type,  # type: ignore
-                level=effect.level,
-                duration=effect.duration,
-                location=APPLY_HITROLL,
-                modifier=effect.hitroll_mod,
-                bitvector=bitvector,
-            )
-            self.affected.append(affect)
-
-        # Damroll modifier
-        if effect.damroll_mod:
-            affect = AffectData(
-                type=spell_type,  # type: ignore
-                level=effect.level,
-                duration=effect.duration,
-                location=APPLY_DAMROLL,
-                modifier=effect.damroll_mod,
-                bitvector=bitvector,
-            )
-            self.affected.append(affect)
-
-        # Saving throw modifier
-        if effect.saving_throw_mod:
-            affect = AffectData(
-                type=spell_type,  # type: ignore
-                level=effect.level,
-                duration=effect.duration,
-                location=APPLY_SAVES,
-                modifier=effect.saving_throw_mod,
-                bitvector=bitvector,
-            )
-            self.affected.append(affect)
-
-        # Stat modifiers (APPLY_STR=1, APPLY_DEX=2, APPLY_INT=3, APPLY_WIS=4, APPLY_CON=5)
-        if effect.stat_modifiers:
-            for stat, modifier in effect.stat_modifiers.items():
-                stat_int = int(stat)  # Stat enum to int
-                if stat_int >= 0 and stat_int <= 5:  # STR through CON
-                    affect = AffectData(
-                        type=spell_type,  # type: ignore
-                        level=effect.level,
-                        duration=effect.duration,
-                        location=stat_int + 1,  # APPLY_STR=1, APPLY_DEX=2, etc.
-                        modifier=modifier,
-                        bitvector=bitvector,
-                    )
-                    self.affected.append(affect)
+        """Delegate to the shared :func:`sync_spell_effect_to_affected` so the
+        Character and MobInstance affect-mirroring paths never drift (GL-027)."""
+        sync_spell_effect_to_affected(self, effect)
 
     def remove_spell_effect(self, name: str) -> SpellEffect | None:
         """Remove a spell effect and restore stat changes."""

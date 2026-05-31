@@ -1,4 +1,4 @@
-# Session Status — 2026-05-31 — affect-tick parity (GL-026/GL-028) + EMOTE-003
+# Session Status — 2026-05-31 — affect-tick parity (GL-026/GL-027/GL-028/GL-029) + EMOTE-003
 
 ## Current State
 
@@ -23,12 +23,27 @@
     Added symmetric `MobInstance.remove_spell_effect`. Test:
     `tests/integration/test_gl028_mob_spell_effect_tick.py` (real char_update
     path).
-- **Open follow-up filed**: **GL-027** (⚠️ OPEN, `UPDATE_C_AUDIT`) — the same
-  dict-only fallback still (1) rolls zero RNG per mob affect and (2) expires
-  `duration==1` one tick early. Fix-direction decision pending: patch the
-  fallback to mirror ROM's loop, **or** give `MobInstance` a real `affected`
-  list + sync so mobs collapse onto the main GL-026 path and the fallback
-  retires. GL-028 unblocked exercising this.
+- **GL-027 + GL-029 (2.12.8) — CLOSED** (commit `94fc9226`). Chose fix
+  direction (b): gave `MobInstance` a real `affected` list and extracted
+  `Character._sync_spell_effect_to_affected` into a shared
+  `mud.models.character.sync_spell_effect_to_affected` helper, so mobs route
+  through the main `affected`-list tick path (one `number_range(0,4)` roll per
+  `duration>0` affect — the GL-026 contract — and decrement-and-stay). The
+  re-cast merge now mirrors Character's remove-then-apply (fixes a latent
+  hitroll/damroll double-apply). **GL-029** (caught by advisor review before
+  push): the helper emitted a shadow only for numeric modifiers, so a flag-only
+  effect (sanctuary/sleep/…) produced none — and a regression GL-027 itself
+  introduced: a flag-only effect FROZE on the main path behind a
+  modifier-bearing affect (never decremented). Fixed by emitting one base
+  `AffectData` (`APPLY_NONE`, `bitvector=flag`) when no modifier shadow was
+  created; every active `spell_effect` now mirrors ≥1 `AffectData`, so the
+  dict-only fallback is no longer reachable via the normal apply path. Full
+  suite green (5126 passed, 4 skipped). Tests:
+  `tests/integration/test_gl027_mob_affect_tick_parity.py` (3:
+  RNG-stream, decrement-and-stay, flag-only-orphan guard).
+  **To verify next (advisor minor, non-blocking):** a charmed pet with an
+  active affect round-tripping through save/reload — `MobInstance.affected`
+  is new; confirm `AffectData` serializes (or is acceptably transient).
 - **Prior this session (2.12.5)**:
   - **EMOTE-003 / INV-025 correction** — `do_emote` no longer fires NPC
     act-triggers. ROM `do_emote` (`src/act_comm.c:1090-1093`) wraps its
@@ -69,11 +84,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.7 |
-| Tests | 5123 passed, 4 skipped |
+| Version | 2.12.8 |
+| Tests | 5126 passed, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 24 enforced — INV-025 now records the MOBtrigger *suppression* leg (EMOTE-003 correction); producer leg anchored at `do_stand` |
-| Open correctness gaps | **GL-027** (mob affect-tick fallback: 0 RNG rolls + off-by-one expiry — fix-direction pending; see `UPDATE_C_AUDIT`) |
+| Open correctness gaps | **None** — GL-027 + GL-029 closed (2.12.8). Non-blocking follow-up: verify charmed-pet affect save/reload round-trip (new `MobInstance.affected`) |
 | Active focus | cross-file invariants probe pass (affect-ticks) |
 
 ## Next Intended Task
@@ -93,14 +108,16 @@ No open correctness gaps. Resume the **cross-file invariants probe pass**:
    verified clean; the only divergence was the EMOTE-003 over-dispatch (closed).
    The MOBtrigger-suppression sweep is now complete (emote/pmote/give/mpasound
    all verified).
-3. **GL-027 (highest-value open gap)** — close the mob affect-tick fallback
-   divergence (0 RNG rolls + off-by-one). Decide fix direction first:
-   patch the dict-only fallback to mirror ROM's loop, **or** give
-   `MobInstance` a real `affected` list + sync (the ROM-correct end-state —
-   one affect list, one loop — but higher blast radius; not a tail-of-session
-   change). See `UPDATE_C_AUDIT` GL-027.
-4. ~~Affect ticks~~ **probed 2.12.6/2.12.7** — GL-026 (RNG order) + GL-028
-   (mob expiry crash) closed; GL-027 remains (see #3).
+3. ~~GL-027~~ **closed 2.12.8 (commit `94fc9226`)** — chose fix direction (b):
+   `MobInstance` got a real `affected` list + shared
+   `sync_spell_effect_to_affected`, so mobs route through the main GL-026 path.
+   Adversarial review caught **GL-029** (flag-only effects froze on the main
+   path / hit the fallback) — also closed in the same commit via a base
+   `AffectData`. The dict-only fallback is now unreachable via the normal apply
+   path. See `UPDATE_C_AUDIT` GL-027/GL-029.
+4. ~~Affect ticks~~ **probed/closed 2.12.6–2.12.8** — GL-026 (RNG order), GL-028
+   (mob expiry crash), GL-027 + GL-029 (mob/flag-only affect-tick path) all
+   closed. Affect-tick candidate is now exhausted.
 5. Broader INV-025 sweep: remaining non-combat `_push_message`/`broadcast_room`
    narration surfaces where the matching ROM site uses `act()`.
 6. Other probe candidates: position transitions, group/follower chain.

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from mud.models.object import Object
 
 if TYPE_CHECKING:
-    from mud.models.character import Character, SpellEffect
+    from mud.models.character import AffectData, Character, SpellEffect
     from mud.models.mob import MobIndex, MobProgram
     from mud.models.obj import ObjIndex
     from mud.models.object import Object
@@ -304,6 +304,10 @@ class MobInstance:
     fighting: "Character | MobInstance | None" = None  # Combat target
     pcdata: None = None  # NPCs don't have pcdata (player-specific data)
     spell_effects: dict[str, "SpellEffect"] = field(default_factory=dict)  # Active spell effects
+    # GL-027: shadow AffectData mirror of spell_effects, so char_update ticks the
+    # mob through ROM's main affect loop (src/update.c:762-786) instead of the
+    # dict-only fallback (which rolled zero RNG and expired one tick early).
+    affected: list[AffectData] = field(default_factory=list)
 
     @classmethod
     def from_prototype(cls, proto: MobIndex) -> MobInstance:
@@ -567,12 +571,16 @@ class MobInstance:
                 self.affected_by &= ~int(effect.affect_flag)
             except Exception:
                 pass
+        # GL-027: drop the shadow AffectData mirror so the main tick path
+        # (mud/affects/engine.py) doesn't keep ticking a removed effect.
+        self.affected = [paf for paf in self.affected if getattr(paf, "type", None) != name]
         return effect
 
     def apply_spell_effect(self, effect: "SpellEffect") -> bool:
         """Apply spell effect to mob (simplified version matching Character interface)."""
         from dataclasses import replace
         from mud.math.c_compat import c_div
+        from mud.models.character import sync_spell_effect_to_affected
 
         existing = self.spell_effects.get(effect.name)
         combined = replace(effect)
@@ -586,6 +594,11 @@ class MobInstance:
             combined.damroll_mod += existing.damroll_mod
             if combined.affect_flag is None:
                 combined.affect_flag = existing.affect_flag
+            # ROM affect_join replaces the prior affect: remove it (its applied
+            # mods AND its shadow AffectData) before applying the merged one, so
+            # a re-cast neither double-applies hitroll/damroll nor leaves a
+            # duplicate shadow on self.affected. Mirrors Character.apply_spell_effect.
+            self.remove_spell_effect(effect.name)
 
         # Apply stat modifications
         if combined.hitroll_mod:
@@ -596,6 +609,10 @@ class MobInstance:
             self.add_affect(combined.affect_flag)
 
         self.spell_effects[combined.name] = combined
+        # GL-027: mirror shadow AffectData into self.affected so char_update ticks
+        # the mob through ROM's main affect loop (one number_range roll per
+        # duration>0 affect, decrement-and-stay) instead of the dict-only fallback.
+        sync_spell_effect_to_affected(self, combined)
         return True
 
     def is_immortal(self) -> bool:
