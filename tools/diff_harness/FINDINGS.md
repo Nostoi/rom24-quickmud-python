@@ -8,6 +8,572 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-015 — affect spells emit no ROM success message when cast through `do_cast` — ✅ RESOLVED (armor; bless/shield sweep open)
+
+**Status:** ✅ RESOLVED 2026-05-29 (master v2.11.20, `a3476e33`) — the `armor` handler now
+delivers ROM's success messaging, so `affect_armor` converges end-to-end and the
+`KNOWN_DIVERGENCES` entry self-cleared. Surfaced by the new `affect_armor` scenario (an L10
+mage self-casts `armor`). The broader bless/shield/… sweep remains open under
+`docs/parity/MAGIC_C_AUDIT.md` **MAGIC-002**.
+
+**Scenario:** `affect_armor` — `__seed=777`, `__learn=armor`, `cast armor` (level 10 so a
+mage clears armor's `skill_level[mage]==7` gate; armor is −20 AC regardless of level, so the
+higher level keeps the baseline clean).
+
+Symptom (step 3, `cast armor`):
+```
+C : ['You feel someone protecting you.']
+py: []
+```
+Everything else converges: `affects == ['armor']`, `eff_ac == [80,80,80,80]` (−20), and
+`mana == 80` (100 − 20) on both sides. The **only** diverging field is `output`.
+
+**Root cause:** ROM `spell_armor` (`src/magic.c:753-777`) sends
+`"You feel someone protecting you.\n\r"` to the victim on success (and `act("$N is protected
+by your magic.")` to the caster when `ch != victim`). The Python `armor` handler
+(`mud/skills/handlers.py:1335`) applies the affect but sends **nothing** on success. Because
+`do_cast` is silent on a successful cast (FINDING-013: all player-facing output comes from the
+spell function), the message is dropped entirely.
+
+This is a **class**, not a one-off: `bless` (`handlers.py:1465`) and `shield`
+(`handlers.py:7094`) are likewise silent on success, so every affect-only spell cast through
+`do_cast` is missing its ROM success line. (When cast via the older `skill_registry.cast`
+path they instead get the generic `_default_success_message` "You cast <spell>." fallback —
+also non-ROM, just a different wrong string.) The `affect_armor` scenario exercises and fixes
+the `armor` instance; the broader sweep (bless/shield/giant strength/haste/frenzy/… — verify
+each handler against its `src/magic.c` `spell_*` success message) is filed under MAGIC-002 as
+follow-up, not closed here (one gap = one test = one commit).
+
+**Fix (armor, on master):** make the `armor` handler deliver ROM's messaging faithfully —
+`"You feel someone protecting you."` to the target on success, and the `"$N is protected by
+your magic."` caster line for a cross-target cast; also correct the already-affected branch to
+ROM's `"You are already armored."` / `act("$N is already armored.")` (Python currently sends
+the non-ROM `"They are already protected."`). Regression: a master integration test
+(`tests/integration/test_magic_002_armor_message.py`) asserting the success message reaches
+the target through `do_cast`; the differential `affect_armor` golden then converges and the
+`KNOWN_DIVERGENCES` entry self-clears.
+
+**Instrument note (separate from the bug):** before this scenario the snapshot's `affects`
+field was never exercised by any golden, and `pysnap._affect_names` only read
+`aff.spell_name`/`aff.name` — neither of which the real affect model (`AffectData`) carries
+(it stores the spell identity in `.type`: a lowercase ROM skill name in the SpellEffect-sync
+path, or an int SN via `affect_to_char`). So `affects` was silently always `[]` on the Python
+side. Fixed in `pysnap.py` (read `.type`, mapping int SNs through `ROM_SKILL_NAMES_BY_INDEX`
+to match the C shim's `skill_table[paf->type].name`), locked by two Python-only unit tests in
+`test_diff_harness_unit.py`. The `affect_flags` case mismatch (C lowercase `affect_flags[]`
+vs Python `AffectFlag.<NAME>.name`) is **not** touched here — `armor` sets no bitvector, so no
+flag is exercised; defer that normalization to a flag-setting scenario (sanctuary/haste/
+detect-invis) where a real golden can prove it.
+
+---
+
+## FINDING-014 — wait-state ("lag") enforcement: synchronous pulse-loop vs async — ✅ RESOLVED (architectural divergence)
+
+**Status:** ✅ RESOLVED 2026-05-29 as a **documented architectural divergence** (class of
+`docs/divergences/MESSAGE_DELIVERY.md`), **not a parity bug** — no production change. The
+replay now drives ordinary commands below the wait gate (`char.wait = 0` before
+`process_command`), mirroring the C shim's direct `interpret()`. With that, **`spell_combat`
+converges end-to-end** (all 7 steps; removed from `KNOWN_DIVERGENCES`).
+
+**Why it is not a bug:** in real ROM you *cannot* cast twice with zero intervening pulses —
+`WAIT_STATE` from cast 1 makes the comm.c loop defer cast 2 until `wait` decrements. The C
+golden shows both casts firing *only* because the diffshim calls `interpret()` directly,
+**bypassing ROM's own comm-loop gate** (`src/comm.c:619-621`/`:820-822`). So the back-to-back
+casts are an **instrument artifact, not real ROM behavior** — Python's handler-level wait
+enforcement (`do_cast` etc.) is actually the *more* faithful end-state. Two corroborations:
+the snapshot schema has **no `wait` field** (wait was never under comparison), and the C side
+has wait **set-but-unchecked**; the harness drives *below* the gate on C and *above* it on
+Python — that asymmetry *is* the finding. A real input-loop wait gate for Python (like
+comm.c, above `process_command`) is a worthwhile *separate* project but would not converge
+the differential by itself (the replay must still drive below the gate).
+
+Symptom (step 6, the second consecutive `cast 'magic missile' drunk`, before the replay fix):
+
+Symptom (step 6, the second consecutive `cast 'magic missile' drunk`):
+```
+C : ['Your magic missile grazes the drunk.']
+py: ['You are still recovering.', 'You are still recovering.']
+```
+
+**Root cause:** ROM `do_cast` only *sets* wait via `WAIT_STATE(ch, skill_table[sn].beats)`
+(`src/magic.c:547`); it never rejects a cast for `ch->wait > 0`. The wait gate lives in
+the **game loop** (`src/comm.c:619-621` and `:820-822`): each pulse the loop decrements
+`d->character->wait` and skips processing that descriptor's queued input until wait
+reaches 0 — the command is *deferred silently*, never rejected, and ROM sends no
+"You are still recovering." message. Python instead checks `char.wait > 0` *inside* the
+command handlers (`do_cast` `mud/commands/combat.py:827`, plus `do_kick`/`do_rescue`/
+`do_backstab`/`do_berserk`/`do_bash` at :178/:236/:349/:402/:537) and returns a synthetic
+"You are still recovering." line. So the differential's second cast — driven directly via
+`process_command`/`interpret`, bypassing the loop on both sides — is *rejected* in Python
+but *executes* in C. (The doubled py line is `do_cast` both `return`-ing and appending the
+message to `char.messages`.)
+
+**Optional separate project (not required for parity):** if Python's input model is ever made
+to enforce wait at the loop level like ROM `comm.c` (defer input under wait, above
+`process_command`), the ~5 in-handler `char.wait > 0` checks (`do_cast`
+`mud/commands/combat.py:827`, plus `do_kick`/`do_rescue`/`do_backstab`/`do_berserk`/`do_bash`
+at :178/:236/:349/:402/:537) and the synthetic "You are still recovering." message (no ROM
+source) would move there. This is an async-architecture improvement, deliberately out of
+scope here — the handler-level enforcement is the more faithful behavior today, and the
+replay drives below the gate to keep the scenario exercising interpret-level parity.
+
+---
+
+## FINDING-013 — `do_cast` emits a spurious "You cast <spell>." line ROM never sends — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-29 via **master v2.11.19** (`do_cast` now returns `""` on a
+successful cast; the spell handler's own message is the only player-facing output, matching
+ROM `src/magic.c:553-563`). Merged into `diff-harness`; `spell_combat` step 5 now converges
+and the first divergence advanced to **step 6** (FINDING-014). Regression:
+`tests/integration/test_finding_013_cast_silent_on_success.py`. Re-baselined
+`tests/test_skills_spells_cast_listing.py::test_do_cast_offensive_no_target_defaults_to_fighting_victim`.
+
+Historical (surfaced 2026-05-29 the moment FINDING-012 unblocked casting). Gated in
+`KNOWN_DIVERGENCES` until resolved.
+
+**Scenario:** `spell_combat` — an L5 mage `__learn=magic missile` then
+`cast 'magic missile' drunk` twice, then one `__tick`.
+
+Symptom (step 5, first cast):
+```
+C : ['Your magic missile maims the drunk.']
+py: ['You cast magic missile.', 'Your magic missile maims the drunk.']
+```
+
+**Root cause:** ROM `do_cast` (`src/magic.c:553-563`) is **silent on a successful
+cast** — it deducts mana, calls `spell_fun`, and `check_improve`; the only player-
+facing output is whatever the spell function itself sends (here `damage()` →
+"Your magic missile maims the drunk."). Python's `do_cast`
+(`mud/commands/combat.py:897`) and `skill_registry.cast`
+(`mud/skills/registry.py:277`) both `return f"You cast {skill.name}."`, and the
+command dispatcher sends a command's return value to the player
+(`mud/net/connection.py:1979-2000`) — so the player sees an extra confirmation
+line ROM never produces.
+
+**Blast radius (why this is not a one-liner):** the `"You cast {skill.name}."`
+string is the return contract of both cast entry points and is asserted by 3
+existing tests — `tests/test_skills_spells_cast_listing.py:218`,
+`tests/test_skills.py:60` & `:118`. The ROM-faithful fix returns `""` on success
+(the spell handler already delivers messages via `char.messages`/`_deliver_message`)
+and re-baselines those 3 assertions (per AGENTS.md, a test contradicting ROM is the
+test's bug). File as a per-file gap before closing.
+
+---
+
+## FINDING-012 — `MobInstance` lacks `saving_throw`, crashing `saves_spell` for any NPC spell target — ✅ RESOLVED (fix applied, pending master land)
+
+**Status:** ✅ Fix applied in the `diff-harness` worktree (`mud/spawning/templates.py`);
+**pending commit + land on master**. Surfaced 2026-05-29 by the new `spell_combat`
+scenario, step 5 (the first offensive cast at an NPC).
+
+Symptom (step 5, before fix):
+```
+C : ['Your magic missile maims the drunk.']
+py: ["Spell cast failed: 'MobInstance' object has no attribute 'saving_throw'"]
+```
+(`do_cast` wraps `spell_fun` in try/except, so the `AttributeError` surfaced as a
+"Spell cast failed: …" line instead of crashing the process.)
+
+**Root cause:** ROM `CHAR_DATA.saving_throw` is a field shared by PCs **and** NPCs;
+`saves_spell` (`src/magic.c:170`) reads `victim->saving_throw` for every target. The
+Python `MobInstance` dataclass mirrors many `CHAR_DATA` fields but **omitted
+`saving_throw`**, so any `saves_spell`-using offensive spell cast at an NPC raised
+`AttributeError`. (No prior test caught it — existing spell tests target PCs or
+bypass the NPC-victim `saves_spell` path; the differential exercised it directly.)
+
+**Fix:** added `saving_throw: int = 0` to `MobInstance` (mirrors ROM `create_mobile`,
+which leaves a mob's `saving_throw` at 0 — never set from the proto). Purely
+additive (new field, default 0; no constructor or reader change). `gitnexus_impact`
+= HIGH by import-graph breadth (125 importers) but functionally low-risk (additive).
+
+---
+
+## FINDING-011 — combat miss line drops the attack noun — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-29 via **FIGHT-028** (master v2.11.16). `dam_message`
+had a `percent <= 0` early-return that forced the no-noun `TYPE_HIT` template for
+*any* miss (and any low-damage hit rounding to percent 0), regardless of `dt`. ROM
+`src/fight.c:2157` chooses its template purely on `dt == TYPE_HIT` vs not — `dam == 0`
+only swaps `vs/vp` to "miss"/"misses". Deleted the block so the no-noun output keys
+solely on `attack is None`; a resolved-noun miss now renders "$n's beating misses you"
+like its own hit path. **`combat_melee_rounds` now converges end-to-end** (clean diff,
+no xfail) and was removed from `KNOWN_DIVERGENCES`. Regression:
+`tests/integration/test_fight_028_miss_attack_noun.py`.
+
+Historical (surfaced 2026-05-29 the moment FINDING-010 (FIGHT-027, v2.11.15) was
+closed): with the unarmed-NPC damage-dice fix merged from master, the
+`combat_melee_rounds` first divergence advanced from step 6 to **step 7** (the
+*third* `__tick`/`violence_update` round); steps 1–6 converged fully on both
+engines.
+
+Symptom (step 7, third combat round — the drunk *misses*):
+```
+step 7 (command='__tick') · output ·
+  C  = ["The drunk's beating misses you.", 'You scratch the drunk.']
+  py = ["The drunk misses you.",            'You scratch the drunk.']
+        └ C includes the attack noun "beating"; py drops it on the miss line
+```
+
+Line 2 (the PC's swing) is identical, and the hp converges (both engines: the
+drunk's miss deals 0). The only diff is the **miss-line rendering**: ROM
+`dam_message` (`src/fight.c:2171-2211`) for `dt != TYPE_HIT` builds
+`"{4$n's %s %s you%c{x"` with `attack = attack_table[dt - TYPE_HIT].noun` and
+`vp = "misses"` (for `dam == 0`), i.e. **"The drunk's beating misses you."**.
+Only the bare `dt == TYPE_HIT` case (`src/fight.c:2157-2169`) renders the
+noun-less `"$n %s you"`. The drunk's `dt = TYPE_HIT + 13` ("beating"), so ROM
+uses the noun template — and indeed a *hit* by the same mob renders
+"The drunk's beating hits you." correctly in Python (step 5/6). So Python's
+**miss path** specifically routes through the noun-less template where its own
+hit path uses the noun template.
+
+**Root cause (to confirm):** the Python miss path (`apply_damage` with `dam == 0`,
+or `mud/combat/messages.py:dam_message`) selects the `TYPE_HIT` noun-less branch
+instead of the attack-noun branch keyed on `dt`. Distinct from FIGHT-027 (damage
+calc) — this is dam_message rendering. Closed as **FIGHT-028** in
+`docs/parity/FIGHT_C_AUDIT.md` (see Status above).
+
+---
+
+## FINDING-010 — combat-tick round-2 damage amount diverges (severity verb) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-29 via **FIGHT-027** (master v2.11.15). Root cause:
+`mud/combat/engine.py:calculate_weapon_damage` had no `IS_NPC` branch, so an
+unarmed mob fell through to the **PC-unarmed** formula
+`number_range(1 + 4*skill/100, 2*level/3*skill/100)`. For the drunk #3064 (level 2,
+damage dice 1d6, skill_total ≈ 50) that collapsed to a degenerate
+`number_range(3, 0)` → ROM returns `from` = constant **3**, consuming **zero**
+`number_mm` draws — so the Python drunk dealt a constant 3 every hit (round 1's
+tier happened to match C's roll of 3), while ROM rolls `dice(1, 6)` (range 1–6,
+**one** draw). The round-4 C hit of **5** is unreachable by the old-format
+`number_range(level/2, level*3/2)`=1–3, proving the new-format dice path. The
+missing draw *also* desynced the shared combat RNG stream from round 2 on. Fix:
+`calculate_weapon_damage` now resolves an unarmed NPC (`is_npc and wield is None`)
+via `rng_mm.dice(damage[DICE_NUMBER], damage[DICE_TYPE])` (ROM `convert_mobile`
+makes `new_format` universal at runtime, so the dice path is the only live one).
+**Verified:** the `combat_melee_rounds` differential now converges on all of steps
+1–6 (hp + severity verbs match); the first divergence advanced to step 7, filed as
+**FINDING-011** (miss-line noun). Regression:
+`tests/integration/test_fight_027_npc_unarmed_damage_dice.py`. Historical
+investigation notes retained below.
+
+### (historical) original triage
+
+Surfaced 2026-05-29 the moment FINDING-009 (all 4 facets)
+was fully closed. With FIGHT-021/022/023/024/025 + the worktree `reversed()`
+merged from master, the `combat_melee_rounds` first divergence advanced from
+step 5 to **step 6** (the *second* `__tick`/`violence_update` round); **step 5
+now converges fully on both engines.**
+
+Symptom (step 6, second combat round):
+```
+step 6 (command='__tick') · output ·
+  C  = ["The drunk's beating scratches you.", 'You scratch the drunk.']
+  py = ["The drunk's beating hits you.",      'You scratch the drunk.']
+        └ damage SEVERITY differs: C "scratches" (≤5% tier) vs py "hits" (≤15% tier)
+```
+
+Line 2 (the PC's swing) is identical. The capitalization ("The"), damtype noun
+("beating"), and message order all match — **FINDING-009 facets 1–4 are
+confirmed closed end-to-end.** The only diff is the drunk's **damage amount** to
+the player landing in a different `_DAMAGE_TIERS` bucket: C deals ≤5% of the
+player's `max_hit` (20) ≈ ≤1 dmg → "scratches"; Python deals (5%,15%] ≈ 2–3 dmg
+→ "hits".
+
+**Notable:** round 1 (step 5) drunk swing is "beating hits you" in *both*
+engines (damage matched), but round 2 (step 6) diverges — so the streams/state
+agree for one round and drift by the next.
+
+**Root cause UNKNOWN — including whether this is pre-existing or a regression
+introduced by the FINDING-009 fixes. Rule out regression FIRST:** step 6 was
+*never compared* before this session (py diverged at step 5), so "pre-existing"
+is unproven. FIGHT-023 changed the drunk's damage class SLASH→BASH (reasoned
+inert for the differential char — uniform AC `[100,100,100,100]`, no RIV — but
+unverified at round 2), and FIGHT-021/022 changed `mob_hit`'s per-round draw set.
+Either could shift round-2 damage.
+
+Candidates to probe:
+- **Round-2 RNG draw-count residual.** Step-5 convergence proves round *1*, not
+  steady state. If draw *counts* diverge by round 2, facet 1 isn't fully closed
+  at steady state — OR the inter-round wait/daze burn in `violence_tick`
+  diverges from ROM and re-gates `mob_hit`'s `wait==0` checks differently on the
+  second round (the FIGHT-022 `number_range(0,2)`/`(0,8)` draws are gated on
+  `ch->wait`). The unit tests pin the drunk's *single-round* draw count, so this
+  wait-state/round-2 path is the more likely culprit than the count itself.
+- **Damage-formula divergence** (damroll / STR damage app / position or AC delta
+  between rounds) that round 1's tier happened to mask.
+
+Distinct from FINDING-009's 4 rendering/draw-order facets. `combat_melee_rounds`
+stays in `KNOWN_DIVERGENCES` (xfail) under FINDING-010 until round-2 damage
+converges. **Discriminating probe:** dump the per-round draw *sequence* +
+damage components (dice value, damroll, STR app, RIV, **and the drunk's
+wait-state between rounds**) for both engines at step 6. Draw counts diverge →
+facet-1/wait-state residual (rule out regression); draws match but damage differs
+→ formula bug. File the root cause as a FIGHT-NNN gap once isolated.
+
+---
+
+## FINDING-009 — combat-tick round diverges at `__tick` (violence_update) — ✅ RESOLVED (all 4 facets)
+
+**Status:** ✅ RESOLVED 2026-05-29 — all four facets closed; step 5 (`__tick`)
+converges fully on both engines and the first divergence advanced to **step 6**
+(round-2 damage amount, now tracked as **FINDING-010**). Surfaced 2026-05-28 the
+moment FINDING-008 was fully closed; probed + root-caused into four facets, all
+now fixed on master:
+- **Facet 1** (`multi_hit`/`mob_hit` RNG draw-count desync) — FIGHT-021 (`79c4d7f7`, v2.11.9) + FIGHT-022 (`4d9fb5c3`, v2.11.10).
+- **Facet 2** (mob `dam_type` attack-table index → noun "beating") — FIGHT-023 (`027eee0f`, v2.11.13).
+- **Facet 3** (combat-tick iteration order — `violence_tick` reversed) — FIGHT-024 (`863f8734`, v2.11.12).
+- **Facet 4** (act() first-char capitalization "The") — FIGHT-025 (`b8878785`, v2.11.14).
+- Plus **FIGHT-026** (`850662b5`, v2.11.11) — a latent crash facet 3's reorder exposed (NPC `do_dirt`/`do_trip`/`do_disarm` on `mob_hit` dispatch).
+
+With the step-4 `kill drunk` first strike matching (FIGHT-019 + FIGHT-020 + colour/`fighting`-key
+normalization), the `combat_melee_rounds` first divergence advanced to **step 5
+`__tick`** — the `violence_update` combat round that resolves both combatants' swings.
+
+Original symptom (Python iterating `character_registry` forward):
+```
+step 5 (command='__tick') · output ·
+  C  = ["The drunk's beating hits you.", 'You miss the drunk.']
+  py = ['You scratch the drunk.',        "the drunk's slice hits you."]
+```
+
+`__seed=777` ran before step 4, so both engines resolve this round from the same
+RNG state. The probe split this into **four facets, each root-caused** (two
+empirically, two by ROM source read). **Facets 1 + 3 are now closed**; the remaining
+step-5 diff is isolated to line 1 (the drunk's swing rendering — facets 2 + 4):
+```
+step 5 (command='__tick') · output ·   (after facet-3 reversed() + FIGHT-021 + FIGHT-022)
+  C  = ["The drunk's beating hits you.", 'You miss the drunk.']
+  py = ["the drunk's slice hits you.",   'You miss the drunk.']
+        └ f4: The/the · f2: beating/slice    └ line 2 IDENTICAL — facets 1+3 closed ✓
+```
+
+### Facet 3 — message order — ✅ FIXED (master FIGHT-024, v2.11.12)
+
+ROM `violence_update` (`src/fight.c:72`) walks `char_list` **head-first**, and ROM
+inserts every new char at the HEAD of `char_list` (`src/db.c:2256-2257`
+create_mobile; `src/nanny.c:757-758` PC login) — so the list is in **reverse-creation
+order: the most-recently-loaded actor swings first.** The drunk (loaded after Tester)
+acts first. Python's `character_registry` is **append-order**, and `violence_tick`
+iterated `list(character_registry)` forward → Tester first → reversed message order.
+
+**Fix (staged in worktree, `mud/game_loop.py:violence_tick`):** iterate
+`list(reversed(character_registry))` (snapshot guards mid-tick removals, mirroring
+ROM's `ch_next = ch->next`). **Verified by re-run:** the message order flipped to
+match C — the drunk now swings first. This is load-bearing for RNG draw sequence
+(who consumes the stream first), not cosmetics. Belongs on master (combat-tick swing
+order changes game-wide → blast radius; grep callers + run full combat integration
+suite, triage non-ROM-order assertions as test bugs).
+
+Post-fix diff (swings now aligned, so facets 1/2/4 read independently):
+```
+  C  = ["The drunk's beating hits you.", 'You miss the drunk.']
+  py = ["the drunk's slice hits you.",   'You scratch the drunk.']
+        └ drunk swing: hit MATCHES ──┘    └ Tester swing: hit/miss DIFFERS (facet 1)
+          only noun (f2) + capital (f4) differ
+```
+
+### Facet 1 — `multi_hit`/`mob_hit` RNG draw-count desync — ✅ FIXED (master FIGHT-021 + FIGHT-022)
+
+**Closed 2026-05-28** as two master gap-closers — FIGHT-021 (`commit 79c4d7f7`, v2.11.9)
++ FIGHT-022 (`commit 4d9fb5c3`, v2.11.10). Convergence verified end-to-end: with the
+worktree's facet-3 `reversed()` plus both fixes, step-5 line 2 (Tester's swing) now
+reads `You miss the drunk.` on both engines (`scratch`→`miss`). Root cause + fix below.
+
+The drunk swings first in both engines and **both hit** ("hits" tier matches), yet
+Tester (2nd swing) **misses in C but scratches in Python** — Tester starts its
+`one_hit` from a *different RNG stream position* because the drunk's swing consumes a
+**different number of draws** in Python. Root cause (read in `mud/combat/engine.py`
+`multi_hit` vs ROM `src/fight.c` `multi_hit`/`mob_hit`):
+
+- **(a) Guarded second/third-attack draws.** Python guards the second/third-attack
+  `number_percent()` behind `if skill > 0` (`engine.py:346,362`). ROM evaluates
+  `number_percent() < chance` **unconditionally** — the draw fires even when
+  `chance==0` (a 0-skill attacker). So a no-skill attacker draws 0 in Python, 2 in ROM.
+- **(b) No `mob_hit`.** Python's `multi_hit` treats PC and NPC identically. ROM
+  `multi_hit` for an NPC calls `mob_hit` and returns — a separate path that (after
+  the unconditional 2nd/3rd `number_percent()`) draws `number_range(0,2)` (mob-cast
+  check) and `number_range(0,8)` (mob-skill check) when `ch->wait==0`. Python's NPC
+  path omits both.
+
+For the drunk (NPC, no second/third skill, `wait==0` on the first `__tick`): **ROM
+draws 4 values after `one_hit` (2× `number_percent` + `number_range(0,2)` +
+`number_range(0,8)`) that Python draws 0 of** → Python's stream is 4 draws behind
+when Tester swings. **Real, broad parity bug** — affects every combat round
+game-wide, latent because the suite uses seeded synthetic combat that never compared
+against a ROM golden stream. Master gap-closer(s); likely two rows (the unconditional
+2nd/3rd draw, and a faithful `mob_hit` port). Note `engine.py` + `game_loop.py` are on
+the 32KB gitnexus-gap list — `gitnexus_impact` under-reports; grep + integration suite.
+
+### Facet 2 — mob attack noun ("beating" → "slice") — ✅ FIXED (master FIGHT-023, v2.11.13)
+
+C `beating`, Python `slice`. ROM `ch->dam_type` is an **attack_table index**
+(`src/const.c`: index 13 = `{"beating", "beating", DAM_BASH}`, index 0 =
+`{"slice","slice",DAM_SLASH}`); the noun is `attack_table[dam_type].noun`
+(`src/fight.c:2176`, via `dt = TYPE_HIT + ch->dam_type` for an unarmed mob,
+`fight.c:420-424`). Python conflates `dam_type` with a **DamageType damage-class**
+(`templates.py:366` `_parse_damage_type`, `:396-403`; `engine.py:403`
+`attack_index = attacker.dam_type or 0`), defaulting the index to 0 = "slice". The
+`.are` damtype word "beating" is read into `proto.damage_type`
+(`mud/loaders/mob_loader.py:152`) but never mapped through an `attack_lookup`. **Real
+parity bug** — bigger than cosmetic: the correct index also fixes the damage *class*
+(SLASH→BASH), which feeds AC-index and RIV selection. Master gap-closer (verify
+`_parse_damage_type` first — confirm whether it string-matches "beating" to anything
+and whether `proto.dam_type` is ever set numerically).
+
+### Facet 4 — act() sentence-initial capitalization ("the" → "The") — ✅ FIXED (master FIGHT-025, v2.11.14)
+
+C `The drunk's …`, Python `the drunk's …`. ROM `act_new` (`src/comm.c`) uppercases the
+first rendered character (`buf[0] = UPPER(buf[0])`). Python's act/`dam_message` render
+path does not. **Real rendering gap.** Fix at Python's single act/`dam_message`
+chokepoint (capitalize once — do NOT sprinkle `.capitalize()`). Candidate INV
+(act-render contract) or a per-file act row. Master gap-closer.
+
+**Resolved:** all four facets landed on master (FIGHT-021/022/023/024/025, plus the
+FIGHT-026 crash fix) and merged into the worktree. Step 5 now converges on both
+engines — verified end-to-end via `pytest tests/test_differential_smoke.py -k
+combat_melee`. The first divergence advanced to **step 6** (round-2 damage amount),
+so `combat_melee_rounds` remains in `KNOWN_DIVERGENCES` (xfail) but now under
+**FINDING-010**, not FINDING-009.
+
+---
+
+## FINDING-008 — combat first-attack outcome / message rendering diverges at `kill` — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28. Surfaced the moment FINDING-007 was fixed; the
+`combat_melee_rounds` first divergence sat at **step 4 `kill drunk`**
+(`C=['You miss the drunk.']` vs `py=['{2You scratch the drunk.{x', '{2You scratch the
+drunk.{x']`). All three sub-issues triaged and closed; the differential advanced past
+step 4 to **FINDING-009** (step 5).
+
+1. **Hit/miss + damage-tier outcome** — ✅ **real parity bug**, fixed as **FIGHT-019**
+   (master 2.11.4). Production combat shipped a non-ROM percent hit model behind a
+   `COMBAT_USE_THAC0=False` flag; ROM resolves every swing through the THAC0 /
+   `number_bits(5)` roll. Made THAC0 the only path → step-4 first strike is now `miss`
+   on both engines. (`docs/parity/FIGHT_C_AUDIT.md` FIGHT-019.)
+2. **Color codes** — ✅ **harness normalization** (compare-fairness, like
+   FINDING-002/005). The C shim's descriptor runs colour-off (ROM `colour()` non-ANSI
+   branch eats every `{X` pair), so its golden is plain text; the Python engine emits
+   raw ROM colour tokens. `compare._normalize_output` now applies
+   `mud.net.ansi.strip_ansi` (mirrors the ROM non-colour branch) to both sides — a
+   no-op on the already-plain C side. Fixed on `diff-harness`.
+3. **Double-delivery** — ✅ **real SINGLE-DELIVERY (INV-001) engine bug, fixed as
+   FIGHT-020** (master 2.11.5) — **NOT the "harness capture artifact" the earlier
+   triage recorded.** `do_kill` returned `multi_hit(...)[0]` — the attacker line
+   `apply_damage` had already pushed via `_push_message` — so the connection loop
+   double-delivered it to connected PCs (the same class as the WS death-path bug).
+   `do_kill` now returns `""`. The sibling `broadcast_room`/`broadcast_global` (2.11.6)
+   and `do_surrender` (2.11.7) double-sends were closed in the same INV-001 sweep.
+   Closing #3 also surfaced a harness `fighting`-field key mismatch (snapshot recorded
+   the mob display name `the drunk` vs the C shim's char_key `drunk`); `pysnap._char_snap`
+   now records `fighting` via `_person_key`, matching the room/char key convention.
+
+**Outcome:** step 4 matches byte-for-byte on both engines; the gate moved to
+FINDING-009 (the step-5 `__tick` round).
+
+---
+
+## FINDING-007 — mob spawn RNG draw-order diverges (gold vs HP) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28 via **SPAWN-001** (master `47f8fd75`,
+v2.11.3). `MobInstance.from_prototype` now draws the spawn RNG stream in ROM
+`create_mobile` order — **gold/wealth → HP dice → mana dice → random damtype
+(`dam_type == 0`) → random sex (`sex == EITHER`)** — so the drunk #3064 spawns at HP
+**31** on both engines from seed 777. Verified end-to-end: the `combat_melee_rounds`
+first divergence advanced past the `__mload` spawn step (steps 1–3 now match the C
+golden) to the step-4 combat output, which is the separate **FINDING-008**. Regression:
+`tests/integration/test_spawn_001_rng_draw_order.py`; audit row
+`docs/parity/DB_C_AUDIT.md` SPAWN-001. Original analysis below.
+
+**Status (historical):** 🔴 OPEN — **real Python parity bug.** Surfaced 2026-05-28 by the
+`combat_melee_rounds` scenario: the drunk #3064 spawns at HP **31** in ROM C vs **33**
+in Python from the *same* seed (777). Both roll the correct `2d6+22` (FINDING-006 is
+fixed); the values differ because the two engines draw RNG in a **different order**
+during mob creation.
+
+**Root cause.** ROM `create_mobile` (`src/db.c:2047-2091`) draws in this order:
+1. **gold/wealth** — `number_range(wealth/2, 3*wealth/2)` then `number_range(wealth/200, wealth/100)` (2 draws when `wealth > 0`),
+2. **HP** dice, 3. **mana** dice, 4. random damtype via `number_range(1,3)` *only if* `dam_type == 0`.
+
+Python `MobInstance.from_prototype` (`mud/spawning/templates.py:364-394`) draws:
+1. random damtype (`number_range(1,3)`) *first* if `dam_type == 0`,
+2. **HP**, 3. **mana**, 4. **gold** *last*.
+
+So gold is drawn last in Python but first in ROM, and the damtype roll is first vs
+last. The drunk has `wealth=65 > 0`, so ROM's 2 gold draws precede its HP roll while
+Python's don't — shifting the `2d6`. This affects **every seed-dependent mob spawn**
+game-wide (mob stats diverge from ROM), latent because the suite uses synthetic mobs.
+
+**Fix shape (master gap-closer, e.g. SPAWN-001 / a templates.py row):** reorder
+`from_prototype`'s RNG draws to match `create_mobile` exactly — gold/wealth first, then
+HP, then mana, then the `dam_type == 0` random roll last. Bounded to one function;
+expect possible seeded-test fallout (it changes spawn RNG order). Same pattern as
+DB2-007: a real Python parity bug surfaced by the harness, fixed on master, then
+re-run the differential (the `combat_melee_rounds` `KNOWN_DIVERGENCES` xfail
+auto-clears when the diff goes clean).
+
+**Gated:** `combat_melee_rounds` is in `KNOWN_DIVERGENCES` (xfail) until this lands.
+
+---
+
+## FINDING-006 — area JSON mob HP/mana/damage dice are mislabeled (field-shifted) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-05-28 via **DB2-007** (master 2.11.2, commit `1857b5f8`).
+Root cause was a phantom scalar `ac` token at stat-line index [2] in
+`mud/loaders/mob_loader.py` (ROM has no scalar AC there — it's on the next line), which
+shifted every dice field by one and dropped the real HP dice. Fixed; all 52 area JSONs
+regenerated; full suite 4925/0. The per-file `DB2_C_AUDIT.md` Phase 2 had marked this
+stat line ✅ — corrected. Regression: `tests/test_mob_dice_parity.py`.
+
+**Combat-v1 follow-on (not a data bug — normal harness RNG-alignment work):** with the
+fix, the drunk #3064 now rolls `2d6+22` on both engines, but the *value* still differs
+(C 31, Python 33) because the RNG stream position at `__mload` time isn't yet aligned
+between `create_mobile` and `from_prototype` (seeding convention and/or spawn draw
+order). The combat scenario's `__seed`-before-`__mload` + matched-stub tasks address
+this; the first capture will surface it as the mob's starting-HP diff to triage.
+
+### (historical, root-cause notes below)
+
+**Status:** 🔴 OPEN — **real, systematic Python parity bug.** Surfaced 2026-05-28 while
+preparing the combat differential scenario (drunk #3064 spawned at 100 HP in Python
+vs 31 in ROM C). **Blocks** `combat_melee_rounds` (the combatant's HP cannot match
+across engines until fixed).
+
+**Root cause.** ROM new-format mob stat line (`src/db.c` `load_mobiles`) is
+`level hitroll <hp-dice> <mana-dice> <dam-dice> damtype`. The `.are`→JSON conversion
+that produced `data/areas/*.json` shifted these by one field:
+
+| JSON field | Holds (wrong) | Should hold |
+|------------|---------------|-------------|
+| `hit_dice` | the `.are` **mana** dice | the `.are` **HP** dice |
+| `mana_dice` | the `.are` **damage** dice | the `.are` **mana** dice |
+| `damage_dice` | the **damtype** word (e.g. `"beating"`) | the `.are` **damage** dice |
+
+The real HP dice is dropped entirely. `MobInstance.from_prototype`
+(`mud/spawning/templates.py:374`) then rolls `max_hit` from `hit_dice` — i.e. from the
+mana dice — so every JSON-loaded mob has the wrong HP, mana, and damage.
+
+**Evidence (drunk #3064, room 3008, seed 777):**
+- `area/midgaard.are`: `2 -1 2d6+22 1d1+99 1d6+0 beating` → HP `2d6+22`, mana `1d1+99`, dam `1d6+0`.
+- C shim (`src/diffshim`, = ROM loading the `.are`): `max_hp = 31` (a `2d6+22` roll).
+- Python `spawn_mob(3064).max_hit = 100` (parsed `1d1+99`, the **mana** dice).
+- Hassan #3001 `.are` HP `1d1+999` → ROM 1000 HP; JSON `hit_dice='1d1+99'` → Python 100 HP.
+
+**Scope.** Systematic: **62 of 65** midgaard mobs mismatch on `hit_dice` (the 3 that
+"match" do so only because their HP and mana dice are coincidentally equal). Almost
+certainly affects **all** `data/areas/*.json`, not just midgaard — i.e. every
+JSON-loaded mob game-wide has wrong HP/mana/damage. Latent because the test suite
+uses synthetic mobs (`movable_mob_factory` with explicit points), never asserting a
+JSON-loaded mob's HP against ROM.
+
+**Fix shape (master, NOT this branch — wide blast radius, needs scoping with the user):**
+likely fix the `.are`→JSON converter's field mapping and regenerate every
+`data/areas/*.json`, then add a regression that checks a JSON-loaded mob's HP/mana/
+damage dice against the `.are`. Route via `rom-gap-closer` once scoped; file the
+data-conversion bug in the appropriate tracker. Until fixed, `combat_melee_rounds`
+stays uncaptured / out of `KNOWN_DIVERGENCES`.
+
+---
+
 ## FINDING-005 — input-source asymmetry (C reads `.are`, Python reads JSON) — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-05-28 — investigated, found **structurally benign**,
@@ -41,6 +607,12 @@ to either source that desyncs the two engines' world data now fails this guard.
 `midgaard.json` (Option B). The probe proves it is unnecessary for soundness, and
 regenerating the JSON has a wide blast radius across tests asserting current
 JSON-loaded state. The overlay + guard is the minimal sound close.
+
+**⚠️ Update (FINDING-006):** this guard checks vnum-set *coverage* only, not field
+*values*. FINDING-006 (below) found the JSON's mob HP/mana/damage dice are
+field-shifted vs the `.are` — so the two sources are NOT value-equivalent even though
+their vnum sets match. The guard should be extended to compare mob dice as part of
+FINDING-006's fix.
 
 ---
 

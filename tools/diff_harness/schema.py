@@ -32,6 +32,9 @@ class CharSnap:
     affect_flags: list[str] = field(default_factory=list)
     inventory: list[int] = field(default_factory=list)
     equipment: dict[str, int] = field(default_factory=dict)
+    eff_hitroll: int = 0
+    eff_damroll: int = 0
+    eff_ac: list[int] = field(default_factory=list)
 
 
 @dataclass

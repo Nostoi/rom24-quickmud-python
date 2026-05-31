@@ -33,6 +33,7 @@
 void boot_db (void);
 void init_mm (void);
 void reset_char (CHAR_DATA *ch);
+void violence_update (void);
 
 /* ---- synthetic descriptor: ROM's output funcs write here ------------------ */
 
@@ -168,14 +169,39 @@ static void char_key (const CHAR_DATA *ch, char *buf, size_t cap)
 }
 
 /* Find a connected/loaded character by name's first word, searching char_list. */
-static CHAR_DATA *find_char_by_key (const char *key)
+/*
+ * Resolve a snapshot char key to a specific instance, scoped to the watched
+ * rooms. A keyword like "drunk" can match multiple instances game-wide (a
+ * reset-spawned one in its home room plus one __mload'd into the scenario room);
+ * a global first-match would snapshot whichever was created most recently, which
+ * differs from the Python replay's explicit instance. Scoping to the watched
+ * rooms makes the lookup unambiguous: the watched char is the one the scenario
+ * is actually observing. No global fallback — if the key is not in a watched
+ * room it is omitted (the Python side omits it too).
+ */
+static CHAR_DATA *find_char_by_key (const char *key, const int *room_vnums, int n_rooms)
 {
     CHAR_DATA *ch;
     for (ch = char_list; ch != NULL; ch = ch->next)
     {
         char buf[MAX_INPUT_LENGTH];
+        int i, in_watched = 0;
+
         char_key (ch, buf, sizeof (buf));
-        if (str_cmp (buf, key) == 0)
+        if (str_cmp (buf, key) != 0)
+            continue;
+
+        if (n_rooms <= 0)
+            return ch;                       /* unscoped: preserve old behavior */
+        if (ch->in_room == NULL)
+            continue;
+        for (i = 0; i < n_rooms; i++)
+            if (ch->in_room->vnum == room_vnums[i])
+            {
+                in_watched = 1;
+                break;
+            }
+        if (in_watched)
             return ch;
     }
     return NULL;
@@ -201,6 +227,11 @@ static void emit_char_snapshot (CHAR_DATA *ch)
             ch->hit, ch->max_hit, ch->mana, ch->move);
     printf (",\"level\":%d,\"align\":%d,\"gold\":%ld",
             ch->level, ch->alignment, ch->gold);
+    printf (",\"eff_hitroll\":%d", GET_HITROLL (ch));
+    printf (",\"eff_damroll\":%d", GET_DAMROLL (ch));
+    printf (",\"eff_ac\":[%d,%d,%d,%d]",
+            GET_AC (ch, AC_PIERCE), GET_AC (ch, AC_BASH),
+            GET_AC (ch, AC_SLASH), GET_AC (ch, AC_EXOTIC));
 
     /* fighting: target's first-word name, or null. */
     if (ch->fighting != NULL)
@@ -337,6 +368,22 @@ static void handle_snapshot (char *args)
             strncpy (rooms_csv, tok + 6, sizeof (rooms_csv) - 1);
     }
 
+    /* Parse the watched room vnums into an int array (from a copy, so the
+     * destructive strtok below does not clobber rooms_csv, which the rooms
+     * output loop re-parses). Used to scope the char-key lookup. */
+    int watched_rooms[64];
+    int n_watched = 0;
+    {
+        char rooms_copy[MAX_INPUT_LENGTH];
+        char *p, *save;
+        strncpy (rooms_copy, rooms_csv, sizeof (rooms_copy) - 1);
+        rooms_copy[sizeof (rooms_copy) - 1] = '\0';
+        for (p = strtok_r (rooms_copy, ",", &save);
+             p != NULL && n_watched < 64;
+             p = strtok_r (NULL, ",", &save))
+            watched_rooms[n_watched++] = atoi (p);
+    }
+
     fputs ("{\"type\":\"snapshot\",\"chars\":[", stdout);
     {
         char *p, *save;
@@ -344,7 +391,7 @@ static void handle_snapshot (char *args)
         for (p = strtok_r (chars_csv, ",", &save); p != NULL;
              p = strtok_r (NULL, ",", &save))
         {
-            CHAR_DATA *ch = find_char_by_key (p);
+            CHAR_DATA *ch = find_char_by_key (p, watched_rooms, n_watched);
             if (ch == NULL)
                 continue;
             if (!first)
@@ -518,6 +565,60 @@ int main (int argc, char **argv)
             while (*args == ' ' || *args == '\t')
                 args++;
             handle_snapshot (args);
+            continue;
+        }
+
+        /* __seed=<n>: reseed OLD_RAND mid-run, same convention as boot
+         * (init_mm seeds piState from current_time). Scopes the next
+         * commands' RNG to a known stream position. */
+        if (strncmp (line, "__seed=", 7) == 0)
+        {
+            current_time = (time_t) atol (line + 7);
+            init_mm ();
+            continue;
+        }
+
+        /* __mload=<vnum>: spawn a fresh mob into the PC's current room
+         * (ROM create_mobile + char_to_room). */
+        if (strncmp (line, "__mload=", 8) == 0)
+        {
+            int vnum = atoi (line + 8);
+            MOB_INDEX_DATA *mi = get_mob_index (vnum);
+            if (mi != NULL && ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob = create_mobile (mi);
+                char_to_room (mob, ch->in_room);
+            }
+            continue;
+        }
+
+        /* __learn=<skill/spell name>: teach the PC the skill at 100% so it can
+         * be cast/used. Mirrors nanny.c's class group_add (which make_test_char
+         * deliberately skips) but scoped per-scenario, so the existing melee
+         * scenario keeps an empty skill set. skill_lookup canonicalizes the
+         * name on this side; the Python replay resolves the same name through
+         * skill_registry. learned == 100 means deterministic success AND no
+         * check_improve RNG (src/skills.c:932 early-return), so the only RNG a
+         * cast draws is do_cast's number_percent success roll + the spell's own
+         * draws — symmetric with Python. No output. */
+        if (strncmp (line, "__learn=", 8) == 0)
+        {
+            if (ch != NULL && ch->pcdata != NULL)
+            {
+                int sn = skill_lookup (line + 8);
+                if (sn >= 0)
+                    ch->pcdata->learned[sn] = 100;
+            }
+            continue;
+        }
+
+        /* __tick: run one violence_update() pulse (combat round only),
+         * capturing the PC's combat output. */
+        if (strncmp (line, "__tick", 6) == 0)
+        {
+            shim_reset_output ();
+            violence_update ();
+            emit_output ();
             continue;
         }
 

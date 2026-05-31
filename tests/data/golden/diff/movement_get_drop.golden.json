@@ -1,6 +1,6 @@
 {
   "scenario": "movement_get_drop",
-  "c_commit": "c878dd419414ffbb550ace91e33027ebc7459e0f",
+  "c_commit": "53c1b52725eeb606a49ef683e09ffb9bd6a43f7e",
   "build_flags": "-DOLD_RAND",
   "seed": 1234,
   "trace": [
@@ -17,6 +17,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -73,6 +81,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -121,6 +137,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -175,6 +199,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -229,6 +261,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -276,6 +316,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -324,6 +372,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -371,6 +427,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -419,6 +483,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],
@@ -475,6 +547,14 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
           "fighting": null,
           "affects": [],
           "affect_flags": [],

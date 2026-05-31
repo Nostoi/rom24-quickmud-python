@@ -1,0 +1,146 @@
+{
+  "scenario": "affect_armor",
+  "c_commit": "fb7adb7b80a123f2645390625ad62a703ebf21b0",
+  "build_flags": "-DOLD_RAND",
+  "seed": 12345,
+  "trace": [
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 1,
+      "command": "__seed=777",
+      "output": []
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 2,
+      "command": "__learn=armor",
+      "output": []
+    },
+    {
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 80,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            80
+          ],
+          "fighting": null,
+          "affects": [
+            "armor"
+          ],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {}
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "step": 3,
+      "command": "cast armor",
+      "output": [
+        "",
+        "\rYou feel someone protecting you.",
+        ""
+      ]
+    }
+  ]
+}
