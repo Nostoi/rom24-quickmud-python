@@ -3,7 +3,7 @@
 **ROM C File**: `src/db.c` (3,952 lines)  
 **QuickMUD Equivalents**: `mud/loaders/*.py` (2,217 lines), `mud/spawning/*.py` (855 lines), `mud/utils/rng_mm.py` (160 lines), `mud/utils/text.py` (140 lines), `mud/utils/math_utils.py` (22 lines), `mud/registry.py` (13 lines)  
 **Audit Date**: January 4-5, 2026  
-**Audit Status**: ✅ **100% COMPLETE** (Phase 1-4 Complete)
+**Audit Status**: ⚠️ **1 OPEN GAP** (DB-001 — `load_rooms` drops all room flags; see Known Gaps). Was marked "100% COMPLETE" but the per-function check verified the loader *ran*, not that it parsed the flag field correctly — a false-✅ surfaced 2026-05-31 by in-game play (a dark school room was readable). Phase 1-4 otherwise complete.
 
 ## Executive Summary
 
@@ -35,7 +35,7 @@ ROM's `db.c` is the **database/world loading subsystem** - one of the largest an
 
 **QuickMUD Efficiency**: 3,407 Python lines replace 3,952 ROM C lines (13.8% reduction) with better modularity.
 
-**✅ FINAL STATUS**: **100% ROM Parity Achieved** (44/44 functional functions implemented, 24 N/A system functions)
+**STATUS**: 44/44 functional functions implemented, 24 N/A system functions — but **1 open correctness gap (DB-001)**: `load_rooms` parses the wrong token for `room_flags`, zeroing every room flag game-wide. "Implemented" ≠ "correct"; the function runs but mis-parses the flag field. See Known Gaps.
 
 ---
 
@@ -65,7 +65,7 @@ ROM's `db.c` is the **database/world loading subsystem** - one of the largest an
 | `load_objects()` | ❓ | `obj_loader.load_objects()` | ✅ Implemented | Full obj loader in `mud/loaders/obj_loader.py` (405 lines) |
 | `new_reset()` | 980-1008 | ❌ Not implemented | ⚠️ N/A | OLC reset creation - QuickMUD uses `reset_loader.load_resets()` |
 | `load_resets()` | 1009-1112 | `reset_loader.load_resets()` | ✅ Implemented | Lines 39-311 in `mud/loaders/reset_loader.py` (350 lines) |
-| `load_rooms()` | 1113-1286 | `room_loader.load_rooms()` | ✅ Implemented | Full room loader in `mud/loaders/room_loader.py` (302 lines) |
+| `load_rooms()` | 1113-1286 | `room_loader.load_rooms()` | ⚠️ BUG (DB-001) | Loads rooms but **drops all room flags** — reads `int(tokens[0])` (the discarded area-number field) instead of letter-decoding `tokens[1]`. See Known Gaps below. |
 | `load_shops()` | 1287-1343 | `shop_loader.load_shops()` | ✅ Implemented | Lines 8-70 in `mud/loaders/shop_loader.py` (99 lines) |
 | `load_specials()` | 1344-1383 | `specials_loader.load_specials()` | ✅ Implemented | Lines 6-33 in `mud/loaders/specials_loader.py` (67 lines) |
 
@@ -550,3 +550,11 @@ Reordered to match ROM exactly. **Surfaced by the differential testing harness**
 (`combat_melee_rounds` scenario; `tools/diff_harness/FINDINGS.md` FINDING-007).
 Regression: `tests/integration/test_spawn_001_rng_draw_order.py` (replays ROM's
 draw order with the real RNG primitives + a stream-position sentinel).
+
+---
+
+## Known Gaps
+
+| Gap ID | Severity | ROM C | Python | Description | Status |
+|--------|----------|-------|--------|-------------|--------|
+| `DB-001` | **CRITICAL** | `src/db.c:1113-1286 load_rooms` (lines 1149-1151: `/* Area number */ fread_number; room_flags = fread_flag; sector_type = fread_number`) | `mud/loaders/room_loader.py:41-42` | **All room flags are dropped game-wide.** ROM's room header line is `<area-number> <room_flags> <sector_type>` (3 fields); `load_rooms` discards the first, letter-decodes the second into `room_flags`, and reads the third as `sector_type`. `room_loader.py:41` instead reads `room_flags = int(tokens[0])` — the discarded area-number field (always 0) — and `int()` cannot decode ROM's letter bitvectors (`ADR`) anyway. `sector_type = int(tokens[-1])` is correct by luck (last token). Result: **every room in every area loads with `room_flags = 0`** — no `ROOM_DARK`, `ROOM_SAFE`, `ROOM_NO_RECALL`, `ROOM_LAW`, `ROOM_PRIVATE`/`SOLITARY`, `ROOM_INDOORS`, or access-control flags anywhere. The live server loads the pre-converted `data/areas/*.json` (default `use_json=True`), and the converter (`mud/scripts/convert_are_to_json.py`) dumps `room.room_flags` from this same buggy loader, so the zeros are baked into all 52 JSON files (verified: 0/~3,800 rooms have nonzero flags; all 52 areas regenerate byte-identical, confirming the JSONs are faithful converter output with no hand-edits). **Surfaced 2026-05-31 by in-game play**: an elf in the school's "Darkened Room" (vnum 3720, ROM flags `ADR` = `ROOM_DARK\|ROOM_INDOORS\|ROOM_NEWBIES_ONLY`) could read the room — `room_is_dark()` returned False because the flag never loaded (the monster was visible via correct elf infravision, which masked the missing-darkness for the initial triage). **Fix plan (its own session — see INV-032):** (1) `room_loader.py` — discard token0, `convert_flags_from_letters(tokens[1], RoomFlag)` for flags, `int(tokens[2])` for sector, assert `len(tokens) == 3` so a malformed line fails loud; failing test loads a known `.are` room and asserts `ROOM_DARK`. (2) Regenerate all 52 `data/areas/*.json` (proven safe — only `flags` will change). (3) Triage the resulting test fallout when `SAFE`/`NO_RECALL`/`DARK`/`LAW` switch on game-wide (some failing tests will be legitimately wrong per AGENTS.md; some may be real ripples — triage, don't blanket-update). **Side-note to verify during the fix:** exit/door flags may have the same loss (the converter only decodes the `locks` field via `_locks_to_exit_bits`). | 🔄 OPEN (deferred to own session) |
