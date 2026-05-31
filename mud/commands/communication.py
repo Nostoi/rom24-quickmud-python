@@ -615,7 +615,6 @@ def do_emote(char: Character, args: str) -> str:
     # emoter renders as "someone" to listeners without DETECT_INVIS
     # (EMOTE-001). Build one substituted string per recipient.
     if char.room:
-        from mud.mobprog import mp_act_trigger_room
         from mud.world.vision import pers
 
         for listener in list(char.room.people):
@@ -628,14 +627,14 @@ def do_emote(char: Character, args: str) -> str:
             if hasattr(listener, "messages"):
                 listener.messages.append(per_message)
 
-        # INV-025 — ROM src/comm.c:2384 dispatches mp_act_trigger to every
-        # NPC recipient of an act() broadcast.  do_emote is the canonical
-        # ROM TRIG_ACT producer (`act("$n $T", ch, NULL, argument, TO_ROOM)`
-        # at src/act_comm.c:1091).  Pass the unformatted argument as the
-        # trigger phrase to match ROM's substring-on-formatted-buffer
-        # semantics — the verb the player typed is what mobprog phrases
-        # key on.
-        mp_act_trigger_room(args, char.room, char)
+        # EMOTE-003 / INV-025 — do_emote does NOT dispatch TRIG_ACT.  ROM
+        # src/act_comm.c:1090-1093 wraps both `act("$n $T", …)` calls in
+        # `MOBtrigger = FALSE; … ; MOBtrigger = TRUE;`, and the trigger
+        # dispatch at src/comm.c:2384 fires only `else if (MOBtrigger)`.
+        # The suppression is deliberate: emote text is free-form, so an
+        # uncapped dispatch would let a player forge any act-trigger phrase
+        # (`emote bows` tripping an NPC scripted on "bows").  Messages still
+        # reach PCs (the fanout above); the trigger must not fire.
 
     # mirroring ROM src/act_comm.c:1092 — `act("$n $T", ..., TO_CHAR)`.
     # ROM act() substitutes `$n` to "You" on the TO_CHAR branch so the
