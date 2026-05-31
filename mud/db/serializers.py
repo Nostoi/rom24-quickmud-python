@@ -396,7 +396,13 @@ def _serialize_pet(pet: Any) -> PetSave | None:
     pet_affects: list[PetAffectSave] = []
     for affect in getattr(pet, "affected", []) or []:
         affect_type = getattr(affect, "type", -1)
-        if affect_type < 0:
+        # GL-030: GL-027 shadow AffectData are keyed by spell NAME (str), not an
+        # integer SN — they mirror the pet's spell_effects dict and are regenerated
+        # by apply_spell_effect, so they don't fit this SN-based pet affect format.
+        # Skip them (and any non-int / negative type) rather than crashing on
+        # `str < 0`. Integer-SN raw affects (affect_to_char-style) still round-trip.
+        # Persisting spell-cast pet buffs across reload is a separate gap (GL-031).
+        if not isinstance(affect_type, int) or affect_type < 0:
             continue
 
         # Lookup skill name by searching registry
