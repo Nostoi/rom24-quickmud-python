@@ -986,3 +986,52 @@ def test_weapon_invalid_uses_crlf(monkeypatch):
     assert all("\n\rYour choice? " in p for p in retry_prompts), (
         f"Weapon retry prompt must use \\n\\r before 'Your choice?', got {retry_prompts!r}"
     )
+
+
+@pytest.mark.p1
+def test_new_character_starts_with_three_training_sessions():
+    """NANNY-015 — A new PC starts with exactly 3 training sessions.
+
+    ROM C: src/nanny.c:776-777 (CON_READ_MOTD, the ``if (ch->level == 0)``
+    block that runs once for every newly created character):
+        ```c
+        ch->train = 3;
+        ch->practice = 5;
+        ```
+    These two assignments are unconditional and run for *every* new PC,
+    overwriting the ``ch->train = (40 - ch->pcdata->points + 1) / 2``
+    formula computed earlier at src/nanny.c:684. The formula is therefore
+    effectively dead — its result never survives to CON_PLAYING.
+
+    QuickMUD diverged: ``CreationSelection.train_value()``
+    (mud/account/account_service.py) implemented only the nanny.c:684
+    formula and ``create_character`` consumed it (mud/net/connection.py),
+    so an elf (race points = 5) started with ``(40 - 5 + 1)//2 = 18``
+    training sessions instead of ROM's hardcoded 3. ``practice`` was
+    correctly hardcoded to 5; ``train`` was not. The mismatched half of
+    the pair is the tell.
+    """
+    from mud.account.account_service import (
+        CreationSelection,
+        get_creation_classes,
+        get_creation_races,
+    )
+
+    def _by_name(items, name):
+        for item in items:
+            if item.name == name:
+                return item
+        raise AssertionError(f"{name!r} not in {[i.name for i in items]}")
+
+    elf = _by_name(get_creation_races(), "elf")
+    mage = _by_name(get_creation_classes(), "mage")
+
+    # No customization: __post_init__ seeds the class default groups without
+    # deducting points, leaving creation_points at the race base (5 for elf),
+    # i.e. the path a player takes by answering "no" to "customize?".
+    selection = CreationSelection(elf, mage)
+
+    assert selection.train_value() == 3, (
+        "ROM nanny.c:776 hardcodes ch->train = 3 for every new PC; the "
+        "nanny.c:684 formula is overwritten and must not leak through."
+    )

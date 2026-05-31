@@ -1,7 +1,7 @@
 # NANNY.C Parity Audit — ROM 2.4b6 → QuickMUD
 
 **Created**: 2026-04-28
-**Status**: ✅ Audited (14/14 closed)
+**Status**: ✅ Audited (15/15 closed)
 **Coverage**: 1 ROM function (`nanny()`, 824 lines, 16 connection-state cases) mapped to Python; 14 gaps identified (8 CRITICAL, 5 IMPORTANT, 1 MINOR). All 14 gaps are now fixed or verified against ROM behavior.
 
 ROM source: `src/nanny.c`
@@ -122,7 +122,11 @@ do_function(ch, &do_help, "newbie info");
 ```
 
 Python:
-- `practice=5, train=3` set in creation (`mud/account/account_service.py:929-930`). ✅
+- `practice=5` set in creation (defaults in `create_character`). ✅
+- `train=3`: ROM hardcodes this unconditionally at line 776 (the line 684
+  `(40 - points + 1)/2` formula is dead — always overwritten). Python had
+  ported only the dead formula via `CreationSelection.train_value()`, so an
+  elf started with 18 sessions. See NANNY-015.
 - `give_school_outfit` (`mud/commands/inventory.py:142-198`) gives outfit + `OBJ_VNUM_MAP = 3162`. ✅
 - Starting room SCHOOL applied via `starting_room_vnum`. ✅
 - **Missing**: `perm_stat[attr_prime] += 3` first-login bonus. See NANNY-005.
@@ -181,6 +185,7 @@ ROM enforces length 3–12, alpha-only, and rejects reserved tokens including `a
 | `NANNY-006` | CRITICAL | `nanny.c:791-802` | `mud/account/account_manager.py:119-128` | Returning immortal without saved room is not routed to `ROOM_VNUM_CHAT (1200)`; falls through to TEMPLE. | ✅ FIXED — added `ROOM_VNUM_CHAT = 1200` constant and `default_login_room_vnum(char)` helper that picks CHAT for `is_admin` else TEMPLE. Wired into both branches of `handle_connection` so a load with `char.room is None` falls back to the right room. Test: `tests/integration/test_nanny_login_parity.py::test_immortal_without_saved_room_routes_to_chat_room`. |
 | `NANNY-007` | CRITICAL | `nanny.c:804` | `mud/net/connection.py:1554-1601` | `act("$n has entered the game.", TO_ROOM)` broadcast missing on login — other players in the room never see arrivals. | ✅ FIXED — `broadcast_entry_to_room` helper added; called in both non-reconnecting branches of `handle_connection`. Test: `tests/integration/test_nanny_login_parity.py::test_login_broadcasts_entry_to_room`. |
 | `NANNY-014` | CRITICAL | `nanny.c:760` | `mud/handler.py:1046` (defined but unwired) | `reset_char(ch)` not invoked on login; max stats / hit / mana / move / armor not recomputed from equipment. | ✅ FIXED — `apply_login_state_refresh` wired into both branches of `handle_connection`; latent `WearLocation.MAX` typo in `reset_char` corrected to `19` (ROM `MAX_WEAR`). Test: `tests/integration/test_nanny_login_parity.py`. |
+| `NANNY-015` | IMPORTANT | `nanny.c:776-777` | `mud/account/account_service.py:CreationSelection.train_value` | New PC started with `(40 - points + 1)//2` training sessions (18 for an elf) instead of ROM's hardcoded 3. ROM computes the formula at nanny.c:684 but unconditionally overwrites `ch->train = 3` at nanny.c:776 in CON_READ_MOTD; the formula is dead code. `practice` was correctly hardcoded to 5; `train` leaked the dead formula. | ✅ FIXED — `train_value()` now returns 3 unconditionally, mirroring the nanny.c:776 override. Surfaced via in-game play (elf mage showed 18 sessions). Test: `tests/integration/test_nanny_login_parity.py::test_new_character_starts_with_three_training_sessions`. |
 | `NANNY-008` | IMPORTANT | `nanny.c:810-815` | `mud/net/connection.py:broadcast_entry_to_room` | Pet does not follow owner into room on login (`char_to_room(pet, in_room)` + entry act missing). | ✅ FIXED — `broadcast_entry_to_room` extended to move `char.pet` into `char.room` via `char_to_room` and emit a TO_ROOM "$n has entered the game." for the pet (excluding the pet itself). Test: `tests/integration/test_nanny_login_parity.py::test_login_pet_follows_owner_into_room`. |
 | `NANNY-009` | IMPORTANT | `nanny.c:778-780` | `mud/models/titles.py`, `mud/account/account_service.py:create_character` | `title_table[class][level][sex]` data and `set_title("the …")` first-login call missing — new chars get no class title. | ✅ FIXED — ported ROM `title_table` from `src/const.c:421-721` into `mud/models/titles.py`, then wired `create_character()` to persist the ROM default title (`the <class title>`) at level 1 using the correct sex branch. Test: `tests/integration/test_character_creation_runtime.py::test_new_character_gets_rom_default_title_on_load`. |
 | `NANNY-010` | IMPORTANT | `nanny.c:307-352` | `mud/net/connection.py:_close_duplicate_reconnect_descriptors`, `mud/net/connection.py:_select_character`, `mud/commands/imm_admin.py:do_switch`, `mud/commands/imm_admin.py:do_return` | `CON_BREAK_CONNECT` Y-path now sweeps the full descriptor list, matching by `original->name` for switched immortals and `character->name` otherwise, while leaving the canonical active session for `_disconnect_session(...)` to transfer. | ✅ FIXED — `_close_duplicate_reconnect_descriptors(...)` now mirrors ROM's duplicate-descriptor loop and closes every extra matching descriptor before reconnect. `do_switch` / `do_return` keep the lightweight ROM descriptor's `original` field in sync so the switched-immortal branch uses the correct name. Tests: `tests/test_account_auth.py::test_break_connect_closes_all_matching_descriptors`, `tests/test_telnet_server.py::test_telnet_break_connect_prompts_and_reconnects`. |

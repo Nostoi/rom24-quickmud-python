@@ -433,8 +433,13 @@ class CreationSelection:
         return base + 40
 
     def train_value(self) -> int:
-        if self.creation_points < 40:
-            return max(0, (40 - self.creation_points + 1) // 2)
+        # mirroring ROM src/nanny.c:776 — CON_READ_MOTD unconditionally sets
+        # ch->train = 3 for every level-0 character, overwriting the
+        # `ch->train = (40 - points + 1) / 2` formula from src/nanny.c:684.
+        # The formula never survives to CON_PLAYING (it is dead code in ROM),
+        # so a freshly created PC always starts with exactly 3 training
+        # sessions regardless of how many creation points were spent. (practice
+        # is likewise hardcoded to 5 at src/nanny.c:777.)
         return 3
 
     def group_names(self) -> tuple[str, ...]:
