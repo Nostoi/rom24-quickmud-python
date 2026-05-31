@@ -363,3 +363,78 @@ class TestCastCommandEdgeCases:
             or "not here" in result.lower()
             or "you don't know any spells of that name" in result.lower()
         )
+
+
+class TestCastManaDeductionCAST008:
+    """CAST-008 — failed casts must cost mana/2 only, not full + half.
+
+    ROM src/magic.c:551-558 deducts EITHER `ch->mana -= mana / 2;` (failure)
+    OR `ch->mana -= mana;` (success) — never both, and never before the
+    concentration roll. QuickMUD deducted the full mana_cost upfront and then
+    an additional mana_cost/2 on failure, so a failed cast cost 1.5x.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _load_skills(self):
+        from pathlib import Path
+
+        from mud.skills.registry import load_skills
+        from mud.utils import rng_mm
+
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+        load_skills(Path("data/skills.json"))
+        rng_mm.seed_mm(12345)
+        yield
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+
+    def _level1_mage(self, room):
+        from mud.models.constants import Position
+
+        char = Character(
+            name="Apprentice",
+            level=1,
+            room=room,
+            mana=100,
+            max_mana=100,
+            is_npc=False,
+            ch_class=0,  # mage_player fixture convention; magic missile levels[0]=1
+            position=Position.STANDING,
+        )
+        char.skills = {"magic missile": 75}  # 75% like the reported in-game char
+        char.messages = []
+        room.people.append(char)
+        return char
+
+    def test_failed_cast_costs_half_mana_only(self, test_room, target_mob):
+        from unittest.mock import patch
+
+        char = self._level1_mage(test_room)
+        try:
+            # magic missile for a level-1 mage costs 50 mana
+            # (max(min_mana=15, 100 // (2 + 1 - 1)) = 50).
+            # Force the concentration roll to FAIL: number_percent()=100 > skill 75.
+            with patch("mud.utils.rng_mm.number_percent", return_value=100):
+                process_command(char, "cast 'magic missile' goblin")
+            # mirrors ROM src/magic.c:553 — failed cast costs mana/2 (25) ONLY,
+            # leaving mana at 75. The CAST-008 bug deducted 50 upfront + 25 = 75
+            # total, leaving mana at 25 (the reported "costs 75 of 100 mana").
+            assert char.mana == 75, f"failed cast must cost mana/2 (25); cost was {100 - char.mana}"
+        finally:
+            if char in test_room.people:
+                test_room.people.remove(char)
+
+    def test_successful_cast_costs_full_mana(self, test_room, target_mob):
+        from unittest.mock import patch
+
+        char = self._level1_mage(test_room)
+        try:
+            # Force the concentration roll to SUCCEED: number_percent()=1 <= skill 75.
+            with patch("mud.utils.rng_mm.number_percent", return_value=1):
+                process_command(char, "cast 'magic missile' goblin")
+            # mirrors ROM src/magic.c:557 — successful cast costs the full mana (50).
+            assert char.mana == 50, f"successful cast must cost full mana (50); cost was {100 - char.mana}"
+        finally:
+            if char in test_room.people:
+                test_room.people.remove(char)

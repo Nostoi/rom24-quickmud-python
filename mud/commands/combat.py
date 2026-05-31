@@ -954,15 +954,21 @@ def do_cast(char: Character, args: str) -> str:
         ):
             return "You can't do that on your own follower."
 
-    char.mana -= mana_cost
     skill_registry._apply_wait_state(char, get_pulse_violence())
 
     roll = rng_mm.number_percent()
     success = roll <= spell_level
 
     if not success:
+        # mirroring ROM src/magic.c:551-555 — a failed cast costs HALF mana
+        # only (`ch->mana -= mana / 2;`). Mana is NOT deducted before the roll,
+        # so the full cost is never charged on failure (CAST-008).
         char.mana = max(0, char.mana - c_div(mana_cost, 2))
         return "You lost your concentration."
+
+    # mirroring ROM src/magic.c:557 — a successful cast costs the FULL mana
+    # (`ch->mana -= mana;`), charged only after the concentration roll passes.
+    char.mana -= mana_cost
 
     spell_func = skill_registry.handlers.get(skill.name)
     if not callable(spell_func):
