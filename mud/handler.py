@@ -843,38 +843,38 @@ def get_max_train(ch: Character, stat: int) -> int:
     """
     from mud.models.classes import CLASS_TABLE
     from mud.models.constants import LEVEL_IMMORTAL
-    from mud.models.races import PC_RACE_TABLE
+    from mud.models.races import get_pc_race, get_race_by_index
 
     is_npc = getattr(ch, "is_npc", False)
     level = getattr(ch, "level", 1)
+    # ROM: IS_NPC(ch) || ch->level > LEVEL_IMMORTAL -> 25 (note: strict >)
     if is_npc or level > LEVEL_IMMORTAL:
         return 25
 
-    race_name = getattr(ch, "race", "human")
-    class_index = getattr(ch, "class_num", 0)
-
-    pc_race = None
-    for race in PC_RACE_TABLE:
-        if race.name == race_name:
-            pc_race = race
-            break
-
-    if not pc_race or stat < 0 or stat >= 5:
-        return 18
+    # TRAIN-004: `ch.race` / `ch.ch_class` are int indices (mirroring ROM's
+    # `ch->race` / `ch->class`), not name strings. Bridge the race index to
+    # the pc_race_table by name; the RACE_TABLE sentinel offset means the
+    # indices don't line up with PC_RACE_TABLE directly.
+    race = get_race_by_index(getattr(ch, "race", 0))
+    if race is None:
+        return 25
+    pc_race = get_pc_race(race.name)
+    if pc_race is None or stat < 0 or stat >= len(pc_race.max_stats):
+        # A real PC always resolves to a pc_race row; fall back defensively to
+        # 25 (the NPC/immortal value) — ROM has no race_max fallback here.
+        return 25
 
     max_stat = pc_race.max_stats[stat]
 
-    if class_index < len(CLASS_TABLE):
-        class_entry = CLASS_TABLE[class_index]
-        prime_stat = int(class_entry.prime_stat)
-
+    # ROM src/handler.c:884-889 — the class's prime stat gets a bonus:
+    # +3 for humans, +2 for every other race.
+    class_index = getattr(ch, "ch_class", 0)
+    if 0 <= class_index < len(CLASS_TABLE):
+        prime_stat = int(CLASS_TABLE[class_index].prime_stat)
         if stat == prime_stat:
-            if race_name == "human":
-                max_stat += 3
-            else:
-                max_stat += 2
+            max_stat += 3 if race.name == "human" else 2
 
-    return min(max_stat, 25)
+    return min(max_stat, 25)  # ROM UMIN(max, 25)
 
 
 # ==============================================================================

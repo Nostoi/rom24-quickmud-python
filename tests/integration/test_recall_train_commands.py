@@ -359,3 +359,83 @@ def test_train_without_trainer_in_room_fails():
     assert do_train(char, "hp") == "You can't do that here."
     # the trainer gate precedes the no-arg session display too (ROM order)
     assert do_train(char, "") == "You can't do that here."
+
+
+def test_train_caps_human_nonprime_stat_at_race_max(train_test_setup):
+    """TRAIN-004 — stat cap is race/class-specific, not a hardcoded 22.
+
+    ROM src/act_move.c:1781 gates on `get_max_train(ch, stat)`
+    (src/handler.c:876): `pc_race_table[race].max_stats[stat]`, +3 for a
+    human's prime stat / +2 otherwise, clamped to 25. A human's max_stats
+    are all 18, so a human mage's STR (non-prime) caps at 18 — the old
+    hardcoded `max_stat = 22` over-caps it.
+    """
+    from mud.models.races import race_lookup
+
+    char, _room = train_test_setup
+    char.race = race_lookup("human")
+    char.ch_class = 0  # mage — prime stat is INT, so STR is non-prime
+    char.perm_stat = [18, 13, 13, 13, 13]  # STR already at the human race max
+
+    # mirrors ROM src/handler.c:876 get_max_train — human non-prime cap is 18
+    result = do_train(char, "str")
+    assert result == "Your strength is already at maximum."
+    assert char.perm_stat[0] == 18, "STR must not exceed the race max of 18"
+
+
+def test_train_caps_dwarf_dex_at_race_max(train_test_setup):
+    """TRAIN-004 — non-uniform race exercises the per-stat max_stats index.
+
+    Dwarf max_stats are (20, 16, 19, 14, 21); DEX (STAT_DEX index 3) caps
+    at 14. The old hardcoded 22 over-caps it, and a wrong stat→index
+    mapping would read a different ceiling.
+    """
+    from mud.models.races import race_lookup
+
+    char, _room = train_test_setup
+    char.race = race_lookup("dwarf")
+    char.ch_class = 3  # warrior — prime STR, so DEX is non-prime
+    char.perm_stat = [13, 13, 13, 14, 13]  # DEX already at the dwarf race max
+
+    # mirrors ROM src/handler.c:883 — pc_race_table[dwarf].max_stats[STAT_DEX] == 14
+    result = do_train(char, "dex")
+    assert result == "Your dexterity is already at maximum."
+    assert char.perm_stat[3] == 14, "DEX must not exceed the dwarf max of 14"
+
+
+def test_train_prime_stat_gets_class_bonus(train_test_setup):
+    """TRAIN-004 — a human's prime stat ceiling is race max + 3 (clamped 25).
+
+    A human mage's prime stat is INT (max_stats 18 + 3 = 21), so INT=20 is
+    still trainable up to 21. mirrors ROM src/handler.c:884-889.
+    """
+    from mud.models.races import race_lookup
+
+    char, _room = train_test_setup
+    char.race = race_lookup("human")
+    char.ch_class = 0  # mage — prime stat is INT
+    char.perm_stat = [13, 20, 13, 13, 13]  # INT below the 18+3 prime cap
+
+    result = do_train(char, "int")
+    assert result == "Your intelligence increases!"
+    assert char.perm_stat[1] == 21, "prime INT trains up to race max + 3 = 21"
+
+
+def test_train_prime_stat_nonhuman_bonus_is_plus_two(train_test_setup):
+    """TRAIN-004 — a non-human's prime stat ceiling is race max + 2 (not +3).
+
+    A giant warrior's prime stat is STR (max_stats 22 + 2 = 24, clamped 25),
+    so STR=23 is still trainable. mirrors ROM src/handler.c:888 (`max += 2`
+    for non-human prime). Also guards against wrongly applying the human +3
+    (which would yield 25).
+    """
+    from mud.models.races import race_lookup
+
+    char, _room = train_test_setup
+    char.race = race_lookup("giant")  # giant max_stats = (22, 15, 18, 15, 20)
+    char.ch_class = 3  # warrior — prime stat is STR
+    char.perm_stat = [23, 13, 13, 13, 13]  # STR one below the 22+2 prime cap
+
+    result = do_train(char, "str")
+    assert result == "Your strength increases!"
+    assert char.perm_stat[0] == 24, "non-human prime STR trains up to race max + 2 = 24"

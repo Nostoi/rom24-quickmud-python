@@ -75,7 +75,7 @@ Create tests for end-to-end handler workflows
 | `get_trust()` | ✅ Multiple: `mud/commands/imm_commands.py:get_trust()`, `mud/world/vision.py:_get_trust()`, etc. | ✅ **Audited** | 8+ implementations - **VERIFIED Jan 3, 2026** |
 | `get_age()` | ✅ `mud/handler.py:get_age()` | ✅ **Implemented** | Get character age (ROM ref: handler.c:846-849) - **IMPLEMENTED Jan 3, 2026** |
 | `get_curr_stat()` | ✅ `mud/models/character.py:Character.get_curr_stat()` (line 444) | ✅ **Audited** | Character method + 3 helpers - **VERIFIED Jan 3, 2026** |
-| `get_max_train()` | ✅ `mud/handler.py:get_max_train()` | ✅ **Implemented** | Get max trainable stat (ROM ref: handler.c:876-893) - **IMPLEMENTED Jan 3, 2026** |
+| `get_max_train()` | ✅ `mud/handler.py:get_max_train()` | ✅ **Implemented (fixed 2026-05-31)** | Get max trainable stat (ROM ref: handler.c:876-893). **False-✅ corrected:** the Jan-3 impl compared the int `ch.race` index against PC-race *name* strings and read a non-existent `class_num` attr, so for every real PC it fell through to a hardcoded `return 18` fallback — capping all stats at 18 regardless of race (observable in `do_mset` stat ranges, see ACT_WIZ SET-001) and shadowed in `do_train` by its own literal 22 (TRAIN-004). Fixed via int-race→name bridge (`get_race_by_index`→`get_pc_race`), correct `ch_class` field, ROM `+3 human / +2 other` prime bonus, and fallback 25 (ROM has no race_max fallback). Both `do_train` and `do_mset` now route through it. |
 
 ### Encumbrance Functions (2 functions)
 

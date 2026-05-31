@@ -302,23 +302,24 @@ def do_train(char: Character, args: str) -> str:
         # Check which stats can be trained (ROM C src/act_move.c:1716-1725).
         # ROM reads `ch->perm_stat[STAT_*]`; QuickMUD stores the same list at
         # `char.perm_stat`. There are no `perm_str`/`perm_int`/… attributes.
-        # get_max_train returns race_max + 4 (ROM src/handler.c:3027);
-        # the ROM standard is 18 base + 4 = 22.
-        max_stat = 22
+        # TRAIN-004: the ceiling is race/class-specific via get_max_train
+        # (ROM src/handler.c:876), not a hardcoded 22.
+        from mud.handler import get_max_train
+
         perm_stat = getattr(char, "perm_stat", []) or []
 
         def _stat(idx: int) -> int:
             return perm_stat[idx] if idx < len(perm_stat) else 0
 
-        if _stat(0) < max_stat:  # STAT_STR
+        if _stat(0) < get_max_train(char, 0):  # STAT_STR
             options.append(" str")
-        if _stat(1) < max_stat:  # STAT_INT
+        if _stat(1) < get_max_train(char, 1):  # STAT_INT
             options.append(" int")
-        if _stat(2) < max_stat:  # STAT_WIS
+        if _stat(2) < get_max_train(char, 2):  # STAT_WIS
             options.append(" wis")
-        if _stat(3) < max_stat:  # STAT_DEX
+        if _stat(3) < get_max_train(char, 3):  # STAT_DEX
             options.append(" dex")
-        if _stat(4) < max_stat:  # STAT_CON
+        if _stat(4) < get_max_train(char, 4):  # STAT_CON
             options.append(" con")
         options.append(" hp mana")
 
@@ -374,9 +375,11 @@ def do_train(char: Character, args: str) -> str:
         # Get current stat value from perm_stat array
         current_value = char.perm_stat[stat_index]
 
-        # Check max (ROM C get_max_train returns race_max + 4)
-        max_stat = 22  # ROM standard: 18 base + 4
-        if current_value >= max_stat:
+        # TRAIN-004: ROM src/act_move.c:1781 gates on get_max_train(ch, stat)
+        # (race/class-specific, ROM src/handler.c:876), not a hardcoded 22.
+        from mud.handler import get_max_train
+
+        if current_value >= get_max_train(char, stat_index):
             return f"Your {stat_name} is already at maximum."
 
         if cost > char.train:

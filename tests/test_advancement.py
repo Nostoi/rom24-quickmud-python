@@ -544,10 +544,16 @@ def test_train_lists_available_stats_without_crash():
 
 def test_train_lists_only_unmaxed_stats():
     """ROM src/act_move.c:1716-1725 skips stats already at
-    ``get_max_train`` (race_max + 4 = 22). Listing must omit maxed stats."""
+    ``get_max_train`` (race/class-specific, src/handler.c:876). Listing must
+    omit maxed stats. TRAIN-004: the cap is per-race, not a hardcoded 22."""
 
-    # STR = 22 (maxed), others below max
-    char = Character(practice=0, train=5, is_npc=False, perm_stat=[22, 15, 15, 15, 15])
+    from mud.models.races import race_lookup
+
+    # Human mage: max_stats are all 18; STR (non-prime) caps at 18, while the
+    # prime INT caps at 18+3=21. STR=18 is maxed; INT=15 is below its cap.
+    char = Character(practice=0, train=5, is_npc=False, perm_stat=[18, 15, 15, 15, 15])
+    char.race = race_lookup("human")
+    char.ch_class = 0  # mage — prime stat is INT
     _place_with_trainer(char)
 
     msg = do_train(char, "magic")
