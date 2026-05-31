@@ -57,44 +57,54 @@ If you find yourself adding a rule that says "ALWAYS run X before Y", consider w
    - Repeated pre-commit failure → add a Lefthook/husky hook
    - Repeated unsafe tool use → add a PreToolUse hook in .claude/settings.json
 
-# ⚠️ Known GitNexus Indexing Gap (load-bearing — read before trusting `gitnexus_impact`)
+# GitNexus Indexing — 32 KB scope-extraction bug RESOLVED on 1.6.5 (verified 2026-05-31)
 
-GitNexus's scope extractor has a **32 KB-per-file limit** in tree-sitter's binding (upstream bug, [issue #1097](https://github.com/abhigyanpatwari/GitNexus/issues/1097)). Failures show as `scope extraction failed for <file>: Invalid argument` during `npx gitnexus analyze -v`. Confirmed still present on **gitnexus 1.6.4-rc.13** (April 27, 2026) — [PR #1100](https://github.com/abhigyanpatwari/GitNexus/pull/1100) closed only the empty-`__init__.py` half of the bug, not the buffer cap.
+The tree-sitter scope-extraction bug that used to drop symbols/edges from any
+`mud/*.py` file over ~32 KB ([issue #1097](https://github.com/abhigyanpatwari/GitNexus/issues/1097),
+`scope extraction failed for <file>: Invalid argument`) is **fixed as of
+gitnexus 1.6.5**. The old "Known Indexing Gap" warning here listed ~25
+Python files to distrust; that list is obsolete — **do not re-add it**.
 
-**Important:** even when a file *itself* parses cleanly, if its callers or callees live in failing files the relationship edges drop on whichever side fails. So a symbol can show "0 incoming, 0 outgoing" in `gitnexus_context()` and `gitnexus_impact()` will silently report "0 callers, LOW risk" on real symbols that have many callers.
+**Verification (2026-05-31, forced `analyze -v -f` on 1.6.5):**
+- Previously-failing large files now parse with full relationship edges:
+  `mud/handler.py` (52 KB) `equip_char` → 7 callers + 2 callees;
+  `mud/combat/engine.py` (75 KB) `get_wielded_weapon` → 8 callers;
+  `mud/skills/handlers.py` (275 KB) symbols appear as callers. Graph grew to
+  ~42.8 K nodes / ~79.5 K edges (was ~39 K / ~65 K).
+- **Zero** `Invalid argument` failures on Python files. The only 2 residual
+  `scope extraction failed` lines are `src/recycle.h` and `src/olc.h` —
+  declaration-only **C reference headers** (read-only ROM source, irrelevant to
+  Python parity work), failing for a *different* reason ("no Module scope
+  found"), not the byte-buffer cap.
 
-**Affected files** (confirmed `Invalid argument` on rc.13 with `-v` and `--max-file-size 32768`):
+**Net:** `gitnexus_impact` / `gitnexus_context` results on `mud/*.py` are now
+trustworthy. The "run it anyway but don't believe a clean result, fall back to
+grep" workaround is **retired**. Normal discipline applies: run `gitnexus_impact`
+before edits, `gitnexus_detect_changes` before commits, and still cross-check
+with the integration suite for behavioral regressions (that's parity hygiene,
+not distrust of the graph).
 
-```
-mud/skills/handlers.py            mud/handler.py
-mud/combat/engine.py              mud/persistence.py
-mud/game_loop.py                  mud/mobprog.py
-mud/mob_cmds.py                   mud/models/character.py
-mud/commands/build.py             mud/commands/dispatcher.py
-mud/commands/shop.py              mud/spawning/reset_handler.py
-mud/account/account_service.py    mud/net/connection.py
-mud/imc/__init__.py
-tests/test_imc.py                 tests/test_combat_death.py
-tests/test_db_resets_rom_parity.py tests/test_shops.py
-tests/test_skill_combat_rom_parity.py tests/test_spec_funs.py
-tests/test_spawning.py            tests/integration/test_consumables.py
-tests/integration/test_equipment_system.py
-```
+**`--max-file-size` is NOT a knob for this** — per the GitNexus docs and
+`--help`, `--max-file-size <kb>` / `GITNEXUS_MAX_FILE_SIZE` (default 512 KB) is a
+*walker skip threshold* (which files to exclude), and its hard cap of 32768 *is*
+the tree-sitter buffer ceiling. Our source files are already under 512 KB, so
+they were never skipped; raising it would not have helped (and didn't, when
+tested on rc.13). No GitNexus env var is needed for normal operation here.
 
-**Verified failure modes** (April 27, 2026, gitnexus 1.6.4-rc.13):
-- `mud/commands/inventory.py::do_get` — file parses now but symbol still shows 0 in / 0 out (callers in `mud/commands/dispatcher.py`, which still fails).
-- `mud/handler.py::extract_obj` and `mud/combat/engine.py::one_hit` — not in the graph at all.
+**If scope-extraction failures on `mud/*.py` ever reappear** (e.g. a regressed
+release): run `npx gitnexus analyze -v -f` and grep the log for
+`scope extraction failed|Invalid argument`; if real Python files are listed,
+re-instate a grep cross-check for symbols in those files and pin the working
+gitnexus version. Otherwise trust the graph.
 
-**When your target is in one of those files, or a likely caller/callee is, do this instead:**
-
-1. Run `gitnexus_impact` anyway. If it returns 0 callers / LOW risk on a clearly hot symbol, **do not trust it**.
-2. Fall back to `grep -rn "<symbol_name>" mud/ tests/` for callers.
-3. Run the relevant integration suite (`pytest tests/integration/test_<area>.py -v`) to catch regressions the static graph would have flagged.
-4. Still report the (untrusted) `gitnexus_impact` result to the user with the caveat — do not pretend the symbol is safe.
-
-This warning sits **above** the "MUST run impact analysis" rule below, not against it. Always run `gitnexus_impact`; just don't believe a clean result on a listed file. Tracked upstream — re-verify after the next gitnexus release and trim this section if the file list shrinks meaningfully.
-
-**Operational note:** when re-running `npx gitnexus analyze`, pass `--skip-agents-md` if you don't want it to rewrite the auto-managed block in CLAUDE.md/AGENTS.md. The auto-update only touches text inside the `gitnexus:start`/`gitnexus:end` markers — this section sits *above* those markers on purpose so it survives. Pass `-v` to see scope-extraction errors at all on rc.x; the new RC is silent on per-file failures by default.
+**Operational note:** when re-running `npx gitnexus analyze`, pass
+`--skip-agents-md` so it doesn't rewrite the auto-managed block in
+CLAUDE.md/AGENTS.md (the auto-update only touches text inside the
+`gitnexus:start`/`gitnexus:end` markers — this section sits *above* them on
+purpose). Pass `-v` to surface per-file scope-extraction errors (silent by
+default). For long-running hosts (MCP server / CI shell), the useful env knobs
+are `GITNEXUS_WORKER_SUB_BATCH_TIMEOUT_MS` (worker idle timeout, default 30000)
+and `GITNEXUS_WORKER_POOL_SIZE` — not `GITNEXUS_MAX_FILE_SIZE`.
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
