@@ -261,37 +261,30 @@ def do_train(char: Character, args: str) -> str:
         return f"You have {char.train} training sessions."
 
     args_lower = args.lower()
+    # mirroring ROM src/act_move.c do_train — `cost = 1;` is set once before
+    # the stat dispatch and never changed: every `if (attr_prime == STAT_X)
+    # cost = 1;` branch is a no-op and there is NO `else cost = 2;`. So
+    # training ANY stat (prime or not) and hp/mana always costs exactly 1
+    # training session. (Earlier QuickMUD invented a cost=2 for non-prime
+    # stats; that was a misread of the no-op branches — see TRAIN-002.)
     cost = 1
     stat_index = -1
     stat_name = None
 
-    # Get character's class prime stat (for cost calculation)
-    # ROM C lines 1669-1705: prime stats cost 1, others cost 2
-    # Character classes: 0=WARRIOR, 1=CLERIC, 2=THIEF, 3=MAGE
-    # Prime stats (ROM C src/tables.c): WARRIOR=STR, CLERIC=WIS, THIEF=DEX, MAGE=INT
-    char_class = getattr(char, "ch_class", 0)
-    prime_stats = {0: "str", 1: "wis", 2: "dex", 3: "int"}  # class_index: prime_stat
-    prime_stat = prime_stats.get(char_class, "str")
-
     # Parse stat argument (ROM C lines 1667-1705)
     if args_lower == "str":
-        cost = 1 if prime_stat == "str" else 2
         stat_index = 0  # STAT_STR
         stat_name = "strength"
     elif args_lower == "int":
-        cost = 1 if prime_stat == "int" else 2
         stat_index = 1  # STAT_INT
         stat_name = "intelligence"
     elif args_lower == "wis":
-        cost = 1 if prime_stat == "wis" else 2
         stat_index = 2  # STAT_WIS
         stat_name = "wisdom"
     elif args_lower == "dex":
-        cost = 1 if prime_stat == "dex" else 2
         stat_index = 3  # STAT_DEX
         stat_name = "dexterity"
     elif args_lower == "con":
-        cost = 1 if prime_stat == "con" else 2
         stat_index = 4  # STAT_CON
         stat_name = "constitution"
     elif args_lower == "hp":

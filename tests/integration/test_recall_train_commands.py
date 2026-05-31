@@ -239,7 +239,10 @@ def test_train_int_increases_stat(train_test_setup):
     initial_train = char.train
     initial_int = char.perm_stat[1]
 
-    cost = 2
+    # TRAIN-002 — ROM src/act_move.c do_train charges cost=1 for EVERY stat,
+    # including non-prime ones (INT is non-prime for a warrior). The previous
+    # cost=2 here asserted a QuickMUD divergence, not ROM behavior.
+    cost = 1
 
     result = do_train(char, "int")
 
@@ -294,3 +297,30 @@ def test_train_npc_blocked(train_test_setup):
     assert char.train == initial_train, "NPC training sessions should not change"
     assert char.max_hit == initial_max_hit, "NPC max HP should not change"
     assert result == "", "Should return empty string for NPCs"
+
+
+def test_train_nonprime_stat_costs_one_session(train_test_setup):
+    """TRAIN-002 — training a stat costs exactly 1 session, never 2.
+
+    ROM src/act_move.c do_train sets `cost = 1;` once before the stat
+    dispatch chain. Each branch's `if (class_table[ch->class].attr_prime
+    == STAT_X) cost = 1;` is a no-op (there is no `else cost = 2;`), so a
+    NON-prime stat costs the same single session as a prime stat. Python
+    had invented `cost = 1 if prime else 2`, charging 2 for non-prime
+    stats. The fixture char is class 0 (WARRIOR, prime STR), so CON is
+    non-prime and must still cost exactly 1.
+    """
+    char, room = train_test_setup
+    # All stats below get_max_train (22) so the train succeeds.
+    char.perm_stat = [15, 15, 15, 15, 15]
+    char.train = 5
+
+    # mirrors ROM src/act_move.c do_train — cost is 1 for every stat
+    result = do_train(char, "con")  # CON: non-prime for a warrior
+
+    assert char.perm_stat[4] == 16, "constitution should increase by 1 (STAT_CON)"
+    assert char.train == 4, (
+        "non-prime stat training must cost exactly 1 session; ROM do_train "
+        "never sets cost=2"
+    )
+    assert "constitution increases" in result.lower()
