@@ -543,6 +543,32 @@ class MobInstance:
             return
         self.affected_by |= bit
 
+    def remove_spell_effect(self, name: str) -> SpellEffect | None:
+        """Remove a spell effect, unwinding exactly the modifiers that
+        ``MobInstance.apply_spell_effect`` applied (hitroll / damroll /
+        affect_flag) — the mob model never applies ac/saving/stat/sex mods,
+        so this stays symmetric and does not over-unwind.
+
+        GL-028: ``tick_spell_effects``'s dict-only fallback calls
+        ``character.remove_spell_effect`` on expiry; ``MobInstance`` lacked
+        this method, so an expiring mob spell effect raised ``AttributeError``
+        out of ``char_update`` — aborting the whole game tick (no try/except
+        guards the per-character loop or the ``char_update()`` call).
+        """
+        effect = self.spell_effects.pop(name, None)
+        if effect is None:
+            return None
+        if getattr(effect, "hitroll_mod", 0):
+            self.hitroll -= effect.hitroll_mod
+        if getattr(effect, "damroll_mod", 0):
+            self.damroll -= effect.damroll_mod
+        if getattr(effect, "affect_flag", None) is not None:
+            try:
+                self.affected_by &= ~int(effect.affect_flag)
+            except Exception:
+                pass
+        return effect
+
     def apply_spell_effect(self, effect: "SpellEffect") -> bool:
         """Apply spell effect to mob (simplified version matching Character interface)."""
         from dataclasses import replace
