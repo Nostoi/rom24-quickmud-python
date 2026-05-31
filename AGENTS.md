@@ -195,11 +195,54 @@ mypy mud/net/ansi.py mud/security/hash_utils.py --follow-imports=skip
 
 # Comprehensive command registration check
 python3 test_all_commands.py
+
+# Differential parity harness (ROM C ⇄ Python) — pure-Python replay, no C build
+pytest tests/test_differential_smoke.py tests/test_diff_harness_unit.py
 ```
 
 Three test layers — unit (`tests/test_*.py`), integration
 (`tests/integration/`), and command-registry (`test_all_commands.py`). Run all
 three when adding commands.
+
+### Differential testing harness (`tools/diff_harness/`)
+
+A fourth, complementary verification layer: it runs the **original ROM 2.4b6 C
+engine** and the Python port through identical scripted scenarios and diffs
+observable state + output, so parity divergences surface mechanically instead of
+relying on hand-written assertions. Full docs: `tools/diff_harness/README.md`;
+open divergences: `tools/diff_harness/FINDINGS.md`.
+
+**When to use it:**
+
+- You changed an engine surface covered by a scenario (movement/get-drop,
+  affect_armor, combat_melee_rounds, spell_combat) — run the replay to confirm
+  you didn't drift from ROM.
+- You're hunting a subtle parity divergence and want C ground truth rather than a
+  Python-authored expectation. Author a new scenario (see below) to capture it.
+- Before claiming a parity gap closed on a surface the harness can exercise.
+
+**How to use it:**
+
+- **Everyday replay (no C build):** `pytest tests/test_differential_smoke.py
+  tests/test_diff_harness_unit.py`. Replays pure-Python against the committed
+  goldens in `tests/data/golden/diff/`. A missing golden skips; a known,
+  not-yet-resolved divergence xfails (`KNOWN_DIVERGENCES` in the replay test).
+- **Author a scenario:** drop `tools/diff_harness/scenarios/<name>.json`
+  (`name`, `seed`, `start_room`, `char`, `watch` set, `steps`). A snapshot over
+  the watch-set is auto-inserted after every step. v1 is a deterministic no-RNG
+  slice (look/movement/get-drop/inventory/wear-remove).
+- **Regenerate/verify goldens (needs the instrumented C binary):**
+  `cd src && make -f Makefile.diffshim diffshim` (one-time, additive — ROM
+  `src/*.c` stay byte-for-byte unchanged), then
+  `python3 -m tools.diff_harness.capture --all` (regenerate) or `--check`
+  (CI-style diff vs committed). Goldens are stamped with the repo HEAD sha +
+  build flags + seed; the trace is C-engine output (immutable unless ROM C or a
+  scenario changes), so a regen typically only refreshes the provenance stamp.
+
+**A divergence is a finding, not a golden to overwrite.** ROM is the source of
+truth: when replay fails on a real divergence, triage it, record it in
+`FINDINGS.md`, file a parity gap (per the routing table below), and fix Python
+or the data — never edit the golden to make the test pass.
 
 ### Test fixtures (from `conftest.py`)
 

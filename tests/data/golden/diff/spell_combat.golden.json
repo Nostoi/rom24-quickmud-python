@@ -1,6 +1,6 @@
 {
   "scenario": "spell_combat",
-  "c_commit": "4094aded23b910b1e05f07d0feee38c9e651f95a",
+  "c_commit": "ed15fc6d73c26dca403c51cab5d583d4b447e4ab",
   "build_flags": "-DOLD_RAND",
   "seed": 12345,
   "trace": [

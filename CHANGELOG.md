@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **AGENTS.md documents the differential testing harness (when/how to use).** Added a "Differential testing harness (`tools/diff_harness/`)" subsection + a replay command in the Build/Lint/Test block, so future agents know it's a fourth verification layer (ROM C ⇄ Python), how to run the pure-Python replay, author scenarios, and regenerate goldens — and that a divergence is a finding, not a golden to overwrite.
+- **Diff-harness goldens re-verified against the instrumented C binary.** Rebuilt `src/diffshim` and ran `capture --check` (all 4 scenarios ok) then `--all`; the trace data is byte-identical (ROM C behavior unchanged), so only the `c_commit` provenance stamp refreshed to the current HEAD. Replay suite green (`tests/test_differential_smoke.py`, `tests/test_diff_harness_unit.py` — 12 passed).
+
 ### Added
 - **Differential test harness merged to master (`diff-harness` branch).** Brings the ROM-C-vs-Python differential diff infrastructure onto `master`: `tools/diff_harness/` scenario runner + `compare.py`/`pysnap.py` drivers, golden JSON fixtures (`tests/data/golden/diff/`: `affect_armor`, `combat_melee_rounds`, `spell_combat`, `movement_get_drop`), the `src/diff_shim/diffmain.c` C shim, `tests/test_diff_harness_unit.py` + `tests/test_differential_smoke.py`, and the combat-RNG differential scenario design docs. Dev-tooling/tests only — no `mud/` engine changes. Clean auto-merge (29 commits), full suite green (5107 passed, 4 skipped).
 
