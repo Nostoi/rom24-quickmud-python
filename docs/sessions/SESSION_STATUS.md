@@ -22,8 +22,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.11.61 |
-| Tests | 5102 passed, 4 skipped |
+| Version | 2.12.0 |
+| Tests | 5107 passed, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 24 enforced — all rows enforced (tracker is source of truth; INV-032 flipped this session) |
 | Open correctness gaps | none |
