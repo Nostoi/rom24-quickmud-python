@@ -1,57 +1,54 @@
-# Session Status — 2026-06-01 — CAST-009 + TRAIN-005 (open-gap queue drain) (2.12.42)
+# Session Status — 2026-06-01 — MAGIC-012/013 manual-room-loop PERS masking (2.12.44)
 
 ## Current State
 
-- **Active mode**: cross-file invariants (per-file audit tracker exhausted).
-  The documented open-gap queue is now **empty** — both remaining 🔄 OPEN
-  correctness gaps were closed this session.
-- **Last completed (this session, 2.12.40 → 2.12.42)** — two single-gap TDD
-  commits:
-  - **CAST-009** (`3cc79497`, 2.12.41) — a failed cast now trains the spell
-    skill (`_check_improve(char, skill, skill.name, False)` added to the
-    concentration-lost branch of `do_cast`, ahead of the half-mana deduction;
-    ROM `src/magic.c:553`). Message order verified async-deferred.
-  - **TRAIN-005** (`b99a71ef`, 2.12.42) — bare `train` now shows the session
-    count *and* the trainable-stat listing (no-arg branch emits a
-    `session_prefix` then falls through with `args = "foo"`; ROM
-    `src/act_move.c:1658-1663`).
-  - **2 new integration tests** (one per gap); both failed-first, pass after.
-    Area suites green (magic/skills 63, recall/train + advancement 59).
+- **Active mode**: cross-file invariants — the **INV-025 manual-room-loop PERS
+  sweep** is the active pass (the 2.12.30 sweep converted `_act_room` call sites
+  but missed handlers baking `_character_name()` into `room.broadcast(...)` /
+  hand-rolled room loops).
+- **Earlier today (2.12.40 → 2.12.42, pushed green):** CAST-009 + TRAIN-005
+  closed; full suite green (5242 passed); pushed to origin (also carried the
+  prior session's unpushed 2.12.40 commits). See
+  [SESSION_SUMMARY_2026-06-01_CAST009_TRAIN005_QUEUE_DRAIN.md](SESSION_SUMMARY_2026-06-01_CAST009_TRAIN005_QUEUE_DRAIN.md).
+- **This pass (2.12.42 → 2.12.44):**
+  - **MAGIC-012** (`14cf90c4`, 2.12.43) — `frenzy` success room line
+    `$n`/`$s` per-recipient PERS masking (ROM `magic.c:2961`).
+  - **MAGIC-013** (`ded5e147`, 2.12.44) — `cure_disease` success room line
+    PERS masking **+ wrong-channel** fix (ROM `magic.c:1658`).
+  - Probed group/follower + affect-tick — both **faithful** (no gap).
+  - 4 new integration tests; INV-025 trail extended with the remaining
+    ~12-site work-list.
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-01_CAST009_TRAIN005_QUEUE_DRAIN.md](SESSION_SUMMARY_2026-06-01_CAST009_TRAIN005_QUEUE_DRAIN.md)
+  [SESSION_SUMMARY_2026-06-01_MAGIC012_013_MANUAL_ROOM_LOOP_PERS.md](SESSION_SUMMARY_2026-06-01_MAGIC012_013_MANUAL_ROOM_LOOP_PERS.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.42 |
-| Tests | **full suite green: 5242 passed, 4 skipped** (`-n0`, 12:54; `-n auto` hangs at worker startup under high machine load — use `-n0` if it recurs) |
+| Version | 2.12.44 |
+| Tests | full suite green at 2.12.42 (5242 passed); 2.12.44 run pending push (4 new tests → ~5246) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | **none documented** — CAST-009 + TRAIN-005 closed; INV-025/027 structural queue already drained |
+| Open correctness gaps | INV-025 manual-room-loop PERS sweep: ~12 sites OPEN (work-list in INV-025 trail); dirt-kicking "their" line needs ROM verification |
 
 ## Next Intended Task
 
-The documented open-gap queue is drained. Next session:
+1. **Continue the INV-025 manual-room-loop PERS sweep** — ~12 remaining sites
+   (work-list in the INV-025 "Touched by" trail in
+   `CROSS_FILE_INVARIANTS_TRACKER.md`): rose (handlers.py:2624), earthquake
+   (3550), sleep (7520), giant_strength (4966), haste/slow
+   (5038/5075/7567/7604), `$n turns translucent` (6298), stone skin (7801),
+   trip→`$s` (7981), weaken (8163). One failing-first MAGIC-NNN commit each;
+   **verify each handler's exact `src/magic.c` `act()` format string** before
+   converting (the `$s`/`$e`/`$m`/`$p` token and TO_ROOM vs TO_NOTVICT vary).
+2. Verify the dirt-kicking already-affected caster line
+   (`handlers.py:~3200`) — no ROM equivalent found; confirm Python-invented.
 
-1. **Open a fresh cross-file-invariants candidate area** (affect ticks, position
-   transitions, mob script triggers, group/follower chain) per the AGENTS.md
-   probe-then-scope method — read ROM C contract → read Python equivalent → one
-   failing test → close as a gap or file the next free INV-NNN.
+> **Push note:** MAGIC-012/013 + this handoff are local on `master` pending the
+> full-suite confirmation at 2.12.44 (running `-n0`; the machine intermittently
+> spikes to load ~180 from unrelated workloads, which hangs `-n auto` at worker
+> startup — use `-n0`). README test-count/version refresh to 2.12.44 belongs in
+> the push commit once the count is confirmed.
 
-> **Push gate: CLEARED.** Full suite ran green (`5242 passed, 4 skipped`, `-n0`)
-> once machine load recovered, and `master` was pushed to origin at `83c73b85`
-> (2.12.42). This push also carried the prior session's 2.12.40 commits, which
-> had likewise never been pushed (origin had been back at `0e9ced77`). All nine
-> commits are covered by the green full-suite run.
-
-> **Stale index note:** a `gitnexus analyze --skip-agents-md` reindex was started
-> mid-session but **killed before completion** (it was contending with pytest for
-> CPU under the machine overload). The GitNexus index is stale at `04f118e`. Run
-> a reindex on a quiet machine before relying on `gitnexus_impact` /
-> `gitnexus_detect_changes` results.
-
-> **Distrust unverified audit-row ROM refs:** prior sessions found multiple rows
-> with materially wrong ROM line numbers. Re-verify any ⚠️/❌ row against `src/`
-> before relying on it.
+> **Stale index:** GitNexus index reindex pending — run on a quiet machine.
