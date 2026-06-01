@@ -9,12 +9,11 @@ from __future__ import annotations
 from mud.handler import unequip_char
 from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
-from mud.models.constants import ExtraFlag, ItemType, PlayerFlag, Position, OBJ_VNUM_PIT, WearFlag
+from mud.models.constants import OBJ_VNUM_PIT, ExtraFlag, ItemType, PlayerFlag, WearFlag
 from mud.net.protocol import broadcast_room
 from mud.utils import rng_mm
 from mud.utils.act import act_format
 from mud.world.obj_find import get_obj_carry, get_obj_here, get_obj_wear
-
 
 # Container flags
 CONT_CLOSEABLE = 1
@@ -517,6 +516,8 @@ def do_quaff(char: Character, args: str) -> str:
     if room is not None:
         room_message = act_format("$n quaffs $p.", recipient=None, actor=char, arg1=obj)
         broadcast_room(room, room_message, exclude=char)
+        # ROM src/act_obj.c:1897 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+        mp_act_trigger_room(room_message, room, char, arg1=obj)
 
     # Cast the spells from the potion
     obj_value = getattr(obj, "value", [0, 0, 0, 0, 0])

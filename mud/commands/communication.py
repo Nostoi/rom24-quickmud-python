@@ -28,6 +28,17 @@ def _queue_personal_message(target: Character, message: str) -> None:
         target.messages.append(message)
 
 
+def _has_mobprog_trigger(mob: Character, trigger: mobprog.Trigger) -> bool:
+    programs = []
+    direct = getattr(mob, "mob_programs", None)
+    if direct:
+        programs.extend(direct)
+    proto = getattr(mob, "prototype", None) or getattr(mob, "mob_index", None)
+    if proto:
+        programs.extend(getattr(proto, "mprogs", []) or [])
+    return any(int(getattr(prog, "trig_type", 0) or 0) & int(trigger) for prog in programs)
+
+
 def _deliver_tell(sender: Character, target: Character, message: str) -> None:
     """Send the formatted tell *message* to *target* and record reply."""
 
@@ -35,6 +46,16 @@ def _deliver_tell(sender: Character, target: Character, message: str) -> None:
     writer = getattr(target, "connection", None)
     if writer:
         asyncio.create_task(send_to_char(target, message))
+    # mirroring ROM src/act_comm.c:942 / src/comm.c:2384 — the
+    # act_new(TO_VICT) tell line dispatches TRIG_ACT on NPC recipients
+    # separately from the later TRIG_SPEECH hook.
+    if (
+        getattr(target, "is_npc", False)
+        and not writer
+        and mobprog.MOBtrigger
+        and _has_mobprog_trigger(target, mobprog.Trigger.ACT)
+    ):
+        mobprog.mp_act_trigger(message, target, sender, None, target, mobprog.Trigger.ACT)
     target.reply = sender
 
 
@@ -164,6 +185,16 @@ def do_say(char: Character, args: str) -> str:
                 asyncio.create_task(send_to_char(listener, per_message))
             if hasattr(listener, "messages"):
                 listener.messages.append(per_message)
+            # mirroring ROM src/act_comm.c:776 / src/comm.c:2384 — the
+            # unsuppressed say TO_ROOM act() dispatches TRIG_ACT on NPC
+            # listeners independently of the explicit TRIG_SPEECH loop below.
+            if (
+                getattr(listener, "is_npc", False)
+                and writer is None
+                and mobprog.MOBtrigger
+                and _has_mobprog_trigger(listener, mobprog.Trigger.ACT)
+            ):
+                mobprog.mp_act_trigger(per_message, listener, char, None, args, mobprog.Trigger.ACT)
         # mirroring ROM src/act_comm.c:779 — `if (!IS_NPC (ch))` gate.
         # Only PC speakers enter the SPEECH listener loop; this prevents
         # mob-to-mob speech-trigger cascades (mob A says "X" → mob B's

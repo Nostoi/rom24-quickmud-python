@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from mud.math.c_compat import c_div
 from mud.models.character import Character, _object_carry_number, _object_carry_weight
-from mud.models.constants import AffectFlag, ExtraFlag, MAX_LEVEL, PlayerFlag, Position
+from mud.models.constants import MAX_LEVEL, AffectFlag, ExtraFlag, PlayerFlag, Position
 from mud.utils.act import act_format
 from mud.utils.rng_mm import number_percent, number_range
 from mud.world.char_find import get_char_room
@@ -70,7 +70,7 @@ def do_hide(char: Character, args: str) -> str:
 def do_visible(char: Character, args: str) -> str:
     """
     Remove invisibility, sneak, and hide effects.
-    
+
     ROM Reference: src/act_move.c do_visible (lines 1549-1560)
     """
     # ROM affect_strip(ch, gsn_invis/gsn_mass_invis/gsn_sneak) — remove the
@@ -84,14 +84,14 @@ def do_visible(char: Character, args: str) -> str:
     char.remove_spell_effect("invis")
     char.remove_spell_effect("mass invis")
     _strip_affect(char, "sneak")
-    
+
     # Remove affect flags
     affected_by = getattr(char, "affected_by", 0)
     affected_by &= ~AffectFlag.HIDE
     affected_by &= ~AffectFlag.INVISIBLE
     affected_by &= ~AffectFlag.SNEAK
     char.affected_by = affected_by
-    
+
     return "Ok."
 
 
@@ -211,6 +211,15 @@ def _steal_failure(char: Character, victim: Character) -> str:
                 continue
             _send_to_char_sync(occupant, notvict_msg)
 
+    # ROM src/act_obj.c:2223-2224 / src/comm.c:2384 — unsuppressed act()
+    # fires TRIG_ACT on NPC recipients.
+    import mud.mobprog as mobprog
+
+    if getattr(victim, "is_npc", False):
+        mobprog.mp_act_trigger(victim_msg, victim, char, None, victim, mobprog.Trigger.ACT)
+    if room is not None:
+        mobprog.mp_act_trigger_room(notvict_msg, room, char, arg2=victim, exclude=(char, victim))
+
     # ROM L2225-2240: random yell text
     char_name = getattr(char, "name", "someone") or "someone"
     sex = int(getattr(char, "sex", 0) or 0)
@@ -238,7 +247,7 @@ def _steal_failure(char: Character, victim: Character) -> str:
     # ROM L2247-2263: NPC victim attacks; PC victim sets THIEF flag on attacker.
     char_is_npc = bool(getattr(char, "is_npc", False))
     if not char_is_npc:
-        if victim_is_npc := bool(getattr(victim, "is_npc", False)):
+        if bool(getattr(victim, "is_npc", False)):  # noqa: SIM108
             from mud.combat.engine import multi_hit
 
             multi_hit(victim, char, None)
@@ -357,9 +366,9 @@ def _strip_affect(char: Character, affect_name: str) -> None:
 def _apply_sneak_affect(char: Character) -> None:
     """Apply sneak affect to character."""
     from mud.models.affect import Affect
-    
+
     level = getattr(char, "level", 1)
-    
+
     affect = Affect(
         type="sneak",
         level=level,
@@ -368,12 +377,11 @@ def _apply_sneak_affect(char: Character) -> None:
         modifier=0,
         bitvector=AffectFlag.SNEAK,
     )
-    
-    affects = getattr(char, "affected", [])
+
     if not hasattr(char, "affected"):
         char.affected = []
     char.affected.append(affect)
-    
+
     char.affected_by = getattr(char, "affected_by", 0) | AffectFlag.SNEAK
 
 

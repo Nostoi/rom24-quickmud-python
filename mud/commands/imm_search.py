@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from mud.commands.affects import affect_loc_name
 from mud.commands.imm_commands import (
     MAX_LEVEL,
     _is_room_owner,
@@ -16,7 +17,6 @@ from mud.commands.imm_commands import (
     get_char_world,
     get_trust,
 )
-from mud.commands.affects import affect_loc_name
 from mud.handler import (
     act_bit_name,
     affect_bit_name,
@@ -469,7 +469,12 @@ def do_clone(char: Character, args: str) -> str:
                 or "something"
             )
             actor_name = getattr(char, "name", None) or "Someone"
-            broadcast_room(actor_room, f"{actor_name} has created {clone_short}.", exclude=char)
+            room_message = f"{actor_name} has created {clone_short}."
+            broadcast_room(actor_room, room_message, exclude=char)
+            from mud.mobprog import mp_act_trigger_room
+
+            # ROM src/act_wiz.c:2405 + src/comm.c:2384 - clone object act(TO_ROOM) fires TRIG_ACT.
+            mp_act_trigger_room(room_message, actor_room, char, arg1=clone)
 
         from mud.wiznet import WiznetFlag, wiznet
 
@@ -533,7 +538,12 @@ def do_clone(char: Character, args: str) -> str:
             from mud.net.protocol import broadcast_room
 
             actor_name = getattr(char, "name", None) or "Someone"
-            broadcast_room(room, f"{actor_name} has created {clone_short}.", exclude=char)
+            room_message = f"{actor_name} has created {clone_short}."
+            broadcast_room(room, room_message, exclude=char)
+            from mud.mobprog import mp_act_trigger_room
+
+            # ROM src/act_wiz.c:2449 + src/comm.c:2384 - clone mobile act(TO_ROOM) fires TRIG_ACT.
+            mp_act_trigger_room(room_message, room, char, arg2=clone)
 
         from mud.wiznet import WiznetFlag, wiznet
 

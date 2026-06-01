@@ -7,11 +7,11 @@ from dataclasses import dataclass, field
 from enum import IntFlag
 from typing import TYPE_CHECKING
 
-logger = logging.getLogger(__name__)
-
 from mud.models.constants import ActFlag, AffectFlag, Direction, ImmFlag, ItemType, OffFlag, Position
 from mud.models.mob import MobProgram
 from mud.utils import rng_mm
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -760,7 +760,7 @@ def _cmd_eval(
 
     if getattr(mob, "mprog_target", None) is None and ch is not None:
         try:
-            setattr(mob, "mprog_target", ch)
+            mob.mprog_target = ch
         except Exception:
             pass
 
@@ -1438,8 +1438,9 @@ def mp_act_trigger_room(
     if not people:
         return 0
     fired = 0
+    excluded = tuple(exclude) if isinstance(exclude, list | tuple) else (exclude,)
     for recipient in list(people):
-        if recipient is ch or recipient is exclude:
+        if recipient is ch or any(recipient is skipped for skipped in excluded):
             continue
         if not getattr(recipient, "is_npc", False):
             continue

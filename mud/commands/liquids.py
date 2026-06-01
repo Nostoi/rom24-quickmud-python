@@ -5,8 +5,9 @@ ROM Reference: src/act_obj.c do_fill (lines 965-1032), do_pour (lines 1033-1160)
 """
 from __future__ import annotations
 
+from mud.mobprog import Trigger, mp_act_trigger_room
 from mud.models.character import Character
-from mud.models.constants import ItemType, LIQUID_TABLE, WearLocation
+from mud.models.constants import LIQUID_TABLE, ItemType, WearLocation
 from mud.net.protocol import broadcast_room
 from mud.utils.act import act_format
 from mud.world.obj_find import get_obj_carry, get_obj_here
@@ -96,6 +97,8 @@ def do_fill(char: Character, args: str) -> str:
         arg2=fountain,
     )
     broadcast_room(room, room_msg, exclude=char)
+    # ROM src/act_obj.c:1025 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+    mp_act_trigger_room(room_msg, room, char, arg1=obj, arg2=fountain)
 
     # FILL-003: TO_CHAR — ROM src/act_obj.c:1022-1024
     # "You fill $p with %s from $P."
@@ -224,6 +227,7 @@ def do_pour(char: Character, args: str) -> str:
         )
         if hasattr(target_char, "messages"):
             target_char.messages.append(vict_msg)
+        _dispatch_act_trigger_to_recipient(vict_msg, target_char, char, arg2=target_char)
 
         # TO_NOTVICT — observers excluding both char and target_char
         if room:
@@ -239,6 +243,8 @@ def do_pour(char: Character, args: str) -> str:
                     continue
                 if hasattr(person, "messages"):
                     person.messages.append(notvict_msg)
+            # ROM src/act_obj.c:1155 — TO_NOTVICT excludes actor and victim, then dispatches TRIG_ACT.
+            mp_act_trigger_room(notvict_msg, room, char, arg2=target_char, exclude=(target_char,))
 
         return f"You pour some {liquid_name} for {char_name}."
     else:
@@ -253,6 +259,8 @@ def do_pour(char: Character, args: str) -> str:
                 arg2=target,
             )
             broadcast_room(room, room_msg, exclude=char)
+            # ROM src/act_obj.c:1142 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+            mp_act_trigger_room(room_msg, room, char, arg1=source, arg2=target)
 
         return f"You pour {liquid_name} from {source_name_str} into {target_name_str}."
 
@@ -289,6 +297,8 @@ def _pour_out(char: Character, source, source_value: list) -> str:
             arg2=None,
         )
         broadcast_room(room, room_msg, exclude=char)
+        # ROM src/act_obj.c:1075 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
+        mp_act_trigger_room(room_msg, room, char, arg1=source)
 
     return f"You invert {source_name_str}, spilling {liquid_name} all over the ground."
 
@@ -305,6 +315,24 @@ def do_empty(char: Character, args: str) -> str:
         return "Empty what?"
 
     return do_pour(char, f"{container_name} out")
+
+
+def _dispatch_act_trigger_to_recipient(
+    message: str,
+    recipient: Character,
+    actor: Character,
+    *,
+    arg1: object | None = None,
+    arg2: object | None = None,
+) -> None:
+    """Dispatch TRIG_ACT for a direct act() recipient, mirroring comm.c."""
+    if not getattr(recipient, "is_npc", False):
+        return
+    import mud.mobprog as mobprog
+
+    if not mobprog.MOBtrigger:
+        return
+    mobprog.mp_act_trigger(message, recipient, actor, arg1, arg2, Trigger.ACT)
 
 
 def _get_liquid_name(liquid_index: int) -> str:

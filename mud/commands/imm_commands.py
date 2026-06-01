@@ -270,15 +270,32 @@ def do_transfer(char: Character, args: str) -> str:
     if getattr(victim, "fighting", None):
         victim.fighting = None
 
-    # Announce and transfer
+# Announce and transfer
     old_room = getattr(victim, "room", None)
     if old_room:
         _act_room(old_room, victim, "$n disappears in a mushroom cloud.")
+        # ROM src/act_wiz.c:870 / src/comm.c:2384 — unsuppressed act() TO_ROOM
+        # dispatches TRIG_ACT to NPC recipients.
+        import mud.mobprog as mobprog
+        from mud.utils.act import act_format
+
+        departure_msg = act_format(
+            "$n disappears in a mushroom cloud.", recipient=None, actor=victim
+        )
+        mobprog.mp_act_trigger_room(departure_msg, old_room, victim)
 
     _char_from_room(victim)
     _char_to_room(victim, location)
 
     _act_room(location, victim, "$n arrives from a puff of smoke.")
+    # ROM src/act_wiz.c:873 / src/comm.c:2384 — unsuppressed act() TO_ROOM
+    import mud.mobprog as mobprog
+    from mud.utils.act import act_format
+
+    arrival_msg = act_format(
+        "$n arrives from a puff of smoke.", recipient=None, actor=victim
+    )
+    mobprog.mp_act_trigger_room(arrival_msg, location, victim)
 
     if char is not victim:
         # WIZ-048 / INV-027: ROM notifies the moved victim via
@@ -289,7 +306,16 @@ def do_transfer(char: Character, args: str) -> str:
         from mud.world.vision import pers  # function-local: avoid import cycle
 
         # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
-        _send_to_char(victim, capitalize_act_line(f"{pers(char, victim)} has transferred you."))
+        transferred_msg = capitalize_act_line(f"{pers(char, victim)} has transferred you.")
+        _send_to_char(victim, transferred_msg)
+        # ROM src/act_wiz.c:875 / src/comm.c:2384 — TO_VICT act() on NPC victim
+        # dispatches TRIG_ACT.
+        if getattr(victim, "is_npc", False):
+            import mud.mobprog as mobprog
+
+            mobprog.mp_act_trigger(
+                transferred_msg, victim, char, None, victim, mobprog.Trigger.ACT
+            )
 
     # Make victim look
     from mud.commands.inspection import do_look
@@ -402,8 +428,16 @@ def do_force(char: Character, args: str) -> str:
         return "Not at your level!\n\r"
 
     # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
-    _send_to_char(victim, capitalize_act_line(f"{pers(char, victim)} forces you to '{command}'.\n\r"))
+    forced_msg = capitalize_act_line(f"{pers(char, victim)} forces you to '{command}'.\n\r")
+    _send_to_char(victim, forced_msg)
+    # ROM src/act_wiz.c:4316 / src/comm.c:2384 — TO_VICT act() on NPC victim
+    # dispatches TRIG_ACT.
+    if getattr(victim, "is_npc", False):
+        import mud.mobprog as mobprog
+
+        mobprog.mp_act_trigger(forced_msg, victim, char, None, victim, mobprog.Trigger.ACT)
     from mud.commands import process_command
+
     process_command(victim, command)
 
     return "Ok.\n\r"
@@ -524,7 +558,15 @@ def _act_room_invis_gated(room, char: Character, message: str) -> None:
     witnesses (gated on ``invis_level`` only, not full ``can_see``) rather than
     name-masked. The actor never sees their own line (ROM's TO_VICT skips
     ``to == ch``). WIZ-045.
+
+    INV-025: ROM ``src/comm.c:2384`` dispatches ``mp_act_trigger`` on every
+    NPC recipient that passes the door check (``to->desc == NULL ||
+    to->desc->connected != CON_PLAYING``). Since ``do_goto`` / ``do_violate``
+    have no ``MOBtrigger = FALSE`` wrapper, every NPC that passes the trust
+    gate receives TRIG_ACT.
     """
+    import mud.mobprog as mobprog
+
     invis_level = int(getattr(char, "invis_level", 0) or 0)
     char_name = getattr(char, "name", "Someone")
     # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
@@ -536,6 +578,10 @@ def _act_room_invis_gated(room, char: Character, message: str) -> None:
         if get_trust(person) < invis_level:  # ROM: get_trust(rch) >= ch->invis_level
             continue
         _send_to_char(person, formatted)
+        # ROM src/act_wiz.c:969-994 / src/comm.c:2384 — NPC recipients
+        # receive mp_act_trigger for the bamf line.
+        if getattr(person, "is_npc", False) and mobprog.MOBtrigger:
+            mobprog.mp_act_trigger(formatted, person, char, None, None, mobprog.Trigger.ACT)
 
 
 # DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.

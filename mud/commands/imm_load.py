@@ -3,6 +3,7 @@ Immortal wizard commands - load, purge, restore, slay.
 
 ROM Reference: src/act_wiz.c, src/fight.c
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -40,18 +41,16 @@ def _notvict_broadcast(room, actor, victim, message: str) -> None:
 def do_load(char: Character, args: str) -> str:
     """
     Load a mobile or object into the game.
-    
+
     ROM Reference: src/act_wiz.c do_load (lines 2459-2486)
-    
+
     Usage:
     - load mob <vnum>          - Load a mobile
     - load obj <vnum> [level]  - Load an object
     """
     # mirrors ROM src/act_wiz.c:2465-2470
     if not args or not args.strip():
-        return ("Syntax:\n\r"
-                "  load mob <vnum>\n\r"
-                "  load obj <vnum> <level>\n\r")
+        return "Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r"
 
     parts = args.strip().split()
     load_type = parts[0].lower()
@@ -74,7 +73,7 @@ def do_load(char: Character, args: str) -> str:
 def do_mload(char: Character, vnum_arg: str) -> str:
     """
     Load a mobile by vnum.
-    
+
     ROM Reference: src/act_wiz.c do_mload (lines 2489-2517)
     """
     # mirrors ROM src/act_wiz.c:2498-2501
@@ -94,6 +93,7 @@ def do_mload(char: Character, vnum_arg: str) -> str:
 
     # Create the mobile
     from mud.spawning.mob_spawner import spawn_mob
+
     victim = spawn_mob(vnum)
 
     if victim is None:
@@ -112,20 +112,27 @@ def do_mload(char: Character, vnum_arg: str) -> str:
     # src/act_wiz.c:2512 act("$n has created $N!", ch, NULL, victim, TO_ROOM).
     # $n -> ch->name, $N -> victim->short_descr.
     from mud.net.protocol import broadcast_room
+
     proto_short = getattr(getattr(victim, "prototype", None), "short_descr", None)
-    victim_short = (
-        getattr(victim, "short_descr", None)
-        or proto_short
-        or getattr(victim, "name", None)
-        or "something"
-    )
+    victim_short = getattr(victim, "short_descr", None) or proto_short or getattr(victim, "name", None) or "something"
     actor_name = getattr(char, "name", None) or "Someone"
     if room is not None:
         broadcast_room(room, f"{actor_name} has created {victim_short}!", exclude=char)
+        # ROM src/act_wiz.c:2512 / src/comm.c:2384 — unsuppressed act()
+        # dispatches TRIG_ACT to NPC room recipients.
+        import mud.mobprog as mobprog
+
+        mobprog.mp_act_trigger_room(
+            f"{actor_name} has created {victim_short}!",
+            room,
+            char,
+            arg2=victim,
+        )
 
     # mirrors ROM src/act_wiz.c:2512-2515
     _send_to_char(char, "Ok.\n\r")
-    from mud.wiznet import wiznet, WiznetFlag
+    from mud.wiznet import WiznetFlag, wiznet
+
     wiznet(f"$N loads {victim_short}.", char, None, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))
     return "Ok.\n\r"
 
@@ -133,7 +140,7 @@ def do_mload(char: Character, vnum_arg: str) -> str:
 def do_oload(char: Character, vnum_arg: str, level_arg: str | None = None) -> str:
     """
     Load an object by vnum.
-    
+
     ROM Reference: src/act_wiz.c do_oload (lines 2521-2570)
     """
     # mirrors ROM src/act_wiz.c:2531-2534
@@ -164,6 +171,7 @@ def do_oload(char: Character, vnum_arg: str, level_arg: str | None = None) -> st
 
     # Create the object
     from mud.spawning.obj_spawner import spawn_object
+
     obj = spawn_object(vnum)
     if obj is not None:
         # mirrors ROM src/act_wiz.c:2560 obj = create_object(pObjIndex, level)
@@ -199,20 +207,27 @@ def do_oload(char: Character, vnum_arg: str, level_arg: str | None = None) -> st
     # src/act_wiz.c:2566 act("$n has created $p!", ch, obj, NULL, TO_ROOM).
     # $n -> ch->name, $p -> obj->short_descr.
     from mud.net.protocol import broadcast_room
+
     actor_room = getattr(char, "room", None)
     if actor_room is not None:
         proto_short = getattr(getattr(obj, "prototype", None), "short_descr", None)
-        obj_short = (
-            getattr(obj, "short_descr", None)
-            or proto_short
-            or getattr(obj, "name", None)
-            or "something"
-        )
+        obj_short = getattr(obj, "short_descr", None) or proto_short or getattr(obj, "name", None) or "something"
         actor_name = getattr(char, "name", None) or "Someone"
         broadcast_room(actor_room, f"{actor_name} has created {obj_short}!", exclude=char)
+        # ROM src/act_wiz.c:2566 / src/comm.c:2384 — unsuppressed act()
+        # dispatches TRIG_ACT to NPC room recipients.
+        import mud.mobprog as mobprog
+
+        mobprog.mp_act_trigger_room(
+            f"{actor_name} has created {obj_short}!",
+            actor_room,
+            char,
+            arg1=obj,
+        )
 
     # mirrors ROM src/act_wiz.c:2566-2568
-    from mud.wiznet import wiznet, WiznetFlag
+    from mud.wiznet import WiznetFlag, wiznet
+
     wiznet("$N loads $p.", char, obj, WiznetFlag.WIZ_LOAD, WiznetFlag.WIZ_SECURE, get_trust(char))
     return "Ok.\n\r"
 
@@ -220,9 +235,9 @@ def do_oload(char: Character, vnum_arg: str, level_arg: str | None = None) -> st
 def do_purge(char: Character, args: str) -> str:
     """
     Purge mobiles and objects from a room, or a specific target.
-    
+
     ROM Reference: src/act_wiz.c do_purge (lines 2574-2648)
-    
+
     Usage:
     - purge           - Purge all mobs/objects in room
     - purge <target>  - Purge specific mob or player (kicks them)
@@ -257,8 +272,14 @@ def do_purge(char: Character, args: str) -> str:
         # BCAST-035: TO_ROOM mirroring ROM src/act_wiz.c:2605 —
         # act("$n purges the room!", ch, NULL, NULL, TO_ROOM).
         from mud.net.protocol import broadcast_room
+
         actor_name = getattr(char, "name", None) or "Someone"
         broadcast_room(room, f"{actor_name} purges the room!", exclude=char)
+        # ROM src/act_wiz.c:2605 / src/comm.c:2384 — the room-purge act()
+        # fires after purge extraction, so only remaining NPCs can receive it.
+        import mud.mobprog as mobprog
+
+        mobprog.mp_act_trigger_room(f"{actor_name} purges the room!", room, char)
 
         return "Ok.\n\r"
 
@@ -284,12 +305,19 @@ def do_purge(char: Character, args: str) -> str:
         # act("$n disintegrates $N.", ch, 0, victim, TO_NOTVICT).
         # Excludes both actor and victim; victim is about to be extracted.
         actor_name = getattr(char, "name", None) or "Someone"
-        victim_short = (
-            getattr(victim, "short_descr", None)
-            or getattr(victim, "name", None)
-            or "someone"
-        )
+        victim_short = getattr(victim, "short_descr", None) or getattr(victim, "name", None) or "someone"
         _notvict_broadcast(room, char, victim, f"{actor_name} disintegrates {victim_short}.")
+        # ROM src/act_wiz.c:2633 / src/comm.c:2384 — TO_NOTVICT act()
+        # dispatches TRIG_ACT to NPC bystanders, excluding actor and victim.
+        import mud.mobprog as mobprog
+
+        mobprog.mp_act_trigger_room(
+            f"{actor_name} disintegrates {victim_short}.",
+            room,
+            char,
+            arg2=victim,
+            exclude=(victim,),
+        )
 
         # PURGE-001: route through canonical chokepoint (INV-020).
         # Mirrors ROM src/act_wiz.c:2638 extract_char(victim, TRUE).
@@ -300,14 +328,21 @@ def do_purge(char: Character, args: str) -> str:
     # act("$n purges $N.", ch, NULL, victim, TO_NOTVICT). Excludes both
     # actor and victim; victim is about to be extracted.
     actor_name = getattr(char, "name", None) or "Someone"
-    victim_short = (
-        getattr(victim, "short_descr", None)
-        or getattr(victim, "name", None)
-        or "someone"
-    )
+    victim_short = getattr(victim, "short_descr", None) or getattr(victim, "name", None) or "someone"
     npc_room = getattr(char, "room", None)
     if npc_room is not None:
         _notvict_broadcast(npc_room, char, victim, f"{actor_name} purges {victim_short}.")
+        # ROM src/act_wiz.c:2645 / src/comm.c:2384 — TO_NOTVICT act()
+        # dispatches TRIG_ACT to NPC bystanders, excluding actor and victim.
+        import mud.mobprog as mobprog
+
+        mobprog.mp_act_trigger_room(
+            f"{actor_name} purges {victim_short}.",
+            npc_room,
+            char,
+            arg2=victim,
+            exclude=(victim,),
+        )
 
     # Purge NPC — mirrors ROM src/act_wiz.c:2645-2647 extract_char(victim, TRUE).
     _extract_character(victim)
@@ -317,9 +352,9 @@ def do_purge(char: Character, args: str) -> str:
 def do_restore(char: Character, args: str) -> str:
     """
     Restore a character to full health/mana/move and remove afflictions.
-    
+
     ROM Reference: src/act_wiz.c do_restore (lines 2785-2869)
-    
+
     Usage:
     - restore         - Restore everyone in room
     - restore room    - Restore everyone in room
@@ -334,10 +369,25 @@ def do_restore(char: Character, args: str) -> str:
 
         for victim in list(getattr(room, "people", [])):
             _restore_char(victim)
-            _send_to_char(victim, f"{getattr(char, 'name', 'Someone')} has restored you.\n\r")
+            message = f"{getattr(char, 'name', 'Someone')} has restored you."
+            _send_to_char(victim, f"{message}\n\r")
+            if getattr(victim, "is_npc", False):
+                # ROM src/act_wiz.c:2809 / src/comm.c:2384 — TO_VICT act()
+                # on NPC victims dispatches TRIG_ACT.
+                import mud.mobprog as mobprog
 
-        from mud.wiznet import wiznet, WiznetFlag
-        wiznet(f"$N restored room {getattr(room, 'vnum', 0)}.", char, None, WiznetFlag.WIZ_RESTORE, WiznetFlag.WIZ_SECURE, get_trust(char))
+                mobprog.mp_act_trigger(message, victim, char, None, victim, mobprog.Trigger.ACT)
+
+        from mud.wiznet import WiznetFlag, wiznet
+
+        wiznet(
+            f"$N restored room {getattr(room, 'vnum', 0)}.",
+            char,
+            None,
+            WiznetFlag.WIZ_RESTORE,
+            WiznetFlag.WIZ_SECURE,
+            get_trust(char),
+        )
 
         return "Room restored.\n\r"
 
@@ -349,6 +399,7 @@ def do_restore(char: Character, args: str) -> str:
             return "Not at your level!\n\r"
 
         from mud import registry
+
         descriptor_list = getattr(registry, "descriptor_list", [])
         if descriptor_list:
             for desc in descriptor_list:
@@ -371,10 +422,20 @@ def do_restore(char: Character, args: str) -> str:
         return "They aren't here.\n\r"
 
     _restore_char(victim)
-    _send_to_char(victim, f"{getattr(char, 'name', 'Someone')} has restored you.\n\r")
+    message = f"{getattr(char, 'name', 'Someone')} has restored you."
+    _send_to_char(victim, f"{message}\n\r")
+    if getattr(victim, "is_npc", False):
+        # ROM src/act_wiz.c:2863 / src/comm.c:2384 — TO_VICT act() on NPC
+        # victims dispatches TRIG_ACT.
+        import mud.mobprog as mobprog
 
-    from mud.wiznet import wiznet, WiznetFlag
-    victim_name = getattr(victim, "short_descr", None) if getattr(victim, "is_npc", False) else getattr(victim, "name", "someone")
+        mobprog.mp_act_trigger(message, victim, char, None, victim, mobprog.Trigger.ACT)
+
+    from mud.wiznet import WiznetFlag, wiznet
+
+    victim_name = (
+        getattr(victim, "short_descr", None) if getattr(victim, "is_npc", False) else getattr(victim, "name", "someone")
+    )
     wiznet(f"$N restored {victim_name}", char, None, WiznetFlag.WIZ_RESTORE, WiznetFlag.WIZ_SECURE, get_trust(char))
 
     return "Ok.\n\r"
@@ -383,28 +444,28 @@ def do_restore(char: Character, args: str) -> str:
 def do_slay(char: Character, args: str) -> str:
     """
     Instantly kill a target.
-    
+
     ROM Reference: src/fight.c do_slay (lines 3252-3290)
-    
+
     Usage: slay <target>
     """
     if not args or not args.strip():
         return "Slay whom?"
-    
+
     target_name = args.strip().split()[0]
     victim = get_char_room(char, target_name)
-    
+
     if victim is None:
         return "They aren't here."
-    
+
     if victim is char:
         return "Suicide is a mortal sin."
-    
+
     # Check trust for players
     if not getattr(victim, "is_npc", False):
         if getattr(victim, "level", 1) >= get_trust(char):
             return "You failed."
-    
+
     # Slay the victim
     victim_name = getattr(victim, "name", "someone")
     victim_short = getattr(victim, "short_descr", None) or victim_name
@@ -437,13 +498,14 @@ def do_slay(char: Character, args: str) -> str:
 def do_sla(char: Character, args: str) -> str:
     """
     Typo guard for slay - prevents accidental slaying.
-    
+
     ROM Reference: interp.c - sla is a separate command that does nothing
     """
     return "If you want to SLAY, spell it out."
 
 
 # Helper functions
+
 
 def _restore_char(char: Character) -> None:
     """Fully restore a character.
@@ -459,16 +521,16 @@ def _restore_char(char: Character) -> None:
     char.hit = getattr(char, "max_hit", 100)
     char.mana = getattr(char, "max_mana", 100)
     char.move = getattr(char, "max_move", 100)
-    
+
     # Update position
     from mud.models.constants import Position
+
     if getattr(char, "position", Position.STANDING) < Position.STANDING:
         char.position = Position.STANDING
 
 
 # DUPL-003 — canonical at mud/game_loop.py:_extract_obj.
 from mud.game_loop import _extract_obj  # noqa: E402
-
 
 # DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.
 from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: E402

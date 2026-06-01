@@ -315,10 +315,11 @@ from mud.utils.messaging import send_to_char_buffered as _send_to_char  # noqa: 
 
 
 def _act_room(char: Character, message: str, *, do_not_see_char: bool = False) -> None:
-    """Send a message to all other characters in char's room.
+    """Send a message to all other characters in char's room + dispatch TRIG_ACT.
 
-    ROM C uses act() with TO_ROOM for this. This is a simplified version
-    that sends the message (with $n/$s/$e substitution) to room occupants.
+    ROM C uses act() with TO_ROOM, which at src/comm.c:2384 also dispatches
+    mp_act_trigger on every NPC recipient.  do_invis / do_incognito have no
+    MOBtrigger = FALSE wrapper, so TRIG_ACT fires unconditionally.
 
     Args:
         char: The source character (used for $n substitution).
@@ -326,6 +327,8 @@ def _act_room(char: Character, message: str, *, do_not_see_char: bool = False) -
         do_not_see_char: If True, also shows the message to char (for
             invis fade-in/fade-out where others see it).
     """
+    import mud.mobprog as mobprog
+    from mud.utils.act import capitalize_act_line
     from mud.world.vision import can_see_character
 
     room = getattr(char, "room", None)
@@ -333,10 +336,17 @@ def _act_room(char: Character, message: str, *, do_not_see_char: bool = False) -
         return
 
     char_name = getattr(char, "name", "someone")
-    display_msg = message.replace("$n", char_name).replace("$s", f"{char_name}'s").replace("$e", char_name)
+    display_msg = capitalize_act_line(
+        message.replace("$n", char_name).replace("$s", f"{char_name}'s").replace("$e", char_name)
+    )
 
     for person in getattr(room, "people", []):
         if person is char and do_not_see_char:
             continue
         if can_see_character(person, char):
             _send_to_char(person, f"{display_msg}\n\r")
+        # INV-025: ROM src/comm.c:2384 — NPC recipients receive TRIG_ACT
+        # regardless of can_see (the act() delivery gate is descriptor-only,
+        # not can_see).  do_invis / do_incognito have no MOBtrigger wrapper.
+        if getattr(person, "is_npc", False) and mobprog.MOBtrigger:
+            mobprog.mp_act_trigger(display_msg, person, char, None, None, mobprog.Trigger.ACT)

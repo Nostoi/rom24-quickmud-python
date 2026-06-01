@@ -19,13 +19,15 @@ from typing import TYPE_CHECKING
 
 from mud.commands.obj_manipulation import _extract_obj, _obj_cast_spell
 from mud.math.c_compat import c_div
+from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import ItemType, WearLocation
 from mud.net.protocol import broadcast_room
 from mud.skills.registry import check_improve, skill_registry
 from mud.utils import rng_mm
 from mud.utils.act import act_format
 from mud.world.char_find import get_char_room as _get_char_room
-from mud.world.obj_find import get_obj_carry, get_obj_here as _get_obj_here
+from mud.world.obj_find import get_obj_carry
+from mud.world.obj_find import get_obj_here as _get_obj_here
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -36,7 +38,7 @@ if TYPE_CHECKING:
 _PULSE_VIOLENCE = 3
 
 
-def _skill_percent(character: "Character", name: str) -> int:
+def _skill_percent(character: Character, name: str) -> int:
     """Return character's learned percent for ``name`` (0-100)."""
     pcdata = getattr(character, "pcdata", None)
     if not pcdata:
@@ -45,7 +47,7 @@ def _skill_percent(character: "Character", name: str) -> int:
     return int(learned.get(name, 0))
 
 
-def _find_obj_here(ch: "Character", name: str) -> "Object | None":
+def _find_obj_here(ch: Character, name: str) -> Object | None:
     """ROM get_obj_here scoped to actor's room (visible items)."""
     return _get_obj_here(ch, name)
 
@@ -88,7 +90,7 @@ def _resolve_target_kind(spell_name: str) -> str:
     return getattr(skill, "target", "ignore") or "ignore"
 
 
-def _broadcast(room, msg: str, *, exclude=None) -> None:
+def _broadcast(room, msg: str, *, actor=None, arg1=None, arg2=None, exclude=None) -> None:
     """Broadcast ``msg`` to room, supporting an iterable ``exclude`` set.
 
     ``broadcast_room`` only accepts a single character; for ROM TO_NOTVICT we
@@ -96,8 +98,11 @@ def _broadcast(room, msg: str, *, exclude=None) -> None:
     """
     if room is None or not msg:
         return
-    if exclude is None or not isinstance(exclude, (list, tuple)):
+    if exclude is None or not isinstance(exclude, list | tuple):
         broadcast_room(room, msg, exclude=exclude)
+        # ROM src/act_obj.c magic-item act() sites are not MOBtrigger-suppressed;
+        # src/comm.c:2384 dispatches TRIG_ACT to NPC recipients of the room line.
+        mp_act_trigger_room(msg, room, actor, arg1=arg1, arg2=arg2, exclude=exclude)
         return
     skip = list(exclude)
     for char in list(getattr(room, "people", [])):
@@ -106,9 +111,11 @@ def _broadcast(room, msg: str, *, exclude=None) -> None:
         msgs = getattr(char, "messages", None)
         if msgs is not None:
             msgs.append(msg)
+    # ROM TO_NOTVICT lines trigger only for recipients that received the line.
+    mp_act_trigger_room(msg, room, actor, arg1=arg1, arg2=arg2, exclude=skip)
 
 
-def do_recite(ch: "Character", args: str) -> str:
+def do_recite(ch: Character, args: str) -> str:
     """Recite a scroll. ROM src/act_obj.c:1910-1974."""
     parts = (args or "").split()
     arg1 = parts[0] if parts else ""
@@ -130,8 +137,8 @@ def do_recite(ch: "Character", args: str) -> str:
     if int(getattr(ch, "level", 0)) < int(getattr(scroll, "level", 0)):
         return "This scroll is too complex for you to comprehend."
 
-    victim: "Character | None" = None
-    target_obj: "Object | None" = None
+    victim: Character | None = None
+    target_obj: Object | None = None
     if not arg2:
         # ROM 1942 — default to self
         victim = ch
@@ -144,7 +151,13 @@ def do_recite(ch: "Character", args: str) -> str:
 
     room = getattr(ch, "room", None)
     # ROM 1955-1956: act() pair fires before skill check
-    _broadcast(room, act_format("$n recites $p.", recipient=None, actor=ch, arg1=scroll), exclude=ch)
+    _broadcast(
+        room,
+        act_format("$n recites $p.", recipient=None, actor=ch, arg1=scroll),
+        actor=ch,
+        arg1=scroll,
+        exclude=ch,
+    )
     self_msg = act_format("You recite $p.", recipient=ch, actor=ch, arg1=scroll)
 
     # ROM 1958: number_percent() >= 20 + skill * 4 / 5  (failure branch)
@@ -169,18 +182,18 @@ def do_recite(ch: "Character", args: str) -> str:
     return out
 
 
-def _hold_slot(ch: "Character"):
+def _hold_slot(ch: Character):
     """ROM get_eq_char(ch, WEAR_HOLD). Equipment dict keyed by WearLocation.HOLD."""
     equipment = getattr(ch, "equipment", None) or {}
     return equipment.get(WearLocation.HOLD)
 
 
-def _clear_hold(ch: "Character") -> None:
+def _clear_hold(ch: Character) -> None:
     equipment = getattr(ch, "equipment", None) or {}
     equipment.pop(WearLocation.HOLD, None)
 
 
-def do_brandish(ch: "Character", args: str) -> str:
+def do_brandish(ch: Character, args: str) -> str:
     """Brandish a staff. ROM src/act_obj.c:1978-2064."""
     staff = _hold_slot(ch)
 
@@ -207,7 +220,13 @@ def do_brandish(ch: "Character", args: str) -> str:
     # ROM 2006: if (staff->value[2] > 0)
     if charges > 0:
         # ROM 2008-2009: act pair
-        _broadcast(room, act_format("$n brandishes $p.", recipient=None, actor=ch, arg1=staff), exclude=ch)
+        _broadcast(
+            room,
+            act_format("$n brandishes $p.", recipient=None, actor=ch, arg1=staff),
+            actor=ch,
+            arg1=staff,
+            exclude=ch,
+        )
         out_lines.append(act_format("You brandish $p.", recipient=ch, actor=ch, arg1=staff))
 
         skill_pct = _skill_percent(ch, "staves")
@@ -215,7 +234,7 @@ def do_brandish(ch: "Character", args: str) -> str:
         # ROM 2010-2016
         if int(getattr(ch, "level", 0)) < int(getattr(staff, "level", 0)) or rng_mm.number_percent() >= chance:
             out_lines.append(act_format("You fail to invoke $p.", recipient=ch, actor=ch, arg1=staff))
-            _broadcast(room, "...and nothing happens.", exclude=ch)
+            _broadcast(room, "...and nothing happens.", actor=ch, exclude=ch)
             check_improve(ch, "staves", False, 2)
         else:
             # ROM 2019-2053: per-target loop
@@ -252,6 +271,8 @@ def do_brandish(ch: "Character", args: str) -> str:
         _broadcast(
             room,
             act_format("$n's $p blazes bright and is gone.", recipient=None, actor=ch, arg1=staff),
+            actor=ch,
+            arg1=staff,
             exclude=ch,
         )
         out_lines.append(act_format("Your $p blazes bright and is gone.", recipient=ch, actor=ch, arg1=staff))
@@ -261,7 +282,7 @@ def do_brandish(ch: "Character", args: str) -> str:
     return "\n".join(line for line in out_lines if line)
 
 
-def do_zap(ch: "Character", args: str) -> str:
+def do_zap(ch: Character, args: str) -> str:
     """Zap with a wand. ROM src/act_obj.c:2068-2157."""
     arg = (args or "").split()
     arg = arg[0] if arg else ""
@@ -281,8 +302,8 @@ def do_zap(ch: "Character", args: str) -> str:
     if wand.item_type != int(ItemType.WAND):
         return "You can zap only with a wand."
 
-    victim: "Character | None" = None
-    target_obj: "Object | None" = None
+    victim: Character | None = None
+    target_obj: Object | None = None
     if not arg:
         # ROM 2095-2105
         if fighting is not None:
@@ -311,6 +332,9 @@ def do_zap(ch: "Character", args: str) -> str:
             _broadcast(
                 room,
                 act_format("$n zaps $N with $p.", recipient=None, actor=ch, arg1=wand, arg2=victim),
+                actor=ch,
+                arg1=wand,
+                arg2=victim,
                 exclude=[ch, victim],
             )
             out_lines.append(act_format("You zap $N with $p.", recipient=ch, actor=ch, arg1=wand, arg2=victim))
@@ -323,6 +347,9 @@ def do_zap(ch: "Character", args: str) -> str:
             _broadcast(
                 room,
                 act_format("$n zaps $P with $p.", recipient=None, actor=ch, arg1=wand, arg2=target_obj),
+                actor=ch,
+                arg1=wand,
+                arg2=target_obj,
                 exclude=ch,
             )
             out_lines.append(act_format("You zap $P with $p.", recipient=ch, actor=ch, arg1=wand, arg2=target_obj))
@@ -337,6 +364,8 @@ def do_zap(ch: "Character", args: str) -> str:
             _broadcast(
                 room,
                 act_format("$n's efforts with $p produce only smoke and sparks.", recipient=None, actor=ch, arg1=wand),
+                actor=ch,
+                arg1=wand,
                 exclude=ch,
             )
             check_improve(ch, "wands", False, 2)
@@ -354,6 +383,8 @@ def do_zap(ch: "Character", args: str) -> str:
         _broadcast(
             room,
             act_format("$n's $p explodes into fragments.", recipient=None, actor=ch, arg1=wand),
+            actor=ch,
+            arg1=wand,
             exclude=ch,
         )
         out_lines.append(act_format("Your $p explodes into fragments.", recipient=ch, actor=ch, arg1=wand))
