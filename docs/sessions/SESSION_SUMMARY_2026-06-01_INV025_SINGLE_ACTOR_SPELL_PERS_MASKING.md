@@ -37,8 +37,11 @@ Two commits landed:
   `_character_name`/`caster_name`/`victim_name`/`pet_name`/`possessive`/`reflexive`
   locals and the orphaned `_reflexive_pronoun` helper.
 - **Tests**: `tests/integration/test_inv025_spell_self_effect_pers_masking.py` —
-  `test_infravision_masks_invisible_target_name`,
-  `test_infravision_shows_visible_target_name` (visible-render guard).
+  `test_infravision_masks_invisible_caster_name`,
+  `test_infravision_shows_visible_caster_name` (visible-render guard).
+  Infravision is exercised **self-cast** because ROM uses `ch` (caster) as the
+  `$n` actor while Python passes `target` — a cross-target divergence filed as
+  `MAGIC-009`; self-casting keeps the masking guard unambiguously ROM-faithful.
 
 ### `MAGIC-008` — invis broadcast order — ✅ FIXED
 
@@ -72,6 +75,9 @@ Excluded from the clean single-actor sweep and filed durably:
   TO_CHAR/TO_VICT/TO_NOTVICT structure + `{5..{x` colour (`fight.c:2245-2255`).
 - `FIGHT-036` — dirt-kick blind line uses "their eyes" vs ROM `$s eyes`, baked
   name, no colour (`fight.c:2614`).
+- `MAGIC-009` — infravision room line uses `target` as the `$n` actor vs ROM's
+  `ch` (caster) (`magic.c:3598`); diverges only when cast on another. Surfaced
+  by advisor review of this sweep's infravision test.
 
 ## Files Modified
 

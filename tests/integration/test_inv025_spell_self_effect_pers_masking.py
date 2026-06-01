@@ -53,34 +53,39 @@ class TestSpellSelfEffectPERSMasking:
     """A genuinely-invisible spell actor's room line must render per-recipient
     through PERS (can_see), not leak the real name."""
 
-    def test_infravision_masks_invisible_target_name(self) -> None:
+    # NOTE: infravision is exercised SELF-CAST here. ROM `act("$n's eyes glow
+    # red.", ch, TO_ROOM)` (src/magic.c:3598) uses the CASTER (`ch`) as the `$n`
+    # actor, but the Python handler passes the target — a divergence that only
+    # manifests when caster != target (filed as MAGIC-009). Self-casting makes
+    # `$n` == caster == target under both ROM and Python, so the masking
+    # assertion is unambiguously ROM-faithful.
+
+    def test_infravision_masks_invisible_caster_name(self) -> None:
         room = _lit_room()
-        caster = _pc("Mystra", room, level=31)
-        target = _pc("Verdana", room, level=30)
-        target.add_affect(AffectFlag.INVISIBLE)
+        caster = _pc("Verdana", room, level=31)
+        caster.add_affect(AffectFlag.INVISIBLE)
         onlooker = _pc("Bystan", room)
 
-        assert infravision(caster, target) is True
+        assert infravision(caster) is True
 
         onlooker_msgs = [str(m) for m in onlooker.messages]
         assert any("Someone's eyes glow red" in m for m in onlooker_msgs), (
             f"Expected PERS-masked infravision line for onlooker, got: {onlooker_msgs}"
         )
         assert not any("Verdana's eyes glow red" in m for m in onlooker_msgs), (
-            f"Invisible target's name leaked to onlooker: {onlooker_msgs}"
+            f"Invisible caster's name leaked to onlooker: {onlooker_msgs}"
         )
 
-    def test_infravision_shows_visible_target_name(self) -> None:
+    def test_infravision_shows_visible_caster_name(self) -> None:
         room = _lit_room()
-        caster = _pc("Mystra", room, level=31)
-        target = _pc("Verdana", room, level=30)
+        caster = _pc("Verdana", room, level=31)
         onlooker = _pc("Bystan", room)
 
-        assert infravision(caster, target) is True
+        assert infravision(caster) is True
 
         onlooker_msgs = [str(m) for m in onlooker.messages]
         assert any("Verdana's eyes glow red" in m for m in onlooker_msgs), (
-            f"Expected real name for visible target, got: {onlooker_msgs}"
+            f"Expected real name for visible caster, got: {onlooker_msgs}"
         )
 
 

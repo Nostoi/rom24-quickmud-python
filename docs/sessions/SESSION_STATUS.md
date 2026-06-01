@@ -37,7 +37,7 @@
 | Tests | full suite: 5211 passed, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | MAGIC-004/005/006/007 + FIGHT-035/036 (this session); MAGIC-008 closed; CAST-009 + TRAIN-005 remain |
+| Open correctness gaps | MAGIC-004/005/006/007/009 + FIGHT-035/036 (this session); MAGIC-008 closed; CAST-009 + TRAIN-005 remain |
 
 ## Next Intended Task
 
