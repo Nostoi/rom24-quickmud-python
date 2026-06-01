@@ -26,7 +26,7 @@
 | Metric | Value |
 |--------|-------|
 | Version | 2.12.42 |
-| Tests | area suites green + 202 cast/skill-adjacent units (`-n0`) green (CAST-009 RNG-shift cleared); full suite NOT run this session (machine overload — see below). Projected 5242 passed, 4 skipped |
+| Tests | **full suite green: 5242 passed, 4 skipped** (`-n0`, 12:54; `-n auto` hangs at worker startup under high machine load — use `-n0` if it recurs) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
 | Open correctness gaps | **none documented** — CAST-009 + TRAIN-005 closed; INV-025/027 structural queue already drained |
@@ -40,13 +40,11 @@ The documented open-gap queue is drained. Next session:
    probe-then-scope method — read ROM C contract → read Python equivalent → one
    failing test → close as a gap or file the next free INV-NNN.
 
-> **Push gate (IMPORTANT):** commits `3cc79497` (CAST-009), `b99a71ef`
-> (TRAIN-005), and this handoff commit are **local on `master`, not pushed**.
-> The full suite could NOT be completed this session — the machine was at load
-> average ~136 (concurrent unrelated workloads), under which the default
-> `-n auto` xdist run hangs at worker startup and a serial run projects to
-> hours. **Before pushing, run the full suite on a quiet machine** (`pytest`, or
-> `pytest -n0` if xdist still hangs) and confirm `5242 passed, 4 skipped`.
+> **Push gate: CLEARED.** Full suite ran green (`5242 passed, 4 skipped`, `-n0`)
+> once machine load recovered, and `master` was pushed to origin at `83c73b85`
+> (2.12.42). This push also carried the prior session's 2.12.40 commits, which
+> had likewise never been pushed (origin had been back at `0e9ced77`). All nine
+> commits are covered by the green full-suite run.
 
 > **Stale index note:** a `gitnexus analyze --skip-agents-md` reindex was started
 > mid-session but **killed before completion** (it was contending with pytest for
