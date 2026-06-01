@@ -133,5 +133,19 @@ left (TO_VICT/TO_NOTVICT splits to rebuild, not token swaps):
 3. **FIGHT-037** (filed this session) — dirt-kick TO_VICT/victim-self legs drop
    `{5..{x` colour; Python invents a caster "You kick dirt…" line ROM never
    emits (`src/fight.c:2616/2618`; success branch has no caster message).
-4. **CAST-009** — failed-cast skill improvement (🔄 OPEN in `MAGIC_C_AUDIT.md`).
-5. **TRAIN-005** — remains open per prior status.
+4. **MAGIC-011** (filed this session) — poison **food/drink** caster leg is not
+   capitalized (`handlers.py:poison` ~6546, `src/magic.c:3946`). ROM
+   `act(TO_ALL)` caps for every recipient incl. the caster ("Loaf of bread is
+   infused…"); Python emits lowercase. A missed site under the CLOSED
+   ACT-CAP-002 invariant (the weapon leg above it *is* capped). Surfaced by
+   advisor review while closing MAGIC-005.
+5. **CAST-009** — failed-cast skill improvement (🔄 OPEN in `MAGIC_C_AUDIT.md`).
+6. **TRAIN-005** — remains open per prior status.
+
+> **Repo hygiene note for the next push:** `README.md` is stale — badge/Version
+> "2.12.11" and "Test Suite: 5107 passed" vs current 2.12.35 / 5225. It was
+> already 20+ patch-versions behind before this session (not introduced here).
+> Per AGENTS.md Repo Hygiene, refresh README version/badge/test-count (and
+> confirm AGENTS.md tracker pointers) **before pushing** to keep README /
+> AGENTS / SESSION_STATUS in agreement. Nothing was pushed this session — all
+> commits are local on `master`.

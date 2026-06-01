@@ -18,7 +18,9 @@
     + `$n` PERS + `{5..{x` colour (`src/fight.c:2614`).
   - **Filed (not fixed):** **FIGHT-037** — dirt-kick TO_VICT/victim-self legs
     drop `{5..{x` colour; Python invents a caster "You kick dirt…" line ROM
-    never emits.
+    never emits. **MAGIC-011** — poison food/drink caster leg uncapped (missed
+    site under the CLOSED ACT-CAP-002 invariant; weapon leg above it *is*
+    capped).
   - **Tests**: 4 new integration files (12 tests). Full suite: 5225 passed,
     4 skipped.
 
@@ -33,7 +35,7 @@
 | Tests | full suite: 5225 passed, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | MAGIC-004 + FIGHT-035 (structural); FIGHT-037 (new); CAST-009 + TRAIN-005 remain (MAGIC-005/006/007/008/010 closed) |
+| Open correctness gaps | MAGIC-004 + FIGHT-035 (structural); FIGHT-037 + MAGIC-011 (new); MAGIC-009 + CAST-009 + TRAIN-005 remain (MAGIC-005/006/007/008/010 closed) |
 
 ## Next Intended Task
 
