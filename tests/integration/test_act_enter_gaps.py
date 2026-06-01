@@ -375,6 +375,33 @@ class TestEnter011PortalFadeOut:
         room_registry.pop(8940, None)
         room_registry.pop(8941, None)
 
+    def test_fade_happens_before_greet_trigger(self, monkeypatch):
+        """ROM src/act_enter.c:200-222 — expiring portal fades before PC greet trigger."""
+        from mud import mobprog
+        from mud.registry import room_registry
+
+        room_a = _make_room(8946)
+        room_b = _make_room(8947)
+        room_registry[8946] = room_a
+        room_registry[8947] = room_b
+
+        traveller = _make_char("Alice", room_a)
+        _make_portal(room_a, to_vnum=8947, charges=1)
+
+        def _record_greet(ch):
+            ch.send_to_char("GREET_TRIGGER")
+
+        monkeypatch.setattr(mobprog, "mp_greet_trigger", _record_greet)
+
+        do_enter(traveller, "portal")
+
+        fade_index = next(i for i, msg in enumerate(traveller.messages) if "fades out of existence" in msg)
+        greet_index = traveller.messages.index("GREET_TRIGGER")
+        assert fade_index < greet_index
+
+        room_registry.pop(8946, None)
+        room_registry.pop(8947, None)
+
     def test_fade_message_sent_to_old_room_occupants_not_destination(self):
         from mud.registry import room_registry
 

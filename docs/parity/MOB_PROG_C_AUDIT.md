@@ -51,7 +51,7 @@ Trigger bit values verified against `src/merc.h:1971-1986` (A=1<<0 ACT, B=1<<1 B
 - **`mp_percent_trigger`** — strict `<` random-percent comparison via `rng_mm.number_percent()`.
 - **`mp_bribe_trigger`** — `amount >= atoi(prg->trig_phrase)` threshold, first match wins.
 - **`mp_exit_trigger`** — direction filter, EXIT-vs-EXALL position/visibility gating, first match wins (`mob_prog.c:1244-1281`).
-- **`mp_give_trigger`** — vnum fast path + name-token loop + literal `"all"` synonym.
+- **`mp_give_trigger`** — vnum fast path + name-token loop + literal `"all"` synonym. Re-verified 2026-06-01 after stale-audit correction; see MOBPROG-008.
 - **`mp_hprct_trigger`** — `(100 * hit) / max_hit < phrase` uses Python `//` (no signs involved → identical to ROM `c_div`).
 - **`get_random_char`** — Python uses `highest = -1` while ROM uses `highest = 0`, but `rng_mm.number_percent()` returns `1..100` (no zero), so the starting value never wins; behavior is identical.
 
@@ -68,6 +68,7 @@ Trigger bit values verified against `src/merc.h:1971-1986` (A=1<<0 ACT, B=1<<1 B
 | MOBPROG-005    | IMPORTANT  | `mob_prog.c:1127-1140`   | `mobprog.py:1189-1194`    | ✅ FIXED — `tests/integration/test_mobprog_program_flow.py` |
 | MOBPROG-006    | IMPORTANT  | `mob_prog.c:795-799`     | `mobprog.py:540-545`      | ✅ FIXED — `tests/integration/test_mobprog_predicates.py` |
 | MOBPROG-007    | MINOR      | `mob_prog.c:1051-1109`   | `mobprog.py:1170-1188`    | ✅ FIXED — `tests/integration/test_mobprog_program_flow.py` |
+| MOBPROG-008    | IMPORTANT  | `mob_prog.c:1309-1318`   | `mobprog.py:1595-1596`    | ✅ FIXED — `tests/integration/test_mobprog_give_trigger.py` |
 
 ### MOBPROG-001 — `objexists` is room-only; ROM searches the world (CRITICAL)
 
@@ -120,6 +121,10 @@ This is a long-standing ROM bug (`rch` was intended; `ch` slipped in) that produ
 
 ROM (`mob_prog.c:1049-1056, 1076-1083, 1103-1109`) on an unknown `if`/`and`/`or` keyword logs `"Mobprog: invalid if_check (…), mob %d prog %d"` via `bug()` and **returns from `program_flow`**, aborting the rest of the program. Python (`mobprog.py:1170-1188`) calls `_cmd_eval(check_name.lower(), …)` which silently returns False for unknown keywords; the program continues executing. Effect: typos in mob progs are louder and more debuggable in ROM than in Python, and a typo'd `or` clause stops the whole prog in ROM where Python keeps running. Cosmetic for live behavior; matters for area-builder feedback.
 
+### MOBPROG-008 — `mp_give_trigger` treated multi-token name phrases as one string (IMPORTANT)
+
+ROM `mp_give_trigger` (`mob_prog.c:1309-1318`) walks a non-numeric trigger phrase with `one_argument`, then fires if any token matches `obj->name` through `is_name(buf, obj->name)` or if the token is the literal `"all"`. Python (`mobprog.py:1595-1596`) compared the entire phrase string to either `"all"` or one object-name token, so a trigger phrase like `"dagger sword shield"` failed to fire for an object named `"ruby sword"`, and `"coin all gem"` failed to act as a wildcard. Fixed 2026-06-01 by tokenizing the phrase and checking each token. Regression: `tests/integration/test_mobprog_give_trigger.py`.
+
 ---
 
 ## Phase 4 — Closure plan
@@ -133,6 +138,7 @@ Hand off each gap to `/rom-gap-closer` in this order (CRITICAL → IMPORTANT →
 5. **MOBPROG-005** — set `state[level] = IN_BLOCK` in the `else` branch of `_program_flow`. Test: nested `if/else { if/else }` program executes the inner else branch correctly.
 6. **MOBPROG-006** — change `_expand_arg` `R` branch to read `ch.short_descr or ch.name` (i.e. the original actor) per the ROM bug. Cite `mob_prog.c:798-799` in a comment. Test: an `$R` expansion with a PC actor and NPC random-victim renders the *PC* short_descr, not the random victim's.
 7. **MOBPROG-007** — emit a structured warning / log on unknown if-check keyword and abort the program (parity with `bug()`+return). Test: a prog with `if foozle $n` halts and does not execute subsequent commands.
+8. **MOBPROG-008** — ✅ fixed 2026-06-01. Tokenize non-numeric GIVE trigger phrases and match any token against the object aliases, preserving the literal `"all"` wildcard. Test: `tests/integration/test_mobprog_give_trigger.py`.
 
 After all CRITICAL+IMPORTANT closures: rerun `pytest tests/test_mobprog*.py tests/integration/test_mobprog_*.py` and bump the tracker row to ✅ AUDITED. MINOR gap MOBPROG-007 may be closed in the same session or deferred (per `docs/ROM_PARITY_VERIFICATION_GUIDE.md`).
 

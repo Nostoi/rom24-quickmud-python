@@ -10,8 +10,8 @@
 | ROM C dispatcher | `mud/commands/dispatcher.py:261` — registered as `enter`, `min_position=Position.STANDING`; `mud/commands/remaining_rom.py:400` — `go` aliases to `do_enter` |
 | Audit date | 2026-04-27 |
 | Auditor | Claude Sonnet 4.6 |
-| **Status** | ✅ **100% AUDITED — all 15 gaps closed (2026-04-27)** |
-| Integration tests | `tests/integration/test_act_enter_gaps.py` — 25 tests, all passing |
+| **Status** | ✅ **100% AUDITED — all 16 gaps closed (2026-06-01)** |
+| Integration tests | `tests/integration/test_act_enter_gaps.py` — 26 tests, all passing |
 
 ### File Purpose
 
@@ -357,6 +357,33 @@ The real gap in ENTER-012 is that Python's `_move_followers` calls `move_charact
 
 ---
 
+### ENTER-017 — Expiring portal fade-out happened after ENTRY/GREET triggers ✅ AUDITED
+
+| Field | Detail |
+|---|---|
+| Gap ID | ENTER-017 |
+| ROM C reference | `src/act_enter.c:200–222` |
+| Severity | IMPORTANT |
+| **Closure** | Fixed in `mud/world/movement.py:move_character_through_portal` (2026-06-01). The one-charge portal fade/extract block now runs before the `TRIG_ENTRY` / `mp_greet_trigger` block, matching ROM ordering. Regression: `tests/integration/test_act_enter_gaps.py::TestEnter011PortalFadeOut::test_fade_happens_before_greet_trigger`. |
+
+**ROM C order (lines 200–222):**
+```c
+if (portal != NULL && portal->value[0] == -1) {
+    act("$p fades out of existence.", ch, portal, NULL, TO_CHAR);
+    ...
+    extract_obj(portal);
+}
+
+if (IS_NPC(ch) && HAS_TRIGGER(ch, TRIG_ENTRY))
+    mp_percent_trigger(ch, NULL, NULL, NULL, TRIG_ENTRY);
+if (!IS_NPC(ch))
+    mp_greet_trigger(ch);
+```
+
+Python had the same two behaviors but in reverse order: `mp_greet_trigger(ch)` ran before `_portal_fade_out(...)`. That was observable to scripts and message ordering on a one-charge portal. ROM expires and extracts the portal first, then runs the mob-program entry/greet hooks.
+
+---
+
 ### ENTER-013 — `_get_random_room` bounded-loop can return `None` ✅ AUDITED
 
 | Field | Detail |
@@ -437,26 +464,26 @@ Returns a message. ROM is silent. (Note: `move_character_through_portal` also ha
 
 ## Summary
 
-### ✅ ALL GAPS CLOSED — 100% AUDITED (2026-04-27)
+### ✅ ALL GAPS CLOSED — 100% AUDITED (2026-06-01)
 
 ### Gap Count by Severity
 
 | Severity | Count | Gap IDs | Status |
 |---|---|---|---|
 | CRITICAL | 1 | ENTER-009 | ✅ Closed |
-| IMPORTANT | 9 | ENTER-001, ENTER-004, ENTER-005, ENTER-006, ENTER-008, ENTER-010, ENTER-011, ENTER-012, ENTER-013 | ✅ All Closed |
+| IMPORTANT | 10 | ENTER-001, ENTER-004, ENTER-005, ENTER-006, ENTER-008, ENTER-010, ENTER-011, ENTER-012, ENTER-013, ENTER-017 | ✅ All Closed |
 | MINOR | 5 | ENTER-002, ENTER-003, ENTER-007, ENTER-014, ENTER-015, ENTER-016 | ✅ All Closed |
 
-(ENTER-016 counted as MINOR; total = 15 gaps — all closed)
+(ENTER-016 counted as MINOR; total = 16 gaps — all closed)
 
 ### Files Modified
 
 - `mud/commands/movement.py` — `do_enter`: ENTER-002, ENTER-003, ENTER-004, ENTER-005, ENTER-016
-- `mud/world/movement.py` — `_get_random_room`: ENTER-001, ENTER-013; `_stand_charmed_follower`: ENTER-006; `_move_followers`: ENTER-007; `move_character_through_portal`: ENTER-008, ENTER-009, ENTER-010, ENTER-011, ENTER-012, ENTER-015, ENTER-016; new `_portal_fade_out`: ENTER-011
+- `mud/world/movement.py` — `_get_random_room`: ENTER-001, ENTER-013; `_stand_charmed_follower`: ENTER-006; `_move_followers`: ENTER-007; `move_character_through_portal`: ENTER-008, ENTER-009, ENTER-010, ENTER-011, ENTER-012, ENTER-015, ENTER-016, ENTER-017; new `_portal_fade_out`: ENTER-011
 
 ### Integration Tests
 
-`tests/integration/test_act_enter_gaps.py` — 25 tests, all passing
+`tests/integration/test_act_enter_gaps.py` — 26 tests, all passing
 
 ### Recommended Close Order
 

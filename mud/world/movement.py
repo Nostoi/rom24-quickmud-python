@@ -26,6 +26,7 @@ from mud.net.protocol import broadcast_room
 from mud.registry import room_registry
 from mud.utils import rng_mm
 from mud.utils.act import act_format
+from mud.utils.messaging import push_message
 from mud.world.look import look
 from mud.world.vision import can_see_room
 
@@ -108,6 +109,30 @@ def _move_followers(
             follow_msg = act_format("You follow $N.", recipient=follower, actor=follower, arg2=leader)
             follower.send_to_char(follow_msg)
         mover(follower)
+
+
+def _act_to_room(
+    room: Room,
+    format_str: str,
+    actor: Character,
+    *,
+    arg1: object | None = None,
+    arg2: object | None = None,
+    exclude: Character | None = None,
+) -> None:
+    """Render and deliver a ROM ``act(..., TO_ROOM)`` line per recipient."""
+
+    dispatch_mobprog = bool(getattr(mobprog, "MOBtrigger", True))
+    for recipient in list(getattr(room, "people", []) or []):
+        if recipient is actor or recipient is exclude:
+            continue
+        # mirroring ROM src/comm.c:2230-2385 — act_new renders PERS() for
+        # each concrete recipient before delivery, then feeds that same
+        # rendered buffer to TRIG_ACT when MOBtrigger is enabled.
+        message = act_format(format_str, recipient=recipient, actor=actor, arg1=arg1, arg2=arg2)
+        push_message(recipient, message)
+        if dispatch_mobprog and getattr(recipient, "is_npc", False):
+            mobprog.mp_act_trigger(message, recipient, actor, arg1, arg2, mobprog.Trigger.ACT)
 
 
 # ROM str_app carry table (carry column only) for STR 0..25.
@@ -437,19 +462,14 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
         char.wait = max(char.wait, 1)
         char.move -= move_cost
 
-    char_name = char.name or "someone"
     show_movement = not (char.has_affect(AffectFlag.SNEAK) or getattr(char, "invis_level", 0) >= LEVEL_HERO)
 
     if show_movement:
-        departure_msg = f"{char_name} leaves {dir_key}."
-        broadcast_room(current_room, departure_msg, exclude=char)
-        mobprog.mp_act_trigger_room(departure_msg, current_room, char, exclude=char)
+        _act_to_room(current_room, "$n leaves $T.", char, arg2=dir_key, exclude=char)
     current_room.remove_character(char)
     target_room.add_character(char)
     if show_movement:
-        arrival_msg = f"{char_name} has arrived."
-        broadcast_room(target_room, arrival_msg, exclude=char)
-        mobprog.mp_act_trigger_room(arrival_msg, target_room, char, exclude=char)
+        _act_to_room(target_room, "$n has arrived.", char, exclude=char)
 
     # ROM src/act_move.c:204 — move_char ends with do_function(ch, &do_look, "auto"):
     # the mover sees the destination room and ROM sends NO "you walk <dir>" line.
@@ -614,16 +634,16 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
             lambda follower: move_character_through_portal(follower, portal, _is_follow=False),
         )
 
+    # ROM src/act_enter.c:200-222 fades/extracts an expired portal before
+    # firing TRIG_ENTRY / TRIG_GREET.
+    if charges_remaining == -1:
+        _portal_fade_out(char, portal, current_room, destination)
+
     # Mob-prog triggers (act_enter.c:219-222)
     if char.is_npc:
         mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
     else:
         mobprog.mp_greet_trigger(char)
-
-    # ENTER-011: Portal fade-out (act_enter.c:200-213)
-    # Broadcast logic depends on whether traveller ended up in a different room
-    if charges_remaining == -1:
-        _portal_fade_out(char, portal, current_room, destination)
 
     return entry_msg
 

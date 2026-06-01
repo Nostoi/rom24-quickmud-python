@@ -13,6 +13,7 @@ Portal entry/exit broadcasts (``src/act_enter.c:134,151``) similarly use
 Locks the contract for:
   - Directional movement departure  (act_move.c:197)
   - Directional movement arrival    (act_move.c:202)
+  - Directional movement PERS masking before delivery / TRIG_ACT
   - Portal entry departure          (act_enter.c:134)
   - Portal entry arrival            (act_enter.c:151)
 """
@@ -23,6 +24,7 @@ import pytest
 
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
+    AffectFlag,
     Direction,
     ItemType,
     PortalFlag,
@@ -222,6 +224,21 @@ class TestDirectionalDepartureArrival:
             "and must NOT fire TRIG_ACT — ROM act_move.c:197 guards on "
             "!IS_AFFECTED(ch, AFF_SNEAK) && ch->invis_level < LEVEL_HERO"
         )
+
+    def test_departure_uses_per_recipient_pers_masking(self):
+        room_a = _make_room(9570, "Room A")
+        room_b = _make_room(9571, "Room B")
+        _connect_rooms(room_a, room_b, Direction.NORTH)
+        pc = _make_pc(room_a, name="HiddenMover")
+        pc.affected_by = int(AffectFlag.INVISIBLE)
+        watcher = _make_pc(room_a, name="Watcher")
+
+        # mirrors ROM src/act_move.c:197 — act("$n leaves $T.", ..., TO_ROOM)
+        # renders $n through PERS(ch, to), so an unaided watcher sees "Someone".
+        move_character(pc, "north")
+
+        assert "Someone leaves north." in watcher.messages
+        assert "HiddenMover leaves north." not in watcher.messages
 
 
 class TestPortalEntry:

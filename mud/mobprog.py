@@ -1593,8 +1593,13 @@ def mp_give_trigger(mob: Character, ch: object | None, obj: object | None) -> bo
             vnum = getattr(proto, "vnum", None)
             fire = vnum is not None and int(vnum) == int(phrase)
         else:
-            needle = phrase.lower()
-            fire = needle == "all" or any(token == needle for token in name_tokens)
+            # mirroring ROM src/mob_prog.c:1309-1318 — non-numeric GIVE
+            # phrases are tokenized with one_argument(); any token matching
+            # obj->name, or the literal "all", fires the program.
+            for needle in phrase.lower().split():
+                if needle == "all" or needle in name_tokens:
+                    fire = True
+                    break
         if not fire:
             continue
         _register_program(prog)
