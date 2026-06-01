@@ -1057,21 +1057,6 @@ def _format_locate_destination(holder: object, caster: Character) -> str:
     return "One is in somewhere."
 
 
-def _reflexive_pronoun(character: Character | None) -> str:
-    """Return a reflexive pronoun matching the character's sex."""
-
-    try:
-        sex = Sex(int(getattr(character, "sex", 0) or 0))
-    except (TypeError, ValueError):
-        return "themselves"
-
-    return {
-        Sex.MALE: "himself",
-        Sex.FEMALE: "herself",
-        Sex.NONE: "itself",
-    }.get(sex, "themselves")
-
-
 def _possessive_pronoun(character: Character | None) -> str:
     """Return a possessive pronoun (his/her/its/their) for messaging."""
 
@@ -2236,9 +2221,7 @@ def change_sex(caster: Character, target: Character | None = None) -> bool:
     _send_to_char(target, "You feel different.")
     room = getattr(target, "room", None)
     if room is not None:
-        victim_name = _character_name(target)
-        reflexive = _reflexive_pronoun(target)
-        _act_room(room, f"{victim_name} doesn't look like {reflexive} anymore...", target, exclude=target)
+        act_to_room(room, "$n doesn't look like $mself anymore...", target, exclude=target)
 
     return True
 
@@ -4167,12 +4150,7 @@ def faerie_fire(caster: Character, target: Character | None = None) -> bool:
     _send_to_char(target, "You are surrounded by a pink outline.")
     room = getattr(target, "room", None)
     if room is not None:
-        _act_room(
-            room,
-            f"{_character_name(target)} is surrounded by a pink outline.",
-            target,
-            exclude=target,
-        )
+        act_to_room(room, "$n is surrounded by a pink outline.", target, exclude=target)
 
     return True
 
@@ -4188,12 +4166,7 @@ def faerie_fog(caster: Character, target: Character | None = None) -> bool:
         _send_to_char(caster, "You conjure a cloud of purple smoke.")
         return False
 
-    _act_room(
-        room,
-        f"{_character_name(caster)} conjures a cloud of purple smoke.",
-        caster,
-        exclude=caster,
-    )
+    act_to_room(room, "$n conjures a cloud of purple smoke.", caster, exclude=caster)
     _send_to_char(caster, "You conjure a cloud of purple smoke.")
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -4510,7 +4483,7 @@ def floating_disc(caster: Character, target=None):  # noqa: ARG001 - parity sign
 
     room = getattr(caster, "room", None)
     if room is not None:
-        _act_room(room, f"{_character_name(caster)} has created a floating black disc.", caster, exclude=caster)
+        act_to_room(room, "$n has created a floating black disc.", caster, exclude=caster)
     _send_to_char(caster, "You create a floating disc.")
 
     return disc
@@ -4841,30 +4814,28 @@ def gate(caster: Character, target: Character | None = None):
         if saves_spell(level, target, DamageType.OTHER):
             return _gate_fail(caster)
 
-    caster_name = _character_name(caster)
-    _act_room(current_room, f"{caster_name} steps through a gate and vanishes.", caster, exclude=caster)
+    act_to_room(current_room, "$n steps through a gate and vanishes.", caster, exclude=caster)
     _send_to_char(caster, "You step through a gate and vanish.")
 
     caster.was_in_room = current_room
     current_room.remove_character(caster)
     target_room.add_character(caster)
 
-    _act_room(target_room, f"{caster_name} has arrived through a gate.", caster, exclude=caster)
+    act_to_room(target_room, "$n has arrived through a gate.", caster, exclude=caster)
     view = look(caster)
     if view:
         _send_to_char(caster, view)
 
     pet = getattr(caster, "pet", None)
     if isinstance(pet, Character) and getattr(pet, "room", None) is current_room:
-        pet_name = _character_name(pet)
-        _act_room(current_room, f"{pet_name} steps through a gate and vanishes.", pet, exclude=pet)
+        act_to_room(current_room, "$n steps through a gate and vanishes.", pet, exclude=pet)
         _send_to_char(pet, "You step through a gate and vanish.")
 
         pet.was_in_room = current_room
         current_room.remove_character(pet)
         target_room.add_character(pet)
 
-        _act_room(target_room, f"{pet_name} has arrived through a gate.", pet, exclude=pet)
+        act_to_room(target_room, "$n has arrived through a gate.", pet, exclude=pet)
         pet_view = look(pet)
         if pet_view:
             _send_to_char(pet, pet_view)
@@ -5415,8 +5386,7 @@ def holy_word(caster: Character, target=None):  # noqa: ARG001 - parity signatur
     caster_neutral = is_neutral(caster)
     level = max(int(getattr(caster, "level", 0) or 0), 0)
 
-    caster_name = _character_name(caster)
-    _act_room(room, f"{caster_name} utters a word of divine power!", caster, exclude=caster)
+    act_to_room(room, "$n utters a word of divine power!", caster, exclude=caster)
     _send_to_char(caster, "You utter a word of divine power.")
 
     any_effect = False
@@ -5605,7 +5575,7 @@ def infravision(caster: Character, target: Character | None = None) -> bool:
     _send_to_char(target, "Your eyes glow red.")
     room = getattr(target, "room", None)
     if room is not None:
-        _act_room(room, f"{_character_name(target)}'s eyes glow red.", target, exclude=target)
+        act_to_room(room, "$n's eyes glow red.", target, exclude=target)
 
     return True
 
@@ -5676,14 +5646,19 @@ def invis(caster: Character, target: Character | Object | None = None) -> bool:
         wear_off_message="You fade back into existence.",
     )
 
+    # ROM spell_invisibility (src/magic.c:3650-3659): the room line is broadcast
+    # BEFORE AFF_INVISIBLE is applied, so witnesses still see the target's name
+    # (per-recipient PERS) while they remain visible; the self-message follows
+    # affect_to_char.
+    room = getattr(target, "room", None)
+    if room is not None:
+        act_to_room(room, "$n fades out of existence.", target, exclude=target)
+
     applied = target.apply_spell_effect(effect)
     if not applied:
         return False
 
     _send_to_char(target, "You fade out of existence.")
-    room = getattr(target, "room", None)
-    if room is not None:
-        _act_room(room, f"{_character_name(target)} fades out of existence.", target, exclude=target)
     return True
 
 
@@ -6075,12 +6050,7 @@ def mass_invis(caster: Character, target: Character | None = None) -> bool:
         if member.has_affect(AffectFlag.INVISIBLE) or member.has_spell_effect("mass invis"):
             continue
 
-        _act_room(
-            room,
-            f"{_character_name(member)} slowly fades out of existence.",
-            member,
-            exclude=member,
-        )
+        act_to_room(room, "$n slowly fades out of existence.", member, exclude=member)
         _send_to_char(member, "You slowly fade out of existence.")
 
         effect = SpellEffect(
@@ -6612,12 +6582,7 @@ def poison(
         _send_to_char(victim, "You feel momentarily ill, but it passes.")
         room = getattr(victim, "room", None)
         if room is not None:
-            _act_room(
-                room,
-                f"{_character_name(victim)} turns slightly green, but it passes.",
-                victim,
-                exclude=victim,
-            )
+            act_to_room(room, "$n turns slightly green, but it passes.", victim, exclude=victim)
         return False
 
     effect = SpellEffect(
@@ -6636,12 +6601,7 @@ def poison(
     _send_to_char(victim, "You feel very sick.")
     room = getattr(victim, "room", None)
     if room is not None:
-        _act_room(
-            room,
-            f"{_character_name(victim)} looks very ill.",
-            victim,
-            exclude=victim,
-        )
+        act_to_room(room, "$n looks very ill.", victim, exclude=victim)
     return True
 
 
@@ -6855,10 +6815,9 @@ def ray_of_truth(caster: Character, target: Character | None = None) -> int:
         if victim is not caster:
             room = getattr(caster, "room", None)
             if room is not None:
-                possessive = _possessive_pronoun(caster)
-                _act_room(
+                act_to_room(
                     room,
-                    f"{_character_name(caster)} raises {possessive} hand, and a blinding ray of light shoots forth!",
+                    "$n raises $s hand, and a blinding ray of light shoots forth!",
                     caster,
                     exclude=caster,
                 )
@@ -6867,12 +6826,7 @@ def ray_of_truth(caster: Character, target: Character | None = None) -> int:
     if is_good(victim):
         room = getattr(victim, "room", None)
         if room is not None:
-            _act_room(
-                room,
-                f"{_character_name(victim)} seems unharmed by the light.",
-                victim,
-                exclude=victim,
-            )
+            act_to_room(room, "$n seems unharmed by the light.", victim, exclude=victim)
         _send_to_char(victim, "The light seems powerless to affect you.")
         return 0
 
@@ -6916,8 +6870,7 @@ def recall(caster: Character, target: Character | None = None) -> str:
 
     current_room = getattr(caster, "room", None)
     if current_room is not None:
-        caster_name = _character_name(caster)
-        _act_room(current_room, f"{caster_name} prays for transportation!", caster, exclude=caster)
+        act_to_room(current_room, "$n prays for transportation!", caster, exclude=caster)
 
     location = room_registry.get(ROOM_VNUM_TEMPLE)
     if location is None:
@@ -6953,12 +6906,11 @@ def recall(caster: Character, target: Character | None = None) -> str:
     caster.move = c_div(move_points, 2)
 
     if current_room is not None:
-        caster_name = _character_name(caster)
-        _act_room(current_room, f"{caster_name} disappears.", caster, exclude=caster)
+        act_to_room(current_room, "$n disappears.", caster, exclude=caster)
         current_room.remove_character(caster)
 
     location.add_character(caster)
-    _act_room(location, f"{_character_name(caster)} appears in the room.", caster, exclude=caster)
+    act_to_room(location, "$n appears in the room.", caster, exclude=caster)
 
     view = look(caster)
     if view:
@@ -7146,7 +7098,7 @@ def remove_curse(
     if check_dispel(level, victim, "curse"):
         _send_to_char(victim, "You feel better.")
         if room is not None:
-            _act_room(room, f"{_character_name(victim)} looks more relaxed.", victim, exclude=victim)
+            act_to_room(room, "$n looks more relaxed.", victim, exclude=victim)
         removed_any = True
 
     seen: set[int] = set()
@@ -7843,12 +7795,10 @@ def summon(caster: Character, target: Character | None = None) -> bool:
             _send_to_char(caster, "You failed.")
             return False
 
-    victim_name = _character_name(target)
-
-    _act_room(target_room, f"{victim_name} disappears suddenly.", target, exclude=target)
+    act_to_room(target_room, "$n disappears suddenly.", target, exclude=target)
     target_room.remove_character(target)
     caster_room.add_character(target)
-    _act_room(caster_room, f"{victim_name} arrives suddenly.", target, exclude=target)
+    act_to_room(caster_room, "$n arrives suddenly.", target, exclude=target)
 
     caster_name = _character_name(caster)
     _send_to_char(target, f"{caster_name} has summoned you!")
@@ -7908,12 +7858,10 @@ def teleport(caster: Character, target: Character | None = None) -> bool:
     if victim is not caster:
         _send_to_char(victim, "You have been teleported!")
 
-    victim_name = _character_name(victim)
-
-    _act_room(victim_room, f"{victim_name} vanishes!", victim, exclude=victim)
+    act_to_room(victim_room, "$n vanishes!", victim, exclude=victim)
     victim_room.remove_character(victim)
     destination.add_character(victim)
-    _act_room(destination, f"{victim_name} slowly fades into existence.", victim, exclude=victim)
+    act_to_room(destination, "$n slowly fades into existence.", victim, exclude=victim)
 
     view = look(victim)
     if view:
@@ -8169,14 +8117,12 @@ def word_of_recall(caster: Character, target: Character | None = None) -> bool:
     move_points = int(getattr(victim, "move", 0) or 0)
     victim.move = c_div(move_points, 2)
 
-    victim_name = _character_name(victim)
-
     if current_room is not None:
-        _act_room(current_room, f"{victim_name} disappears.", victim, exclude=victim)
+        act_to_room(current_room, "$n disappears.", victim, exclude=victim)
         current_room.remove_character(victim)
 
     location.add_character(victim)
-    _act_room(location, f"{victim_name} appears in the room.", victim, exclude=victim)
+    act_to_room(location, "$n appears in the room.", victim, exclude=victim)
 
     view = look(victim)
     if view:

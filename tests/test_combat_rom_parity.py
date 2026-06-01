@@ -70,8 +70,12 @@ def test_ac_clamping_for_negative_values():
     attacker.hitroll = 100  # Increase hitroll to guarantee hit through clamped AC
 
     # The AC clamping should limit the effectiveness of extreme negative AC
-    # This is tested implicitly through the hit calculation
-    result = attack_round(attacker, victim)
+    # This is tested implicitly through the hit calculation. Pin the to-hit
+    # roll low so the assertion is deterministic regardless of leaked global
+    # RNG state (this test relies on hitroll=100 producing a hit, but the
+    # unpatched number_percent roll could otherwise miss).
+    with patch("mud.utils.rng_mm.number_percent", return_value=1):
+        result = attack_round(attacker, victim)
 
     # Should hit despite very negative AC due to clamping
     assert "miss" not in result.lower()

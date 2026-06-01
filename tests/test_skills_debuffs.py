@@ -223,7 +223,10 @@ def test_poison_afflicts_character_and_messages(monkeypatch: pytest.MonkeyPatch)
 
 
 def test_poison_save_prevents_affect(monkeypatch: pytest.MonkeyPatch) -> None:
-    room = Room(vnum=4304, sector_type=int(Sector.FIELD))
+    # INSIDE room is always lit so the witness can see the (visible) victim.
+    # ROM act("$n turns slightly green...", victim, TO_ROOM) renders $n through
+    # PERS/can_see, which masks to "someone" in a dark room (src/magic.c:3993).
+    room = Room(vnum=4304, sector_type=int(Sector.INSIDE))
 
     caster = _make_character("Alchemist", level=35)
     target = _make_character("Victim", level=30)
