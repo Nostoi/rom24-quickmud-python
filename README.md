@@ -1,9 +1,9 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.12.35-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.12.42-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-5225%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Tests](https://img.shields.io/badge/tests-5242%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-revalidation%20in%20progress-orange.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![ROM C Audit](https://img.shields.io/badge/ROM%20C%20Audit-40%2F40%20audited-success.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![Integration Tests](https://img.shields.io/badge/integration%20tests-1000%2B-brightgreen.svg)](tests/integration/)
@@ -24,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 4,957 passing tests across unit, integration, and command-registry suites
+- **📊 Comprehensive Testing**: 5,242 passing tests across unit, integration, and command-registry suites
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -163,7 +163,7 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.12.35
+- **Version**: 2.12.42
 - **ROM 2.4b Gameplay Parity**: ⚠️ **broadly audited, currently being revalidated** —
   combat, skills, spells, movement, communication, world/db, save/load, mob programs,
   and all 255 ROM commands are implemented, but some previously “verified” user-visible surfaces were only smoke-tested and are being rechecked with ROM-exact assertions.
@@ -173,7 +173,7 @@ python -m mud  # Start development server
 - **Cross-file Invariants**: ✅ **24/24 enforced** — message delivery, prompt clamping, registry membership,
   same-room combat, death/connection behavior, RNG determinism, persistence coherence, and room-flag
   survival (`.are`→JSON→runtime) are locked by dedicated tests.
-- **Test Suite**: ✅ **5225 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
+- **Test Suite**: ✅ **5242 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
   integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
 - **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact output, boundary, and runtime-path tests on the highest-risk user-visible surfaces.
 - **Compatibility**: Python 3.10+, cross-platform
@@ -322,7 +322,7 @@ QuickMUD is a **production-ready ROM 2.4b MUD** with ✅ **100% behavioral parit
   skills, spells, movement, communication, world/db, save/load, mob programs,
   255/255 commands).
 - **ROM C Source Audit**: 40 of 40 applicable ROM files audited, plus 3 intentional N/A files.
-- **Cross-file Invariants**: 24 of 24 enforced by dedicated regression tests.
+- **Cross-file Invariants**: 25 of 25 enforced by dedicated regression tests.
 
 ### 🔧 Advanced Features
 
