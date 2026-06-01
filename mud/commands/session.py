@@ -59,11 +59,16 @@ def do_quit(ch: Character, args: str) -> str:
     room = getattr(ch, "room", None)
     if room is not None:
         from mud.net.protocol import broadcast_room
+
         actor_name = getattr(ch, "name", None) or "someone"
-        broadcast_room(room, f"{actor_name} has left the game.", exclude=ch)
+        quit_msg = f"{actor_name} has left the game."
+        broadcast_room(room, quit_msg, exclude=ch)
+        from mud.mobprog import mp_act_trigger_room
+
+        mp_act_trigger_room(quit_msg, room, ch, exclude=ch)
 
     # Set a flag to signal the connection handler to disconnect
-    setattr(ch, "_quit_requested", True)
+    ch._quit_requested = True
 
     return "May your travels be safe.\n"
 
@@ -84,9 +89,10 @@ def do_score(ch: Character, args: str) -> str:
     level = getattr(ch, "level", 1)
 
     # Get age and played hours
+    import time
+
     from mud.handler import class_name, get_age, race_name
     from mud.math.c_compat import c_div
-    import time
 
     age = get_age(ch)
     played = getattr(ch, "played", 0)
@@ -233,7 +239,7 @@ def do_score(ch: Character, args: str) -> str:
         pos_enum = Position(position)
         lines.append(f"You are {pos_enum.name.lower()}.")
     except ValueError:
-        lines.append(f"You are standing.")
+        lines.append("You are standing.")
 
     # Carrying - ROM src/act_info.c lines 1514-1518
     carry_weight = getattr(ch, "carry_weight", 0)
@@ -341,7 +347,7 @@ def do_recall(ch: Character, args: str) -> str:
     ROM Reference: src/act_move.c lines 1563-1628 (do_recall)
     """
     from mud.combat.engine import stop_fighting
-    from mud.models.constants import AffectFlag, RoomFlag, ROOM_VNUM_TEMPLE
+    from mud.models.constants import ROOM_VNUM_TEMPLE, AffectFlag, RoomFlag
     from mud.registry import room_registry
     from mud.utils.rng_mm import number_percent
 

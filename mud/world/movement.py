@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
-
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 
 from mud import mobprog
 from mud.models.character import Character
@@ -25,11 +23,11 @@ from mud.models.constants import (
 )
 from mud.models.room import Exit, Room
 from mud.net.protocol import broadcast_room
-from mud.utils.act import act_format
 from mud.registry import room_registry
+from mud.utils import rng_mm
+from mud.utils.act import act_format
 from mud.world.look import look
 from mud.world.vision import can_see_room
-from mud.utils import rng_mm
 
 dir_map: dict[str, Direction] = {
     "north": Direction.NORTH,
@@ -443,11 +441,15 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     show_movement = not (char.has_affect(AffectFlag.SNEAK) or getattr(char, "invis_level", 0) >= LEVEL_HERO)
 
     if show_movement:
-        broadcast_room(current_room, f"{char_name} leaves {dir_key}.", exclude=char)
+        departure_msg = f"{char_name} leaves {dir_key}."
+        broadcast_room(current_room, departure_msg, exclude=char)
+        mobprog.mp_act_trigger_room(departure_msg, current_room, char, exclude=char)
     current_room.remove_character(char)
     target_room.add_character(char)
     if show_movement:
-        broadcast_room(target_room, f"{char_name} has arrived.", exclude=char)
+        arrival_msg = f"{char_name} has arrived."
+        broadcast_room(target_room, arrival_msg, exclude=char)
+        mobprog.mp_act_trigger_room(arrival_msg, target_room, char, exclude=char)
 
     # ROM src/act_move.c:204 — move_char ends with do_function(ch, &do_look, "auto"):
     # the mover sees the destination room and ROM sends NO "you walk <dir>" line.
@@ -559,6 +561,7 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
     # "$n steps into $p." — $n resolves char visibility, $p resolves portal name
     departure_msg = act_format("$n steps into $p.", recipient=None, actor=char, arg1=portal)
     broadcast_room(current_room, departure_msg, exclude=char)
+    mobprog.mp_act_trigger_room(departure_msg, current_room, char, arg1=portal, exclude=char)
 
     # ENTER-009: TO_CHAR entry message sent BEFORE room move (act_enter.c:136-140)
     if uses_normal_exit:
@@ -587,6 +590,7 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
     else:
         arrival_msg = act_format("$n has arrived through $p.", recipient=None, actor=char, arg1=portal)
     broadcast_room(destination, arrival_msg, exclude=char)
+    mobprog.mp_act_trigger_room(arrival_msg, destination, char, arg1=portal, exclude=char)
 
     # do_look "auto" (act_enter.c:156)
     _auto_look(char)
@@ -646,6 +650,7 @@ def _portal_fade_out(char: Character, portal: object, old_room: object, destinat
         # Destination == origin: also TO_ROOM in that room (act_enter.c:204)
         to_room_msg = act_format(fade_fmt, recipient=None, actor=char, arg1=portal)
         broadcast_room(old_room, to_room_msg, exclude=char)
+        mobprog.mp_act_trigger_room(to_room_msg, old_room, char, arg1=portal, exclude=char)
     else:
         # Destination != origin: notify old_room occupants (act_enter.c:205-211)
         old_people = list(getattr(old_room, "people", []) or [])
@@ -656,6 +661,7 @@ def _portal_fade_out(char: Character, portal: object, old_room: object, destinat
                 witness.send_to_char(to_char_old_msg)
             to_room_old_msg = act_format(fade_fmt, recipient=None, actor=witness, arg1=portal)
             broadcast_room(old_room, to_room_old_msg, exclude=witness)
+            mobprog.mp_act_trigger_room(to_room_old_msg, old_room, witness, arg1=portal, exclude=witness)
 
     # extract_obj equivalent (act_enter.c:212).
     # game_loop._extract_obj keys off `in_room`, but Object uses `location`; always

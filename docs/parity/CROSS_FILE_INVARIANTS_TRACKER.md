@@ -504,6 +504,30 @@ PERS/can_see. Line-suppression is per-command (`do_goto`/`do_violate` → WIZ-04
    on NPC recipients, with cloned objects threaded as `arg1` and cloned mobiles
    as `arg2`. Regression:
    `tests/integration/test_inv025_clone_act_trigger_dispatch.py` (2 tests).
+    **Movement departure/arrival broadcasts closed in 2.12.22**:
+    `mud/world/movement.py:move_character` departure (`"$n leaves north."`)
+    and arrival (`"$n has arrived."`) now dispatch `mp_act_trigger_room` on
+    NPC recipients, matching ROM `src/act_move.c:197,202` (no `MOBtrigger`
+    wrap). Portal entry departure (`"$n steps into $p."`, `act_enter.c:134`)
+    and arrival (`"$n has arrived."` / `"$n has arrived through $p."`,
+    `act_enter.c:151`) also dispatch. Portal fade-out same-room and
+    cross-room broadcasts (`act_enter.c:204,209-210`) dispatch with the
+    correct actor (traveller vs. witness). Sneaking characters suppress
+    the broadcast lines and therefore suppress TRIG_ACT, matching ROM's
+    `!IS_AFFECTED(ch, AFF_SNEAK)` guard. Regression:
+    `tests/integration/test_inv025_movement_act_trigger_dispatch.py` (8 tests:
+    departure, arrival, portal departure, portal arrival, sneaking suppression,
+    quit, scan-all, scan-direction).
+    **Quit broadcast closed in 2.12.22**: `mud/commands/session.py:do_quit`
+    now dispatches `mp_act_trigger_room` after its `"$n has left the game."`
+    broadcast, matching ROM `src/act_comm.c:1482`
+    `act("$n has left the game.", ch, NULL, NULL, TO_ROOM)` (no `MOBtrigger`
+    wrap).
+    **Scan/peer broadcasts closed in 2.12.22**:
+    `mud/commands/inspection.py:do_scan` all-around broadcast
+    (`"$n looks all around."`) and directional scan peer broadcast
+    (`"$n peers intently east."`) now dispatch `mp_act_trigger_room`,
+    matching ROM `src/scan.c:60` and `:90` (no `MOBtrigger` wrap).
    **Reverse-side linked-room broadcasts closed in 2.12.4:** `do_open` and
    `do_close` now route ROM's `act(..., rch, TO_CHAR)` linked-room loop through
    `mp_reverse_act_trigger_room`; lock/unlock/pick have no reverse-side

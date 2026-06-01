@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import Direction
 from mud.net.protocol import broadcast_room
@@ -73,7 +74,9 @@ def do_scan(char: Character, args: str = "") -> str:
     if not s:
         # SCAN-001: TO_ROOM broadcast — mirroring ROM src/scan.c:60
         # `act("$n looks all around.", ch, NULL, NULL, TO_ROOM);`
-        broadcast_room(char.room, f"{char.name} looks all around.", exclude=char)
+        scan_msg = f"{char.name} looks all around."
+        broadcast_room(char.room, scan_msg, exclude=char)
+        mp_act_trigger_room(scan_msg, char.room, char, exclude=char)
         lines: list[str] = ["Looking around you see:"]
         # current room
         lines += list_room(char.room, 0, -1)
@@ -108,7 +111,9 @@ def do_scan(char: Character, args: str = "") -> str:
     # SCAN-002: TO_CHAR + TO_ROOM act() pair — mirroring ROM src/scan.c:89-91.
     # ROM builds a "Looking <dir> you see:" header into `buf` but never sends it;
     # the only visible messages are the two act() calls below.
-    broadcast_room(char.room, f"{char.name} peers intently {dir_str}.", exclude=char)
+    peer_msg = f"{char.name} peers intently {dir_str}."
+    broadcast_room(char.room, peer_msg, exclude=char)
+    mp_act_trigger_room(peer_msg, char.room, char, exclude=char)
     lines = [f"You peer intently {dir_str}."]
     scan_room = char.room
     for depth in (1, 2, 3):
@@ -160,7 +165,7 @@ def do_exits(char: Character, args: str = "") -> str:
     rather than hiding them entirely. ROM C can_see_room() does NOT check darkness,
     only permission flags (handler.c lines 2590-2611).
     """
-    from mud.models.constants import AffectFlag, EX_CLOSED, MAX_LEVEL, RoomFlag
+    from mud.models.constants import EX_CLOSED, MAX_LEVEL, AffectFlag, RoomFlag
     from mud.world.vision import room_is_dark
 
     # ROM: check_blind - blind characters cannot see exits
