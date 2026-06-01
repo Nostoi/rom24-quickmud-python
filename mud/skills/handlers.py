@@ -6542,11 +6542,16 @@ def poison(
             values[3] = 1
             obj.value = values
 
-            message = f"{_object_short_descr(obj)} is infused with poisonous vapors."
-            _send_to_char(caster, message)
+            # MAGIC-005: ROM act("$p is infused with poisonous vapors.", ch, obj,
+            # NULL, TO_ALL) (src/magic.c:3946). Poison does NOT make the object
+            # invisible, so the caster (targeting a visible object) keeps the
+            # baked short_descr; the room leg renders $p per-recipient via
+            # act_to_room (can_see_obj masks a blind/dark-room/invisible-object
+            # witness to "something").
+            _send_to_char(caster, f"{_object_short_descr(obj)} is infused with poisonous vapors.")
             room = getattr(caster, "room", None)
             if room is not None:
-                _act_room(room, message, caster, exclude=caster)
+                act_to_room(room, "$p is infused with poisonous vapors.", caster, arg1=obj, exclude=caster)
             return True
 
         if item_type is ItemType.WEAPON:
@@ -6602,13 +6607,16 @@ def poison(
             obj.value = values
             obj.weapon_flags = new_flags
 
-            message = f"{_object_short_descr(obj)} is coated with deadly venom."
-            # ACT-CAP-002: ROM act("$p is coated with deadly venom.", ch, obj, NULL, TO_ALL)
-            message = capitalize_act_line(message)
-            _send_to_char(caster, message)
+            # MAGIC-005: ROM act("$p is coated with deadly venom.", ch, obj, NULL,
+            # TO_ALL) (src/magic.c:3981). Poison does NOT make the object
+            # invisible, so the caster (targeting a visible object) keeps the
+            # baked short_descr (capped per ACT-CAP-002); the room leg renders $p
+            # per-recipient via act_to_room (can_see_obj masks a blind/dark-room/
+            # invisible-object witness to "something").
+            _send_to_char(caster, capitalize_act_line(f"{_object_short_descr(obj)} is coated with deadly venom."))
             room = getattr(caster, "room", None)
             if room is not None:
-                _act_room(room, message, caster, exclude=caster)
+                act_to_room(room, "$p is coated with deadly venom.", caster, arg1=obj, exclude=caster)
             return True
 
         _send_to_char(caster, f"You can't poison {_object_short_descr(obj)}.")
