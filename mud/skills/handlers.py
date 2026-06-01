@@ -2101,22 +2101,33 @@ def chain_lightning(caster: Character, target: Character | None = None) -> bool:
     if level <= 0:
         return False
 
-    caster_name = _character_name(caster)
-    victim_name = _character_name(target)
-
-    _act_room(
+    # MAGIC-004: ROM src/magic.c:1244-1249 — first strike as three act() legs with
+    # per-recipient PERS ($n=caster, $N=victim). TO_ROOM (:1244) excludes only ch,
+    # so the victim DOES receive the third-person line (it is TO_ROOM, not
+    # TO_NOTVICT). Tokens are mid-sentence, so a masked actor renders lowercase.
+    act_to_room(
         room,
-        f"A lightning bolt leaps from {caster_name}'s hand and arcs to {victim_name}.",
+        "A lightning bolt leaps from $n's hand and arcs to $N.",
         caster,
-        exclude=caster,
+        arg2=target,
     )
     _send_to_char(
         caster,
-        f"A lightning bolt leaps from your hand and arcs to {victim_name}.",
+        act_format(
+            "A lightning bolt leaps from your hand and arcs to $N.",
+            recipient=caster,
+            actor=caster,
+            arg2=target,
+        ),
     )
     _send_to_char(
         target,
-        f"A lightning bolt leaps from {caster_name}'s hand and hits you!",
+        act_format(
+            "A lightning bolt leaps from $n's hand and hits you!",
+            recipient=target,
+            actor=caster,
+            arg2=target,
+        ),
     )
 
     damage = rng_mm.dice(level, 6)
@@ -2139,13 +2150,9 @@ def chain_lightning(caster: Character, target: Character | None = None) -> bool:
 
             found = True
             last_victim = occupant
-            victim_name = _character_name(occupant)
-            _act_room(
-                room,
-                f"The bolt arcs to {victim_name}!",
-                occupant,
-                exclude=occupant,
-            )
+            # MAGIC-004: ROM src/magic.c:1270 — act("The bolt arcs to $n!", tmp_vict,
+            # ..., TO_ROOM); $n is the bounced victim, masked per recipient.
+            act_to_room(room, "The bolt arcs to $n!", occupant)
             _send_to_char(occupant, "The bolt hits you!")
 
             damage = rng_mm.dice(level, 6)
@@ -2160,22 +2167,14 @@ def chain_lightning(caster: Character, target: Character | None = None) -> bool:
 
         if not found:
             if last_victim is caster:
-                _act_room(
-                    room,
-                    "The bolt seems to have fizzled out.",
-                    caster,
-                    exclude=caster,
-                )
+                # ROM src/magic.c:1287-1290 (fizzle — no $ tokens).
+                act_to_room(room, "The bolt seems to have fizzled out.", caster)
                 _send_to_char(caster, "The bolt grounds out through your body.")
                 break
 
             last_victim = caster
-            _act_room(
-                room,
-                f"The bolt arcs to {caster_name}...whoops!",
-                caster,
-                exclude=caster,
-            )
+            # ROM src/magic.c:1295 — act("The bolt arcs to $n...whoops!", ch, TO_ROOM).
+            act_to_room(room, "The bolt arcs to $n...whoops!", caster)
             _send_to_char(caster, "You are struck by your own lightning!")
             damage = rng_mm.dice(level, 6)
             if saves_spell(level, caster, DamageType.LIGHTNING):
