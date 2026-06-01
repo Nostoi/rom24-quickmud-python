@@ -578,15 +578,19 @@ def test_invis_handles_objects_and_characters() -> None:
 
     assert skill_handlers.invis(caster, obj) is True
     assert obj.extra_flags & int(ExtraFlag.INVIS)
-    # ACT-CAP-002: ROM act("$p fades out of sight.", ch, obj, NULL, TO_ALL) caps
-    # for everyone including the caster. Both _send_to_char and broadcast_room
-    # get the capped message now.
-    assert caster.messages[-1] == "Mysterious gem fades out of sight."
-    assert witness.messages[-1] == "Mysterious gem fades out of sight."
+    # MAGIC-010: ROM act("$p fades out of sight.", ch, obj, NULL, TO_ALL) renders
+    # AFTER affect_to_obj sets ITEM_INVIS (src/magic.c:3638-3640), so can_see_obj
+    # masks $p to "Something" for the caster AND the witness (neither has
+    # detect-invis/holylight) — TO_ALL includes the caster.
+    assert caster.messages[-1] == "Something fades out of sight."
+    assert witness.messages[-1] == "Something fades out of sight."
 
     caster.messages.clear()
     assert skill_handlers.invis(caster, obj) is False
-    assert caster.messages[-1] == "mysterious gem is already invisible."
+    # MAGIC-010: act("$p is already invisible.", ..., TO_CHAR) (src/magic.c:3627)
+    # is inside the ITEM_INVIS branch — masked + capped for a caster without
+    # detect-invis.
+    assert caster.messages[-1] == "Something is already invisible."
 
     witness.messages.clear()
     assert skill_handlers.invis(caster, target) is True
@@ -614,9 +618,10 @@ def test_invis_object_wears_off() -> None:
     try:
         assert skill_handlers.invis(caster, obj) is True
         assert obj.extra_flags & int(ExtraFlag.INVIS)
-        # ACT-CAP-002: caster leg now capped (shared message capitalized at build site).
-        assert caster.messages[-1] == "Mysterious gem fades out of sight."
-        assert witness.messages[-1] == "Mysterious gem fades out of sight."
+        # MAGIC-010: object is ITEM_INVIS at render time, so can_see_obj masks $p
+        # to "Something" for the caster and witness (no detect-invis).
+        assert caster.messages[-1] == "Something fades out of sight."
+        assert witness.messages[-1] == "Something fades out of sight."
 
         caster.messages.clear()
         witness.messages.clear()

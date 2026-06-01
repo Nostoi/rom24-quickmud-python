@@ -114,8 +114,9 @@ def test_message_room_caps_fallback_path() -> None:
 #
 # ROM act("$p fades out of sight.", ch, obj, NULL, TO_ALL) caps the line for
 # everyone including the caster.  The Python handlers split TO_ALL into
-# _send_to_char(caster, message) + broadcast_room(room, message, exclude=caster).
-# The shared `message` must be capitalized before both legs, matching ROM.
+# _send_to_char(caster, act_format(...)) + act_to_room(room, ..., exclude=caster);
+# each leg renders the format string independently and act_format/act_to_room
+# cap the first visible letter per recipient (INV-029), matching ROM.
 # These tests exercise the actual handler paths end-to-end.
 
 

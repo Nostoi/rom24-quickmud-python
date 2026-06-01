@@ -77,7 +77,7 @@ from mud.skills.metadata import ROM_SKILL_METADATA, ROM_SKILL_NAMES_BY_INDEX
 from mud.skills.registry import check_improve
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
-from mud.utils.act import act_to_room, capitalize_act_line
+from mud.utils.act import act_format, act_to_room, capitalize_act_line
 from mud.world.look import look
 from mud.world.movement import _get_random_room
 from mud.world.vision import can_see_object, can_see_room, room_is_dark
@@ -5623,7 +5623,12 @@ def invis(caster: Character, target: Character | Object | None = None) -> bool:
     if obj is not None:
         extra_flags = _coerce_int(getattr(obj, "extra_flags", 0))
         if extra_flags & int(ExtraFlag.INVIS):
-            _send_to_char(caster, f"{_object_short_descr(obj)} is already invisible.")
+            # MAGIC-010: ROM act("$p is already invisible.", ch, obj, NULL,
+            # TO_CHAR) (src/magic.c:3627) — this early-out is inside the
+            # IS_OBJ_STAT(obj, ITEM_INVIS) branch, so the object is invisible at
+            # render time; can_see_obj masks $p to "something" for a caster
+            # without detect-invis/holylight.
+            _send_to_char(caster, act_format("$p is already invisible.", recipient=caster, actor=caster, arg1=obj))
             return False
 
         level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -5646,16 +5651,17 @@ def invis(caster: Character, target: Character | Object | None = None) -> bool:
             obj.affected = [affect]
 
         obj.extra_flags = extra_flags | int(ExtraFlag.INVIS)
-        message = f"{_object_short_descr(obj)} fades out of sight."
-        # ACT-CAP-002: ROM act("$p fades out of sight.", ch, obj, NULL, TO_ALL)
-        # caps for everyone including the caster. Cap the shared message so both
-        # the _send_to_char caster leg and broadcast_room room leg are capitalized.
-        message = capitalize_act_line(message)
-        _send_to_char(caster, message)
+        # MAGIC-010: ROM act("$p fades out of sight.", ch, obj, NULL, TO_ALL)
+        # (src/magic.c:3640). affect_to_obj set ITEM_INVIS (:3638) BEFORE this
+        # act, so the object is invisible at render time — can_see_obj masks $p
+        # to "something" for the caster AND every witness without
+        # detect-invis/holylight (TO_ALL includes the caster). Both legs render
+        # $p per-recipient via act_format/act_to_room (which also cap, INV-029).
+        _send_to_char(caster, act_format("$p fades out of sight.", recipient=caster, actor=caster, arg1=obj))
 
         caster_room = getattr(caster, "room", None)
         if caster_room is not None:
-            _act_room(caster_room, message, caster, exclude=caster)
+            act_to_room(caster_room, "$p fades out of sight.", caster, arg1=obj, exclude=caster)
         return True
 
     if not isinstance(target, Character):
