@@ -260,9 +260,16 @@ def do_train(char: Character, args: str) -> str:
     if _find_trainer(char) is None:
         return "You can't do that here."
 
-    # No argument: show training sessions (ROM C lines 1658-1663)
+    # No argument: show training sessions (ROM C lines 1658-1663). ROM prints
+    # the session count, then sets `argument = "foo"` and FALLS THROUGH — "foo"
+    # matches no stat/hp/mana, so control reaches the listing branch (`:1713`)
+    # and the player also sees "You can train: ...". We mirror that by emitting
+    # the session-count line as a prefix and continuing with args = "foo".
+    # TRAIN-005.
+    session_prefix = ""
     if not args:
-        return f"You have {char.train} training sessions."
+        session_prefix = f"You have {char.train} training sessions.\n"
+        args = "foo"
 
     args_lower = args.lower()
     # mirroring ROM src/act_move.c do_train — `cost = 1;` is set once before
@@ -328,13 +335,13 @@ def do_train(char: Character, args: str) -> str:
             # Jordan's easter egg message
             sex = getattr(char, "sex", 0)
             if sex == 1:  # SEX_MALE
-                return "You have nothing left to train, you big stud!"
+                return session_prefix + "You have nothing left to train, you big stud!"
             elif sex == 2:  # SEX_FEMALE
-                return "You have nothing left to train, you hot babe!"
+                return session_prefix + "You have nothing left to train, you hot babe!"
             else:
-                return "You have nothing left to train, you wild thing!"
+                return session_prefix + "You have nothing left to train, you wild thing!"
 
-        return "".join(options) + "."
+        return session_prefix + "".join(options) + "."
 
     # Train HP (ROM C lines 1747-1762)
     if args_lower == "hp":

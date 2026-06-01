@@ -273,6 +273,28 @@ def test_train_shows_sessions_count(train_test_setup):
     assert "train" in result.lower(), "Should mention training sessions"
 
 
+def test_train_no_arg_falls_through_to_listing(train_test_setup):
+    """Bare `train` shows the session count AND the trainable-stat listing.
+
+    ROM `do_train` (src/act_move.c:1658-1663) prints "You have %d training
+    sessions." then sets `argument = "foo"` and falls through; "foo" matches no
+    stat/hp/mana so it lands in the listing branch (`:1713`), so the player also
+    sees "You can train: ...". Python early-returned just the session count.
+    (TRAIN-005)
+    """
+    char, room = train_test_setup
+
+    char.train = 5
+
+    result = do_train(char, "")
+
+    # Both ROM outputs must appear: the session count and the listing branch.
+    assert "5 training sessions" in result, result
+    assert "You can train:" in result, result
+    # The fixture char has trainable stats below max, so at least one stat shows.
+    assert "hp mana" in result, result
+
+
 def test_train_insufficient_sessions_fails(train_test_setup):
     """Test that training without enough sessions fails
 
