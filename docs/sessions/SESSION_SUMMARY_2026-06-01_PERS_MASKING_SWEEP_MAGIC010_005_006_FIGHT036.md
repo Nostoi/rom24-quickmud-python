@@ -104,10 +104,20 @@ Four commits landed: `f50ce63f` (2.12.32), `d70ce1e0` (2.12.33),
 - `tests/test_skills_buffs.py` — invis baked-name assertions → "Something".
 - `tests/test_skills_debuffs.py` — plague "their"→"its".
 - `tests/integration/test_act_cap_002_room_broadcast.py` — stale comment fix.
-- `docs/parity/MAGIC_C_AUDIT.md` — MAGIC-010/005/006 → ✅ FIXED.
+- `docs/parity/MAGIC_C_AUDIT.md` — MAGIC-010/005/006 → ✅ FIXED; **filed MAGIC-011**.
 - `docs/parity/FIGHT_C_AUDIT.md` — FIGHT-036 → ✅ FIXED; **filed FIGHT-037**.
 - `CHANGELOG.md` — 4 Fixed entries.
 - `pyproject.toml` — 2.12.31 → 2.12.35.
+- `README.md` — synced version badge/line 2.12.11 → 2.12.35 and test count
+  5130/5107 → 5225 passing (commit `772cf681`, after the original handoff
+  commit). Audit-coverage numbers left as-is (40 audited + 3 N/A = 43, matches
+  the tracker).
+
+## Push state
+
+All 7 commits pushed to `origin/master` (`9ce58ae4..772cf681`). Working tree
+clean, in sync with origin. This was a complete, shipped session — not a
+mid-stream handoff.
 
 ## Test Status
 
