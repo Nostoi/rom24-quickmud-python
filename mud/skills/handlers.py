@@ -3255,8 +3255,6 @@ def dirt_kicking(caster: Character, target: Character | None = None) -> str:
 
     roll = rng_mm.number_percent()
     if roll < chance:
-        victim_name = _character_name(victim)
-        caster_name = _character_name(caster)
         if room is not None:
             # FIGHT-036: ROM act("{5$n is blinded by the dirt in $s eyes!{x",
             # victim, NULL, NULL, TO_ROOM) (src/fight.c:2614). $n renders per
@@ -3269,9 +3267,15 @@ def dirt_kicking(caster: Character, target: Character | None = None) -> str:
                 victim,
                 exclude=victim,
             )
-        _send_to_char(victim, f"{caster_name} kicks dirt in your eyes!")
-        _send_to_char(victim, "You can't see a thing!")
-        _send_to_char(caster, f"You kick dirt in {victim_name}'s eyes!")
+        # FIGHT-037: ROM act("{5$n kicks dirt in your eyes!{x", ch, NULL, victim,
+        # TO_VICT) (src/fight.c:2616). $n renders per the victim via PERS(ch,
+        # victim) — an invisible kicker masks to "someone" — with {5..{x colour.
+        _send_to_char(victim, act_format("{5$n kicks dirt in your eyes!{x", recipient=victim, actor=caster))
+        # ROM send_to_char("{5You can't see a thing!{x\n\r", victim) (:2618).
+        _send_to_char(victim, "{5You can't see a thing!{x")
+        # ROM's success branch sends the kicker NO self message (:2611-2631); the
+        # kicker only sees the :2614 blind line as a room recipient (FIGHT-036's
+        # act_to_room excludes only the victim).
 
         damage = rng_mm.number_range(2, 5)
         result = apply_damage(caster, victim, damage, DamageType.NONE, dt="dirt kicking")
