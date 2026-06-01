@@ -22,11 +22,9 @@ from mud.models.constants import (
     Sector,
 )
 from mud.models.room import Exit, Room
-from mud.net.protocol import broadcast_room
 from mud.registry import room_registry
 from mud.utils import rng_mm
 from mud.utils.act import act_format
-from mud.utils.messaging import push_message
 from mud.world.look import look
 from mud.world.vision import can_see_room
 
@@ -121,18 +119,9 @@ def _act_to_room(
     exclude: Character | None = None,
 ) -> None:
     """Render and deliver a ROM ``act(..., TO_ROOM)`` line per recipient."""
+    from mud.utils.act import act_to_room as _shared_act_to_room
 
-    dispatch_mobprog = bool(getattr(mobprog, "MOBtrigger", True))
-    for recipient in list(getattr(room, "people", []) or []):
-        if recipient is actor or recipient is exclude:
-            continue
-        # mirroring ROM src/comm.c:2230-2385 — act_new renders PERS() for
-        # each concrete recipient before delivery, then feeds that same
-        # rendered buffer to TRIG_ACT when MOBtrigger is enabled.
-        message = act_format(format_str, recipient=recipient, actor=actor, arg1=arg1, arg2=arg2)
-        push_message(recipient, message)
-        if dispatch_mobprog and getattr(recipient, "is_npc", False):
-            mobprog.mp_act_trigger(message, recipient, actor, arg1, arg2, mobprog.Trigger.ACT)
+    _shared_act_to_room(room, format_str, actor, arg1=arg1, arg2=arg2, exclude=exclude)
 
 
 # ROM str_app carry table (carry column only) for STR 0..25.
@@ -578,10 +567,9 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
     uses_normal_exit = bool(gate_flags & int(PortalFlag.NORMAL_EXIT))
 
     # ENTER-008: TO_ROOM departure uses act() for $n/$p visibility (act_enter.c:134)
-    # "$n steps into $p." — $n resolves char visibility, $p resolves portal name
-    departure_msg = act_format("$n steps into $p.", recipient=None, actor=char, arg1=portal)
-    broadcast_room(current_room, departure_msg, exclude=char)
-    mobprog.mp_act_trigger_room(departure_msg, current_room, char, arg1=portal, exclude=char)
+    # ENTER-018: per-recipient PERS masking — act(TO_ROOM) renders $n through
+    # PERS(ch, recipient) / can_see, so an invisible actor becomes "someone".
+    _act_to_room(current_room, "$n steps into $p.", char, arg1=portal, exclude=char)
 
     # ENTER-009: TO_CHAR entry message sent BEFORE room move (act_enter.c:136-140)
     if uses_normal_exit:
@@ -605,12 +593,11 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
         destination.add_object(portal)
 
     # ENTER-010: TO_ROOM arrival uses act() for $n/$p visibility (act_enter.c:151-154)
+    # ENTER-018: per-recipient PERS masking — same as departure above.
     if uses_normal_exit:
-        arrival_msg = act_format("$n has arrived.", recipient=None, actor=char, arg1=portal)
+        _act_to_room(destination, "$n has arrived.", char, exclude=char)
     else:
-        arrival_msg = act_format("$n has arrived through $p.", recipient=None, actor=char, arg1=portal)
-    broadcast_room(destination, arrival_msg, exclude=char)
-    mobprog.mp_act_trigger_room(arrival_msg, destination, char, arg1=portal, exclude=char)
+        _act_to_room(destination, "$n has arrived through $p.", char, arg1=portal, exclude=char)
 
     # do_look "auto" (act_enter.c:156)
     _auto_look(char)
@@ -668,20 +655,19 @@ def _portal_fade_out(char: Character, portal: object, old_room: object, destinat
 
     if char.room is old_room:
         # Destination == origin: also TO_ROOM in that room (act_enter.c:204)
-        to_room_msg = act_format(fade_fmt, recipient=None, actor=char, arg1=portal)
-        broadcast_room(old_room, to_room_msg, exclude=char)
-        mobprog.mp_act_trigger_room(to_room_msg, old_room, char, arg1=portal, exclude=char)
+        # ENTER-018: per-recipient PERS masking for the TO_ROOM broadcast.
+        _act_to_room(old_room, fade_fmt, char, arg1=portal, exclude=char)
     else:
         # Destination != origin: notify old_room occupants (act_enter.c:205-211)
         old_people = list(getattr(old_room, "people", []) or [])
         if old_people:
+            # TO_CHAR to first occupant (the "actor" for this broadcast per ROM)
             witness = old_people[0]
             to_char_old_msg = act_format(fade_fmt, recipient=witness, actor=witness, arg1=portal)
             if hasattr(witness, "send_to_char"):
                 witness.send_to_char(to_char_old_msg)
-            to_room_old_msg = act_format(fade_fmt, recipient=None, actor=witness, arg1=portal)
-            broadcast_room(old_room, to_room_old_msg, exclude=witness)
-            mobprog.mp_act_trigger_room(to_room_old_msg, old_room, witness, arg1=portal, exclude=witness)
+            # TO_ROOM to remaining occupants — per-recipient PERS masking (ENTER-018)
+            _act_to_room(old_room, fade_fmt, witness, arg1=portal, exclude=witness)
 
     # extract_obj equivalent (act_enter.c:212).
     # game_loop._extract_obj keys off `in_room`, but Object uses `location`; always

@@ -408,3 +408,62 @@ class TestScanPeerBroadcast:
             "broadcast — ROM src/scan.c:90, no MOBtrigger wrap"
         )
         assert "peers" in fired[0][1]
+
+
+class TestPortalPERSMasking:
+    """ENTER-018: portal departure and arrival messages must apply per-recipient
+    PERS masking (INV-027), mirroring ROM src/act_enter.c:134,151-154 where
+    act(TO_ROOM) renders $n through PERS(ch, recipient) / can_see().
+    """
+
+    def test_portal_departure_masks_invisible_actor(self):
+        room_a = _make_room(9570, "Room A")
+        room_b = _make_room(9571, "Room B")
+        pc = _make_pc(room_a, name="HiddenMover")
+        pc.affected_by = int(AffectFlag.INVISIBLE)
+        watcher = _make_pc(room_a, name="Watcher")
+
+        proto = ObjIndex(vnum=9580, short_descr="a glowing portal", name="portal")
+        proto.item_type = int(ItemType.PORTAL)
+        proto.wear_flags = 0
+        proto.value = [3, 0, 0, 0, 0]
+        portal = Object(instance_id=None, prototype=proto)
+        portal.value = [3, 0, int(PortalFlag.NORMAL_EXIT), room_b.vnum, 0]
+        room_a.add_object(portal)
+
+        move_character_through_portal(pc, portal)
+
+        assert "Someone steps into a glowing portal." in watcher.messages, (
+            "Portal departure must render $n through PERS — an invisible "
+            "actor's name must be masked to 'Someone' for unaided witnesses. "
+            "ROM act_enter.c:134 act(TO_ROOM)."
+        )
+        assert "HiddenMover steps into" not in watcher.messages, (
+            "Invisible actor's real name must NOT appear in the departure broadcast."
+        )
+
+    def test_portal_arrival_masks_invisible_actor(self):
+        room_a = _make_room(9570, "Room A")
+        room_b = _make_room(9571, "Room B")
+        pc = _make_pc(room_a, name="HiddenMover")
+        pc.affected_by = int(AffectFlag.INVISIBLE)
+        watcher = _make_pc(room_b, name="DestinationWatcher")
+
+        proto = ObjIndex(vnum=9580, short_descr="a glowing portal", name="portal")
+        proto.item_type = int(ItemType.PORTAL)
+        proto.wear_flags = 0
+        proto.value = [3, 0, 0, 0, 0]
+        portal = Object(instance_id=None, prototype=proto)
+        portal.value = [3, 0, int(PortalFlag.NORMAL_EXIT), room_b.vnum, 0]
+        room_a.add_object(portal)
+
+        move_character_through_portal(pc, portal)
+
+        assert "Someone has arrived." in watcher.messages, (
+            "Portal arrival must render $n through PERS — an invisible "
+            "actor's name must be masked to 'Someone' for unaided witnesses. "
+            "ROM act_enter.c:151-152 act(TO_ROOM)."
+        )
+        assert "HiddenMover has arrived" not in watcher.messages, (
+            "Invisible actor's real name must NOT appear in the arrival broadcast."
+        )

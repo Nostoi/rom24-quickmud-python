@@ -218,3 +218,45 @@ def act_format(
     # INV-029 (ACT-FIRST-LETTER-CAP): ROM act_new caps the first visible letter
     # of the formatted buffer before delivery (src/comm.c:2376-2379).
     return capitalize_act_line("".join(result))
+
+
+def act_to_room(
+    room: Any,
+    format_str: str,
+    actor: Any,
+    *,
+    arg1: Any | None = None,
+    arg2: Any | None = None,
+    exclude: Any | None = None,
+) -> None:
+    """Render and deliver a ROM ``act(..., TO_ROOM)`` line per recipient.
+
+    Mirrors ROM ``src/comm.c:2230-2385``: for each room occupant (excluding
+    *actor* and *exclude*), format *format_str* through ``act_format``
+    (which applies per-recipient PERS masking via INV-027), deliver the
+    result, and dispatch ``TRIG_ACT`` to NPC recipients when the global
+    ``MOBtrigger`` flag is enabled.
+
+    This is the canonical shared helper for every ``act(TO_ROOM)`` site
+    that needs per-recipient visibility masking.  Callers that previously
+    baked ``char.name`` into a string and passed it to ``broadcast_room``
+    should use this instead.
+    """
+    import mud.mobprog as mobprog
+    from mud.utils.messaging import push_message
+
+    people = getattr(room, "people", None)
+    if not people:
+        return
+
+    dispatch_mobprog = bool(getattr(mobprog, "MOBtrigger", True))
+
+    for recipient in list(people):
+        if recipient is actor or recipient is exclude:
+            continue
+
+        message = act_format(format_str, recipient=recipient, actor=actor, arg1=arg1, arg2=arg2)
+        push_message(recipient, message)
+
+        if dispatch_mobprog and getattr(recipient, "is_npc", False):
+            mobprog.mp_act_trigger(message, recipient, actor, arg1, arg2, mobprog.Trigger.ACT)

@@ -38,7 +38,7 @@ from mud.spawning.reset_handler import reset_tick
 from mud.spec_funs import run_npc_specs
 from mud.time import time_info
 from mud.utils import rng_mm
-from mud.utils.act import act_format, capitalize_act_line
+from mud.utils.act import capitalize_act_line
 from mud.wiznet import WiznetFlag, wiznet
 
 _AUTOSAVE_ROTATION = 0
@@ -363,27 +363,9 @@ def _act_to_room(
     exclude: Character | None = None,
 ) -> None:
     """Deliver a ROM act(TO_ROOM)-style message with per-recipient formatting."""
+    from mud.utils.act import act_to_room as _shared_act_to_room
 
-    if room is None:
-        return
-
-    people = getattr(room, "people", None)
-    if not people:
-        return
-
-    # Mirroring ROM src/comm.c:2233-2385: TO_ROOM skips the actor, formats
-    # $n/$N through PERS for each recipient, then dispatches TRIG_ACT to NPCs.
-    import mud.mobprog as mobprog
-
-    for recipient in list(people):
-        if recipient is actor or recipient is exclude:
-            continue
-
-        message = act_format(format_str, recipient=recipient, actor=actor, arg1=arg1, arg2=arg2)
-        _send_to_char(recipient, message)
-
-        if getattr(recipient, "is_npc", False) and getattr(mobprog, "MOBtrigger", True):
-            mobprog.mp_act_trigger(message, recipient, actor, arg1, arg2, mobprog.Trigger.ACT)
+    _shared_act_to_room(room, format_str, actor, arg1=arg1, arg2=arg2, exclude=exclude)
 
 
 def _find_equipped_light(character: Character) -> tuple[object | None, object | None]:

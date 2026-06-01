@@ -28,7 +28,7 @@ The Python implementation splits this across `do_enter` (pre-flight checks in `m
 | ROM C function | Lines | Python equivalent | Status |
 |---|---|---|---|
 | `get_random_room` | 44–63 | `_get_random_room` in `mud/world/movement.py` | ✅ AUDITED — ENTER-001/013 closed |
-| `do_enter` | 66–229 | `do_enter` + `move_character_through_portal` | ✅ AUDITED — ENTER-002 through ENTER-016 closed |
+| `do_enter` | 66–229 | `do_enter` + `move_character_through_portal` | ✅ AUDITED — ENTER-002 through ENTER-018 closed |
 
 ---
 
@@ -384,6 +384,29 @@ Python had the same two behaviors but in reverse order: `mp_greet_trigger(ch)` r
 
 ---
 
+### ENTER-018 — Portal departure/arrival broadcasts bypass per-recipient PERS masking ✅ FIXED
+
+| Field | Detail |
+|---|---|
+| Gap ID | ENTER-018 |
+| ROM C reference | `src/act_enter.c:134,151-154` |
+| Severity | IMPORTANT |
+| **Closure** | Fixed in `mud/world/movement.py:move_character_through_portal` + `_portal_fade_out` (2026-06-01). Replaced `broadcast_room()` + `mobprog.mp_act_trigger_room()` pairs with `_act_to_room()` calls, which render per-recipient via `act_format(recipient=recipient, ...)` and dispatch `mp_act_trigger` per NPC — matching ROM's `act(..., TO_ROOM)` per-recipient PERS masking (INV-027). Observable: an invisible player entering a portal now appears as "Someone" to unaided witnesses, not their real name. Regression: `tests/integration/test_inv025_movement_act_trigger_dispatch.py::TestPortalPERSMasking`. |
+
+**ROM C (lines 134, 151-154):**
+```c
+act("$n steps into $p.", ch, portal, NULL, TO_ROOM);     // line 134
+act("$n has arrived.", ch, portal, NULL, TO_ROOM);        // line 152 (GATE_NORMAL_EXIT)
+act("$n has arrived through $p.", ch, portal, NULL, TO_ROOM); // line 154
+```
+All three use `act(TO_ROOM)`, which renders `$n` through `PERS(ch, to)` → `can_see(to, ch)` per recipient (src/comm.c:2230–2385, INV-027). An invisible actor's name must render as "someone" for recipients who cannot see them.
+
+**Python (before fix):** `broadcast_room()` delivered a single baked string (rendered once with `recipient=None`, so `$n` expanded to the actor's real name unconditionally) to all recipients — no PERS masking. `mobprog.mp_act_trigger_room()` dispatched a single pre-rendered message to all NPC recipients.
+
+**Python (after fix):** `_act_to_room()` renders per recipient with `act_format(recipient=recipient, ...)`, then delivers via `push_message()` and dispatches `mp_act_trigger()` per NPC — matching ROM's `act(TO_ROOM)` per-recipient behavior exactly. Same fix applied to `_portal_fade_out`'s TO_ROOM broadcasts (lines 204, 209-210).
+
+---
+
 ### ENTER-013 — `_get_random_room` bounded-loop can return `None` ✅ AUDITED
 
 | Field | Detail |
@@ -471,15 +494,15 @@ Returns a message. ROM is silent. (Note: `move_character_through_portal` also ha
 | Severity | Count | Gap IDs | Status |
 |---|---|---|---|
 | CRITICAL | 1 | ENTER-009 | ✅ Closed |
-| IMPORTANT | 10 | ENTER-001, ENTER-004, ENTER-005, ENTER-006, ENTER-008, ENTER-010, ENTER-011, ENTER-012, ENTER-013, ENTER-017 | ✅ All Closed |
+| IMPORTANT | 11 | ENTER-001, ENTER-004, ENTER-005, ENTER-006, ENTER-008, ENTER-010, ENTER-011, ENTER-012, ENTER-013, ENTER-017, ENTER-018 | ✅ All Closed |
 | MINOR | 5 | ENTER-002, ENTER-003, ENTER-007, ENTER-014, ENTER-015, ENTER-016 | ✅ All Closed |
 
-(ENTER-016 counted as MINOR; total = 16 gaps — all closed)
+(ENTER-016 counted as MINOR; total = 17 gaps — all closed)
 
 ### Files Modified
 
 - `mud/commands/movement.py` — `do_enter`: ENTER-002, ENTER-003, ENTER-004, ENTER-005, ENTER-016
-- `mud/world/movement.py` — `_get_random_room`: ENTER-001, ENTER-013; `_stand_charmed_follower`: ENTER-006; `_move_followers`: ENTER-007; `move_character_through_portal`: ENTER-008, ENTER-009, ENTER-010, ENTER-011, ENTER-012, ENTER-015, ENTER-016, ENTER-017; new `_portal_fade_out`: ENTER-011
+- `mud/world/movement.py` — `_get_random_room`: ENTER-001, ENTER-013; `_stand_charmed_follower`: ENTER-006; `_move_followers`: ENTER-007; `move_character_through_portal`: ENTER-008, ENTER-009, ENTER-010, ENTER-011, ENTER-012, ENTER-015, ENTER-016, ENTER-017, ENTER-018; `_portal_fade_out`: ENTER-011, ENTER-018
 
 ### Integration Tests
 

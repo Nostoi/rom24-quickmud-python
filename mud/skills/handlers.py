@@ -77,7 +77,7 @@ from mud.skills.metadata import ROM_SKILL_METADATA, ROM_SKILL_NAMES_BY_INDEX
 from mud.skills.registry import check_improve
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
-from mud.utils.act import capitalize_act_line
+from mud.utils.act import act_to_room, capitalize_act_line
 from mud.world.look import look
 from mud.world.movement import _get_random_room
 from mud.world.vision import can_see_object, can_see_room, room_is_dark
@@ -110,6 +110,10 @@ def _act_room(room, message: str, actor, *, arg1=None, arg2=None, exclude=None) 
     suppress the trigger (only ``do_emote``, ``do_pmote``, ``do_give``,
     ``do_mpasound`` in all of ROM) should wrap the call in
     ``disable_mobtrigger()`` instead.
+
+    NOTE: callers that bake ``_character_name()`` into *message* bypass
+    per-recipient PERS masking.  Prefer ``act_to_room()`` with ``$n``/``$m``
+    tokens for new code so invisible actor names render as "someone".
     """
     broadcast_room(room, message, exclude=exclude)
     mp_act_trigger_room(message, room, actor, arg1=arg1, arg2=arg2, exclude=exclude)
@@ -1907,13 +1911,9 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
     found = False
     room = getattr(target, "room", None)
 
-    # Helper to broadcast room messages + dispatch TRIG_ACT.
-    # ROM src/magic.c:1062-1196 wear-off act(TO_ROOM) lines all dispatch
-    # mp_act_trigger inside act() — no MOBtrigger=FALSE guard.
-    def _broadcast_room_msg(msg: str) -> None:
-        if room:
-            broadcast_room(room, msg.replace("$n", _character_name(target)), exclude=target)
-            mp_act_trigger_room(msg, room, target, exclude=target)
+    # ROM src/magic.c:1062-1196 wear-off act(TO_ROOM) lines use act() which
+    # renders $n per-recipient via PERS(ch, to) and dispatches TRIG_ACT to
+    # NPC recipients.  The shared act_to_room helper mirrors both contracts.
 
     def _cancel_effect(effect_name: str) -> bool:
         effect = target.spell_effects.get(effect_name)
@@ -1932,23 +1932,23 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
 
     if _cancel_effect("blindness"):
         found = True
-        _broadcast_room_msg("$n is no longer blinded.")
+        act_to_room(room, "$n is no longer blinded.", target, exclude=target)
 
     if _cancel_effect("calm"):
         found = True
-        _broadcast_room_msg("$n no longer looks so peaceful...")
+        act_to_room(room, "$n no longer looks so peaceful...", target, exclude=target)
 
     if _cancel_effect("change_sex"):
         found = True
-        _broadcast_room_msg("$n looks more like $mself again.")
+        act_to_room(room, "$n looks more like $mself again.", target, exclude=target)
 
     if _cancel_effect("charm_person"):
         found = True
-        _broadcast_room_msg("$n regains $s free will.")
+        act_to_room(room, "$n regains $s free will.", target, exclude=target)
 
     if _cancel_effect("chill_touch"):
         found = True
-        _broadcast_room_msg("$n looks warmer.")
+        act_to_room(room, "$n looks warmer.", target, exclude=target)
 
     if _cancel_effect("curse"):
         found = True
@@ -1969,34 +1969,34 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
         found = True
 
     if _cancel_effect("faerie_fire"):
-        _broadcast_room_msg("$n's outline fades.")
+        act_to_room(room, "$n's outline fades.", target, exclude=target)
         found = True
 
     if _cancel_effect("fly"):
-        _broadcast_room_msg("$n falls to the ground!")
+        act_to_room(room, "$n falls to the ground!", target, exclude=target)
         found = True
 
     if _cancel_effect("frenzy"):
-        _broadcast_room_msg("$n no longer looks so wild.")
+        act_to_room(room, "$n no longer looks so wild.", target, exclude=target)
         found = True
 
     if _cancel_effect("giant_strength"):
-        _broadcast_room_msg("$n no longer looks so mighty.")
+        act_to_room(room, "$n no longer looks so mighty.", target, exclude=target)
         found = True
 
     if _cancel_effect("haste"):
-        _broadcast_room_msg("$n is no longer moving so quickly.")
+        act_to_room(room, "$n is no longer moving so quickly.", target, exclude=target)
         found = True
 
     if _cancel_effect("infravision"):
         found = True
 
     if _cancel_effect("invis"):
-        _broadcast_room_msg("$n fades into existance.")
+        act_to_room(room, "$n fades into existance.", target, exclude=target)
         found = True
 
     if _cancel_effect("mass_invis"):
-        _broadcast_room_msg("$n fades into existance.")
+        act_to_room(room, "$n fades into existance.", target, exclude=target)
         found = True
 
     if _cancel_effect("pass_door"):
@@ -2009,26 +2009,26 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
         found = True
 
     if _cancel_effect("sanctuary"):
-        _broadcast_room_msg("The white aura around $n's body vanishes.")
+        act_to_room(room, "The white aura around $n's body vanishes.", target, exclude=target)
         found = True
 
     if _cancel_effect("shield"):
-        _broadcast_room_msg("The shield protecting $n vanishes.")
+        act_to_room(room, "The shield protecting $n vanishes.", target, exclude=target)
         found = True
 
     if _cancel_effect("sleep"):
         found = True
 
     if _cancel_effect("slow"):
-        _broadcast_room_msg("$n is no longer moving so slowly.")
+        act_to_room(room, "$n is no longer moving so slowly.", target, exclude=target)
         found = True
 
     if _cancel_effect("stone_skin"):
-        _broadcast_room_msg("$n's skin regains its normal texture.")
+        act_to_room(room, "$n's skin regains its normal texture.", target, exclude=target)
         found = True
 
     if _cancel_effect("weaken"):
-        _broadcast_room_msg("$n looks stronger.")
+        act_to_room(room, "$n looks stronger.", target, exclude=target)
         found = True
 
     # ROM L1200-1203: send result message
