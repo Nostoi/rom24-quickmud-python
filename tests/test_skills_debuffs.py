@@ -394,8 +394,12 @@ def test_plague_applies_affect_and_messages(monkeypatch: pytest.MonkeyPatch) -> 
     assert effect.wear_off_message == "Your sores vanish."
     assert target.mod_stat[Stat.STR] == -5
 
+    # MAGIC-006: ROM act("$n ... from $s skin.", victim, TO_ROOM) (src/magic.c:3921)
+    # renders $s as the victim's gendered possessive — a sexless test character
+    # defaults to Sex.NONE → "its" (not the literal "their"), and $n masks per
+    # recipient. "Patient" is visible to both watchers here.
     target_message = "You scream in agony as plague sores erupt from your skin."
-    room_message = "Patient screams in agony as plague sores erupt from their skin."
+    room_message = "Patient screams in agony as plague sores erupt from its skin."
     assert target.messages[-1] == target_message
     assert caster.messages[-1] == room_message
     assert witness.messages[-1] == room_message

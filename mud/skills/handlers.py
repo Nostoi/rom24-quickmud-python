@@ -6502,9 +6502,14 @@ def plague(caster: Character, target: Character | None = None) -> bool:
     _send_to_char(target, "You scream in agony as plague sores erupt from your skin.")
     room = getattr(target, "room", None)
     if room is not None:
-        _act_room(
+        # MAGIC-006: ROM act("$n screams in agony as plague sores erupt from $s
+        # skin.", victim, NULL, NULL, TO_ROOM) (src/magic.c:3921). $n renders
+        # per recipient via PERS (an invisible victim masks to "someone"); $s is
+        # the victim's gendered possessive (his/her/its), not the literal
+        # "their".
+        act_to_room(
             room,
-            f"{_character_name(target)} screams in agony as plague sores erupt from their skin.",
+            "$n screams in agony as plague sores erupt from $s skin.",
             target,
             exclude=target,
         )
