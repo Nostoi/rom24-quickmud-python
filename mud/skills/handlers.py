@@ -6555,10 +6555,14 @@ def poison(
             # MAGIC-005: ROM act("$p is infused with poisonous vapors.", ch, obj,
             # NULL, TO_ALL) (src/magic.c:3946). Poison does NOT make the object
             # invisible, so the caster (targeting a visible object) keeps the
-            # baked short_descr; the room leg renders $p per-recipient via
+            # baked short_descr (capped per MAGIC-011); the room leg renders $p per-recipient via
             # act_to_room (can_see_obj masks a blind/dark-room/invisible-object
             # witness to "something").
-            _send_to_char(caster, f"{_object_short_descr(obj)} is infused with poisonous vapors.")
+            # MAGIC-011: ROM act(TO_ALL) caps buf[0] for every recipient incl.
+            # the caster (src/comm.c:2376-2379), matching the weapon leg below.
+            _send_to_char(
+                caster, capitalize_act_line(f"{_object_short_descr(obj)} is infused with poisonous vapors.")
+            )
             room = getattr(caster, "room", None)
             if room is not None:
                 act_to_room(room, "$p is infused with poisonous vapors.", caster, arg1=obj, exclude=caster)

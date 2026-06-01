@@ -186,8 +186,8 @@ def test_poison_taints_food_and_messages() -> None:
     assert skill_handlers.poison(caster, food) is True
     assert food.value[3] == 1
 
-    # ACT-CAP-001: room leg capped; caster leg uncapped (ACT-CAP-002).
-    assert caster.messages[-1] == "loaf of bread is infused with poisonous vapors."
+    # ACT-CAP-002 (MAGIC-011): ROM act(TO_ALL) caps for every recipient incl. ch.
+    assert caster.messages[-1] == "Loaf of bread is infused with poisonous vapors."
     assert witness.messages[-1] == "Loaf of bread is infused with poisonous vapors."
 
     caster.messages.clear()

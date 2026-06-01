@@ -110,4 +110,5 @@ class TestPoisonObjectPERSMasking:
         assert witness_msgs[-1] == "Something is infused with poisonous vapors.", (
             f"Object short_descr leaked to a blind witness: {witness_msgs}"
         )
-        assert caster.messages[-1] == "loaf of bread is infused with poisonous vapors."
+        # MAGIC-011: caster leg capped per ROM act(TO_ALL) (src/comm.c:2376-2379).
+        assert caster.messages[-1] == "Loaf of bread is infused with poisonous vapors."
