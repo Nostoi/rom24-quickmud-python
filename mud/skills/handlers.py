@@ -3351,41 +3351,56 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
     caster.wait = max(int(getattr(caster, "wait", 0) or 0), beats)
 
     roll = rng_mm.number_percent()
-    caster_name = _character_name(caster)
-    victim_name = _character_name(victim)
     room = getattr(caster, "room", None)
 
+    # FIGHT-035: ROM splits each disarm outcome into TO_CHAR/TO_VICT/TO_NOTVICT
+    # legs with {5..{x colour and per-recipient PERS ($n/$N). The TO_NOTVICT leg
+    # excludes BOTH ch and victim — rendered here as act_to_room(actor=caster,
+    # exclude=victim) (actor is auto-excluded), so neither actor double-receives.
     if roll >= chance:
-        _send_to_char(caster, f"You fail to disarm {victim_name}.")
-        _send_to_char(victim, f"{caster_name} tries to disarm you, but fails.")
+        # ROM src/fight.c:3211-3215 (do_disarm fail path).
+        _send_to_char(caster, act_format("{5You fail to disarm $N.{x", recipient=caster, actor=caster, arg2=victim))
+        _send_to_char(
+            victim,
+            act_format("{5$n tries to disarm you, but fails.{x", recipient=victim, actor=caster, arg2=victim),
+        )
         if room is not None:
-            _act_room(
-                room,
-                f"{caster_name} tries to disarm {victim_name}, but fails.",
-                caster,
-                exclude=caster,
+            act_to_room(
+                room, "{5$n tries to disarm $N, but fails.{x", caster, arg2=victim, exclude=victim
             )
         check_improve(caster, "disarm", False, 1)
         return False
 
     extra_flags = int(getattr(victim_weapon, "extra_flags", 0) or 0)
     if extra_flags & int(ExtraFlag.NOREMOVE):
-        _send_to_char(caster, f"{victim_name}'s weapon won't budge!")
-        _send_to_char(victim, f"{caster_name} tries to disarm you, but your weapon won't budge!")
+        # ROM src/fight.c:2244-2248 (disarm NOREMOVE branch). $S = victim possessive.
+        _send_to_char(caster, act_format("{5$S weapon won't budge!{x", recipient=caster, actor=caster, arg2=victim))
+        _send_to_char(
+            victim,
+            act_format(
+                "{5$n tries to disarm you, but your weapon won't budge!{x",
+                recipient=victim,
+                actor=caster,
+                arg2=victim,
+            ),
+        )
         if room is not None:
-            _act_room(
-                room,
-                f"{caster_name} tries to disarm {victim_name}, but fails.",
-                victim,
-                exclude=victim,
+            act_to_room(
+                room, "{5$n tries to disarm $N, but fails.{x", caster, arg2=victim, exclude=victim
             )
         check_improve(caster, "disarm", False, 1)
         return False
 
-    _send_to_char(caster, f"You disarm {victim_name}!")
-    _send_to_char(victim, f"{caster_name} disarms you and sends your weapon flying!")
+    # ROM src/fight.c:2252-2255 (disarm success — TO_VICT, TO_CHAR, TO_NOTVICT).
+    _send_to_char(
+        victim,
+        act_format(
+            "{5$n DISARMS you and sends your weapon flying!{x", recipient=victim, actor=caster, arg2=victim
+        ),
+    )
+    _send_to_char(caster, act_format("{5You disarm $N!{x", recipient=caster, actor=caster, arg2=victim))
     if room is not None:
-        _act_room(room, f"{caster_name} disarms {victim_name}!", caster, exclude=caster)
+        act_to_room(room, "{5$n disarms $N!{x", caster, arg2=victim, exclude=victim)
 
     victim.remove_object(victim_weapon)
     if getattr(victim, "wielded_weapon", None) is victim_weapon:

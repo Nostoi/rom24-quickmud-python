@@ -161,7 +161,8 @@ def test_disarm_strips_weapon_and_trains_skill(monkeypatch: pytest.MonkeyPatch) 
     assert weapon in room.contents
     assert improvements == [(True, 1)]
     assert duelist.wait == skill_handlers._skill_beats("disarm")
-    assert any("disarms you" in message for message in mercenary.messages)
+    # FIGHT-035: ROM TO_VICT line is "{5$n DISARMS you and sends your weapon flying!{x" (caps).
+    assert any("DISARMS you and sends your weapon flying" in message for message in mercenary.messages)
 
 
 def test_trip_knocks_target_and_triggers_wait_state(monkeypatch: pytest.MonkeyPatch) -> None:
