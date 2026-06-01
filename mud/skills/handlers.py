@@ -2768,15 +2768,15 @@ def cure_disease(caster: Character, target: Character | None = None) -> bool:
     level = max(int(getattr(caster, "level", 0) or 0), 0)
     if check_dispel(level, victim, "plague"):
         _send_to_char(victim, "Your sores vanish.")
+        # mirroring ROM src/magic.c:1658 — act("$n looks relieved as $s sores
+        # vanish.", victim, NULL, NULL, TO_ROOM): per-recipient `$n` PERS masking
+        # (an invisible victim renders "someone") and `$s` gendered possessive.
+        # MAGIC-013 — was a manual room loop baking the name + literal "their"
+        # AND delivering via the divergent `messages.append` mailbox channel
+        # (MAGIC-003 class); `act_to_room` fixes both.
         room = getattr(victim, "room", None)
         if room is not None:
-            name = getattr(victim, "name", None) or "Someone"
-            message = f"{name} looks relieved as their sores vanish."
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is victim:
-                    continue
-                if hasattr(occupant, "messages"):
-                    occupant.messages.append(message)
+            act_to_room(room, "$n looks relieved as $s sores vanish.", victim, exclude=victim)
         return True
 
     _send_to_char(caster, "Spell failed.")

@@ -57,7 +57,11 @@ def test_cure_disease_and_poison_remove_affects(
     assert not target.has_spell_effect("plague")
     assert not target.has_affect(AffectFlag.PLAGUE)
     assert "Your sores vanish." in target.messages
-    assert "Patient looks relieved as their sores vanish." in observer.messages
+    # ROM src/magic.c:1658 `act("$n looks relieved as $s sores vanish.", ...)` —
+    # `$s` is the victim's gendered possessive; a sexless test character
+    # (Sex.NONE) renders "its", not the previously baked literal "their"
+    # (MAGIC-013).
+    assert "Patient looks relieved as its sores vanish." in observer.messages
 
     poison_effect = SpellEffect(
         name="poison",
