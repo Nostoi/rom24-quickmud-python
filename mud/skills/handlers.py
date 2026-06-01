@@ -34,6 +34,7 @@ from mud.magic.effects import (
     shock_effect,
 )
 from mud.math.c_compat import c_div
+from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character, SpellEffect, character_registry
 from mud.models.constants import (
     ATTACK_TABLE,
@@ -97,6 +98,21 @@ _APPLY_HITROLL = 18
 _APPLY_DAMROLL = 19
 _OBJECT_INVIS_WEAR_OFF = "$p fades into view."
 _OBJECT_FIREPROOF_WEAR_OFF = "$p's protective aura fades."
+
+
+def _act_room(room, message: str, actor, *, arg1=None, arg2=None, exclude=None) -> None:
+    """Broadcast to room + dispatch TRIG_ACT, matching ROM ``act(TO_ROOM)``.
+
+    ROM ``src/comm.c:2384`` dispatches ``mp_act_trigger`` to every NPC
+    recipient inside ``act()``.  Every spell-effect ``act(TO_ROOM)`` in
+    ``src/magic.c`` / ``src/magic2.c`` is outside any ``MOBtrigger = FALSE``
+    block, so the trigger fires for all of them.  Callers that need to
+    suppress the trigger (only ``do_emote``, ``do_pmote``, ``do_give``,
+    ``do_mpasound`` in all of ROM) should wrap the call in
+    ``disable_mobtrigger()`` instead.
+    """
+    broadcast_room(room, message, exclude=exclude)
+    mp_act_trigger_room(message, room, actor, arg1=arg1, arg2=arg2, exclude=exclude)
 
 
 def _flag_names(value: int, mapping: tuple[tuple[int, str], ...]) -> str:
@@ -1529,10 +1545,13 @@ def bless(caster: Character, target: Character | Object | None = None) -> bool:
                     curse_affect = af
                     break
 
-            if not saves_dispel(level, obj_level if curse_affect is None else getattr(curse_affect, "level", obj_level), 0):
+            if not saves_dispel(
+                level, obj_level if curse_affect is None else getattr(curse_affect, "level", obj_level), 0
+            ):
                 # ROM :806-810 — dispel succeeded: remove curse affect, remove EVIL flag
                 if curse_affect is not None:
                     from mud.handler import affect_remove_obj
+
                     affect_remove_obj(obj, curse_affect)
                 obj.extra_flags = _coerce_int(getattr(obj, "extra_flags", 0)) & ~int(ExtraFlag.EVIL)
                 message = f"{_object_short_descr(obj)} glows a pale blue."
@@ -1540,7 +1559,7 @@ def bless(caster: Character, target: Character | Object | None = None) -> bool:
                 _send_to_char(caster, message)
                 room = getattr(caster, "room", None)
                 if room is not None:
-                    broadcast_room(room, message, exclude=caster)
+                    _act_room(room, message, caster, exclude=caster)
                 return True
             else:
                 # ROM :813-816 — dispel failed
@@ -1573,7 +1592,7 @@ def bless(caster: Character, target: Character | Object | None = None) -> bool:
         _send_to_char(caster, message)
         room = getattr(caster, "room", None)
         if room is not None:
-            broadcast_room(room, message, exclude=caster)
+            _act_room(room, message, caster, exclude=caster)
 
         # ROM :831-832 — if worn, saving_throw -= 1
         wear_loc = getattr(obj, "wear_loc", -1)
@@ -1888,10 +1907,13 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
     found = False
     room = getattr(target, "room", None)
 
-    # Helper to broadcast room messages
+    # Helper to broadcast room messages + dispatch TRIG_ACT.
+    # ROM src/magic.c:1062-1196 wear-off act(TO_ROOM) lines all dispatch
+    # mp_act_trigger inside act() — no MOBtrigger=FALSE guard.
     def _broadcast_room_msg(msg: str) -> None:
         if room:
             broadcast_room(room, msg.replace("$n", _character_name(target)), exclude=target)
+            mp_act_trigger_room(msg, room, target, exclude=target)
 
     def _cancel_effect(effect_name: str) -> bool:
         effect = target.spell_effects.get(effect_name)
@@ -2093,9 +2115,10 @@ def chain_lightning(caster: Character, target: Character | None = None) -> bool:
     caster_name = _character_name(caster)
     victim_name = _character_name(target)
 
-    broadcast_room(
+    _act_room(
         room,
         f"A lightning bolt leaps from {caster_name}'s hand and arcs to {victim_name}.",
+        caster,
         exclude=caster,
     )
     _send_to_char(
@@ -2128,9 +2151,10 @@ def chain_lightning(caster: Character, target: Character | None = None) -> bool:
             found = True
             last_victim = occupant
             victim_name = _character_name(occupant)
-            broadcast_room(
+            _act_room(
                 room,
                 f"The bolt arcs to {victim_name}!",
+                occupant,
                 exclude=occupant,
             )
             _send_to_char(occupant, "The bolt hits you!")
@@ -2147,18 +2171,20 @@ def chain_lightning(caster: Character, target: Character | None = None) -> bool:
 
         if not found:
             if last_victim is caster:
-                broadcast_room(
+                _act_room(
                     room,
                     "The bolt seems to have fizzled out.",
+                    caster,
                     exclude=caster,
                 )
                 _send_to_char(caster, "The bolt grounds out through your body.")
                 break
 
             last_victim = caster
-            broadcast_room(
+            _act_room(
                 room,
                 f"The bolt arcs to {caster_name}...whoops!",
+                caster,
                 exclude=caster,
             )
             _send_to_char(caster, "You are struck by your own lightning!")
@@ -2212,7 +2238,7 @@ def change_sex(caster: Character, target: Character | None = None) -> bool:
     if room is not None:
         victim_name = _character_name(target)
         reflexive = _reflexive_pronoun(target)
-        broadcast_room(room, f"{victim_name} doesn't look like {reflexive} anymore...", exclude=target)
+        _act_room(room, f"{victim_name} doesn't look like {reflexive} anymore...", target, exclude=target)
 
     return True
 
@@ -3245,9 +3271,10 @@ def dirt_kicking(caster: Character, target: Character | None = None) -> str:
         victim_name = _character_name(victim)
         caster_name = _character_name(caster)
         if room is not None:
-            broadcast_room(
+            _act_room(
                 room,
                 f"{victim_name} is blinded by the dirt in their eyes!",
+                victim,
                 exclude=victim,
             )
         _send_to_char(victim, f"{caster_name} kicks dirt in your eyes!")
@@ -3336,9 +3363,10 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
         _send_to_char(caster, f"You fail to disarm {victim_name}.")
         _send_to_char(victim, f"{caster_name} tries to disarm you, but fails.")
         if room is not None:
-            broadcast_room(
+            _act_room(
                 room,
                 f"{caster_name} tries to disarm {victim_name}, but fails.",
+                caster,
                 exclude=caster,
             )
         check_improve(caster, "disarm", False, 1)
@@ -3349,9 +3377,10 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
         _send_to_char(caster, f"{victim_name}'s weapon won't budge!")
         _send_to_char(victim, f"{caster_name} tries to disarm you, but your weapon won't budge!")
         if room is not None:
-            broadcast_room(
+            _act_room(
                 room,
                 f"{caster_name} tries to disarm {victim_name}, but fails.",
+                victim,
                 exclude=victim,
             )
         check_improve(caster, "disarm", False, 1)
@@ -3360,7 +3389,7 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
     _send_to_char(caster, f"You disarm {victim_name}!")
     _send_to_char(victim, f"{caster_name} disarms you and sends your weapon flying!")
     if room is not None:
-        broadcast_room(room, f"{caster_name} disarms {victim_name}!", exclude=caster)
+        _act_room(room, f"{caster_name} disarms {victim_name}!", caster, exclude=caster)
 
     victim.remove_object(victim_weapon)
     if getattr(victim, "wielded_weapon", None) is victim_weapon:
@@ -3595,7 +3624,7 @@ def enchant_armor(caster: Character, target: Object | None = None) -> bool:
 
     def _notify_room(message: str) -> None:
         if room is not None:
-            broadcast_room(room, message, exclude=caster)
+            _act_room(room, message, caster, exclude=caster)
 
     if result < fail // 5:
         _send_to_char(caster, f"{short_descr} flares blindingly... and evaporates!")
@@ -3742,7 +3771,7 @@ def enchant_weapon(caster: Character, target: Object | None = None) -> bool:
 
     def _notify_room(message: str) -> None:
         if room is not None:
-            broadcast_room(room, message, exclude=caster)
+            _act_room(room, message, caster, exclude=caster)
 
     if result < fail // 5:
         _send_to_char(caster, f"{short_descr} shivers violently and explodes!")
@@ -3976,8 +4005,8 @@ def envenom(
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             room = getattr(caster, "room", None)
             if room is not None:
-                broadcast_room(
-                    room, f"{_character_name(caster)} treats {short_descr} with deadly poison.", exclude=caster
+                _act_room(
+                    room, f"{_character_name(caster)} treats {short_descr} with deadly poison.", caster, exclude=caster
                 )
 
             _send_to_char(caster, f"You treat {short_descr} with deadly poison.")
@@ -4043,9 +4072,7 @@ def envenom(
         # index 0 is NOT DAM_BASH and must pass through; attack_damage_type() folds
         # DAM_NONE into BASH for combat fallback, which would over-reject here.
         attack_raw_damage = (
-            ATTACK_TABLE[weapon_attack_type].damage
-            if 0 <= weapon_attack_type < len(ATTACK_TABLE)
-            else None
+            ATTACK_TABLE[weapon_attack_type].damage if 0 <= weapon_attack_type < len(ATTACK_TABLE) else None
         )
         if weapon_attack_type < 0 or attack_raw_damage == int(DamageType.BASH):
             return {"success": False, "message": "You can only envenom edged weapons."}
@@ -4081,8 +4108,8 @@ def envenom(
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             room = getattr(caster, "room", None)
             if room is not None:
-                broadcast_room(
-                    room, f"{_character_name(caster)} coats {short_descr} with deadly venom.", exclude=caster
+                _act_room(
+                    room, f"{_character_name(caster)} coats {short_descr} with deadly venom.", caster, exclude=caster
                 )
 
             _send_to_char(caster, f"You coat {short_descr} with venom.")
@@ -4140,9 +4167,10 @@ def faerie_fire(caster: Character, target: Character | None = None) -> bool:
     _send_to_char(target, "You are surrounded by a pink outline.")
     room = getattr(target, "room", None)
     if room is not None:
-        broadcast_room(
+        _act_room(
             room,
             f"{_character_name(target)} is surrounded by a pink outline.",
+            target,
             exclude=target,
         )
 
@@ -4160,9 +4188,10 @@ def faerie_fog(caster: Character, target: Character | None = None) -> bool:
         _send_to_char(caster, "You conjure a cloud of purple smoke.")
         return False
 
-    broadcast_room(
+    _act_room(
         room,
         f"{_character_name(caster)} conjures a cloud of purple smoke.",
+        caster,
         exclude=caster,
     )
     _send_to_char(caster, "You conjure a cloud of purple smoke.")
@@ -4191,9 +4220,10 @@ def faerie_fog(caster: Character, target: Character | None = None) -> bool:
             occupant.remove_affect(AffectFlag.INVISIBLE)
             occupant.remove_affect(AffectFlag.SNEAK)
 
-        broadcast_room(
+        _act_room(
             room,
             f"{_character_name(occupant)} is revealed!",
+            occupant,
             exclude=occupant,
         )
         _send_to_char(occupant, "You are revealed!")
@@ -4411,7 +4441,7 @@ def fireproof(caster: Character, target: Object | None = None) -> bool:
 
     room = getattr(caster, "room", None)
     if room is not None:
-        broadcast_room(room, message, exclude=caster)
+        _act_room(room, message, caster, exclude=caster)
 
     return True
 
@@ -4480,7 +4510,7 @@ def floating_disc(caster: Character, target=None):  # noqa: ARG001 - parity sign
 
     room = getattr(caster, "room", None)
     if room is not None:
-        broadcast_room(room, f"{_character_name(caster)} has created a floating black disc.", exclude=caster)
+        _act_room(room, f"{_character_name(caster)} has created a floating black disc.", caster, exclude=caster)
     _send_to_char(caster, "You create a floating disc.")
 
     return disc
@@ -4812,14 +4842,14 @@ def gate(caster: Character, target: Character | None = None):
             return _gate_fail(caster)
 
     caster_name = _character_name(caster)
-    broadcast_room(current_room, f"{caster_name} steps through a gate and vanishes.", exclude=caster)
+    _act_room(current_room, f"{caster_name} steps through a gate and vanishes.", caster, exclude=caster)
     _send_to_char(caster, "You step through a gate and vanish.")
 
     caster.was_in_room = current_room
     current_room.remove_character(caster)
     target_room.add_character(caster)
 
-    broadcast_room(target_room, f"{caster_name} has arrived through a gate.", exclude=caster)
+    _act_room(target_room, f"{caster_name} has arrived through a gate.", caster, exclude=caster)
     view = look(caster)
     if view:
         _send_to_char(caster, view)
@@ -4827,14 +4857,14 @@ def gate(caster: Character, target: Character | None = None):
     pet = getattr(caster, "pet", None)
     if isinstance(pet, Character) and getattr(pet, "room", None) is current_room:
         pet_name = _character_name(pet)
-        broadcast_room(current_room, f"{pet_name} steps through a gate and vanishes.", exclude=pet)
+        _act_room(current_room, f"{pet_name} steps through a gate and vanishes.", pet, exclude=pet)
         _send_to_char(pet, "You step through a gate and vanish.")
 
         pet.was_in_room = current_room
         current_room.remove_character(pet)
         target_room.add_character(pet)
 
-        broadcast_room(target_room, f"{pet_name} has arrived through a gate.", exclude=pet)
+        _act_room(target_room, f"{pet_name} has arrived through a gate.", pet, exclude=pet)
         pet_view = look(pet)
         if pet_view:
             _send_to_char(pet, pet_view)
@@ -5160,9 +5190,10 @@ def heat_metal(
                     # Successfully removed
                     obj_name = getattr(obj, "short_descr", "something")
                     if room:
-                        broadcast_room(
+                        _act_room(
                             room,
                             f"{_character_name(target)} yelps and throws {obj_name} to the ground!",
+                            target,
                             exclude=target,
                         )
                     _send_to_char(target, f"You remove and drop {obj_name} before it burns you.")
@@ -5188,9 +5219,10 @@ def heat_metal(
                 # Simplified: assume can_drop (no cursed check)
                 if True:  # can_drop_obj
                     if room:
-                        broadcast_room(
+                        _act_room(
                             room,
                             f"{_character_name(target)} yelps and throws {obj_name} to the ground!",
+                            target,
                             exclude=target,
                         )
                     _send_to_char(target, f"You and drop {obj_name} before it burns you.")
@@ -5224,9 +5256,10 @@ def heat_metal(
                 # Simplified: assume can_drop
                 if True:  # can_drop_obj and remove_obj
                     if room:
-                        broadcast_room(
+                        _act_room(
                             room,
                             f"{_character_name(target)} is burned by {obj_name}, and throws it to the ground.",
+                            target,
                             exclude=target,
                         )
                     _send_to_char(target, "You throw your red-hot weapon to the ground!")
@@ -5250,9 +5283,10 @@ def heat_metal(
                 obj_name = getattr(obj, "short_descr", "something")
                 if True:  # can_drop_obj
                     if room:
-                        broadcast_room(
+                        _act_room(
                             room,
                             f"{_character_name(target)} throws a burning hot {obj_name} to the ground!",
+                            target,
                             exclude=target,
                         )
                     _send_to_char(target, f"You and drop {obj_name} before it burns you.")
@@ -5382,7 +5416,7 @@ def holy_word(caster: Character, target=None):  # noqa: ARG001 - parity signatur
     level = max(int(getattr(caster, "level", 0) or 0), 0)
 
     caster_name = _character_name(caster)
-    broadcast_room(room, f"{caster_name} utters a word of divine power!", exclude=caster)
+    _act_room(room, f"{caster_name} utters a word of divine power!", caster, exclude=caster)
     _send_to_char(caster, "You utter a word of divine power.")
 
     any_effect = False
@@ -5571,7 +5605,7 @@ def infravision(caster: Character, target: Character | None = None) -> bool:
     _send_to_char(target, "Your eyes glow red.")
     room = getattr(target, "room", None)
     if room is not None:
-        broadcast_room(room, f"{_character_name(target)}'s eyes glow red.", exclude=target)
+        _act_room(room, f"{_character_name(target)}'s eyes glow red.", target, exclude=target)
 
     return True
 
@@ -5624,7 +5658,7 @@ def invis(caster: Character, target: Character | Object | None = None) -> bool:
 
         caster_room = getattr(caster, "room", None)
         if caster_room is not None:
-            broadcast_room(caster_room, message, exclude=caster)
+            _act_room(caster_room, message, caster, exclude=caster)
         return True
 
     if not isinstance(target, Character):
@@ -5649,7 +5683,7 @@ def invis(caster: Character, target: Character | Object | None = None) -> bool:
     _send_to_char(target, "You fade out of existence.")
     room = getattr(target, "room", None)
     if room is not None:
-        broadcast_room(room, f"{_character_name(target)} fades out of existence.", exclude=target)
+        _act_room(room, f"{_character_name(target)} fades out of existence.", target, exclude=target)
     return True
 
 
@@ -6041,9 +6075,10 @@ def mass_invis(caster: Character, target: Character | None = None) -> bool:
         if member.has_affect(AffectFlag.INVISIBLE) or member.has_spell_effect("mass invis"):
             continue
 
-        broadcast_room(
+        _act_room(
             room,
             f"{_character_name(member)} slowly fades out of existence.",
+            member,
             exclude=member,
         )
         _send_to_char(member, "You slowly fade out of existence.")
@@ -6159,7 +6194,7 @@ def nexus(caster: Character, target: Character | None = None) -> list[Object]:
     from_room.add_object(portal_out)
 
     portal_name = _object_short_descr(portal_out)
-    broadcast_room(from_room, f"{portal_name} rises up from the ground.", exclude=caster)
+    _act_room(from_room, f"{portal_name} rises up from the ground.", caster, exclude=caster)
     _send_to_char(caster, f"{portal_name} rises up before you.")
     created.append(portal_out)
 
@@ -6179,7 +6214,7 @@ def nexus(caster: Character, target: Character | None = None) -> list[Object]:
     to_room.add_object(portal_return)
 
     return_name = _object_short_descr(portal_return)
-    broadcast_room(to_room, f"{return_name} rises up from the ground.")
+    _act_room(to_room, f"{return_name} rises up from the ground.", caster)
     created.append(portal_return)
 
     return created
@@ -6381,7 +6416,7 @@ def pick_lock(
 
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             _send_to_char(caster, f"You pick the lock on {short_descr}.")
-            broadcast_room(room, f"{_character_name(caster)} picks the lock on {short_descr}.", exclude=caster)
+            _act_room(room, f"{_character_name(caster)} picks the lock on {short_descr}.", caster, exclude=caster)
             check_improve(caster, "pick lock", True, 2)
             return {"success": True, "message": "", "picked_type": "portal"}
 
@@ -6414,7 +6449,7 @@ def pick_lock(
 
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             _send_to_char(caster, f"You pick the lock on {short_descr}.")
-            broadcast_room(room, f"{_character_name(caster)} picks the lock on {short_descr}.", exclude=caster)
+            _act_room(room, f"{_character_name(caster)} picks the lock on {short_descr}.", caster, exclude=caster)
             check_improve(caster, "pick lock", True, 2)
             return {"success": True, "message": "", "picked_type": "container"}
 
@@ -6455,9 +6490,10 @@ def plague(caster: Character, target: Character | None = None) -> bool:
     _send_to_char(target, "You scream in agony as plague sores erupt from your skin.")
     room = getattr(target, "room", None)
     if room is not None:
-        broadcast_room(
+        _act_room(
             room,
             f"{_character_name(target)} screams in agony as plague sores erupt from their skin.",
+            target,
             exclude=target,
         )
 
@@ -6498,7 +6534,7 @@ def poison(
             _send_to_char(caster, message)
             room = getattr(caster, "room", None)
             if room is not None:
-                broadcast_room(room, message, exclude=caster)
+                _act_room(room, message, caster, exclude=caster)
             return True
 
         if item_type is ItemType.WEAPON:
@@ -6560,7 +6596,7 @@ def poison(
             _send_to_char(caster, message)
             room = getattr(caster, "room", None)
             if room is not None:
-                broadcast_room(room, message, exclude=caster)
+                _act_room(room, message, caster, exclude=caster)
             return True
 
         _send_to_char(caster, f"You can't poison {_object_short_descr(obj)}.")
@@ -6576,9 +6612,10 @@ def poison(
         _send_to_char(victim, "You feel momentarily ill, but it passes.")
         room = getattr(victim, "room", None)
         if room is not None:
-            broadcast_room(
+            _act_room(
                 room,
                 f"{_character_name(victim)} turns slightly green, but it passes.",
+                victim,
                 exclude=victim,
             )
         return False
@@ -6599,9 +6636,10 @@ def poison(
     _send_to_char(victim, "You feel very sick.")
     room = getattr(victim, "room", None)
     if room is not None:
-        broadcast_room(
+        _act_room(
             room,
             f"{_character_name(victim)} looks very ill.",
+            victim,
             exclude=victim,
         )
     return True
@@ -6709,7 +6747,7 @@ def portal(caster: Character, target: Character | None = None) -> Object | None:
     current_room.add_object(portal_obj)
 
     portal_name = _object_short_descr(portal_obj)
-    broadcast_room(current_room, f"{portal_name} rises up from the ground.", exclude=caster)
+    _act_room(current_room, f"{portal_name} rises up from the ground.", caster, exclude=caster)
     _send_to_char(caster, f"{portal_name} rises up before you.")
 
     return portal_obj
@@ -6818,9 +6856,10 @@ def ray_of_truth(caster: Character, target: Character | None = None) -> int:
             room = getattr(caster, "room", None)
             if room is not None:
                 possessive = _possessive_pronoun(caster)
-                broadcast_room(
+                _act_room(
                     room,
                     f"{_character_name(caster)} raises {possessive} hand, and a blinding ray of light shoots forth!",
+                    caster,
                     exclude=caster,
                 )
             _send_to_char(caster, "You raise your hand and a blinding ray of light shoots forth!")
@@ -6828,9 +6867,10 @@ def ray_of_truth(caster: Character, target: Character | None = None) -> int:
     if is_good(victim):
         room = getattr(victim, "room", None)
         if room is not None:
-            broadcast_room(
+            _act_room(
                 room,
                 f"{_character_name(victim)} seems unharmed by the light.",
+                victim,
                 exclude=victim,
             )
         _send_to_char(victim, "The light seems powerless to affect you.")
@@ -6877,7 +6917,7 @@ def recall(caster: Character, target: Character | None = None) -> str:
     current_room = getattr(caster, "room", None)
     if current_room is not None:
         caster_name = _character_name(caster)
-        broadcast_room(current_room, f"{caster_name} prays for transportation!", exclude=caster)
+        _act_room(current_room, f"{caster_name} prays for transportation!", caster, exclude=caster)
 
     location = room_registry.get(ROOM_VNUM_TEMPLE)
     if location is None:
@@ -6914,11 +6954,11 @@ def recall(caster: Character, target: Character | None = None) -> str:
 
     if current_room is not None:
         caster_name = _character_name(caster)
-        broadcast_room(current_room, f"{caster_name} disappears.", exclude=caster)
+        _act_room(current_room, f"{caster_name} disappears.", caster, exclude=caster)
         current_room.remove_character(caster)
 
     location.add_character(caster)
-    broadcast_room(location, f"{_character_name(caster)} appears in the room.", exclude=caster)
+    _act_room(location, f"{_character_name(caster)} appears in the room.", caster, exclude=caster)
 
     view = look(caster)
     if view:
@@ -6982,7 +7022,7 @@ def recharge(
     if percent < c_div(chance, 2):
         _send_to_char(caster, f"{short_descr} glows softly.")
         if room is not None:
-            broadcast_room(room, f"{short_descr} glows softly.", exclude=caster)
+            _act_room(room, f"{short_descr} glows softly.", caster, exclude=caster)
         values[2] = max(stored_max, current_charges)
         values[1] = 0
         obj.value = values
@@ -7010,7 +7050,7 @@ def recharge(
 
     _send_to_char(caster, f"{short_descr} glows brightly and explodes!")
     if room is not None:
-        broadcast_room(room, f"{short_descr} glows brightly and explodes!", exclude=caster)
+        _act_room(room, f"{short_descr} glows brightly and explodes!", caster, exclude=caster)
     _extract_runtime_object(obj)
     return False
 
@@ -7090,7 +7130,7 @@ def remove_curse(
         _send_to_char(caster, message)
         room = getattr(caster, "room", None)
         if room is not None:
-            broadcast_room(room, message, exclude=caster)
+            _act_room(room, message, caster, exclude=caster)
         return True
 
     if isinstance(target, Object):
@@ -7106,7 +7146,7 @@ def remove_curse(
     if check_dispel(level, victim, "curse"):
         _send_to_char(victim, "You feel better.")
         if room is not None:
-            broadcast_room(room, f"{_character_name(victim)} looks more relaxed.", exclude=victim)
+            _act_room(room, f"{_character_name(victim)} looks more relaxed.", victim, exclude=victim)
         removed_any = True
 
     seen: set[int] = set()
@@ -7137,9 +7177,10 @@ def remove_curse(
         short_descr = _object_short_descr(obj)
         _send_to_char(victim, f"Your {short_descr} glows blue.")
         if room is not None:
-            broadcast_room(
+            _act_room(
                 room,
                 f"{_character_name(victim)}'s {short_descr} glows blue.",
+                victim,
                 exclude=victim,
             )
         removed_any = True
@@ -7241,9 +7282,7 @@ def sanctuary(caster, target=None):
     room = getattr(target, "room", None)
     if room is not None:
         room_message = (
-            f"{target.name} is surrounded by a white aura."
-            if target.name
-            else "Someone is surrounded by a white aura."
+            f"{target.name} is surrounded by a white aura." if target.name else "Someone is surrounded by a white aura."
         )
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is target:
@@ -7806,10 +7845,10 @@ def summon(caster: Character, target: Character | None = None) -> bool:
 
     victim_name = _character_name(target)
 
-    broadcast_room(target_room, f"{victim_name} disappears suddenly.", exclude=target)
+    _act_room(target_room, f"{victim_name} disappears suddenly.", target, exclude=target)
     target_room.remove_character(target)
     caster_room.add_character(target)
-    broadcast_room(caster_room, f"{victim_name} arrives suddenly.", exclude=target)
+    _act_room(caster_room, f"{victim_name} arrives suddenly.", target, exclude=target)
 
     caster_name = _character_name(caster)
     _send_to_char(target, f"{caster_name} has summoned you!")
@@ -7871,10 +7910,10 @@ def teleport(caster: Character, target: Character | None = None) -> bool:
 
     victim_name = _character_name(victim)
 
-    broadcast_room(victim_room, f"{victim_name} vanishes!", exclude=victim)
+    _act_room(victim_room, f"{victim_name} vanishes!", victim, exclude=victim)
     victim_room.remove_character(victim)
     destination.add_character(victim)
-    broadcast_room(destination, f"{victim_name} slowly fades into existence.", exclude=victim)
+    _act_room(destination, f"{victim_name} slowly fades into existence.", victim, exclude=victim)
 
     view = look(victim)
     if view:
@@ -8133,11 +8172,11 @@ def word_of_recall(caster: Character, target: Character | None = None) -> bool:
     victim_name = _character_name(victim)
 
     if current_room is not None:
-        broadcast_room(current_room, f"{victim_name} disappears.", exclude=victim)
+        _act_room(current_room, f"{victim_name} disappears.", victim, exclude=victim)
         current_room.remove_character(victim)
 
     location.add_character(victim)
-    broadcast_room(location, f"{victim_name} appears in the room.", exclude=victim)
+    _act_room(location, f"{victim_name} appears in the room.", victim, exclude=victim)
 
     view = look(victim)
     if view:

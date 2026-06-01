@@ -7,6 +7,7 @@ from mud.combat import multi_hit
 from mud.combat.engine import stop_fighting
 from mud.combat.safety import is_safe
 from mud.math.c_compat import c_div
+from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import (
     EX_CLOSED,
     GROUP_VNUM_OGRES,
@@ -34,8 +35,10 @@ from mud.world.vision import can_see_character
 try:  # Import optional helper used by janitors to respect loot restrictions.
     from mud.ai import _can_loot as _can_loot_item
 except Exception:  # pragma: no cover - fallback when AI helpers unavailable
+
     def _can_loot_item(_mob: Any, _obj: Any) -> bool:
         return True
+
 
 spec_fun_registry: dict[str, Callable[..., Any]] = {}
 
@@ -127,12 +130,16 @@ def _append_message(target: Any, message: str) -> None:
 
 
 def _broadcast_room_message(room: Any, template: str | None, actor: Any, victim: Any | None) -> None:
+    """Format and broadcast a ROM ``act()``-style room message, then dispatch
+    TRIG_ACT to NPC recipients — matching ROM ``src/comm.c:2384`` which
+    fires ``mp_act_trigger`` inside ``act()`` for every NPC in the room."""
     if not template:
         return
     for listener in _room_occupants(room):
         formatted = act_format(template, recipient=listener, actor=actor, arg2=victim)
         if formatted:
             _append_message(listener, formatted)
+    mp_act_trigger_room(template, room, actor, arg2=victim)
 
 
 _MAYOR_OPEN_PATH = "W3a3003b33000c111d0d111Oe333333Oe22c222112212111a1S."
@@ -283,6 +290,7 @@ def _mayor_toggle_gate(mayor: Any, *, open_gate: bool) -> None:
                             reverse_exit.exit_info &= ~EX_CLOSED
                         else:
                             reverse_exit.exit_info |= EX_CLOSED
+
 
 def _clear_comm_flag(ch: Any, flag: CommFlag) -> None:
     try:
@@ -828,6 +836,8 @@ def _broadcast_area(room: Any, message: str) -> None:
 
 
 def _broadcast_room(mob: Any, message: str) -> None:
+    """Broadcast a ROM ``act(TO_ROOM)``-style message, then dispatch TRIG_ACT
+    to NPC recipients — matching ROM ``src/comm.c:2384``."""
     room = getattr(mob, "room", None)
     if room is None:
         return
@@ -837,6 +847,7 @@ def _broadcast_room(mob: Any, message: str) -> None:
         formatted = act_format(message, recipient=occupant, actor=mob)
         if formatted:
             _append_message(occupant, formatted)
+    mp_act_trigger_room(message, room, mob, exclude=mob)
 
 
 def _yell_area(mob: Any, message: str) -> None:
@@ -858,6 +869,7 @@ def _yell_area(mob: Any, message: str) -> None:
     area_message = f"{mob_name} yells '{message}'"
 
     from mud.registry import room_registry as _room_reg
+
     for other_room in list(_room_reg.values()):
         if other_room is room:
             # Same room already handled via room broadcast below
@@ -1193,9 +1205,7 @@ def spec_executioner(mob: Any) -> bool:
 
     # ROM uses do_yell which broadcasts area-wide (src/act_comm.c:1033-1065)
     _clear_comm_flag(mob, CommFlag.NOSHOUT)
-    declaration = (
-        f"{getattr(target, 'name', 'Someone')} is a {crime}!  PROTECT THE INNOCENT!  MORE BLOOOOD!!!"
-    )
+    declaration = f"{getattr(target, 'name', 'Someone')} is a {crime}!  PROTECT THE INNOCENT!  MORE BLOOOOD!!!"
     _yell_area(mob, declaration)
     _attack(mob, target)
     return True
@@ -1242,9 +1252,7 @@ def spec_guard(mob: Any) -> bool:
     if target is not None:
         # ROM uses do_yell which broadcasts area-wide (src/act_comm.c:1033-1065)
         _clear_comm_flag(mob, CommFlag.NOSHOUT)
-        message = (
-            f"{getattr(target, 'name', 'Someone')} is a {crime}!  PROTECT THE INNOCENT!!  BANZAI!!"
-        )
+        message = f"{getattr(target, 'name', 'Someone')} is a {crime}!  PROTECT THE INNOCENT!!  BANZAI!!"
         _yell_area(mob, message)
         _attack(mob, target)
         return True

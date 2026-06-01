@@ -5,6 +5,7 @@ from collections.abc import Callable
 from mud.config import get_pulse_violence
 from mud.handler import deduct_cost
 from mud.math.c_compat import c_div
+from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import ActFlag
 from mud.net.protocol import broadcast_room
@@ -44,7 +45,14 @@ class _HealerService(tuple):
 
 _SERVICES: tuple[_HealerService, ...] = (
     _HealerService(
-        ("light", ("light",), "  light: cure light wounds      10 gold", "judicandus dies", 1000, spell_handlers.cure_light)
+        (
+            "light",
+            ("light",),
+            "  light: cure light wounds      10 gold",
+            "judicandus dies",
+            1000,
+            spell_handlers.cure_light,
+        )
     ),
     _HealerService(
         (
@@ -231,7 +239,9 @@ def do_heal(char: Character, args: str = "") -> str:
 
     room = getattr(healer, "room", None)
     if room is not None:
-        broadcast_room(room, f"{_healer_name(healer)} utters the words '{service.words}'.", exclude=healer)
+        utter_msg = f"{_healer_name(healer)} utters the words '{service.words}'."
+        broadcast_room(room, utter_msg, exclude=healer)
+        mp_act_trigger_room(utter_msg, room, healer, exclude=healer)
 
     if service.spell is None:
         level = max(int(getattr(healer, "level", 0) or 0), 0)
