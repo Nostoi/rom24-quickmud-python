@@ -707,6 +707,9 @@ def do_pose(char: Character, args: str) -> str:
 
     if char.room:
         broadcast_room(char.room, room_msg, exclude=char)
+        # ROM src/act_comm.c:1420 act(TO_ROOM) fires TRIG_ACT per src/comm.c:2384
+        from mud.mobprog import mp_act_trigger_room
+        mp_act_trigger_room(room_msg, char.room, char)
 
     return self_msg
 

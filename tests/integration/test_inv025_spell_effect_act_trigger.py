@@ -13,6 +13,10 @@ Locks the contract for:
   - _act_room helper in handlers.py (covers all spell broadcasts)
   - Healer utterance (healer.c:183)
   - MOBtrigger suppression (give/emote/pmote paths)
+  - Music jukebox (music.c:122-154 act(TO_ALL))
+  - do_pose (act_comm.c:1420 act(TO_ROOM))
+  - _broadcast_level_fail (act_obj.c:1410 act(TO_ROOM))
+  - Mota decline (act_obj.c:1782 act(TO_ROOM))
 """
 
 from __future__ import annotations
@@ -22,6 +26,7 @@ import pytest
 from mud.models.character import Character, character_registry
 from mud.models.constants import Position
 from mud.models.mob import MobIndex
+from mud.models.obj import object_registry
 from mud.models.room import Room
 from mud.registry import room_registry
 from mud.utils import rng_mm
@@ -32,10 +37,14 @@ def _seed_and_cleanup():
     rng_mm.seed_mm(12345)
     snapshot = list(character_registry)
     character_registry.clear()
+    obj_snapshot = list(object_registry)
+    object_registry.clear()
     yield
+    object_registry.clear()
+    object_registry.extend(obj_snapshot)
     character_registry.clear()
     character_registry.extend(snapshot)
-    for vnum in (30001, 30002, 30003, 30004, 30005):
+    for vnum in (30001, 30002, 30003, 30004, 30005, 30006, 30007, 30008, 30009):
         room_registry.pop(vnum, None)
 
 
@@ -305,4 +314,206 @@ class TestMOBtriggerSuppression:
         assert not fired, (
             "TRIG_ACT must be suppressed inside disable_mobtrigger() — "
             "ROM src/comm.c:2384 checks MOBtrigger"
+        )
+
+
+# ── Music jukebox ────────────────────────────────────────────────────
+
+class TestMusicJukeboxActTrigger:
+    """Music _broadcast_jukebox_message dispatches TRIG_ACT.
+
+    ROM src/music.c:128 and 154 use act(..., TO_ALL) which fires
+    mp_act_trigger per src/comm.c:2384 for every NPC in the room.
+    """
+
+    def test_jukebox_start_dispatches_trigger(self):
+        room = _make_room(30001)
+        from mud.models.constants import ItemType
+        from mud.models.obj import ObjIndex
+        from mud.models.object import Object
+        jukebox = Object(
+            instance_id=None,
+            prototype=ObjIndex(
+                vnum=9700, item_type=int(ItemType.JUKEBOX),
+                short_descr="a brass jukebox",
+            ),
+        )
+        jukebox.value = [-1, 0, -1, -1, -1]
+        jukebox.in_room = room
+        room.contents.append(jukebox)
+        _make_listener(room, "starts playing", vnum=9701)
+
+        import mud.mobprog as mobprog
+        from mud.music import _broadcast_jukebox_message
+        fired, original = _setup_probe()
+        try:
+            _broadcast_jukebox_message(room, jukebox, "starts playing U2, One.")
+        finally:
+            mobprog.mp_act_trigger = original
+
+        assert any("starts playing" in f for f in fired), (
+            "jukebox start must dispatch mp_act_trigger_room — "
+            "ROM src/music.c:128 act(TO_ALL)"
+        )
+
+    def test_jukebox_lyric_dispatches_trigger(self):
+        room = _make_room(30002)
+        from mud.models.constants import ItemType
+        from mud.models.obj import ObjIndex
+        from mud.models.object import Object
+        jukebox = Object(
+            instance_id=None,
+            prototype=ObjIndex(
+                vnum=9702, item_type=int(ItemType.JUKEBOX),
+                short_descr="a wooden jukebox",
+            ),
+        )
+        jukebox.value = [1, 0, -1, -1, -1]
+        jukebox.in_room = room
+        room.contents.append(jukebox)
+        _make_listener(room, "bops", vnum=9703)
+
+        import mud.mobprog as mobprog
+        from mud.music import _broadcast_jukebox_message
+        fired, original = _setup_probe()
+        try:
+            _broadcast_jukebox_message(room, jukebox, "bops: 'I still haven't found'")
+        finally:
+            mobprog.mp_act_trigger = original
+
+        assert any("bops" in f for f in fired), (
+            "jukebox lyric must dispatch mp_act_trigger_room — "
+            "ROM src/music.c:154 act(TO_ALL)"
+        )
+
+    def test_jukebox_trigger_uses_npc_recipient_object_visibility(self):
+        room = _make_room(30009)
+        pc = _make_pc(room, "Seer", level=10)
+        from mud.models.constants import AffectFlag, ExtraFlag, ItemType
+        from mud.models.obj import ObjIndex
+        from mud.models.object import Object
+        pc.affected_by = int(AffectFlag.DETECT_INVIS)
+        jukebox = Object(
+            instance_id=None,
+            prototype=ObjIndex(
+                vnum=9708, item_type=int(ItemType.JUKEBOX),
+                short_descr="the hidden jukebox",
+            ),
+            extra_flags=int(ExtraFlag.INVIS),
+        )
+        jukebox.value = [-1, 0, -1, -1, -1]
+        jukebox.in_room = room
+        room.contents.append(jukebox)
+        listener = _make_listener(room, "Something starts", vnum=9709)
+
+        import mud.mobprog as mobprog
+        fired: list[tuple[object, str]] = []
+        original = mobprog.mp_act_trigger
+
+        def _probe(argument, recipient, *args, **kwargs):
+            fired.append((recipient, str(argument)))
+            return True
+
+        mobprog.mp_act_trigger = _probe
+        try:
+            from mud.music import _broadcast_jukebox_message
+            _broadcast_jukebox_message(room, jukebox, "starts playing The Band, Anthem.")
+        finally:
+            mobprog.mp_act_trigger = original
+
+        assert (listener, "Something starts playing The Band, Anthem.") in fired, (
+            "jukebox TRIG_ACT must use the NPC recipient's $p visibility — "
+            "ROM src/music.c:128 act(TO_ALL) formats buf before src/comm.c:2384"
+        )
+
+
+# ── do_pose ──────────────────────────────────────────────────────────
+
+class TestPoseActTrigger:
+    """do_pose dispatches TRIG_ACT for the TO_ROOM broadcast.
+
+    ROM src/act_comm.c:1420 act(TO_ROOM) fires mp_act_trigger per
+    src/comm.c:2384.
+    """
+
+    def test_pose_fires_trigger(self):
+        room = _make_room(30006)
+        pc = _make_pc(room, "Poser", level=10)
+        _make_listener(room, "dances", vnum=9707)
+
+        import mud.mobprog as mobprog
+        fired, original = _setup_probe()
+        try:
+            from mud.commands.communication import do_pose
+            rng_mm.seed_mm(42)
+            do_pose(pc, "")
+        finally:
+            mobprog.mp_act_trigger = original
+
+        assert len(fired) > 0, (
+            "do_pose must dispatch mp_act_trigger_room for TO_ROOM — "
+            "ROM src/act_comm.c:1420"
+        )
+
+
+# ── _broadcast_level_fail ────────────────────────────────────────────
+
+class TestBroadcastLevelFailActTrigger:
+    """_broadcast_level_fail dispatches TRIG_ACT.
+
+    ROM src/act_obj.c:1410 act("$n tries to use $p, but is too "
+    "inexperienced.", ch, obj, NULL, TO_ROOM) fires mp_act_trigger.
+    """
+
+    def test_level_fail_dispatches_trigger(self):
+        room = _make_room(30007)
+        pc = _make_pc(room, "Newbie", level=1)
+        from mud.models.obj import ObjIndex
+        from mud.models.object import Object
+        obj = Object(
+            instance_id=None,
+            prototype=ObjIndex(vnum=9704, short_descr="a glowing sword"),
+        )
+        _make_listener(room, "too inexperienced", vnum=9705)
+
+        import mud.mobprog as mobprog
+        fired, original = _setup_probe()
+        try:
+            from mud.commands.equipment import _broadcast_level_fail
+            _broadcast_level_fail(pc, obj)
+        finally:
+            mobprog.mp_act_trigger = original
+
+        assert any("too inexperienced" in f for f in fired), (
+            "_broadcast_level_fail must dispatch mp_act_trigger_room — "
+            "ROM src/act_obj.c:1410"
+        )
+
+
+# ── Mota decline ────────────────────────────────────────────────────
+
+class TestMotaDeclineActTrigger:
+    """Mota decline room broadcast dispatches TRIG_ACT.
+
+    ROM src/act_obj.c:1782 act("$n offers $mself to Mota, who "
+    "graciously declines.", ch, NULL, NULL, TO_ROOM) fires mp_act_trigger.
+    """
+
+    def test_mota_decline_dispatches_trigger(self):
+        room = _make_room(30008)
+        pc = _make_pc(room, "Sacrificer", level=10)
+        pc.name = "Sacrificer"
+        _make_listener(room, "Mota", vnum=9706)
+
+        import mud.mobprog as mobprog
+        fired, original = _setup_probe()
+        try:
+            from mud.commands.obj_manipulation import do_sacrifice
+            do_sacrifice(pc, pc.name)
+        finally:
+            mobprog.mp_act_trigger = original
+
+        assert any("Mota" in f for f in fired), (
+            "Mota decline broadcast must dispatch mp_act_trigger_room — "
+            "ROM src/act_obj.c:1782"
         )

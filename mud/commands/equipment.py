@@ -39,11 +39,12 @@ def _broadcast_level_fail(ch: Character, obj: Object) -> None:
     """ROM act_obj.c:1410-1411 — emit TO_ROOM observer message for level-too-low."""
     obj_name = getattr(obj, "short_descr", "something")
     ch_name = getattr(ch, "name", "Someone")
-    broadcast_room(
-        getattr(ch, "room", None),
-        f"{ch_name} tries to use {obj_name}, but is too inexperienced.",
-        exclude=ch,
-    )
+    room = getattr(ch, "room", None)
+    message = f"{ch_name} tries to use {obj_name}, but is too inexperienced."
+    broadcast_room(room, message, exclude=ch)
+    # ROM src/act_obj.c:1410 act(TO_ROOM) fires TRIG_ACT per src/comm.c:2384
+    from mud.mobprog import mp_act_trigger_room
+    mp_act_trigger_room(message, room, ch, arg1=obj)
 
 
 def _unequip_to_inventory(ch: Character, obj: Object) -> bool:

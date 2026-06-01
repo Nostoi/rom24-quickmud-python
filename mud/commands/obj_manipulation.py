@@ -400,6 +400,8 @@ def do_sacrifice(char: Character, args: str) -> str:
                 actor=char,
             )
             broadcast_room(room, room_msg, exclude=char)
+            # ROM src/act_obj.c:1782 act(TO_ROOM) fires TRIG_ACT per src/comm.c:2384
+            mp_act_trigger_room(room_msg, room, char)
         return "Mota appreciates your offer and may accept it later."
 
     if not room:

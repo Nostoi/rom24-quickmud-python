@@ -206,6 +206,19 @@ def _broadcast_jukebox_message(room: Room, obj: Object, suffix: str) -> None:
         prefix = act_format("$p", recipient=occupant, arg1=obj)
         _push_music_message(occupant, f"{prefix} {suffix}")
 
+    # mirroring ROM src/music.c:128,154 act(TO_ALL) through
+    # src/comm.c:2384-2385 — the trigger receives each NPC's formatted
+    # act() buffer, including per-recipient $p visibility.
+    import mud.mobprog as mobprog
+
+    if not mobprog.MOBtrigger:
+        return
+    for occupant in list(getattr(room, "people", [])):
+        if not getattr(occupant, "is_npc", False):
+            continue
+        prefix = act_format("$p", recipient=occupant, arg1=obj)
+        mobprog.mp_act_trigger(f"{prefix} {suffix}", occupant, None, obj, None, mobprog.Trigger.ACT)
+
 
 def _can_hear_music(character: Character) -> bool:
     if getattr(character, "is_npc", False):
