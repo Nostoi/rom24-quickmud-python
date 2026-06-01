@@ -3258,9 +3258,14 @@ def dirt_kicking(caster: Character, target: Character | None = None) -> str:
         victim_name = _character_name(victim)
         caster_name = _character_name(caster)
         if room is not None:
-            _act_room(
+            # FIGHT-036: ROM act("{5$n is blinded by the dirt in $s eyes!{x",
+            # victim, NULL, NULL, TO_ROOM) (src/fight.c:2614). $n renders per
+            # recipient via PERS (an invisible victim masks to "someone"); $s is
+            # the victim's gendered possessive (his/her/its); the {5..{x colour
+            # codes are preserved.
+            act_to_room(
                 room,
-                f"{victim_name} is blinded by the dirt in their eyes!",
+                "{5$n is blinded by the dirt in $s eyes!{x",
                 victim,
                 exclude=victim,
             )
