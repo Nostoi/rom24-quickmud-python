@@ -963,6 +963,10 @@ def do_cast(char: Character, args: str) -> str:
         # mirroring ROM src/magic.c:551-555 — a failed cast costs HALF mana
         # only (`ch->mana -= mana / 2;`). Mana is NOT deducted before the roll,
         # so the full cost is never charged on failure (CAST-008).
+        # mirroring ROM src/magic.c:553 — a failed cast still trains the skill
+        # (`check_improve(ch, sn, FALSE, 1)`). Failing a spell is a valid path to
+        # improving it; this runs before the half-mana deduction (CAST-009).
+        skill_registry._check_improve(char, skill, skill.name, False)
         char.mana = max(0, char.mana - c_div(mana_cost, 2))
         return "You lost your concentration."
 
