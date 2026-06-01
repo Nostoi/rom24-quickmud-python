@@ -4655,14 +4655,15 @@ def frenzy(caster: Character, target: Character | None = None) -> bool:  # noqa:
 
     _send_to_char(target, "You are filled with holy wrath!")
 
+    # mirroring ROM src/magic.c:2961 — act("$n gets a wild look in $s eyes!",
+    # victim, NULL, NULL, TO_ROOM): per-recipient `$n` PERS masking (an invisible
+    # victim renders "someone") and `$s` gendered possessive (his/her/its).
+    # MAGIC-012 — was a manual room loop baking the name + literal "their",
+    # missed by the INV-025 `_act_room` sweep (it converted `_act_room` call
+    # sites, not hand-rolled room loops).
     room = getattr(target, "room", None)
     if room is not None:
-        name = _character_name(target)
-        message = f"{name} gets a wild look in their eyes!"
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, message)
+        act_to_room(room, "$n gets a wild look in $s eyes!", target, exclude=target)
 
     return True
 

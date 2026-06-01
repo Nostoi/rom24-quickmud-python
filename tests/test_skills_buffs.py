@@ -125,7 +125,10 @@ def test_frenzy_applies_bonuses_and_messages() -> None:
     # ROM initializes armor to [100,100,100,100], frenzy adds +20 penalty = [120,120,120,120]
     assert target.armor == [100 + effect.ac_mod] * 4
     assert target.messages[-1] == "You are filled with holy wrath!"
-    assert witness.messages[-1] == "Paladin gets a wild look in their eyes!"
+    # ROM src/magic.c:2961 `act("$n gets a wild look in $s eyes!", ...)` — `$s`
+    # is the victim's gendered possessive; a sexless test character (Sex.NONE)
+    # renders "its", not the previously baked literal "their" (MAGIC-012).
+    assert witness.messages[-1] == "Paladin gets a wild look in its eyes!"
 
 
 def test_frenzy_blocks_duplicates_and_berserk() -> None:
