@@ -3388,7 +3388,9 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
             act_to_room(
                 room, "{5$n tries to disarm $N, but fails.{x", caster, arg2=victim, exclude=victim
             )
-        check_improve(caster, "disarm", False, 1)
+        # FIGHT-038: ROM reaches NOREMOVE via do_disarm's successful-roll branch,
+        # which still calls check_improve(..., TRUE, 1) (src/fight.c:3206).
+        check_improve(caster, "disarm", True, 1)
         return False
 
     # ROM src/fight.c:2252-2255 (disarm success — TO_VICT, TO_CHAR, TO_NOTVICT).
