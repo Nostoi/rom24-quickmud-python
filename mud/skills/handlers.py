@@ -1548,7 +1548,10 @@ def bless(caster: Character, target: Character | Object | None = None) -> bool:
                 _send_to_char(caster, message)
                 room = getattr(caster, "room", None)
                 if room is not None:
-                    _act_room(room, message, caster, exclude=caster)
+                    # MAGIC-007 / INV-027: ROM act("$p glows a pale blue.", ch,
+                    # obj, NULL, TO_ALL) (src/magic.c:808) — $p masked per
+                    # recipient via can_see_obj.
+                    act_to_room(room, "$p glows a pale blue.", caster, arg1=obj, exclude=caster)
                 return True
             else:
                 # ROM :813-816 — dispel failed
@@ -1581,7 +1584,8 @@ def bless(caster: Character, target: Character | Object | None = None) -> bool:
         _send_to_char(caster, message)
         room = getattr(caster, "room", None)
         if room is not None:
-            _act_room(room, message, caster, exclude=caster)
+            # MAGIC-007 / INV-027: $p masked per recipient via can_see_obj.
+            act_to_room(room, "$p glows with a holy aura.", caster, arg1=obj, exclude=caster)
 
         # ROM :831-832 — if worn, saving_throw -= 1
         wear_loc = getattr(obj, "wear_loc", -1)
@@ -3605,13 +3609,16 @@ def enchant_armor(caster: Character, target: Object | None = None) -> bool:
     short_descr = _object_short_descr(obj)
     room = getattr(caster, "room", None)
 
-    def _notify_room(message: str) -> None:
+    def _notify_room(fmt: str) -> None:
+        # MAGIC-007 / INV-027: ROM emits each enchant_armor line as a paired
+        # act(TO_CHAR)+act(TO_ROOM) with $p (src/magic.c:2358-2428). Render the
+        # room leg's $p per recipient via can_see_obj.
         if room is not None:
-            _act_room(room, message, caster, exclude=caster)
+            act_to_room(room, fmt, caster, arg1=obj, exclude=caster)
 
     if result < fail // 5:
         _send_to_char(caster, f"{short_descr} flares blindingly... and evaporates!")
-        _notify_room(f"{short_descr} flares blindingly... and evaporates!")
+        _notify_room("$p flares blindingly... and evaporates!")
         inventory = getattr(caster, "inventory", None)
         removed = False
         if isinstance(inventory, list) and obj in inventory:
@@ -3630,7 +3637,7 @@ def enchant_armor(caster: Character, target: Object | None = None) -> bool:
 
     if result < fail // 3:
         _send_to_char(caster, f"{short_descr} glows brightly, then fades...oops.")
-        _notify_room(f"{short_descr} glows brightly, then fades.")
+        _notify_room("$p glows brightly, then fades.")
         obj.enchanted = True
         obj.affected = []
         obj.extra_flags = 0
@@ -3646,13 +3653,13 @@ def enchant_armor(caster: Character, target: Object | None = None) -> bool:
 
     if result <= (90 - c_div(level, 5)):
         _send_to_char(caster, f"{short_descr} shimmers with a gold aura.")
-        _notify_room(f"{short_descr} shimmers with a gold aura.")
+        _notify_room("$p shimmers with a gold aura.")
         added = -1
         base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
         obj.extra_flags = base_flags | int(ExtraFlag.MAGIC)
     else:
         _send_to_char(caster, f"{short_descr} glows a brillant gold!")
-        _notify_room(f"{short_descr} glows a brillant gold!")
+        _notify_room("$p glows a brillant gold!")
         base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
         obj.extra_flags = base_flags | int(ExtraFlag.MAGIC | ExtraFlag.GLOW)
         added = -2
@@ -3752,13 +3759,18 @@ def enchant_weapon(caster: Character, target: Object | None = None) -> bool:
     short_descr = _object_short_descr(obj)
     room = getattr(caster, "room", None)
 
-    def _notify_room(message: str) -> None:
+    def _notify_room(fmt: str) -> None:
+        # MAGIC-007 / INV-027: ROM emits each enchant_weapon line as a paired
+        # act(TO_CHAR)+act(TO_ROOM) with $p (src/magic.c:2556-2624). Render the
+        # room leg's $p per recipient via can_see_obj.
         if room is not None:
-            _act_room(room, message, caster, exclude=caster)
+            act_to_room(room, fmt, caster, arg1=obj, exclude=caster)
 
     if result < fail // 5:
         _send_to_char(caster, f"{short_descr} shivers violently and explodes!")
-        _notify_room(f"{short_descr} shivers violently and explodeds!")
+        # ROM src/magic.c:2557 — the TO_ROOM leg carries the "explodeds!" typo
+        # (the TO_CHAR leg at :2556 reads "explodes!"); preserve byte-for-byte.
+        _notify_room("$p shivers violently and explodeds!")
         inventory = getattr(caster, "inventory", None)
         removed = False
         if isinstance(inventory, list) and obj in inventory:
@@ -3777,7 +3789,7 @@ def enchant_weapon(caster: Character, target: Object | None = None) -> bool:
 
     if result < fail // 2:
         _send_to_char(caster, f"{short_descr} glows brightly, then fades...oops.")
-        _notify_room(f"{short_descr} glows brightly, then fades.")
+        _notify_room("$p glows brightly, then fades.")
         obj.enchanted = True
         obj.affected = []
         obj.extra_flags = 0
@@ -3794,12 +3806,12 @@ def enchant_weapon(caster: Character, target: Object | None = None) -> bool:
     base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
     if result <= (100 - c_div(level, 5)):
         _send_to_char(caster, f"{short_descr} glows blue.")
-        _notify_room(f"{short_descr} glows blue.")
+        _notify_room("$p glows blue.")
         added = 1
         obj.extra_flags = base_flags | int(ExtraFlag.MAGIC)
     else:
         _send_to_char(caster, f"{short_descr} glows a brillant blue!")
-        _notify_room(f"{short_descr} glows a brillant blue!")
+        _notify_room("$p glows a brillant blue!")
         added = 2
         obj.extra_flags = base_flags | int(ExtraFlag.MAGIC | ExtraFlag.GLOW)
 
@@ -4409,12 +4421,14 @@ def fireproof(caster: Character, target: Object | None = None) -> bool:
 
     obj.extra_flags = extra_flags | int(ExtraFlag.BURN_PROOF)
 
-    message = f"{_object_short_descr(obj)} is surrounded by a protective aura."
     _send_to_char(caster, f"You protect {_object_short_descr(obj)} from fire.")
 
     room = getattr(caster, "room", None)
     if room is not None:
-        _act_room(room, message, caster, exclude=caster)
+        # MAGIC-007 / INV-027: ROM act("$p is surrounded by a protective aura.",
+        # ch, obj, NULL, TO_ROOM) (src/magic.c:2785). Render $p per recipient via
+        # can_see_obj so a blind/dark-room witness sees "something".
+        act_to_room(room, "$p is surrounded by a protective aura.", caster, arg1=obj, exclude=caster)
 
     return True
 
@@ -5161,10 +5175,13 @@ def heat_metal(
                     # Successfully removed
                     obj_name = getattr(obj, "short_descr", "something")
                     if room:
-                        _act_room(
+                        # MAGIC-007 / INV-027: ROM act("$n yelps and throws $p to
+                        # the ground!", victim, obj, NULL, TO_ROOM) (src/magic.c:3156).
+                        act_to_room(
                             room,
-                            f"{_character_name(target)} yelps and throws {obj_name} to the ground!",
+                            "$n yelps and throws $p to the ground!",
                             target,
+                            arg1=obj,
                             exclude=target,
                         )
                     _send_to_char(target, f"You remove and drop {obj_name} before it burns you.")
@@ -5190,10 +5207,13 @@ def heat_metal(
                 # Simplified: assume can_drop (no cursed check)
                 if True:  # can_drop_obj
                     if room:
-                        _act_room(
+                        # MAGIC-007 / INV-027: ROM act("$n yelps and throws $p to
+                        # the ground!", victim, obj, NULL, TO_ROOM) (src/magic.c:3182).
+                        act_to_room(
                             room,
-                            f"{_character_name(target)} yelps and throws {obj_name} to the ground!",
+                            "$n yelps and throws $p to the ground!",
                             target,
+                            arg1=obj,
                             exclude=target,
                         )
                     _send_to_char(target, f"You and drop {obj_name} before it burns you.")
@@ -5227,10 +5247,14 @@ def heat_metal(
                 # Simplified: assume can_drop
                 if True:  # can_drop_obj and remove_obj
                     if room:
-                        _act_room(
+                        # MAGIC-007 / INV-027: ROM act("$n is burned by $p, and
+                        # throws it to the ground.", victim, obj, NULL, TO_ROOM)
+                        # (src/magic.c:3214).
+                        act_to_room(
                             room,
-                            f"{_character_name(target)} is burned by {obj_name}, and throws it to the ground.",
+                            "$n is burned by $p, and throws it to the ground.",
                             target,
+                            arg1=obj,
                             exclude=target,
                         )
                     _send_to_char(target, "You throw your red-hot weapon to the ground!")
@@ -5254,10 +5278,13 @@ def heat_metal(
                 obj_name = getattr(obj, "short_descr", "something")
                 if True:  # can_drop_obj
                     if room:
-                        _act_room(
+                        # MAGIC-007 / INV-027: ROM act("$n throws a burning hot $p
+                        # to the ground!", victim, obj, NULL, TO_ROOM) (src/magic.c:3240).
+                        act_to_room(
                             room,
-                            f"{_character_name(target)} throws a burning hot {obj_name} to the ground!",
+                            "$n throws a burning hot $p to the ground!",
                             target,
+                            arg1=obj,
                             exclude=target,
                         )
                     _send_to_char(target, f"You and drop {obj_name} before it burns you.")
@@ -6164,7 +6191,9 @@ def nexus(caster: Character, target: Character | None = None) -> list[Object]:
     from_room.add_object(portal_out)
 
     portal_name = _object_short_descr(portal_out)
-    _act_room(from_room, f"{portal_name} rises up from the ground.", caster, exclude=caster)
+    # MAGIC-007 / INV-027: ROM act("$p rises up from the ground.", ch, portal,
+    # NULL, TO_ROOM) (src/magic2.c:155). $p masked per recipient via can_see_obj.
+    act_to_room(from_room, "$p rises up from the ground.", caster, arg1=portal_out, exclude=caster)
     _send_to_char(caster, f"{portal_name} rises up before you.")
     created.append(portal_out)
 
@@ -6183,8 +6212,11 @@ def nexus(caster: Character, target: Character | None = None) -> list[Object]:
     portal_return.value[3] = _coerce_int(getattr(from_room, "vnum", 0))
     to_room.add_object(portal_return)
 
-    return_name = _object_short_descr(portal_return)
-    _act_room(to_room, f"{return_name} rises up from the ground.", caster)
+    # MAGIC-007 / INV-027: ROM act("$p rises up from the ground.",
+    # to_room->people, portal, NULL, TO_ROOM/TO_CHAR) (src/magic2.c:171-174) —
+    # every dest-room occupant sees it. caster is not in to_room, so passing it
+    # as the actor (no exclude) delivers to all of them, matching ROM's net set.
+    act_to_room(to_room, "$p rises up from the ground.", caster, arg1=portal_return)
     created.append(portal_return)
 
     return created
@@ -6386,7 +6418,9 @@ def pick_lock(
 
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             _send_to_char(caster, f"You pick the lock on {short_descr}.")
-            _act_room(room, f"{_character_name(caster)} picks the lock on {short_descr}.", caster, exclude=caster)
+            # MAGIC-007 / INV-027: ROM act("$n picks the lock on $p.", ch, obj,
+            # NULL, TO_ROOM) (src/act_move.c:907). $n + $p masked per recipient.
+            act_to_room(room, "$n picks the lock on $p.", caster, arg1=obj, exclude=caster)
             check_improve(caster, "pick lock", True, 2)
             return {"success": True, "message": "", "picked_type": "portal"}
 
@@ -6419,7 +6453,9 @@ def pick_lock(
 
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             _send_to_char(caster, f"You pick the lock on {short_descr}.")
-            _act_room(room, f"{_character_name(caster)} picks the lock on {short_descr}.", caster, exclude=caster)
+            # MAGIC-007 / INV-027: ROM act("$n picks the lock on $p.", ch, obj,
+            # NULL, TO_ROOM) (src/act_move.c:945). $n + $p masked per recipient.
+            act_to_room(room, "$n picks the lock on $p.", caster, arg1=obj, exclude=caster)
             check_improve(caster, "pick lock", True, 2)
             return {"success": True, "message": "", "picked_type": "container"}
 
@@ -6707,7 +6743,9 @@ def portal(caster: Character, target: Character | None = None) -> Object | None:
     current_room.add_object(portal_obj)
 
     portal_name = _object_short_descr(portal_obj)
-    _act_room(current_room, f"{portal_name} rises up from the ground.", caster, exclude=caster)
+    # MAGIC-007 / INV-027: ROM act("$p rises up from the ground.", ch, portal,
+    # NULL, TO_ROOM) (src/magic2.c:101). $p masked per recipient via can_see_obj.
+    act_to_room(current_room, "$p rises up from the ground.", caster, arg1=portal_obj, exclude=caster)
     _send_to_char(caster, f"{portal_name} rises up before you.")
 
     return portal_obj
@@ -6974,7 +7012,9 @@ def recharge(
     if percent < c_div(chance, 2):
         _send_to_char(caster, f"{short_descr} glows softly.")
         if room is not None:
-            _act_room(room, f"{short_descr} glows softly.", caster, exclude=caster)
+            # MAGIC-007 / INV-027: ROM act("$p glows softly.", ch, obj, NULL,
+            # TO_ROOM) (src/magic.c:4158). $p masked per recipient via can_see_obj.
+            act_to_room(room, "$p glows softly.", caster, arg1=obj, exclude=caster)
         values[2] = max(stored_max, current_charges)
         values[1] = 0
         obj.value = values
@@ -7002,7 +7042,9 @@ def recharge(
 
     _send_to_char(caster, f"{short_descr} glows brightly and explodes!")
     if room is not None:
-        _act_room(room, f"{short_descr} glows brightly and explodes!", caster, exclude=caster)
+        # MAGIC-007 / INV-027: ROM act("$p glows brightly and explodes!", ch,
+        # obj, NULL, TO_ROOM) (src/magic.c:4195). $p masked per recipient.
+        act_to_room(room, "$p glows brightly and explodes!", caster, arg1=obj, exclude=caster)
     _extract_runtime_object(obj)
     return False
 
@@ -7082,7 +7124,9 @@ def remove_curse(
         _send_to_char(caster, message)
         room = getattr(caster, "room", None)
         if room is not None:
-            _act_room(room, message, caster, exclude=caster)
+            # MAGIC-007 / INV-027: ROM act("$p glows blue.", ch, obj, NULL,
+            # TO_ALL) (src/magic.c:4233). $p masked per recipient via can_see_obj.
+            act_to_room(room, "$p glows blue.", caster, arg1=obj, exclude=caster)
         return True
 
     if isinstance(target, Object):
@@ -7129,12 +7173,10 @@ def remove_curse(
         short_descr = _object_short_descr(obj)
         _send_to_char(victim, f"Your {short_descr} glows blue.")
         if room is not None:
-            _act_room(
-                room,
-                f"{_character_name(victim)}'s {short_descr} glows blue.",
-                victim,
-                exclude=victim,
-            )
+            # MAGIC-007 / INV-027: ROM act("$n's $p glows blue.", victim, obj,
+            # NULL, TO_ROOM) (src/magic.c:4268). $n (victim) and $p masked per
+            # recipient via PERS / can_see_obj.
+            act_to_room(room, "$n's $p glows blue.", victim, arg1=obj, exclude=victim)
         removed_any = True
 
     return removed_any
