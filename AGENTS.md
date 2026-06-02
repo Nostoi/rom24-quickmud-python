@@ -168,6 +168,48 @@ enumerate the contracts once, lock each one with a test, and
 reference those tests from the per-file rows. The
 `/rom-parity-audit` skill's Phase 2 calls this out explicitly.
 
+### Completeness lens & verification epistemics
+
+The per-file audit and the cross-INV process answer "is *this*
+function/contract correct?" They do **not** answer "how close to done
+are we, and how would we know?" That question has a tractable
+reformulation: ROM↔Python parity risk only exists where the two
+engines **diverge structurally** (sync vs async, pointer vs GC
+identity, array vs dict, C-int vs Python-int, static-buffer reuse,
+fread parsing). That set of **divergence classes** is small (~11) and
+enumerable, and each class has a single correct verification *layer*.
+The roster is
+[`docs/parity/DIVERGENCE_CLASS_ROSTER.md`](docs/parity/DIVERGENCE_CLASS_ROSTER.md);
+run a sweep via `/rom-divergence-sweep`.
+
+This lens **contains** the existing processes, it does not replace
+them: the grep-guards (`test_rng_determinism.py`,
+`test_equipment_key_convention.py`, `test_attribute_convention.py`)
+are its **Layer A** (static bypass-guards); the cross-INV process is
+its **Layer C** (ordering/lifecycle, no chokepoint); signed-math is
+**Layer B** (domain-conditional, human-read). Keep using cross-INV,
+`/rom-gap-closer`, and `/rom-parity-audit` — the roster just routes
+work into them.
+
+Four guardrails — learned the hard way, durable on purpose:
+
+1. **Durable surfaces hold method; trackers hold status.** Never write
+   a number, a ✅, or "class X is clean" into AGENTS.md / CLAUDE.md /
+   a SKILL.md. Status goes in the roster / INV trackers (which are
+   expected to rot and be re-verified on read).
+2. **A committed guard beats a doc-✅.** A `rglob → forbid-pattern →
+   assert` test is self-maintaining; a tracker note rots. Prefer
+   turning a verified contract into a test over writing "verified."
+3. **The roster is enumeration-dependent — blind to classes nobody
+   named.** The only enumeration-*independent* check is differential
+   execution (`tools/diff_harness/`). Therefore **"close on the known
+   surface" ≠ "close to ROM parity"** — never blur the two.
+4. **Re-verify any ✅/status claim against ROM C source (or an
+   empirical run on the installed tool) before relying on or relaying
+   it** — reinforcing the rule above; a recall oracle (re-deriving a
+   known-open item) is how you prove a sweep has recall before
+   trusting its silence.
+
 ---
 
 ## Build / Lint / Test

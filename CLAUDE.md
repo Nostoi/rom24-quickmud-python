@@ -11,11 +11,17 @@ Use them; do not re-derive the workflow each session.
 | Closing one gap by ID (e.g. "fix `DROP-001`", working through a gap list from an audit doc) | `/rom-gap-closer` | One failing-test-first commit with `feat(parity)` / `fix(parity)` prefix; audit row flipped to ✅ FIXED |
 | Wrapping up the session (multiple gaps closed, file just hit 100%, "write the session summary") | `/rom-session-handoff` | New `docs/sessions/SESSION_SUMMARY_<date>_<topic>.md`, refreshed `SESSION_STATUS.md`, CHANGELOG entries, version bump if pushing |
 | Per-file audit tracker exhausted; surfacing the next cross-file contract gap (e.g. "scan affect-tick contracts for divergences", "audit position-transition edges") | (no skill — manual probe-then-scope; file as INV-NNN row in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`) | New ✅ ENFORCED INV row + enforcement test, or single gap-closer commit |
+| Measuring "how close to done" on a known divergence class, or converting a hand-verified contract into a self-maintaining guard (e.g. "how complete is the async-delivery class", "lock the equipment-key contract") | `/rom-divergence-sweep` | Updated row in `docs/parity/DIVERGENCE_CLASS_ROSTER.md` + a Layer-A guard test / Layer-B domain note / Layer-C diff_harness scenario. Routes gaps INTO `/rom-gap-closer` or cross-INV; does not replace them. |
 
 When the per-file audit tracker has no ⚠️ Partial / ❌ Not Audited
 rows (current state), **cross-file invariants is the active pass**.
 See the "Cross-File Invariants" section in AGENTS.md for the
-probe-then-scope method and current candidate areas.
+probe-then-scope method and current candidate areas. The
+**completeness lens above both** — which verification layer each
+divergence class needs, and how close the known surface is to done —
+is `docs/parity/DIVERGENCE_CLASS_ROSTER.md` (run via
+`/rom-divergence-sweep`). It organizes the cross-INV process as its
+"Layer C" and the grep-guards as "Layer A"; it does not supersede them.
 
 Decision tree:
 
