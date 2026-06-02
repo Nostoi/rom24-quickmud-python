@@ -55,7 +55,6 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 | 1 | **RNG** | C Mitchell-Moore `number_mm` vs Python `random` | `mud.math.rng_mm.number_*` | ✅ | clean | `tests/test_rng_determinism.py` (bans `random.*` in combat/skills/spells) |
 | 2 | **Equipment key** | C `obj->wear_loc == iWear` (int) vs Python dict | `int(WearLocation.X)` via `canonical_wear_slot` | ✅ | clean | `tests/test_equipment_key_convention.py` (bans string-keyed access) |
 | 3 | **Attribute naming** | port-specific field names | `char.inventory` / `room.people` / `char.equipment` | ✅ | clean | `tests/test_attribute_convention.py` (bans `.carrying`/`.characters`/`.equipped`) |
-| 4 | **Async message delivery / act-cap** | C synchronous `write_to_buffer` in tick vs Python async dispatch (double-deliver, miss, mis-cap) | `act_format` · `broadcast_room` · `push_message` · `act_to_room` | ⚠️ | clean (probe 2026-06-02) **+ doc-rot** | INV-001/027/029, ACT-CAP-001/002. Hand-probe: all 7 room-emit primitives route through a capped chokepoint. **`do_say`/`do_tell` are capped but INV-029's watch list still lists them as "uncapped" — stale.** No committed bypass-guard yet. |
 | 5 | **Flag values** | C bit-shift macros vs guessable hex | `IntEnum` flag classes | ❌ | unverified | AGENTS.md rule ("never hardcode hex bit values"); no scanner exists |
 | 6 | **Pointer identity** | C pointer `==` vs Python object `==`/`is` | `is` for character identity compares | ❌ | partial | INV-031 (`is_same_group` uses `is`), INV-006; specific sites tested, no bypass-grep across `mud/` |
 
@@ -73,13 +72,15 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 | 9 | **Ordering / temporal** | C single-threaded tick vs Python async (e.g. prompt rendering `<-15hp>` between `update_pos` and `raw_kill` clamp) | no single chokepoint — sequencing | enforced (point) | INV-002 (PROMPT-CLAMP); `tools/diff_harness` |
 | 10 | **Object / affect lifecycle** | C `extract_obj`/affect expiry vs Python registry add/remove | behavioral lifecycle on `object_registry` / expiry loop | enforced | INV-014/015 tests |
 | 11 | **Data-load round-trip** | C `fread_flag` letter-decode vs Python `.are`→JSON→runtime | boot world, assert flags survive end-to-end | enforced | INV-032/033; `test_inv032_room_flags_survive_load.py` |
+| 4 | **Async message delivery / act-cap** | C synchronous `write_to_buffer` in tick vs Python async dispatch (double-deliver, miss, mis-cap) | behavioral — single-delivery (XOR), per-recipient masking, first-letter cap, verified by integration tests, not a lexical bypass | enforced | INV-001 (×5 `test_inv001_*.py`) / 027 / 029; ACT-CAP-001..004. **Reclassified A→C 2026-06-02:** a clean static bypass-guard is INFEASIBLE — legitimate hand-rolled XOR loops (`do_yell`) correctly use `create_task(send_to_char)`, and `.messages.append` has many legitimate sites (`Character.send_to_char`, broadcast primitives, actor-self lines), so any blanket grep false-positives. The contract is contextual → Layer C, with a Layer-B "review new delivery sites" element. |
 
 ## What "done" means, per layer
 
 - **Layer A:** every class has a committed bypass-guard and it's green. Today:
-  3 of 6 guarded (RNG, equipment-key, attribute-naming). **To-do:** classes
-  4 (async-delivery — promote the hand-probe to a guard), 5 (flag-hex scanner),
-  6 (pointer-identity scanner).
+  3 of 5 guarded (RNG, equipment-key, attribute-naming). **To-do:** classes
+  5 (flag-hex scanner) and 6 (pointer-identity scanner) — and both may prove
+  infeasible as Layer A and reclassify, exactly as async-delivery (old class 4)
+  did on 2026-06-02 when a clean bypass-grep turned out to false-positive.
 - **Layer B:** every signed-math site has been domain-read once. Ongoing,
   inherently point-in-time; the closest to a guard is flagging *new* `//`/`%`
   in PRs for human review.
@@ -90,13 +91,21 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 
 ## To-do list (falls directly out of the roster)
 
-1. **Promote class 4 to a committed Layer-A guard.** Hand-probe (2026-06-02)
-   found the async-delivery surface clean; lock it with a `rglob` scan that
-   forbids raw socket/`send_to_char` emits bypassing the capped chokepoints,
-   the same shape as the other three guards.
-2. **Fix the class-4 doc-rot.** Move `do_say`/`do_tell` from INV-029's
-   "remaining cousins (still uncapped)" to closed, citing the `_deliver_tell`
-   (`communication.py:108`) and `do_say` (`:187`,`:218`) cap sites.
+1. ~~Promote class 4 to a committed Layer-A guard.~~ **Resolved differently
+   (2026-06-02):** the attempt found a clean static guard **infeasible** —
+   `do_yell` correctly hand-rolls the `create_task(send_to_char)` XOR, and
+   `.messages.append` has many legitimate sites, so any blanket grep
+   false-positives. Class 4 **reclassified A→C**: enforced behaviorally by the
+   INV-001/027/029 + ACT-CAP-001..004 integration tests, not a lexical guard.
+   (This is the skill's Phase-1 "if it false-positives, it's not Layer A" rule
+   firing as designed.)
+2. ~~Fix the class-4 doc-rot.~~ **Done (2026-06-02):** INV-029's row cell
+   falsely listed `do_say`/`do_tell` cousins as OPEN/uncapped; they were closed
+   via ACT-CAP-003/004 (2.11.42–43, committed tests). Corrected the stale status
+   and enforcement clauses to match the (already-correct) watch-list. Note the
+   precise finding was an *internal contradiction* (stale row cell vs. current
+   watch-list), found by re-verifying the source — not the looser "doc-rot" I
+   first reported.
 3. **Class 5 (flag-hex) scanner.** Decide first whether a clean grep is even
    possible (hex literals assigned to flag-typed fields) or whether it false-
    positives too much — if so, it's a Layer-B class, not Layer-A.
