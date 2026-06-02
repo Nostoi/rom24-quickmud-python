@@ -447,20 +447,13 @@ def do_wake(ch: Character, args: str) -> str:
     if getattr(victim, "affected_by", 0) & AffectFlag.SLEEP:
         return act_format("You can't wake $M!", recipient=ch, actor=ch, arg2=victim) + "\r\n"
 
-    # ROM act_new($n wakes you., TO_VICT) — deliver to victim's message buffer
+    # ROM act_new($n wakes you., TO_VICT) — deliver to victim's descriptor.
+    # INV-001: single-channel delivery (push_message XOR) — the prior
+    # unconditional append + if-writer-async double-delivered to a connected PC.
     vict_msg = act_format("$n wakes you.", recipient=victim, actor=ch, arg2=victim) + "\r\n"
-    if hasattr(victim, "messages"):
-        victim.messages.append(vict_msg)
-    writer = getattr(victim, "connection", None)
-    if writer:
-        try:
-            import asyncio
+    from mud.utils.messaging import push_message
 
-            from mud.net.protocol import send_to_char
-
-            asyncio.create_task(send_to_char(victim, vict_msg))
-        except Exception:
-            pass
+    push_message(victim, vict_msg)
 
     # ROM faithfully calls do_function(ch, &do_stand, "") on the *caller*, not
     # the victim. Preserve this quirk; the victim's position is unchanged here.

@@ -2287,9 +2287,8 @@ def charm_person(caster: Character, target: Character | None = None) -> bool:
         return False
 
     actor_name = getattr(caster, "name", None) or "Someone"
-    target_messages = getattr(target, "messages", None)
-    if isinstance(target_messages, list):
-        target_messages.append(f"Isn't {actor_name} just so nice?")
+    # INV-001: single-channel delivery for the cross-character target line.
+    _send_to_char(target, f"Isn't {actor_name} just so nice?")
 
     if caster is not target:
         target_name = getattr(target, "name", None) or "Someone"
@@ -2377,8 +2376,8 @@ def chill_touch(caster: Character, target: Character | None = None) -> int:
             for occupant in list(getattr(room, "people", []) or []):
                 if occupant is target:
                     continue
-                if hasattr(occupant, "messages"):
-                    occupant.messages.append(message)
+                # INV-001: single-channel delivery (push_message XOR).
+                _send_to_char(occupant, message)
 
         effect = SpellEffect(
             name="chill touch",
@@ -2468,16 +2467,15 @@ def colour_spray(caster: Character, target: Character | None = None) -> int:
 
     if hasattr(caster, "messages"):
         caster.messages.append(caster_msg)
-    if hasattr(target, "messages"):
-        target.messages.append(target_msg)
+    # INV-001: single-channel delivery for the cross-character target/room lines.
+    _send_to_char(target, target_msg)
 
     room = getattr(caster, "room", None)
     if room is not None:
         for occupant in list(getattr(room, "people", []) or []):
             if occupant is caster or occupant is target:
                 continue
-            if hasattr(occupant, "messages"):
-                occupant.messages.append(room_msg)
+            _send_to_char(occupant, room_msg)
 
     if saves_spell(capped, target, DamageType.LIGHT):
         damage = c_div(damage, 2)
@@ -2715,8 +2713,8 @@ def cure_blindness(caster: Character, target: Character | None = None) -> bool:
             for occupant in list(getattr(room, "people", []) or []):
                 if occupant is victim:
                     continue
-                if hasattr(occupant, "messages"):
-                    occupant.messages.append(message)
+                # INV-001: single-channel delivery (push_message XOR).
+                _send_to_char(occupant, message)
         return True
 
     _send_to_char(caster, "Spell failed.")
@@ -2826,8 +2824,8 @@ def cure_poison(caster: Character, target: Character | None = None) -> bool:
             for occupant in list(getattr(room, "people", []) or []):
                 if occupant is victim:
                     continue
-                if hasattr(occupant, "messages"):
-                    occupant.messages.append(message)
+                # INV-001: single-channel delivery (push_message XOR).
+                _send_to_char(occupant, message)
         return True
 
     _send_to_char(caster, "Spell failed.")
@@ -8016,8 +8014,8 @@ def trip(caster: Character, target: Character | None = None) -> str:
             for occupant in list(getattr(room, "people", []) or []):
                 if occupant is caster or occupant is victim:
                     continue
-                if hasattr(occupant, "messages"):
-                    occupant.messages.append(message)
+                # INV-001: single-channel delivery (push_message XOR).
+                _send_to_char(occupant, message)
 
         from mud.config import get_pulse_violence
 

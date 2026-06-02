@@ -160,10 +160,15 @@ async def _send_music_line(recipient: Character, writer: object, message: str) -
 
 
 def _push_music_message(recipient: Character, message: str, *, writer: object | None = None) -> None:
+    # INV-001: single-channel delivery (XOR). The async send (via _send_music_line,
+    # which honours the explicit `writer` fallback that push_message can't see)
+    # is taken when any writer exists; the mailbox is the fallback ONLY for a
+    # recipient with no writer at all. The prior unconditional append in addition
+    # to the async send double-delivered to a connected recipient.
     actual_writer = getattr(recipient, "connection", None) or writer
     if actual_writer is not None:
         asyncio.create_task(_send_music_line(recipient, actual_writer, message))
-    if hasattr(recipient, "messages"):
+    elif hasattr(recipient, "messages"):
         recipient.messages.append(message)
 
 

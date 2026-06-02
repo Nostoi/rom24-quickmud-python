@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import asyncio
-
 from mud import mobprog
 from mud.account.account_manager import save_character
 from mud.advancement import exp_per_level, gain_exp
@@ -39,7 +37,7 @@ from mud.models.constants import (
     WearFlag,
     WearLocation,
     attack_damage_type,
- )
+)
 from mud.models.weapon_table import weapon_skill_name_for_type
 from mud.skills import check_improve
 from mud.utils import rng_mm
@@ -852,7 +850,7 @@ def _broadcast_pos_change(victim: Character, template: str, **extra: object) -> 
     `can_see`-gated, so they pass through verbatim.
     """
     from mud.mobprog import mp_act_trigger_room
-    from mud.net.protocol import send_to_char as _send
+    from mud.utils.messaging import push_message
 
     room = getattr(victim, "room", None)
     if room is None:
@@ -865,11 +863,10 @@ def _broadcast_pos_change(victim: Character, template: str, **extra: object) -> 
         # name token per listener ("the orc" vs "someone"), so each rendered line
         # is capitalized individually, exactly as ROM caps each recipient's buf.
         message = capitalize_act_line(template.format(name=pers(victim, listener), **extra))
-        writer = getattr(listener, "connection", None)
-        if writer is not None:
-            asyncio.create_task(_send(listener, message))
-        if hasattr(listener, "messages"):
-            listener.messages.append(message)
+        # INV-001: single-channel delivery (push_message XOR) — the prior
+        # if-writer-async + unconditional append double-delivered to a connected
+        # PC. TRIG_ACT is dispatched separately below via mp_act_trigger_room.
+        push_message(listener, message)
     # ROM src/fight.c:837-861 / src/comm.c:2384 — position-transition act()
     # calls have no MOBtrigger wrap; TRIG_ACT dispatches per recipient against
     # the already-capitalized buffer (the cap at :2376 precedes the trigger
@@ -1208,18 +1205,16 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
     # share is %d silver.", ch, NULL, gch, TO_VICT). $n resolves through PERS(ch, gch)
     # per recipient (masking invisible actors) and act_new caps the first letter
     # (src/comm.c:2376). FIGHT-034.
-    from mud.net.protocol import send_to_char as _send_split
+    from mud.utils.messaging import push_message
+
     for member in group_members:
         if member is attacker:
             continue
         member.silver = max(0, int(getattr(member, "silver", 0) or 0)) + share
         # Per-recipient PERS + capitalize, matching ROM act(TO_VICT).
         member_msg = capitalize_act_line(f"{pers(attacker, member)} splits {silver_reward} silver coins. Your share is {share} silver.")
-        writer = getattr(member, "connection", None)
-        if writer is not None:
-            asyncio.create_task(_send_split(member, member_msg))
-        if hasattr(member, "messages"):
-            member.messages.append(member_msg)
+        # INV-001: single-channel delivery (push_message XOR).
+        push_message(member, member_msg)
 
 
 def _handle_auto_actions(attacker: Character, corpse) -> None:

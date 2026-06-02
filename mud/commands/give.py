@@ -229,10 +229,13 @@ def _handle_changer_exchange(victim: Character, char: Character, amount: int, is
 
 
 def _append_message(actor: Character, recipient: Character, template: str) -> None:
-    """Append an act-formatted message when the recipient tracks messages in tests/runtime."""
-    if not hasattr(recipient, "messages"):
-        return
-    recipient.messages.append(act_format(template, recipient=recipient, actor=actor, arg1=None, arg2=recipient))
+    """Deliver an act-formatted changer-exchange line to the recipient.
+
+    INV-001 (GIVE-001 cousin): single-channel delivery (push_message XOR) — the
+    prior raw mailbox append arrived late for a connected recipient. ROM's
+    changer path sends the "$n tells you ..." line via act(TO_VICT), immediate.
+    """
+    push_message(recipient, act_format(template, recipient=recipient, actor=actor, arg1=None, arg2=recipient))
 
 
 def _victim_name(victim: Character) -> str:

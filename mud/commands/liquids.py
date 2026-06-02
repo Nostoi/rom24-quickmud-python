@@ -219,8 +219,11 @@ def do_pour(char: Character, args: str) -> str:
             arg1=None,
             arg2=target_char,
         )
-        if hasattr(target_char, "messages"):
-            target_char.messages.append(vict_msg)
+        # INV-001: single-channel delivery (push_message XOR) — the prior raw
+        # mailbox append arrived late for a connected recipient.
+        from mud.utils.messaging import push_message
+
+        push_message(target_char, vict_msg)
         _dispatch_act_trigger_to_recipient(vict_msg, target_char, char, arg2=target_char)
 
         # TO_NOTVICT — observers excluding both char and target_char.

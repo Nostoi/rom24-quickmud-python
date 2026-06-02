@@ -123,7 +123,7 @@ def broadcast_spell_words(caster: Any, spell_name: str) -> None:
     """
     # Import here to avoid circular dependencies
     try:
-        from mud.net.protocol import broadcast_room
+        from mud.utils.messaging import push_message
     except ImportError:
         # Gracefully handle if module not available
         return
@@ -149,5 +149,6 @@ def broadcast_spell_words(caster: Any, spell_name: str) -> None:
         else:
             message = garbled_msg.replace("$n", getattr(caster, "name", "Someone"))
 
-        if hasattr(occupant, "messages"):
-            occupant.messages.append(message)
+        # INV-001: single-channel delivery (push_message XOR) — the prior raw
+        # mailbox append arrived late for a connected occupant.
+        push_message(occupant, message)
