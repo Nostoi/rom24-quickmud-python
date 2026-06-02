@@ -137,8 +137,36 @@ Create tests for end-to-end handler workflows
 
 | ROM C Function | QuickMUD Location | Status | Notes |
 |----------------|-------------------|--------|-------|
-| `get_char_room()` | ✅ `mud/world/char_find.py` | ✅ Verified | Implemented Dec 31 |
+| `get_char_room()` | ✅ `mud/world/char_find.py` | ⚠️ Divergent — see HANDLER-001 | "self" keyword OK, but people loop **skips ch** (`char_find.py:51`); ROM does not (`src/handler.c:2205-2211`), so callers can't target self by own name. Stale "Verified" corrected 2026-06-02. |
 | `get_char_world()` | ✅ `mud/world/char_find.py` | ✅ Verified | Implemented Dec 30 |
+
+#### HANDLER-001 — `get_char_room` skips self by name (cross-caller divergence)
+
+| Field | Value |
+|-------|-------|
+| Severity | IMPORTANT |
+| ROM C | `src/handler.c:2194-2214` |
+| Python | `mud/world/char_find.py:get_char_room` (line 51 `if occupant is char: continue`) |
+| Status | ❌ OPEN |
+
+ROM `get_char_room` returns `ch` for the `"self"` keyword (2203-2204) **and** its
+`in_room->people` loop has **no self-skip** — only `can_see`/`is_name` gates
+(2205-2211) — so socialing/targeting your own name finds you. Python honors
+`"self"` (line 47-48) but adds `if occupant is char: continue` (line 51), so
+`<cmd> <ownname>` cannot resolve to self. Affects every caller that relies on
+ROM's self-by-name match (e.g. `follow <ownname>` → stop-following, `look
+<ownname>`, `kill <ownname>` → self-hit guard).
+
+**Why not fixed in 2.12.57 (INTERP-025):** removing the skip is **CRITICAL**
+blast radius — `gitnexus_impact` shows **14 direct callers** (`do_give`,
+`do_follow`, `do_group`, `do_order`, `do_consider`, `do_murder`, `do_steal`,
+`do_recite`, `do_zap`, `do_pour`, `do_wake`, `look`, `get_char_world`, +
+`_give_money`). Each must be re-checked for its ROM `victim == ch` handling
+before the shared skip is removed; otherwise a command with no self-guard could
+mis-behave on self-targets. INTERP-025 was closed socials-local instead.
+Test-first when closing: assert `look <ownname>` / `follow <ownname>` resolve to
+self, and sweep the 14 callers' self-target branches against their ROM
+counterparts. Surfaced 2026-06-02 while closing INTERP-025.
 
 ### Object Lookup Functions (7 functions)
 

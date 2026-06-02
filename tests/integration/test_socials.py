@@ -107,18 +107,20 @@ class TestSocialExecution:
         assert "alice" in bob.messages[0].lower()
 
     def test_social_targeting_self(self, alice):
-        """Test social targeting self shows 'not found' because search loop skips self."""
+        """Self-target reaches char_auto (INTERP-025).
+
+        ROM do_social resolves the target via get_char_room (src/interp.c:637),
+        whose people loop does NOT skip ch (src/handler.c:2205-2211), so
+        socialing your own name yields victim == ch → char_auto
+        (src/interp.c:643-644). The prior assertion encoded the buggy
+        not-found behavior; ROM is the source of truth (AGENTS.md).
+        """
         alice.messages.clear()
 
         result = perform_social(alice, "smile", "alice")
 
         assert result == ""
-        assert len(alice.messages) > 0
-        assert (
-            "around" in alice.messages[0].lower()
-            or "here" in alice.messages[0].lower()
-            or "isn't" in alice.messages[0].lower()
-        )
+        assert alice.messages == ["You smile at yourself."]
 
     def test_social_nonexistent_target(self, alice):
         """Test social with nonexistent target shows 'not found' message."""

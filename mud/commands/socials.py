@@ -55,12 +55,18 @@ def perform_social(char: Character, name: str, arg: str) -> str:
     victim = None
     if arg:
         arg_lower = arg.lower()
-        for person in char.room.people:
-            if person is char:
-                continue
-            if (getattr(person, "name", None) or "").lower().startswith(arg_lower):
-                victim = person
-                break
+        # mirroring ROM src/interp.c:637 — do_social resolves the target via
+        # get_char_room (src/handler.c:2194-2214): "self" returns ch directly
+        # (2203-2204), and the in_room->people loop does NOT skip ch (2205-2211),
+        # so socialing your own name also finds you. Either path → victim == ch
+        # → char_auto/others_auto (INTERP-025). Do not re-add an `is char` skip.
+        if arg_lower == "self":
+            victim = char
+        else:
+            for person in char.room.people:
+                if (getattr(person, "name", None) or "").lower().startswith(arg_lower):
+                    victim = person
+                    break
     if victim and victim is not char:
         # mirroring ROM src/interp.c:648-650 — TO_NOTVICT excludes the victim;
         # TO_CHAR/TO_VICT go to the directed recipient. act_to_room / _act_to_char
