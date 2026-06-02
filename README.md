@@ -1,6 +1,6 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.12.54-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.12.55-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-5281%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
@@ -163,7 +163,7 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.12.54
+- **Version**: 2.12.55
 - **ROM 2.4b Gameplay Parity**: ⚠️ **broadly audited, currently being revalidated** —
   combat, skills, spells, movement, communication, world/db, save/load, mob programs,
   and all 255 ROM commands are implemented, but some previously “verified” user-visible surfaces were only smoke-tested and are being rechecked with ROM-exact assertions.
@@ -173,7 +173,7 @@ python -m mud  # Start development server
 - **Cross-file Invariants**: ✅ **25/25 enforced** — message delivery, prompt clamping, registry membership,
   same-room combat, death/connection behavior, RNG determinism, persistence coherence, and room-flag
   survival (`.are`→JSON→runtime) are locked by dedicated tests.
-- **Test Suite**: ✅ **5281 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
+- **Test Suite**: ✅ **5303 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
   integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
 - **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact output, boundary, and runtime-path tests on the highest-risk user-visible surfaces.
 - **Compatibility**: Python 3.10+, cross-platform
