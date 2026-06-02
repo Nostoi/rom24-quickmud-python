@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **README honesty pass.** Reconciled the README's internal contradiction — the top framed the project as "trust rebuild in progress" while the bottom "Project Completeness" section still claimed "production-ready" with "100% behavioral parity." Both now consistently describe a feature-complete, green-suite engine in a verification trust-rebuild phase, and distinguish *audit-process completion* (every applicable ROM C file has an audit document) from *behavioral parity* (not yet certified bug-free — three prod bugs shipped this year against ≥95%-audited files). Unified four conflicting test counts (4,934 / 5,256 / 5,306 / 5,319) to the live `5323 passed`, bumped the version badge to 2.12.64, and added an "open parity gaps" note.
+- **README honesty pass.** Reconciled the README's internal contradiction — the top framed the project as "trust rebuild in progress" while the bottom "Project Completeness" section still claimed "production-ready" with "100% behavioral parity." Both now consistently describe a feature-complete, green-suite engine in a verification trust-rebuild phase, and distinguish *audit-process completion* (every applicable ROM C file has an audit document) from *behavioral parity* (not yet certified bug-free — three prod bugs shipped this year against ≥95%-audited files). Unified four conflicting test counts (4,934 / 5,256 / 5,306 / 5,319) to the live `5329 passed`, bumped the version badge to 2.12.65, and added an "open parity gaps" note.
 
 ### Fixed
 
