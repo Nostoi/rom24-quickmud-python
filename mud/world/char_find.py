@@ -57,17 +57,15 @@ def get_char_room(char: "Character", name: str) -> "Character | None":
         if not can_see_character(char, occupant):
             continue
 
-        occupant_name = (getattr(occupant, "name", None) or "").lower()
-        occupant_short = (getattr(occupant, "short_descr", "") or "").lower()
-        keywords = (getattr(occupant, "keywords", "") or "").lower()
+        occupant_name = getattr(occupant, "name", None) or ""
 
-        # mirroring ROM src/handler.c:2207-2210 — `if (!is_name(...)) continue;
-        # if (++count == number)` advances count ONCE per occupant. Combine the
-        # name/short/keyword match sources into a single predicate so an
-        # occupant matching more than one source is not double-counted
-        # (HANDLER-002). Real occupants keep keywords in `name`, so the keyword
-        # term is defensive coverage, never live.
-        if name_lower in occupant_name or name_lower in occupant_short or name_lower in keywords:
+        # mirroring ROM src/handler.c:2207-2210 — `if (!is_name(arg, rch->name))
+        # continue; if (++count == number)`. ROM gates SOLELY on the keyword
+        # `name` list (whole-word is_name), NOT the short_descr — `look city`
+        # must not resolve "a city guard" whose keyword name is just "guard"
+        # (HANDLER-003). The single predicate also keeps count advancing once
+        # per occupant (HANDLER-002).
+        if is_name(name, occupant_name):
             count += 1
             if count == target_count:
                 return occupant
@@ -102,18 +100,18 @@ def get_char_world(char: "Character", name: str) -> "Character | None":
         except ValueError:
             pass
 
-    name_lower = name.lower()
-
     for ch in character_registry:
         from mud.world.vision import can_see_character
 
         if not can_see_character(char, ch):
             continue
 
-        ch_name = (getattr(ch, "name", None) or "").lower()
-        ch_short = (getattr(ch, "short_descr", "") or "").lower()
+        ch_name = getattr(ch, "name", None) or ""
 
-        if name_lower in ch_name or name_lower in ch_short:
+        # mirroring ROM src/handler.c:2237 — get_char_world gates on
+        # is_name(arg, wch->name) only (keyword name, whole-word), not short_descr
+        # (HANDLER-003).
+        if is_name(name, ch_name):
             count += 1
             if count == target_count:
                 return ch

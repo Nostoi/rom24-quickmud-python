@@ -226,19 +226,55 @@ Test: `tests/integration/test_handler002_get_char_room_count_once.py`.
 |-------|-------|
 | Severity | MINOR |
 | ROM C | `src/handler.c:2207` (`is_name(arg, rch->name)` — only `rch->name`) |
-| Python | `mud/world/char_find.py:get_char_room` / `get_char_world` (also tests `short_descr`) |
-| Status | ❌ OPEN |
+| Python | `mud/world/char_find.py:get_char_room` / `get_char_world` (now gate on `is_name(arg, name)` only) |
+| Status | ✅ FIXED (2026-06-02) — both helpers gate on `is_name(name, occupant.name)` only; `short_descr`/`keywords` substring match dropped. |
 
 ROM's room/world char lookup gates solely on `is_name(arg, rch->name)`. Python
-additionally matches `name_lower in occupant_short` (the `short_descr`), so e.g.
-`look city` resolves "a city guard" in Python where ROM would not (ROM's `name`
+additionally matched `name_lower in occupant_short` (the `short_descr`), so e.g.
+`look city` resolved "a city guard" in Python where ROM would not (ROM's `name`
 is the keyword list "guard", and `is_name` does whole-word matching, not the
-substring match Python uses). Likely load-bearing for existing callers/tests
-that rely on the looser substring/short_descr match — do **not** silently tighten
-it. Surfaced 2026-06-02 while closing HANDLER-002. Scope when picked up:
-decide whether to mirror ROM's `is_name(arg, name)`-only whole-word match
-(parity-faithful) and audit caller fallout, or document the divergence as
-intentional. Separate gap from the HANDLER-002 double-count.
+substring match Python uses). Surfaced 2026-06-02 while closing HANDLER-002.
+
+**Fixed 2026-06-02:** `get_char_room` and `get_char_world` now gate each occupant
+on `is_name(name, occupant.name)` alone (keyword `name` list), dropping the
+`short_descr` and `keywords` substring branches — matching ROM
+`src/handler.c:2207`/`:2237`. The shared `is_name` helper was **not** touched (it
+has its own callers in `mob_cmds`, `build`, `info`, `account_service`).
+**Caller fallout: zero** — the full suite (5321 passed) surfaced no failures
+attributable to the tightening; existing callers/tests target mobs by keyword,
+not by description words, so the "load-bearing" concern in the original gap note
+was conservative. Tests:
+`tests/integration/test_handler003_get_char_matches_name_only.py` (room + world,
+keyword matches / short_descr word does not).
+
+**Out-of-scope divergence filed while here → HANDLER-004 (below):** Python's
+`is_name` itself is looser than ROM — it uses a substring test (`name_lower in
+word`) rather than ROM's `str_prefix` whole-word match, and does not enforce
+ROM's "ALL space-separated parts of `arg` must match" rule. `is_name("uard",
+"guard")` returns `True` in Python, `FALSE` in ROM. Left as a separate gap to
+keep this fix scoped (changing `is_name` widens blast radius to its other
+callers).
+
+#### HANDLER-004 — Python `is_name` uses substring match, not ROM's whole-word `str_prefix`
+
+| Field | Value |
+|-------|-------|
+| Severity | MINOR |
+| ROM C | `src/handler.c:932-969` (`is_name`) — each space-separated part of `str` must be a `str_prefix` (whole-word prefix) of some word in `namelist`; **all** parts must match. |
+| Python | `mud/world/char_find.py:is_name` — `name_lower in word or word.startswith(name_lower)` per word; matches if **any** single word substring-matches. |
+| Status | ❌ OPEN |
+
+Python's `is_name` diverges from ROM in two ways: (1) it uses a **substring**
+test (`name_lower in word`) in addition to `startswith`, so `is_name("uard",
+"guard")` returns `True` where ROM's `str_prefix` (prefix-only) returns `FALSE`;
+(2) for a multi-word `arg` (e.g. `"big guard"`) ROM requires **every** part to
+match a namelist word, while Python returns `True` as soon as the whole `arg`
+substring-matches a single word (the loop has no all-parts conjunction). Surfaced
+2026-06-02 while closing HANDLER-003 (which routed both char-lookup helpers
+through this `is_name`). Scope when picked up: rewrite `is_name` to mirror ROM's
+`one_argument` tokenization + `str_prefix` all-parts logic, then audit the other
+callers (`mob_cmds`, `build` ×3, `info`, `account_service`) for fallout — they
+currently rely on the looser substring behavior, so tighten test-first.
 
 ### Object Lookup Functions (7 functions)
 
