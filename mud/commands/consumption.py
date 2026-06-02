@@ -8,10 +8,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import AffectFlag, ItemType
-from mud.net.protocol import broadcast_room
-from mud.utils.act import act_format
+from mud.utils.act import act_to_room
 from mud.utils.rng_mm import number_fuzzy
 
 if TYPE_CHECKING:
@@ -66,10 +64,9 @@ def do_eat(ch: Character, args: str) -> str:
     # ROM src/act_obj.c:1317
     room = getattr(ch, "room", None)
     if room is not None:
-        room_message = act_format("$n eats $p.", recipient=None, actor=ch, arg1=obj)
-        broadcast_room(room, room_message, exclude=ch)
-        # mirroring ROM src/act_obj.c:1317 / src/comm.c:2384 - act() dispatches TRIG_ACT.
-        mp_act_trigger_room(room_message, room, ch, arg1=obj)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:1317, no MOBtrigger wrap).
+        act_to_room(room, "$n eats $p.", ch, arg1=obj, exclude=ch)
 
     obj_name = getattr(obj, "short_descr", "something")
     messages = [f"You eat {obj_name}."]
@@ -114,10 +111,9 @@ def do_eat(ch: Character, args: str) -> str:
         if isinstance(obj_value, list) and len(obj_value) > 3 and obj_value[3] != 0:
             # Poison TO_ROOM: "$n chokes and gags." (ROM src/act_obj.c:1342)
             if room is not None:
-                choke_msg = act_format("$n chokes and gags.", recipient=None, actor=ch, arg1=None)
-                broadcast_room(room, choke_msg, exclude=ch)
-                # mirroring ROM src/act_obj.c:1342 / src/comm.c:2384.
-                mp_act_trigger_room(choke_msg, room, ch)
+                # INV-025: act_to_room renders $n per-recipient (PERS masking) +
+                # dispatches TRIG_ACT (ROM src/act_obj.c:1342, no MOBtrigger wrap).
+                act_to_room(room, "$n chokes and gags.", ch, exclude=ch)
             messages.append("You choke and gag.")
 
             # EAT-005: apply poison flag; store ROM-correct affect metadata on ch.affects
@@ -137,7 +133,7 @@ def do_eat(ch: Character, args: str) -> str:
                         "type": "poison",
                         "level": number_fuzzy(level_val),
                         "duration": 2 * level_val,
-                        "location": 0,   # APPLY_NONE
+                        "location": 0,  # APPLY_NONE
                         "modifier": 0,
                         "bitvector": int(AffectFlag.POISON),
                     }
@@ -243,25 +239,18 @@ def do_drink(ch: Character, args: str) -> str:
     # ROM src/act_obj.c:1238-1241
     obj_short = getattr(obj, "short_descr", "something")
     if room is not None:
-        room_msg = act_format(
-            "$n drinks $T from $p.",
-            recipient=None,
-            actor=ch,
-            arg1=obj,
-            arg2=liq.name,
-        )
-        broadcast_room(room, room_msg, exclude=ch)
-        # mirroring ROM src/act_obj.c:1238-1241 / src/comm.c:2384 - act() dispatches TRIG_ACT.
-        mp_act_trigger_room(room_msg, room, ch, arg1=obj, arg2=liq.name)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:1238-1241, no MOBtrigger wrap).
+        act_to_room(room, "$n drinks $T from $p.", ch, arg1=obj, arg2=liq.name, exclude=ch)
 
     messages = [f"You drink {liq.name} from {obj_short}."]
 
     # DRINK-005: gain_condition using liq_table affect values
     # ROM src/act_obj.c:1243-1250
-    gain_condition(ch, Condition.DRUNK,  amount * liq.proof  // 36)
-    gain_condition(ch, Condition.FULL,   amount * liq.full   // 4)
+    gain_condition(ch, Condition.DRUNK, amount * liq.proof // 36)
+    gain_condition(ch, Condition.FULL, amount * liq.full // 4)
     gain_condition(ch, Condition.THIRST, amount * liq.thirst // 10)
-    gain_condition(ch, Condition.HUNGER, amount * liq.food   // 2)
+    gain_condition(ch, Condition.HUNGER, amount * liq.food // 2)
 
     # DRINK-006: post-condition feedback messages
     # ROM src/act_obj.c:1252-1257
@@ -280,10 +269,9 @@ def do_drink(ch: Character, args: str) -> str:
     # ROM src/act_obj.c:1259-1274
     if len(value) > 3 and value[3] != 0:
         if room is not None:
-            choke_msg = act_format("$n chokes and gags.", recipient=None, actor=ch, arg1=None)
-            broadcast_room(room, choke_msg, exclude=ch)
-            # mirroring ROM src/act_obj.c:1263 / src/comm.c:2384.
-            mp_act_trigger_room(choke_msg, room, ch)
+            # INV-025: act_to_room renders $n per-recipient (PERS masking) +
+            # dispatches TRIG_ACT (ROM src/act_obj.c:1263, no MOBtrigger wrap).
+            act_to_room(room, "$n chokes and gags.", ch, exclude=ch)
         messages.append("You choke and gag.")
 
         if hasattr(ch, "add_affect"):
@@ -298,7 +286,7 @@ def do_drink(ch: Character, args: str) -> str:
                     "type": "poison",
                     "level": number_fuzzy(amount),
                     "duration": 3 * amount,
-                    "location": 0,    # APPLY_NONE
+                    "location": 0,  # APPLY_NONE
                     "modifier": 0,
                     "bitvector": int(AffectFlag.POISON),
                 }

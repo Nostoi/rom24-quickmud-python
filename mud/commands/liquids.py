@@ -3,13 +3,13 @@ Liquid container commands - fill and pour.
 
 ROM Reference: src/act_obj.c do_fill (lines 965-1032), do_pour (lines 1033-1160)
 """
+
 from __future__ import annotations
 
-from mud.mobprog import Trigger, mp_act_trigger_room
+from mud.mobprog import Trigger
 from mud.models.character import Character
 from mud.models.constants import LIQUID_TABLE, ItemType, WearLocation
-from mud.net.protocol import broadcast_room
-from mud.utils.act import act_format
+from mud.utils.act import act_format, act_to_room
 from mud.world.obj_find import get_obj_carry, get_obj_here
 
 
@@ -89,16 +89,9 @@ def do_fill(char: Character, args: str) -> str:
 
     # FILL-002: TO_ROOM broadcast — ROM src/act_obj.c:1025-1027
     # "$n fills $p with %s from $P."
-    room_msg = act_format(
-        f"$n fills $p with {liquid_name} from $P.",
-        recipient=None,
-        actor=char,
-        arg1=obj,
-        arg2=fountain,
-    )
-    broadcast_room(room, room_msg, exclude=char)
-    # ROM src/act_obj.c:1025 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-    mp_act_trigger_room(room_msg, room, char, arg1=obj, arg2=fountain)
+    # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+    # TRIG_ACT (ROM src/act_obj.c:1025, no MOBtrigger wrap).
+    act_to_room(room, f"$n fills $p with {liquid_name} from $P.", char, arg1=obj, arg2=fountain, exclude=char)
 
     # FILL-003: TO_CHAR — ROM src/act_obj.c:1022-1024
     # "You fill $p with %s from $P."
@@ -150,6 +143,7 @@ def do_pour(char: Character, args: str) -> str:
     if target is None:
         # Try to find a character and use what they're holding
         from mud.world.char_find import get_char_room
+
         target_char = get_char_room(char, target_arg)
 
         if target_char is None:
@@ -229,38 +223,20 @@ def do_pour(char: Character, args: str) -> str:
             target_char.messages.append(vict_msg)
         _dispatch_act_trigger_to_recipient(vict_msg, target_char, char, arg2=target_char)
 
-        # TO_NOTVICT — observers excluding both char and target_char
+        # TO_NOTVICT — observers excluding both char and target_char.
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:1155, TO_NOTVICT excludes actor and victim).
         if room:
-            notvict_msg = act_format(
-                f"$n pours some {liquid_name} for $N.",
-                recipient=None,
-                actor=char,
-                arg1=None,
-                arg2=target_char,
-            )
-            for person in list(getattr(room, "people", [])):
-                if person is char or person is target_char:
-                    continue
-                if hasattr(person, "messages"):
-                    person.messages.append(notvict_msg)
-            # ROM src/act_obj.c:1155 — TO_NOTVICT excludes actor and victim, then dispatches TRIG_ACT.
-            mp_act_trigger_room(notvict_msg, room, char, arg2=target_char, exclude=(target_char,))
+            act_to_room(room, f"$n pours some {liquid_name} for $N.", char, arg2=target_char, exclude=target_char)
 
         return f"You pour some {liquid_name} for {char_name}."
     else:
         # POUR-002: object-to-object pour — ROM src/act_obj.c:1142-1144
         # TO_ROOM: "$n pours %s from $p into $P."
         if room:
-            room_msg = act_format(
-                f"$n pours {liquid_name} from $p into $P.",
-                recipient=None,
-                actor=char,
-                arg1=source,
-                arg2=target,
-            )
-            broadcast_room(room, room_msg, exclude=char)
-            # ROM src/act_obj.c:1142 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-            mp_act_trigger_room(room_msg, room, char, arg1=source, arg2=target)
+            # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+            # TRIG_ACT (ROM src/act_obj.c:1142, no MOBtrigger wrap).
+            act_to_room(room, f"$n pours {liquid_name} from $p into $P.", char, arg1=source, arg2=target, exclude=char)
 
         return f"You pour {liquid_name} from {source_name_str} into {target_name_str}."
 
@@ -289,16 +265,11 @@ def _pour_out(char: Character, source, source_value: list) -> str:
     # "$n inverts $p, spilling %s all over the ground."
     room = getattr(char, "room", None)
     if room:
-        room_msg = act_format(
-            f"$n inverts $p, spilling {liquid_name} all over the ground.",
-            recipient=None,
-            actor=char,
-            arg1=source,
-            arg2=None,
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:1075, no MOBtrigger wrap).
+        act_to_room(
+            room, f"$n inverts $p, spilling {liquid_name} all over the ground.", char, arg1=source, exclude=char
         )
-        broadcast_room(room, room_msg, exclude=char)
-        # ROM src/act_obj.c:1075 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-        mp_act_trigger_room(room_msg, room, char, arg1=source)
 
     return f"You invert {source_name_str}, spilling {liquid_name} all over the ground."
 

@@ -7,12 +7,10 @@ ROM Reference: src/act_obj.c
 from __future__ import annotations
 
 from mud.handler import unequip_char
-from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import OBJ_VNUM_PIT, ExtraFlag, ItemType, PlayerFlag, WearFlag
-from mud.net.protocol import broadcast_room
 from mud.utils import rng_mm
-from mud.utils.act import act_format
+from mud.utils.act import act_to_room
 from mud.world.obj_find import get_obj_carry, get_obj_here, get_obj_wear
 
 # Container flags
@@ -161,17 +159,15 @@ def do_put(char: Character, args: str) -> str:
         if room:
             if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
                 # "on" message
-                room_message = act_format("$n puts $p on $P.", recipient=None, actor=char, arg1=obj, arg2=container)
-                broadcast_room(room, room_message, exclude=char)
-                # ROM src/act_obj.c:440 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-                mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
+                # INV-025: act_to_room renders $n per-recipient (PERS masking) +
+                # dispatches TRIG_ACT (ROM src/act_obj.c:440, no MOBtrigger wrap).
+                act_to_room(room, "$n puts $p on $P.", char, arg1=obj, arg2=container, exclude=char)
                 return f"You put {obj_name} on {container_short}."
             else:
                 # "in" message
-                room_message = act_format("$n puts $p in $P.", recipient=None, actor=char, arg1=obj, arg2=container)
-                broadcast_room(room, room_message, exclude=char)
-                # ROM src/act_obj.c:445 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-                mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
+                # INV-025: act_to_room renders $n per-recipient (PERS masking) +
+                # dispatches TRIG_ACT (ROM src/act_obj.c:445, no MOBtrigger wrap).
+                act_to_room(room, "$n puts $p in $P.", char, arg1=obj, arg2=container, exclude=char)
                 return f"You put {obj_name} in {container_short}."
 
         # Fallback if no room
@@ -251,17 +247,15 @@ def do_put(char: Character, args: str) -> str:
             if room:
                 if len(container_value) > 1 and (container_value[1] & CONT_PUT_ON):
                     # "on" message
-                    room_message = act_format("$n puts $p on $P.", recipient=None, actor=char, arg1=obj, arg2=container)
-                    broadcast_room(room, room_message, exclude=char)
-                    # ROM src/act_obj.c:479 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-                    mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
+                    # INV-025: act_to_room renders $n per-recipient (PERS masking) +
+                    # dispatches TRIG_ACT (ROM src/act_obj.c:479, no MOBtrigger wrap).
+                    act_to_room(room, "$n puts $p on $P.", char, arg1=obj, arg2=container, exclude=char)
                     messages.append(f"You put {obj_short} on {container_short}.")
                 else:
                     # "in" message
-                    room_message = act_format("$n puts $p in $P.", recipient=None, actor=char, arg1=obj, arg2=container)
-                    broadcast_room(room, room_message, exclude=char)
-                    # ROM src/act_obj.c:484 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-                    mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
+                    # INV-025: act_to_room renders $n per-recipient (PERS masking) +
+                    # dispatches TRIG_ACT (ROM src/act_obj.c:484, no MOBtrigger wrap).
+                    act_to_room(room, "$n puts $p in $P.", char, arg1=obj, arg2=container, exclude=char)
                     messages.append(f"You put {obj_short} in {container_short}.")
             else:
                 # Fallback if no room
@@ -360,15 +354,9 @@ def _perform_remove(char: Character, obj) -> str:
     # ROM TO_ROOM broadcast: "$n stops using $p."
     room = getattr(char, "room", None)
     if room is not None:
-        room_message = act_format(
-            "$n stops using $p.",
-            recipient=None,
-            actor=char,
-            arg1=obj,
-        )
-        broadcast_room(room, room_message, exclude=char)
-        # ROM src/handler.c:remove_obj — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-        mp_act_trigger_room(room_message, room, char, arg1=obj)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/handler.c:remove_obj act(TO_ROOM), no MOBtrigger wrap).
+        act_to_room(room, "$n stops using $p.", char, arg1=obj, exclude=char)
 
     # ROM TO_CHAR: "You stop using $p."
     return f"You stop using {obj_name}."
@@ -393,15 +381,11 @@ def do_sacrifice(char: Character, args: str) -> str:
         if room is not None:
             # $mself = object pronoun of actor + "self" (e.g., "himself")
             from mud.utils.act import _object_pronoun, _sex_of
+
             reflexive = _object_pronoun(_sex_of(char)) + "self"
-            room_msg = act_format(
-                "$n offers " + reflexive + " to Mota, who graciously declines.",
-                recipient=None,
-                actor=char,
-            )
-            broadcast_room(room, room_msg, exclude=char)
-            # ROM src/act_obj.c:1782 act(TO_ROOM) fires TRIG_ACT per src/comm.c:2384
-            mp_act_trigger_room(room_msg, room, char)
+            # INV-025: act_to_room renders $n per-recipient (PERS masking) +
+            # dispatches TRIG_ACT (ROM src/act_obj.c:1782, no MOBtrigger wrap).
+            act_to_room(room, "$n offers " + reflexive + " to Mota, who graciously declines.", char, exclude=char)
         return "Mota appreciates your offer and may accept it later."
 
     if not room:
@@ -471,10 +455,9 @@ def do_sacrifice(char: Character, args: str) -> str:
 
     # SAC-001: ROM line 1856 — broadcast TO_ROOM before extract_obj.
     if room is not None:
-        room_msg = act_format("$n sacrifices $p to Mota.", recipient=None, actor=char, arg1=obj)
-        broadcast_room(room, room_msg, exclude=char)
-        # ROM src/act_obj.c:1856 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-        mp_act_trigger_room(room_msg, room, char, arg1=obj)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:1856, no MOBtrigger wrap).
+        act_to_room(room, "$n sacrifices $p to Mota.", char, arg1=obj, exclude=char)
 
     _extract_obj(char, obj)
 
@@ -516,10 +499,9 @@ def do_quaff(char: Character, args: str) -> str:
     # ROM act() pair fires BEFORE spells (src/act_obj.c:1897-1898)
     room = getattr(char, "room", None)
     if room is not None:
-        room_message = act_format("$n quaffs $p.", recipient=None, actor=char, arg1=obj)
-        broadcast_room(room, room_message, exclude=char)
-        # ROM src/act_obj.c:1897 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-        mp_act_trigger_room(room_message, room, char, arg1=obj)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:1897, no MOBtrigger wrap).
+        act_to_room(room, "$n quaffs $p.", char, arg1=obj, exclude=char)
 
     # Cast the spells from the potion
     obj_value = getattr(obj, "value", [0, 0, 0, 0, 0])

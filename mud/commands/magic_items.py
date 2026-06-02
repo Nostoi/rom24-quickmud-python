@@ -19,12 +19,10 @@ from typing import TYPE_CHECKING
 
 from mud.commands.obj_manipulation import _extract_obj, _obj_cast_spell
 from mud.math.c_compat import c_div
-from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import ItemType, WearLocation
-from mud.net.protocol import broadcast_room
 from mud.skills.registry import check_improve, skill_registry
 from mud.utils import rng_mm
-from mud.utils.act import act_format
+from mud.utils.act import act_format, act_to_room
 from mud.world.char_find import get_char_room as _get_char_room
 from mud.world.obj_find import get_obj_carry
 from mud.world.obj_find import get_obj_here as _get_obj_here
@@ -90,29 +88,27 @@ def _resolve_target_kind(spell_name: str) -> str:
     return getattr(skill, "target", "ignore") or "ignore"
 
 
-def _broadcast(room, msg: str, *, actor=None, arg1=None, arg2=None, exclude=None) -> None:
-    """Broadcast ``msg`` to room, supporting an iterable ``exclude`` set.
+def _broadcast(room, format_str: str, *, actor=None, arg1=None, arg2=None, exclude=None) -> None:
+    """Render a ROM ``act(TO_ROOM)`` / ``TO_NOTVICT`` line per recipient.
 
-    ``broadcast_room`` only accepts a single character; for ROM TO_NOTVICT we
-    need to skip both actor and victim, so iterate manually when given a set.
+    INV-025: delegates to :func:`act_to_room`, which renders ``$n``/``$N``
+    through per-recipient PERS masking (an invisible actor → "someone") and
+    dispatches TRIG_ACT to NPC recipients. ``act_to_room`` always excludes the
+    actor; for ROM TO_NOTVICT (exclude actor *and* victim) pass the victim as
+    ``exclude`` (a list like ``[ch, victim]`` is reduced to its non-actor
+    member). The magic-item act() sites are not MOBtrigger-suppressed.
     """
-    if room is None or not msg:
+    if room is None or not format_str:
         return
-    if exclude is None or not isinstance(exclude, list | tuple):
-        broadcast_room(room, msg, exclude=exclude)
-        # ROM src/act_obj.c magic-item act() sites are not MOBtrigger-suppressed;
-        # src/comm.c:2384 dispatches TRIG_ACT to NPC recipients of the room line.
-        mp_act_trigger_room(msg, room, actor, arg1=arg1, arg2=arg2, exclude=exclude)
-        return
-    skip = list(exclude)
-    for char in list(getattr(room, "people", [])):
-        if any(char is s for s in skip):
-            continue
-        msgs = getattr(char, "messages", None)
-        if msgs is not None:
-            msgs.append(msg)
-    # ROM TO_NOTVICT lines trigger only for recipients that received the line.
-    mp_act_trigger_room(msg, room, actor, arg1=arg1, arg2=arg2, exclude=skip)
+    extra_exclude = None
+    if isinstance(exclude, list | tuple):
+        for member in exclude:
+            if member is not actor:
+                extra_exclude = member
+                break
+    elif exclude is not actor:
+        extra_exclude = exclude
+    act_to_room(room, format_str, actor, arg1=arg1, arg2=arg2, exclude=extra_exclude)
 
 
 def do_recite(ch: Character, args: str) -> str:
@@ -151,13 +147,7 @@ def do_recite(ch: Character, args: str) -> str:
 
     room = getattr(ch, "room", None)
     # ROM 1955-1956: act() pair fires before skill check
-    _broadcast(
-        room,
-        act_format("$n recites $p.", recipient=None, actor=ch, arg1=scroll),
-        actor=ch,
-        arg1=scroll,
-        exclude=ch,
-    )
+    _broadcast(room, "$n recites $p.", actor=ch, arg1=scroll, exclude=ch)
     self_msg = act_format("You recite $p.", recipient=ch, actor=ch, arg1=scroll)
 
     # ROM 1958: number_percent() >= 20 + skill * 4 / 5  (failure branch)
@@ -220,13 +210,7 @@ def do_brandish(ch: Character, args: str) -> str:
     # ROM 2006: if (staff->value[2] > 0)
     if charges > 0:
         # ROM 2008-2009: act pair
-        _broadcast(
-            room,
-            act_format("$n brandishes $p.", recipient=None, actor=ch, arg1=staff),
-            actor=ch,
-            arg1=staff,
-            exclude=ch,
-        )
+        _broadcast(room, "$n brandishes $p.", actor=ch, arg1=staff, exclude=ch)
         out_lines.append(act_format("You brandish $p.", recipient=ch, actor=ch, arg1=staff))
 
         skill_pct = _skill_percent(ch, "staves")
@@ -249,10 +233,10 @@ def do_brandish(ch: Character, args: str) -> str:
                     if vch is not ch:
                         continue
                 elif target_kind == "victim":  # TAR_CHAR_OFFENSIVE
-                    if (vch_is_npc if ch_is_npc else not vch_is_npc):
+                    if vch_is_npc if ch_is_npc else not vch_is_npc:
                         continue
                 elif target_kind == "friendly":  # TAR_CHAR_DEFENSIVE
-                    if (not vch_is_npc if ch_is_npc else vch_is_npc):
+                    if not vch_is_npc if ch_is_npc else vch_is_npc:
                         continue
                 elif target_kind == "self":  # TAR_CHAR_SELF
                     if vch is not ch:
@@ -268,13 +252,7 @@ def do_brandish(ch: Character, args: str) -> str:
     new_charges = charges - 1
     _set_value(staff, 2, new_charges)
     if new_charges <= 0:
-        _broadcast(
-            room,
-            act_format("$n's $p blazes bright and is gone.", recipient=None, actor=ch, arg1=staff),
-            actor=ch,
-            arg1=staff,
-            exclude=ch,
-        )
+        _broadcast(room, "$n's $p blazes bright and is gone.", actor=ch, arg1=staff, exclude=ch)
         out_lines.append(act_format("Your $p blazes bright and is gone.", recipient=ch, actor=ch, arg1=staff))
         _clear_hold(ch)
         _extract_obj(ch, staff)
@@ -329,14 +307,7 @@ def do_zap(ch: Character, args: str) -> str:
         # ROM 2121-2131: messaging branches
         if victim is not None:
             # ROM TO_NOTVICT: exclude ch + victim. act_format uses arg2 for $N.
-            _broadcast(
-                room,
-                act_format("$n zaps $N with $p.", recipient=None, actor=ch, arg1=wand, arg2=victim),
-                actor=ch,
-                arg1=wand,
-                arg2=victim,
-                exclude=[ch, victim],
-            )
+            _broadcast(room, "$n zaps $N with $p.", actor=ch, arg1=wand, arg2=victim, exclude=[ch, victim])
             out_lines.append(act_format("You zap $N with $p.", recipient=ch, actor=ch, arg1=wand, arg2=victim))
             if victim is not ch:
                 vict_msg = act_format("$n zaps you with $p.", recipient=victim, actor=ch, arg1=wand, arg2=victim)
@@ -344,14 +315,7 @@ def do_zap(ch: Character, args: str) -> str:
                 if msgs is not None and vict_msg:
                     msgs.append(vict_msg)
         else:
-            _broadcast(
-                room,
-                act_format("$n zaps $P with $p.", recipient=None, actor=ch, arg1=wand, arg2=target_obj),
-                actor=ch,
-                arg1=wand,
-                arg2=target_obj,
-                exclude=ch,
-            )
+            _broadcast(room, "$n zaps $P with $p.", actor=ch, arg1=wand, arg2=target_obj, exclude=ch)
             out_lines.append(act_format("You zap $P with $p.", recipient=ch, actor=ch, arg1=wand, arg2=target_obj))
 
         skill_pct = _skill_percent(ch, "wands")
@@ -361,13 +325,7 @@ def do_zap(ch: Character, args: str) -> str:
             out_lines.append(
                 act_format("Your efforts with $p produce only smoke and sparks.", recipient=ch, actor=ch, arg1=wand)
             )
-            _broadcast(
-                room,
-                act_format("$n's efforts with $p produce only smoke and sparks.", recipient=None, actor=ch, arg1=wand),
-                actor=ch,
-                arg1=wand,
-                exclude=ch,
-            )
+            _broadcast(room, "$n's efforts with $p produce only smoke and sparks.", actor=ch, arg1=wand, exclude=ch)
             check_improve(ch, "wands", False, 2)
         else:
             spell = _get_value_raw(wand, 3)
@@ -380,13 +338,7 @@ def do_zap(ch: Character, args: str) -> str:
     new_charges = charges - 1
     _set_value(wand, 2, new_charges)
     if new_charges <= 0:
-        _broadcast(
-            room,
-            act_format("$n's $p explodes into fragments.", recipient=None, actor=ch, arg1=wand),
-            actor=ch,
-            arg1=wand,
-            exclude=ch,
-        )
+        _broadcast(room, "$n's $p explodes into fragments.", actor=ch, arg1=wand, exclude=ch)
         out_lines.append(act_format("Your $p explodes into fragments.", recipient=ch, actor=ch, arg1=wand))
         _clear_hold(ch)
         _extract_obj(ch, wand)

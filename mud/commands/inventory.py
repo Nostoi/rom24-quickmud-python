@@ -7,7 +7,6 @@ from mud.ai import _can_loot
 from mud.commands.group_commands import do_split, is_same_group
 from mud.commands.obj_manipulation import CONT_CLOSED, _can_drop_obj, _obj_from_char, get_obj_list
 from mud.handler import create_money
-from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import (
     OBJ_VNUM_COINS,
@@ -31,9 +30,8 @@ from mud.models.constants import (
     WearLocation,
     canonical_wear_slot,
 )
-from mud.net.protocol import broadcast_room
 from mud.spawning.obj_spawner import spawn_object
-from mud.utils.act import act_format
+from mud.utils.act import act_to_room
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
 from mud.world.obj_find import get_obj_carry, get_obj_here
 from mud.world.vision import can_see_object
@@ -297,10 +295,9 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
         # ROM C line 151: act("$n gets $p from $P.", ch, obj, container, TO_ROOM)
         room = getattr(char, "room", None)
         if room:
-            room_message = act_format("$n gets $p from $P.", recipient=None, actor=char, arg1=obj, arg2=container)
-            broadcast_room(room, room_message, exclude=char)
-            # ROM src/act_obj.c:151 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-            mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=container)
+            # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+            # TRIG_ACT (ROM src/act_obj.c:151, no MOBtrigger wrap).
+            act_to_room(room, "$n gets $p from $P.", char, arg1=obj, arg2=container, exclude=char)
 
         # Remove from container
         if hasattr(container, "contained_items"):
@@ -320,10 +317,9 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
         # ROM C line 158: act("$n gets $p.", ch, obj, container, TO_ROOM)
         room = getattr(char, "room", None)
         if room:
-            room_message = act_format("$n gets $p.", recipient=None, actor=char, arg1=obj, arg2=None)
-            broadcast_room(room, room_message, exclude=char)
-            # ROM src/act_obj.c:158 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-            mp_act_trigger_room(room_message, room, char, arg1=obj)
+            # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+            # TRIG_ACT (ROM src/act_obj.c:158, no MOBtrigger wrap).
+            act_to_room(room, "$n gets $p.", char, arg1=obj, exclude=char)
 
         # Remove from room
         room = getattr(char, "room", None)
@@ -651,10 +647,9 @@ def do_drop(char: Character, args: str) -> str:
         if money_obj is not None:
             room.add_object(money_obj)
 
-        room_message = act_format("$n drops some coins.", recipient=None, actor=char, arg1=None, arg2=None)
-        broadcast_room(room, room_message, exclude=char)
-        # ROM src/act_obj.c:586 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-        mp_act_trigger_room(room_message, room, char)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:586, no MOBtrigger wrap).
+        act_to_room(room, "$n drops some coins.", char, exclude=char)
         return "OK."
 
     if arg != "all" and not arg.startswith("all."):
@@ -667,18 +662,16 @@ def do_drop(char: Character, args: str) -> str:
         _obj_from_char(char, obj)
         room.add_object(obj)
 
-        room_message = act_format("$n drops $p.", recipient=None, actor=char, arg1=obj, arg2=None)
-        broadcast_room(room, room_message, exclude=char)
-        # ROM src/act_obj.c:608 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-        mp_act_trigger_room(room_message, room, char, arg1=obj)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:608, no MOBtrigger wrap).
+        act_to_room(room, "$n drops $p.", char, arg1=obj, exclude=char)
         obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "something")
         extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
         if extra_flags & int(ExtraFlag.MELT_DROP):
             if obj in room.contents:
                 room.contents.remove(obj)
-            smoke_message = act_format("$p dissolves into smoke.", recipient=None, actor=char, arg1=obj, arg2=None)
-            broadcast_room(room, smoke_message, exclude=char)
-            mp_act_trigger_room(smoke_message, room, char, arg1=obj)
+            # $p renders per-recipient object visibility; TRIG_ACT dispatch preserved.
+            act_to_room(room, "$p dissolves into smoke.", char, arg1=obj, exclude=char)
             return f"You drop {obj_name}.\n{obj_name} dissolves into smoke."
         return f"You drop {obj_name}."
 
@@ -701,18 +694,16 @@ def do_drop(char: Character, args: str) -> str:
         _obj_from_char(char, obj)
         room.add_object(obj)
 
-        room_message = act_format("$n drops $p.", recipient=None, actor=char, arg1=obj, arg2=None)
-        broadcast_room(room, room_message, exclude=char)
-        # ROM src/act_obj.c:632 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-        mp_act_trigger_room(room_message, room, char, arg1=obj)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:632, no MOBtrigger wrap).
+        act_to_room(room, "$n drops $p.", char, arg1=obj, exclude=char)
         obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "something")
         extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
         if extra_flags & int(ExtraFlag.MELT_DROP):
             if obj in room.contents:
                 room.contents.remove(obj)
-            smoke_message = act_format("$p dissolves into smoke.", recipient=None, actor=char, arg1=obj, arg2=None)
-            broadcast_room(room, smoke_message, exclude=char)
-            mp_act_trigger_room(smoke_message, room, char, arg1=obj)
+            # $p renders per-recipient object visibility; TRIG_ACT dispatch preserved.
+            act_to_room(room, "$p dissolves into smoke.", char, arg1=obj, exclude=char)
             dropped_messages.append(f"You drop {obj_name}.\n{obj_name} dissolves into smoke.")
         else:
             dropped_messages.append(f"You drop {obj_name}.")
