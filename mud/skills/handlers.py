@@ -3191,15 +3191,20 @@ def dirt_kicking(caster: Character, target: Character | None = None) -> str:
     if victim is None:
         raise ValueError("dirt_kicking requires an opponent")
 
-    if victim is caster:
-        _send_to_char(caster, "Very funny.")
+    # mirroring ROM src/fight.c:2521-2528 — the AFF_BLIND check runs BEFORE the
+    # `victim == ch` "Very funny." check, and its only message is
+    # `act("$E's already been blinded.", ch, NULL, victim, TO_CHAR)` ($E = the
+    # victim's gendered subject pronoun, capitalized). FIGHT-040 — Python had the
+    # checks reversed, baked the victim name instead of $E, and carried an
+    # invented `has_spell_effect("dirt kicking")` guard with a non-ROM message
+    # (dead code anyway: the dirt-kick effect sets AFF_BLIND, so this branch
+    # already catches a re-kick).
+    if getattr(victim, "has_affect", None) and victim.has_affect(AffectFlag.BLIND):
+        _send_to_char(caster, act_format("$E's already been blinded.", recipient=caster, actor=caster, arg2=victim))
         return ""
 
-    if getattr(victim, "has_affect", None) and victim.has_affect(AffectFlag.BLIND):
-        _send_to_char(caster, f"{_character_name(victim)} is already blinded.")
-        return ""
-    if getattr(victim, "has_spell_effect", None) and victim.has_spell_effect("dirt kicking"):
-        _send_to_char(caster, f"{_character_name(victim)} already has dirt in their eyes.")
+    if victim is caster:
+        _send_to_char(caster, "Very funny.")
         return ""
 
     chance = _skill_percent(caster, "dirt kicking")
