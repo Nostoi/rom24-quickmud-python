@@ -1,64 +1,57 @@
-# Session Status — 2026-06-02 — ACT_COMM-002 + HANDLER-003 + HANDLER-005 CLOSED (2.12.64)
+# Session Status — 2026-06-02 — README honesty pass + HANDLER-004 CLOSED (2.12.65)
 
 ## Current State
 
-- **Active mode**: cross-file invariants. This session closed **ACT_COMM-002,
-  HANDLER-003, and HANDLER-005** (the two open gaps the prior 2.12.61 session
-  left, plus one advisor-surfaced divergence in the same function).
-- **This session — five commits (pushed to `master`):**
-  - **2.12.62 / `9f73c6d3`** + **`be5f4047`** — **ACT_COMM-002**: `do_follow`'s
-    NORMAL success path returned `"You now follow X."` *and* `add_follower`
-    appended the same line to `char.messages` — the actor saw it twice. Success
-    path now returns `""` (matching ROM's void return, `src/act_comm.c:1586-1605`);
-    `add_follower` is the sole emitter. Retargeted `test_group_combat.py:162` and
-    `test_player_npc_interaction.py` from the return value to `char.messages`. New
-    `tests/integration/test_act_comm002_follow_other_single_message.py`.
-  - **2.12.63 / `defaf313`** — **HANDLER-003**: `get_char_room`/`get_char_world`
-    substring-matched `short_descr`; ROM gates solely on `is_name(arg, name)`
-    (keyword list, `src/handler.c:2207`/`:2237`). Both helpers now gate on
-    `is_name(name, occupant.name)` only. **Zero caller fallout** (full suite). The
-    shared `is_name` helper was left untouched (own callers). New
-    `tests/integration/test_handler003_get_char_matches_name_only.py`.
-  - **2.12.64 / HANDLER-005** — `get_char_world` omitted ROM's `wch->in_room ==
-    NULL` skip (`src/handler.c:2236`); **live** since VISION-001 made roomless
-    chars visible to `can_see_character`. Added the `ch.room is None` first-gate
-    skip. New `tests/integration/test_handler005_get_char_world_skips_roomless.py`.
-  - **Filed durably (out-of-scope, ❌ OPEN):**
-    - **HANDLER-004** (`HANDLER_C_AUDIT.md`) — Python `is_name` uses a substring
-      test (`name_lower in word`), not ROM's `str_prefix` whole-word match, and
-      skips ROM's "all parts must match" rule. `is_name("uard","guard")`→`True`
-      vs ROM `FALSE`. Tightening widens blast radius to its other callers
-      (`mob_cmds`, `build`, `info`, `account_service`) — do test-first.
-      **Recommended next task.**
+- **Active mode**: cross-file invariants. This session delivered a user-requested
+  **README honesty pass** and closed **HANDLER-004** — the last open per-file gap.
+- **This session — two commits (local on `master`, NOT yet pushed):**
+  - **2.12.65 / `7689e971`** — **README honesty pass**: resolved the README's
+    internal contradiction (top said "trust rebuild in progress", bottom claimed
+    "production-ready" / "100% behavioral parity"). Both sections now consistently
+    describe a feature-complete, green-suite engine in a verification trust-rebuild
+    phase, and distinguish *audit-process completion* from *certified behavioral
+    parity*. Unified four conflicting test counts to the live run, bumped badges,
+    added an open-parity-gaps note.
+  - **2.12.65 / `fc450d41`** — **HANDLER-004**: Python's `is_name` used a substring
+    test (`name_lower in word`) with no all-parts conjunction; ROM
+    (`src/handler.c:932-969`) requires each space-separated part of the arg to be a
+    `str_prefix` (whole-word prefix) of some namelist word, with **all** parts
+    matching. `is_name("uard","guard")`→True (ROM FALSE); `is_name("big guard","guard
+    big")`→False (ROM TRUE). Rewrote `is_name` to mirror ROM's `one_argument` +
+    `str_prefix` all-parts logic. `gitnexus_impact` rated CRITICAL (7 direct callers
+    → nearly every targeting command), but ROM calls `is_name` at every site, so the
+    change is pure parity; **full suite 5329 passed, 4 skipped — zero fallout**. New
+    `tests/integration/test_handler004_is_name_whole_word_prefix.py` (6 tests).
+
+- **Open gaps**: **none.** HANDLER-004 was the last open gap ID; all per-file audit
+  rows are ✅ and no ⚠️ Partial / ❌ Not Audited rows remain.
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-02_ACT_COMM002_HANDLER_003_005.md](SESSION_SUMMARY_2026-06-02_ACT_COMM002_HANDLER_003_005.md)
-  (prior: [HANDLER002_ACT_COMM001](SESSION_SUMMARY_2026-06-02_HANDLER002_ACT_COMM001.md)).
+  [SESSION_SUMMARY_2026-06-02_README_HONESTY_HANDLER_004.md](SESSION_SUMMARY_2026-06-02_README_HONESTY_HANDLER_004.md)
+  (prior: [ACT_COMM002_HANDLER_003_005](SESSION_SUMMARY_2026-06-02_ACT_COMM002_HANDLER_003_005.md)).
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.64 |
-| Tests | **full suite green at 2.12.64: 5323 passed, 4 skipped** (`pytest`, ~137s parallel); HANDLER-003 + HANDLER-005 caused zero caller fallout |
+| Version | 2.12.65 |
+| Tests | **full suite green at 2.12.65: 5329 passed, 4 skipped** (`pytest`, ~152s parallel); HANDLER-004 (CRITICAL blast radius) caused zero caller fallout |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open gaps | **HANDLER-004** (Python `is_name` uses substring match, not ROM's whole-word `str_prefix`; `is_name("uard","guard")`→True vs ROM FALSE) — OPEN, filed this session. (HANDLER-005 CLOSED 2.12.64 / roomless world-lookup skip; HANDLER-003 CLOSED 2.12.63 / `defaf313`; ACT_COMM-002 CLOSED 2.12.62 / `9f73c6d3`.) |
+| Open gaps | **none** — HANDLER-004 CLOSED this session (2.12.65 / `fc450d41`) was the last open gap ID |
 
 ## Next Intended Task
 
-Cross-file invariants remains the active pass. Options:
+Cross-file invariants is the sole active pass (no per-file gaps remain). Probe a
+fresh candidate not yet covered by an INV row:
 
-1. **Close HANDLER-004** (recommended) — rewrite `mud/world/char_find.py:is_name`
-   to mirror ROM's `one_argument` tokenization + `str_prefix` all-parts whole-word
-   match (`src/handler.c:932-969`), replacing the current substring test. Then
-   audit the other callers (`mob_cmds`, `build` ×3, `info`, `account_service`) for
-   fallout — they rely on the looser substring behavior, so tighten test-first.
-2. **Probe a fresh cross-file candidate** — position transitions
-   (`do_stand`/`do_sit`/`do_rest`/`do_sleep`/`do_wake` — deterministic, no RNG),
-   group/follower chains, or mob trigger ordering. Method: read ROM C contract →
-   read Python equivalent → one failing test → close as gap or file as next free
+1. **Position transitions** (recommended) — `do_stand`/`do_sit`/`do_rest`/
+   `do_sleep`/`do_wake` (deterministic, no RNG). Method: read ROM C contract → read
+   Python equivalent → one failing test → close as a gap or file as next free
    INV-NNN.
+2. **Group/follower chain** ordering, or **mob trigger** ordering — other
+   uncovered cross-file candidates.
 
-> **Push note:** through **2.12.64** pushed to `master` 2026-06-02.
-> CHANGELOG/version reflect 2.12.64. GitNexus reindex run after the push.
+> **Push note:** 2.12.65 (commits `7689e971` + `fc450d41`) is committed locally on
+> `master` but **NOT yet pushed** — awaiting user confirmation. CHANGELOG/version
+> reflect 2.12.65. GitNexus reindex kicked off after the commits.
