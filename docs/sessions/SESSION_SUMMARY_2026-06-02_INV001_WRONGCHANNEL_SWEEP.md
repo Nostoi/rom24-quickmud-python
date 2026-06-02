@@ -58,12 +58,36 @@ Full suite after the last commit: **5351 passed, 4 skipped** (~128s). Each
 fix's full-suite run was green with zero fallout, including the high-fan-out
 `Room.broadcast` and the core comm commands.
 
-## Outstanding — remaining verified sweep sites (OPEN, filed in INV-001 trail)
+## Update — sweep completed this session (2.12.72)
 
-These are confirmed wrong-channel/double sites NOT yet fixed (deliberately
-deferred rather than rushed under a long context — combat/engine is a hot path,
-music needs care). All are simple `*.messages.append` → `push_message` swaps
-**except** music. Exact locations:
+The "Outstanding" list below was **closed** in two further commits after the
+delivery-helper batch:
+
+- **`c3bb1854` (2.12.71)** — delivery-helper migration (group_commands /
+  thief_skills `_send_to_char_sync`, `mob_cmds._append_message`,
+  `handlers._to_vict_send`/`_notvict_broadcast`).
+- **`b36cd5f7` (2.12.72)** — inline migration: `combat/engine._broadcast_pos_change`
+  + group-split, `position.do_wake`, `liquids` pour, `say_spell.broadcast_spell_words`,
+  `give._append_message` (gold-changer), `music._push_music_message` (XOR), and
+  7 inline `handlers.py` spell loops.
+
+**Only `mud/wiznet.py:_wiznet_deliver` remains OPEN** — its reconnect-announce
+callers run synchronously outside an event loop, so `push_message`'s
+`create_task` raises "no running event loop". Left mailbox-only with a code NOTE;
+needs a dedicated fix reconciling the sync callers (4 reconnect tests in
+`test_account_auth.py`/`test_wiznet.py` assert mailbox delivery). This is the one
+genuinely-tricky site and the right next-session task for the sweep.
+
+Tests added this session: `test_inv001_comm_delivery_channel.py`,
+`test_inv001_room_broadcast_channel.py`, `test_inv001_delivery_helpers_channel.py`,
+`test_inv001_inline_delivery_channel.py`. Full suite: **5354 passed, 4 skipped**.
+
+---
+
+## Outstanding (ORIGINAL, now closed except wiznet — see Update above)
+
+These were confirmed wrong-channel/double sites; all closed in 2.12.71–2.12.72
+except `wiznet` (see Update). Exact locations were:
 
 - `mud/combat/engine.py` ~868-872 (`_broadcast_pos_change` per-listener) and
   ~1218-1222 (combat split coins) — **both-channels doubles**. Note: the
