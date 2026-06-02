@@ -251,13 +251,14 @@ def _wiznet_deliver(
 
     wiz = getattr(ch, "wiznet", 0)
     prefix = "{Z--> " if wiz & WiznetFlag.WIZ_PREFIX else "{Z"
-    # NOTE: INV-001 wrong-channel candidate — a connected immortal gets this
-    # wiznet line via the mailbox (late) rather than the immediate async send.
-    # NOT migrated to push_message: the reconnect-announce callers run
-    # synchronously outside an event loop (tests + the sync reconnect path), so
-    # create_task would raise "no running event loop". Needs a dedicated fix that
-    # reconciles the sync callers (see CROSS_FILE_INVARIANTS_TRACKER INV-001).
-    ch.messages.append(f"{prefix}{expanded}{ROM_NEWLINE}{{x")
+    # INV-001 single-delivery: ROM src/act_wiz.c:184-189 writes each wiznet line
+    # straight to the descriptor with send_to_char (immediate). push_message
+    # delivers to a connected immortal via the async socket send and falls back
+    # to the mailbox when there is no running event loop (the sync
+    # reconnect-announce callers + tests) — never both.
+    from mud.utils.messaging import push_message
+
+    push_message(ch, f"{prefix}{expanded}{ROM_NEWLINE}{{x")
 
 
 def cmd_wiznet(char: Any, args: str) -> str:

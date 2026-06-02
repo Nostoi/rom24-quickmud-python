@@ -38,10 +38,21 @@ def push_message(character: Character | None, message: str) -> None:
     writer = getattr(character, "connection", None)
     if writer is not None:
         # mirroring ROM src/comm.c:write_to_buffer — single delivery channel.
-        from mud.net.protocol import send_to_char as _send
+        # ``asyncio.create_task`` requires a running event loop. Connected
+        # recipients are normally serviced under the live server loop (combat
+        # ticks, command read loop, async nanny login/reconnect). A few callers
+        # run synchronously outside any loop (the sync reconnect-announce path,
+        # tests); there is no socket to write to, so fall back to the mailbox
+        # rather than raising — keeping the single-delivery contract intact.
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            pass
+        else:
+            from mud.net.protocol import send_to_char as _send
 
-        asyncio.create_task(_send(character, str(message)))
-        return
+            asyncio.create_task(_send(character, str(message)))
+            return
     mailbox = getattr(character, "messages", None)
     if isinstance(mailbox, list):
         mailbox.append(str(message))
