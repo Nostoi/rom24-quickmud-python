@@ -1,53 +1,50 @@
-# Session Status — 2026-06-01 — MAGIC-012/013 manual-room-loop PERS masking (2.12.44)
+# Session Status — 2026-06-01 — MAGIC-014 single-actor PERS sweep (2.12.45)
 
 ## Current State
 
 - **Active mode**: cross-file invariants — the **INV-025 manual-room-loop PERS
-  sweep** is the active pass (the 2.12.30 sweep converted `_act_room` call sites
-  but missed handlers baking `_character_name()` into `room.broadcast(...)` /
-  hand-rolled room loops).
-- **Earlier today (2.12.40 → 2.12.42, pushed green):** CAST-009 + TRAIN-005
-  closed; full suite green (5242 passed); pushed to origin (also carried the
-  prior session's unpushed 2.12.40 commits). See
-  [SESSION_SUMMARY_2026-06-01_CAST009_TRAIN005_QUEUE_DRAIN.md](SESSION_SUMMARY_2026-06-01_CAST009_TRAIN005_QUEUE_DRAIN.md).
-- **This pass (2.12.42 → 2.12.44):**
-  - **MAGIC-012** (`14cf90c4`, 2.12.43) — `frenzy` success room line
-    `$n`/`$s` per-recipient PERS masking (ROM `magic.c:2961`).
-  - **MAGIC-013** (`ded5e147`, 2.12.44) — `cure_disease` success room line
-    PERS masking **+ wrong-channel** fix (ROM `magic.c:1658`).
-  - Probed group/follower + affect-tick — both **faithful** (no gap).
-  - 4 new integration tests; INV-025 trail extended with the remaining
-    ~12-site work-list.
+  sweep is now DRAINED for magic** (`$n`-only single-actor spell room lines).
+- **Today's progression (all pushed green):**
+  - 2.12.40 → 2.12.42: CAST-009 + TRAIN-005 (full suite 5242).
+  - 2.12.42 → 2.12.44: MAGIC-012 (frenzy) + MAGIC-013 (cure_disease) —
+    manual-room-loop `$n`/`$s` PERS + channel (full suite 5246).
+  - 2.12.44 → 2.12.45: **MAGIC-014** (`ed9b35e0`) — batch closure of the ~11
+    `$n`-only single-actor spell room lines (haste, slow ×2 legs,
+    giant_strength, stone_skin, pass_door, sleep, weaken, earthquake,
+    create_rose) → `act_to_room`; fixed the visible-NPC "Someone" bug
+    (`if name else "Someone"` ternaries) + invisible-actor leaks. Full suite
+    **5249 passed, 4 skipped** (no-xdist reliable mode).
+  - Probed group/follower + affect-tick engine — both **faithful**.
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-01_MAGIC012_013_MANUAL_ROOM_LOOP_PERS.md](SESSION_SUMMARY_2026-06-01_MAGIC012_013_MANUAL_ROOM_LOOP_PERS.md)
+  [SESSION_SUMMARY_2026-06-01_MAGIC014_SINGLE_ACTOR_PERS_SWEEP.md](SESSION_SUMMARY_2026-06-01_MAGIC014_SINGLE_ACTOR_PERS_SWEEP.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.44 |
-| Tests | **full suite green at 2.12.44: 5246 passed, 4 skipped** (serial; run with `-p no:xdist -o addopts=""` — under high load `-n auto` hangs at worker fork and even `-n0` can hit a broken xdist `sessionfinish` teardown that eats the summary line) |
+| Version | 2.12.45 |
+| Tests | **full suite green: 5249 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | INV-025 manual-room-loop PERS sweep: ~12 sites OPEN (work-list in INV-025 trail); dirt-kicking "their" line needs ROM verification |
+| Open correctness gaps | **FIGHT-039** (trip self-trip colour/`$s`/`$n` — filed open); dirt-kicking "their" caster line needs ROM verification (MAGIC-013 note) |
 
 ## Next Intended Task
 
-1. **Continue the INV-025 manual-room-loop PERS sweep** — ~12 remaining sites
-   (work-list in the INV-025 "Touched by" trail in
-   `CROSS_FILE_INVARIANTS_TRACKER.md`): rose (handlers.py:2624), earthquake
-   (3550), sleep (7520), giant_strength (4966), haste/slow
-   (5038/5075/7567/7604), `$n turns translucent` (6298), stone skin (7801),
-   trip→`$s` (7981), weaken (8163). One failing-first MAGIC-NNN commit each;
-   **verify each handler's exact `src/magic.c` `act()` format string** before
-   converting (the `$s`/`$e`/`$m`/`$p` token and TO_ROOM vs TO_NOTVICT vary).
-2. Verify the dirt-kicking already-affected caster line
-   (`handlers.py:~3200`) — no ROM equivalent found; confirm Python-invented.
+1. **FIGHT-039** — `trip` self-trip room line (`handlers.py:~7981`, ROM
+   `src/fight.c:2701` `act("{5$n trips over $s own feet!{x", …, TO_ROOM)`):
+   convert to `act_to_room` with colour + `$s` possessive + `$n` masking
+   preserved. Model on FIGHT-036/037 (dirt-kick). One failing-first commit.
+2. **Verify the dirt-kicking already-affected caster line**
+   (`handlers.py:~3200`, `"{name} already has dirt in their eyes."`) — no ROM
+   equivalent found in `src/`; confirm Python-invented before touching.
+3. **Re-probe for remaining baked-name room broadcasts outside handlers.py** —
+   the INV-025 sweep covered `_act_room` sites + handlers.py manual loops; check
+   `mud/commands/`, `mud/combat/`, `mud/spec_funs.py` for `room.broadcast(f"…{name}…")`
+   patterns that bypass `act_to_room` PERS masking.
+4. Other cross-file-invariants candidate areas (position transitions, mob script
+   triggers) remain once the PERS sweep is exhausted.
 
-> **Push note:** full suite confirmed green (5246 passed) and `master` pushed at
-> 2.12.44. Under high machine load (unrelated workloads spike to ~180), `-n auto`
-> hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown;
-> the reliable mode is `pytest -p no:xdist -o addopts="" -q`.
-
-> **Stale index:** GitNexus index reindex pending — run on a quiet machine.
+> **Push note:** all of today's work (through 2.12.45) is pushed to `master`.
+> **Stale index:** GitNexus reindex pending (the running one predates the
+> MAGIC-012/013/014 handler edits) — re-run on a quiet machine.
