@@ -35,8 +35,12 @@ class TestPlayerMeetsNPC:
     
     def test_player_can_follow_mob(self, test_player, test_mob):
         """Player can follow an NPC"""
+        # ACT_COMM-002: ROM do_follow returns void; add_follower is the sole
+        # emitter of "You now follow $N." (src/act_comm.c:1605), delivered via
+        # char.messages — the command return is empty so the actor isn't told twice.
         result = process_command(test_player, "follow mob")
-        assert "you now follow" in result.lower()
+        assert result == ""
+        assert any("you now follow" in m.lower() for m in test_player.messages)
         assert test_player.master == test_mob
     
     def test_player_can_give_item_to_mob(self, test_player, test_mob):
