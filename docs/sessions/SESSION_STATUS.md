@@ -1,10 +1,18 @@
-# Session Status — 2026-06-01 — INV-025 command-layer PERS sweep (2.12.48)
+# Session Status — 2026-06-01 — INV-025 combat re-probe: FIGHT-041 (2.12.49)
 
 ## Current State
 
-- **Active mode**: cross-file invariants — the **INV-025 command-layer PERS
-  sweep is now CLOSED** (all confirmed `mud/commands/` baked-name
-  `room.broadcast(f"{char.name} …")` sites converted to `act_to_room`).
+- **Active mode**: cross-file invariants — the **INV-025 `mud/combat/`
+  re-probe has begun**. First gap closed: **FIGHT-041** (`50242279`,
+  2.12.49) — `death_cry`'s in-room gore line baked `victim.name` via
+  `expand_placeholders` + `room.broadcast` (leaking an invisible victim's
+  name); converted to `act_to_room(room, message_template, victim,
+  exclude=victim)`. Test `test_fight041_death_cry_pers_masking.py` (2:
+  invisible→"Someone", sighted→name). The static neighbor-room cry has no
+  `$n`/name and stays a plain broadcast.
+- The **INV-025 command-layer PERS sweep is CLOSED** (all confirmed
+  `mud/commands/` baked-name `room.broadcast(f"{char.name} …")` sites
+  converted to `act_to_room`).
 - **Today's progression (all pushed green):**
   - 2.12.40 → 2.12.42: CAST-009 + TRAIN-005 (full suite 5242).
   - 2.12.42 → 2.12.44: MAGIC-012 (frenzy) + MAGIC-013 (cure_disease) —
@@ -34,11 +42,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.48 |
-| Tests | **full suite green: 5259 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
+| Version | 2.12.49 |
+| Tests | **full suite green: 5261 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | **INV-025 re-probe** — `mud/combat/`, `mud/world/`, `mud/commands/communication.py` (`do_say`/`do_tell`) not yet swept for the same baked-name `room.broadcast` pattern |
+| Open correctness gaps | **INV-025 re-probe** — rest of `mud/combat/`, `mud/world/`, `mud/commands/communication.py` (`do_say`/`do_tell`) not yet swept for the same baked-name `room.broadcast` pattern (`death_cry`/FIGHT-041 done) |
 
 ## Next Intended Task
 
@@ -49,6 +57,6 @@
 2. Other cross-file-invariants candidate areas (position transitions, mob script
    triggers) remain once the PERS sweep is exhausted.
 
-> **Push note:** all of today's work (through 2.12.48) is pushed to `master`.
-> **Stale index:** GitNexus reindex pending (the running one predates today's
-> handler/command edits) — re-run on a quiet machine.
+> **Push note:** work through 2.12.48 is pushed to `master`; **2.12.49
+> (FIGHT-041, `50242279`) is committed locally but NOT yet pushed.**
+> **Index:** GitNexus reindexed clean after the FIGHT-041 commit (2026-06-01).
