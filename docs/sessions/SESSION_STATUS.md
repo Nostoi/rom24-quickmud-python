@@ -42,30 +42,26 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.61 |
-| Tests | **full suite green: 5319 passed, 4 skipped** (`pytest`, ~126s parallel) |
+| Version | 2.12.62 |
+| Tests | **full suite green as of 2.12.61: 5319 passed, 4 skipped** (`pytest`, ~126s parallel); ACT_COMM-002 area suites green at 2.12.62 |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open gaps | **ACT_COMM-002** (normal-follow double "You now follow X." message) + **HANDLER-003** (`get_char_room` matches `short_descr`; ROM matches only `name`) — both filed this session, OPEN. |
+| Open gaps | **HANDLER-003** (`get_char_room` matches `short_descr`; ROM matches only `name`) — OPEN. (ACT_COMM-002 CLOSED 2.12.62 / `9f73c6d3`.) |
 
 ## Next Intended Task
 
 Cross-file invariants remains the active pass. Options:
 
-1. **Close ACT_COMM-002** (recommended) — `do_follow` success path returns `""`,
-   leaving `add_follower` the sole emitter of "You now follow X."; retarget
-   `test_group_combat.py:162` / `test_shops.py:1365` from the return value to
-   `char.messages`. Live user-facing double-message; trivial fix, modest churn.
-2. **Close HANDLER-003** — decide whether to mirror ROM's `name`-only whole-word
+1. **Close HANDLER-003** (recommended) — decide whether to mirror ROM's `name`-only whole-word
    `is_name` match (parity-faithful) in `get_char_room`/`get_char_world` and
    audit caller fallout, or document the `short_descr`/substring divergence as
    intentional. CRITICAL blast radius (15 callers) — sweep callers test-first.
-3. **Probe a fresh cross-file candidate** — position transitions
+2. **Probe a fresh cross-file candidate** — position transitions
    (`do_stand`/`do_sit`/`do_rest`/`do_sleep`/`do_wake` — deterministic, no RNG),
    group/follower chains, or mob trigger ordering. Method: read ROM C contract →
    read Python equivalent → one failing test → close as gap or file as next free
    INV-NNN.
 
-> **Push note:** everything through 2.12.48 is on `master`; **2.12.49–61** are
-> committed locally but **NOT yet pushed**. README/CHANGELOG/version all reflect
-> 2.12.61. GitNexus reindex pending after the final docs commit.
+> **Push note:** everything through 2.12.48 is on `master`; **2.12.49–62** are
+> committed locally but **NOT yet pushed**. CHANGELOG/version reflect 2.12.62.
+> GitNexus reindex running in background after the ACT_COMM-002 commit.
