@@ -103,6 +103,14 @@ def get_char_world(char: "Character", name: str) -> "Character | None":
     for ch in character_registry:
         from mud.world.vision import can_see_character
 
+        # mirroring ROM src/handler.c:2236 — `if (wch->in_room == NULL || ...)
+        # continue;` skips roomless chars BEFORE can_see/is_name, so a roomless
+        # registry char (e.g. the CON_GET_NEW_CLASS wiznet subject) is never
+        # resolved world-wide (HANDLER-005). Live since VISION-001 made roomless
+        # targets visible to can_see_character.
+        if getattr(ch, "room", None) is None:
+            continue
+
         if not can_see_character(char, ch):
             continue
 

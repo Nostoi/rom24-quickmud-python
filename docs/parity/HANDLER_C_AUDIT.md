@@ -276,6 +276,27 @@ through this `is_name`). Scope when picked up: rewrite `is_name` to mirror ROM's
 callers (`mob_cmds`, `build` ×3, `info`, `account_service`) for fallout — they
 currently rely on the looser substring behavior, so tighten test-first.
 
+#### HANDLER-005 — `get_char_world` omits ROM's `wch->in_room == NULL` skip
+
+| Field | Value |
+|-------|-------|
+| Severity | MINOR |
+| ROM C | `src/handler.c:2236` (`if (wch->in_room == NULL || !can_see(...) || !is_name(...)) continue;`) |
+| Python | `mud/world/char_find.py:get_char_world` loop (`:103-117`) — gated on `can_see` + `is_name` only; no `ch.room is None` skip. |
+| Status | ✅ FIXED (2026-06-02) — loop now skips `ch.room is None`, matching ROM. |
+
+ROM's `get_char_world` world-list scan skips any char whose `in_room == NULL`
+**before** the `can_see`/`is_name` tests, so a roomless char is never resolved by
+a world lookup. Python's loop omitted that guard. This became live-relevant after
+**VISION-001** (2026-05-29) dropped the `target_room is None` bail in
+`can_see_character` — a roomless registry char (e.g. the new-player wiznet
+subject at `CON_GET_NEW_CLASS`, `src/nanny.c:547`, whose `in_room` is NULL) is now
+visible, so `get_char_world` could return it where ROM would skip. Surfaced
+2026-06-02 by advisor review while closing HANDLER-003 (same function). **Fixed:**
+added `if getattr(ch, "room", None) is None: continue` as the first loop gate,
+mirroring `src/handler.c:2236`. Test:
+`tests/integration/test_handler005_get_char_world_skips_roomless.py`.
+
 ### Object Lookup Functions (7 functions)
 
 | ROM C Function | QuickMUD Location | Status | Notes |
