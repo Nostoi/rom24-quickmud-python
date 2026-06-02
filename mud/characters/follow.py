@@ -61,13 +61,12 @@ def stop_follower(follower: Character) -> None:
     # ROM lines 1625-1629: both messages gated on
     # can_see(ch->master, ch) && ch->in_room != NULL.
     if can_see_character(master, follower) and getattr(follower, "room", None) is not None:
-        master_messages = getattr(master, "messages", None)
-        if isinstance(master_messages, list):
-            master_messages.append(f"{_display_name(follower)} stops following you.")
-
-        follower_messages = getattr(follower, "messages", None)
-        if isinstance(follower_messages, list):
-            follower_messages.append(f"You stop following {_display_name(master)}.")
+        # ROM src/act_comm.c:1626-1627 — act(..., TO_VICT)/act(..., TO_CHAR) write
+        # immediately to the descriptor; push_message routes a connected PC to the
+        # async send and falls back to the mailbox only for disconnected chars
+        # (matching add_follower above — ACT_COMM-003 / INV-001 wrong-channel).
+        push_message(master, f"{_display_name(follower)} stops following you.")
+        push_message(follower, f"You stop following {_display_name(master)}.")
 
     if getattr(master, "pet", None) is follower:
         master.pet = None
