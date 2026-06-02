@@ -282,23 +282,26 @@ def test_practice_int_rating_formula(practice_char, practice_trainer, test_skill
 
 
 def test_practice_room_messages(practice_char, practice_trainer, test_skill):
-    """Room receives broadcast messages (ROM C lines 2767-2777)"""
+    """Room receives the ROM ``$n practices $T.`` broadcast (src/act_info.c:2779).
+
+    INV-025 (2.12.48): ``do_practice`` now delivers the room line via
+    ``act_to_room`` (per-recipient PERS masking), not ``room.broadcast`` — so
+    assert it through a sighted witness's messages, not by mocking ``broadcast``.
+    """
     practice_char.skills["fireball"] = 50
 
-    broadcast_messages = []
-
-    def mock_broadcast(msg, exclude=None):
-        broadcast_messages.append((msg, exclude))
-
-    practice_char.room.broadcast = mock_broadcast
+    witness = Character(name="Witness", level=5, is_npc=False, room=practice_char.room)
+    witness.messages = []
+    practice_char.room.people.append(witness)
 
     do_practice(practice_char, "fireball")
 
-    assert len(broadcast_messages) > 0
-    msg, exclude = broadcast_messages[0]
+    assert witness.messages, witness.messages
+    msg = witness.messages[-1]
     assert "testchar" in msg.lower()
     assert "fireball" in msg.lower()
-    assert exclude == practice_char
+    # The actor is excluded from act_to_room, so it must not receive the line.
+    assert not any("practices" in m.lower() for m in getattr(practice_char, "messages", []))
 
 
 # ============================================================================
