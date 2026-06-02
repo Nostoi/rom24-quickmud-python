@@ -173,7 +173,7 @@ python -m mud  # Start development server
 - **Cross-file Invariants**: ✅ **25/25 enforced** — message delivery, prompt clamping, registry membership,
   same-room combat, death/connection behavior, RNG determinism, persistence coherence, and room-flag
   survival (`.are`→JSON→runtime) are locked by dedicated tests.
-- **Test Suite**: ✅ **5303 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
+- **Test Suite**: ✅ **5306 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
   integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
 - **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact output, boundary, and runtime-path tests on the highest-risk user-visible surfaces.
 - **Compatibility**: Python 3.10+, cross-platform

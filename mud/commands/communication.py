@@ -7,7 +7,7 @@ from mud import mobprog
 from mud.characters import is_clan_member, is_same_clan
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
-from mud.net.protocol import broadcast_global, broadcast_room, send_to_char
+from mud.net.protocol import broadcast_global, send_to_char
 from mud.utils.act import capitalize_act_line
 
 if TYPE_CHECKING:
@@ -700,16 +700,16 @@ def do_pose(char: Character, args: str) -> str:
     to_char_fmt = POSE_TABLE[pose][2 * cls + 0]
     to_room_fmt = POSE_TABLE[pose][2 * cls + 1]
 
-    from mud.utils.act import act_format
+    from mud.utils.act import act_format, act_to_room
 
     self_msg = act_format(to_char_fmt, recipient=char, actor=char)
-    room_msg = act_format(to_room_fmt, recipient=None, actor=char)
 
     if char.room:
-        broadcast_room(char.room, room_msg, exclude=char)
-        # ROM src/act_comm.c:1420 act(TO_ROOM) fires TRIG_ACT per src/comm.c:2384
-        from mud.mobprog import mp_act_trigger_room
-        mp_act_trigger_room(room_msg, char.room, char)
+        # ROM src/act_comm.c:1425 act(pose_table[...], ch, NULL, NULL, TO_ROOM).
+        # INV-025/INV-027: act_to_room renders $n per recipient (invisible poser →
+        # "Someone") and dispatches TRIG_ACT — was act_format(recipient=None) +
+        # broadcast_room (one baked string, no per-recipient PERS masking).
+        act_to_room(char.room, to_room_fmt, char)
 
     return self_msg
 

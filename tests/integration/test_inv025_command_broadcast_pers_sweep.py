@@ -366,3 +366,65 @@ def test_restore_self_renders_name_even_when_invisible():
     do_restore(ch, "room")
 
     assert "Glark has restored you." in _line(ch), ch.messages
+
+
+# ---------------------------------------------------------------------------
+# communication — do_pose (act_format(recipient=None)+broadcast_room, $n)
+# ---------------------------------------------------------------------------
+
+
+def test_pose_masks_invisible_actor():
+    from mud.commands.communication import do_pose
+    from mud.utils import rng_mm
+
+    room = _room()
+    ch = _actor(room, invisible=True)
+    ch.ch_class = 0
+    ch.level = 10
+    w = _witness(room)
+    w.messages.clear()
+
+    rng_mm.seed_mm(12345)
+    do_pose(ch, "")
+
+    line = _line(w)
+    assert line, w.messages
+    assert "Glark" not in line, w.messages
+
+
+def test_pose_shows_name_to_sighted_witness():
+    from mud.commands.communication import do_pose
+    from mud.utils import rng_mm
+
+    room = _room()
+    ch = _actor(room, invisible=False)
+    ch.ch_class = 0
+    ch.level = 10
+    w = _witness(room)
+    w.messages.clear()
+
+    rng_mm.seed_mm(12345)
+    do_pose(ch, "")
+
+    # Same seed as the masking test → same pose; visible actor must render its
+    # name (confirms the seeded pose actually contains $n, so the mask test bites).
+    assert "Glark" in _line(w), w.messages
+
+
+# ---------------------------------------------------------------------------
+# admin — cmd_incognito ("$n cloaks $s presence." baked-name broadcast)
+# ---------------------------------------------------------------------------
+
+
+def test_incognito_masks_invisible_actor():
+    from mud.commands.admin_commands import cmd_incognito
+
+    room = _room()
+    ch = _actor(room, invisible=True, trust=60)
+    w = _witness(room)
+    w.messages.clear()
+
+    cmd_incognito(ch, "")
+
+    assert "Someone cloaks" in _line(w), w.messages
+    assert "Glark" not in _line(w), w.messages

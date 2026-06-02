@@ -11,7 +11,7 @@ from mud.config import (
     set_telnetga,
 )
 from mud.models.character import Character
-from mud.models.constants import CommFlag, PlayerFlag, Sex
+from mud.models.constants import CommFlag, PlayerFlag
 from mud.net.session import SESSIONS
 from mud.registry import room_registry
 from mud.security import bans
@@ -198,44 +198,20 @@ def _matches_toggle_prefix(value: str, expected: str) -> bool:
     return expected.startswith(lowered)
 
 
-def _resolve_display_name(char: Character) -> str:
-    name = getattr(char, "name", None)
-    if name:
-        return str(name)
-    short_descr = getattr(char, "short_descr", None)
-    if short_descr:
-        return str(short_descr)
-    return "Someone"
+def _broadcast_incog_message(char: Character, fmt: str) -> None:
+    """ROM ``act("$n …", ch, NULL, NULL, TO_ROOM)`` for incognito toggles.
 
+    Mirrors ``src/act_wiz.c:4389/4395/4412``. INV-025/INV-027: ``act_to_room``
+    renders ``$n`` per recipient (an invisible/incog actor masks to "Someone")
+    and dispatches TRIG_ACT — was a baked ``{name}``/``{poss}`` f-string +
+    ``room.broadcast`` (one string, no per-recipient PERS masking).
+    """
+    from mud.utils.act import act_to_room
 
-def _possessive_pronoun(char: Character) -> str:
-    sex_raw = getattr(char, "sex", None)
-    sex: Sex | None
-    if isinstance(sex_raw, Sex):
-        sex = sex_raw
-    else:
-        try:
-            sex = Sex(int(sex_raw))  # type: ignore[arg-type]
-        except (TypeError, ValueError):
-            sex = None
-    if sex == Sex.MALE:
-        return "his"
-    if sex == Sex.FEMALE:
-        return "her"
-    if sex == Sex.NONE:
-        return "its"
-    return "their"
-
-
-def _broadcast_incog_message(char: Character, template: str) -> None:
     room = getattr(char, "room", None)
     if room is None:
         return
-    message = template.format(
-        name=_resolve_display_name(char),
-        poss=_possessive_pronoun(char),
-    )
-    room.broadcast(message, exclude=char)
+    act_to_room(room, fmt, char)
 
 
 def _render_ban_listing() -> str:
@@ -389,10 +365,10 @@ def cmd_incognito(char: Character, args: str) -> str:
     if not token:
         if getattr(char, "incog_level", 0):
             char.incog_level = 0
-            _broadcast_incog_message(char, "{name} is no longer cloaked.")
+            _broadcast_incog_message(char, "$n is no longer cloaked.")
             return "You are no longer cloaked."
         char.incog_level = trust
-        _broadcast_incog_message(char, "{name} cloaks {poss} presence.")
+        _broadcast_incog_message(char, "$n cloaks $s presence.")
         return "You cloak your presence."
 
     try:
@@ -405,7 +381,7 @@ def cmd_incognito(char: Character, args: str) -> str:
 
     char.reply = None
     char.incog_level = level
-    _broadcast_incog_message(char, "{name} cloaks {poss} presence.")
+    _broadcast_incog_message(char, "$n cloaks $s presence.")
     return "You cloak your presence."
 
 

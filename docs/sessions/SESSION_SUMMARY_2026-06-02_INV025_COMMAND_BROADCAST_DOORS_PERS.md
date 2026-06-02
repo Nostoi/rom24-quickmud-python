@@ -46,9 +46,18 @@ session had to retract in `a4936805`).
   (`MobInstance.name` already == short_descr) but the fix makes act() rendering
   correct when they differ and stops a created/cloned mob receiving
   "… created You!".
-- **Tests**: `tests/integration/test_inv025_command_broadcast_pers_sweep.py` (14:
-  sleep/quit/scan/peer/mload/oload/purge/clone + restore room mask/name/self);
-  shop buy TRIG_ACT dispatch added to `test_shop_room_broadcasts.py`.
+- **`do_pose` + `do_incognito`** (advisor-surfaced stragglers — an ALL-broadcast
+  residual sweep, not just an inline-`f"` grep, caught two more baked-`$n` sites
+  in the same class): `communication.py:do_pose` (`act_format(recipient=None)` +
+  `broadcast_room`, ROM `act_comm.c:1425`) and
+  `admin_commands.py:_broadcast_incog_message` (`{name}`/`{poss}` `.format` +
+  `room.broadcast`, ROM `act_wiz.c:4389/4395/4412` `"$n cloaks $s presence."`) →
+  both converted to `act_to_room`; dropped the orphaned
+  `_resolve_display_name`/`_possessive_pronoun` helpers + unused `Sex` import.
+- **Tests**: `tests/integration/test_inv025_command_broadcast_pers_sweep.py` (17:
+  sleep/quit/scan/peer/mload/oload/purge/clone + restore room mask/name/self +
+  pose mask/name + incognito mask); shop buy TRIG_ACT dispatch added to
+  `test_shop_room_broadcasts.py`.
 
 ### doors.py chokepoint PERS rework — ✅ CLOSED (commit `5299c664`, 2.12.55)
 
@@ -72,6 +81,10 @@ session had to retract in `a4936805`).
   `imm_load.py`, `imm_search.py`, `shop.py` — command-layer conversions; dropped
   `_notvict_broadcast`; pruned orphaned `broadcast_room`/`mp_act_trigger_room`
   imports.
+- `mud/commands/communication.py` — `do_pose` → `act_to_room` (dropped
+  `broadcast_room` import); `admin_commands.py` — `_broadcast_incog_message` →
+  `act_to_room`, removed orphaned `_resolve_display_name`/`_possessive_pronoun` +
+  unused `Sex` import.
 - `mud/commands/doors.py` — `_broadcast_act_to_room` helper redesign + 15 callers.
 - `tests/integration/test_inv025_command_broadcast_pers_sweep.py` — new (14).
 - `tests/integration/test_inv025_door_commands_pers_sweep.py` — new (7).
@@ -85,23 +98,30 @@ session had to retract in `a4936805`).
 
 ## Test Status
 
-- New/changed tests: 22 across the three files, all green.
+- New/changed tests: 25 across the three files, all green.
 - Area suites green throughout (doors ×29 incl. existing trigger tests; shop ×3;
-  command-broadcast ×14; restore/imm_load ×20).
-- **Full suite: 5303 passed, 4 skipped** (`pytest -p no:xdist -o addopts="" -q`,
-  ~10m17s) — no regressions from the shared `_pers` change. `ruff check` clean on
+  command-broadcast ×17; restore/imm_load ×20; incognito/pose/comm regression ×65).
+- **Full suite: 5306 passed, 4 skipped** (`pytest -p no:xdist -o addopts="" -q`,
+  ~9.5m) — no regressions from the shared `_pers` change. `ruff check` clean on
   all touched files. `gitnexus_detect_changes` low-risk / 0 affected processes.
 
 ## Next Steps
 
-The INV-025 command-layer `broadcast_room` / `act_format(recipient=None)` PERS
-class is now **exhausted** across `mud/commands/` (residual grep for
-`broadcast_room(.*f"` / `.broadcast(f"` returns only the no-`$n` door reverse
-line). Next cross-file-invariants candidates (per AGENTS.md): mob script trigger
-ordering (TRIG_ENTRY/GREET/GIVE/BRIBE), position transitions, group/follower
-chains. The `act_format._pers` "You" removal is a shared-helper change — if any
-future TO_VICT/TO_CHAR site relied on `$n`→"You" it would now render the name
-(ROM-correct); none surfaced in the full suite.
+The `act_format` / inline-f-string / `.format`-baked `broadcast_room` command
+group is **closed** across `mud/commands/` (verified by an ALL-broadcast residual
+sweep — `broadcast_room|\.broadcast(` + `for … in ….people`, every call
+eyeballed; the inline-`f"` grep alone was insufficient and missed `do_pose` /
+incognito, both now closed). **One distinct `$n`-baking class remains and is the
+next task: the socials `expand_placeholders` group** (`socials.py` →
+`models/social.py:expand_placeholders`, which does `$n`→`actor.name` with no
+`can_see` masking, no per-recipient PERS, and no TRIG_ACT; ROM uses
+`act(social.others_*, ch, victim, TO_ROOM/TO_NOTVICT)`). Separate mechanism over
+~244 socials with victim TO_NOTVICT handling → its own batch. After that, the
+cross-file-invariants candidates: mob script trigger ordering, position
+transitions, group/follower chains. The `act_format._pers` "You" removal is a
+shared-helper change — if any future TO_VICT/TO_CHAR site relied on `$n`→"You" it
+would now render the name (ROM-correct); none surfaced in the full suite (5306
+passed).
 
 > **Push note:** everything through 2.12.48 is on `master`; **2.12.49–51**
 > (FIGHT-041/042 + NUKEPET-001), **2.12.52–54** (object/equipment/give), and
