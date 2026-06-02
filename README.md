@@ -1,9 +1,9 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.12.61-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.12.65-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-5319%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Tests](https://img.shields.io/badge/tests-5329%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-revalidation%20in%20progress-orange.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![ROM C Audit](https://img.shields.io/badge/ROM%20C%20Audit-40%2F40%20audited-success.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![Integration Tests](https://img.shields.io/badge/integration%20tests-1000%2B-brightgreen.svg)](tests/integration/)
@@ -24,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 5,256 passing tests across unit, integration, and command-registry suites
+- **📊 Comprehensive Testing**: 5,329 passing tests across unit, integration, and command-registry suites
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -163,19 +163,41 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-- **Version**: 2.12.61
-- **ROM 2.4b Gameplay Parity**: ⚠️ **broadly audited, currently being revalidated** —
-  combat, skills, spells, movement, communication, world/db, save/load, mob programs,
-  and all 255 ROM commands are implemented, but some previously “verified” user-visible surfaces were only smoke-tested and are being rechecked with ROM-exact assertions.
-- **ROM C Source Audit**: ✅ **100% audit-bound coverage** — 40 of 40 applicable ROM C files are audited, with
-  3 additional ROM files intentionally N/A (`recycle.c`, `mem.c`, `imc.c`). See
+**Honest one-line summary:** broad implementation and audit coverage of ROM 2.4b6
+is complete and the test suite is green, but the project is in a **verification
+trust-rebuild phase** — "audited" means a per-file audit document exists, not that
+behavior is proven bug-free, and a small number of parity gaps remain open.
+
+- **Version**: 2.12.65
+- **ROM 2.4b Gameplay Parity**: ⚠️ **broadly implemented, verification hardening in
+  progress** — combat, skills, spells, movement, communication, world/db, save/load,
+  mob programs, and all 255 ROM commands are implemented and pass their tests. However,
+  some surfaces that were previously marked "verified" were only smoke-tested, and are
+  being rechecked with ROM-exact assertions. Treat the audit coverage below as
+  *process completeness*, not a guarantee of bit-for-bit correctness.
+- **ROM C Source Audit**: ✅ **100% audit-bound coverage** — 40 of 40 applicable ROM C
+  files have a completed audit document, with 3 additional ROM files intentionally N/A
+  (`recycle.c`, `mem.c`, `imc.c`). This tracks that every applicable file has been
+  *reviewed and documented*; it does not by itself certify behavioral parity (three
+  production bugs this year shipped against files marked ≥95% audited — see the
+  cross-file invariants tracker for why per-file audits are necessary but not
+  sufficient). See
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
-- **Cross-file Invariants**: ✅ **25/25 enforced** — message delivery, prompt clamping, registry membership,
-  same-room combat, death/connection behavior, RNG determinism, persistence coherence, and room-flag
-  survival (`.are`→JSON→runtime) are locked by dedicated tests.
-- **Test Suite**: ✅ **5306 passed, 4 skipped**. Three layers — unit (`tests/test_*.py`),
-  integration (`tests/integration/`), and command-registry (`test_all_commands.py`).
-- **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact output, boundary, and runtime-path tests on the highest-risk user-visible surfaces.
+- **Cross-file Invariants**: ✅ **25/25 enforced** — message delivery, prompt clamping,
+  registry membership, same-room combat, death/connection behavior, RNG determinism,
+  persistence coherence, and room-flag survival (`.are`→JSON→runtime) are locked by
+  dedicated regression tests. This layer exists specifically to catch the contract
+  violations that per-file audits miss.
+- **Open parity gaps**: a small backlog of identified divergences is tracked and being
+  closed one failing-test-first commit at a time (current example: `HANDLER-004`,
+  `is_name` uses a substring match rather than ROM's whole-word `str_prefix`). Open
+  gaps are logged in the per-file `docs/parity/*_C_AUDIT.md` documents.
+- **Test Suite**: ✅ **5329 passed, 4 skipped** (full `pytest` run, ~152s parallel).
+  Three layers — unit (`tests/test_*.py`), integration (`tests/integration/`), and
+  command-registry (`test_all_commands.py`).
+- **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact
+  output, boundary, and runtime-path tests on the highest-risk user-visible surfaces,
+  and closing the remaining documented parity gaps.
 - **Compatibility**: Python 3.10+, cross-platform
 
 ## 🏛️ Architecture
@@ -300,9 +322,14 @@ for loading and manipulating area, room, object, and character data.
 
 ## Project Completeness
 
-QuickMUD is a **production-ready ROM 2.4b MUD** with ✅ **100% behavioral parity** to the original ROM 2.4b6 C codebase:
+QuickMUD implements the full ROM 2.4b6 gameplay surface and has broad, documented
+audit coverage of the original C codebase. It is **feature-complete and running on a
+green test suite**, and is in an active **verification trust-rebuild phase** rather than
+claiming finished, certified parity. "Implemented" below means the system exists and
+passes its current tests; it does not assert bit-for-bit behavioral parity, which is
+being hardened gap-by-gap (see **Project Status** above).
 
-### ✅ Fully Implemented Systems
+### ✅ Implemented Systems
 
 - **Combat Engine**: Complete ROM combat mechanics with THAC0, damage calculations, and weapon special attacks
 - **Skills & Spells**: All ROM skills and spells with correct formulas and targeting
@@ -317,12 +344,16 @@ QuickMUD is a **production-ready ROM 2.4b MUD** with ✅ **100% behavioral parit
 
 ### 📈 Quality Metrics
 
-- **Test Suite**: 4,934 passing, 4 skipped on the last full recertification.
-- **Behavioral Parity**: 100% of ROM 2.4b6 gameplay subsystems audited (combat,
-  skills, spells, movement, communication, world/db, save/load, mob programs,
-  255/255 commands).
-- **ROM C Source Audit**: 40 of 40 applicable ROM files audited, plus 3 intentional N/A files.
+- **Test Suite**: 5,329 passing, 4 skipped on the latest full run.
+- **Audit Coverage**: every ROM 2.4b6 gameplay subsystem has a completed audit
+  document (combat, skills, spells, movement, communication, world/db, save/load,
+  mob programs, 255/255 commands). Audit completion means *reviewed and documented*,
+  not *certified bug-free* — verification rigor is still being hardened.
+- **ROM C Source Audit**: 40 of 40 applicable ROM files have an audit document, plus
+  3 intentional N/A files.
 - **Cross-file Invariants**: 25 of 25 enforced by dedicated regression tests.
+- **Open gaps**: a small, tracked backlog of identified divergences is being closed
+  one test-first commit at a time.
 
 ### 🔧 Advanced Features
 
