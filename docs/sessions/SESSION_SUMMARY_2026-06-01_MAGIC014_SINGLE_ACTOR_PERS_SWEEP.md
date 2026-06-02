@@ -94,9 +94,38 @@ Closed the split-out `trip` self-trip gap in the same session.
   test asserted these lines.
 - **Full suite: 5251 passed, 4 skipped.**
 
+## Addendum — `FIGHT-040` ✅ FIXED (commit `4015cccb`, 2.12.47)
+
+Closed the carried-over "verify the dirt-kicking already-affected line" task —
+which turned out to be a real 3-part gap, not just a verification.
+
+- **Python**: `mud/skills/handlers.py:dirt_kicking` early checks.
+- **ROM C**: `src/fight.c:2521-2528` — one already-affected check,
+  `if (IS_AFFECTED(victim, AFF_BLIND)) act("$E's already been blinded.", ch,
+  NULL, victim, TO_CHAR)`, *before* the `victim == ch` "Very funny." check.
+- **Fixes**: (1) AFF_BLIND message → `act_format("$E's already been blinded.",
+  recipient=caster, actor=caster, arg2=victim)` (gendered He/She/It, was the
+  baked name); (2) **deleted** the Python-invented `has_spell_effect("dirt
+  kicking")` guard + its "already has dirt in their eyes" message (no ROM
+  equivalent; dead code — the dirt effect sets AFF_BLIND so the check above
+  catches a re-kick); (3) reordered AFF_BLIND before `victim == ch`.
+- **Tests**: `tests/integration/test_fight040_dirt_already_blinded.py` (gendered
+  He/She/It ×3, re-kick→AFF_BLIND, blind-self→ROM order). Full suite **5256
+  passed, 4 skipped**.
+
+## New open sweep filed — INV-025 command-layer baked-name `room.broadcast`
+
+Re-probing outside `handlers.py` (the queued cleanup) surfaced a **larger**
+remaining INV-025 surface than expected: ~10 `room.broadcast(f"{char.name} …")`
+sites in `mud/commands/` that ROM emits as `act("$n …", TO_ROOM)` — confirmed vs
+ROM: `advancement.py` 191/196/360/377/400 (practice + train durability/power/
+`$T`), `session.py` 362/405/417 (recall pray/disappear/appear), `notes.py`
+377/457. Filed as a NEW OPEN SWEEP in the INV-025 trail (per the advisor: file,
+don't rabbit-hole). `mud/combat/`, `mud/world/`, `communication.py` not yet
+re-probed.
+
 ## Next Steps
 
-1. Verify the dirt-kicking "their" caster line (MAGIC-013 note).
-2. Re-probe `mud/commands/`, `mud/combat/`, `mud/spec_funs.py` for
-   `room.broadcast(f"…{name}…")` baked-name patterns outside handlers.py that
-   bypass `act_to_room` PERS masking.
+1. **INV-025 command-layer PERS sweep** (~10 sites, work-list in the INV-025
+   trail) — convert to `act_to_room`, batch like MAGIC-014.
+2. Re-probe `mud/combat/`, `mud/world/`, `mud/commands/communication.py`.
