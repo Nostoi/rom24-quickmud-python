@@ -230,8 +230,9 @@ return "You must type the full command to delete yourself."
 - ✅ stop_follower() before add_follower()
 - ✅ add_follower() call
 
-**Parity Check**: ✅ PERFECT (ACT_COMM-001 self-unfollow double-message FIXED
-2026-06-02).
+**Parity Check**: ⚠️ ACT_COMM-001 (self-unfollow double-message) FIXED
+2026-06-02; **ACT_COMM-002 (normal-follow double "You now follow X." message)
+OPEN** — same root cause in the success path.
 
 ##### ACT_COMM-001 — `follow self` emits a double "stop following" message
 
@@ -259,6 +260,37 @@ single "You stop following X." (not a bare duplicate).
 **Fixed 2026-06-02:** the self-branch now returns `""` (silent, matching ROM's
 silent return at `:1570`), leaving `stop_follower` as the sole emitter of the
 named line. Test: `tests/integration/test_act_comm001_follow_self_single_message.py`.
+
+##### ACT_COMM-002 — normal `follow <other>` emits a double "You now follow X." message
+
+| Field | Value |
+|-------|-------|
+| Severity | MINOR |
+| ROM C | `src/act_comm.c:1586` (do_follow calls add_follower, returns void), `add_follower:1605` (`act("You now follow $N.", ch, NULL, master, TO_CHAR)` — sole TO_CHAR emitter) |
+| Python | `mud/commands/group_commands.py:do_follow:190-193` (returns `"You now follow {victim}."`) + `add_follower:83-85` (appends same line to `char.messages`) |
+| Status | ❌ OPEN |
+
+**Same root cause / sibling of ACT_COMM-001, in the NORMAL follow path.** ROM
+`do_follow`'s success path calls `add_follower(ch, victim)` — whose
+`act("You now follow $N.", …TO_CHAR)` (`:1605`) is the **sole** emitter of the
+follower's confirmation — and then `return;` (void). Python's `add_follower`
+(`group_commands.py:83-85`) already appends `"You now follow {master}."` to
+`char.messages`, **and then** `do_follow` *also* `return`s
+`f"You now follow {victim_name}."` (`:192-193`). Both channels reach a connected
+player in the command loop (`mud/net/connection.py:1989` sends the command
+return, `:2002-2008` drains `char.messages`), so the actor sees the line
+**twice**. **Empirically confirmed 2026-06-02** (`follow bobx` → return value
+*and* `char.messages` both carry `"You now follow bobx."`). Surfaced by advisor
+review while closing ACT_COMM-001 (its discriminating-channel check predicted
+this). Fix: `do_follow`'s success path returns `""`, leaving `add_follower` the
+sole emitter — but **mind the test churn**: existing tests assert the *return*
+value (`tests/integration/test_group_combat.py:162` `"You now follow Leader" in
+result`, `tests/test_shops.py:1365`), which must be retargeted to `char.messages`
+and re-verified against ROM. Deserves a focused test-first gap-closer, not an
+end-of-session rush. Note: `char.messages` IS a production delivery channel in
+the synchronous command loop (drained at `connection.py:2002`) — the AGENTS.md
+"`char.messages` is a test fallback only" note is scoped to *combat-tick*
+delivery, where synchronous socket writes are impossible.
 
 ---
 

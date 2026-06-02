@@ -21,11 +21,18 @@
     now returns `""` (silent), matching ROM's silent return (`src/act_comm.c:
     1569-1570`); `stop_follower` is the sole emitter. New
     `tests/integration/test_act_comm001_follow_self_single_message.py`.
-  - **Filed durably (out-of-scope, ❌ OPEN):** **HANDLER-003**
-    (`HANDLER_C_AUDIT.md`) — `get_char_room`/`get_char_world` also match
-    `short_descr`; ROM matches **only** `name` (whole-word `is_name`, not
-    substring). e.g. `look city` resolves "a city guard" in Python where ROM
-    would not. Likely load-bearing for callers — do not silently tighten.
+  - **Filed durably (out-of-scope, ❌ OPEN):**
+    - **ACT_COMM-002** (`ACT_COMM_C_AUDIT.md`) — sibling of ACT_COMM-001 in the
+      NORMAL follow path: `do_follow` returns "You now follow X." *and*
+      `add_follower` appends it to `char.messages`; both reach a connected player,
+      so the actor sees it twice. Empirically confirmed. Fix: `do_follow` success
+      path returns `""` (test churn: `test_group_combat.py:162`,
+      `test_shops.py:1365` assert the return value). **Recommended next task.**
+    - **HANDLER-003** (`HANDLER_C_AUDIT.md`) — `get_char_room`/`get_char_world`
+      also match `short_descr`; ROM matches **only** `name` (whole-word
+      `is_name`, not substring). e.g. `look city` resolves "a city guard" in
+      Python where ROM would not. Likely load-bearing for callers — do not
+      silently tighten.
 
 - **Pointer to latest summary**:
   [SESSION_SUMMARY_2026-06-02_HANDLER002_ACT_COMM001.md](SESSION_SUMMARY_2026-06-02_HANDLER002_ACT_COMM001.md)
@@ -39,17 +46,21 @@
 | Tests | **full suite green: 5319 passed, 4 skipped** (`pytest`, ~126s parallel) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open gaps | **HANDLER-003** (`get_char_room` matches `short_descr`; ROM matches only `name`) — filed this session, OPEN. |
+| Open gaps | **ACT_COMM-002** (normal-follow double "You now follow X." message) + **HANDLER-003** (`get_char_room` matches `short_descr`; ROM matches only `name`) — both filed this session, OPEN. |
 
 ## Next Intended Task
 
 Cross-file invariants remains the active pass. Options:
 
-1. **Close HANDLER-003** — decide whether to mirror ROM's `name`-only whole-word
+1. **Close ACT_COMM-002** (recommended) — `do_follow` success path returns `""`,
+   leaving `add_follower` the sole emitter of "You now follow X."; retarget
+   `test_group_combat.py:162` / `test_shops.py:1365` from the return value to
+   `char.messages`. Live user-facing double-message; trivial fix, modest churn.
+2. **Close HANDLER-003** — decide whether to mirror ROM's `name`-only whole-word
    `is_name` match (parity-faithful) in `get_char_room`/`get_char_world` and
    audit caller fallout, or document the `short_descr`/substring divergence as
    intentional. CRITICAL blast radius (15 callers) — sweep callers test-first.
-2. **Probe a fresh cross-file candidate** — position transitions
+3. **Probe a fresh cross-file candidate** — position transitions
    (`do_stand`/`do_sit`/`do_rest`/`do_sleep`/`do_wake` — deterministic, no RNG),
    group/follower chains, or mob trigger ordering. Method: read ROM C contract →
    read Python equivalent → one failing test → close as gap or file as next free

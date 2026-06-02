@@ -54,8 +54,20 @@ remains the active pass; both gaps are local single-function divergences.
   "You stop following bob."; no-master branch → "You already follow yourself."
   unchanged). Fails pre-fix (bare duplicate returned), passes post-fix.
 
-## Out-of-scope gap filed durably
+## Out-of-scope gaps filed durably
 
+- **ACT_COMM-002** (`docs/parity/ACT_COMM_C_AUDIT.md`, ❌ OPEN) — **sibling of
+  ACT_COMM-001 in the NORMAL follow path.** `do_follow`'s success path returns
+  `"You now follow {victim}."` *and* `add_follower` already appends the same line
+  to `char.messages`; both channels reach a connected player (command-return at
+  `connection.py:1989`, `char.messages` drain at `:2002-2008`), so the actor sees
+  it **twice**. ROM `add_follower:1605` is the sole TO_CHAR emitter; `do_follow`
+  returns void. **Empirically confirmed** this session (advisor's
+  discriminating-channel check while closing ACT_COMM-001 predicted it). Fix:
+  `do_follow` success path returns `""` — but existing tests assert the *return*
+  value (`test_group_combat.py:162`, `test_shops.py:1365`), so it needs a focused
+  test-first gap-closer (retarget those to `char.messages`), not an end-of-session
+  rush. **Recommended top task for the next session.**
 - **HANDLER-003** (`docs/parity/HANDLER_C_AUDIT.md`, ❌ OPEN) —
   `get_char_room`/`get_char_world` also match `short_descr`; ROM matches **only**
   `name` (via whole-word `is_name`, not substring). e.g. `look city` resolves
@@ -85,11 +97,16 @@ remains the active pass; both gaps are local single-function divergences.
 
 Cross-file invariants remains the active pass. Candidate next tasks:
 
-1. **Close HANDLER-003** — decide whether to mirror ROM's `name`-only whole-word
+1. **Close ACT_COMM-002** (recommended first) — `do_follow` success path returns
+   `""`, leaving `add_follower` the sole emitter of "You now follow X."; retarget
+   `test_group_combat.py:162` / `test_shops.py:1365` from the return value to
+   `char.messages` and re-verify against ROM `act(TO_CHAR)`. Live user-facing
+   double-message; trivial fix, modest test churn.
+2. **Close HANDLER-003** — decide whether to mirror ROM's `name`-only whole-word
    `is_name` match (parity-faithful) in `get_char_room`/`get_char_world` and
    audit caller fallout, or document the `short_descr`/substring divergence as
    intentional. CRITICAL blast radius (15 callers) — sweep callers test-first.
-2. **Probe a fresh cross-file candidate** — position transitions
+3. **Probe a fresh cross-file candidate** — position transitions
    (`do_stand`/`do_sit`/`do_rest`/`do_sleep`/`do_wake`), group/follower chains,
    or mob trigger ordering. Method: read ROM C contract → read Python equivalent
    → one failing test → close as gap or file as next free INV-NNN.
