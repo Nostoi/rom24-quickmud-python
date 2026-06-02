@@ -27,7 +27,7 @@
 | Metric | Value |
 |--------|-------|
 | Version | 2.12.44 |
-| Tests | full suite green at 2.12.42 (5242 passed); 2.12.44 run pending push (4 new tests → ~5246) |
+| Tests | **full suite green at 2.12.44: 5246 passed, 4 skipped** (serial; run with `-p no:xdist -o addopts=""` — under high load `-n auto` hangs at worker fork and even `-n0` can hit a broken xdist `sessionfinish` teardown that eats the summary line) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
 | Open correctness gaps | INV-025 manual-room-loop PERS sweep: ~12 sites OPEN (work-list in INV-025 trail); dirt-kicking "their" line needs ROM verification |
@@ -45,10 +45,9 @@
 2. Verify the dirt-kicking already-affected caster line
    (`handlers.py:~3200`) — no ROM equivalent found; confirm Python-invented.
 
-> **Push note:** MAGIC-012/013 + this handoff are local on `master` pending the
-> full-suite confirmation at 2.12.44 (running `-n0`; the machine intermittently
-> spikes to load ~180 from unrelated workloads, which hangs `-n auto` at worker
-> startup — use `-n0`). README test-count/version refresh to 2.12.44 belongs in
-> the push commit once the count is confirmed.
+> **Push note:** full suite confirmed green (5246 passed) and `master` pushed at
+> 2.12.44. Under high machine load (unrelated workloads spike to ~180), `-n auto`
+> hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown;
+> the reliable mode is `pytest -p no:xdist -o addopts="" -q`.
 
 > **Stale index:** GitNexus index reindex pending — run on a quiet machine.
