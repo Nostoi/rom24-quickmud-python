@@ -31,9 +31,9 @@
       (`mob_cmds`, `build`, `info`, `account_service`) — do test-first.
       **Recommended next task.**
 
-- **Pointer to latest summary**: none written for this session yet (run
-  `rom-session-handoff` to generate `SESSION_SUMMARY_2026-06-02_*`); prior:
-  [HANDLER002_ACT_COMM001](SESSION_SUMMARY_2026-06-02_HANDLER002_ACT_COMM001.md).
+- **Pointer to latest summary**:
+  [SESSION_SUMMARY_2026-06-02_ACT_COMM002_HANDLER_003_005.md](SESSION_SUMMARY_2026-06-02_ACT_COMM002_HANDLER_003_005.md)
+  (prior: [HANDLER002_ACT_COMM001](SESSION_SUMMARY_2026-06-02_HANDLER002_ACT_COMM001.md)).
 
 ## Project Status (snapshot)
 
