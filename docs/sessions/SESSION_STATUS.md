@@ -65,7 +65,7 @@
 | Tests | **full suite green: 5265 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | **INV-025 re-probe** — rest of `mud/combat/`, `mud/world/`, `mud/commands/communication.py` (`do_say`/`do_tell`) not yet swept for the same baked-name `room.broadcast` / missing-TRIG_ACT pattern (`death_cry` done: FIGHT-041 PERS + FIGHT-042 TRIG_ACT) |
+| Open correctness gaps | **INV-025 re-probe** — `mud/combat/death.py` is now **provably swept** (grep `broadcast\|broadcast_room\|messages.append\|send_to_char\|push_message` returns only the `_broadcast_neighbor_cry` def/comment/call, whose body is `act_to_room`; all 3 delivery sites converted: FIGHT-041 PERS + FIGHT-042 TRIG_ACT + NUKEPET-001). **Not yet swept:** rest of `mud/combat/` (engine.py et al.), `mud/world/`, `mud/commands/communication.py` (`do_say`/`do_tell`) for the same baked-name `room.broadcast` / missing-TRIG_ACT pattern |
 
 ## Next Intended Task
 
