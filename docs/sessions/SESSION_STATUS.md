@@ -42,26 +42,27 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.62 |
-| Tests | **full suite green as of 2.12.61: 5319 passed, 4 skipped** (`pytest`, ~126s parallel); ACT_COMM-002 area suites green at 2.12.62 |
+| Version | 2.12.63 |
+| Tests | **full suite green at 2.12.62: 5321 passed, 4 skipped** (`pytest`, ~132s parallel); HANDLER-003 caused zero caller fallout; new test + ACT_COMM-002 area suites green at 2.12.63 |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open gaps | **HANDLER-003** (`get_char_room` matches `short_descr`; ROM matches only `name`) — OPEN. (ACT_COMM-002 CLOSED 2.12.62 / `9f73c6d3`.) |
+| Open gaps | **HANDLER-004** (Python `is_name` uses substring match, not ROM's whole-word `str_prefix`; `is_name("uard","guard")`→True vs ROM FALSE) — OPEN, filed this session. (HANDLER-003 CLOSED 2.12.63 / `defaf313`; ACT_COMM-002 CLOSED 2.12.62 / `9f73c6d3`.) |
 
 ## Next Intended Task
 
 Cross-file invariants remains the active pass. Options:
 
-1. **Close HANDLER-003** (recommended) — decide whether to mirror ROM's `name`-only whole-word
-   `is_name` match (parity-faithful) in `get_char_room`/`get_char_world` and
-   audit caller fallout, or document the `short_descr`/substring divergence as
-   intentional. CRITICAL blast radius (15 callers) — sweep callers test-first.
+1. **Close HANDLER-004** (recommended) — rewrite `mud/world/char_find.py:is_name`
+   to mirror ROM's `one_argument` tokenization + `str_prefix` all-parts whole-word
+   match (`src/handler.c:932-969`), replacing the current substring test. Then
+   audit the other callers (`mob_cmds`, `build` ×3, `info`, `account_service`) for
+   fallout — they rely on the looser substring behavior, so tighten test-first.
 2. **Probe a fresh cross-file candidate** — position transitions
    (`do_stand`/`do_sit`/`do_rest`/`do_sleep`/`do_wake` — deterministic, no RNG),
    group/follower chains, or mob trigger ordering. Method: read ROM C contract →
    read Python equivalent → one failing test → close as gap or file as next free
    INV-NNN.
 
-> **Push note:** everything through 2.12.48 is on `master`; **2.12.49–62** are
-> committed locally but **NOT yet pushed**. CHANGELOG/version reflect 2.12.62.
-> GitNexus reindex running in background after the ACT_COMM-002 commit.
+> **Push note:** everything through 2.12.48 is on `master`; **2.12.49–63** are
+> committed locally but **NOT yet pushed**. CHANGELOG/version reflect 2.12.63.
+> GitNexus reindex running in background after the HANDLER-003 commit.
