@@ -194,22 +194,51 @@ double "stop following" message) during the sweep.
 | Severity | MINOR |
 | ROM C | `src/handler.c:2205-2211` (`get_char_room`), `is_name` (one match per occupant) |
 | Python | `mud/world/char_find.py:get_char_room` (name/short block + keywords block) |
-| Status | ❌ OPEN |
+| Status | ✅ FIXED (2026-06-02) — combined predicate, counts once per occupant. |
 
 ROM `get_char_room` does `if (++count == number)` **once per occupant** —
-`is_name(arg, rch->name)` is a single boolean test. Python's helper checks the
+`is_name(arg, rch->name)` is a single boolean test. Python's helper checked the
 name/short_descr in one block (`count += 1`) **and then** the keyword list in a
 separate block (`count += 1`), so an occupant whose name/short *and* keywords
-both match `arg` increments `count` **twice**. For typical mobs whose keyword
-list repeats their name (e.g. a guard with name "guard", keywords "guard
-soldier"), `2.guard` returns the **first** guard (count hits 2 on occupant #1)
-instead of the second. Affects every `N.name` lookup through `get_char_room` /
-`get_char_world` (look, give, social target, etc.). Pre-existing; surfaced
-2026-06-02 while closing INTERP-026 (whose N.name test sidesteps it by using a
-short_descr without the keyword). Fix: count at most once per occupant —
-combine the name/short/keyword tests into a single `is_name`-style predicate and
-increment once. Test-first: two mobs sharing name+keyword; `2.<name>` selects
-the second.
+both match `arg` incremented `count` **twice**.
+
+**Correction (2026-06-02, empirically re-verified):** the original row claimed
+this fired "for typical mobs whose keyword list repeats their name" and that
+`2.guard` returned the *first* guard. **That claim is false.** Real `Character`
+instances never carry a `.keywords` attribute — the JSON loader stores a mob's
+keyword list in `.name` (see `tests/integration/test_json_loader_parity.py::
+test_name_populated_from_keywords_key`; spawned mobs have `hasattr(m,
+"keywords") == False`), so the keyword block is empty for every real occupant
+and the double-count **never fires in production**. `2.guard` already returns
+the second guard. This was a **latent** double-count in a ROM-divergent dead
+block (ROM has no keyword field distinct from `name`), not a live divergence.
+
+**Fix:** count at most once per occupant — the name/short/keyword match sources
+are now ORed into a single predicate with one `count += 1`. Behavior-identical
+for every real input (keyword term is defensive coverage). Test forces the
+multi-field match by setting `.keywords` directly and asserts `2.<name>` returns
+the second occupant (honestly labeled a latent-invariant guard).
+Test: `tests/integration/test_handler002_get_char_room_count_once.py`.
+
+#### HANDLER-003 — `get_char_room`/`get_char_world` match `short_descr`; ROM matches only `name`
+
+| Field | Value |
+|-------|-------|
+| Severity | MINOR |
+| ROM C | `src/handler.c:2207` (`is_name(arg, rch->name)` — only `rch->name`) |
+| Python | `mud/world/char_find.py:get_char_room` / `get_char_world` (also tests `short_descr`) |
+| Status | ❌ OPEN |
+
+ROM's room/world char lookup gates solely on `is_name(arg, rch->name)`. Python
+additionally matches `name_lower in occupant_short` (the `short_descr`), so e.g.
+`look city` resolves "a city guard" in Python where ROM would not (ROM's `name`
+is the keyword list "guard", and `is_name` does whole-word matching, not the
+substring match Python uses). Likely load-bearing for existing callers/tests
+that rely on the looser substring/short_descr match — do **not** silently tighten
+it. Surfaced 2026-06-02 while closing HANDLER-002. Scope when picked up:
+decide whether to mirror ROM's `is_name(arg, name)`-only whole-word match
+(parity-faithful) and audit caller fallout, or document the divergence as
+intentional. Separate gap from the HANDLER-002 double-count.
 
 ### Object Lookup Functions (7 functions)
 

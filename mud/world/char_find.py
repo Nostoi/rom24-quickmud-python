@@ -59,14 +59,15 @@ def get_char_room(char: "Character", name: str) -> "Character | None":
 
         occupant_name = (getattr(occupant, "name", None) or "").lower()
         occupant_short = (getattr(occupant, "short_descr", "") or "").lower()
+        keywords = (getattr(occupant, "keywords", "") or "").lower()
 
-        if name_lower in occupant_name or name_lower in occupant_short:
-            count += 1
-            if count == target_count:
-                return occupant
-
-        keywords = getattr(occupant, "keywords", "") or ""
-        if name_lower in keywords.lower():
+        # mirroring ROM src/handler.c:2207-2210 — `if (!is_name(...)) continue;
+        # if (++count == number)` advances count ONCE per occupant. Combine the
+        # name/short/keyword match sources into a single predicate so an
+        # occupant matching more than one source is not double-counted
+        # (HANDLER-002). Real occupants keep keywords in `name`, so the keyword
+        # term is defensive coverage, never live.
+        if name_lower in occupant_name or name_lower in occupant_short or name_lower in keywords:
             count += 1
             if count == target_count:
                 return occupant
