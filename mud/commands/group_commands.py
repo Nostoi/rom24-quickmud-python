@@ -167,8 +167,12 @@ def do_follow(char: Character, args: str) -> str:
     if victim is char:
         if char.master is None:
             return "You already follow yourself."
+        # mirroring ROM src/act_comm.c:1569-1570 — the self-target branch calls
+        # stop_follower and returns SILENTLY; stop_follower is the sole emitter
+        # of "You stop following $N." (with the master's name). Returning a bare
+        # TO_CHAR string here would double the message (ACT_COMM-001).
         stop_follower(char)
-        return "You stop following."
+        return ""
 
     # Check NOFOLLOW flag on target
     is_npc = getattr(victim, "is_npc", True)

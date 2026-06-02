@@ -224,14 +224,14 @@ return "You must type the full command to delete yourself."
 - ✅ Empty check
 - ✅ get_char_room() lookup
 - ✅ AFF_CHARM check (charmed can't change master)
-- ⚠️ Self-target unfollow logic — **double message, see ACT_COMM-001**
+- ✅ Self-target unfollow logic — ACT_COMM-001 FIXED 2026-06-02 (single message)
 - ✅ PLR_NOFOLLOW check
 - ✅ REMOVE_BIT(PLR_NOFOLLOW) equivalent
 - ✅ stop_follower() before add_follower()
 - ✅ add_follower() call
 
-**Parity Check**: ⚠️ Divergent on self-unfollow (ACT_COMM-001); stale "PERFECT"
-corrected 2026-06-02.
+**Parity Check**: ✅ PERFECT (ACT_COMM-001 self-unfollow double-message FIXED
+2026-06-02).
 
 ##### ACT_COMM-001 — `follow self` emits a double "stop following" message
 
@@ -240,7 +240,7 @@ corrected 2026-06-02.
 | Severity | MINOR |
 | ROM C | `src/act_comm.c:1562-1571` (do_follow), `stop_follower` (act emits the message) |
 | Python | `mud/commands/group_commands.py:170-171` (do_follow) + `stop_follower:108-118` |
-| Status | ❌ OPEN |
+| Status | ✅ FIXED (2026-06-02) — self-branch returns `""`; `stop_follower` is the sole emitter. |
 
 ROM `do_follow`'s `if (victim == ch)` branch, when already following someone,
 calls `stop_follower(ch)` and **returns silently** — the only message is the
@@ -255,6 +255,10 @@ once without. **Pre-existing** and reachable today via `follow self` (the
 the self-branch (return `""`), letting `stop_follower` be the sole emitter, to
 match ROM's silent return. Test-first: `follow self` while following X yields a
 single "You stop following X." (not a bare duplicate).
+
+**Fixed 2026-06-02:** the self-branch now returns `""` (silent, matching ROM's
+silent return at `:1570`), leaving `stop_follower` as the sole emitter of the
+named line. Test: `tests/integration/test_act_comm001_follow_self_single_message.py`.
 
 ---
 
