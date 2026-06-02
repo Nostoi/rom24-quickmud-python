@@ -11,6 +11,7 @@ from mud.mobprog import disable_mobtrigger
 from mud.models.character import Character, _object_carry_number, _object_carry_weight
 from mud.models.constants import ActFlag
 from mud.utils.act import act_format, act_to_room
+from mud.utils.messaging import push_message
 from mud.world.char_find import get_char_room
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
 from mud.world.obj_find import get_obj_carry
@@ -89,8 +90,12 @@ def do_give(char: Character, args: str) -> str:
     # actor = ROM TO_NOTVICT; disable_mobtrigger() suppresses the per-NPC dispatch.
     with disable_mobtrigger():
         act_to_room(room, "$n gives $p to $N.", char, arg1=obj, arg2=victim, exclude=victim)
-        if hasattr(victim, "messages"):
-            victim.messages.append(victim_message)
+        # ROM src/act_obj.c:834 act("$n gives you $p.", …, TO_VICT) writes to the
+        # recipient's descriptor immediately; push_message routes a connected PC
+        # to the async send and falls back to the mailbox only for disconnected
+        # chars (GIVE-001 / INV-001 wrong-channel — push_message does not dispatch
+        # TRIG_ACT, so the disable_mobtrigger contract is unaffected).
+        push_message(victim, victim_message)
 
     if getattr(victim, "is_npc", False):
         from mud.mobprog import mp_give_trigger
@@ -143,8 +148,10 @@ def _give_money(char: Character, room, amount: int, parts: list[str]) -> str:
         arg2=victim,
     )
 
-    if hasattr(victim, "messages"):
-        victim.messages.append(victim_message)
+    # ROM coins branch act(..., TO_VICT) writes to the recipient's descriptor
+    # immediately; push_message routes a connected PC to the async send (GIVE-001
+    # / INV-001 wrong-channel), mailbox fallback for disconnected chars.
+    push_message(victim, victim_message)
     # ROM src/act_obj.c:726 "$n gives $N some coins." TO_NOTVICT — NOT
     # MOBtrigger-suppressed (the suppressor block is only the object branch at
     # :832), so the room line DOES fire TRIG_ACT. INV-025: act_to_room renders $N

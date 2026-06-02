@@ -319,6 +319,10 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 **Remaining Gaps**:
 - ❓ No confirmed `do_give()` parity gaps remain from the current audit; next focus is `do_wear()`
 
+| Gap ID | Severity | ROM C | Python | Description | Status |
+|--------|----------|-------|--------|-------------|--------|
+| `GIVE-001` | IMPORTANT | src/act_obj.c:834 (object) + ~726 (coins) | mud/commands/give.py:93, 147 | `do_give`'s recipient TO_VICT line (`"$n gives you $p."` / `"$n gives you N coins."`) is emitted in ROM via `act(..., TO_VICT)`, which writes straight to the descriptor — immediate. Both Python branches (object + coins) delivered it via raw `victim.messages.append(...)`, the mailbox fallback a **connected** PC only drains on its next prompt → a connected recipient saw the gift line **late**. INV-001 SINGLE-DELIVERY / MAGIC-003 wrong-channel family (the ACT_COMM-003 shape). The giver's TO_CHAR line is already correct (returned by `do_give`, sent by the connection loop) — only the victim leg was wrong-channel. Fix: both legs now route through `push_message` (async send for connected PCs, mailbox fallback for disconnected/tests); `push_message` does not dispatch TRIG_ACT, so the object branch's `disable_mobtrigger()` contract (ROM `:832` MOBtrigger=FALSE) is unaffected. Surfaced 2026-06-02 while probing mob-trigger ordering (the give-trigger ordering itself is faithful — obj is in the victim's inventory before `mp_give_trigger`). Existing give tests use disconnected chars (mailbox fallback) so they stayed green; the new test uses connected PCs. Test: `tests/integration/test_give001_victim_delivery_channel.py`. | ✅ FIXED (2.12.68) |
+
 #### do_wear() (ROM C lines 1699-1738 + wear_obj helper 1401-1697, QuickMUD equipment.py:51+)
 
 **Estimated Parity**: ⚠️ **~80%** (Initial parity batch verified; deeper edge-case audit still open)
