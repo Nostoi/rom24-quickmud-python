@@ -55,7 +55,7 @@ uncovered cross-file candidates:
 Method: probe-then-scope (read ROM C contract → read Python equivalent → one
 failing test → close as a gap or file as next free INV-034).
 
-> **Push note:** 2.12.66 (one commit) is committed locally on `master` but **NOT
-> yet pushed** — awaiting user confirmation. The prior session's 2.12.65
-> (`7689e971` + `fc450d41`) is likewise still unpushed. CHANGELOG/version reflect
-> 2.12.66.
+> **Push note:** 2.12.66 (`8d6e982e`) is **pushed to `origin/master`** —
+> `master` and `origin/master` are in sync. (The prior 2.12.65 commits had in
+> fact already been pushed; `origin/master` was at `0301b452` before this push.)
+> CHANGELOG/version reflect 2.12.66.

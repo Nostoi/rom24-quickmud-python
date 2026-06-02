@@ -79,6 +79,7 @@ ordering and **mob trigger** ordering. Probe-then-scope: read ROM C contract →
 read Python equivalent → one failing test → close as a gap or file as the next
 free INV-NNN (INV-034).
 
-> **Push note:** 2.12.66 is committed locally on `master` (one commit) but **NOT
-> yet pushed** — awaiting user confirmation, matching the prior session's
-> unpushed 2.12.65 (`7689e971` + `fc450d41`).
+> **Push note:** 2.12.66 (`8d6e982e`) is **pushed to `origin/master`**
+> (`0301b452..8d6e982e`). The prior 2.12.65 commits had already been pushed —
+> `origin/master` sat at `0301b452` before this push — so this push carried only
+> the INV-033 commit. `master` and `origin/master` are now in sync.
