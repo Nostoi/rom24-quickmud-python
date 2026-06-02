@@ -1042,6 +1042,14 @@ def _extract_obj(obj: Object) -> None:
 
     room = getattr(obj, "in_room", None)
     if room is not None:
+        # INV-033: mirror ROM obj_from_room (src/handler.c:1915-1917) — clear the
+        # furniture pointer of every occupant sitting/resting/sleeping on this
+        # object before it leaves the room, so the dangling ch->on does not keep
+        # feeding the regen bonus (src/update.c:217-218) or the no-arg
+        # do_rest/do_sit/do_sleep default (obj = ch->on).
+        for occupant in list(getattr(room, "people", []) or []):
+            if getattr(occupant, "on", None) is obj:
+                occupant.on = None
         contents = getattr(room, "contents", None)
         if isinstance(contents, list) and obj in contents:
             contents.remove(obj)
