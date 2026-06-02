@@ -40,7 +40,7 @@
     `character.send_to_char` test helper) verified NOT late → excluded.
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-02_INV001_WRONGCHANNEL_SWEEP.md](SESSION_SUMMARY_2026-06-02_INV001_WRONGCHANNEL_SWEEP.md).
+  [SESSION_SUMMARY_2026-06-02_INV001_WIZNET_CHANNEL.md](SESSION_SUMMARY_2026-06-02_INV001_WIZNET_CHANNEL.md).
 
 ## Project Status (snapshot)
 
