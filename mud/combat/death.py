@@ -3,16 +3,11 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from mud.characters import is_clan_member
+from mud.characters.follow import stop_follower
 from mud.combat.kill_table import increment_killed
 from mud.models.character import Character, character_registry
+from mud.models.clans import get_clan_hall_vnum
 from mud.models.constants import (
-    FormFlag,
-    ItemType,
-    PartFlag,
-    PlayerFlag,
-    Position,
-    WearLocation,
-    WearFlag,
     ITEM_INVENTORY,
     ITEM_ROT_DEATH,
     ITEM_VIS_DEATH,
@@ -24,15 +19,21 @@ from mud.models.constants import (
     OBJ_VNUM_SLICED_ARM,
     OBJ_VNUM_SLICED_LEG,
     OBJ_VNUM_TORN_HEART,
+    FormFlag,
+    ItemType,
+    PartFlag,
+    PlayerFlag,
+    Position,
+    WearFlag,
+    WearLocation,
 )
-from mud.characters.follow import stop_follower
-from mud.models.clans import get_clan_hall_vnum
-from mud.models.races import get_race_by_index
 from mud.models.obj import ObjIndex
 from mud.models.object import Object, create_object
+from mud.models.races import get_race_by_index
 from mud.models.social import expand_placeholders
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
+from mud.utils.act import act_to_room
 from mud.world.world_state import get_room
 
 
@@ -212,7 +213,7 @@ def _increment_kill_counters(victim: Character) -> None:
             current = int(getattr(proto, "killed", 0) or 0)
         except (TypeError, ValueError):  # pragma: no cover - defensive guard
             current = 0
-        setattr(proto, "killed", current + 1)
+        proto.killed = current + 1
 
     increment_killed(getattr(victim, "level", 0))
 
@@ -326,7 +327,11 @@ def death_cry(victim: Character) -> None:
                 break
         break
 
-    room.broadcast(expand_placeholders(message_template, victim), exclude=victim)
+    # mirroring ROM src/fight.c:1640 — act(msg, ch, NULL, NULL, TO_ROOM) renders
+    # $n through PERS(ch, to) per recipient, so an invisible corpse-to-be masks
+    # to "Someone" for a sightless witness (INV-025/INV-027). Baking victim.name
+    # via expand_placeholders leaked the name to every listener.
+    act_to_room(room, message_template, victim, exclude=victim)
 
     if gore_spec is not None:
         _spawn_gore(
@@ -556,8 +561,8 @@ def _move_player_to_death_room(victim: Character) -> None:
 def raw_kill(victim: Character) -> Object | None:
     """Handle character death by creating a corpse and removing the victim."""
 
-    from mud.combat.engine import stop_fighting as _stop_fighting
     from mud.characters.follow import die_follower
+    from mud.combat.engine import stop_fighting as _stop_fighting
 
     # Trigger death mobprog handled in apply_damage before raw_kill
     # ROM Reference: src/fight.c:1136-1180 (mp_death_trigger called before raw_kill)
