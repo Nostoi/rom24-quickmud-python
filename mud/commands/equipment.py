@@ -9,10 +9,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.handler import equip_char, unequip_char
-from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import ExtraFlag, ItemType, Position, WearFlag, WearLocation
-from mud.net.protocol import broadcast_room
-from mud.utils.act import act_format
+from mud.utils.act import act_to_room
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -23,9 +21,32 @@ if TYPE_CHECKING:
 # Source: src/const.c:728 str_app[26], fourth field (wield).
 # Max wieldable weight = _STR_WIELD[STR] * 10 (ROM src/act_obj.c:1624-1625).
 _STR_WIELD = (
-    0,   1,  2,  3,  4,  5,  6,  7,  8,  9,
-    10, 11, 12, 13, 14, 15, 16, 22, 25, 30,
-    35, 40, 45, 50, 55, 60,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    22,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50,
+    55,
+    60,
 )
 
 
@@ -37,14 +58,10 @@ def _str_wield_max(str_stat: int) -> int:
 
 def _broadcast_level_fail(ch: Character, obj: Object) -> None:
     """ROM act_obj.c:1410-1411 — emit TO_ROOM observer message for level-too-low."""
-    obj_name = getattr(obj, "short_descr", "something")
-    ch_name = getattr(ch, "name", "Someone")
     room = getattr(ch, "room", None)
-    message = f"{ch_name} tries to use {obj_name}, but is too inexperienced."
-    broadcast_room(room, message, exclude=ch)
-    # ROM src/act_obj.c:1410 act(TO_ROOM) fires TRIG_ACT per src/comm.c:2384
-    from mud.mobprog import mp_act_trigger_room
-    mp_act_trigger_room(message, room, ch, arg1=obj)
+    # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+    # TRIG_ACT (ROM src/act_obj.c:1410, no MOBtrigger wrap).
+    act_to_room(room, "$n tries to use $p, but is too inexperienced.", ch, arg1=obj, exclude=ch)
 
 
 def _unequip_to_inventory(ch: Character, obj: Object) -> bool:
@@ -74,13 +91,12 @@ def _unequip_to_inventory(ch: Character, obj: Object) -> bool:
         inventory.append(obj)
 
     obj_name = getattr(obj, "short_descr", "something")
-    room_msg = f"{getattr(ch, 'name', 'Someone')} stops using {obj_name}."
     char_msg = f"You stop using {obj_name}."
 
     room = getattr(ch, "room", None)
-    broadcast_room(room, room_msg, exclude=ch)
-    # ROM src/handler.c:remove_obj — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-    mp_act_trigger_room(room_msg, room, ch, arg1=obj)
+    # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+    # TRIG_ACT (ROM src/act_obj.c:1389, no MOBtrigger wrap).
+    act_to_room(room, "$n stops using $p.", ch, arg1=obj, exclude=ch)
     if hasattr(ch, "send_to_char"):
         ch.send_to_char(char_msg)
 
@@ -198,12 +214,10 @@ def do_wear(ch: Character, args: str) -> str:
         equip_char(ch, obj, light_loc)
 
         obj_name = getattr(obj, "short_descr", "something")
-        ch_name = getattr(ch, "name", "Someone")
         room = getattr(ch, "room", None)
-        # ROM src/act_obj.c:1419-1420 — same messages even though slot is WEAR_LIGHT.
-        room_message = f"{ch_name} lights {obj_name} and holds it."
-        broadcast_room(room, room_message, exclude=ch)
-        mp_act_trigger_room(room_message, room, ch, arg1=obj)
+        # ROM src/act_obj.c:1419 — same messages even though slot is WEAR_LIGHT.
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches TRIG_ACT.
+        act_to_room(room, "$n lights $p and holds it.", ch, arg1=obj, exclude=ch)
         return f"You light {obj_name} and hold it."
 
     # ROM act_obj.c:1595-1614: SHIELD branch removes the existing shield FIRST
@@ -242,16 +256,14 @@ def do_wear(ch: Character, args: str) -> str:
         equip_char(ch, obj, hold_loc)
 
         obj_name = getattr(obj, "short_descr", "something")
-        ch_name = getattr(ch, "name", "Someone")
 
-        # ROM act_obj.c:1670-1677 (HOLD branch). ITEM_LIGHT is handled earlier in
+        # ROM act_obj.c:1674 (HOLD branch). ITEM_LIGHT is handled earlier in
         # its own WEAR_LIGHT branch (see ROM 1415-1423 / INV-028), so it never
-        # reaches here.
+        # reaches here. ROM uses "$s hand" (gendered possessive), not "their".
         room = getattr(ch, "room", None)
-        room_message = f"{ch_name} holds {obj_name} in their hand."
-        broadcast_room(room, room_message, exclude=ch)
-        # ROM src/act_obj.c:1674 — no MOBtrigger wrap.
-        mp_act_trigger_room(room_message, room, ch, arg1=obj)
+        # INV-025: act_to_room renders $n per-recipient (PERS masking) + $s gendered
+        # possessive + dispatches TRIG_ACT (ROM src/act_obj.c:1674, no MOBtrigger wrap).
+        act_to_room(room, "$n holds $p in $s hand.", ch, arg1=obj, exclude=ch)
         return f"You hold {obj_name} in your hand."
 
     # Find appropriate wear location
@@ -313,11 +325,10 @@ def do_wear(ch: Character, args: str) -> str:
     # ROM-style location-specific messages (src/act_obj.c:1435-1612)
     obj_name = getattr(obj, "short_descr", "something")
     room_template, char_template = _wear_location_messages(wear_loc)
-    room_message = act_format(room_template, recipient=None, actor=ch, arg1=obj, arg2=None)
     room = getattr(ch, "room", None)
-    broadcast_room(room, room_message, exclude=ch)
-    # ROM src/act_obj.c:1435-1612 — no MOBtrigger wrap; TRIG_ACT fires per src/comm.c:2384.
-    mp_act_trigger_room(room_message, room, ch, arg1=obj)
+    # INV-025: act_to_room renders $n/$s per-recipient (PERS masking) + dispatches
+    # TRIG_ACT (ROM src/act_obj.c:1435-1612, no MOBtrigger wrap).
+    act_to_room(room, room_template, ch, arg1=obj, exclude=ch)
     return char_template.format(obj_name=obj_name)
 
 
@@ -387,13 +398,11 @@ def _dispatch_wield(ch: Character, obj: Object) -> str:
     equip_char(ch, obj, wear_loc)
 
     obj_name = getattr(obj, "short_descr", "something")
-    ch_name = getattr(ch, "name", "Someone")
     # ROM act_obj.c:1639 — TO_ROOM "$n wields $p."
     room = getattr(ch, "room", None)
-    room_message = f"{ch_name} wields {obj_name}."
-    broadcast_room(room, room_message, exclude=ch)
-    # ROM src/act_obj.c:1639 — no MOBtrigger wrap.
-    mp_act_trigger_room(room_message, room, ch, arg1=obj)
+    # INV-025: act_to_room renders $n per-recipient (PERS masking) + dispatches
+    # TRIG_ACT (ROM src/act_obj.c:1639, no MOBtrigger wrap).
+    act_to_room(room, "$n wields $p.", ch, arg1=obj, exclude=ch)
 
     # ROM act_obj.c:1643-1665 — weapon-skill flavor (skip for hand-to-hand).
     flavor = _weapon_skill_flavor(ch, obj)
@@ -488,18 +497,16 @@ def _wear_all(ch: Character) -> str:
 
         obj_name = getattr(obj, "short_descr", "something")
         room_template, char_template = _wear_location_messages(int(wear_loc))
-        room_message = act_format(room_template, recipient=None, actor=ch, arg1=obj, arg2=None)
         room = getattr(ch, "room", None)
-        broadcast_room(room, room_message, exclude=ch)
-        # ROM src/act_obj.c:1435-1612 — no MOBtrigger wrap.
-        mp_act_trigger_room(room_message, room, ch, arg1=obj)
+        # INV-025: act_to_room renders $n/$s per-recipient (PERS masking) + dispatches
+        # TRIG_ACT (ROM src/act_obj.c:1435-1612, no MOBtrigger wrap).
+        act_to_room(room, room_template, ch, arg1=obj, exclude=ch)
         messages.append(char_template.format(obj_name=obj_name))
 
     if not messages:
         return "You have nothing else to wear."
 
     return "\n".join(messages)
-
 
 
 def _wear_location_messages(wear_loc: int) -> tuple[str, str]:
@@ -521,9 +528,15 @@ def _wear_location_messages(wear_loc: int) -> tuple[str, str]:
         int(WearLocation.ABOUT): ("$n wears $p about $s torso.", "You wear {obj_name} about your torso."),
         int(WearLocation.WAIST): ("$n wears $p about $s waist.", "You wear {obj_name} about your waist."),
         int(WearLocation.WRIST_L): ("$n wears $p around $s left wrist.", "You wear {obj_name} around your left wrist."),
-        int(WearLocation.WRIST_R): ("$n wears $p around $s right wrist.", "You wear {obj_name} around your right wrist."),
+        int(WearLocation.WRIST_R): (
+            "$n wears $p around $s right wrist.",
+            "You wear {obj_name} around your right wrist.",
+        ),
         int(WearLocation.SHIELD): ("$n wears $p as a shield.", "You wear {obj_name} as a shield."),
-        int(WearLocation.FLOAT): ("$n releases $p to float next to $m.", "You release {obj_name} and it floats next to you."),
+        int(WearLocation.FLOAT): (
+            "$n releases $p to float next to $m.",
+            "You release {obj_name} and it floats next to you.",
+        ),
     }
     return mapping.get(wear_loc, ("$n wears $p.", "You wear {obj_name}."))
 
