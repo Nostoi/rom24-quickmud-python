@@ -261,20 +261,27 @@ callers).
 |-------|-------|
 | Severity | MINOR |
 | ROM C | `src/handler.c:932-969` (`is_name`) — each space-separated part of `str` must be a `str_prefix` (whole-word prefix) of some word in `namelist`; **all** parts must match. |
-| Python | `mud/world/char_find.py:is_name` — `name_lower in word or word.startswith(name_lower)` per word; matches if **any** single word substring-matches. |
-| Status | ❌ OPEN |
+| Python | `mud/world/char_find.py:is_name` — per-part `str_prefix` (whole-word prefix) with the ROM all-parts conjunction; full-arg prefix short-circuit kept for fidelity. |
+| Status | ✅ FIXED (2026-06-02) — `is_name` now mirrors ROM's `one_argument` tokenization + `str_prefix` all-parts logic. Zero caller fallout (full suite 5329 passed). |
 
-Python's `is_name` diverges from ROM in two ways: (1) it uses a **substring**
-test (`name_lower in word`) in addition to `startswith`, so `is_name("uard",
-"guard")` returns `True` where ROM's `str_prefix` (prefix-only) returns `FALSE`;
-(2) for a multi-word `arg` (e.g. `"big guard"`) ROM requires **every** part to
-match a namelist word, while Python returns `True` as soon as the whole `arg`
-substring-matches a single word (the loop has no all-parts conjunction). Surfaced
-2026-06-02 while closing HANDLER-003 (which routed both char-lookup helpers
-through this `is_name`). Scope when picked up: rewrite `is_name` to mirror ROM's
-`one_argument` tokenization + `str_prefix` all-parts logic, then audit the other
-callers (`mob_cmds`, `build` ×3, `info`, `account_service`) for fallout — they
-currently rely on the looser substring behavior, so tighten test-first.
+Python's `is_name` previously diverged from ROM in two ways: (1) it used a
+**substring** test (`name_lower in word`) in addition to `startswith`, so
+`is_name("uard", "guard")` returned `True` where ROM's `str_prefix` (prefix-only)
+returns `FALSE`; (2) for a multi-word `arg` (e.g. `"big guard"`) ROM requires
+**every** part to match a namelist word, while Python returned `True` as soon as
+the whole `arg` substring-matched a single word (the loop had no all-parts
+conjunction). Surfaced 2026-06-02 while closing HANDLER-003 (which routed both
+char-lookup helpers through this `is_name`).
+
+**Fix:** rewrote `is_name` to split the arg into parts, require each part to be a
+prefix of some `name_list` word (ROM `str_prefix`, prefix-only), and gate the
+overall match on **all** parts matching — mirroring `src/handler.c:946-967`.
+`gitnexus_impact` rated the change CRITICAL (7 direct callers fanning out to
+nearly every char/object-targeting command), but ROM itself calls `is_name` at
+every one of those sites, so the tightening moves all callers *toward* parity.
+The full suite (5329 passed, 4 skipped) confirmed **zero** behavioral fallout —
+no test relied on the looser substring behavior. Test:
+`tests/integration/test_handler004_is_name_whole_word_prefix.py`.
 
 #### HANDLER-005 — `get_char_world` omits ROM's `wch->in_room == NULL` skip
 

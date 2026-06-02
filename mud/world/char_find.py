@@ -129,16 +129,40 @@ def get_char_world(char: "Character", name: str) -> "Character | None":
 
 def is_name(name: str, name_list: str) -> bool:
     """
-    Check if name matches any word in name_list.
+    Check if ``name`` matches ``name_list`` per ROM's whole-word prefix rule.
 
-    ROM Reference: src/handler.c is_name
+    ROM Reference: src/handler.c:932-969 (`is_name`). Each space-separated part of
+    ``name`` must be a ``str_prefix`` (whole-word *prefix*, not substring) of some
+    word in ``name_list``, and **all** parts must match. Mirrors ROM's
+    ``one_argument`` tokenization + ``str_prefix`` all-parts conjunction
+    (HANDLER-004). `is_name("uard", "guard")` is False (ROM `str_prefix` is
+    prefix-only); `is_name("big guard", "guard big")` is True (every part prefixes
+    a namelist word).
     """
     if not name or not name_list:
         return False
 
-    name_lower = name.lower()
-    for word in name_list.lower().split():
-        if name_lower in word or word.startswith(name_lower):
-            return True
+    full = name.lower()
+    parts = full.split()
+    if not parts:
+        return False
 
-    return False
+    list_words = name_list.lower().split()
+
+    # mirroring ROM src/handler.c:946-967 — for each part of the arg, scan the
+    # namelist; the part must be a prefix of some namelist word, else FALSE. The
+    # full-arg prefix check (ROM `!str_prefix(string, name)`) short-circuits to
+    # TRUE; it is redundant once the namelist is split on whitespace (a multi-word
+    # `full` can never prefix a single space-free word) but is kept for fidelity.
+    for part in parts:
+        matched = False
+        for word in list_words:
+            if word.startswith(full):
+                return True
+            if word.startswith(part):
+                matched = True
+                break
+        if not matched:
+            return False
+
+    return True
