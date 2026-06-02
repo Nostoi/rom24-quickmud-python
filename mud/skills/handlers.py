@@ -2621,7 +2621,9 @@ def create_rose(caster: Character, target=None) -> Object | None:  # noqa: ARG00
     _send_to_char(caster, "You create a beautiful red rose.")
     room = getattr(caster, "room", None)
     if room is not None:
-        room.broadcast(f"{_character_name(caster)} has created a beautiful red rose.", exclude=caster)
+        # ROM src/magic.c:1536 — act("$n has created a beautiful red rose.", ch,
+        # rose, NULL, TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+        act_to_room(room, "$n has created a beautiful red rose.", caster, exclude=caster)
 
     return rose
 
@@ -3547,7 +3549,9 @@ def earthquake(caster: Character, target=None) -> bool:  # noqa: ARG001 - parity
         return False
 
     _send_to_char(caster, "The earth trembles beneath your feet!")
-    room.broadcast(f"{_character_name(caster)} makes the earth tremble and shiver.", exclude=caster)
+    # ROM src/magic.c:2263 — act("$n makes the earth tremble and shiver.", ch,
+    # NULL, NULL, TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+    act_to_room(room, "$n makes the earth tremble and shiver.", caster, exclude=caster)
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
     caster_area = getattr(room, "area", None)
@@ -4962,15 +4966,10 @@ def giant_strength(
 
     room = getattr(target, "room", None)
     if room is not None:
-        message = (
-            f"{_character_name(target)}'s muscles surge with heightened power."
-            if getattr(target, "name", None)
-            else "Someone's muscles surge with heightened power."
-        )
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, message)
+        # ROM src/magic.c:3041 — act("$n's muscles surge with heightened power.",
+        # victim, NULL, NULL, TO_ROOM): per-recipient $n PERS masking; a visible
+        # NPC renders short_descr (not "Someone"). INV-025 sweep.
+        act_to_room(room, "$n's muscles surge with heightened power.", target, exclude=target)
 
     return True
 
@@ -5034,15 +5033,9 @@ def haste(
 
         room = getattr(target, "room", None)
         if room is not None:
-            message = (
-                f"{_character_name(target)} is moving less slowly."
-                if getattr(target, "name", None)
-                else "Someone is moving less slowly."
-            )
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is target:
-                    continue
-                _send_to_char(occupant, message)
+            # ROM src/magic.c:3088 — act("$n is moving less slowly.", victim,
+            # NULL, NULL, TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+            act_to_room(room, "$n is moving less slowly.", target, exclude=target)
         return True
 
     modifier = 1
@@ -5071,15 +5064,9 @@ def haste(
 
     room = getattr(target, "room", None)
     if room is not None:
-        message = (
-            f"{_character_name(target)} is moving more quickly."
-            if getattr(target, "name", None)
-            else "Someone is moving more quickly."
-        )
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, message)
+        # ROM src/magic.c:3104 — act("$n is moving more quickly.", victim, NULL,
+        # NULL, TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+        act_to_room(room, "$n is moving more quickly.", target, exclude=target)
 
     if target is not caster:
         _send_to_char(caster, "Ok.")
@@ -6294,15 +6281,9 @@ def pass_door(caster: Character, target: Character | None = None) -> bool:
 
     room = getattr(target, "room", None)
     if room is not None:
-        message = (
-            f"{_character_name(target)} turns translucent."
-            if getattr(target, "name", None)
-            else "Someone turns translucent."
-        )
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, message)
+        # ROM src/magic.c:3887 — act("$n turns translucent.", victim, NULL, NULL,
+        # TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+        act_to_room(room, "$n turns translucent.", target, exclude=target)
 
     return True
 
@@ -7517,7 +7498,9 @@ def sleep(
         _send_to_char(target, "You feel very sleepy ..... zzzzzz.")
         room = getattr(target, "room", None)
         if room is not None:
-            room.broadcast(f"{_character_name(target)} goes to sleep.", exclude=target)
+            # ROM src/magic.c:4380 — act("$n goes to sleep.", victim, NULL, NULL,
+            # TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+            act_to_room(room, "$n goes to sleep.", target, exclude=target)
         target.position = Position.SLEEPING
     else:
         _send_to_char(target, "You feel very sleepy ..... zzzzzz.")
@@ -7563,15 +7546,9 @@ def slow(
 
         room = getattr(target, "room", None)
         if room is not None:
-            message = (
-                f"{_character_name(target)} is moving less quickly."
-                if getattr(target, "name", None)
-                else "Someone is moving less quickly."
-            )
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is target:
-                    continue
-                _send_to_char(occupant, message)
+            # ROM src/magic.c:4420 — act("$n is moving less quickly.", victim,
+            # NULL, NULL, TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+            act_to_room(room, "$n is moving less quickly.", target, exclude=target)
         return True
 
     modifier = -1
@@ -7600,15 +7577,9 @@ def slow(
 
     room = getattr(target, "room", None)
     if room is not None:
-        message = (
-            f"{_character_name(target)} starts to move in slow motion."
-            if getattr(target, "name", None)
-            else "Someone starts to move in slow motion."
-        )
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, message)
+        # ROM src/magic.c:4434 — act("$n starts to move in slow motion.", victim,
+        # NULL, NULL, TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+        act_to_room(room, "$n starts to move in slow motion.", target, exclude=target)
 
     return True
 
@@ -7797,15 +7768,9 @@ def stone_skin(caster: Character, target: Character | None = None) -> bool:  # n
 
     room = getattr(target, "room", None)
     if room is not None:
-        message = (
-            f"{_character_name(target)}'s skin turns to stone."
-            if getattr(target, "name", None)
-            else "Someone's skin turns to stone."
-        )
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, message)
+        # ROM src/magic.c:4465 — act("$n's skin turns to stone.", victim, NULL,
+        # NULL, TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
+        act_to_room(room, "$n's skin turns to stone.", target, exclude=target)
 
     return True
 
@@ -8158,13 +8123,11 @@ def weaken(caster: Character, target: Character | None = None) -> bool:
     # MAGIC-003: the room leg now uses the canonical single-delivery channel
     # (the self leg above already did), not the char.messages mailbox.
     _send_to_char(target, "You feel your strength slip away.")
+    # ROM src/magic.c:4581 — act("$n looks tired and weak.", victim, NULL, NULL,
+    # TO_ROOM): per-recipient $n PERS masking (INV-025 sweep).
     room = getattr(target, "room", None)
     if room is not None:
-        message = f"{_character_name(target)} looks tired and weak."
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, message)
+        act_to_room(room, "$n looks tired and weak.", target, exclude=target)
 
     return True
 

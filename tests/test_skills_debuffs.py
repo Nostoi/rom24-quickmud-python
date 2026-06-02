@@ -277,7 +277,10 @@ def test_slow_applies_affect_and_messages(monkeypatch: pytest.MonkeyPatch) -> No
 
 
 def test_slow_uses_override_item_level(monkeypatch: pytest.MonkeyPatch) -> None:
-    room = Room(vnum=4102, sector_type=int(Sector.FIELD))
+    # CITY sector is never dark (ROM room_is_dark), so the slow room broadcast's
+    # `$n` PERS masking renders the target's name deterministically regardless of
+    # the leaked global sunlight state (INV-025 manual-room-loop sweep).
+    room = Room(vnum=4102, sector_type=int(Sector.CITY))
 
     caster = _make_character("Mage", level=18)
     target = _make_character("Scout", level=16)
@@ -312,7 +315,10 @@ def test_slow_uses_override_item_level(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 def test_slow_dispels_haste_or_handles_saves(monkeypatch: pytest.MonkeyPatch) -> None:
-    room = Room(vnum=4101, sector_type=int(Sector.FIELD))
+    # CITY sector is never dark (ROM room_is_dark), so the slow room broadcast's
+    # `$n` PERS masking renders the target's name deterministically regardless of
+    # the leaked global sunlight state (INV-025 manual-room-loop sweep).
+    room = Room(vnum=4101, sector_type=int(Sector.CITY))
 
     caster = _make_character("Wizard", level=30)
     target = _make_character("Sprinter", level=25)
