@@ -7940,15 +7940,15 @@ def trip(caster: Character, target: Character | None = None) -> str:
     if victim is caster:
         beats = _skill_beats("trip")
         caster.wait = max(int(getattr(caster, "wait", 0) or 0), beats * 2)
-        _send_to_char(caster, "You fall flat on your face!")
+        # mirroring ROM src/fight.c:2699-2701 (do_trip self-trip): both lines
+        # carry {5..{x colour; the room line renders $n per-recipient via PERS
+        # (an invisible tripper masks to "someone") and $s as the tripper's
+        # gendered possessive (his/her/its). FIGHT-039 — was an uncoloured self
+        # line + a baked-name "their" mailbox loop.
+        _send_to_char(caster, "{5You fall flat on your face!{x")
         room = getattr(caster, "room", None)
         if room is not None:
-            message = f"{_character_name(caster)} trips over their own feet!"
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is caster:
-                    continue
-                if hasattr(occupant, "messages"):
-                    occupant.messages.append(message)
+            act_to_room(room, "{5$n trips over $s own feet!{x", caster, exclude=caster)
         return ""
 
     chance = _skill_percent(caster, "trip")
