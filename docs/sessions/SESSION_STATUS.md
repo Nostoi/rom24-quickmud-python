@@ -1,66 +1,63 @@
-# Session Status — 2026-06-02 — INV-001 WRONG-CHANNEL SWEEP FULLY COMPLETE (2.12.73)
+# Session Status — 2026-06-02 — Divergence-Class Completeness Lens (2.12.75)
 
 ## Current State
 
-- **Active mode**: cross-file invariants. The INV-001 **wrong-channel sweep** —
-  auditing every `*.messages.append` in `mud/` for connected-PC double-delivery
-  (async send + mailbox append) or late delivery (cross-character mailbox-only)
-  and migrating the real ones to `push_message` (async-XOR-mailbox) — is now
-  **100% closed**. The final, deferred wiznet site landed this session (2.12.73).
-- **Latest commit — 2.12.73 — INV-001 wiznet** (`611381de`): `_wiznet_deliver`
-  routed through a now **loop-aware** `push_message` (`mud/utils/messaging.py`
-  probes `asyncio.get_running_loop()` and falls back to the mailbox when no loop
-  runs, instead of raising). A connected immortal under the live server loop now
-  gets wiznet lines on the immediate async channel (ROM `src/act_wiz.c:184-189`
-  `send_to_char`); the sync reconnect-announce callers + tests fall back to the
-  mailbox exactly as before. Test
-  `tests/integration/test_inv001_wiznet_delivery_channel.py`. **This closes the
-  one deferred sweep site — INV-001 wrong-channel sweep is fully done.**
-- **Earlier this session — 7 parity fix commits:**
-  - **2.12.72 — INV-001 inline migration** (`b36cd5f7`): combat pos-change +
-    group-split, `do_wake`, `pour`, `say_spell`, gold-changer line, `music`
-    (XOR), 7 inline `handlers.py` spell loops.
-  - **2.12.71 — INV-001 delivery-helper migration** (`c3bb1854`): 5 hand-rolled
-    helpers (`group_commands`/`thief_skills` `_send_to_char_sync`,
-    `mob_cmds._append_message`, `handlers._to_vict_send`/`_notvict_broadcast`).
-  - **2.12.70 — ROOM-BCAST-001** (`5a5bc77c`): `Room.broadcast` double-delivery.
-  - **2.12.69 — SAY-005/SHOUT-004/TELL-007/EMOTE-004** (`85271aec`):
-    say/shout/tell/emote per-listener double-delivery (regression of SAY-004).
-  - **2.12.68 — GIVE-001** (`a6fb9c03`): `do_give` recipient TO_VICT.
-  - **2.12.67 — ACT_COMM-003** (`a181a894`): `stop_follower`.
-- **Sweep status: FULLY COMPLETE.** Every verified double-delivery and
-  cross-character-late site is migrated, including the last deliberate exception:
-  - **`mud/wiznet.py:_wiznet_deliver` — ✅ CLOSED (2.12.73):** its reconnect-
-    announce callers run **synchronously outside an event loop**, so a naive
-    `push_message`'s `create_task` raised "no running event loop". Resolved by
-    making `push_message` loop-aware (probe `get_running_loop`, fall back to
-    mailbox when absent) and routing `_wiznet_deliver` through it. The 4
-    mailbox-asserting reconnect tests stay green (they run sync → fallback).
-  - Actor-self appends (charm/colour_spray caster, practice, THIEF-flag, the
-    `character.send_to_char` test helper) verified NOT late → excluded.
+- **Active mode**: cross-file invariants — now organized under a new
+  **completeness lens**. This session was process/tooling (zero `mud/` code, zero
+  tests changed); it built the measurement framework that sits *above* the
+  cross-INV process, not new gap fixes.
+- **New: divergence-class completeness lens** (`docs/parity/DIVERGENCE_CLASS_ROSTER.md`,
+  DRAFT) — ~11 ROM↔Python *structural* divergence classes, each routed to a
+  verification **layer**: A static bypass-guard (committable `rglob` test),
+  B human domain-read (signed math), C dynamic differential (`diff_harness` /
+  cross-INV). The lens *contains* the existing processes (grep-guards = Layer A,
+  cross-INV = Layer C); it does not replace them. Run via the new
+  **`/rom-divergence-sweep`** skill (a checker/locker of KNOWN invariants — it
+  does **not** discover new ones).
+- **Latest commit — 2.12.75 — INV-029 reconcile + async-delivery reclassify**
+  (`2ab8d02f`):
+  - **INV-029 row-cell reconcile**: the row cell falsely listed `do_say`/`do_tell`
+    cousins as OPEN/uncapped, contradicting its own watch-list (CLOSED via
+    ACT-CAP-003/004, committed tests). Corrected to match.
+  - **async-delivery reclassified A→C**: a clean static guard proved infeasible
+    (`do_yell` correctly hand-rolls the `create_task(send_to_char)` XOR; diverse
+    legit `.messages.append`), so any bypass-grep false-positives. Now Layer C
+    (behavioral, INV-001/027/029 + ACT-CAP-001..004 tests) + Layer-B review.
+  - **diff_harness widening proposal** added (`PROPOSAL_HYPOTHESIS_WIDENING.md`).
+- **Prior commit — 2.12.74 — lens + skill** (`03397e07`): the roster doc, the
+  `/rom-divergence-sweep` skill, the four AGENTS.md epistemic guardrails, the
+  CLAUDE.md routing row.
+- **Four durable guardrails** now in AGENTS.md: method-in-skills/status-in-trackers;
+  committed-guard > doc-✅; enumeration-dependence ⇒ "close on the known surface"
+  ≠ "close to parity"; re-verify ✅ via recall oracle.
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-02_INV001_WIZNET_CHANNEL.md](SESSION_SUMMARY_2026-06-02_INV001_WIZNET_CHANNEL.md).
+  [SESSION_SUMMARY_2026-06-02_DIVERGENCE_CLASS_LENS.md](SESSION_SUMMARY_2026-06-02_DIVERGENCE_CLASS_LENS.md).
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.73 |
-| Tests | **5355 passed, 4 skipped** (`pytest`, ~166s parallel) |
+| Version | 2.12.75 |
+| Tests | **5355 passed, 4 skipped** (110.31s; identical to 2.12.73 baseline — no code/tests changed this session) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Cross-file invariants | 26 enforced; INV-001 wrong-channel sweep added 8 fixes to its trail (no new rows) — tracker past the ~20 soft cap, consolidation due |
-| Open gaps | none from the INV-001 sweep (fully closed) |
+| Cross-file invariants | 26 enforced; lens reclassified async-delivery A→C, INV-029 row cell reconciled (no new rows) |
+| Divergence-class lens | Layer A 3/5 guarded (RNG, equipment-key, attribute-naming); classes 5/6 to-do |
+| Lint | `ruff check .` shows 1762 pre-existing errors (none introduced this session — zero `.py` touched) |
 
 ## Next Intended Task
 
-1. **INV-001 wrong-channel sweep is fully closed** (wiznet landed 2.12.73). No
-   remaining sweep work.
-2. Weigh INV tracker **consolidation** (26 rows, past the ~20 cap), and probe the
-   unaudited **mob-trigger ordering** contracts (bribe/exit/fight/kill/hpcnt) as
-   the next cross-file-invariants candidate.
+1. **Layer-A to-do (cheap, via `/rom-divergence-sweep`):** investigate class 5
+   (flag-hex) and class 6 (pointer-identity) — each yields either a committed
+   guard or an honest reclassification (as async-delivery did when its grep
+   false-positived).
+2. **Highest-ceiling (deliberate multi-day project):** `diff_harness` Hypothesis
+   widening (`tools/diff_harness/PROPOSAL_HYPOTHESIS_WIDENING.md`) — the only
+   enumeration-independent path to *unknown* divergences. Phase A (live-C oracle)
+   is the cost center.
+3. **Standing cross-INV candidate:** mob-trigger ordering (bribe/exit/fight/kill/
+   hpcnt); INV tracker consolidation (26 rows, past the ~20 soft cap).
 
-> **Push note:** 2.12.67–2.12.73 (`a181a894`..`611381de`) are on local `master`.
-> Earlier this session 2.12.67–2.12.71 (through `17b38b72`) were pushed to
-> `origin/master`; **2.12.72 (`b36cd5f7`), 2.12.73 (`611381de`) + this status
-> update are NOT yet pushed.** CHANGELOG/version reflect 2.12.73.
+> **Push note:** 2.12.74 (`03397e07`), 2.12.75 (`2ab8d02f`), + this handoff are on
+> local `master`, **not pushed** — on top of the unpushed 2.12.72/2.12.73 from the
+> prior session. CHANGELOG/version reflect 2.12.75.
