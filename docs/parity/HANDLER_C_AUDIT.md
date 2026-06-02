@@ -137,7 +137,7 @@ Create tests for end-to-end handler workflows
 
 | ROM C Function | QuickMUD Location | Status | Notes |
 |----------------|-------------------|--------|-------|
-| `get_char_room()` | ✅ `mud/world/char_find.py` | ⚠️ Divergent — see HANDLER-001 | "self" keyword OK, but people loop **skips ch** (`char_find.py:51`); ROM does not (`src/handler.c:2205-2211`), so callers can't target self by own name. Stale "Verified" corrected 2026-06-02. |
+| `get_char_room()` | ✅ `mud/world/char_find.py` | ✅ Verified (HANDLER-001 FIXED 2.12.58) | Self-skip removed; people loop now matches ROM (`src/handler.c:2205-2211`) — own name resolves to self, `can_see(ch,ch)` short-circuits True. |
 | `get_char_world()` | ✅ `mud/world/char_find.py` | ✅ Verified | Implemented Dec 30 |
 
 #### HANDLER-001 — `get_char_room` skips self by name (cross-caller divergence)
@@ -146,8 +146,8 @@ Create tests for end-to-end handler workflows
 |-------|-------|
 | Severity | IMPORTANT |
 | ROM C | `src/handler.c:2194-2214` |
-| Python | `mud/world/char_find.py:get_char_room` (line 51 `if occupant is char: continue`) |
-| Status | ❌ OPEN |
+| Python | `mud/world/char_find.py:get_char_room` (was line 51 `if occupant is char: continue`) |
+| Status | ✅ FIXED 2026-06-02 (2.12.58) |
 
 ROM `get_char_room` returns `ch` for the `"self"` keyword (2203-2204) **and** its
 `in_room->people` loop has **no self-skip** — only `can_see`/`is_name` gates
@@ -167,6 +167,25 @@ mis-behave on self-targets. INTERP-025 was closed socials-local instead.
 Test-first when closing: assert `look <ownname>` / `follow <ownname>` resolve to
 self, and sweep the 14 callers' self-target branches against their ROM
 counterparts. Surfaced 2026-06-02 while closing INTERP-025.
+
+**Resolution (2.12.58):** Removed the `if occupant is char: continue` self-skip
+in `char_find.py`; the people loop now matches ROM (`can_see` + `is_name` only).
+`can_see_character(ch, ch)` already short-circuits `True` (`vision.py:158`,
+mirroring ROM `can_see`'s `if (ch == victim) return TRUE;`), so the self match
+survives in the dark / while blind. **14-caller sweep verified** (ROM C ⇄
+Python, each self-target branch): no compensating guards needed —
+`do_consider` (is_safe blocks self), `do_give`/`_give_money` (no self-guard in
+ROM either; net-zero money), `do_group`/`do_order`/`do_murder` (existing
+`victim==ch` guards correct), `do_recite`/`do_zap`/`do_pour`/`do_wake`/`look`
+(self-target legitimate per ROM), `get_char_world` (already returned self via
+its registry loop). **One caller adjusted:** `do_steal`'s substring pre-check
+(`arg2_lower in own_name`) removed — it papered over the missing self-return and
+wrongly blocked stealing from others whose name is a substring of the thief's;
+the ROM `victim==ch` guard (`act_obj.c:2185-2189`) at `thief_skills.py:129`
+subsumes it. Test: `tests/integration/test_handler001_get_char_room_self.py`
+(self-by-name + self-while-blind + `look <ownname>` + steal-substring
+regression). Surfaced & filed pre-existing **ACT_COMM-001** (do_follow
+double "stop following" message) during the sweep.
 
 ### Object Lookup Functions (7 functions)
 

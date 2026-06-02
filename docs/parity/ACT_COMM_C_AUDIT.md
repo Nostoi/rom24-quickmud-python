@@ -224,13 +224,37 @@ return "You must type the full command to delete yourself."
 - ✅ Empty check
 - ✅ get_char_room() lookup
 - ✅ AFF_CHARM check (charmed can't change master)
-- ✅ Self-target unfollow logic
+- ⚠️ Self-target unfollow logic — **double message, see ACT_COMM-001**
 - ✅ PLR_NOFOLLOW check
 - ✅ REMOVE_BIT(PLR_NOFOLLOW) equivalent
 - ✅ stop_follower() before add_follower()
 - ✅ add_follower() call
 
-**Parity Check**: ✅ PERFECT
+**Parity Check**: ⚠️ Divergent on self-unfollow (ACT_COMM-001); stale "PERFECT"
+corrected 2026-06-02.
+
+##### ACT_COMM-001 — `follow self` emits a double "stop following" message
+
+| Field | Value |
+|-------|-------|
+| Severity | MINOR |
+| ROM C | `src/act_comm.c:1562-1571` (do_follow), `stop_follower` (act emits the message) |
+| Python | `mud/commands/group_commands.py:170-171` (do_follow) + `stop_follower:108-118` |
+| Status | ❌ OPEN |
+
+ROM `do_follow`'s `if (victim == ch)` branch, when already following someone,
+calls `stop_follower(ch)` and **returns silently** — the only message is the
+`act("You stop following $N.", …)` emitted *inside* `stop_follower` (with the
+master's name). Python's `do_follow` calls `stop_follower(char)` (which already
+appends `"You stop following {master}."` to `char.messages`, gated on
+`can_see`) **and then** `return "You stop following."` (bare, no name) as the
+TO_CHAR string — so the actor sees the message **twice**, once with the name and
+once without. **Pre-existing** and reachable today via `follow self` (the
+`"self"` keyword path), so NOT introduced by HANDLER-001 — surfaced during its
+14-caller sweep (2026-06-02). Fix: drop the `return "You stop following."` in
+the self-branch (return `""`), letting `stop_follower` be the sole emitter, to
+match ROM's silent return. Test-first: `follow self` while following X yields a
+single "You stop following X." (not a bare duplicate).
 
 ---
 

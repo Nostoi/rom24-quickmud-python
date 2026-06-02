@@ -19,20 +19,23 @@ class TestPlayerMeetsNPC:
     
     def test_player_can_look_at_mob(self, test_player, test_mob):
         """Player can examine a specific mob"""
-        result = process_command(test_player, "look test")
+        # Target by "mob" not "test": the player fixture is named "TestPlayer",
+        # and ROM get_char_room has no self-skip (HANDLER-001) + is_name prefix-
+        # matches, so "test" would resolve to the actor (self), not the mob.
+        result = process_command(test_player, "look mob")
         # Should show mob description, not just room
         assert "test mob" in result.lower() or "nothing special" in result.lower()
     
     def test_player_can_consider_mob(self, test_player, test_mob):
         """Player can assess mob difficulty"""
         # test_player is level 5, test_mob is level 3 (diff = -2)
-        result = process_command(test_player, "consider test")
+        result = process_command(test_player, "consider mob")
         # Level diff -2 should show "easy kill"
         assert "easy" in result.lower() or "match" in result.lower()
     
     def test_player_can_follow_mob(self, test_player, test_mob):
         """Player can follow an NPC"""
-        result = process_command(test_player, "follow test")
+        result = process_command(test_player, "follow mob")
         assert "you now follow" in result.lower()
         assert test_player.master == test_mob
     
@@ -59,7 +62,7 @@ class TestPlayerMeetsNPC:
         test_player.inventory.append(bread)
         bread.carried_by = test_player
         
-        result = process_command(test_player, "give bread test")
+        result = process_command(test_player, "give bread mob")
         assert "you give" in result.lower() or "give" in result.lower()
 
 
@@ -72,7 +75,7 @@ class TestGroupFormation:
         # But in ROM, only the leader can group followers
         # So let's have the mob follow the player first
         # Actually, let's test the simpler case: player follows mob
-        result = process_command(test_player, "follow test")
+        result = process_command(test_player, "follow mob")
         assert test_player.master == test_mob
         
         # Now test_mob is leader, and test_player is following
@@ -104,7 +107,7 @@ class TestGroupFormation:
         north_room.exits = {2: Exit(to_room=test_room, exit_info=0, keyword="", key=0)}
         
         # Setup group - player follows mob
-        process_command(test_player, "follow test")
+        process_command(test_player, "follow mob")
         assert test_player.master == test_mob
         
         # In ROM, only leader can add followers to group
@@ -175,7 +178,7 @@ class TestCombatInteraction:
     
     def test_consider_before_combat(self, test_player, test_mob):
         """Players assess danger before fighting"""
-        result = process_command(test_player, "consider test")
+        result = process_command(test_player, "consider mob")
         assert result  # Should get assessment
         assert "easy" in result.lower() or "match" in result.lower()
     

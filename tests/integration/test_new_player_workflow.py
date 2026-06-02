@@ -42,12 +42,13 @@ class TestNewPlayerWorkflow:
         result = process_command(test_player, "look")
         assert "test mob" in result.lower()
         
-        # 3. Examine NPCs
-        result = process_command(test_player, "look test")
+        # 3. Examine NPCs (target "mob": player is "TestPlayer" and ROM
+        # get_char_room has no self-skip — "test" would resolve to self.)
+        result = process_command(test_player, "look mob")
         assert result is not None
-        
+
         # 4. Assess danger
-        result = process_command(test_player, "consider test")
+        result = process_command(test_player, "consider mob")
         assert "easy" in result.lower() or "match" in result.lower()
         
         # 5. Talk to NPCs
@@ -59,7 +60,7 @@ class TestNewPlayerWorkflow:
         assert result is not None
         
         # 8. Group with NPC
-        result = process_command(test_player, "follow test")
+        result = process_command(test_player, "follow mob")
         assert test_player.master == test_mob
         
         # 9-10. Combat would need more setup, but consider works
@@ -152,11 +153,11 @@ class TestNewPlayerWorkflow:
         assert "test mob" in result.lower()
         
         # Assess difficulty
-        result = process_command(test_player, "consider test")
+        result = process_command(test_player, "consider mob")
         assert "easy" in result.lower() or "match" in result.lower()
-        
+
         # Follow NPC
-        result = process_command(test_player, "follow test")
+        result = process_command(test_player, "follow mob")
         assert test_player.master == test_mob
         
         # Create quest item
@@ -176,7 +177,7 @@ class TestNewPlayerWorkflow:
         quest_item.carried_by = test_player
         
         # Give quest item to NPC
-        result = process_command(test_player, "give gem test")
+        result = process_command(test_player, "give gem mob")
         assert "give" in result.lower()
         
         # Quest workflow complete!

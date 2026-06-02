@@ -47,10 +47,11 @@ def get_char_room(char: "Character", name: str) -> "Character | None":
     if name_lower == "self":
         return char
 
+    # mirroring ROM src/handler.c:2205-2211 — the in_room->people loop has NO
+    # self-skip; only can_see + is_name gate it. can_see (src/handler.c) returns
+    # TRUE for ch == victim, so the actor's own name resolves to the actor (even
+    # when blind / in the dark). HANDLER-001.
     for occupant in getattr(room, "people", []):
-        if occupant is char:
-            continue
-
         from mud.world.vision import can_see_character
 
         if not can_see_character(char, occupant):

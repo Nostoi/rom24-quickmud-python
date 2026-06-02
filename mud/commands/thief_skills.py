@@ -114,18 +114,15 @@ def do_steal(char: Character, args: str) -> str:
     if not arg1 or not arg2:
         return "Steal what from whom?\n"
 
-    # ROM L2180-2183: get_char_room may return ch itself in ROM; QuickMUD's
-    # helper excludes self, so emulate ROM by self-matching by name first.
-    own_name = (getattr(char, "name", "") or "").lower()
-    arg2_lower = arg2.lower()
-    if arg2_lower == "self" or (own_name and arg2_lower in own_name):
-        return "That's pointless.\n"
-
+    # ROM L2180-2183: get_char_room resolves "self"/own-name to ch (HANDLER-001),
+    # matching ROM's helper. No pre-check needed — the victim == ch guard below
+    # mirrors ROM and avoids wrongly blocking thieves whose name is a substring
+    # of the victim's (or vice versa).
     victim = get_char_room(char, arg2)
     if victim is None:
         return "They aren't here.\n"
 
-    # ROM L2185-2189 (defensive — get_char_room shouldn't return self here)
+    # ROM L2185-2189: if (victim == ch) "That's pointless."
     if victim is char:
         return "That's pointless.\n"
 
