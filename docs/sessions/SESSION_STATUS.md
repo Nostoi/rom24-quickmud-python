@@ -1,82 +1,61 @@
-# Session Status — 2026-06-02 — INV-025 obj/equipment/give PERS sweep (act_format class closed; broadcast_room group OPEN) (2.12.54)
+# Session Status — 2026-06-02 — INV-025 command-layer broadcast PERS sweep CLOSED + doors rework + `_pers` fidelity (2.12.55)
 
 ## Current State
 
-- **Active mode**: cross-file invariants. The INV-025 **`act_format(recipient=None)`
-  object/equipment/give class is CLOSED** (3 batches this session), and
-  `mud/combat/`/`mud/world/`/`communication.py` were verified already-swept.
-  **NOT yet exhausted:** advisor review surfaced a remaining **baked-f-string
-  `broadcast_room` TO_ROOM group** (~22 sites) this session walked past — see
-  "Next Intended Task". The earlier "exhausted/COMPLETE" wording was over-claimed
-  and has been retracted across CHANGELOG / tracker / this file.
-- **This session — three batches (all committed locally, NOT pushed):**
-  - **2.12.52** (`733a741d`) — object commands: `obj_manipulation.py` (put×4,
-    remove, sacrifice×2, quaff), `inventory.py` (get×2, drop×3, smoke), 
-    `consumption.py` (eat/drink/choke×2), `liquids.py` (fill/pour/pour-out),
-    `magic_items.py` (`_broadcast` helper → `act_to_room`: recite/brandish/zap).
-    `act_format(recipient=None)+broadcast_room` baked the actor name → collapsed
-    each `broadcast_room`+`mp_act_trigger_room` pair into one `act_to_room`.
-    Reconciled RECITE-002/BRANDISH-004/ZAP-004. Test
-    `test_inv025_obj_command_pers_sweep.py` (7).
-  - **2.12.53** (`379baa0b`) — `equipment.py` baked `f"{ch.name} …"` f-strings
-    (wear/wield/hold/light/remove/level-fail) → `act_to_room`; **hold line gained
-    ROM's `$s` gendered possessive** (was literal "their hand"). Reconciled
-    WEAR-004. Test `test_inv025_equipment_pers_sweep.py` (5).
-  - **2.12.54** (`4b6a012e`) — `give.py`: object branch → `disable_mobtrigger()`-
-    wrapped `act_to_room` (TRIG_ACT stays suppressed per ROM `act_obj.c:832`;
-    `mp_give_trigger` unchanged); **coins branch gained the missing TRIG_ACT**
-    (ROM `:726` is unsuppressed). Removed the now-unused
-    `_broadcast_to_room_observers`. Reconciled the `do_give` row + the obsolete
-    `test_inv025_do_give_act_trigger_suppression.py`. Test
-    `test_inv025_give_pers_sweep.py` (4).
-- Discovery vs the literal prior task: `mud/combat/`, `mud/world/`, and
-  `communication.py` (`do_say`/`do_tell`/`do_shout`) were **already swept**; the
-  real remaining divergence was the object-command `act_format(recipient=None)`
-  class. Advisor-reviewed scope; `give` split out for its inverse TRIG_ACT contract.
+- **Active mode**: cross-file invariants. The **INV-025 command-layer
+  `broadcast_room` / `act_format(recipient=None)` PERS class is now EXHAUSTED**
+  across `mud/commands/` — verified by a residual grep
+  (`broadcast_room(.*f"` / `.broadcast(f"`) that returns only the no-`$n` door
+  reverse line. This 4th batch closed the group the prior three (object /
+  equipment / give) walked past, and surfaced + fixed two latent
+  `act_format._pers` divergences from ROM `PERS`.
+- **This session — two commits (local, NOT pushed):**
+  - **2.12.55 / `e020127d`** — command-layer broadcast PERS sweep: `position.py`
+    (rest/sit/sleep/stand), `session.py` (quit), `inspection.py` (scan/peer `$T`),
+    `healer.py` (utter `$T`), `imm_load.py` (mload `$N`/oload `$p`/purge room/`$N`
+    TO_NOTVICT — dropped `_notvict_broadcast`), `imm_search.py` (clone `$p`/`$N`),
+    `shop.py` (buy-pet `$N`/buy-item `$p[N]`/sell `$p` — **adds the missing
+    TRIG_ACT**, masking unreachable via keeper-can-see gate). **`do_restore`
+    TO_VICT** → `act_format(recipient=victim)` (self-restore keeps the name).
+    **`act_format._pers`** aligned with `vision.pers`: NPC→short_descr (was
+    `name`), and removed the non-ROM `"You"` self-case. Tests:
+    `test_inv025_command_broadcast_pers_sweep.py` (14) + shop buy TRIG_ACT.
+  - **2.12.55 / `5299c664`** — `doors.py:_broadcast_act_to_room` reworked from a
+    pre-baked `f"{actor_name} …"` string to a ROM `act()` format string +
+    `act_to_room`; all 15 open/close/lock/unlock/pick callers converted
+    (`$p`/`$d`). Test `test_inv025_door_commands_pers_sweep.py` (7). Carries the
+    version bump + CHANGELOG/README/tracker doc updates.
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-02_INV025_OBJ_EQUIP_GIVE_PERS.md](SESSION_SUMMARY_2026-06-02_INV025_OBJ_EQUIP_GIVE_PERS.md)
-  (prior: [INV025_COMBAT_DEATH_PERS_TRIGACT](SESSION_SUMMARY_2026-06-01_INV025_COMBAT_DEATH_PERS_TRIGACT.md))
+  [SESSION_SUMMARY_2026-06-02_INV025_COMMAND_BROADCAST_DOORS_PERS.md](SESSION_SUMMARY_2026-06-02_INV025_COMMAND_BROADCAST_DOORS_PERS.md)
+  (prior: [INV025_OBJ_EQUIP_GIVE_PERS](SESSION_SUMMARY_2026-06-02_INV025_OBJ_EQUIP_GIVE_PERS.md))
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.54 |
-| Tests | **full suite green: 5281 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
+| Version | 2.12.55 |
+| Tests | **full suite green: 5303 passed, 4 skipped** (`pytest -p no:xdist -o addopts="" -q`, ~10m) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | **INV-025 baked-f-string `broadcast_room` group still OPEN** (~22 sites: `imm_load` mload/oload/purge, `session` quit, `inspection` scan/peer, `position` rest/sit/sleep, `healer` utter, `imm_search` clone, `doors._broadcast_act_to_room` open/close/lock/unlock). The `act_format(recipient=None)` object/equipment/give class is closed. |
+| Open correctness gaps | **none in the INV-025 command-layer PERS class** (exhausted this session). |
 
 ## Next Intended Task
 
-**4th INV-025 PERS batch — the baked-f-string `broadcast_room` TO_ROOM group**
-(same mechanical pattern as this session, ~22 sites; verify each ROM `act()`
-string, then `act_to_room`):
+The INV-025 PERS sweep is complete for `mud/commands/`. Move to the remaining
+**cross-file invariants** candidates (per AGENTS.md probe-then-scope method):
 
-1. `mud/commands/imm_load.py:120/216/277` — do_mload/oload/purge. **Note:** ROM
-   `do_mload` is `act("$n has created $N!", ch, NULL, victim, TO_ROOM)` — `$N`
-   renders the created **mob** per-recipient (not a baked `victim_short`); oload
-   uses `$p`. do_restore (`:372/425`, "$n has restored you.") is TO_VICT — verify
-   before touching.
-2. `mud/commands/session.py:65` — quit `"$n has left the game."`
-3. `mud/commands/inspection.py:77/114` — scan/peer.
-4. `mud/commands/position.py:92` — rest/sit/sleep (`act_format(recipient=None)`,
-   the same shape as Batch 1; this file was missed).
-5. `mud/commands/healer.py:242` — utter.
-6. `mud/commands/imm_search.py:472/541` — clone.
-7. `mud/commands/doors.py:_broadcast_act_to_room` — the chokepoint takes a
-   pre-baked `f"{actor_name} …"` string (open/close/lock/unlock, ~12 callers); it
-   dispatches TRIG_ACT but cannot re-mask. Rework the helper to take a `$n` format
-   string + `act_to_room`, then convert the callers. The reverse-side `rev_msg`
-   ("The $d opens/closes.") has no `$n` → leave as-is.
+1. **Mob script trigger ordering** — TRIG_ENTRY / TRIG_GREET / TRIG_GIVE /
+   TRIG_BRIBE fire-order vs ROM (`src/mob_prog.c`, `mob_cmds.c`).
+2. **Position transitions** — sleeping/resting/sitting/standing/fighting edges
+   and the act() lines they emit (cross-check vs `act_move.c`).
+3. **Group / follower chains** — `add_follower`/`die_follower`/`stop_follower`
+   and charm/pet membership invariants.
 
-After this batch, the INV-025 PERS class is genuinely exhausted; then move to the
-remaining cross-file invariants candidates: mob script trigger ordering
-(TRIG_ENTRY/GREET/GIVE/BRIBE), position transitions, group/follower chains.
+Run a 5-minute probe (read ROM C contract → read Python equivalent → write one
+failing test), then either close as a single gap-closer commit or file as the
+next free INV-NNN.
 
-> **Push note:** everything through 2.12.48 is on `master`; **2.12.49–51**
-> (FIGHT-041/042 + NUKEPET-001) and **2.12.52–54** (this session) are committed
-> locally but **NOT yet pushed**. README/CHANGELOG/version all reflect 2.12.54.
-> **Index:** GitNexus reindexed clean after the give commit; re-run after the
-> docs/handoff commit.
+> **Push note:** everything through 2.12.48 is on `master`; **2.12.49–55** are
+> committed locally but **NOT yet pushed**. README/CHANGELOG/version all reflect
+> 2.12.55. Reindex GitNexus after the docs/handoff commit.
