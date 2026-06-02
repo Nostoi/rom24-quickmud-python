@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
@@ -200,18 +199,19 @@ class Room:
         matching the broadcast_room pattern (ACT-CAP-001).
         """
         from mud.utils.act import capitalize_act_line
+        from mud.utils.messaging import push_message
 
         message = capitalize_act_line(message)
         for char in self.people:
             if char is exclude:
                 continue
-            writer = getattr(char, "connection", None)
-            if writer is not None:
-                from mud.net.protocol import send_to_char as _send
-
-                asyncio.create_task(_send(char, message))
-            if hasattr(char, "messages"):
-                char.messages.append(message)
+            # INV-001 (ROOM-BCAST-001): single-channel delivery — push_message
+            # routes a connected occupant to the async send and the mailbox only
+            # for disconnected chars (XOR), matching broadcast_room (fixed in
+            # 2.11.6). The prior if-writer-async + unconditional append
+            # double-delivered to a connected PC (the connection loop drains the
+            # mailbox too). The docstring above already described this XOR intent.
+            push_message(char, message)
 
 
 # `room_registry` is re-exported from `mud.registry` at the top of this file.
