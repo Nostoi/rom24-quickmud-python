@@ -1,4 +1,4 @@
-# Session Status — 2026-06-02 — INV-025 command-layer broadcast PERS sweep CLOSED + doors rework + `_pers` fidelity (2.12.55)
+# Session Status — 2026-06-02 — INV-025 `act_format`/broadcast command group CLOSED (socials class still open) + doors rework + `_pers` fidelity (2.12.55)
 
 ## Current State
 
