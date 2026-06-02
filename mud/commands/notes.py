@@ -13,6 +13,7 @@ from mud.notes import (
     iter_boards,
     save_board,
 )
+from mud.utils.act import act_to_room
 
 
 def _ensure_pcdata(char: Character) -> PCData:
@@ -75,13 +76,6 @@ _IMPLEMENTOR_TOKENS = {
 
 def _split_tokens(value: str) -> set[str]:
     return {token.lower() for token in value.replace(",", " ").split() if token}
-
-
-def _possessive(char: Character) -> str:
-    """Return ROM ``$s`` possessive pronoun for ``char`` (his/her/its)."""
-
-    sex = getattr(char, "sex", 0) or 0
-    return {1: "his", 2: "her"}.get(sex, "its")
 
 
 def _is_note_visible_to(char: Character, note) -> bool:
@@ -374,7 +368,7 @@ def do_note(char: Character, args: str) -> str:
         # actor's room (excluding the actor) so bystanders see the action.
         room = getattr(char, "room", None)
         if room is not None and hasattr(room, "broadcast"):
-            room.broadcast(f"{char.name} starts writing a note.", exclude=char)
+            act_to_room(room, "{G$n starts writing a note.{x", char, exclude=char)  # ROM board.c:503
         message = [cancellation] if cancellation else []
         message.append(
             "You continue your note on the" if (draft.subject or draft.text) else "You begin writing a note on the"
@@ -454,7 +448,7 @@ def do_note(char: Character, args: str) -> str:
         # broadcast announcing the post to bystanders.
         room = getattr(char, "room", None)
         if room is not None and hasattr(room, "broadcast"):
-            room.broadcast(f"{char.name} finishes {_possessive(char)} note.", exclude=char)
+            act_to_room(room, "{G$n finishes $s note.{x", char, exclude=char)  # ROM board.c:1181
         return "Note posted."
 
     if subcmd == "forget":

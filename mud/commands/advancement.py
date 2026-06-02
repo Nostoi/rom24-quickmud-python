@@ -4,6 +4,7 @@ from mud.math.c_compat import c_div
 from mud.models.character import Character
 from mud.models.constants import LEVEL_IMMORTAL, ActFlag, convert_flags_from_letters
 from mud.skills.registry import skill_registry
+from mud.utils.act import act_to_room
 
 
 def _has_practice_flag(entity) -> bool:
@@ -188,12 +189,12 @@ def do_practice(char: Character, args: str) -> str:
         char_msg = f"You are now learned at {skill.name}."
         char.messages.append(char_msg)
         if char.room:
-            char.room.broadcast(f"{char.name} is now learned at {skill.name}.", exclude=char)
+            act_to_room(char.room, f"$n is now learned at {skill.name}.", char, exclude=char)  # ROM act_info.c:2787
     else:
         char_msg = f"You practice {skill.name}."
         char.messages.append(char_msg)
         if char.room:
-            char.room.broadcast(f"{char.name} practices {skill.name}.", exclude=char)
+            act_to_room(char.room, f"$n practices {skill.name}.", char, exclude=char)  # ROM act_info.c:2779
 
     return char_msg
 
@@ -357,7 +358,7 @@ def do_train(char: Character, args: str) -> str:
 
         # ROM C act() messages (lines 1759-1760)
         if getattr(char, "room", None):
-            char.room.broadcast(f"{char.name}'s durability increases!", exclude=char)
+            act_to_room(char.room, "$n's durability increases!", char, exclude=char)  # ROM act_move.c:1760
         return "Your durability increases!"
 
     # Train mana (ROM C lines 1764-1779)
@@ -374,7 +375,7 @@ def do_train(char: Character, args: str) -> str:
 
         # ROM C act() messages (lines 1776-1777)
         if getattr(char, "room", None):
-            char.room.broadcast(f"{char.name}'s power increases!", exclude=char)
+            act_to_room(char.room, "$n's power increases!", char, exclude=char)  # ROM act_move.c:1777
         return "Your power increases!"
 
     # Train stat (ROM C lines 1781-1799)
@@ -397,7 +398,7 @@ def do_train(char: Character, args: str) -> str:
 
         # ROM C act() messages (lines 1796-1797)
         if getattr(char, "room", None):
-            char.room.broadcast(f"{char.name}'s {stat_name} increases!", exclude=char)
+            act_to_room(char.room, f"$n's {stat_name} increases!", char, exclude=char)  # ROM act_move.c:1798
         return f"Your {stat_name} increases!"
 
     return "Train what?"

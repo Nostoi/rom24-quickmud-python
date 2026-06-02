@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.constants import Position
+from mud.utils.act import act_to_room
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -359,7 +360,7 @@ def do_recall(ch: Character, args: str) -> str:
 
     # Message to room FIRST (ROM C line 1575)
     if ch.room:
-        ch.room.broadcast(f"{ch.name} prays for transportation!", exclude=ch)
+        act_to_room(ch.room, "$n prays for transportation!", ch, exclude=ch)  # ROM act_move.c:1575
 
     # Get recall room (ROM C lines 1577-1581)
     recall_room = room_registry.get(ROOM_VNUM_TEMPLE)
@@ -402,7 +403,7 @@ def do_recall(ch: Character, args: str) -> str:
 
     # Departure message (ROM C line 1618)
     if ch.room:
-        ch.room.broadcast(f"{ch.name} disappears.", exclude=ch)
+        act_to_room(ch.room, "$n disappears.", ch, exclude=ch)  # ROM act_move.c:1618
 
     # Move character (ROM C lines 1619-1620).
     # Route through Room.remove_character / Room.add_character so that
@@ -414,7 +415,7 @@ def do_recall(ch: Character, args: str) -> str:
     recall_room.add_character(ch)
 
     # Arrival message (ROM C line 1621)
-    recall_room.broadcast(f"{ch.name} appears in the room.", exclude=ch)
+    act_to_room(recall_room, "$n appears in the room.", ch, exclude=ch)  # ROM act_move.c:1621
 
     # Show room to character (ROM C line 1622)
     from mud.commands.inspection import do_look
