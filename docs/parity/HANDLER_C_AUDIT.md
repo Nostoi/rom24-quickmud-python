@@ -187,6 +187,30 @@ subsumes it. Test: `tests/integration/test_handler001_get_char_room_self.py`
 regression). Surfaced & filed pre-existing **ACT_COMM-001** (do_follow
 double "stop following" message) during the sweep.
 
+#### HANDLER-002 — `get_char_room`/`get_char_world` count an occupant twice (N.name)
+
+| Field | Value |
+|-------|-------|
+| Severity | MINOR |
+| ROM C | `src/handler.c:2205-2211` (`get_char_room`), `is_name` (one match per occupant) |
+| Python | `mud/world/char_find.py:get_char_room` (name/short block + keywords block) |
+| Status | ❌ OPEN |
+
+ROM `get_char_room` does `if (++count == number)` **once per occupant** —
+`is_name(arg, rch->name)` is a single boolean test. Python's helper checks the
+name/short_descr in one block (`count += 1`) **and then** the keyword list in a
+separate block (`count += 1`), so an occupant whose name/short *and* keywords
+both match `arg` increments `count` **twice**. For typical mobs whose keyword
+list repeats their name (e.g. a guard with name "guard", keywords "guard
+soldier"), `2.guard` returns the **first** guard (count hits 2 on occupant #1)
+instead of the second. Affects every `N.name` lookup through `get_char_room` /
+`get_char_world` (look, give, social target, etc.). Pre-existing; surfaced
+2026-06-02 while closing INTERP-026 (whose N.name test sidesteps it by using a
+short_descr without the keyword). Fix: count at most once per occupant —
+combine the name/short/keyword tests into a single `is_name`-style predicate and
+increment once. Test-first: two mobs sharing name+keyword; `2.<name>` selects
+the second.
+
 ### Object Lookup Functions (7 functions)
 
 | ROM C Function | QuickMUD Location | Status | Notes |

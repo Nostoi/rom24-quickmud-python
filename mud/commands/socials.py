@@ -8,6 +8,7 @@ from mud.models.social import find_social
 from mud.utils import rng_mm
 from mud.utils.act import act_format, act_to_room
 from mud.utils.messaging import push_message
+from mud.world.char_find import get_char_room
 
 
 def _act_to_char(recipient: Any, fmt: str, actor: Any, *, arg2: Any | None = None) -> None:
@@ -54,19 +55,13 @@ def perform_social(char: Character, name: str, arg: str) -> str:
         return "In your dreams, or what?"
     victim = None
     if arg:
-        arg_lower = arg.lower()
         # mirroring ROM src/interp.c:637 — do_social resolves the target via
-        # get_char_room (src/handler.c:2194-2214): "self" returns ch directly
-        # (2203-2204), and the in_room->people loop does NOT skip ch (2205-2211),
-        # so socialing your own name also finds you. Either path → victim == ch
-        # → char_auto/others_auto (INTERP-025). Do not re-add an `is char` skip.
-        if arg_lower == "self":
-            victim = char
-        else:
-            for person in char.room.people:
-                if (getattr(person, "name", None) or "").lower().startswith(arg_lower):
-                    victim = person
-                    break
+        # get_char_room (src/handler.c:2194-2214): "self"/own-name resolve to ch
+        # (HANDLER-001), the in_room->people loop is can_see + is_name gated so an
+        # unseen target → NULL → "They aren't here." (INTERP-026, no presence
+        # leak), and N.name syntax ("2.guard") is honored. Either self path →
+        # victim == ch → char_auto/others_auto (INTERP-025).
+        victim = get_char_room(char, arg)
     if victim and victim is not char:
         # mirroring ROM src/interp.c:648-650 — TO_NOTVICT excludes the victim;
         # TO_CHAR/TO_VICT go to the directed recipient. act_to_room / _act_to_char
