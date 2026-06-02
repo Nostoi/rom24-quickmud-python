@@ -1,12 +1,14 @@
-# Session Status — 2026-06-02 — INV-025 object/equipment/give PERS sweep COMPLETE (2.12.54)
+# Session Status — 2026-06-02 — INV-025 obj/equipment/give PERS sweep (act_format class closed; broadcast_room group OPEN) (2.12.54)
 
 ## Current State
 
-- **Active mode**: cross-file invariants. The **INV-025 baked-name PERS
-  re-probe is now EXHAUSTED** across `mud/commands/`, `mud/combat/`,
-  `mud/skills/`, `mud/world/` — every confirmed `act_format(recipient=None)` /
-  baked-`room.broadcast` / baked-f-string `act(TO_ROOM)` site renders through the
-  shared `act_to_room` helper (per-recipient PERS masking + per-NPC TRIG_ACT).
+- **Active mode**: cross-file invariants. The INV-025 **`act_format(recipient=None)`
+  object/equipment/give class is CLOSED** (3 batches this session), and
+  `mud/combat/`/`mud/world/`/`communication.py` were verified already-swept.
+  **NOT yet exhausted:** advisor review surfaced a remaining **baked-f-string
+  `broadcast_room` TO_ROOM group** (~22 sites) this session walked past — see
+  "Next Intended Task". The earlier "exhausted/COMPLETE" wording was over-claimed
+  and has been retracted across CHANGELOG / tracker / this file.
 - **This session — three batches (all committed locally, NOT pushed):**
   - **2.12.52** (`733a741d`) — object commands: `obj_manipulation.py` (put×4,
     remove, sacrifice×2, quaff), `inventory.py` (get×2, drop×3, smoke), 
@@ -44,22 +46,34 @@
 | Tests | **full suite green: 5281 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | **None in the INV-025 PERS class** — the baked-name re-probe is exhausted across `mud/commands/`, `mud/combat/`, `mud/skills/`, `mud/world/`. |
+| Open correctness gaps | **INV-025 baked-f-string `broadcast_room` group still OPEN** (~22 sites: `imm_load` mload/oload/purge, `session` quit, `inspection` scan/peer, `position` rest/sit/sleep, `healer` utter, `imm_search` clone, `doors._broadcast_act_to_room` open/close/lock/unlock). The `act_format(recipient=None)` object/equipment/give class is closed. |
 
 ## Next Intended Task
 
-The INV-025 baked-name PERS re-probe is complete. Move to the next cross-file
-invariants candidate (per AGENTS.md probe-then-scope method):
+**4th INV-025 PERS batch — the baked-f-string `broadcast_room` TO_ROOM group**
+(same mechanical pattern as this session, ~22 sites; verify each ROM `act()`
+string, then `act_to_room`):
 
-1. **Mob script trigger ordering** — TRIG_ENTRY/GREET/GIVE/BRIBE dispatch order vs
-   ROM (e.g. portal/move ENTRY-vs-GREET, give MOBtrigger interactions). Read the
-   ROM trigger site → Python equivalent → one failing contract test.
-2. **Position transitions** — `update_pos`/`apply_position_change` edges (the
-   INV-016 family) for any unguarded path.
-3. **Group/follower chains** — leader-death/extract cascade, charm-break ordering.
+1. `mud/commands/imm_load.py:120/216/277` — do_mload/oload/purge. **Note:** ROM
+   `do_mload` is `act("$n has created $N!", ch, NULL, victim, TO_ROOM)` — `$N`
+   renders the created **mob** per-recipient (not a baked `victim_short`); oload
+   uses `$p`. do_restore (`:372/425`, "$n has restored you.") is TO_VICT — verify
+   before touching.
+2. `mud/commands/session.py:65` — quit `"$n has left the game."`
+3. `mud/commands/inspection.py:77/114` — scan/peer.
+4. `mud/commands/position.py:92` — rest/sit/sleep (`act_format(recipient=None)`,
+   the same shape as Batch 1; this file was missed).
+5. `mud/commands/healer.py:242` — utter.
+6. `mud/commands/imm_search.py:472/541` — clone.
+7. `mud/commands/doors.py:_broadcast_act_to_room` — the chokepoint takes a
+   pre-baked `f"{actor_name} …"` string (open/close/lock/unlock, ~12 callers); it
+   dispatches TRIG_ACT but cannot re-mask. Rework the helper to take a `$n` format
+   string + `act_to_room`, then convert the callers. The reverse-side `rev_msg`
+   ("The $d opens/closes.") has no `$n` → leave as-is.
 
-Run a 5-minute probe; close as a single gap-closer commit or file the next free
-INV-NNN in `CROSS_FILE_INVARIANTS_TRACKER.md`.
+After this batch, the INV-025 PERS class is genuinely exhausted; then move to the
+remaining cross-file invariants candidates: mob script trigger ordering
+(TRIG_ENTRY/GREET/GIVE/BRIBE), position transitions, group/follower chains.
 
 > **Push note:** everything through 2.12.48 is on `master`; **2.12.49–51**
 > (FIGHT-041/042 + NUKEPET-001) and **2.12.52–54** (this session) are committed

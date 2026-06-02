@@ -1,4 +1,4 @@
-# Session Summary — 2026-06-02 — INV-025 object/equipment/give PERS sweep (re-probe COMPLETE)
+# Session Summary — 2026-06-02 — INV-025 object/equipment/give PERS sweep (act_format class closed; broadcast_room group still open)
 
 ## Scope
 
@@ -108,14 +108,21 @@ previously-✅ audit row per the AGENTS.md "re-verify ✅" rule.
 
 ## Next Steps
 
-The INV-025 baked-name / missing-TRIG_ACT PERS re-probe is **exhausted** across
-`mud/commands/`, `mud/combat/`, `mud/skills/`, `mud/world/` — every confirmed
-`act_format(recipient=None)` / baked-`room.broadcast` / baked-f-string
-`act(TO_ROOM)` site now renders through `act_to_room`. Remaining cross-file
-invariants candidates (per AGENTS.md): **position transitions**, **mob script
-triggers** (TRIG_ENTRY/GREET/GIVE/BRIBE ordering), and **group/follower chains**.
-Pick one, run the 5-minute probe-then-scope, and file the next free INV-NNN or a
-single gap-closer commit.
+The `act_format(recipient=None)` object/equipment/give class is **closed**, and
+`mud/combat/`/`mud/world/`/`communication.py` were verified already-swept.
+**Not yet complete:** advisor review (post-batch) surfaced a remaining
+**baked-f-string `broadcast_room` TO_ROOM group** this session walked past —
+`imm_load.py:120/216/277` (do_mload/oload/purge; note `do_mload` ROM uses `$N`
+for the created mob, not a baked short_descr), `session.py:65` (quit),
+`inspection.py:77/114` (scan/peer), `position.py:92` (rest/sit/sleep,
+`act_format(recipient=None)`), `healer.py:242` (utter), `imm_search.py:472/541`
+(clone), and the `doors.py:_broadcast_act_to_room` chokepoint (~12 open/close/
+lock/unlock sites pass a baked `f"{actor_name} …"` string). The `doors.py`
+reverse-side `rev_msg` has no `$n` (fine); `imm_load` do_restore is TO_VICT
+(verify). **This is the next session's task — a 4th INV-025 PERS batch** (same
+mechanical pattern, ~22 sites, ROM-string verify each). After it, move to the
+remaining cross-file invariants candidates: position transitions, mob script
+trigger ordering, group/follower chains.
 
 > **Push note:** 2.12.49–51 (FIGHT-041/042 + NUKEPET-001) and 2.12.52–54
 > (this session's three batches) are committed locally but **NOT yet pushed** to
