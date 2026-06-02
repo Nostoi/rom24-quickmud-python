@@ -38,7 +38,7 @@
 | Metric | Value |
 |--------|-------|
 | Version | 2.12.56 |
-| Tests | socials + mobprog surface green (131); full `tests/integration/` green (2735 passed, 3 skipped) |
+| Tests | **full suite green: 5308 passed, 4 skipped** (`pytest`, ~96s parallel) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
 | Open correctness gaps | **None known in the INV-025 `$n`-broadcast class** — every `mud/commands/` room-broadcast that bakes `$n` is now converted to per-recipient PERS + TRIG_ACT. |

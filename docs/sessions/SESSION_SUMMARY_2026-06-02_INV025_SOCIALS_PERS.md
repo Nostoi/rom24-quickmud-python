@@ -89,5 +89,17 @@ No known open items in the INV-025 `$n`-broadcast class. The sweep across
 complete. Next cross-file-invariants candidates (probe-then-scope): mob script
 trigger ordering, position transitions, group/follower chains.
 
+**Filed mid-session (out of scope, NOT fixed here):**
+
+- **INTERP-025** (`docs/parity/INTERP_C_AUDIT.md`) — self-targeted socials are
+  unreachable. ROM `get_char_room` (`src/handler.c:2194`) returns `ch` for
+  `"self"` and does not skip `ch` in its room-people loop, so `smile self` /
+  `smile <ownname>` → `victim == ch` → `char_auto`/`others_auto`. Python's
+  victim search does `if person is char: continue` and has no `"self"` keyword,
+  so those fall through to "They aren't here." and the `char_auto`/`others_auto`
+  branch is dead code. Pre-existing; surfaced during the 2.12.56 conversion.
+  When closed, `test_socials.py::test_social_targeting_self` (which currently
+  asserts the buggy not-found behavior) must flip.
+
 **Push note:** 2.12.49–56 are committed locally but NOT yet pushed; 2.12.48 is
 the last on `master`.
