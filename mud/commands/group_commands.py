@@ -191,10 +191,13 @@ def do_follow(char: Character, args: str) -> str:
         stop_follower(char)
 
     # Start following new master
+    # mirroring ROM src/act_comm.c:1586-1587 — the success path calls add_follower
+    # and `return;` (void). add_follower's act("You now follow $N.", …TO_CHAR)
+    # (src/act_comm.c:1605) is the SOLE emitter of the follower's confirmation;
+    # it already appended the named line to char.messages. Returning a TO_CHAR
+    # string here too would double the message (ACT_COMM-002).
     add_follower(char, victim)
-
-    victim_name = getattr(victim, "short_descr", None) or getattr(victim, "name", "them")
-    return f"You now follow {victim_name}."
+    return ""
 
 
 def do_group(char: Character, args: str) -> str:

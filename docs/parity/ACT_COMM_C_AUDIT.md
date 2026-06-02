@@ -230,9 +230,9 @@ return "You must type the full command to delete yourself."
 - ✅ stop_follower() before add_follower()
 - ✅ add_follower() call
 
-**Parity Check**: ⚠️ ACT_COMM-001 (self-unfollow double-message) FIXED
-2026-06-02; **ACT_COMM-002 (normal-follow double "You now follow X." message)
-OPEN** — same root cause in the success path.
+**Parity Check**: ✅ ACT_COMM-001 (self-unfollow double-message) FIXED
+2026-06-02; ✅ **ACT_COMM-002 (normal-follow double "You now follow X." message)
+FIXED 2026-06-02** — same root cause in the success path, also resolved.
 
 ##### ACT_COMM-001 — `follow self` emits a double "stop following" message
 
@@ -267,8 +267,8 @@ named line. Test: `tests/integration/test_act_comm001_follow_self_single_message
 |-------|-------|
 | Severity | MINOR |
 | ROM C | `src/act_comm.c:1586` (do_follow calls add_follower, returns void), `add_follower:1605` (`act("You now follow $N.", ch, NULL, master, TO_CHAR)` — sole TO_CHAR emitter) |
-| Python | `mud/commands/group_commands.py:do_follow:190-193` (returns `"You now follow {victim}."`) + `add_follower:83-85` (appends same line to `char.messages`) |
-| Status | ❌ OPEN |
+| Python | `mud/commands/group_commands.py:do_follow:189-196` (success path returns `""`) + `add_follower:83-85` (sole emitter — appends to `char.messages`) |
+| Status | ✅ FIXED (2026-06-02) — `do_follow` success path returns `""`; `add_follower` is the sole emitter. |
 
 **Same root cause / sibling of ACT_COMM-001, in the NORMAL follow path.** ROM
 `do_follow`'s success path calls `add_follower(ch, victim)` — whose
@@ -291,6 +291,14 @@ end-of-session rush. Note: `char.messages` IS a production delivery channel in
 the synchronous command loop (drained at `connection.py:2002`) — the AGENTS.md
 "`char.messages` is a test fallback only" note is scoped to *combat-tick*
 delivery, where synchronous socket writes are impossible.
+
+**Fixed 2026-06-02:** `do_follow`'s success path now returns `""` (matching
+ROM's void return at `:1587`), leaving `add_follower`'s
+`char.messages.append("You now follow $N.")` (`:1605`) the sole emitter.
+`test_group_combat.py:162` was retargeted from the return value to
+`follower.messages`; `test_shops.py:1365` already asserted the `pet.messages`
+channel (buy-pet path calls `add_follower` directly, not `do_follow`) and was
+unaffected. Test: `tests/integration/test_act_comm002_follow_other_single_message.py`.
 
 ---
 

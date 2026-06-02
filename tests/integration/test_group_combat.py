@@ -159,7 +159,11 @@ class TestGroupFormation:
 
         result = process_command(follower, "follow Leader")
 
-        assert "You now follow Leader" in result
+        # ACT_COMM-002: ROM do_follow returns void; add_follower is the sole
+        # emitter of "You now follow $N." (src/act_comm.c:1605), delivered via
+        # char.messages. The command return is empty so the actor isn't told twice.
+        assert result == ""
+        assert "You now follow Leader." in follower.messages
         assert follower.master == leader
         assert leader.master is None
 
