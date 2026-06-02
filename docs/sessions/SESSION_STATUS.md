@@ -1,9 +1,9 @@
-# Session Status — 2026-06-01 — INV-025 combat re-probe: FIGHT-041/042 (2.12.50)
+# Session Status — 2026-06-01 — INV-025 combat re-probe: FIGHT-041/042 + NUKEPET-001 (2.12.51)
 
 ## Current State
 
 - **Active mode**: cross-file invariants — the **INV-025 `mud/combat/`
-  re-probe has begun**. Two sibling gaps in `death_cry` closed:
+  re-probe has begun**. Three gaps closed (all in `mud/combat/death.py`):
   - **FIGHT-041** (`50242279`, 2.12.49) — `death_cry`'s in-room gore line
     baked `victim.name` via `expand_placeholders` + `room.broadcast`
     (leaking an invisible victim's name); converted to
@@ -18,6 +18,17 @@
     "plain broadcast" note. Converted to `act_to_room(target, message,
     victim)`; cry has no `$n` so PERS unchanged. Test
     `test_fight042_death_cry_neighbor_trig_act.py`.
+  - **NUKEPET-001** (2.12.51, filed in `ACT_COMM_C_AUDIT.md`) — `_nuke_pets`
+    (the shared pet-dismissal chokepoint: combat death, PC-extract, quit,
+    mob_cmds, imm slay), ROM `nuke_pets` `act_comm.c:1648`
+    `act("$N slowly fades away.", ch, NULL, pet, TO_NOTVICT)`. Baked `$N`=pet
+    name + `broadcast(exclude=pet)` → (1) leaked an invisible pet's name,
+    (2) wrongly showed the **owner** the line (TO_NOTVICT excludes both
+    owner+pet), (3) no TRIG_ACT. Converted to
+    `act_to_room(pet_room, "$N slowly fades away.", victim, arg2=pet,
+    exclude=pet)`; removed the now-unused `expand_placeholders` import. Test
+    `test_nukepet001_pet_fade_pers_and_notvict.py` (3). Surfaced by advisor
+    review of the unclassified `expand_placeholders` grep hit in `death.py`.
 - The **INV-025 command-layer PERS sweep is CLOSED** (all confirmed
   `mud/commands/` baked-name `room.broadcast(f"{char.name} …")` sites
   converted to `act_to_room`).
@@ -50,8 +61,8 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.50 |
-| Tests | **full suite green: 5262 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
+| Version | 2.12.51 |
+| Tests | **full suite green: 5265 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
 | Open correctness gaps | **INV-025 re-probe** — rest of `mud/combat/`, `mud/world/`, `mud/commands/communication.py` (`do_say`/`do_tell`) not yet swept for the same baked-name `room.broadcast` / missing-TRIG_ACT pattern (`death_cry` done: FIGHT-041 PERS + FIGHT-042 TRIG_ACT) |
@@ -66,7 +77,7 @@
    triggers) remain once the PERS sweep is exhausted.
 
 > **Push note:** work through 2.12.48 is pushed to `master`; **2.12.49
-> (FIGHT-041, `50242279`) and 2.12.50 (FIGHT-042) are committed locally but
-> NOT yet pushed.**
-> **Index:** GitNexus reindexed clean after the FIGHT-041 commit (2026-06-01);
-> re-run after the FIGHT-042 commit.
+> (FIGHT-041, `50242279`), 2.12.50 (FIGHT-042, `56201629`), and 2.12.51
+> (NUKEPET-001) are committed locally but NOT yet pushed.**
+> **Index:** GitNexus reindexed clean after each commit (2026-06-01); re-run
+> after the NUKEPET-001 commit.

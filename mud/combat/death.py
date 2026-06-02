@@ -30,7 +30,6 @@ from mud.models.constants import (
 from mud.models.obj import ObjIndex
 from mud.models.object import Object, create_object
 from mud.models.races import get_race_by_index
-from mud.models.social import expand_placeholders
 from mud.spawning.obj_spawner import spawn_object
 from mud.utils import rng_mm
 from mud.utils.act import act_to_room
@@ -525,8 +524,13 @@ def _nuke_pets(victim: Character, room) -> None:
 
     pet_room = getattr(pet, "room", None) or room
     if pet_room is not None:
-        message = expand_placeholders("$N slowly fades away.", victim, pet)
-        pet_room.broadcast(message, exclude=pet)
+        # mirroring ROM src/act_comm.c:1648 — act("$N slowly fades away.", ch,
+        # NULL, pet, TO_NOTVICT): $N renders via PERS(pet, to) per recipient (an
+        # invisible pet masks to "someone", INV-027), TO_NOTVICT excludes BOTH
+        # the owner (ch) and the pet, and — with no MOBtrigger wrap — dispatches
+        # TRIG_ACT to listening NPCs (INV-025). act_to_room auto-excludes the
+        # actor (owner); exclude=pet supplies the second TO_NOTVICT exclusion.
+        act_to_room(pet_room, "$N slowly fades away.", victim, arg2=pet, exclude=pet)
         pet_room.remove_character(pet)
 
     for obj in list(getattr(pet, "inventory", []) or []):
