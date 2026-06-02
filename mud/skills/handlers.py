@@ -1088,34 +1088,28 @@ def _objective_pronoun(character: Character | None) -> str:
 
 
 def _notvict_broadcast(room, actor, victim, message: str) -> None:
-    """Deliver a ROM TO_NOTVICT message — excludes both actor and victim."""
+    """Deliver a ROM TO_NOTVICT message — excludes both actor and victim.
 
-    import asyncio as _asyncio
-
-    from mud.net.protocol import send_to_char as _send_to_char_async
+    INV-001: single-channel delivery per recipient (push_message XOR). The prior
+    if-writer-async + unconditional append double-delivered to a connected PC.
+    """
+    from mud.utils.messaging import push_message
 
     for bystander in list(getattr(room, "people", [])):
         if bystander is actor or bystander is victim:
             continue
-        writer = getattr(bystander, "connection", None)
-        if writer:
-            _asyncio.create_task(_send_to_char_async(bystander, message))
-        if hasattr(bystander, "messages"):
-            bystander.messages.append(message)
+        push_message(bystander, message)
 
 
 def _to_vict_send(victim, message: str) -> None:
-    """Deliver a ROM TO_VICT message — single recipient."""
+    """Deliver a ROM TO_VICT message — single recipient.
 
-    import asyncio as _asyncio
+    INV-001: single-channel delivery (push_message XOR). The prior
+    if-writer-async + unconditional append double-delivered to a connected PC.
+    """
+    from mud.utils.messaging import push_message
 
-    from mud.net.protocol import send_to_char as _send_to_char_async
-
-    writer = getattr(victim, "connection", None)
-    if writer:
-        _asyncio.create_task(_send_to_char_async(victim, message))
-    if hasattr(victim, "messages"):
-        victim.messages.append(message)
+    push_message(victim, message)
 
 
 def _get_room_flags(room) -> int:

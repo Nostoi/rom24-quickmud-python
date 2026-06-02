@@ -15,16 +15,15 @@ from mud.world.char_find import get_char_room
 
 
 def _send_to_char_sync(character: Character, message: str) -> None:
-    """Fire-and-forget real-socket delivery (mirrors AGENTS.md Message Delivery)."""
-    import asyncio as _asyncio
+    """Single-channel delivery (mirrors AGENTS.md Message Delivery / ROM write_to_buffer).
 
-    from mud.net.protocol import send_to_char as _send_to_char_async
+    INV-001: push_message routes a connected char to the async send and the
+    mailbox only for disconnected chars (XOR). The prior if-writer-async +
+    unconditional append double-delivered to a connected PC.
+    """
+    from mud.utils.messaging import push_message
 
-    writer = getattr(character, "connection", None)
-    if writer:
-        _asyncio.create_task(_send_to_char_async(character, message))
-    if hasattr(character, "messages"):
-        character.messages.append(message)
+    push_message(character, message)
 
 
 def do_sneak(char: Character, args: str) -> str:
@@ -238,8 +237,8 @@ def _steal_failure(char: Character, victim: Character) -> str:
         yell_text = f"{getattr(victim, 'name', 'Someone')} yells '{yell_buf}'\n"
         if room is not None:
             for occupant in list(getattr(room, "people", []) or []):
-                if hasattr(occupant, "messages"):
-                    occupant.messages.append(yell_text)
+                # INV-001: single-channel delivery (XOR) for connected occupants.
+                _send_to_char_sync(occupant, yell_text)
 
     # ROM L2247-2263: NPC victim attacks; PC victim sets THIEF flag on attacker.
     char_is_npc = bool(getattr(char, "is_npc", False))

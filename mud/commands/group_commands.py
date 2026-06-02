@@ -12,16 +12,15 @@ from mud.world.char_find import get_char_room
 
 
 def _send_to_char_sync(character: Character, message: str) -> None:
-    """Fire-and-forget real-socket delivery (mirrors AGENTS.md Message Delivery)."""
-    import asyncio as _asyncio
+    """Single-channel delivery (mirrors AGENTS.md Message Delivery / ROM write_to_buffer).
 
-    from mud.net.protocol import send_to_char as _send_to_char_async
+    INV-001: push_message routes a connected char to the async send and the
+    mailbox only for disconnected chars (XOR). The prior if-writer-async +
+    unconditional append double-delivered to a connected PC.
+    """
+    from mud.utils.messaging import push_message
 
-    writer = getattr(character, "connection", None)
-    if writer:
-        _asyncio.create_task(_send_to_char_async(character, message))
-    if hasattr(character, "messages"):
-        character.messages.append(message)
+    push_message(character, message)
 
 
 def _pers_gated(actor: Character, viewer: Character) -> str:
@@ -76,13 +75,10 @@ def add_follower(char: Character, master: Character) -> None:
     from mud.world.vision import can_see_character
 
     if can_see_character(master, char):
-        master_messages = getattr(master, "messages", None)
-        if isinstance(master_messages, list):
-            master_messages.append(f"{_display_name(char)} now follows you.")
+        # INV-001: single-channel delivery (XOR) — see _send_to_char_sync.
+        _send_to_char_sync(master, f"{_display_name(char)} now follows you.")
 
-    char_messages = getattr(char, "messages", None)
-    if isinstance(char_messages, list):
-        char_messages.append(f"You now follow {_display_name(master)}.")
+    _send_to_char_sync(char, f"You now follow {_display_name(master)}.")
 
 
 def stop_follower(char: Character) -> None:
@@ -110,12 +106,9 @@ def stop_follower(char: Character) -> None:
     from mud.world.vision import can_see_character
 
     if can_see_character(master, char) and getattr(char, "room", None) is not None:
-        master_messages = getattr(master, "messages", None)
-        if isinstance(master_messages, list):
-            master_messages.append(f"{_display_name(char)} stops following you.")
-        char_messages = getattr(char, "messages", None)
-        if isinstance(char_messages, list):
-            char_messages.append(f"You stop following {_display_name(master)}.")
+        # INV-001: single-channel delivery (XOR) — see _send_to_char_sync.
+        _send_to_char_sync(master, f"{_display_name(char)} stops following you.")
+        _send_to_char_sync(char, f"You stop following {_display_name(master)}.")
 
     char.master = None
     char.leader = None
@@ -488,9 +481,9 @@ def do_split(char: Character, args: str) -> str:
                 f"gold coins, giving you {share_silver} silver and {share_gold} gold."
             )
 
+        # INV-001: _send_to_char_sync already delivers (push_message XOR); the
+        # prior extra mailbox append double-delivered the split line.
         _send_to_char_sync(occupant, member_msg)
-        if hasattr(occupant, "messages"):
-            occupant.messages.append(member_msg)
 
     return "\n".join(out_lines) if out_lines else ""
 

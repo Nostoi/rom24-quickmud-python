@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import logging
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
@@ -337,14 +336,15 @@ def _move_to_room(ch: Character, destination: Room) -> None:
 
 
 def _append_message(target: Character, message: str) -> None:
-    """Deliver a message to a character, mirroring ROM C write_to_buffer."""
-    writer = getattr(target, "connection", None)
-    if writer is not None:
-        from mud.net.protocol import send_to_char as _send
+    """Deliver a message to a character, mirroring ROM C write_to_buffer.
 
-        asyncio.create_task(_send(target, message))
-    if hasattr(target, "messages"):
-        target.messages.append(message)
+    INV-001: push_message routes a connected char to the async send and the
+    mailbox only for disconnected chars (XOR). The prior if-writer-async +
+    unconditional append double-delivered to a connected PC.
+    """
+    from mud.utils.messaging import push_message
+
+    push_message(target, message)
 
 
 def do_mpat(ch: Character, argument: str) -> None:
