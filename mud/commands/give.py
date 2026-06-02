@@ -7,11 +7,10 @@ ROM Reference: src/act_obj.c do_give (lines 678-855)
 from __future__ import annotations
 
 from mud.commands.obj_manipulation import _can_drop_obj, _obj_from_char
-from mud.mobprog import disable_mobtrigger, mp_act_trigger_room
+from mud.mobprog import disable_mobtrigger
 from mud.models.character import Character, _object_carry_number, _object_carry_weight
 from mud.models.constants import ActFlag
-from mud.net.protocol import send_to_char
-from mud.utils.act import act_format
+from mud.utils.act import act_format, act_to_room
 from mud.world.char_find import get_char_room
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
 from mud.world.obj_find import get_obj_carry
@@ -67,7 +66,7 @@ def do_give(char: Character, args: str) -> str:
         return "You can't let go of it."
 
     if int(getattr(victim, "carry_number", 0) or 0) + _object_carry_number(obj) > can_carry_n(victim):
-        return f"{_victim_name(victim)} has { _victim_possessive(victim) } hands full."
+        return f"{_victim_name(victim)} has {_victim_possessive(victim)} hands full."
 
     obj_weight = _object_carry_weight(obj)
     if get_carry_weight(victim) + obj_weight > can_carry_w(victim):
@@ -80,16 +79,16 @@ def do_give(char: Character, args: str) -> str:
     victim.add_object(obj)
     obj.carried_by = victim
 
-    room_message = act_format("$n gives $p to $N.", recipient=None, actor=char, arg1=obj, arg2=victim)
     victim_message = act_format("$n gives you $p.", recipient=victim, actor=char, arg1=obj, arg2=victim)
     char_message = act_format("You give $p to $N.", recipient=char, actor=char, arg1=obj, arg2=victim)
 
-    # ROM src/act_obj.c:832-836 wraps the give act() lines in
-    # MOBtrigger=FALSE/TRUE so TRIG_ACT does not fire on the broadcast;
-    # the explicit mp_give_trigger below covers the give event.
+    # ROM src/act_obj.c:832-836 wraps the give act() trio in MOBtrigger=FALSE/TRUE so
+    # the TO_NOTVICT room line does NOT fire TRIG_ACT; the explicit mp_give_trigger
+    # below covers the give event. INV-025: act_to_room renders $n/$N per-recipient
+    # (PERS masking, an invisible giver → "Someone"); exclude=victim + auto-excluded
+    # actor = ROM TO_NOTVICT; disable_mobtrigger() suppresses the per-NPC dispatch.
     with disable_mobtrigger():
-        _broadcast_to_room_observers(room, room_message, actor=char, victim=victim)
-        mp_act_trigger_room(room_message, room, char, arg1=obj, arg2=victim, exclude=victim)
+        act_to_room(room, "$n gives $p to $N.", char, arg1=obj, arg2=victim, exclude=victim)
         if hasattr(victim, "messages"):
             victim.messages.append(victim_message)
 
@@ -136,7 +135,6 @@ def _give_money(char: Character, room, amount: int, parts: list[str]) -> str:
         arg1=None,
         arg2=victim,
     )
-    room_message = act_format("$n gives $N some coins.", recipient=None, actor=char, arg1=None, arg2=victim)
     char_message = act_format(
         f"You give $N {amount} {money_name}.",
         recipient=char,
@@ -147,7 +145,12 @@ def _give_money(char: Character, room, amount: int, parts: list[str]) -> str:
 
     if hasattr(victim, "messages"):
         victim.messages.append(victim_message)
-    _broadcast_to_room_observers(room, room_message, actor=char, victim=victim)
+    # ROM src/act_obj.c:726 "$n gives $N some coins." TO_NOTVICT — NOT
+    # MOBtrigger-suppressed (the suppressor block is only the object branch at
+    # :832), so the room line DOES fire TRIG_ACT. INV-025: act_to_room renders $N
+    # per-recipient (PERS masking) + dispatches TRIG_ACT; exclude=victim +
+    # auto-excluded actor = ROM TO_NOTVICT.
+    act_to_room(room, "$n gives $N some coins.", char, arg2=victim, exclude=victim)
 
     if getattr(victim, "is_npc", False):
         from mud.mobprog import mp_bribe_trigger
@@ -223,21 +226,6 @@ def _append_message(actor: Character, recipient: Character, template: str) -> No
     if not hasattr(recipient, "messages"):
         return
     recipient.messages.append(act_format(template, recipient=recipient, actor=actor, arg1=None, arg2=recipient))
-
-
-def _broadcast_to_room_observers(room, message: str, actor: Character, victim: Character) -> None:
-    """Mirror ROM TO_NOTVICT by excluding both the actor and the victim."""
-    for occupant in list(getattr(room, "people", [])):
-        if occupant is actor or occupant is victim:
-            continue
-        writer = getattr(occupant, "connection", None)
-        if writer:
-            # fire and forget
-            import asyncio
-
-            asyncio.create_task(send_to_char(occupant, message))
-        if hasattr(occupant, "messages"):
-            occupant.messages.append(message)
 
 
 def _victim_name(victim: Character) -> str:

@@ -9,11 +9,15 @@ ROM contract (``src/act_obj.c:832-836``):
     MOBtrigger = TRUE;
 
 The explicit ``mp_give_trigger`` covers the give event; the broadcast
-act() lines must NOT fan out to TRIG_ACT.  Pre-sweep Python had no
-act-trigger dispatch in the broadcast path *at all*, so the suppression
-was accidental — wiring INV-025's ``mp_act_trigger_room`` into the
-give broadcast would silently regress unless ``disable_mobtrigger()``
-wraps it.  This test locks the wrapper.
+act() lines must NOT fan out to TRIG_ACT.  Two behavioral halves must
+hold: (1) the TO_NOTVICT line is delivered to room observers, and
+(2) no TRIG_ACT fires on a listening NPC.  As of the 2.12.54 PERS sweep
+the object branch renders through ``act_to_room`` wrapped in
+``disable_mobtrigger()`` — ``act_to_room`` gates its own per-recipient
+``mp_act_trigger`` dispatch on the ``MOBtrigger`` global, so the wrapper
+is what keeps the suppression.  This test locks the wrapper behaviorally
+(it no longer asserts the obsolete ``mp_act_trigger_room`` call shape,
+which the ``act_to_room`` refactor replaced).
 """
 
 from __future__ import annotations
@@ -129,49 +133,38 @@ def _make_obj(holder: Character) -> Object:
 
 
 def test_do_give_broadcast_dispatches_but_suppresses_act_trigger():
-    """ROM src/act_obj.c:832-836 — broadcast dispatches act() per recipient
-    (wired via ``mp_act_trigger_room``) but the surrounding
-    ``MOBtrigger=FALSE`` (Python ``disable_mobtrigger()``) blocks
-    TRIG_ACT fan-out.  Both halves of the contract must hold.
+    """ROM src/act_obj.c:832-836 — the give TO_NOTVICT line is delivered to room
+    observers, but the surrounding ``MOBtrigger=FALSE`` (Python
+    ``disable_mobtrigger()`` wrapping ``act_to_room``) blocks TRIG_ACT fan-out.
+    Both behavioral halves must hold.
     """
-    import mud.commands.give as give_module
     import mud.mobprog as mobprog
 
     room = _make_room()
     giver = _make_pc(room, name="giver")
     recipient = _make_recipient(room)
-    _make_listener(room)
+    listener = _make_listener(room)  # NPC bystander (not the victim) with a "gives" TRIG_ACT
     obj = _make_obj(giver)
+    listener.messages.clear()
 
     triggered: list[tuple[str, str]] = []
-    dispatch_calls: list[str] = []
     original_trigger = mobprog.mp_act_trigger
-    original_dispatch = mobprog.mp_act_trigger_room
 
     def _trigger_probe(argument, mob, ch, *args, **kwargs):
         triggered.append((getattr(mob, "name", "?"), str(argument)))
         return original_trigger(argument, mob, ch, *args, **kwargs)
 
-    def _dispatch_probe(message, *args, **kwargs):
-        dispatch_calls.append(str(message))
-        return original_dispatch(message, *args, **kwargs)
-
     mobprog.mp_act_trigger = _trigger_probe
-    mobprog.mp_act_trigger_room = _dispatch_probe
-    if hasattr(give_module, "mp_act_trigger_room"):
-        give_module.mp_act_trigger_room = _dispatch_probe
     try:
         do_give(giver, f"{obj.name} {recipient.name}")
     finally:
         mobprog.mp_act_trigger = original_trigger
-        mobprog.mp_act_trigger_room = original_dispatch
-        if hasattr(give_module, "mp_act_trigger_room"):
-            give_module.mp_act_trigger_room = original_dispatch
 
-    assert dispatch_calls, (
-        "do_give broadcast must call mp_act_trigger_room to mirror "
-        "ROM src/comm.c:2384 — wiring missing"
+    # (1) The TO_NOTVICT line reaches the bystander (act_to_room delivery).
+    assert any("gives" in m for m in listener.messages), (
+        f"do_give must deliver its TO_NOTVICT act() line to room observers; got {listener.messages}"
     )
+    # (2) No TRIG_ACT fires — disable_mobtrigger() gates act_to_room's per-recipient dispatch.
     assert triggered == [], (
         f"do_give must wrap its act() broadcast in disable_mobtrigger() "
         f"to mirror ROM src/act_obj.c:832-836; fired: {triggered}"
