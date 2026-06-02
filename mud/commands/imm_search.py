@@ -40,6 +40,7 @@ from mud.models.constants import (
     ItemType,
     WeaponType,
 )
+from mud.utils.act import act_to_room
 
 if TYPE_CHECKING:
     pass
@@ -456,25 +457,12 @@ def do_clone(char: Character, args: str) -> str:
                 clone.in_room = room
 
         # BCAST-002 (obj branch): TO_ROOM mirroring ROM
-        # src/act_wiz.c:2406 act("$n has created $p.", ch, clone, NULL, TO_ROOM).
-        # $n -> ch->name, $p -> clone->short_descr.
-        from mud.net.protocol import broadcast_room
+        # src/act_wiz.c:2405 act("$n has created $p.", ch, clone, NULL, TO_ROOM).
+        # INV-025/INV-027: act_to_room renders $n per recipient (invisible cloner →
+        # "Someone") and dispatches TRIG_ACT; $p is the created clone object.
         actor_room = getattr(char, "room", None)
         if actor_room is not None:
-            proto_short = getattr(getattr(clone, "prototype", None), "short_descr", None)
-            clone_short = (
-                getattr(clone, "short_descr", None)
-                or proto_short
-                or getattr(clone, "name", None)
-                or "something"
-            )
-            actor_name = getattr(char, "name", None) or "Someone"
-            room_message = f"{actor_name} has created {clone_short}."
-            broadcast_room(actor_room, room_message, exclude=char)
-            from mud.mobprog import mp_act_trigger_room
-
-            # ROM src/act_wiz.c:2405 + src/comm.c:2384 - clone object act(TO_ROOM) fires TRIG_ACT.
-            mp_act_trigger_room(room_message, actor_room, char, arg1=clone)
+            act_to_room(actor_room, "$n has created $p.", char, arg1=clone)
 
         from mud.wiznet import WiznetFlag, wiznet
 
@@ -527,7 +515,9 @@ def do_clone(char: Character, args: str) -> str:
                 room.people = []
             room.people.append(clone)
 
-        # mirrors ROM src/act_wiz.c:2450 — act("$n has created $N.", ch, NULL, clone, TO_ROOM)
+        # mirrors ROM src/act_wiz.c:2449 — act("$n has created $N.", ch, NULL, clone, TO_ROOM)
+        # INV-025/INV-027: act_to_room renders $n per recipient (invisible cloner →
+        # "Someone") and dispatches TRIG_ACT; $N is the created clone mob.
         clone_short = (
             getattr(clone, "short_descr", None)
             or getattr(getattr(clone, "prototype", None), "short_descr", None)
@@ -535,15 +525,7 @@ def do_clone(char: Character, args: str) -> str:
             or "something"
         )
         if room:
-            from mud.net.protocol import broadcast_room
-
-            actor_name = getattr(char, "name", None) or "Someone"
-            room_message = f"{actor_name} has created {clone_short}."
-            broadcast_room(room, room_message, exclude=char)
-            from mud.mobprog import mp_act_trigger_room
-
-            # ROM src/act_wiz.c:2449 + src/comm.c:2384 - clone mobile act(TO_ROOM) fires TRIG_ACT.
-            mp_act_trigger_room(room_message, room, char, arg2=clone)
+            act_to_room(room, "$n has created $N.", char, arg2=clone)
 
         from mud.wiznet import WiznetFlag, wiznet
 

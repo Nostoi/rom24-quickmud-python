@@ -73,9 +73,6 @@ def _pers(target: Any | None, viewer: Any | None) -> str:
     if target is None:
         return "someone"
 
-    if viewer is not None and target is viewer:
-        return "You"
-
     # INV-027: per-recipient PERS name-masking. Mirrors mud/world/vision.py:pers.
     if viewer is not None:
         from mud.world.vision import can_see_character
@@ -83,15 +80,15 @@ def _pers(target: Any | None, viewer: Any | None) -> str:
         if not can_see_character(viewer, target):
             return "someone"
 
-    name = getattr(target, "name", None)
-    if name:
-        return str(name)
+    # ROM PERS (src/merc.h:2145): NPC → short_descr, PC → name. ROM has no
+    # "$n"/"$N" self-case ("You"): the TO_CHAR templates address the subject
+    # with literal "You ..." text instead. Mirrors mud/world/vision.py:pers.
+    if getattr(target, "is_npc", False):
+        name = getattr(target, "short_descr", None) or getattr(target, "name", None)
+    else:
+        name = getattr(target, "name", None) or getattr(target, "short_descr", None)
 
-    short_descr = getattr(target, "short_descr", None)
-    if short_descr:
-        return str(short_descr)
-
-    return "someone"
+    return str(name) if name else "someone"
 
 
 def _object_name(obj: Any | None, viewer: Any | None = None) -> str:

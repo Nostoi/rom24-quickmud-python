@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import Direction
-from mud.net.protocol import broadcast_room
+from mud.utils.act import act_to_room
 from mud.world.look import dir_names, look
 from mud.world.vision import can_see_character, describe_character
 
@@ -74,9 +73,9 @@ def do_scan(char: Character, args: str = "") -> str:
     if not s:
         # SCAN-001: TO_ROOM broadcast — mirroring ROM src/scan.c:60
         # `act("$n looks all around.", ch, NULL, NULL, TO_ROOM);`
-        scan_msg = f"{char.name} looks all around."
-        broadcast_room(char.room, scan_msg, exclude=char)
-        mp_act_trigger_room(scan_msg, char.room, char, exclude=char)
+        # INV-025/INV-027: act_to_room renders $n per recipient (invisible
+        # scanner → "Someone") and dispatches TRIG_ACT to NPC witnesses.
+        act_to_room(char.room, "$n looks all around.", char)
         lines: list[str] = ["Looking around you see:"]
         # current room
         lines += list_room(char.room, 0, -1)
@@ -108,12 +107,13 @@ def do_scan(char: Character, args: str = "") -> str:
         return "Which way do you want to scan?"
     d = token_map[s]
     dir_str = dir_name[d]
-    # SCAN-002: TO_CHAR + TO_ROOM act() pair — mirroring ROM src/scan.c:89-91.
+    # SCAN-002: TO_CHAR + TO_ROOM act() pair — mirroring ROM src/scan.c:90
+    # `act("$n peers intently $T.", ch, NULL, dir_name[door], TO_ROOM);`.
     # ROM builds a "Looking <dir> you see:" header into `buf` but never sends it;
-    # the only visible messages are the two act() calls below.
-    peer_msg = f"{char.name} peers intently {dir_str}."
-    broadcast_room(char.room, peer_msg, exclude=char)
-    mp_act_trigger_room(peer_msg, char.room, char, exclude=char)
+    # the only visible messages are the two act() calls below. INV-025/INV-027:
+    # act_to_room renders $n per recipient (invisible peerer → "Someone") and
+    # dispatches TRIG_ACT; $T is the direction text.
+    act_to_room(char.room, "$n peers intently $T.", char, arg2=dir_str)
     lines = [f"You peer intently {dir_str}."]
     scan_room = char.room
     for depth in (1, 2, 3):

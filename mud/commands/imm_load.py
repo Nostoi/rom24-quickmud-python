@@ -12,30 +12,10 @@ from mud.commands.imm_commands import MAX_LEVEL, get_char_room, get_char_world, 
 from mud.mob_cmds import _extract_character
 from mud.models.character import Character
 from mud.models.constants import ActFlag, ExtraFlag
+from mud.utils.act import act_format, act_to_room
 
 if TYPE_CHECKING:
     pass
-
-
-def _notvict_broadcast(room, actor, victim, message: str) -> None:
-    """ROM ``TO_NOTVICT`` — deliver to every room occupant except actor and victim.
-
-    Mirrors ``broadcast_room`` (mud/net/protocol.py:58) but supports a
-    two-actor exclude set. Fires the socket task for connected players
-    and appends to the test-fallback ``messages`` list.
-    """
-    import asyncio as _asyncio
-
-    from mud.net.protocol import send_to_char as _send_to_char_async
-
-    for bystander in list(getattr(room, "people", [])):
-        if bystander is actor or bystander is victim:
-            continue
-        writer = getattr(bystander, "connection", None)
-        if writer:
-            _asyncio.create_task(_send_to_char_async(bystander, message))
-        if hasattr(bystander, "messages"):
-            bystander.messages.append(message)
 
 
 def do_load(char: Character, args: str) -> str:
@@ -110,24 +90,12 @@ def do_mload(char: Character, vnum_arg: str) -> str:
 
     # BCAST-014: TO_ROOM broadcast mirroring ROM
     # src/act_wiz.c:2512 act("$n has created $N!", ch, NULL, victim, TO_ROOM).
-    # $n -> ch->name, $N -> victim->short_descr.
-    from mud.net.protocol import broadcast_room
-
+    # INV-025/INV-027: act_to_room renders $n per recipient (invisible loader →
+    # "Someone") and dispatches TRIG_ACT; $N is the created mob (always visible).
     proto_short = getattr(getattr(victim, "prototype", None), "short_descr", None)
     victim_short = getattr(victim, "short_descr", None) or proto_short or getattr(victim, "name", None) or "something"
-    actor_name = getattr(char, "name", None) or "Someone"
     if room is not None:
-        broadcast_room(room, f"{actor_name} has created {victim_short}!", exclude=char)
-        # ROM src/act_wiz.c:2512 / src/comm.c:2384 — unsuppressed act()
-        # dispatches TRIG_ACT to NPC room recipients.
-        import mud.mobprog as mobprog
-
-        mobprog.mp_act_trigger_room(
-            f"{actor_name} has created {victim_short}!",
-            room,
-            char,
-            arg2=victim,
-        )
+        act_to_room(room, "$n has created $N!", char, arg2=victim)
 
     # mirrors ROM src/act_wiz.c:2512-2515
     _send_to_char(char, "Ok.\n\r")
@@ -205,25 +173,11 @@ def do_oload(char: Character, vnum_arg: str, level_arg: str | None = None) -> st
 
     # BCAST-015: TO_ROOM broadcast mirroring ROM
     # src/act_wiz.c:2566 act("$n has created $p!", ch, obj, NULL, TO_ROOM).
-    # $n -> ch->name, $p -> obj->short_descr.
-    from mud.net.protocol import broadcast_room
-
+    # INV-025/INV-027: act_to_room renders $n per recipient (invisible loader →
+    # "Someone") and dispatches TRIG_ACT; $p is the created object.
     actor_room = getattr(char, "room", None)
     if actor_room is not None:
-        proto_short = getattr(getattr(obj, "prototype", None), "short_descr", None)
-        obj_short = getattr(obj, "short_descr", None) or proto_short or getattr(obj, "name", None) or "something"
-        actor_name = getattr(char, "name", None) or "Someone"
-        broadcast_room(actor_room, f"{actor_name} has created {obj_short}!", exclude=char)
-        # ROM src/act_wiz.c:2566 / src/comm.c:2384 — unsuppressed act()
-        # dispatches TRIG_ACT to NPC room recipients.
-        import mud.mobprog as mobprog
-
-        mobprog.mp_act_trigger_room(
-            f"{actor_name} has created {obj_short}!",
-            actor_room,
-            char,
-            arg1=obj,
-        )
+        act_to_room(actor_room, "$n has created $p!", char, arg1=obj)
 
     # mirrors ROM src/act_wiz.c:2566-2568
     from mud.wiznet import WiznetFlag, wiznet
@@ -270,16 +224,11 @@ def do_purge(char: Character, args: str) -> str:
             _extract_obj(obj)
 
         # BCAST-035: TO_ROOM mirroring ROM src/act_wiz.c:2605 —
-        # act("$n purges the room!", ch, NULL, NULL, TO_ROOM).
-        from mud.net.protocol import broadcast_room
-
-        actor_name = getattr(char, "name", None) or "Someone"
-        broadcast_room(room, f"{actor_name} purges the room!", exclude=char)
-        # ROM src/act_wiz.c:2605 / src/comm.c:2384 — the room-purge act()
-        # fires after purge extraction, so only remaining NPCs can receive it.
-        import mud.mobprog as mobprog
-
-        mobprog.mp_act_trigger_room(f"{actor_name} purges the room!", room, char)
+        # act("$n purges the room!", ch, NULL, NULL, TO_ROOM). INV-025/INV-027:
+        # act_to_room renders $n per recipient (invisible purger → "Someone") and
+        # dispatches TRIG_ACT. The act() fires after purge extraction, so only
+        # remaining NPCs (ACT_NOPURGE) can receive it.
+        act_to_room(room, "$n purges the room!", char)
 
         return "Ok.\n\r"
 
@@ -302,22 +251,11 @@ def do_purge(char: Character, args: str) -> str:
             return "Maybe that wasn't a good idea...\n\r"
 
         # BCAST-035: TO_NOTVICT mirroring ROM src/act_wiz.c:2633 —
-        # act("$n disintegrates $N.", ch, 0, victim, TO_NOTVICT).
-        # Excludes both actor and victim; victim is about to be extracted.
-        actor_name = getattr(char, "name", None) or "Someone"
-        victim_short = getattr(victim, "short_descr", None) or getattr(victim, "name", None) or "someone"
-        _notvict_broadcast(room, char, victim, f"{actor_name} disintegrates {victim_short}.")
-        # ROM src/act_wiz.c:2633 / src/comm.c:2384 — TO_NOTVICT act()
-        # dispatches TRIG_ACT to NPC bystanders, excluding actor and victim.
-        import mud.mobprog as mobprog
-
-        mobprog.mp_act_trigger_room(
-            f"{actor_name} disintegrates {victim_short}.",
-            room,
-            char,
-            arg2=victim,
-            exclude=(victim,),
-        )
+        # act("$n disintegrates $N.", ch, 0, victim, TO_NOTVICT). INV-025/INV-027:
+        # act_to_room renders $n per recipient (invisible actor → "Someone") and
+        # dispatches TRIG_ACT; act_to_room auto-excludes the actor and exclude=victim
+        # gives ROM TO_NOTVICT (victim is about to be extracted).
+        act_to_room(room, "$n disintegrates $N.", char, arg2=victim, exclude=victim)
 
         # PURGE-001: route through canonical chokepoint (INV-020).
         # Mirrors ROM src/act_wiz.c:2638 extract_char(victim, TRUE).
@@ -325,24 +263,13 @@ def do_purge(char: Character, args: str) -> str:
         return "Ok.\n\r"
 
     # BCAST-035: TO_NOTVICT mirroring ROM src/act_wiz.c:2645 —
-    # act("$n purges $N.", ch, NULL, victim, TO_NOTVICT). Excludes both
-    # actor and victim; victim is about to be extracted.
-    actor_name = getattr(char, "name", None) or "Someone"
-    victim_short = getattr(victim, "short_descr", None) or getattr(victim, "name", None) or "someone"
+    # act("$n purges $N.", ch, NULL, victim, TO_NOTVICT). INV-025/INV-027:
+    # act_to_room renders $n per recipient (invisible actor → "Someone") and
+    # dispatches TRIG_ACT; act_to_room auto-excludes the actor and exclude=victim
+    # gives ROM TO_NOTVICT (victim is about to be extracted).
     npc_room = getattr(char, "room", None)
     if npc_room is not None:
-        _notvict_broadcast(npc_room, char, victim, f"{actor_name} purges {victim_short}.")
-        # ROM src/act_wiz.c:2645 / src/comm.c:2384 — TO_NOTVICT act()
-        # dispatches TRIG_ACT to NPC bystanders, excluding actor and victim.
-        import mud.mobprog as mobprog
-
-        mobprog.mp_act_trigger_room(
-            f"{actor_name} purges {victim_short}.",
-            npc_room,
-            char,
-            arg2=victim,
-            exclude=(victim,),
-        )
+        act_to_room(npc_room, "$n purges $N.", char, arg2=victim, exclude=victim)
 
     # Purge NPC — mirrors ROM src/act_wiz.c:2645-2647 extract_char(victim, TRUE).
     _extract_character(victim)
@@ -369,7 +296,11 @@ def do_restore(char: Character, args: str) -> str:
 
         for victim in list(getattr(room, "people", [])):
             _restore_char(victim)
-            message = f"{getattr(char, 'name', 'Someone')} has restored you."
+            # mirrors ROM src/act_wiz.c:2809 — act("$n has restored you.", ch,
+            # NULL, victim, TO_VICT). INV-025/INV-027: act_format PERS-masks an
+            # invisible restorer per the victim's sight; self-restore renders the
+            # name (ROM PERS(ch,ch) → name, can_see(self) is TRUE).
+            message = act_format("$n has restored you.", recipient=victim, actor=char)
             _send_to_char(victim, f"{message}\n\r")
             if getattr(victim, "is_npc", False):
                 # ROM src/act_wiz.c:2809 / src/comm.c:2384 — TO_VICT act()
@@ -400,6 +331,8 @@ def do_restore(char: Character, args: str) -> str:
 
         from mud import registry
 
+        # mirrors ROM src/act_wiz.c:2842 — act("$n has restored you.", ch, NULL,
+        # victim, TO_VICT). INV-025/INV-027: PERS-mask the restorer per victim sight.
         descriptor_list = getattr(registry, "descriptor_list", [])
         if descriptor_list:
             for desc in descriptor_list:
@@ -407,12 +340,12 @@ def do_restore(char: Character, args: str) -> str:
                 if victim is None or getattr(victim, "is_npc", False):
                     continue
                 _restore_char(victim)
-                _send_to_char(victim, f"{getattr(char, 'name', 'Someone')} has restored you.\n\r")
+                _send_to_char(victim, f"{act_format('$n has restored you.', recipient=victim, actor=char)}\n\r")
         else:
             for player in getattr(registry, "players", {}).values():
                 if not getattr(player, "is_npc", False):
                     _restore_char(player)
-                    _send_to_char(player, f"{getattr(char, 'name', 'Someone')} has restored you.\n\r")
+                    _send_to_char(player, f"{act_format('$n has restored you.', recipient=player, actor=char)}\n\r")
 
         return "All active players restored.\n\r"
 
@@ -422,7 +355,9 @@ def do_restore(char: Character, args: str) -> str:
         return "They aren't here.\n\r"
 
     _restore_char(victim)
-    message = f"{getattr(char, 'name', 'Someone')} has restored you."
+    # mirrors ROM src/act_wiz.c:2863 — act("$n has restored you.", ch, NULL,
+    # victim, TO_VICT). INV-025/INV-027: PERS-mask the restorer per victim sight.
+    message = act_format("$n has restored you.", recipient=victim, actor=char)
     _send_to_char(victim, f"{message}\n\r")
     if getattr(victim, "is_npc", False):
         # ROM src/act_wiz.c:2863 / src/comm.c:2384 — TO_VICT act() on NPC

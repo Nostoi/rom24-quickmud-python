@@ -27,6 +27,7 @@ from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.time import time_info
 from mud.utils import rng_mm
+from mud.utils.act import act_to_room
 from mud.utils.messaging import push_message
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
 from mud.world.vision import room_is_dark
@@ -604,9 +605,10 @@ def _handle_pet_shop_purchase(char: Character, args: str) -> str:
     # live in ONE channel only — return it, do NOT also append it to the mailbox.
     buyer_message = "Enjoy your pet."
 
-    actor_name = char.short_descr or char.name or "Someone"
-    target_name = pet.short_descr or pet.name or "a pet"
-    current_room.broadcast(f"{actor_name} bought {target_name} as a pet.", exclude=char)
+    # mirroring ROM src/act_obj.c:2636 — act("$n bought $N as a pet.", ch, NULL,
+    # pet, TO_ROOM). INV-025/INV-027: act_to_room renders $n per recipient
+    # (invisible buyer → "Someone") and dispatches TRIG_ACT; $N is the pet.
+    act_to_room(current_room, "$n bought $N as a pet.", char, arg2=pet)
 
     return buyer_message
 
@@ -810,14 +812,14 @@ def do_buy(char: Character, args: str) -> str:
 
     # ROM src/act_obj.c:2734-2745 — broadcast `$n buys $p[N].` or `$n buys $p.`
     # to the room before deducting cost so onlookers see the transaction.
+    # INV-025/INV-027: act_to_room renders $n per recipient (invisible buyer →
+    # "Someone") and dispatches TRIG_ACT; $p is the item, [N] the literal qty.
     room = getattr(char, "room", None)
     if room is not None:
-        buyer_name = char.short_descr or char.name or "Someone"
-        item_name = selected_obj.short_descr or selected_obj.name or "something"
         if quantity > 1:
-            room.broadcast(f"{buyer_name} buys {item_name}[{quantity}].", exclude=char)
+            act_to_room(room, f"$n buys $p[{quantity}].", char, arg1=selected_obj)
         else:
-            room.broadcast(f"{buyer_name} buys {item_name}.", exclude=char)
+            act_to_room(room, "$n buys $p.", char, arg1=selected_obj)
 
     deduct_cost(char, total_cost)
     _set_keeper_total_wealth(keeper, _keeper_total_wealth(keeper) + total_cost)
@@ -922,11 +924,12 @@ def do_sell(char: Character, args: str) -> str:
             push_message(char, "You haggle with the shopkeeper.")
             check_improve(char, "haggle", True, 4)
 
+    # mirroring ROM src/act_obj.c:2923 — act("$n sells $p.", ch, obj, NULL, TO_ROOM).
+    # INV-025/INV-027: act_to_room renders $n per recipient (invisible seller →
+    # "Someone") and dispatches TRIG_ACT; $p is the item.
     room = getattr(char, "room", None)
     if room is not None:
-        seller_name = char.short_descr or char.name or "Someone"
-        item_name = selected_obj.short_descr or selected_obj.name or "something"
-        room.broadcast(f"{seller_name} sells {item_name}.", exclude=char)
+        act_to_room(room, "$n sells $p.", char, arg1=selected_obj)
 
     removed = False
     inventory_list = getattr(char, "inventory", None)

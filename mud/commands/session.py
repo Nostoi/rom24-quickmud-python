@@ -57,16 +57,11 @@ def do_quit(ch: Character, args: str) -> str:
     # mirroring ROM src/act_comm.c:1482 — act("$n has left the game.", ch, NULL, NULL, TO_ROOM)
     # Fires BEFORE the connection-extraction tear-down so witnesses in the
     # current room see the departure while the actor is still in room.people.
+    # INV-025/INV-027: act_to_room renders $n per recipient (an invisible quitter
+    # masks to "Someone") and dispatches TRIG_ACT to NPC witnesses.
     room = getattr(ch, "room", None)
     if room is not None:
-        from mud.net.protocol import broadcast_room
-
-        actor_name = getattr(ch, "name", None) or "someone"
-        quit_msg = f"{actor_name} has left the game."
-        broadcast_room(room, quit_msg, exclude=ch)
-        from mud.mobprog import mp_act_trigger_room
-
-        mp_act_trigger_room(quit_msg, room, ch, exclude=ch)
+        act_to_room(room, "$n has left the game.", ch)
 
     # Set a flag to signal the connection handler to disconnect
     ch._quit_requested = True

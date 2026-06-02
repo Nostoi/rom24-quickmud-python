@@ -5,12 +5,11 @@ from collections.abc import Callable
 from mud.config import get_pulse_violence
 from mud.handler import deduct_cost
 from mud.math.c_compat import c_div
-from mud.mobprog import mp_act_trigger_room
 from mud.models.character import Character
 from mud.models.constants import ActFlag
-from mud.net.protocol import broadcast_room
 from mud.skills import handlers as spell_handlers
 from mud.utils import rng_mm
+from mud.utils.act import act_to_room
 
 _ServiceFunc = Callable[[Character, Character | None], int | bool]
 
@@ -239,9 +238,10 @@ def do_heal(char: Character, args: str = "") -> str:
 
     room = getattr(healer, "room", None)
     if room is not None:
-        utter_msg = f"{_healer_name(healer)} utters the words '{service.words}'."
-        broadcast_room(room, utter_msg, exclude=healer)
-        mp_act_trigger_room(utter_msg, room, healer, exclude=healer)
+        # mirroring ROM src/healer.c:183 — act("$n utters the words '$T'.", mob,
+        # NULL, words, TO_ROOM). INV-025/INV-027: act_to_room renders $n per
+        # recipient and dispatches TRIG_ACT; $T is the spell words.
+        act_to_room(room, "$n utters the words '$T'.", healer, arg2=service.words)
 
     if service.spell is None:
         level = max(int(getattr(healer, "level", 0) or 0), 0)

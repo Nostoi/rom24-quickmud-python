@@ -12,10 +12,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import AffectFlag, FurnitureFlag, ItemType, Position
-from mud.net.protocol import broadcast_room
-from mud.utils.act import act_format
+from mud.utils.act import act_format, act_to_room
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -89,10 +87,10 @@ def _broadcast(ch: Character, fmt: str, obj=None) -> None:
     room = getattr(ch, "room", None)
     if room is None:
         return
-    msg = act_format(fmt, recipient=None, actor=ch, arg1=obj)
-    broadcast_room(room, msg, exclude=ch)
-    # ROM src/comm.c:2384 — position-command act(TO_ROOM) lines fire TRIG_ACT.
-    mp_act_trigger_room(msg, room, ch, arg1=obj)
+    # ROM src/comm.c:2384 — position-command act(TO_ROOM) lines render $n per
+    # recipient (INV-027 PERS masking) and fire TRIG_ACT to NPC witnesses.
+    # act_to_room auto-excludes the actor (ROM TO_ROOM excludes ch).
+    act_to_room(room, fmt, ch, arg1=obj)
 
 
 def _to_char(fmt: str, ch: Character, obj=None) -> str:

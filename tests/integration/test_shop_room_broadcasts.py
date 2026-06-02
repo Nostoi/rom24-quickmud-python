@@ -16,7 +16,6 @@ shop activity.
 from __future__ import annotations
 
 from mud.commands.dispatcher import process_command
-from mud.models.character import character_registry
 from mud.registry import shop_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
@@ -118,3 +117,57 @@ def test_do_sell_broadcasts_to_room():
     assert not any("sells" in m.lower() for m in getattr(char, "messages", []) or []), (
         "seller should not receive the TO_ROOM `$n sells $p.` broadcast"
     )
+
+
+def test_do_buy_dispatches_act_trigger_to_npc_witness():
+    """INV-025 — the converted `$n buys $p.` broadcast now routes through
+    ``act_to_room`` (was a bare ``.broadcast`` with NO TRIG_ACT), so a listening
+    NPC in the shop receives ``mp_act_trigger`` per ROM src/comm.c:2384.
+
+    PERS masking is unreachable for shops (the keeper refuses an invisible
+    customer — ROM src/act_obj.c:2395 `if (!can_see(keeper, ch))`), so the
+    visible-name render is covered by ``test_do_buy_broadcasts_to_room``; this
+    test locks the genuinely-new behavior (TRIG_ACT dispatch).
+    """
+    import mud.mobprog as mobprog
+    from mud.mobprog import Trigger
+
+    initialize_world("area/area.lst")
+    char = create_test_character("Buyer", 3010)
+    char.level = 20
+    char.gold = 100
+    keeper = _grocer_in_room(char) or spawn_mob(3002)
+    assert keeper is not None
+    if keeper not in char.room.people:
+        keeper.move_to_room(char.room)
+
+    listener = spawn_mob(3002)
+    assert listener is not None
+    proto = listener.prototype
+    proto.mprogs = [
+        type(
+            "_FakeProg",
+            (),
+            {"trig_type": int(Trigger.ACT), "trig_phrase": "buys", "code": 'mob echo "SEEN"\n', "vnum": proto.vnum},
+        )()
+    ]
+    listener.move_to_room(char.room)
+
+    fired: list[tuple[str, str]] = []
+    original = mobprog.mp_act_trigger
+
+    def _probe(argument, mob, ch, *a, **k):
+        fired.append((getattr(mob, "name", "?"), str(argument)))
+        return original(argument, mob, ch, *a, **k)
+
+    previous_hour = time_info.hour
+    mobprog.mp_act_trigger = _probe
+    try:
+        time_info.hour = 10
+        _ensure_lantern(keeper)
+        process_command(char, "buy lantern")
+    finally:
+        time_info.hour = previous_hour
+        mobprog.mp_act_trigger = original
+
+    assert any("buys" in arg.lower() for _, arg in fired), fired
