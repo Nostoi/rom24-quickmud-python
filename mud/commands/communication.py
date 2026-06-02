@@ -9,6 +9,7 @@ from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
 from mud.net.protocol import broadcast_global, send_to_char
 from mud.utils.act import capitalize_act_line
+from mud.utils.messaging import push_message
 
 if TYPE_CHECKING:
     from mud.net.session import Session
@@ -42,10 +43,14 @@ def _has_mobprog_trigger(mob: Character, trigger: mobprog.Trigger) -> bool:
 def _deliver_tell(sender: Character, target: Character, message: str) -> None:
     """Send the formatted tell *message* to *target* and record reply."""
 
-    _queue_personal_message(target, message)
     writer = getattr(target, "connection", None)
-    if writer:
-        asyncio.create_task(send_to_char(target, message))
+    # INV-001 (TELL-007): single-channel delivery — push_message routes a
+    # connected target to the async send and the mailbox only for disconnected
+    # chars (XOR). The prior _queue_personal_message + if-writer-async
+    # double-delivered to a connected PC (the connection loop drains the mailbox
+    # too). The linkdead/AFK/note-writing branches in do_tell keep the mailbox
+    # queue — those targets are not actively receiving.
+    push_message(target, message)
     # mirroring ROM src/act_comm.c:942 / src/comm.c:2384 — the
     # act_new(TO_VICT) tell line dispatches TRIG_ACT on NPC recipients
     # separately from the later TRIG_SPEECH hook.
@@ -181,10 +186,13 @@ def do_say(char: Character, args: str) -> str:
             speaker_name = pers(char, listener)
             per_message = capitalize_act_line(f"{{6{speaker_name} says '{{7{args}{{6'{{x")
             writer = getattr(listener, "connection", None)
-            if writer is not None:
-                asyncio.create_task(send_to_char(listener, per_message))
-            if hasattr(listener, "messages"):
-                listener.messages.append(per_message)
+            # INV-001 (SAY-005): single-channel delivery — push_message routes a
+            # connected listener to the async send and the mailbox only for
+            # disconnected chars (XOR). The prior if-writer-async + unconditional
+            # append double-delivered to a connected PC (the connection loop
+            # drains the mailbox too). SAY-004 fixed this once; the INV-025 PERS
+            # rewrite re-introduced it as this hand-rolled loop.
+            push_message(listener, per_message)
             # mirroring ROM src/act_comm.c:776 / src/comm.c:2384 — the
             # unsuppressed say TO_ROOM act() dispatches TRIG_ACT on NPC
             # listeners independently of the explicit TRIG_SPEECH loop below.
@@ -320,11 +328,10 @@ def do_shout(char: Character, args: str) -> str:
             continue
         speaker_name = pers(char, victim)
         per_message = capitalize_act_line(f"{speaker_name} shouts '{cleaned}'")
-        writer = getattr(victim, "connection", None)
-        if writer:
-            asyncio.create_task(send_to_char(victim, per_message))
-        if hasattr(victim, "messages"):
-            victim.messages.append(per_message)
+        # INV-001 (SHOUT-004): single-channel delivery (XOR) — see SAY-005. The
+        # prior if-writer-async + unconditional append double-delivered to a
+        # connected PC.
+        push_message(victim, per_message)
     # mirroring ROM src/act_comm.c:824 — `act("You shout '$T'", ...)`.
     # No comma between `shout` and the open quote (SHOUT-001).
     return capitalize_act_line(f"You shout '{cleaned}'")
@@ -652,11 +659,10 @@ def do_emote(char: Character, args: str) -> str:
             if listener is char:
                 continue
             per_message = capitalize_act_line(f"{pers(char, listener)} {args}")
-            writer = getattr(listener, "connection", None)
-            if writer is not None:
-                asyncio.create_task(send_to_char(listener, per_message))
-            if hasattr(listener, "messages"):
-                listener.messages.append(per_message)
+            # INV-001 (EMOTE-004): single-channel delivery (XOR) — see SAY-005.
+            # The prior if-writer-async + unconditional append double-delivered
+            # to a connected PC.
+            push_message(listener, per_message)
 
         # EMOTE-003 / INV-025 — do_emote does NOT dispatch TRIG_ACT.  ROM
         # src/act_comm.c:1090-1093 wraps both `act("$n $T", …)` calls in
