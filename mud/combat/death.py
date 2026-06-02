@@ -231,7 +231,12 @@ def _broadcast_neighbor_cry(victim: Character) -> None:
         target = getattr(exit_data, "to_room", None)
         if target is None or target is room:
             continue
-        target.broadcast(message)
+        # mirroring ROM src/fight.c:1685 — act(msg, ch, NULL, NULL, TO_ROOM)
+        # per exit, with no MOBtrigger wrap, so an NPC in the adjacent room
+        # with a matching TRIG_ACT receives mp_act_trigger (INV-025). The
+        # message has no $n, so PERS rendering is identical to a plain
+        # broadcast; act_to_room adds the missing TRIG_ACT dispatch.
+        act_to_room(target, message, victim)
 
 
 def death_cry(victim: Character) -> None:

@@ -1,15 +1,23 @@
-# Session Status — 2026-06-01 — INV-025 combat re-probe: FIGHT-041 (2.12.49)
+# Session Status — 2026-06-01 — INV-025 combat re-probe: FIGHT-041/042 (2.12.50)
 
 ## Current State
 
 - **Active mode**: cross-file invariants — the **INV-025 `mud/combat/`
-  re-probe has begun**. First gap closed: **FIGHT-041** (`50242279`,
-  2.12.49) — `death_cry`'s in-room gore line baked `victim.name` via
-  `expand_placeholders` + `room.broadcast` (leaking an invisible victim's
-  name); converted to `act_to_room(room, message_template, victim,
-  exclude=victim)`. Test `test_fight041_death_cry_pers_masking.py` (2:
-  invisible→"Someone", sighted→name). The static neighbor-room cry has no
-  `$n`/name and stays a plain broadcast.
+  re-probe has begun**. Two sibling gaps in `death_cry` closed:
+  - **FIGHT-041** (`50242279`, 2.12.49) — `death_cry`'s in-room gore line
+    baked `victim.name` via `expand_placeholders` + `room.broadcast`
+    (leaking an invisible victim's name); converted to
+    `act_to_room(room, message_template, victim, exclude=victim)`. Test
+    `test_fight041_death_cry_pers_masking.py` (2: invisible→"Someone",
+    sighted→name).
+  - **FIGHT-042** (2.12.50) — the neighbor-room cry
+    (`_broadcast_neighbor_cry`, ROM `fight.c:1685` `act(TO_ROOM)` per exit,
+    no MOBtrigger wrap) delivered visible text but never dispatched
+    TRIG_ACT to listening NPCs in adjacent rooms (INV-025's primary
+    contract). Surfaced by advisor review of FIGHT-041's over-claimed
+    "plain broadcast" note. Converted to `act_to_room(target, message,
+    victim)`; cry has no `$n` so PERS unchanged. Test
+    `test_fight042_death_cry_neighbor_trig_act.py`.
 - The **INV-025 command-layer PERS sweep is CLOSED** (all confirmed
   `mud/commands/` baked-name `room.broadcast(f"{char.name} …")` sites
   converted to `act_to_room`).
@@ -42,11 +50,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.49 |
-| Tests | **full suite green: 5261 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
+| Version | 2.12.50 |
+| Tests | **full suite green: 5262 passed, 4 skipped** (run `pytest -p no:xdist -o addopts="" -q`; under high load `-n auto` hangs at worker fork and `-n0` can hit a broken xdist `sessionfinish` teardown) |
 | ROM C files audited | 43 / 43 (per-file pass complete; cross-file invariants active) |
 | Cross-file invariants | 25 enforced |
-| Open correctness gaps | **INV-025 re-probe** — rest of `mud/combat/`, `mud/world/`, `mud/commands/communication.py` (`do_say`/`do_tell`) not yet swept for the same baked-name `room.broadcast` pattern (`death_cry`/FIGHT-041 done) |
+| Open correctness gaps | **INV-025 re-probe** — rest of `mud/combat/`, `mud/world/`, `mud/commands/communication.py` (`do_say`/`do_tell`) not yet swept for the same baked-name `room.broadcast` / missing-TRIG_ACT pattern (`death_cry` done: FIGHT-041 PERS + FIGHT-042 TRIG_ACT) |
 
 ## Next Intended Task
 
@@ -58,5 +66,7 @@
    triggers) remain once the PERS sweep is exhausted.
 
 > **Push note:** work through 2.12.48 is pushed to `master`; **2.12.49
-> (FIGHT-041, `50242279`) is committed locally but NOT yet pushed.**
-> **Index:** GitNexus reindexed clean after the FIGHT-041 commit (2026-06-01).
+> (FIGHT-041, `50242279`) and 2.12.50 (FIGHT-042) are committed locally but
+> NOT yet pushed.**
+> **Index:** GitNexus reindexed clean after the FIGHT-041 commit (2026-06-01);
+> re-run after the FIGHT-042 commit.
