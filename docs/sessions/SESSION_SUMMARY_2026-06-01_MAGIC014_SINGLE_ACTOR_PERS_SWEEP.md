@@ -76,10 +76,27 @@ correct ROM-parity outcome, not a test workaround.
 - **Full suite: 5249 passed, 4 skipped** (`-p no:xdist -o addopts="" -q`).
 - `act_to_room` consumes no RNG, so no global RNG-sequence shift.
 
+## Addendum — `FIGHT-039` ✅ FIXED (commit `83e42d33`, 2.12.46)
+
+Closed the split-out `trip` self-trip gap in the same session.
+
+- **Python**: `mud/skills/handlers.py:trip` self-trip branch (`victim is caster`).
+- **ROM C**: `src/fight.c:2699-2701` — `send_to_char("{5You fall flat on your
+  face!{x\n\r", ch)` + `act("{5$n trips over $s own feet!{x", ch, NULL, NULL,
+  TO_ROOM)`.
+- **Fix**: self line now coloured (`"{5You fall flat on your face!{x"`); room leg
+  → `act_to_room(room, "{5$n trips over $s own feet!{x", caster, exclude=caster)`
+  (per-recipient `$n` PERS masking, `$s` gendered possessive, colour preserved,
+  mailbox loop replaced). Also fixed the missing colour on the self line (same
+  ROM gap area, ROM `:2699`).
+- **Tests**: `tests/integration/test_fight039_trip_self_room_pers.py` (visible
+  male→"his"+colour+self-colour; invisible female→"Someone"+"her"). No existing
+  test asserted these lines.
+- **Full suite: 5251 passed, 4 skipped.**
+
 ## Next Steps
 
-1. **FIGHT-039** — `trip` self-trip colour/`$s`/`$n` (one commit).
-2. Verify the dirt-kicking "their" caster line (MAGIC-013 note).
-3. Re-probe `mud/commands/`, `mud/combat/`, `mud/spec_funs.py` for
+1. Verify the dirt-kicking "their" caster line (MAGIC-013 note).
+2. Re-probe `mud/commands/`, `mud/combat/`, `mud/spec_funs.py` for
    `room.broadcast(f"…{name}…")` baked-name patterns outside handlers.py that
    bypass `act_to_room` PERS masking.
