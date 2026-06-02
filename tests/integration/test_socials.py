@@ -250,7 +250,11 @@ class TestMultipleSocials:
             perform_social(alice, "smile", "bob")
 
             assert len(alice.messages) == 1
-            assert len(bob.messages) == 2
+            # ROM src/interp.c:648 — others_found is act(..., TO_NOTVICT), which
+            # excludes the victim. Bob receives ONLY vict_found (TO_VICT), not the
+            # others_found broadcast. (Previously this asserted 2, encoding the
+            # TO_ROOM-vs-TO_NOTVICT bug fixed in the INV-025 socials conversion.)
+            assert bob.messages == ["Alice smiles at you."]
             assert len(observer.messages) == 1
             assert "alice" in observer.messages[0].lower()
             assert "bob" in observer.messages[0].lower()
