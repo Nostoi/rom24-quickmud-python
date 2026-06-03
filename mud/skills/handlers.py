@@ -1873,12 +1873,8 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
     if caster is None or target is None:
         raise ValueError("cancellation requires caster and target")
 
-    # ROM L1039: level += 2
-    # NB: `level` is currently unused because `_cancel_effect` strips effects
-    # unconditionally instead of routing through `check_dispel(level, ...)` —
-    # a real parity bug tracked as MAGIC-009 (docs/parity/MAGIC_C_AUDIT.md).
-    # Kept (not removed) as the breadcrumb for that fix.
-    level = max(int(getattr(caster, "level", 0) or 0), 0) + 2  # noqa: F841  # MAGIC-009
+    # ROM L1039: level += 2 — the dispel level used for every per-effect roll.
+    level = max(int(getattr(caster, "level", 0) or 0), 0) + 2
 
     # ROM L1041-1047: Type check - only NPC->PC or PC->NPC (except charmed)
     caster_is_npc = getattr(caster, "is_npc", True)
@@ -1902,14 +1898,14 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
     # renders $n per-recipient via PERS(ch, to) and dispatches TRIG_ACT to
     # NPC recipients.  The shared act_to_room helper mirrors both contracts.
 
+    # ROM src/magic.c:1053+ runs check_dispel(level, victim, sn) per affect, so
+    # each effect rolls saves_dispel(dis_level, af->level, af->duration) and can
+    # *fail* to be removed (decrementing af->level). The "victim gets NO save"
+    # comment refers only to the absent upfront wholesale saves_spell, not these
+    # per-effect rolls. check_dispel also sends the wear-off message on success,
+    # so we delegate fully (no separate removal/message here). MAGIC-009.
     def _cancel_effect(effect_name: str) -> bool:
-        effect = target.spell_effects.get(effect_name)
-        if effect is None:
-            return False
-        removed = target.remove_spell_effect(effect_name)
-        if removed and removed.wear_off_message:
-            target.send_to_char(f"{removed.wear_off_message}\n\r")
-        return bool(removed)
+        return check_dispel(level, target, effect_name)
 
     if _cancel_effect("armor"):
         found = True

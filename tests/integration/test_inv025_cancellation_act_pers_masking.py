@@ -49,7 +49,10 @@ class TestCancellationPERSMasking:
     """An invisible cancellation target's wear-off messages must render
     per-recipient through PERS (can_see), not leak the real name."""
 
-    def test_invisible_mob_blindness_wear_off_masks_name(self) -> None:
+    def test_invisible_mob_blindness_wear_off_masks_name(self, monkeypatch) -> None:
+        # Force the per-effect saves_dispel roll to fail so the dispel succeeds
+        # and the wear-off room line fires (MAGIC-009: removal is now conditional).
+        monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 100)
         room = _lit_room()
         caster = _pc("Dispelra", room, level=31)
         target = _mob("Verdana", room, level=30)
@@ -69,7 +72,8 @@ class TestCancellationPERSMasking:
             f"Expected PERS-masked wear-off for onlooker, got: {onlooker_msgs}"
         )
 
-    def test_visible_mob_blindness_wear_off_shows_name(self) -> None:
+    def test_visible_mob_blindness_wear_off_shows_name(self, monkeypatch) -> None:
+        monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 100)
         room = _lit_room()
         caster = _pc("Dispelra", room, level=31)
         target = _mob("Verdana", room, level=30)
@@ -85,7 +89,8 @@ class TestCancellationPERSMasking:
             f"Expected real-name wear-off for visible target, got: {onlooker_msgs}"
         )
 
-    def test_invisible_mob_sanctuary_wear_off_masks_name(self) -> None:
+    def test_invisible_mob_sanctuary_wear_off_masks_name(self, monkeypatch) -> None:
+        monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: 100)
         room = _lit_room()
         caster = _pc("Dispelra", room, level=31)
         target = _mob("Verdant", room, level=30)
