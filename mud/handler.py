@@ -586,88 +586,12 @@ def affect_remove_obj(obj: Object, paf: Affect) -> None:
                 break
 
 
-def is_friend(ch: Character, victim: Character) -> bool:
-    """
-    Check if two characters are friends (for mob assist AI).
-
-    ROM Reference: src/handler.c:50-93 (is_friend)
-
-    Returns True if ch should assist victim in combat.
-
-    Args:
-        ch: Character considering assist
-        victim: Character potentially being assisted
-
-    Returns:
-        True if ch should help victim
-    """
-    # ROM C handler.c:52-53 - same group always friends
-    if hasattr(ch, "group") and hasattr(victim, "group"):
-        if ch.group and ch.group == victim.group:
-            return True
-
-    # ROM C handler.c:56-57 - players don't auto-assist
-    if not getattr(ch, "is_npc", True):
-        return False
-
-    # ROM C handler.c:59-65 - check ASSIST_PLAYERS flag
-    if not getattr(victim, "is_npc", True):
-        off_flags = getattr(ch, "off_flags", 0)
-        ASSIST_PLAYERS = 0x00000001  # From ROM constants
-        if off_flags & ASSIST_PLAYERS:
-            return True
-        else:
-            return False
-
-    # ROM C handler.c:67-68 - charmed mobs don't assist
-    AFF_CHARM = 0x00000002  # From ROM affect flags
-    if getattr(ch, "affected_by", 0) & AFF_CHARM:
-        return False
-
-    # ROM C handler.c:70-71 - ASSIST_ALL flag
-    off_flags = getattr(ch, "off_flags", 0)
-    ASSIST_ALL = 0x00000002
-    if off_flags & ASSIST_ALL:
-        return True
-
-    # ROM C handler.c:73-74 - same group
-    if hasattr(ch, "group") and hasattr(victim, "group"):
-        if ch.group and ch.group == victim.group:
-            return True
-
-    # ROM C handler.c:76-78 - ASSIST_VNUM (same mob type)
-    ASSIST_VNUM = 0x00000004
-    if off_flags & ASSIST_VNUM:
-        ch_proto = getattr(ch, "prototype", None) or getattr(ch, "pIndexData", None)
-        victim_proto = getattr(victim, "prototype", None) or getattr(victim, "pIndexData", None)
-        if ch_proto and victim_proto and ch_proto == victim_proto:
-            return True
-
-    # ROM C handler.c:80-81 - ASSIST_RACE
-    ASSIST_RACE = 0x00000008
-    if off_flags & ASSIST_RACE:
-        if hasattr(ch, "race") and hasattr(victim, "race") and ch.race == victim.race:
-            return True
-
-    # ROM C handler.c:83-90 - ASSIST_ALIGN
-    ASSIST_ALIGN = 0x00000010
-    ACT_NOALIGN = 0x00000080  # From ROM act flags
-    if off_flags & ASSIST_ALIGN:
-        ch_act = getattr(ch, "act", 0)
-        victim_act = getattr(victim, "act", 0)
-        if not (ch_act & ACT_NOALIGN) and not (victim_act & ACT_NOALIGN):
-            ch_align = getattr(ch, "alignment", 0)
-            victim_align = getattr(victim, "alignment", 0)
-            # Good helps good, evil helps evil, neutral helps neutral
-            if (
-                (ch_align > 350 and victim_align > 350)
-                or (ch_align < -350 and victim_align < -350)
-                or (-350 <= ch_align <= 350 and -350 <= victim_align <= 350)
-            ):
-                return True
-
-    # ROM C handler.c:92 - default to False
-    return False
+# NOTE: a dead `is_friend()` duplicate lived here. It was removed in the
+# divergence-class flag-hex sweep (HANDLER-DEAD-001) — it hardcoded wrong assist
+# bit values (`ASSIST_PLAYERS = 0x1` etc., bits 0-4) that disagreed with the
+# canonical `OffFlag.ASSIST_PLAYERS = 1 << 18` (ROM letter macro `(S)`). It had
+# no callers; the live mob-assist path is `mud/combat/assist.py`, which uses the
+# `OffFlag` enum directly.
 
 
 # ==============================================================================
@@ -1034,78 +958,13 @@ def create_money(gold: int, silver: int) -> Object:
     return obj
 
 
-# ==============================================================================
-# Combat Functions (ROM C handler.c)
-# ==============================================================================
-
-
-def check_immune(ch: Character, dam_type: int) -> int:
-    """
-    Check character's immunity/resistance/vulnerability to damage type.
-
-    ROM C: handler.c:213-304 (check_immune)
-
-    Returns immunity status based on ch.imm_flags, res_flags, vuln_flags.
-    Physical damage (<=3) checks WEAPON flags first.
-    Magical damage (>3) checks MAGIC flags first.
-
-    Args:
-        ch: Character to check
-        dam_type: Damage type (DAM_BASH, DAM_FIRE, etc.)
-
-    Returns:
-        IS_IMMUNE (100), IS_RESISTANT (75), IS_VULNERABLE (150), or IS_NORMAL (100)
-
-    QuickMUD Notes:
-        - Uses constants from constants.py
-        - Returns immunity percentage values
-    """
-    # ROM C constants
-    DAM_NONE = 0
-    IS_NORMAL = 0
-    IS_IMMUNE = 1
-    IS_RESISTANT = 2
-    IS_VULNERABLE = 3
-
-    if dam_type == DAM_NONE:
-        return -1
-
-    # Default to normal
-    defense = IS_NORMAL
-
-    imm_flags = getattr(ch, "imm_flags", 0)
-    res_flags = getattr(ch, "res_flags", 0)
-    vuln_flags = getattr(ch, "vuln_flags", 0)
-
-    # Physical damage (bash/pierce/slash)
-    if dam_type <= 3:
-        IMM_WEAPON = 0x00000001  # From ROM constants
-        RES_WEAPON = 0x00000001
-        VULN_WEAPON = 0x00000001
-
-        if imm_flags & IMM_WEAPON:
-            defense = IS_IMMUNE
-        elif res_flags & RES_WEAPON:
-            defense = IS_RESISTANT
-        elif vuln_flags & VULN_WEAPON:
-            defense = IS_VULNERABLE
-    else:
-        # Magical damage
-        IMM_MAGIC = 0x00000002  # From ROM constants
-        RES_MAGIC = 0x00000002
-        VULN_MAGIC = 0x00000002
-
-        if imm_flags & IMM_MAGIC:
-            defense = IS_IMMUNE
-        elif res_flags & RES_MAGIC:
-            defense = IS_RESISTANT
-        elif vuln_flags & VULN_MAGIC:
-            defense = IS_VULNERABLE
-
-    # TODO: Check specific damage type flags (IMM_BASH, IMM_FIRE, etc.)
-    # This requires full damage type constant mapping
-
-    return defense
+# NOTE: a dead `check_immune()` duplicate lived here. It was removed in the
+# divergence-class flag-hex sweep (HANDLER-DEAD-002) — it hardcoded wrong RIV
+# bit values (`IMM_WEAPON = 0x1` bit 0, `IMM_MAGIC = 0x2` bit 1) that disagreed
+# with the canonical `DefenseBit.WEAPON = 1 << 3` / `DefenseBit.MAGIC = 1 << 2`
+# (ROM letter macros `(D)` / `(C)`), and only handled WEAPON/MAGIC (TODO stub).
+# It had no callers; the live RIV path is `mud/affects/saves.py::_check_immune`,
+# exercised by `tests/test_saves_rom_parity.py`.
 
 
 # ==============================================================================

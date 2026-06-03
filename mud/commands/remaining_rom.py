@@ -100,8 +100,9 @@ def _lookup_flag_bit(token: str, flag_enum: type[IntFlag]) -> int | None:
     return prefix_lookup_intflag(token, flag_enum)
 
 
-# Comm flags
-COMM_DEAF = 0x00000002
+# Comm flags — derive from the canonical IntFlag enum, never a hardcoded hex bit
+# (AGENTS.md ROM Parity Rules; guarded by tests/test_flag_hex_convention.py).
+COMM_DEAF = int(CommFlag.DEAF)  # mirroring ROM src/merc.h COMM_DEAF (B = 1<<1)
 COMM_QUIET = int(CommFlag.QUIET)  # mirroring ROM src/merc.h COMM_QUIET (A = 1<<0)
 
 

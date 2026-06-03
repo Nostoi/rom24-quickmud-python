@@ -6,12 +6,14 @@ ROM Reference: src/act_info.c, src/act_comm.c
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import AffectFlag, DefenseBit
+from mud.models.constants import AffectFlag, DefenseBit, PlayerFlag
 
-# Player act flags (PLR_*)
-PLR_CANLOOT = 0x00008000
-PLR_NOSUMMON = 0x00010000
-PLR_NOFOLLOW = 0x00020000
+# Player act flags (PLR_*) — derive from the canonical IntFlag enum, never a
+# hardcoded hex bit (AGENTS.md ROM Parity Rules; guarded by
+# tests/test_flag_hex_convention.py).
+PLR_CANLOOT = int(PlayerFlag.CANLOOT)
+PLR_NOSUMMON = int(PlayerFlag.NOSUMMON)
+PLR_NOFOLLOW = int(PlayerFlag.NOFOLLOW)
 
 
 def do_noloot(char: Character, args: str) -> str:
