@@ -31,6 +31,7 @@ from mud.models.constants import (
     Sex,
     Size,
     VulnFlag,
+    WearLocation,
     attack_lookup,
     convert_flags_from_letters,
 )
@@ -507,6 +508,9 @@ class MobInstance:
                     if eq is obj:
                         del equipment[slot]
                         break
+        if getattr(obj, "carried_by", None) is self:
+            obj.carried_by = None
+        obj.wear_loc = int(WearLocation.NONE)
         self.carry_number = max(0, self.carry_number - 1)
 
     def equip(self, obj: Object, slot: int) -> None:  # stub

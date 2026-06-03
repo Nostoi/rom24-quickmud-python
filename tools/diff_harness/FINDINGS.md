@@ -40,31 +40,33 @@ produce `[3045, 3021, 3032]`, matching ROM's inline pfile carry-list order.
 
 ---
 
-## FINDING-025 — `MobInstance.equip` uses a different equipment representation than PCs (no dict entry) — ⚠️ OPEN
+## FINDING-025 — `MobInstance.equip` uses carry-list + `wear_loc` but wield lookups missed it — ✅ RESOLVED
 
-**Status:** ⚠️ OPEN 2026-06-03. Surfaced while closing FINDING-020 (PC carry-list
-position). `MobInstance.equip` (`mud/spawning/templates.py:512`, marked `# stub`)
-keeps the equipped item **in** `self.inventory` (via `add_to_inventory`, head-
-insert) and sets `obj.wear_loc`, but **never populates `self.equipment[slot]`**.
-This is a different model from the PC path, where `Character.equip_object`
-*removes* the item from `inventory` and stores it in the `equipment` dict. ROM
-uses **one** carry-list+`wear_loc` model for mobs and PCs alike (`equip_char`
-sets `obj->wear_loc`; `get_eq_char` loops `ch->carrying`).
+**Status:** ✅ RESOLVED 2026-06-03 (2.13.8). Surfaced while closing FINDING-020
+(PC carry-list position). `MobInstance.equip` keeps the equipped item **in**
+`self.inventory` (via `add_to_inventory`, head-insert) and sets `obj.wear_loc`,
+but does not populate a PC-style `equipment` dict. On ROM re-read this
+representation is actually the faithful one: ROM uses one carry-list+`wear_loc`
+model for mobs and PCs alike (`equip_char` sets `obj->wear_loc`; `get_eq_char`
+loops `ch->carrying` at `src/handler.c:1733`).
 
-Open questions to resolve when closing:
-1. Does mob disarm/remove preserve carry-list position? (The PC fix does not touch
-   the mob path — `MobInstance.remove_object` strips from `inventory`, no seq
-   logic.)
-2. Is `MobInstance.equip` not populating the equipment dict a real divergence
-   (mob equipment lookups that key the dict would miss), or just a benign
-   alternate representation (inventory + `wear_loc`) that all mob equipment
-   readers already tolerate?
-3. Does the mob model double-show equipped items anywhere `inventory` is
-   displayed without a `wear_loc != WEAR_NONE` filter?
+**Root divergence:** Python's shared `get_wielded_weapon` only checked
+`wielded_weapon` and the PC `equipment[int(WEAR_WIELD)]` dict. A reset-equipped
+mob therefore looked unarmed to disarm/combat consumers even though it had the
+weapon in `inventory` with `wear_loc == WEAR_WIELD`.
 
-Not yet probed (the diff-harness scenarios use a PC). File a mob-equip diff-
-harness scenario or focused test when closing. Related: FINDING-020 (PC, closed),
-FINDING-024 (PC save/load ordering, open).
+**Fix:** `get_wielded_weapon` now falls back to scanning `inventory` for
+`wear_loc == WearLocation.WIELD`, matching ROM `get_eq_char`. `MobInstance
+.remove_object` clears the carrier back-pointer and `wear_loc`, matching
+`obj_from_char`. `disarm` now also mirrors ROM `src/fight.c:2257-2265`: NODROP/
+INVENTORY weapons route back through the victim's carry-list, and after dropping
+a normal weapon into the room, an NPC victim with `wait == 0` that can see the
+weapon immediately picks it back up via `add_to_inventory`.
+
+**Regression:** `tests/integration/test_finding025_mob_equip_disarm.py` covers
+the mob `wear_loc` lookup, the NPC disarm auto-reclaim path, and the mob NODROP
+carry-list branch. The mob equipment representation is now treated as
+intentional/ROM-faithful rather than requiring a dict entry.
 
 ---
 

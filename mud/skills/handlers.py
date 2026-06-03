@@ -3406,11 +3406,32 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
 
     # ROM src/fight.c:2258-2265 - ITEM_NODROP/ITEM_INVENTORY keep weapon on victim.
     if extra_flags & (int(ExtraFlag.NODROP) | int(ExtraFlag.INVENTORY)):
-        victim.add_object(victim_weapon)
+        if hasattr(victim, "add_object"):
+            victim.add_object(victim_weapon)
+        else:
+            victim.add_to_inventory(victim_weapon)
     elif drop_room is not None and hasattr(drop_room, "add_object"):
         drop_room.add_object(victim_weapon)
+        # ROM src/fight.c:2263-2264: disarmed NPCs immediately recover visible
+        # dropped weapons when they are not waiting.
+        if (
+            getattr(victim, "is_npc", False)
+            and int(getattr(victim, "wait", 0) or 0) == 0
+            and can_see_object(victim, victim_weapon)
+        ):
+            if victim_weapon in drop_room.contents:
+                drop_room.contents.remove(victim_weapon)
+            if getattr(victim_weapon, "in_room", None) is drop_room:
+                victim_weapon.in_room = None
+            victim.add_to_inventory(victim_weapon)
     else:
-        victim.add_object(victim_weapon)
+        if hasattr(victim, "add_object"):
+            victim.add_object(victim_weapon)
+        else:
+            victim.add_to_inventory(victim_weapon)
+
+    if victim_weapon in getattr(victim, "inventory", []) and getattr(victim_weapon, "carried_by", None) is not victim:
+        victim_weapon.carried_by = victim
 
     check_improve(caster, "disarm", True, 1)
     return True

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FINDING-025 — reset-equipped mobs looked unarmed to shared combat lookups.**
+  ROM `get_eq_char` scans `ch->carrying` for `wear_loc`, and `MobInstance.equip`
+  already used that faithful inventory+`wear_loc` model. The Python shared
+  `get_wielded_weapon` only checked `wielded_weapon` and PC equipment dicts, so
+  mob reset equipment could be invisible to disarm/combat consumers. Wield lookup
+  now falls back to scanning inventory by `wear_loc`; mob extraction clears
+  carrier/`wear_loc`; and disarm mirrors ROM's NODROP/INVENTORY carry-list branch
+  plus the NPC branch that immediately picks visible dropped weapons back up when
+  the NPC is not waiting.
 - **FINDING-024 — DB save/load lost equipped-item carry-list position.** ROM saves
   equipped objects inline in `ch->carrying` with `wear_loc`, so a pfile
   round-trip preserves their position relative to carried inventory. Python saved

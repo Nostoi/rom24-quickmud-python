@@ -70,6 +70,13 @@ def get_wielded_weapon(attacker: Character | None):
         candidate = equipment.get(int(WearLocation.WIELD))
         if candidate is not None:
             return candidate
+    # FINDING-025: ROM src/handler.c:1733 get_eq_char scans ch->carrying for
+    # obj->wear_loc == iWear. Reset-equipped mobs use that one-list model
+    # directly: their weapon lives in inventory with wear_loc set, not in the
+    # PC equipment dict.
+    for obj in getattr(attacker, "inventory", []) or []:
+        if int(getattr(obj, "wear_loc", int(WearLocation.NONE)) or int(WearLocation.NONE)) == int(WearLocation.WIELD):
+            return obj
     return None
 
 

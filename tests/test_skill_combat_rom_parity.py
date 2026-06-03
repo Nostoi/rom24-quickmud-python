@@ -1719,7 +1719,7 @@ class TestDisarmRomParity:
             assert improve_mock.call_args.args[2] is False
 
     def test_disarm_success_drops_weapon_to_room(self, movable_char_factory, movable_mob_factory, object_factory):
-        """ROM helper L2257-2265: on success, weapon is removed and dropped to room when not NODROP/INVENTORY."""
+        """ROM L2257-2265: NPC victims immediately get visible disarmed weapons back."""
         from mud.skills import handlers as skill_handlers
 
         char = movable_char_factory("warrior", 3001)
@@ -1768,9 +1768,9 @@ class TestDisarmRomParity:
             assert skill_handlers.disarm(char, target=victim) is True
 
         assert victim_weapon not in victim.equipment.values()
-        assert victim_weapon not in victim.inventory
-        assert victim_weapon in getattr(room, "contents", [])
-        assert getattr(room, "contents", []) != before
+        assert victim_weapon in victim.inventory
+        assert victim_weapon not in getattr(room, "contents", [])
+        assert getattr(room, "contents", []) == before
 
     def test_disarm_success_keeps_nodrop_or_inventory_on_victim(
         self, movable_char_factory, movable_mob_factory, object_factory

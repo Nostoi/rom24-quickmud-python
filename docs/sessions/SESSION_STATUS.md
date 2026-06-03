@@ -1,44 +1,40 @@
-# Session Status — 2026-06-03 — FINDING-024 save/load carry-list ordering (2.13.7)
+# Session Status — 2026-06-03 — FINDING-025 mob equip/disarm (2.13.8)
 
 ## Current State
 
 - **Active mode**: cross-file invariants / divergence-class sweep (per-file audit
   tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
+  - **FINDING-025 — mob equip/disarm** ✅ RESOLVED (2.13.8).
+    `MobInstance.equip`'s inventory+`wear_loc` model was verified as
+    ROM-faithful; the real gap was shared consumers. `get_wielded_weapon` now
+    scans carried objects by `wear_loc`, `MobInstance.remove_object` clears
+    carrier/`wear_loc`, and `disarm` mirrors ROM's NODROP/INVENTORY carry-list
+    branch plus the NPC immediate visible-weapon reclaim branch.
   - **FINDING-024 — save/load carry-list ordering** ✅ RESOLVED (2.13.7).
-    `ObjectSave` now persists `Object._carry_seq`, `_deserialize_object`
-    restores it, and `from_orm` advances the runtime carry-sequence counter past
-    restored values. Reloaded equipped objects now return to their ROM-preserved
-    carry-list position when removed.
+    `ObjectSave` persists `Object._carry_seq`, `_deserialize_object` restores it,
+    and `from_orm` advances the runtime carry-sequence counter past restored
+    values.
   - **FINDING-020 — equip→remove carry-list position** ✅ RESOLVED (PC path,
-    2.13.6). ROM keeps equipped objects in `ch->carrying` (only `wear_loc`
-    flips), so a removed item keeps its original LIFO slot. C oracle confirmed
-    the position is *relative to acquisition order*, not a fixed index. Fixed via
-    an `Object._carry_seq` acquisition-sequence shim; `_remove_obj` re-inserts by
-    descending seq. Validated against the live C oracle (6 scenarios) + un-gated
-    diff-harness generated remove rules. 3 new integration tests.
-  - Room-contents `look()` `show_list_to_char` parity (2.13.5).
+    2.13.6).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-03_FINDING_024_SAVE_LOAD_CARRY_SEQ.md](SESSION_SUMMARY_2026-06-03_FINDING_024_SAVE_LOAD_CARRY_SEQ.md)
+  [SESSION_SUMMARY_2026-06-03_FINDING_025_MOB_EQUIP_DISARM.md](SESSION_SUMMARY_2026-06-03_FINDING_025_MOB_EQUIP_DISARM.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.7 |
-| Tests | Targeted final slice `PYTHONPATH=. pytest -n0 tests/integration/test_db_canonical_round_trip.py tests/integration/test_finding020_equip_remove_carry_position.py -q` → **11 passed**; `ruff check .` clean |
+| Version | 2.13.8 |
+| Tests | Focused + disarm slice `pytest -n0 tests/integration/test_finding025_mob_equip_disarm.py tests/test_skill_combat_rom_parity.py::TestDisarmRomParity -q` → **17 passed**; adjacent slice `pytest -n0 tests/integration/test_finding025_mob_equip_disarm.py tests/integration/test_fight038_disarm_noremove_improve.py tests/integration/test_fight_026_npc_offensive_skill_no_crash.py tests/test_equipment_key_convention.py tests/test_attribute_convention.py -q` → **9 passed**; `ruff check .` clean |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Divergence class 13 | object-list ordering — runtime + PC persistence legs closed (INV-039 + FINDING-020 + FINDING-024) |
-| Open engine findings | FINDING-025 (mob equip model) |
+| Divergence class 13 | object-list ordering + equipment representation legs closed (INV-039 + FINDING-020 + FINDING-024 + FINDING-025) |
+| Open engine findings | None currently called out in the latest session pointer |
 
 ## Next Intended Task
 
-1. **FINDING-025** — probe `MobInstance.equip`: it keeps equipped items in
-   `inventory` + `wear_loc` and never populates the equipment dict (different
-   model from PCs). Verify mob disarm position and whether the missing dict entry
-   is a real divergence. ROM uses one carry-list+`wear_loc` model for both.
-2. Continue Phase C deterministic diff-harness widening (light hold, money/shop
-   paths); add RNG-locked combat only after seed alignment is proven.
+1. Continue Phase C deterministic diff-harness widening: light hold and
+   money/shop paths.
+2. Add RNG-locked combat scenarios only after seed alignment is proven.
 
 ## Other open / deferred items
 
