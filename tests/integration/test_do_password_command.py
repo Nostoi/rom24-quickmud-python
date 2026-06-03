@@ -96,7 +96,7 @@ def test_password_wait_state_penalty(password_char):
     """Wrong password sets 10-second WAIT_STATE (ROM C lines 2893-2894)"""
     password_char.wait = 0
 
-    output = do_password(password_char, "wrongpassword newpassword")
+    do_password(password_char, "wrongpassword newpassword")
 
     assert password_char.wait == 40
 

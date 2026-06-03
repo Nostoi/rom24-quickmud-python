@@ -95,7 +95,7 @@ def test_steal_from_self_is_pointless(movable_char_factory, room):
 # ---------------------------------------------------------------------------
 def test_steal_from_fighting_npc_rejected(movable_char_factory, room):
     thief = _make_thief(movable_char_factory)
-    npc = _make_victim(movable_char_factory, name="Goblin", position=Position.FIGHTING, gold=500)
+    _make_victim(movable_char_factory, name="Goblin", position=Position.FIGHTING, gold=500)
     out = do_steal(thief, "gold goblin")
     assert "Kill stealing is not permitted" in out
 
@@ -126,7 +126,7 @@ def test_steal_coins_uses_rom_message_order(movable_char_factory, room, monkeypa
 
 def test_steal_coins_no_money_returns_rom_string(movable_char_factory, room, monkeypatch):
     thief = _make_thief(movable_char_factory, level=30, skill=100)
-    npc = _make_victim(movable_char_factory, name="Pauper", gold=0, silver=0)
+    _make_victim(movable_char_factory, name="Pauper", gold=0, silver=0)
 
     import mud.commands.thief_skills as ts
 
@@ -244,7 +244,7 @@ def test_steal_item_too_high_level_rejected(movable_char_factory, object_factory
 # ---------------------------------------------------------------------------
 def test_steal_no_clan_pc_fails(movable_char_factory, room, monkeypatch):
     thief = _make_thief(movable_char_factory, level=30, clan=0, skill=100)
-    npc = _make_victim(movable_char_factory, name="Mark", gold=1000)
+    _make_victim(movable_char_factory, name="Mark", gold=1000)
 
     import mud.commands.thief_skills as ts
 
@@ -287,7 +287,7 @@ def test_steal_failure_broadcasts_to_vict_and_notvict(movable_char_factory, room
 def test_steal_failure_strips_sneak(movable_char_factory, room, monkeypatch):
     thief = _make_thief(movable_char_factory, level=30, clan=0)
     thief.affected_by = int(AffectFlag.SNEAK)
-    npc = _make_victim(movable_char_factory, name="Mark", gold=100)
+    _make_victim(movable_char_factory, name="Mark", gold=100)
 
     import mud.commands.thief_skills as ts
 
@@ -303,7 +303,7 @@ def test_steal_failure_strips_sneak(movable_char_factory, room, monkeypatch):
 # ---------------------------------------------------------------------------
 def test_steal_failure_pc_to_pc_sets_thief_flag(movable_char_factory, room, monkeypatch):
     thief = _make_thief(movable_char_factory, level=30, clan=0)
-    pc_victim = _make_victim(movable_char_factory, name="Alice", is_npc=False, gold=100)
+    _make_victim(movable_char_factory, name="Alice", is_npc=False, gold=100)
 
     import mud.commands.thief_skills as ts
 
@@ -319,7 +319,7 @@ def test_steal_failure_pc_to_pc_sets_thief_flag(movable_char_factory, room, monk
 # ---------------------------------------------------------------------------
 def test_steal_applies_wait_state(movable_char_factory, room, monkeypatch):
     thief = _make_thief(movable_char_factory, level=30, clan=0)
-    npc = _make_victim(movable_char_factory, name="Mark", gold=100)
+    _make_victim(movable_char_factory, name="Mark", gold=100)
     thief.wait = 0
 
     import mud.commands.thief_skills as ts
@@ -336,7 +336,7 @@ def test_steal_applies_wait_state(movable_char_factory, room, monkeypatch):
 # ---------------------------------------------------------------------------
 def test_steal_level_diff_forces_failure_pc_to_pc(movable_char_factory, room, monkeypatch):
     thief = _make_thief(movable_char_factory, level=10, clan=1, skill=100)
-    pc_victim = _make_victim(movable_char_factory, name="Alice", is_npc=False, level=25, gold=1000)
+    _make_victim(movable_char_factory, name="Alice", is_npc=False, level=25, gold=1000)
 
     import mud.commands.thief_skills as ts
 

@@ -238,7 +238,7 @@ def test_hedit_unknown_command_does_not_recurse(builder_char, test_help_entry):
     cmd_hedit(builder_char, "magic")
     # 'look' is a real command — should not recurse
     try:
-        result = cmd_hedit(builder_char, "look")
+        cmd_hedit(builder_char, "look")
         # Any string response is fine; what matters is no RecursionError
     except RecursionError:
         pytest.fail("cmd_hedit fell into infinite recursion on unknown command")

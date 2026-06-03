@@ -56,7 +56,7 @@ def test_mload_emits_to_room_broadcast_with_victim_short_descr() -> None:
     # mirrors ROM src/act_wiz.c:2512 — act("$n has created $N!", ch, NULL, victim, TO_ROOM)
     from mud.commands.imm_load import do_mload
 
-    room = _room(40150)
+    _room(40150)
     admin = _imm("Admin", 40150)
     bystander = _witness("Watcher", 40150)
     proto = MobIndex(vnum=88160, short_descr="a small rat", level=1)
@@ -77,7 +77,7 @@ def test_oload_emits_to_room_broadcast_with_obj_short_descr() -> None:
     # mirrors ROM src/act_wiz.c:2566 — act("$n has created $p!", ch, obj, NULL, TO_ROOM)
     from mud.commands.imm_load import do_oload
 
-    room = _room(40250)
+    _room(40250)
     admin = _imm("Admin", 40250)
     bystander = _witness("Watcher", 40250)
     proto = ObjIndex(vnum=88260, name="widget", short_descr="a shiny widget")

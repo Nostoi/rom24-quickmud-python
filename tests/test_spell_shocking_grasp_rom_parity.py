@@ -173,7 +173,7 @@ def test_shocking_grasp_updates_position():
     victim = make_character(hit=10, max_hit=100, level=1)
 
     rng_mm.seed_mm(0xDEAD)
-    dealt = shocking_grasp(caster, victim)
+    shocking_grasp(caster, victim)
 
     # Should reduce hit below 0 and update position
     assert victim.hit < 0

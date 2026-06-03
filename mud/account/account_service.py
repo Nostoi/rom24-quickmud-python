@@ -153,7 +153,7 @@ def _skill_ratings(name: str) -> tuple[int, int, int, int] | None:
     metadata = ROM_SKILL_METADATA.get(normalized)
     if metadata is not None:
         ratings_meta = metadata.get("ratings")
-        if isinstance(ratings_meta, (list, tuple)) and len(ratings_meta) >= 4:
+        if isinstance(ratings_meta, list | tuple) and len(ratings_meta) >= 4:
             try:
                 return tuple(int(value) for value in ratings_meta[:4])
             except (TypeError, ValueError):

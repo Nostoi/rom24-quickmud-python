@@ -950,7 +950,7 @@ def test_pour_to_character_finds_held_container(test_character, object_factory):
 
 def test_pour_to_character_when_not_holding(test_character, object_factory):
     """ROM src/act_obj.c:1093-1097 — target holding nothing returns 'They aren't holding anything.'"""
-    recipient = create_test_character("Recipient", room_vnum=3001)
+    create_test_character("Recipient", room_vnum=3001)
     # No equipment in HOLD slot
 
     source = _make_obj(

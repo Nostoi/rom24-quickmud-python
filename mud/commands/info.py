@@ -108,7 +108,7 @@ def do_who(char: Character, args: str) -> str:
     level_upper = MAX_LEVEL
     class_restrict: set[int] = set()
     race_restrict: set[int] = set()
-    clan_restrict: set[int] = set()  # For future clan system
+    clan_restrict: set[int] = set()  # noqa: F841  # placeholder for the unfinished `who clan` filter
     immortals_only = False
     clan_only = False
     number_count = 0
@@ -131,7 +131,7 @@ def do_who(char: Character, args: str) -> str:
                 immortals_only = True
             # Check for "clan" keyword
             elif token.lower() == "clan":
-                clan_only = True
+                clan_only = True  # noqa: F841  # unfinished `who clan` filter; token consumed but not yet applied
             else:
                 # Try class lookup
                 class_data = get_player_class(token)
@@ -434,7 +434,6 @@ def do_time(char: Character, args: str) -> str:
     hour = time_info.hour
     day = time_info.day + 1  # ROM days are 1-based for display (ROM C line 1778)
     month = time_info.month
-    year = time_info.year
 
     # ROM C ordinal suffix logic (src/act_info.c lines 1780-1789)
     # Note: day already has +1 applied (line 1778: day = time_info.day + 1)

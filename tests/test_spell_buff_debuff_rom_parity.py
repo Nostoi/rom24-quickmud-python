@@ -147,7 +147,7 @@ def test_slow_dexterity_modifier_formula():
 
     # Force saves to fail by using very high level caster
     caster = make_character(name="Mage", level=50, alignment=0)
-    target = make_character(name="Target", level=1, alignment=0)
+    make_character(name="Target", level=1, alignment=0)
 
     # Try multiple times since there's a save check
     success = False
@@ -170,7 +170,7 @@ def test_slow_duration_formula():
     rng_mm.seed_mm(600)
 
     caster = make_character(name="Mage", level=40, alignment=0)
-    target = make_character(name="Target", level=1, alignment=0)
+    make_character(name="Target", level=1, alignment=0)
 
     # Try multiple times since there's a save check
     for _ in range(10):
@@ -265,7 +265,7 @@ def test_weaken_applies_strength_penalty():
     rng_mm.seed_mm(42)
 
     caster = make_character(name="Mage", level=30)
-    target = make_character(name="Target", level=1)
+    make_character(name="Target", level=1)
 
     # Weaken has save check, try multiple times
     success = False
@@ -284,7 +284,7 @@ def test_weaken_strength_modifier_formula():
     rng_mm.seed_mm(300)
 
     caster = make_character(name="Mage", level=25, alignment=0)
-    target = make_character(name="Target", level=1, alignment=0)
+    make_character(name="Target", level=1, alignment=0)
 
     # Try multiple times since there's a save check
     for _ in range(10):
@@ -303,7 +303,7 @@ def test_weaken_duration_formula():
     rng_mm.seed_mm(400)
 
     caster = make_character(name="Mage", level=30)
-    target = make_character(name="Target", level=1)
+    make_character(name="Target", level=1)
 
     # Try multiple times since there's a save check
     for _ in range(10):

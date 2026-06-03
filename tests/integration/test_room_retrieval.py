@@ -202,7 +202,7 @@ def test_get_all_type_from_room(movable_char_factory, test_room_3001):
     test_room_3001.add_object(armor)
 
     # Get all weapons from room
-    result = do_get(char, "all.weapon")
+    do_get(char, "all.weapon")
 
     # Verify only weapons retrieved
     assert sword in char.inventory, "Sword should be retrieved"
@@ -280,7 +280,7 @@ def test_get_all_respects_visibility(movable_char_factory, test_room_3001):
     test_room_3001.add_object(invisible_dagger)
 
     # Get all from room
-    result = do_get(char, "all")
+    do_get(char, "all")
 
     # Verify only visible object retrieved
     assert visible_sword in char.inventory, "Visible sword should be retrieved"
@@ -345,7 +345,7 @@ def test_get_all_with_money_triggers_autosplit(movable_char_factory, test_room_3
     test_room_3001.add_object(money)
 
     # Leader gets all from room
-    result = do_get(leader, "all")
+    do_get(leader, "all")
 
     # Verify sword in inventory, money split
     assert sword in leader.inventory, "Sword should be in inventory"

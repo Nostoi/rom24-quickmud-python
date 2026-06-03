@@ -73,7 +73,7 @@ def test_do_order_wiz_invis_orderer_renders_as_someone(monkeypatch):
     orderer.invis_level = 60  # wiz-invis to anyone below trust 60
     orderer.messages = []
 
-    follower = _charmed_follower("fido", room, orderer)
+    _charmed_follower("fido", room, orderer)
     # follower.trust = 0 — cannot see orderer
 
     delivered: list[tuple[str, str]] = []
@@ -109,7 +109,7 @@ def test_do_order_visible_orderer_renders_with_name(monkeypatch):
     orderer.trust = 30
     orderer.messages = []
 
-    follower = _charmed_follower("rex", room, orderer)
+    _charmed_follower("rex", room, orderer)
 
     delivered: list[tuple[str, str]] = []
 

@@ -125,7 +125,6 @@ def analyze_division(file_path: Path, line_num: int, code: str, context_lines: l
         )
 
     # Check for known-positive variables
-    all_positive = True
     code_lower = code.lower()
 
     # Check for negative indicators

@@ -769,7 +769,7 @@ def test_chain_lightning_save_reduces_to_third(monkeypatch):
 
     rng_mm.seed_mm(42)
     expected_hit1 = c_div(rng_mm.dice(10, 6), 3)
-    expected_caster = c_div(rng_mm.dice(6, 6), 3)
+    c_div(rng_mm.dice(6, 6), 3)
     expected_hit2 = c_div(rng_mm.dice(2, 6), 3)
 
     rng_mm.seed_mm(42)

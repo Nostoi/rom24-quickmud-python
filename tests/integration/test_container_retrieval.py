@@ -247,7 +247,7 @@ def test_get_all_from_container(movable_char_factory, test_room_3001):
     test_room_3001.add_object(container)
 
     # Get all from chest
-    result = do_get(char, "all chest")
+    do_get(char, "all chest")
 
     assert sword in char.inventory
     assert armor in char.inventory
@@ -273,7 +273,7 @@ def test_get_all_type_from_container(movable_char_factory, test_room_3001):
     test_room_3001.add_object(container)
 
     # Get all weapons from chest
-    result = do_get(char, "all.weapon chest")
+    do_get(char, "all.weapon chest")
 
     assert sword in char.inventory, "Weapon should be retrieved"
     assert armor not in char.inventory, "Armor should NOT be retrieved"
@@ -382,7 +382,7 @@ def test_get_from_npc_corpse(movable_char_factory, test_room_3001):
     test_room_3001.add_object(corpse)
 
     # Get sword from corpse
-    result = do_get(char, "sword corpse")
+    do_get(char, "sword corpse")
 
     assert sword in char.inventory
     assert sword not in corpse.contained_items
@@ -427,7 +427,7 @@ def test_cannot_get_from_pc_corpse_without_permission(movable_char_factory, test
         can_loot() returns TRUE if owner not in char_list
     """
     char = movable_char_factory(name="Thief", room_vnum=3001)
-    victim = movable_char_factory(name="Victim", room_vnum=3001)
+    movable_char_factory(name="Victim", room_vnum=3001)
 
     corpse = create_corpse_pc(player_name="Victim")
     sword = create_weapon(name="a magic sword")
@@ -576,7 +576,7 @@ def test_get_all_from_empty_container(movable_char_factory, test_room_3001):
     test_room_3001.add_object(container)
 
     # Get all from empty container
-    result = do_get(char, "all chest")
+    do_get(char, "all chest")
 
     # ROM behavior: No message if container empty
     # QuickMUD may return "see nothing" - both acceptable
@@ -621,7 +621,7 @@ def test_autosplit_money_from_container(movable_char_factory, test_room_3001):
     test_room_3001.add_object(container)
 
     # Leader gets money from chest
-    result = do_get(leader, "coins chest")
+    do_get(leader, "coins chest")
 
     # Verify money was split
     assert leader.silver == 50, f"Leader should have 50 silver, got {leader.silver}"

@@ -209,7 +209,7 @@ def test_sacrifice_zero_cost_non_corpse_gives_zero_silver(test_room, actor, obje
     test_room.contents.append(obj)
     obj.location = test_room
 
-    result = do_sacrifice(actor, "trinket")
+    do_sacrifice(actor, "trinket")
 
     # ROM gives 0 silver (UMIN caps it), so message says "one silver coin" only if silver==1
     # With cost=0 and silver capped at 0, ROM actually gives max(1, level*3) capped to 0 = 0

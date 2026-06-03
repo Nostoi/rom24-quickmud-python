@@ -69,7 +69,7 @@ def _get_obj_number(obj: object) -> int:
     item_type_raw = getattr(proto, "item_type", 0)
     if item_type_raw is None:
         item_type = 0
-    elif isinstance(item_type_raw, (int, ItemType)):
+    elif isinstance(item_type_raw, int | ItemType):
         item_type = int(item_type_raw)
     else:
         try:
@@ -290,7 +290,7 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
 
         # ROM C lines 150-153: Container get messages
         obj_short = getattr(obj, "short_descr", "something")
-        container_short = getattr(container, "short_descr", "something")
+        getattr(container, "short_descr", "something")
 
         # ROM C line 151: act("$n gets $p from $P.", ch, obj, container, TO_ROOM)
         room = getattr(char, "room", None)
@@ -309,7 +309,6 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
         obj_extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
         obj.extra_flags = obj_extra_flags & ~int(ExtraFlag.HAD_TIMER)
 
-        message = f"You get {obj_short} from {container_short}."
     else:
         # ROM C lines 155-160: Room extraction logic
         obj_short = getattr(obj, "short_descr", "something")
@@ -328,7 +327,6 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
             if obj in room_contents:
                 room_contents.remove(obj)
 
-        message = f"You get {obj_short}."
 
     # ROM C lines 162-184: AUTOSPLIT for ITEM_MONEY
     proto = getattr(obj, "prototype", None) or obj
@@ -374,11 +372,11 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
                 do_split(char, f"{silver} {gold}")
 
         # Extract money object (ROM C line 183) - don't add to inventory
-        return None  # Success, message already set
+        return None  # Success; do_get emits the "You get ..." line (return value)
     else:
         # ROM C lines 185-188: obj_to_char() for normal objects
         char.add_object(obj)
-        return None  # Success, message already set
+        return None  # Success; do_get emits the "You get ..." line (return value)
 
 
 def do_get(char: Character, args: str) -> str:

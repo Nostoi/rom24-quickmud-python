@@ -253,7 +253,7 @@ def test_player_is_not_extracted_on_death(test_character, test_room):
     When: The player dies
     Then: Player object still exists (moved to death room)
     """
-    corpse = raw_kill(test_character)
+    raw_kill(test_character)
 
     assert test_character is not None, "Player object should still exist after death"
 

@@ -78,7 +78,7 @@ def test_hide_improves_skill_on_success(hiding_char, monkeypatch):
 
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 10)
 
-    initial_percent = hiding_char.skills.get("hide", 0)
+    hiding_char.skills.get("hide", 0)
 
     for _ in range(5):
         hide(hiding_char)

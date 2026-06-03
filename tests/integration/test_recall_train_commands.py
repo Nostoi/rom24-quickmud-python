@@ -106,7 +106,7 @@ def test_recall_moves_to_temple(recall_test_setup):
 
     assert char.room == other_room, "Should start in other room"
 
-    result = do_recall(char, "")
+    do_recall(char, "")
 
     assert char.room == temple, "Should be moved to temple after recall"
     assert char in temple.people, "Character should be in temple's people list"
@@ -154,7 +154,7 @@ def test_recall_halves_movement(recall_test_setup):
 
     initial_move = char.move
 
-    result = do_recall(char, "")
+    do_recall(char, "")
 
     assert char.move == initial_move // 2, f"Movement should be halved: {initial_move} -> {char.move}"
 

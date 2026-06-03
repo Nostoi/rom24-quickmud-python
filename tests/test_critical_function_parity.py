@@ -266,7 +266,7 @@ class TestDamage:
         with patch("mud.combat.engine.check_parry", return_value=False):
             with patch("mud.combat.engine.check_dodge", return_value=False):
                 with patch("mud.combat.engine.check_shield_block", return_value=False):
-                    result = apply_damage(attacker, victim, 20, int(DamageType.BASH))
+                    apply_damage(attacker, victim, 20, int(DamageType.BASH))
 
         assert victim.hit < initial_hp
 
@@ -381,7 +381,7 @@ class TestDefenseChecks:
         with patch("mud.combat.engine.check_shield_block", side_effect=mock_shield):
             with patch("mud.combat.engine.check_parry", side_effect=mock_parry):
                 with patch("mud.combat.engine.check_dodge", side_effect=mock_dodge):
-                    result = apply_damage(attacker, victim, 10, int(DamageType.SLASH))
+                    apply_damage(attacker, victim, 10, int(DamageType.SLASH))
 
         # Shield block should be checked first and succeed
         assert "shield" in call_order[0] if call_order else True

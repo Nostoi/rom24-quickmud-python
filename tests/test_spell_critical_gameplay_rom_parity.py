@@ -335,7 +335,6 @@ def test_teleport_self_targeting():
 
     try:
         room.add_character(caster)
-        original_room = caster.room
 
         result = teleport(caster, None)
 

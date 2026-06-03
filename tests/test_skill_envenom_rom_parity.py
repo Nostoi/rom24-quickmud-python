@@ -286,7 +286,7 @@ def test_envenom_applies_wait_state_on_food_failure():
 
     # Seed RNG so number_percent() >= 1, forcing failure
     rng_mm.seed_mm(0xABCD)
-    result = envenom(thief, item_name="apple")
+    envenom(thief, item_name="apple")
 
     # Whether success or failure, wait must be set
     expected_beats = ROM_SKILL_METADATA["envenom"]["beats"]
@@ -316,7 +316,7 @@ def test_envenom_applies_wait_state_on_weapon_failure():
     thief.wait = 0
 
     rng_mm.seed_mm(0xABCD)
-    result = envenom(thief, item_name="dagger")
+    envenom(thief, item_name="dagger")
 
     expected_beats = ROM_SKILL_METADATA["envenom"]["beats"]
     assert thief.wait >= expected_beats

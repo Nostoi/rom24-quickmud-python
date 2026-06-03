@@ -112,7 +112,7 @@ def _normalize_colour_entry(values: Any) -> list[int]:
             iterable = list(values.values())
         except Exception:
             iterable = None
-    elif isinstance(values, Iterable) and not isinstance(values, (str, bytes)):
+    elif isinstance(values, Iterable) and not isinstance(values, str | bytes):
         iterable = values
     else:
         iterable = None

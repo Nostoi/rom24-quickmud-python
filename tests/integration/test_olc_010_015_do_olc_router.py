@@ -77,7 +77,6 @@ def test_routes_area_to_cmd_aedit(monkeypatch):
 
     import mud.commands.build as build_mod
 
-    original = build_mod.cmd_aedit
 
     def fake_aedit(c, a):
         calls.append(("aedit", c, a))
@@ -185,7 +184,7 @@ def test_prefix_mob_matches_mobile(monkeypatch):
         return "medit called"
 
     monkeypatch.setattr(build_mod, "cmd_medit", fake_medit)
-    result = do_edit(char, "mob 3005")
+    do_edit(char, "mob 3005")
     assert calls, "cmd_medit not called for prefix 'mob'"
 
 
@@ -201,7 +200,7 @@ def test_prefix_r_matches_room(monkeypatch):
         return "redit called"
 
     monkeypatch.setattr(build_mod, "cmd_redit", fake_redit)
-    result = do_edit(char, "r")
+    do_edit(char, "r")
     assert calls, "cmd_redit not called for prefix 'r'"
 
 
@@ -217,7 +216,7 @@ def test_prefix_obj_matches_object(monkeypatch):
         return "oedit called"
 
     monkeypatch.setattr(build_mod, "cmd_oedit", fake_oedit)
-    result = do_edit(char, "obj 3001")
+    do_edit(char, "obj 3001")
     assert calls, "cmd_oedit not called for prefix 'obj'"
 
 

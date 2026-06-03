@@ -26,9 +26,9 @@ async def send_to_char(char: Character, message: str | Iterable[str]) -> None:
     if writer is None:
         return
 
-    if isinstance(message, (list, tuple)):
+    if isinstance(message, list | tuple):
         text = "\r\n".join(str(m) for m in message)
-    elif isinstance(message, Iterable) and not isinstance(message, (str, bytes)):
+    elif isinstance(message, Iterable) and not isinstance(message, str | bytes):
         text = "\r\n".join(str(m) for m in message)
     else:
         text = str(message)

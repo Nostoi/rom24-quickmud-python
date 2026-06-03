@@ -41,7 +41,6 @@ class TestResetMovementIntegration:
         # in the reset_handler module for this to work properly
 
         # For now, we test the concept without patching non-existent attributes
-        reset_area_started = True
 
         # Player moves mid-reset (mocked scenario)
         # move_result = move_character(player, "north")  # Would need proper setup
@@ -115,8 +114,8 @@ class TestMovementCascadingIntegration:
         # 2. Move follower with leader
         # 3. Send auto-look to follower
 
-        with patch("mud.world.movement._auto_look") as mock_auto_look:
-            with patch("mud.world.movement._stand_charmed_follower") as mock_stand:
+        with patch("mud.world.movement._auto_look"):
+            with patch("mud.world.movement._stand_charmed_follower"):
                 # This structure demonstrates the integration test approach
                 # Actual implementation would verify the cascading behavior
                 pass

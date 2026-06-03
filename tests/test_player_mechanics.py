@@ -46,7 +46,7 @@ class TestRecall:
     def test_recall_blocked_in_no_recall_room(self, movable_char_factory):
         """Test recall is blocked in NO_RECALL rooms."""
         # ROM: do_recall checks IS_SET(ch->in_room->room_flags, ROOM_NO_RECALL)
-        ch = movable_char_factory("Tester", 3001, points=200)
+        movable_char_factory("Tester", 3001, points=200)
 
         # Would need to check room flags (ROOM_NO_RECALL)
         # NOTE: Room flag system test
@@ -127,7 +127,6 @@ class TestDeathAndResurrection:
         ch.position = Position.DEAD
 
         # After resurrection
-        expected_hp = 1  # ROM resurrects with 1 HP
         # NOTE: Resurrection HP restore test
 
 

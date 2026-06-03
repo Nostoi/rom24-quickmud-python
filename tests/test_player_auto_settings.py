@@ -435,7 +435,7 @@ class TestPrompt:
         if not pcdata:
             pytest.skip("Player lacks pcdata")
 
-        output = do_prompt(player, "all")
+        do_prompt(player, "all")
 
         assert player.comm & COMM_PROMPT
         # ROM default: "<%hhp %mm %vmv> "

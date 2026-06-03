@@ -100,7 +100,7 @@ class TestTitleCommand:
         """ROM C line 2572: smash_tilde sanitizes input"""
         player = create_test_character("TildeTest", 3001)
 
-        output = do_title(player, "test~title")
+        do_title(player, "test~title")
 
         assert player.pcdata is not None
         assert player.pcdata.title is not None

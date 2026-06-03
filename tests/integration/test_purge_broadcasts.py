@@ -71,7 +71,7 @@ def test_purge_room_emits_to_room_broadcast() -> None:
     # mirrors ROM src/act_wiz.c:2605 — act("$n purges the room!", ch, NULL, NULL, TO_ROOM)
     from mud.commands.imm_load import do_purge
 
-    room = _room(50300)
+    _room(50300)
     admin = _imm("Admin", 50300)
     bystander = _witness("Watcher", 50300)
     result = do_purge(admin, "")
@@ -89,7 +89,7 @@ def test_purge_npc_emits_to_notvict_broadcast() -> None:
     room = _room(50400)
     admin = _imm("Admin", 50400)
     bystander = _witness("Watcher", 50400)
-    rat = _npc("a small rat", room)
+    _npc("a small rat", room)
     result = do_purge(admin, "rat")
     assert "Ok" in result
     msgs = "\n".join(bystander.messages)

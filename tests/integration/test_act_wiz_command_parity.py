@@ -1164,7 +1164,7 @@ def test_deny_sets_plr_deny() -> None:
     from mud.commands.admin_commands import cmd_deny
     from mud.models.constants import PlayerFlag
 
-    room = _room(10003, name="DenyRoom")
+    _room(10003, name="DenyRoom")
     admin = _imm("Admin", 10003, trust=60)
     victim = _imm("Denytarget", 10003, trust=5)
     victim.is_npc = False
@@ -1201,7 +1201,7 @@ def test_switch_rejects_pc() -> None:
     # mirrors ROM src/act_wiz.c:2236-2238
     from mud.commands.imm_admin import do_switch
 
-    room = _room(10102, name="SwitchRoom")
+    _room(10102, name="SwitchRoom")
     admin = _imm("Admin", 10102, trust=60)
     admin.desc = SimpleNamespace(original=None, character=admin)
     victim = _imm("Targetpc", 10102, trust=5)
@@ -1601,7 +1601,7 @@ def test_restore_all_insufficient_trust() -> None:
 
     _room(11402)
     admin = _imm("Admin", 11402, trust=55)
-    result = do_restore(admin, "all")
+    do_restore(admin, "all")
     # Should not restore; trust too low
 
 

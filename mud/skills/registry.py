@@ -141,7 +141,7 @@ class SkillRegistry:
 
             required_level: int | None = None
             levels = getattr(skill, "levels", None)
-            if isinstance(levels, (list, tuple)) and len(levels) > 0:
+            if isinstance(levels, list | tuple) and len(levels) > 0:
                 try:
                     required_level = int(levels[class_index])
                 except (ValueError, TypeError, IndexError):

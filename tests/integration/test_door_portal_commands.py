@@ -166,10 +166,10 @@ def test_unlock_lock_open_sequence(door_test_setup, object_factory):
     )
     char.inventory.append(key)
 
-    unlock_result = do_unlock(char, "north")
+    do_unlock(char, "north")
     assert not (exit_north.exit_info & EX_LOCKED), "Door should be unlocked"
 
-    open_result = do_open(char, "north")
+    do_open(char, "north")
     assert not (exit_north.exit_info & EX_CLOSED), "Door should be open"
 
 
@@ -280,14 +280,14 @@ def test_portal_close_lock_unlock_open_sequence(door_test_setup, place_object_fa
     )
     char.inventory.append(key)
 
-    close_result = do_close(char, "portal")
+    do_close(char, "portal")
     assert portal.value[1] & EX_CLOSED, "Portal should be closed"
 
-    lock_result = do_lock(char, "portal")
+    do_lock(char, "portal")
     assert portal.value[1] & EX_LOCKED or portal.value[4] == 7102, "Portal should be locked"
 
-    unlock_result = do_unlock(char, "portal")
+    do_unlock(char, "portal")
     assert not (portal.value[1] & EX_LOCKED), "Portal should be unlocked"
 
-    open_result = do_open(char, "portal")
+    do_open(char, "portal")
     assert not (portal.value[1] & EX_CLOSED), "Portal should be open"

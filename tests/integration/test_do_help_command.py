@@ -212,14 +212,14 @@ def test_help_orphan_logging(test_character, setup_help_data):
     mock_file = mock_open()
 
     with patch("pathlib.Path.open", mock_file), patch("pathlib.Path.mkdir"):
-        result = do_help(test_character, "orphan_test_topic")
+        do_help(test_character, "orphan_test_topic")
 
     # Verify log file was written
     mock_file.assert_called_once()
     handle = mock_file()
 
     # Check that write was called with correct format
-    written_calls = [call for call in handle.write.call_args_list]
+    written_calls = list(handle.write.call_args_list)
     assert len(written_calls) > 0
 
     # Verify format: [room_vnum] name: topic
@@ -315,7 +315,7 @@ def test_help_with_npc_character():
     register_help(help_test)
 
     # Should work without logging orphans
-    with patch("mud.admin_logging.admin.log_orphan_help_request") as mock_log:
+    with patch("mud.admin_logging.admin.log_orphan_help_request"):
         result = do_help(npc, "nonexistent")
 
         # NPCs should not trigger orphan logging

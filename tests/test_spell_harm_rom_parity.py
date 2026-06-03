@@ -105,7 +105,7 @@ def test_harm_updates_position():
     victim = make_character(hit=19, max_hit=100, level=1)
 
     rng_mm.seed_mm(0xDEAD)
-    dealt = harm(caster, victim)
+    harm(caster, victim)
 
     assert victim.hit < 0
     assert victim.position != Position.STANDING

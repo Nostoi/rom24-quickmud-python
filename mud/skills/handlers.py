@@ -1874,7 +1874,11 @@ def cancellation(caster: Character, target: Character | None = None) -> bool:
         raise ValueError("cancellation requires caster and target")
 
     # ROM L1039: level += 2
-    level = max(int(getattr(caster, "level", 0) or 0), 0) + 2
+    # NB: `level` is currently unused because `_cancel_effect` strips effects
+    # unconditionally instead of routing through `check_dispel(level, ...)` —
+    # a real parity bug tracked as MAGIC-009 (docs/parity/MAGIC_C_AUDIT.md).
+    # Kept (not removed) as the breadcrumb for that fix.
+    level = max(int(getattr(caster, "level", 0) or 0), 0) + 2  # noqa: F841  # MAGIC-009
 
     # ROM L1041-1047: Type check - only NPC->PC or PC->NPC (except charmed)
     caster_is_npc = getattr(caster, "is_npc", True)
@@ -6435,7 +6439,7 @@ def pick_lock(
 
             cont_flags = int(values[1] if len(values) > 1 else 0)
 
-            CONT_CLOSEABLE = int(ContainerFlag.CLOSEABLE)
+            int(ContainerFlag.CLOSEABLE)
             CONT_CLOSED = int(ContainerFlag.CLOSED)
             CONT_LOCKED = int(ContainerFlag.LOCKED)
             CONT_PICKPROOF = int(ContainerFlag.PICKPROOF)

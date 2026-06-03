@@ -80,7 +80,7 @@ class TestAutoSplitPersAndCap:
 
     def test_do_split_invisible_splitter_masks_name(self):
         """Invisible splitter renders 'Someone' via PERS + cap."""
-        room = _setup(5501)
+        _setup(5501)
         try:
             splitter = create_test_character("Hider", 5501)
             splitter.level = 10
@@ -132,7 +132,7 @@ class TestAutoSplitPersAndCap:
 
     def test_do_split_gold_per_member_pers_and_cap(self):
         """do_split gold-only line: PERS + capitalize."""
-        room = _setup(5503)
+        _setup(5503)
         try:
             splitter = create_test_character("Richie", 5503)
             splitter.level = 10
@@ -158,7 +158,7 @@ class TestAutoSplitPersAndCap:
 
     def test_do_split_mixed_per_member_pers_and_cap(self):
         """do_split mixed silver+gold line: PERS + capitalize."""
-        room = _setup(5504)
+        _setup(5504)
         try:
             splitter = create_test_character("SplitMixed", 5504)
             splitter.level = 10

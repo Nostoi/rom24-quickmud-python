@@ -132,7 +132,7 @@ class TestDisarmSkill:
     def test_disarm_requires_fighting(self, skilled_character, movable_mob_factory):
         """Test: Disarm requires being in combat."""
         char = skilled_character
-        mob = movable_mob_factory(3000, 3001)
+        movable_mob_factory(3000, 3001)
 
         result = process_command(char, "disarm")
 
@@ -173,7 +173,7 @@ class TestTripSkill:
     def test_trip_requires_fighting(self, skilled_character, movable_mob_factory):
         """Test: Trip requires being in combat."""
         char = skilled_character
-        mob = movable_mob_factory(3000, 3001)
+        movable_mob_factory(3000, 3001)
 
         result = process_command(char, "trip")
 
@@ -219,7 +219,7 @@ class TestKickSkill:
     def test_kick_requires_fighting(self, skilled_character, movable_mob_factory):
         """Test: Kick requires being in combat."""
         char = skilled_character
-        mob = movable_mob_factory(3000, 3001)
+        movable_mob_factory(3000, 3001)
 
         result = process_command(char, "kick")
 
@@ -264,7 +264,7 @@ class TestDirtKickSkill:
     def test_dirt_kick_requires_fighting(self, skilled_character, movable_mob_factory):
         """Test: Dirt kicking requires being in combat."""
         char = skilled_character
-        mob = movable_mob_factory(3000, 3001)
+        movable_mob_factory(3000, 3001)
 
         result = process_command(char, "dirt")
 

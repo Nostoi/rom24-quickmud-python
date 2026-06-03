@@ -43,7 +43,7 @@ def validate_area_mobprogs(area_file: Path, verbose: bool = False, test_execute:
         if verbose:
             print(f"\n📂 Loading {area_file.name}...")
 
-        area = load_area_file(str(area_file))
+        load_area_file(str(area_file))
 
         # Find all mobs with programs
         programmed_mobs = []

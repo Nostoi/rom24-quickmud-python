@@ -270,7 +270,7 @@ def test_wear_all_wears_multiple_items(test_character, object_factory):
     char.add_object(helmet)
     char.add_object(boots)
 
-    result = process_command(char, "wear all")
+    process_command(char, "wear all")
 
     assert helmet.wear_loc == int(WearLocation.HEAD), "Helmet should be worn"
     assert boots.wear_loc == int(WearLocation.FEET), "Boots should be worn"
@@ -313,7 +313,7 @@ def test_remove_all_removes_all_equipment(test_character, object_factory):
     process_command(char, "wear helmet")
     process_command(char, "wear gloves")
 
-    result = process_command(char, "remove all")
+    process_command(char, "remove all")
 
     assert helmet.wear_loc == int(WearLocation.NONE), "Helmet should be removed"
     assert gloves.wear_loc == int(WearLocation.NONE), "Gloves should be removed"
@@ -609,7 +609,7 @@ def test_wear_neck_items_allows_two(test_character, object_factory):
     char.add_object(amulet2)
 
     process_command(char, "wear gold")
-    result = process_command(char, "wear silver")
+    process_command(char, "wear silver")
 
     worn_items = [item for item in char.equipment.values() if item in (amulet1, amulet2)]
     assert len(worn_items) == 2, "Should be able to wear both amulets"
@@ -651,7 +651,7 @@ def test_wear_finger_items_allows_two(test_character, object_factory):
     char.add_object(ring2)
 
     process_command(char, "wear ruby")
-    result = process_command(char, "wear emerald")
+    process_command(char, "wear emerald")
 
     worn_items = [item for item in char.equipment.values() if item in (ring1, ring2)]
     assert len(worn_items) == 2, "Should be able to wear both rings"

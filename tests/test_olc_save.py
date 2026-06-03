@@ -30,7 +30,7 @@ def test_asave_requires_hero_trust():
     mortal = create_test_character("Mortal", 3001)
     mortal.level = 10
     mortal.is_admin = False
-    session = _attach_session(mortal)
+    _attach_session(mortal)
 
     result = process_command(mortal, "@asave changed")
     assert "huh" in result.lower() or "what" in result.lower()
@@ -41,7 +41,7 @@ def test_asave_no_args_shows_syntax():
     hero.level = LEVEL_HERO
     hero.is_admin = True
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     result = process_command(hero, "@asave")
     assert "syntax" in result.lower()
@@ -57,7 +57,7 @@ def test_asave_invalid_arg():
     hero.level = LEVEL_HERO
     hero.is_admin = True
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     result = process_command(hero, "@asave foobar")
     assert "invalid" in result.lower()
@@ -68,7 +68,7 @@ def test_asave_nonexistent_vnum():
     hero.level = LEVEL_HERO
     hero.is_admin = True
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     result = process_command(hero, "@asave 99999")
     assert "does not exist" in result.lower()
@@ -80,7 +80,7 @@ def test_asave_vnum_requires_builder_rights():
     hero.is_admin = True
     hero.room.area.security = 9
     hero.pcdata.security = 0
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     area_vnum = hero.room.area.vnum
     result = process_command(hero, f"@asave {area_vnum}")
@@ -93,7 +93,7 @@ def test_asave_vnum_saves_area(tmp_path):
     hero.is_admin = True
     hero.room.area.security = 1
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     process_command(hero, "@redit")
     process_command(hero, 'name "Modified Room"')
@@ -104,7 +104,6 @@ def test_asave_vnum_saves_area(tmp_path):
 
     import mud.olc.save
 
-    original_dir = "data/areas"
     test_output = str(tmp_path / "test_areas")
     Path(test_output).mkdir(parents=True, exist_ok=True)
 
@@ -133,7 +132,7 @@ def test_asave_list_creates_area_lst(tmp_path):
     hero.level = LEVEL_HERO
     hero.is_admin = True
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     import mud.olc.save
 
@@ -163,7 +162,7 @@ def test_asave_area_requires_active_edit_session():
     hero.level = LEVEL_HERO
     hero.is_admin = True
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     result = process_command(hero, "@asave area")
     assert "not editing" in result.lower()
@@ -175,7 +174,7 @@ def test_asave_area_saves_currently_edited_area(tmp_path):
     hero.is_admin = True
     hero.room.area.security = 1
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     process_command(hero, "@redit")
     process_command(hero, 'name "Test Area Save"')
@@ -208,7 +207,7 @@ def test_asave_changed_saves_only_modified_areas(tmp_path):
     hero.level = LEVEL_HERO
     hero.is_admin = True
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     for area in area_registry.values():
         area.changed = False
@@ -249,7 +248,7 @@ def test_asave_changed_no_changes_reports_none():
     hero.level = LEVEL_HERO
     hero.is_admin = True
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     for area in area_registry.values():
         area.changed = False
@@ -263,7 +262,7 @@ def test_asave_world_saves_all_authorized_areas(tmp_path):
     hero.level = LEVEL_HERO
     hero.is_admin = True
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     import mud.olc.save
 
@@ -294,7 +293,7 @@ def test_asave_preserves_room_data_during_save(tmp_path):
     hero.is_admin = True
     hero.room.area.security = 1
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     process_command(hero, "@redit")
     process_command(hero, 'name "Complex Test Room"')
@@ -353,7 +352,7 @@ def test_roundtrip_edit_save_reload_verify(tmp_path):
     hero.is_admin = True
     hero.room.area.security = 1
     hero.pcdata.security = 9
-    session = _attach_session(hero)
+    _attach_session(hero)
 
     original_vnum = hero.room.vnum
     original_area_vnum = hero.room.area.vnum

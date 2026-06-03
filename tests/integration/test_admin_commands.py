@@ -148,7 +148,7 @@ def test_goto_teleports_immortal_to_room(immortal_char, test_room_pair):
     room1, room2 = test_room_pair
     room1.add_character(immortal_char)
 
-    result = do_goto(immortal_char, "9002")
+    do_goto(immortal_char, "9002")
 
     assert immortal_char.room == room2
     assert immortal_char in room2.people
@@ -406,7 +406,7 @@ def test_immortal_can_use_all_admin_commands(immortal_char, test_room_pair):
     room1, _ = test_room_pair
     room1.add_character(immortal_char)
 
-    goto_result = do_goto(immortal_char, "9002")
+    do_goto(immortal_char, "9002")
     assert immortal_char.room.vnum == 9002
 
     wizlock_result = cmd_wizlock(immortal_char, "")

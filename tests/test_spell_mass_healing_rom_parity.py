@@ -79,7 +79,7 @@ def test_mass_healing_skips_different_types():
 
     room.people = [pc_caster, npc]
 
-    result = mass_healing(pc_caster)
+    mass_healing(pc_caster)
 
     assert pc_caster.hit == 150
     assert npc.hit == 50

@@ -120,7 +120,7 @@ def create_trash_object(room_vnum: int = 3001) -> Object:
 class TestSpecGuard:
     def test_spec_guard_attacks_criminal_in_room(self):
         guard = create_mob_with_spec("spec_guard", level=20)
-        room = place_mob_in_room(guard, 3001)
+        place_mob_in_room(guard, 3001)
 
         criminal = create_player("BadGuy", 3001)
         criminal.act = PlayerFlag.KILLER
@@ -131,9 +131,9 @@ class TestSpecGuard:
 
     def test_spec_guard_ignores_innocent_players(self):
         guard = create_mob_with_spec("spec_guard", level=20)
-        room = place_mob_in_room(guard, 3001)
+        place_mob_in_room(guard, 3001)
 
-        innocent = create_player("GoodGuy", 3001)
+        create_player("GoodGuy", 3001)
 
         run_npc_specs()
 
@@ -142,7 +142,7 @@ class TestSpecGuard:
 
     def test_spec_guard_attacks_thief_flagged_players(self):
         guard = create_mob_with_spec("spec_guard", level=20)
-        room = place_mob_in_room(guard, 3001)
+        place_mob_in_room(guard, 3001)
 
         thief = create_player("Thief", 3001)
         thief.act = PlayerFlag.THIEF
@@ -158,7 +158,7 @@ class TestSpecJanitor:
         room = place_mob_in_room(janitor, 3001)
 
         trash = create_trash_object(3001)
-        initial_room_contents = list(room.contents)
+        list(room.contents)
 
         run_npc_specs()
 
@@ -216,7 +216,7 @@ class TestSpecFido:
 class TestSpecPoison:
     def test_spec_poison_only_works_in_combat(self):
         poison_mob = create_mob_with_spec("spec_poison", level=15)
-        room = place_mob_in_room(poison_mob, 3001)
+        place_mob_in_room(poison_mob, 3001)
 
         nearby_player = create_player("Innocent", 3001, hit=100, max_hit=100)
 
@@ -229,7 +229,7 @@ class TestSpecPoison:
 class TestSpecThief:
     def test_spec_thief_can_steal(self):
         thief = create_mob_with_spec("spec_thief", level=10)
-        room = place_mob_in_room(thief, 3001)
+        place_mob_in_room(thief, 3001)
 
         victim = create_player("RichGuy", 3001)
         victim.gold = 1000
@@ -242,7 +242,7 @@ class TestSpecThief:
 class TestSpecBreathWeapons:
     def test_spec_breath_fire_exists(self):
         dragon = create_mob_with_spec("spec_breath_fire", level=50)
-        room = place_mob_in_room(dragon, 3001)
+        place_mob_in_room(dragon, 3001)
 
         run_npc_specs()
 
@@ -250,7 +250,7 @@ class TestSpecBreathWeapons:
 
     def test_spec_breath_any_uses_random_type(self):
         dragon = create_mob_with_spec("spec_breath_any", level=50)
-        room = place_mob_in_room(dragon, 3001)
+        place_mob_in_room(dragon, 3001)
 
         run_npc_specs()
 
@@ -260,7 +260,7 @@ class TestSpecBreathWeapons:
 class TestSpecCasters:
     def test_spec_cast_cleric_casts_in_combat(self):
         cleric = create_mob_with_spec("spec_cast_cleric", level=20)
-        room = place_mob_in_room(cleric, 3001)
+        place_mob_in_room(cleric, 3001)
 
         cleric.mana = 500
         cleric.max_mana = 500
@@ -276,7 +276,7 @@ class TestSpecCasters:
 
     def test_spec_cast_mage_casts_offensive_spells(self):
         mage = create_mob_with_spec("spec_cast_mage", level=20)
-        room = place_mob_in_room(mage, 3001)
+        place_mob_in_room(mage, 3001)
 
         victim = create_player("Victim", 3001, hit=200, max_hit=200)
         mage.fighting = victim
@@ -293,7 +293,7 @@ class TestSpecCasters:
 
     def test_spec_cast_undead_energy_drain(self):
         undead = create_mob_with_spec("spec_cast_undead", level=25)
-        room = place_mob_in_room(undead, 3001)
+        place_mob_in_room(undead, 3001)
 
         victim = create_player("Victim", 3001, level=10, hit=150, max_hit=150)
         undead.fighting = victim
@@ -312,7 +312,7 @@ class TestSpecCasters:
 class TestSpecExecutioner:
     def test_spec_executioner_detects_criminals(self):
         executioner = create_mob_with_spec("spec_executioner", level=30)
-        room = place_mob_in_room(executioner, 3002)
+        place_mob_in_room(executioner, 3002)
 
         criminal = create_player("Criminal", 3002)
         criminal.act = PlayerFlag.KILLER
@@ -327,7 +327,7 @@ class TestSpecExecutioner:
 class TestSpecPatrolman:
     def test_spec_patrolman_exists(self):
         patrolman = create_mob_with_spec("spec_patrolman", level=25)
-        room = place_mob_in_room(patrolman, 3002)
+        place_mob_in_room(patrolman, 3002)
 
         run_npc_specs()
 
@@ -337,7 +337,7 @@ class TestSpecPatrolman:
 class TestSpecMayor:
     def test_spec_mayor_has_state(self):
         mayor = create_mob_with_spec("spec_mayor", level=15)
-        room = place_mob_in_room(mayor, 3001)
+        place_mob_in_room(mayor, 3001)
 
         _reset_spec_mayor_state()
 
@@ -352,7 +352,7 @@ class TestSpecMayor:
 class TestSpecCastAdept:
     def test_spec_cast_adept_exists(self):
         adept = create_mob_with_spec("spec_cast_adept", level=20)
-        room = place_mob_in_room(adept, 3001)
+        place_mob_in_room(adept, 3001)
 
         adept.mana = 500
         adept.max_mana = 500
@@ -365,7 +365,7 @@ class TestSpecCastAdept:
 class TestSpecFactionMembers:
     def test_spec_troll_member_exists(self):
         troll = create_mob_with_spec("spec_troll_member", level=20)
-        room = place_mob_in_room(troll, 3001)
+        place_mob_in_room(troll, 3001)
 
         run_npc_specs()
 
@@ -373,7 +373,7 @@ class TestSpecFactionMembers:
 
     def test_spec_ogre_member_exists(self):
         ogre = create_mob_with_spec("spec_ogre_member", level=25)
-        room = place_mob_in_room(ogre, 3001)
+        place_mob_in_room(ogre, 3001)
 
         run_npc_specs()
 
@@ -383,9 +383,9 @@ class TestSpecFactionMembers:
 class TestSpecNasty:
     def test_spec_nasty_random_behavior(self):
         nasty = create_mob_with_spec("spec_nasty", level=15)
-        room = place_mob_in_room(nasty, 3001)
+        place_mob_in_room(nasty, 3001)
 
-        victim = create_player("Victim", 3001, gold=100)
+        create_player("Victim", 3001, gold=100)
 
         for _ in range(20):
             run_npc_specs()

@@ -57,7 +57,7 @@ def apply_specials_from_json(entries: list[dict]) -> None:
     """
     for entry in entries or ():
         raw_vnum = entry.get("mob_vnum")
-        if not isinstance(raw_vnum, (str, int)):
+        if not isinstance(raw_vnum, str | int):
             continue
         try:
             vnum = int(raw_vnum)

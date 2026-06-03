@@ -193,11 +193,11 @@ class TestEnter005GetObjList:
             room_a.add_object(obj)
             return obj
 
-        portal1 = make_p(8911)
-        portal2 = make_p(8912)
+        make_p(8911)
+        make_p(8912)
 
         # "enter 2.portal" should go through the second portal → room_c
-        result = do_enter(char, "2.portal")
+        do_enter(char, "2.portal")
         # After transit char should be in room_c (vnum 8912)
         assert getattr(char.room, "vnum", None) == 8912, (
             f"Expected room 8912 but char is in room {getattr(char.room, 'vnum', None)}"
@@ -229,7 +229,7 @@ class TestEnter008010ToRoomMessages:
 
         _make_portal(room_a, to_vnum=8921, charges=1)
 
-        result = do_enter(traveller, "portal")
+        do_enter(traveller, "portal")
 
         # Observer should see departure message containing "steps into"
         departure_seen = any("steps into" in m for m in observer.messages)
@@ -416,7 +416,7 @@ class TestEnter011PortalFadeOut:
 
         traveller = _make_char("Alice", room_a)
         bystander = _make_char("Bystander", room_a)  # stays in old room
-        waiting = _make_char("Waiting", room_b)  # in destination room
+        _make_char("Waiting", room_b)  # in destination room
 
         _make_portal(room_a, to_vnum=8943, charges=1)
 
@@ -469,7 +469,7 @@ class TestEnter012FollowerMessages:
         follower = _make_char("Follower", room_a)
         follower.master = leader
 
-        portal = _make_portal(room_a, to_vnum=8951, charges=2)
+        _make_portal(room_a, to_vnum=8951, charges=2)
 
         do_enter(leader, "portal")
 
@@ -494,7 +494,7 @@ class TestEnter012FollowerMessages:
         follower.master = leader
 
         # charges=1 → portal expires after leader uses it
-        portal = _make_portal(room_a, to_vnum=8953, charges=1)
+        _make_portal(room_a, to_vnum=8953, charges=1)
 
         do_enter(leader, "portal")
 
@@ -563,7 +563,7 @@ class TestEnter013RandomRoomNeverNone:
                 room_a.add_character(traveller)
             _make_portal(room_a, to_vnum=8963, gate_flags=int(PortalFlag.RANDOM), charges=0)
 
-            result = do_enter(traveller, "portal")
+            do_enter(traveller, "portal")
             nowhere = any("doesn't seem to go anywhere" in m for m in traveller.messages)
             if not nowhere:
                 success_count += 1
@@ -614,7 +614,7 @@ class TestEnter016FightingSilent:
 
     def test_fighting_char_gets_empty_return(self):
         room_a = _make_room(8980)
-        room_b = _make_room(8981)
+        _make_room(8981)
         char = _make_char("Fighter", room_a)
 
         # Set up fighting state (point to something)
@@ -630,7 +630,7 @@ class TestEnter016FightingSilent:
 
     def test_fighting_char_receives_no_message_in_buffer(self):
         room_a = _make_room(8982)
-        room_b = _make_room(8983)
+        _make_room(8983)
         char = _make_char("Fighter", room_a)
 
         dummy_enemy = _make_char("Enemy", room_a)

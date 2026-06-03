@@ -49,7 +49,6 @@ class TestAutoSequenceToggling:
     def test_autoloot_toggle_independent_of_others(self):
         player = create_test_character("Looter", 3001)
         enable_autos(player, autogold=True, autosac=True)
-        initial_act = player.act
 
         do_autoloot(player, "")
 

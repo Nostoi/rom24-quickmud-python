@@ -2668,7 +2668,7 @@ def test_reconnect_skips_login_announcements(monkeypatch):
 
 
 def test_reconnect_announces_note_reminder(monkeypatch):
-    previous_descriptors = getattr(global_registry, "descriptor_list", None)
+    getattr(global_registry, "descriptor_list", None)
     global_registry.descriptor_list = []
     character_registry.clear()
 

@@ -61,7 +61,7 @@ def _object_light_timer(obj: Any) -> int:
         if source is None:
             continue
         values = getattr(source, "value", None)
-        if isinstance(values, (list, tuple)) and len(values) > 2:
+        if isinstance(values, list | tuple) and len(values) > 2:
             try:
                 return int(values[2])
             except (TypeError, ValueError):
@@ -114,7 +114,7 @@ def _get_curr_stat_value(char: Character | None, stat: Stat) -> int:
         if value is not None:
             return _coerce_int(value)
     perm_stats = getattr(char, "perm_stat", None)
-    if isinstance(perm_stats, (list, tuple)):
+    if isinstance(perm_stats, list | tuple):
         idx = int(stat)
         if 0 <= idx < len(perm_stats):
             return _coerce_int(perm_stats[idx])

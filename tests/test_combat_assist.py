@@ -269,8 +269,8 @@ class TestAssistTargetSelection:
         helper_mob = create_char("Goblin", is_npc=True, level=10, off_flags=OffFlag.ASSIST_ALL)
 
         victim1 = create_char("Alice", is_npc=False, level=10, group="heroes")
-        victim2 = create_char("Bob", is_npc=False, level=10, group="heroes")
-        victim3 = create_char("Carol", is_npc=False, level=10, group="heroes")
+        create_char("Bob", is_npc=False, level=10, group="heroes")
+        create_char("Carol", is_npc=False, level=10, group="heroes")
 
         attacker_mob.fighting = victim1
 

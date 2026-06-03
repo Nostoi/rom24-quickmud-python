@@ -563,8 +563,6 @@ def affect_remove_obj(obj: Object, paf: Affect) -> None:
     if hasattr(obj, "carried_by") and obj.carried_by and hasattr(obj, "wear_loc") and obj.wear_loc != -1:
         affect_modify(obj.carried_by, paf, False)
 
-    where = paf.where
-    vector = paf.bitvector
 
     # ROM C handler.c:1377-1388 - remove bitvector from object flags
     if paf.bitvector:

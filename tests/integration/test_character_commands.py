@@ -231,7 +231,7 @@ class TestDoDescription:
         ROM C: lines 2645-2648, 2651-2652
         Expected: Sets description and shows it (with trailing newline per ROM C line 2646)
         """
-        output = do_description(test_char, "A brave warrior.")
+        do_description(test_char, "A brave warrior.")
         assert test_char.description == "A brave warrior.\n"  # ROM C adds "\n\r"
 
     def test_description_add_line(self, test_char):
@@ -242,7 +242,7 @@ class TestDoDescription:
         Expected: Adds line and shows full description
         """
         test_char.description = "A brave warrior."
-        output = do_description(test_char, "+ He wields a mighty sword.")
+        do_description(test_char, "+ He wields a mighty sword.")
 
         # Check description was appended
         assert "A brave warrior" in test_char.description
@@ -267,7 +267,7 @@ class TestDoDescription:
         Expected: Removes last line and shows result
         """
         test_char.description = "Line 1\nLine 2\nLine 3\n"
-        output = do_description(test_char, "-")
+        do_description(test_char, "-")
 
         assert "Line 1" in test_char.description
         assert "Line 2" in test_char.description

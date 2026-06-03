@@ -119,7 +119,7 @@ def test_npc_level_one_contributes_zero_to_group_levels():
     not 1 (Python's pre-fix `max(1, level // 2)`)."""
     room = _make_room()
     pc = _make_pc(room, level=10)
-    pet = _make_npc_pet(room, level=1, master=pc)
+    _make_npc_pet(room, level=1, master=pc)
     victim = _make_victim(room, level=10)
 
     # Expected: xp_compute called with total_levels = 10 (PC only).
@@ -149,7 +149,7 @@ def test_npc_level_three_contributes_one_unchanged():
     agree.  This test must keep passing after the floor is removed."""
     room = _make_room()
     pc = _make_pc(room, level=10)
-    pet = _make_npc_pet(room, level=3, master=pc)
+    _make_npc_pet(room, level=3, master=pc)
     victim = _make_victim(room, level=10)
 
     # Expected: total_levels = 10 (PC) + 1 (level-3 NPC halved) = 11.

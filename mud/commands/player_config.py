@@ -219,5 +219,5 @@ def _stop_follower(char: Character) -> None:
     char.master = None
     char.leader = None
 
-    master_name = getattr(master, "name", "someone")
+    getattr(master, "name", "someone")
     # Would send message but we don't have session context here
