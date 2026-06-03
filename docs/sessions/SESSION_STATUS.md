@@ -1,73 +1,59 @@
-# Session Status — 2026-06-03 — INV-038 idle-timer + live-report bug fixes (2.12.88)
-
-## Live-Report Fixes (this session, after INV-038)
-
-A player playtest surfaced three issues; all triaged against ROM C source:
-
-- **GL-036 (✅ FIXED, 2.12.87)** — a berserker mob crashed the game tick every
-  round: `MobInstance` lacked `has_spell_effect` (called by `do_berserk` via
-  `mob_hit`), and the unguarded tick propagated the `AttributeError` out of the
-  whole loop. Added the method (MobInstance-method-completeness family,
-  GL-028/032). Test: `tests/integration/test_mob_berserk_has_spell_effect.py`.
-- **`do_practice` double-delivery (✅ FIXED, 2.12.88)** — INV-001 SINGLE-DELIVERY:
-  the practice self line was appended to `char.messages` AND returned, so a
-  connected PC saw "You practice X." twice. Dropped the append, kept the return
-  + `act_to_room`. Corrected a stale INV-001 tracker note that had wrongly
-  excluded it as a benign actor-self append. Test:
-  `tests/integration/test_practice_single_delivery.py`.
-- **Practice learning speed — verified ROM-correct (no change).** A high-INT Male
-  Elf Mage maxing magic missile in ~2 practices matches ROM
-  `int_app[INT].learn / rating` (act_info.c:2772-2774) + the mage 75% adept cap.
-- **Idle disconnect-on-tab-away** — most likely browser WebSocket throttling on a
-  backgrounded tab (the web client auto-reconnects: `[reconnecting — attempt 1]`),
-  not a server idle-quit. The pre-INV-038 code never idle-quit connected players;
-  post-INV-038 still does not (connected idlers only void to limbo, GL-035). The
-  repeated GL-036 tick crashes could also have dropped the socket. No server-side
-  idle-quit bug identified.
+# Session Status — 2026-06-03 — INV-038 + live-report fixes + ruff/tooling cleanup (2.12.91)
 
 ## Current State
 
-- **Active mode**: cross-file invariants via **probe-then-scope** under the
-  divergence-class completeness lens.
-- **INV-038 (idle-timer reset on input) → ✅ ENFORCED (2.12.86).**
-  ROM resets a PC's idle `ch->timer` to 0 **only** on descriptor input
-  (`src/comm.c:605`), reconnect, and return-from-void — never on the game tick —
-  while `src/update.c:char_update` increments it once per tick for every
-  non-immortal PC (void at `>= 12`, autoquit on pre-increment `> 30`). Python
-  reset it on every tick for connected players and had no reset-on-input path, so
-  idle→void / idle→autoquit were dead for everyone logged in.
-- **Production divergence closed**: connected players never idled to the void or
-  auto-quit. `mud/game_loop.py:char_update` now lets the timer climb (autosave
-  decoupled), and `mud/net/connection.py:_read_player_command` resets it on input
-  (shared telnet/SSH/websocket chokepoint).
-- **GL-034 filed (❌ OPEN)** in `UPDATE_C_AUDIT.md`: ROM auto-quits at most one
-  idle PC per tick (`ch_quit` last-wins); Python quits all candidates. Low-impact
-  fan-out divergence kept out of the narrow INV-038 fix.
+This session (continued across several threads) landed, in order:
 
-- **Pointer to latest summary**:
+1. **INV-038 IDLE-TIMER-RESET-ON-INPUT** (✅ ENFORCED, 2.12.86) — ROM resets a
+   PC's idle `ch->timer` only on descriptor input, not every tick; the Python
+   port reset it every tick for connected players, killing idle→void. Fix spans
+   `char_update` + `_read_player_command`. Autoquit gated to link-dead chars
+   (connected-player autoquit-with-teardown filed as **GL-035**, OPEN; the
+   single-quit-per-tick quirk as **GL-034**, OPEN).
+2. **GL-036** (✅ FIXED, 2.12.87) — live player report: a berserker mob crashed
+   the game tick every round (`MobInstance` lacked `has_spell_effect`). Added it.
+3. **`do_practice` double-delivery** (✅ FIXED, 2.12.88, INV-001) — live report:
+   practice lines printed twice (mailbox append + return). Dropped the append.
+   Practice learning speed verified ROM-correct (no change).
+4. **Repo-wide ruff cleanup** (2.12.89–90) — `ruff check .` and
+   `ruff format --check .` are now **fully clean repo-wide** (was ~1750 findings,
+   851 files). The `mud/` F841 review surfaced **MAGIC-009** (below).
+5. **pre-commit activated + aligned to ruff** (2.12.91) — installed in-clone;
+   5 commit-stage hooks (ruff, ruff-format, validate-area-parity,
+   equipment-key-convention, attribute-convention). `test-fixtures-lint` left
+   `stages: [manual]` (~617 legacy sites).
+6. **`validate_area_parity` fixed** (2.12.91) — was comparing two loaders with
+   different runtime normalizations (D-reset boot-consumption + M-arg4 0→1),
+   reporting 34 false positives; now compares raw conversion → perfect parity on
+   all 50 shipped areas; re-enabled as a commit hook.
+
+- **Pointer to prior summary**:
   [SESSION_SUMMARY_2026-06-03_INV038_IDLE_TIMER_INPUT_RESET.md](SESSION_SUMMARY_2026-06-03_INV038_IDLE_TIMER_INPUT_RESET.md)
+
+## Next Intended Task — MAGIC-009 (the one open engine bug)
+
+**Fix `spell_cancellation`'s missing per-effect `check_dispel`/`saves_dispel`
+roll.** Full instructions, ROM refs, the exact fix, and the RNG-controlled test
+rewrites are in the dedicated handoff:
+
+➡️ **[HANDOFF_2026-06-03_MAGIC009_CANCELLATION.md](HANDOFF_2026-06-03_MAGIC009_CANCELLATION.md)**
+
+Use the `rom-gap-closer` skill with gap ID `MAGIC-009`
+(`docs/parity/MAGIC_C_AUDIT.md`).
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.88 |
-| Tests | Full suite `pytest` → 5373 passed, 4 skipped (265s parallel) |
+| Version | 2.12.91 |
+| Tests | Full suite `pytest` → 5373 passed, 4 skipped |
+| Lint | `ruff check .` + `ruff format --check .` clean repo-wide; pre-commit active (5 commit-stage hooks) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-file invariants | 31 active rows (INV-038 ✅ ENFORCED) |
-| Divergence-class lens | Layer A 4/4 feasible; class 6 (pointer-identity) ✅ FULLY CLOSED |
-| Lint / impact | `ruff check mud/game_loop.py mud/net/connection.py tests/integration/test_inv038_idle_timer_input_reset.py` clean; `gitnexus_impact` on `char_update` + `_read_player_command` LOW risk; `detect_changes(all)` LOW risk, 0 affected processes |
+| Open engine bugs | MAGIC-009 (cancellation — see handoff). Lower priority: GL-034, GL-035. |
 
-## Next Intended Task
+## Other open / deferred items
 
-Candidate next passes:
-
-1. **GL-034** (single-quit-per-tick autoquit fan-out) — small, self-contained
-   `/rom-gap-closer` candidate now filed in `UPDATE_C_AUDIT.md`.
-2. **Highest-ceiling (multi-day):** `diff_harness` Hypothesis widening
-   (`tools/diff_harness/PROPOSAL_HYPOTHESIS_WIDENING.md`) — the only
-   enumeration-independent path to *unknown* divergences.
-3. **New cross-INV probe area** — another affect-tick or group/follower-chain
-   edge.
-4. **Housekeeping:** INV tracker consolidation (31 active rows, past the ~20
-   soft cap).
+- **GL-034** (`UPDATE_C_AUDIT.md`) — idle autoquit fan-out (ROM one-per-tick vs Python all). Low impact.
+- **GL-035** (`UPDATE_C_AUDIT.md`) — connected-player idle autoquit needs async descriptor teardown.
+- **test-fixtures-lint** — manual-staged style lint; re-enable once legacy tests migrate or it's reworked to changed-files-only.
