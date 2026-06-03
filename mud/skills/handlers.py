@@ -691,7 +691,7 @@ def _extract_runtime_object(obj: Object) -> None:
         if not removed:
             equipment = getattr(character, "equipment", None)
             if isinstance(equipment, dict):
-                for slot, equipped in list(equipment.items()):
+                for _slot, equipped in list(equipment.items()):
                     if equipped is obj:
                         character.remove_object(obj)
                         removed = True
@@ -3651,7 +3651,7 @@ def enchant_armor(caster: Character, target: Object | None = None) -> bool:
         if not removed:
             equipment = getattr(caster, "equipment", None)
             if isinstance(equipment, dict):
-                for slot, equipped in list(equipment.items()):
+                for _slot, equipped in list(equipment.items()):
                     if equipped is obj:
                         caster.remove_object(obj)
                         removed = True
@@ -3803,7 +3803,7 @@ def enchant_weapon(caster: Character, target: Object | None = None) -> bool:
         if not removed:
             equipment = getattr(caster, "equipment", None)
             if isinstance(equipment, dict):
-                for slot, equipped in list(equipment.items()):
+                for _slot, equipped in list(equipment.items()):
                     if equipped is obj:
                         caster.remove_object(obj)
                         removed = True

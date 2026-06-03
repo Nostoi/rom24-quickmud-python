@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """Serialization helpers for DB-canonical player persistence (INV-008).
 
 Extracted from mud.persistence (deprecated stub) in 2.8.3.
@@ -10,6 +8,8 @@ back by mud.models.character.from_orm.
 ROM C reference: src/save.c fwrite_char / fread_char,
 fwrite_obj / fread_obj, fwrite_pet / fread_pet.
 """
+
+from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import dataclass, field

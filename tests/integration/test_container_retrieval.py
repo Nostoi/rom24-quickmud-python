@@ -22,10 +22,10 @@ from mud.commands.inventory import do_get
 from mud.handler import create_money
 from mud.models.constants import ItemType, PlayerFlag, WearFlag
 from mud.models.object import Object, ObjIndex
-
-OBJ_VNUM_PIT = 3010
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import initialize_world
+
+OBJ_VNUM_PIT = 3010
 
 
 @pytest.fixture(scope="module", autouse=True)

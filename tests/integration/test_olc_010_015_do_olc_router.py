@@ -77,7 +77,6 @@ def test_routes_area_to_cmd_aedit(monkeypatch):
 
     import mud.commands.build as build_mod
 
-
     def fake_aedit(c, a):
         calls.append(("aedit", c, a))
         return "aedit called"

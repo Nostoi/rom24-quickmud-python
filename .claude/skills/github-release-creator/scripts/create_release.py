@@ -24,7 +24,7 @@ def check_prerequisites():
     # Check gh CLI
     try:
         run_command("gh --version")
-    except:
+    except Exception:
         print("Error: GitHub CLI (gh) not installed")
         print("Install: brew install gh")
         sys.exit(1)
@@ -32,7 +32,7 @@ def check_prerequisites():
     # Check authentication
     try:
         run_command("gh auth status")
-    except:
+    except Exception:
         print("Error: Not authenticated with GitHub")
         print("Run: gh auth login")
         sys.exit(1)

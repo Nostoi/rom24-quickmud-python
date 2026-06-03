@@ -1,11 +1,11 @@
-from __future__ import annotations
-
 """Time-info persistence — save/load the global clock to/from disk.
 
 Extracted from mud.persistence (deprecated stub) in 2.8.3.
 ROM C reference: src/db.c — time_info is initialised at startup and
 ticked each game loop; we persist it across restarts via a JSON file.
 """
+
+from __future__ import annotations
 
 import os
 from dataclasses import dataclass

@@ -247,7 +247,7 @@ class TestWeatherTransitions:
     def test_raining_to_lightning_transition(self):
         """ROM parity: src/update.c:618 - Raining → lightning when pressure < 970 AND number_bits(2)==0."""
         success = False
-        for attempt in range(50):
+        for _attempt in range(50):
             weather.sky = SkyState.RAINING
             weather.mmhg = 960
             weather.change = 0
@@ -291,7 +291,7 @@ class TestWeatherTransitions:
     def test_raining_to_cloudy_transition(self):
         """ROM parity: src/update.c:624-629 - Raining → cloudy when pressure > 1030 OR (> 1010 AND RNG)."""
         success = False
-        for attempt in range(50):
+        for _attempt in range(50):
             weather.sky = SkyState.RAINING
             weather.mmhg = 1015
             weather.change = 0
@@ -309,7 +309,7 @@ class TestWeatherTransitions:
     def test_cloudy_to_cloudless_transition(self):
         """ROM parity: src/update.c:610-614 - Cloudy → cloudless when pressure > 1030 AND number_bits(2)==0."""
         success = False
-        for attempt in range(50):
+        for _attempt in range(50):
             weather.sky = SkyState.CLOUDY
             weather.mmhg = 1040
             weather.change = 0

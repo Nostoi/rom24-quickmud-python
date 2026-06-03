@@ -85,7 +85,7 @@ def do_socials(char: Character, args: str) -> str:
     # Format in 6 columns
     lines = []
     row = []
-    for i, social in enumerate(socials):
+    for _i, social in enumerate(socials):
         row.append(f"{social:<12}")
         if len(row) == 6:
             lines.append("".join(row))

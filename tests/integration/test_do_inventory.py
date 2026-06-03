@@ -341,7 +341,7 @@ def test_inventory_very_long_list(movable_char_factory, object_factory):
     # At least 50 lines (header + objects)
     lines = output.split("\n")
     # Should have header + 50 items
-    assert len([l for l in lines if l.strip()]) >= 50
+    assert len([ln for ln in lines if ln.strip()]) >= 50
 
 
 def test_inventory_special_characters_in_names(movable_char_factory, object_factory):

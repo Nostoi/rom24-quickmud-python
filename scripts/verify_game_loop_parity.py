@@ -235,7 +235,7 @@ def verify_game_tick_order() -> bool:
     sorted_calls = sorted(positions.items(), key=lambda x: x[1])
 
     print("Function call order in game_tick():")
-    for i, (func_name, pos) in enumerate(sorted_calls, 1):
+    for i, (func_name, _pos) in enumerate(sorted_calls, 1):
         print(f"  {i}. {func_name}()")
 
     # Expected critical ordering:

@@ -24,6 +24,8 @@ module may grow that need it.
 
 from __future__ import annotations
 
+import re as _re
+
 import pytest
 
 from mud.commands.dispatcher import process_command
@@ -38,8 +40,6 @@ def _reset_registry() -> None:
     yield
     character_registry.clear()
 
-
-import re as _re
 
 _ROM_COLOR_RE = _re.compile(r"\{.")
 

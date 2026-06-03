@@ -327,7 +327,6 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
             if obj in room_contents:
                 room_contents.remove(obj)
 
-
     # ROM C lines 162-184: AUTOSPLIT for ITEM_MONEY
     proto = getattr(obj, "prototype", None) or obj
     raw_item_type = getattr(proto, "item_type", 0) or 0
