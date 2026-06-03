@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import re
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
@@ -12,29 +13,28 @@ if TYPE_CHECKING:
     from mud.models.object import Object
     from mud.models.room import Room
 
+from mud.math.c_compat import c_div
 from mud.models.constants import (
-    ActFlag,
-    AffectFlag,
-    CommFlag,
-    ImmFlag,
     MAX_STATS,
-    OffFlag,
-    Position,
-    ResFlag,
-    Sex,
-    Size,
     STAT_CON,
     STAT_DEX,
     STAT_INT,
     STAT_STR,
     STAT_WIS,
+    ActFlag,
+    AffectFlag,
+    CommFlag,
+    ImmFlag,
+    OffFlag,
+    Position,
+    ResFlag,
+    Sex,
+    Size,
     VulnFlag,
     attack_lookup,
     convert_flags_from_letters,
 )
-from mud.math.c_compat import c_div
 from mud.utils import rng_mm
-
 
 _DICE_RE = re.compile(r"^(\d+)d(\d+)(?:\+(-?\d+))?$")
 
@@ -139,7 +139,7 @@ def _parse_size(value: object) -> Size:
 
 
 def _parse_dice(primary: object, fallback: object) -> tuple[int, int, int]:
-    if isinstance(primary, (tuple, list)) and len(primary) == 3:
+    if isinstance(primary, tuple | list) and len(primary) == 3:
         try:
             parsed = (int(primary[0]), int(primary[1]), int(primary[2]))
         except (TypeError, ValueError):
@@ -155,7 +155,7 @@ def _parse_dice(primary: object, fallback: object) -> tuple[int, int, int]:
         if match:
             number, size, bonus = match.groups()
             return (int(number), int(size), int(bonus or 0))
-    if isinstance(primary, (tuple, list)) and len(primary) == 3:
+    if isinstance(primary, tuple | list) and len(primary) == 3:
         try:
             return (int(primary[0]), int(primary[1]), int(primary[2]))
         except (TypeError, ValueError):
@@ -311,9 +311,9 @@ class MobInstance:
     material: str | None = None
     race: str | int | None = None
     spec_fun: str | None = None
-    mob_programs: list["MobProgram"] = field(default_factory=list)
+    mob_programs: list[MobProgram] = field(default_factory=list)
     mprog_flags: int = 0
-    mprog_target: "Character" | None = None
+    mprog_target: Character | None = None
     mprog_delay: int = 0
     perm_stat: list[int] = field(default_factory=lambda: [0] * MAX_STATS)
     # GL-032: ROM stores affect stat modifiers in ch->mod_stat[] for PCs *and*
@@ -325,9 +325,9 @@ class MobInstance:
     is_admin: bool = False
     is_npc: bool = True
     messages: list[str] = field(default_factory=list)
-    fighting: "Character | MobInstance | None" = None  # Combat target
+    fighting: Character | MobInstance | None = None  # Combat target
     pcdata: None = None  # NPCs don't have pcdata (player-specific data)
-    spell_effects: dict[str, "SpellEffect"] = field(default_factory=dict)  # Active spell effects
+    spell_effects: dict[str, SpellEffect] = field(default_factory=dict)  # Active spell effects
     # GL-027: shadow AffectData mirror of spell_effects, so char_update ticks the
     # mob through ROM's main affect loop (src/update.c:762-786) instead of the
     # dict-only fallback (which rolled zero RNG and expired one tick early).
@@ -668,13 +668,14 @@ class MobInstance:
         self.affected = [paf for paf in self.affected if getattr(paf, "type", None) != name]
         return effect
 
-    def apply_spell_effect(self, effect: "SpellEffect") -> bool:
+    def apply_spell_effect(self, effect: SpellEffect) -> bool:
         """Apply a spell effect to a mob, at full parity with
         ``Character.apply_spell_effect`` — every ROM ``affect_modify`` location
         (ac / saving / stat / sex / hitroll / damroll / affect_flag), since ROM
         applies them uniformly to NPCs and PCs (src/handler.c:1018-1164). GL-032.
         """
         from dataclasses import replace
+
         from mud.math.c_compat import c_div
         from mud.models.character import sync_spell_effect_to_affected
 
