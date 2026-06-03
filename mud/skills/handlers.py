@@ -5603,10 +5603,15 @@ def infravision(caster: Character, target: Character | None = None) -> bool:
     if not applied:
         return False
 
-    _send_to_char(target, "Your eyes glow red.")
+    # MAGIC-015: ROM src/magic.c:3598 — act("$n's eyes glow red.", ch, ...,
+    # TO_ROOM): the room-line actor is the CASTER (ch), excluding only the
+    # caster, so on a cross-cast (caster != victim, valid for TAR_CHAR_DEFENSIVE)
+    # the room — including the victim — sees the caster's name/visibility, not
+    # the victim's. The separate "Your eyes glow red." goes to the victim.
     room = getattr(target, "room", None)
     if room is not None:
-        act_to_room(room, "$n's eyes glow red.", target, exclude=target)
+        act_to_room(room, "$n's eyes glow red.", caster, exclude=caster)
+    _send_to_char(target, "Your eyes glow red.")
 
     return True
 
