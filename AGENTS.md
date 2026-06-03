@@ -86,6 +86,23 @@ These are non-negotiable. Violations are bugs even if tests pass.
   same pattern as `test_rng_determinism.py`).
 - **Character inventory:** `char.inventory`, not `char.carrying`.
 - **Room occupants:** `room.people`, not `room.characters`.
+- **Entity identity:** compare `Character`/`Object`/`Room` instances with
+  `is`/`is not`, NEVER `==`/`!=`. ROM compares entities by **pointer**; the
+  Python models are plain `@dataclass` (`eq=True`), so `==` is a **value**
+  compare — and the spawn path leaves `Object.instance_id`/`Character.id` unset
+  (None/0), so two distinct same-prototype entities compare `==`-equal. This
+  also poisons every `obj in <list>` / `<list>.remove(obj)` / `.index(obj)`
+  idiom (they use `==`), so a value-identical duplicate in another container can
+  be found/removed in place of the intended object.
+  - Wrong: `if victim == ch:` / `if obj in ch.inventory:` to mean *this exact
+    object* / `room.people.remove(target)`
+  - Right: `if victim is ch:` and identity-keyed membership checks
+  This is structural divergence class 6. The root cause (model value-equality)
+  is tracked OPEN as **INV-034** in
+  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`; until the model dataclasses are
+  switched to identity equality, new code must use `is`. (Not grep-enforceable —
+  `==`/`!=` can't be type-discriminated lexically; cite the ROM C pointer
+  compare on identity sites, as INV-031(c) did for `is_same_group`.)
 - **Comments:** reference ROM C source on parity-sensitive code, e.g.
   `# mirroring ROM src/fight.c:one_hit`.
 - **No deferring.** When an audit finds a missing/partial ROM C function,

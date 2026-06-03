@@ -92,12 +92,61 @@ two live offenders carried correct values; the two wrong-valued ones were dead.
 - `568639b7` — `fix(parity): flag-hex class — drop dead wrong-bit handler dupes, route PLR_/COMM_DEAF through enums`
 - `6ce23769` — `test(parity): lock flag-hex divergence class as Layer-A bypass-guard (2.12.76)`
 
+## Addendum — class 6 (pointer-identity) probe → INV-034 filed (2.12.77)
+
+Continued into the next Layer-A to-do, class 6 (pointer-identity), as a probe
+("classify + grep, stop at the verdict if behavioral"). It went deeper than
+flag-hex:
+
+- **Verdict: Layer-A infeasible → reclassified A→C** (like async-delivery). A
+  static bypass-guard can't work — `==`/`!=` can't be type-discriminated by
+  line-grep (most `==` in the codebase is int/str/enum).
+- **Discovery (not just classification):** the root cause is *live*.
+  `Character`/`Object` are plain `@dataclass` (`eq=True`) → **value-based
+  `__eq__`** (`Character.__eq__ is object.__eq__` → False; `__hash__` → None).
+  The live spawn path sets `instance_id=None` (`obj_spawner.py:35`) and leaves
+  `Character.id` default, so two freshly-spawned same-proto entities compare
+  `==`-equal. **Empirically verified**: `spawn_object(v) == spawn_object(v)` is
+  True; `a in [b]` is True for distinct a,b. This poisons ~91 production
+  `obj in <list>` / `list.remove(obj)` / `.index(obj)` sites.
+- **Recall oracle:** INV-031(c) had already fixed one site of this exact class
+  (`is_same_group` → `is`, "the `==` version could silently produce wrong
+  results if duplicate Character objects existed"). The sweep independently
+  re-derived the class → recall confirmed, scope broadened.
+- **Advisor caught an over-claim mid-probe:** my first empirical test used bare
+  `Character(name='Alice')` constructors (both `id=0`) — that's *why* they were
+  equal. The advisor flagged that `id`/`instance_id` are in the compare set and
+  the real question is whether the *spawn path* assigns them. It doesn't
+  (verified) — so the divergence genuinely manifests, not just in constructors.
+
+### Artifacts (probe → file, NOT fix — per the probe-only mandate)
+
+- `tests/test_inv034_pointer_identity_divergence.py` — **new**, strict-xfail
+  demonstration (flips to xpass when the root fix lands).
+- `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` — **INV-034** (Layer C, ⚠️ OPEN).
+- `docs/parity/DIVERGENCE_CLASS_ROSTER.md` — class 6 row A→C; Layer C row 12;
+  Layer-A "feasible ceiling" note; to-do items 4/5.
+- `AGENTS.md` — new ROM Parity Rule "**Entity identity:** use `is`/`is not`,
+  never `==`/`!=`" (method; status stays in INV-034 per roster guardrail 1).
+- `CHANGELOG.md` — Added entry; `pyproject.toml` 2.12.76 → 2.12.77.
+
+### Why not fixed this session
+
+The root fix (`@dataclass(eq=False)`, restoring identity `==` + identity
+`__hash__`) has ~91-site blast radius and must be gated on a sweep of tests
+relying on value-equality (`grep -rn "assert .*(obj|char|victim|item).*==" tests/`).
+That is a deliberate scoped session, not a probe tail — fixing it reactively is
+the exact trap the probe-only mandate guards against.
+
 ## Next Steps
 
-1. **Class 6 (pointer-identity) sweep** — the last open Layer-A to-do. Scope a
-   pattern for `==`/`!=` between two `Character` references; high false-positive
-   risk → may reclassify to Layer B/C (like async-delivery), or prove feasible
-   (like flag-hex). Run via `/rom-divergence-sweep`. Roster Layer-A is now 4 of 5.
+1. **Root-fix INV-034 (scoped session)** — convert `Character`/`Object` to
+   identity equality (`@dataclass(eq=False)`), gated on
+   `grep -rn "assert .*(obj|char|victim|item).*==" tests/` to find/repair
+   value-equality reliance first. Promotes divergence class 6 to ✅ and flips the
+   strict-xfail `test_inv034_*` to xpass. (The class-6 *probe* is done — see the
+   addendum above; Layer A is now at its feasible ceiling, 4/4 feasible classes
+   guarded.)
 2. **Highest-ceiling (deliberate project):** `diff_harness` Hypothesis widening
    (`tools/diff_harness/PROPOSAL_HYPOTHESIS_WIDENING.md`) — the only
    enumeration-independent path to *unknown* divergences.

@@ -56,7 +56,7 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 | 2 | **Equipment key** | C `obj->wear_loc == iWear` (int) vs Python dict | `int(WearLocation.X)` via `canonical_wear_slot` | ✅ | clean | `tests/test_equipment_key_convention.py` (bans string-keyed access) |
 | 3 | **Attribute naming** | port-specific field names | `char.inventory` / `room.people` / `char.equipment` | ✅ | clean | `tests/test_attribute_convention.py` (bans `.carrying`/`.characters`/`.equipped`) |
 | 5 | **Flag values** | C bit-shift macros vs guessable hex | `IntEnum` flag classes | ✅ | clean | `tests/test_flag_hex_convention.py` (bans `FLAGPREFIX_X = 0x…` outside the enum modules; `mud/wiznet.py`'s `WiznetFlag` body allowlisted as the canonical chokepoint). Added 2026-06-02. Locks "no flag-prefixed hex constant redefined outside the enum modules" — does **not** catch a decimal-literal bypass (`if act & 32768:`), which is indistinguishable from arithmetic. |
-| 6 | **Pointer identity** | C pointer `==` vs Python object `==`/`is` | `is` for character identity compares | ❌ | partial | INV-031 (`is_same_group` uses `is`), INV-006; specific sites tested, no bypass-grep across `mud/` |
+| 6 | **Pointer identity** | C pointer `==` vs Python object `==`/`is` | `is` for entity identity compares | ❌ → **Layer C** | **open** | **Reclassified A→C + filed OPEN 2026-06-02** (see Layer C row 12). A static bypass-guard is infeasible — `==`/`!=` cannot be type-discriminated by line-grep (most `==` is int/str/enum). Probe found the root cause is live: `Character`/`Object` are value-eq dataclasses + `instance_id`/`id` unset on spawn → distinct same-proto entities compare `==`. INV-031(c)/INV-006 fixed/tested specific sites; the broad surface is now **INV-034**. |
 
 ### Layer B — human domain-read (enumerable, not auto-verifiable)
 
@@ -72,18 +72,21 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 | 9 | **Ordering / temporal** | C single-threaded tick vs Python async (e.g. prompt rendering `<-15hp>` between `update_pos` and `raw_kill` clamp) | no single chokepoint — sequencing | enforced (point) | INV-002 (PROMPT-CLAMP); `tools/diff_harness` |
 | 10 | **Object / affect lifecycle** | C `extract_obj`/affect expiry vs Python registry add/remove | behavioral lifecycle on `object_registry` / expiry loop | enforced | INV-014/015 tests |
 | 11 | **Data-load round-trip** | C `fread_flag` letter-decode vs Python `.are`→JSON→runtime | boot world, assert flags survive end-to-end | enforced | INV-032/033; `test_inv032_room_flags_survive_load.py` |
+| 12 | **Pointer identity** (reclassified from Layer A 2026-06-02) | C pointer `==` vs Python value-eq dataclass `__eq__` | behavioral — entity identity must use `is`; `==` cannot be type-discriminated by grep, and the divergence only manifests when value-equal-but-distinct entities coexist in a list (`in`/`remove`/`index`) | **open** | **INV-034** (`tests/test_inv034_pointer_identity_divergence.py`, strict-xfail demonstration). Root cause (value-eq dataclasses + `instance_id`/`id` unset on spawn) unfixed; ~91 dependent `in`/`remove` sites. Proposed root fix = `@dataclass(eq=False)`, gated on a value-eq test-reliance sweep. INV-031(c) fixed one site (`is_same_group`). |
 | 4 | **Async message delivery / act-cap** | C synchronous `write_to_buffer` in tick vs Python async dispatch (double-deliver, miss, mis-cap) | behavioral — single-delivery (XOR), per-recipient masking, first-letter cap, verified by integration tests, not a lexical bypass | enforced | INV-001 (×5 `test_inv001_*.py`) / 027 / 029; ACT-CAP-001..004. **Reclassified A→C 2026-06-02:** a clean static bypass-guard is INFEASIBLE — legitimate hand-rolled XOR loops (`do_yell`) correctly use `create_task(send_to_char)`, and `.messages.append` has many legitimate sites (`Character.send_to_char`, broadcast primitives, actor-self lines), so any blanket grep false-positives. The contract is contextual → Layer C, with a Layer-B "review new delivery sites" element. |
 
 ## What "done" means, per layer
 
 - **Layer A:** every class has a committed bypass-guard and it's green. Today:
-  4 of 5 guarded (RNG, equipment-key, attribute-naming, **flag-hex** —
-  `test_flag_hex_convention.py`, added 2026-06-02). **To-do:** class
-  6 (pointer-identity scanner) — may prove infeasible as Layer A and reclassify,
-  exactly as async-delivery (old class 4) did on 2026-06-02 when a clean
-  bypass-grep turned out to false-positive. Flag-hex came back the *other* way:
-  a tight prefix-anchored grep had exactly one legitimate hit (the `WiznetFlag`
-  enum body), so it was allowlist-able → feasible, cleaner than async got.
+  4 of 4 *feasible* classes guarded (RNG, equipment-key, attribute-naming,
+  **flag-hex** — `test_flag_hex_convention.py`, added 2026-06-02). The two other
+  nominal Layer-A candidates **both reclassified to Layer C** when probed (a clean
+  bypass-grep proved infeasible): async-delivery (old class 4) and
+  **pointer-identity (class 6, 2026-06-02 — now INV-034)**. Flag-hex was the one
+  that came back feasible: a tight prefix-anchored grep had exactly one
+  legitimate hit (the `WiznetFlag` enum body), so it was allowlist-able. **Net:
+  Layer A is at its feasible ceiling — every class that admits a static
+  chokepoint-guard now has one; the remainder are behavioral (Layer C).**
 - **Layer B:** every signed-math site has been domain-read once. Ongoing,
   inherently point-in-time; the closest to a guard is flagging *new* `//`/`%`
   in PRs for human review.
@@ -122,10 +125,23 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    vs `DefenseBit.WEAPON = 1<<3`). Recall validated against the past
    PARALLEL-005 (`0x0010`→ExtraFlag.EVIL) and ACT_TRAIN (`0x200`) instances.
    Limit recorded in the row: the guard does not catch decimal-literal bypasses.
-4. **Class 6 (pointer-identity) scanner.** Scope a pattern for `==`/`!=`
-   between two `Character` references; high false-positive risk → may be
-   Layer-B.
-5. **Class 11 dynamic widening (optional).** Hypothesis `RuleBasedStateMachine`
+4. ~~**Class 6 (pointer-identity) scanner.**~~ **Resolved A→C + filed OPEN
+   (2026-06-02):** a static guard is infeasible (`==`/`!=` can't be
+   type-discriminated by grep — most `==` is int/str/enum). The probe instead
+   *discovered* the root cause is live: `Character`/`Object` are value-eq
+   dataclasses and the spawn path leaves `instance_id`/`id` unset, so distinct
+   same-proto entities compare `==` (empirically verified). Filed as **INV-034**
+   (Layer C, OPEN) with a strict-xfail demonstration test; INV-031(c) was the
+   recall oracle (it had already fixed one site, `is_same_group`→`is`). Root fix
+   (`@dataclass(eq=False)`) deferred to a scoped session — has ~91-site blast
+   radius + needs a value-eq test-reliance sweep first. An AGENTS.md ROM Parity
+   Rule ("use `is`, not `==`, for entity identity") was added so new code doesn't
+   re-introduce the pattern.
+5. **NEXT — root-fix INV-034 (scoped session).** Convert the model dataclasses to
+   identity equality, gated on `grep -rn "assert .*(obj|char|victim|item).*==" tests/`
+   to find/repair value-equality reliance. Promotes class 6 to ✅ and flips the
+   strict-xfail demonstration to xpass.
+6. **Class 11 dynamic widening (optional).** Hypothesis `RuleBasedStateMachine`
    driving `diff_harness` to attack the scenario-enumeration limit.
 
 ## Honest caveats
