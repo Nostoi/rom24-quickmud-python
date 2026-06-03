@@ -356,12 +356,23 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     if dir_key not in dir_map:
         return "You cannot go that way."
 
+    idx = dir_map[dir_key]
+
+    # MOVE-005: ROM src/act_move.c:move_char fires mp_exit_trigger as the FIRST
+    # action after the door-bounds check — before the exit-existence /
+    # can_see_room check, the movement-cost gate, and (Python-only) the
+    # encumbrance gate. The trigger keys on the attempted direction alone
+    # (`dir == atoi(prg->trig_phrase)`), so a PC walking into a wall or while
+    # over-encumbered still fires the room's exit program. Only PCs trigger it.
+    if not char.is_npc:
+        if mobprog.mp_exit_trigger(char, idx):
+            return ""
+
     if get_carry_weight(char) > can_carry_w(char) or char.carry_number > can_carry_n(char):
         current_wait = int(getattr(char, "wait", 0) or 0)
         char.wait = max(current_wait, 1)
         return "You are too encumbered to move."
 
-    idx = dir_map[dir_key]
     exit = char.room.exits[idx]
     if exit is None or exit.to_room is None:
         return "You cannot go that way."
@@ -369,10 +380,6 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     current_room = char.room
     target_room = exit.to_room
     target_room_flags = int(getattr(target_room, "room_flags", 0) or 0)
-
-    if not char.is_npc:
-        if mobprog.mp_exit_trigger(char, idx):
-            return ""
 
     if not can_see_room(char, target_room):
         return "Alas, you cannot go that way."
