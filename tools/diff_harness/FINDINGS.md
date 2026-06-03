@@ -8,6 +8,49 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-016 — `remove` left stale `worn_by`, blocking re-wear after armor removal — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-03. Surfaced by Phase C generated differential
+coverage after adding `__oload` object lifecycle rules. The minimal Hypothesis
+sequence was:
+
+```
+__oload=3045
+get jacket
+wear jacket
+remove jacket
+wear jacket
+```
+
+Symptom (step 5):
+```
+C : ['You wear a scale mail jacket on your torso.']
+py: ['You are already wearing that.']
+```
+
+**Root cause:** `mud.commands.obj_manipulation._remove_obj` removed the object
+from `char.equipment` and reset `obj.wear_loc` via `unequip_char`, but did not
+clear the Python-only `obj.worn_by` back-pointer. `do_wear` checks
+`obj.worn_by is ch` before dispatching wear logic, so a removed item still looked
+equipped even though `wear_loc == WEAR_NONE` and it was back in inventory. ROM
+has no separate `worn_by`; `unequip_char` leaves the object carried by the
+character and sets only `wear_loc = WEAR_NONE`, so re-wear succeeds.
+
+**Fix:** `_remove_obj` now clears `obj.worn_by = None` after `unequip_char`, and
+the equipment-dict removal loop uses identity (`is`) instead of value equality,
+matching ROM pointer semantics. Regression:
+`tests/integration/test_remove_command.py::test_do_remove_happy_path_emits_both_messages`
+now asserts the stale pointer is cleared and the item can be worn again. The
+generated live C/Python test also converges.
+
+**Instrumentation note:** the same widening added `__oload=<vnum>` to both the C
+shim (`create_object` + `obj_to_room`) and Python replay (`spawn_object` +
+`Room.add_object`). While triaging this finding, the C snapshot's inventory field
+was tightened to carried, non-equipped objects; equipped objects are compared
+through the existing `equipment` field.
+
+---
+
 ## FINDING-015 — affect spells emit no ROM success message when cast through `do_cast` — ✅ RESOLVED (armor; bless/shield sweep open)
 
 **Status:** ✅ RESOLVED 2026-05-29 (master v2.11.20, `a3476e33`) — the `armor` handler now

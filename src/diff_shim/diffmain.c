@@ -281,13 +281,16 @@ static void emit_char_snapshot (CHAR_DATA *ch)
     }
     putchar (']');
 
-    /* inventory: obj->pIndexData->vnum in carrying-list order. */
+    /* inventory: obj->pIndexData->vnum for carried, non-equipped objects in
+     * carrying-list order. Equipment is emitted separately below. */
     fputs (",\"inventory\":[", stdout);
     {
         OBJ_DATA *obj;
         int first = 1;
         for (obj = ch->carrying; obj != NULL; obj = obj->next_content)
         {
+            if (obj->wear_loc != WEAR_NONE)
+                continue;
             if (!first)
                 putchar (',');
             first = 0;
@@ -588,6 +591,20 @@ int main (int argc, char **argv)
             {
                 CHAR_DATA *mob = create_mobile (mi);
                 char_to_room (mob, ch->in_room);
+            }
+            continue;
+        }
+
+        /* __oload=<vnum>: spawn a fresh object into the PC's current room
+         * (ROM create_object + obj_to_room). */
+        if (strncmp (line, "__oload=", 8) == 0)
+        {
+            int vnum = atoi (line + 8);
+            OBJ_INDEX_DATA *oi = get_obj_index (vnum);
+            if (oi != NULL && ch != NULL && ch->in_room != NULL)
+            {
+                OBJ_DATA *obj = create_object (oi, 0);
+                obj_to_room (obj, ch->in_room);
             }
             continue;
         }

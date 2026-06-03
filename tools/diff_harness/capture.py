@@ -14,7 +14,9 @@ import subprocess
 import sys
 from pathlib import Path
 
+from tools.diff_harness.oracle import drive_c_oracle
 from tools.diff_harness.scenario import Scenario, load_scenario
+from tools.diff_harness.schema import step_to_dict
 
 REPO = Path(__file__).resolve().parents[2]
 SCEN_DIR = REPO / "tools" / "diff_harness" / "scenarios"
@@ -27,38 +29,7 @@ def _c_commit() -> str:
 
 
 def _drive(sc: Scenario, binary: Path) -> list[dict]:
-    lines = [f"boot seed={sc.seed} start_room={sc.start_room} level={sc.char_level} char={sc.char_name}"]
-    for step in sc.steps:
-        lines.append(step)
-        lines.append(f"__snapshot chars={','.join(sc.watch_chars)} rooms={','.join(map(str, sc.watch_rooms))}")
-    proc = subprocess.run(
-        [str(binary)],
-        input="\n".join(lines) + "\n",
-        capture_output=True,
-        text=True,
-        cwd=REPO / "src",
-    )
-    if proc.returncode != 0:
-        raise RuntimeError(f"C binary exited {proc.returncode}\nstderr:\n{proc.stderr}")
-
-    events = [json.loads(line) for line in proc.stdout.splitlines() if line.strip()]
-    trace: list[dict] = []
-    step_no = 0
-    pending_output: list[str] = []
-    cmd_iter = iter(sc.steps)
-    for ev in events:
-        if ev["type"] == "output":
-            pending_output = ev["lines"]
-        elif ev["type"] == "snapshot":
-            step_no += 1
-            snap = ev
-            snap["step"] = step_no
-            snap["command"] = next(cmd_iter)
-            snap["output"] = pending_output
-            snap.pop("type", None)
-            trace.append(snap)
-            pending_output = []
-    return trace
+    return [step_to_dict(step) for step in drive_c_oracle(sc, binary)]
 
 
 def capture(sc: Scenario, binary: Path) -> dict:

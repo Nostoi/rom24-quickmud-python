@@ -650,12 +650,13 @@ def _remove_obj(char: Character, obj) -> None:
     if equipment:
         # Find and remove from equipment dict by value
         for slot, equipped_obj in list(equipment.items()):
-            if equipped_obj == obj:
+            if equipped_obj is obj:
                 del equipment[slot]
                 break
 
     # Apply ROM unequip logic (revert AC bonuses, affects, etc.)
     unequip_char(char, obj)
+    obj.worn_by = None
 
     # Move to inventory (Character model uses 'inventory', not 'carrying')
     inventory = getattr(char, "inventory", None)

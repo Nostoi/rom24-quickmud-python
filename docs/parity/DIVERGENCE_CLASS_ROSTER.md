@@ -153,7 +153,17 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    **`Room` flipped 2.12.80** (its own RED test + gating sweep), so **class 6 is
    now fully closed** across every entity runtime type — no follow-up remains.
 6. **Class 11 dynamic widening (optional).** Hypothesis `RuleBasedStateMachine`
-   driving `diff_harness` to attack the scenario-enumeration limit.
+   driving `diff_harness` to attack the scenario-enumeration limit. **Phases A/B
+   complete (2026-06-03):** `tools/diff_harness/oracle.py` provides the live C
+   oracle for arbitrary in-memory scenarios, `tools/diff_harness/pyreplay.py`
+   provides the shared Python replay driver, and
+   `tests/test_diff_harness_generated.py` runs a bounded no-RNG state machine
+   over deterministic commands. **Phase C started (2026-06-03):** generated
+   coverage now includes `__oload` object injection plus legal get/wield/wear/
+   remove/drop lifecycle rules for a small sword and scale mail jacket. This
+   immediately surfaced and closed FINDING-016 (`remove` left stale `worn_by`).
+   Next is more deterministic command/watch-set widening; add RNG-locked combat
+   only after seed alignment is proven.
 
 ## Honest caveats
 

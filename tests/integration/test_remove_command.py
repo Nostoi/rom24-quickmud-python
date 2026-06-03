@@ -118,6 +118,10 @@ def test_do_remove_happy_path_emits_both_messages(test_character, observer_chara
     assert armor.wear_loc == int(WearLocation.NONE)
     assert armor not in char.equipment.values()
     assert armor in char.inventory
+    assert getattr(armor, "worn_by", None) is None
+
+    assert process_command(char, "wear vest") == "You wear a leather vest on your torso."
+    assert armor.wear_loc == int(WearLocation.BODY)
 
 
 def test_do_remove_blocked_by_noremove(test_character, object_factory):

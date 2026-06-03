@@ -101,9 +101,9 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 | ROM C Function | Lines | QuickMUD | Status | Notes |
 |----------------|-------|----------|--------|-------|
 | `do_wear()` | 1699-1738 | ✅ `equipment.py::do_wear()` (line 51) | ✅ **AUDITED** | WEAR-001..009 fixed; replace logic, two-handed/shield/hold interactions, multi-slot wrist/neck/finger, location-specific text, light handling, TO_ROOM messages, `wear all` routing all verified; 52 tests passing across `test_equipment_system.py` + `test_player_equipment.py`. |
-| `do_remove()` | 1740-1763 | ✅ `obj_manipulation.py::do_remove()` (line 272) | ✅ **AUDITED** | 100% parity; `remove all` is documented Python extension |
+| `do_remove()` | 1740-1763 | ✅ `obj_manipulation.py::do_remove()` (line 272) | ✅ **AUDITED** | 100% parity; `remove all` is documented Python extension. **FINDING-016 (2026-06-03):** generated diff-harness coverage found remove→rewear left stale `obj.worn_by`; fixed by clearing it in `_remove_obj`. |
 | `wear_obj()` | 1401-1697 | ✅ `equipment.py::do_wear()`/`do_wield()`/`do_hold()` | ✅ **AUDITED** | Slot/replace/multi-slot logic verified via WEAR-001..009 (all closed) |
-| `remove_obj()` | 1372-1392 | ✅ `obj_manipulation.py::_perform_remove()` (line 339) | ✅ **AUDITED** | NOREMOVE check + TO_CHAR/TO_ROOM "$n stops using $p" pair match ROM |
+| `remove_obj()` | 1372-1392 | ✅ `obj_manipulation.py::_perform_remove()` (line 339) | ✅ **AUDITED** | NOREMOVE check + TO_CHAR/TO_ROOM "$n stops using $p" pair match ROM; FINDING-016 regression covers `wear_loc`, inventory, equipment, and `worn_by` cleanup after removal. |
 
 **Estimated Complexity**: HIGH (slot validation, replace logic)  
 **ROM C Lines**: 365 lines total  
@@ -1288,7 +1288,7 @@ Python target: `mud/commands/equipment.py`.
 
 Per-slice audit dispatched to four parallel Haiku agents (one each for LIGHT/finger/neck, single-slot armor, wrist/shield/wield, hold/float/do_remove). Findings consolidated and re-verified against ROM source. The WIELD strength formula divergence was verified against `src/const.c:728` `str_app[26]` table (wield column: 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,22,25,30,35,40,45,50,55,60).
 
-`do_remove` was inspected and matches ROM (empty arg → `"Remove what?"`, `all` support, lookup by worn slot). No gaps recorded.
+`do_remove` was inspected and matches ROM (empty arg → `"Remove what?"`, `all` support, lookup by worn slot). 2026-06-03 re-check: Phase C generated diff-harness coverage found a Python-only stale `obj.worn_by` back-pointer after `remove`; fixed as FINDING-016 and covered by `test_do_remove_happy_path_emits_both_messages`.
 
 ---
 
@@ -1377,7 +1377,7 @@ the do_drop parity batch (97c901e). **Zero remaining gaps were found.**
 | `do_put` | 346-494 | `mud/commands/obj_manipulation.py:52-187` | 100% | ✅ COMPLETE — PUT-001..003 closed |
 | `do_drop` | 496-657 | `mud/commands/inventory.py:579-700` | 100% | ✅ COMPLETE — TO_ROOM broadcasts, MELT_DROP smoke, all-syntax, gold consolidation |
 | `do_give` | 659-847 | `mud/commands/give.py` | 100% | ✅ COMPLETE — money handling, NPC reactions, TO_NOTVICT parity |
-| `do_remove` | 1740-1763 | `mud/commands/obj_manipulation.py:272-336` | 100% | ✅ COMPLETE — NOREMOVE check, TO_ROOM/TO_CHAR broadcasts |
+| `do_remove` | 1740-1763 | `mud/commands/obj_manipulation.py:272-336` | 100% | ✅ COMPLETE — NOREMOVE check, TO_ROOM/TO_CHAR broadcasts, remove→rewear cleanup (FINDING-016) |
 | `do_sacrifice` | 1765-1862 | `mud/commands/obj_manipulation.py:367-468` | 100% | ✅ COMPLETE — AUTOSPLIT, furniture check, ROM-faithful messages |
 | `do_quaff` | 1865-1906 | `mud/commands/obj_manipulation.py:470-520` | 100% | ✅ COMPLETE — level gate, spell casting |
 | `do_drink` | 1161-1280 | `mud/commands/consumption.py:148-303` | 100% | ✅ COMPLETE — DRINK_CON, fountain, gain_condition, poison |

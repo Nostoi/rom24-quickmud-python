@@ -1,10 +1,13 @@
 # Proposal — Hypothesis-driven scenario widening for the differential harness
 
-> **Status:** PROPOSAL (2026-06-02). Not started. Scoped here so it can be
-> picked up as a deliberate multi-day project when the team chooses to push past
-> the *known* parity surface. This is the only thread that attacks **unknown
-> unknowns** — divergences nobody has named (see the divergence-class roster's
-> guardrail 3: behavior-diffing is the sole enumeration-independent check).
+> **Status:** IN PROGRESS (2026-06-03). Phase A's live C oracle and Phase B's
+> bounded no-RNG Hypothesis state machine are complete. Phase C has started:
+> object lifecycle widening (`__oload`, get/wield/wear/remove/drop) is live and
+> already surfaced FINDING-016. Wider deterministic vocabulary / watch-set, then
+> RNG-locked combat, remain next. This is the only
+> thread that attacks **unknown unknowns** — divergences nobody has named (see
+> the divergence-class roster's guardrail 3: behavior-diffing is the sole
+> enumeration-independent check).
 
 ## Problem
 
@@ -61,13 +64,21 @@ masquerades as a parity bug).
 
 ## Phasing
 
-- **Phase A — live C oracle.** Stand up per-sequence `diffshim` driving (no
-  Hypothesis yet). Pure infrastructure; reuses existing capture/compare.
-- **Phase B — no-RNG state machine.** Minimal `RuleBasedStateMachine` over the
-  deterministic command subset (move / get / drop / wear / remove / look /
-  inventory). Extends the existing v1 deterministic slice; lowest risk.
-- **Phase C — widen.** Grow the command vocabulary and the watch-set; add
-  RNG-locked combat only after Phase-B seed alignment is proven.
+- **Phase A — live C oracle.** ✅ Complete 2026-06-03. `drive_c_oracle()`
+  stands up per-sequence `diffshim` driving (no Hypothesis yet), accepts
+  in-memory scenarios, and reuses the existing schema/compare path. The golden
+  capture CLI delegates to the same driver.
+- **Phase B — no-RNG state machine.** ✅ Complete 2026-06-03. A bounded
+  Hypothesis `RuleBasedStateMachine` generates legal deterministic sequences
+  over `look`, `inventory`, north/south movement, and `get/drop pit`, drives live
+  C and Python, and diffs the traces. It intentionally stays small and cheap;
+  Phase C owns vocabulary/watch-set widening.
+- **Phase C — widen.** IN PROGRESS 2026-06-03. Added object injection plus
+  legal get/wield/wear/remove/drop rules for deterministic sword/armor
+  lifecycle paths, and kept the generated budget bounded (`max_examples=4`,
+  `stateful_step_count=5`). This surfaced FINDING-016 (`remove` left stale
+  `worn_by`), now resolved. Continue growing deterministic command vocabulary
+  and the watch-set; add RNG-locked combat only after seed alignment is proven.
 - **Each phase:** triage every mismatch into `FINDINGS.md` → a parity gap.
   Expect an initial *burst* of findings (untrodden paths) — that is the point,
   and it is real triage load.

@@ -8,6 +8,8 @@ from mud.models.character import Character
 from mud.models.constants import Position
 from mud.models.room import Room
 from tools.diff_harness.compare import diff_traces, normalize_step
+from tools.diff_harness.oracle import build_c_input, drive_c_oracle
+from tools.diff_harness.pyreplay import drive_python_replay
 from tools.diff_harness.pysnap import snapshot_python
 from tools.diff_harness.scenario import Scenario, load_scenario
 from tools.diff_harness.schema import CharSnap, RoomSnap, StepSnap, step_from_dict, step_to_dict
@@ -213,3 +215,131 @@ def test_load_scenario_parses_fields(tmp_path: Path):
     assert sc.watch_chars == ["Tester"]
     assert sc.watch_rooms == [3001, 3054]
     assert sc.steps == ["look", "north"]
+
+
+def test_build_c_input_accepts_in_memory_scenario():
+    sc = Scenario(
+        name="generated",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester", "drunk"],
+        watch_rooms=[3001, 3054],
+        steps=["look", "north"],
+    )
+
+    assert build_c_input(sc).splitlines() == [
+        "boot seed=777 start_room=3001 level=5 char=Tester",
+        "look",
+        "__snapshot chars=Tester,drunk rooms=3001,3054",
+        "north",
+        "__snapshot chars=Tester,drunk rooms=3001,3054",
+    ]
+
+
+def test_drive_c_oracle_parses_live_trace_without_golden(tmp_path: Path):
+    sc = Scenario(
+        name="generated",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["look"],
+    )
+
+    def fake_run(*args, **kwargs):
+        assert kwargs["input"] == build_c_input(sc)
+        return type(
+            "Result",
+            (),
+            {
+                "returncode": 0,
+                "stderr": "",
+                "stdout": (
+                    '{"type":"output","lines":["A room."]}\n'
+                    '{"type":"snapshot","chars":[{"key":"Tester","room":3001,'
+                    '"position":"STANDING","hp":20,"max_hp":20,"mana":100,"move":100,'
+                    '"level":5,"align":0,"gold":0,"fighting":null}],'
+                    '"rooms":[{"vnum":3001,"people":["Tester"],"contents":[]}]}\n'
+                ),
+            },
+        )()
+
+    trace = drive_c_oracle(sc, tmp_path / "diffshim", run=fake_run)
+
+    assert trace == [
+        StepSnap(
+            step=1,
+            command="look",
+            chars=[CharSnap("Tester", 3001, "STANDING", 20, 20, 100, 100, 5, 0, 0, None)],
+            rooms=[RoomSnap(vnum=3001, people=["Tester"], contents=[])],
+            output=["A room."],
+        )
+    ]
+
+
+def test_drive_c_oracle_raises_on_binary_failure(tmp_path: Path):
+    sc = Scenario(
+        name="generated",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["look"],
+    )
+
+    def fake_run(*args, **kwargs):
+        return type("Result", (), {"returncode": 2, "stderr": "boom", "stdout": ""})()
+
+    with pytest.raises(RuntimeError, match=r"(?s)C binary exited 2.*boom"):
+        drive_c_oracle(sc, tmp_path / "diffshim", run=fake_run)
+
+
+def test_drive_python_replay_accepts_in_memory_scenario():
+    sc = Scenario(
+        name="generated",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["inventory"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert len(trace) == 1
+    assert trace[0].command == "inventory"
+    assert trace[0].chars[0].key == "Tester"
+    assert trace[0].chars[0].hp == 20
+    assert trace[0].chars[0].mana == 100
+    assert trace[0].chars[0].move == 100
+
+
+def test_drive_python_replay_oload_exercises_get_wield_remove_drop():
+    sc = Scenario(
+        name="generated_oload",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__oload=3021", "get sword", "wield sword", "remove sword", "drop sword"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    char_snaps = [step.chars[0] for step in trace]
+    room_snaps = [step.rooms[0] for step in trace]
+    assert room_snaps[0].contents == [3021]
+    assert char_snaps[1].inventory == [3021]
+    assert char_snaps[2].equipment == {"16": 3021}
+    assert char_snaps[3].inventory == [3021]
+    assert room_snaps[4].contents == [3021]

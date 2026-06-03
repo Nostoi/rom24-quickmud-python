@@ -2,7 +2,8 @@
 
 Identity is by stable key (character name; object vnum), never pointer/object-id.
 Per-field list ordering policy:
-  - inventory: ORDER-PRESERVED (ROM prepends on pickup; order is observable)
+  - inventory: ORDER-PRESERVED (carried, non-equipped objects; ROM prepends on
+    pickup, and that order is observable)
   - output:    ORDER-PRESERVED (message sequence is observable)
   - room.people, room.contents, char.affects, char.affect_flags: SORTED
     (ROM linked-list order is not behaviorally meaningful here)
