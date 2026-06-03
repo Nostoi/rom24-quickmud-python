@@ -1,34 +1,32 @@
-# Session Status — 2026-06-03 — diff-harness Phase C containers → INV-039 object-list head-insert (2.13.1)
+# Session Status — 2026-06-03 — `look in <container>` header/empty parity (FINDING-021) (2.13.2)
 
 ## Current State
 
-Phase C `diff_harness` Hypothesis widening added container `put`/get-from-container
-coverage, which surfaced a structural divergence class: ROM head-inserts objects
-into every list (`obj_to_{char,room,obj}`, LIFO) while the Python port appended.
-
-- **INV-039 (OBJECT-LIST-HEAD-INSERT) — ✅ ENFORCED (chokepoints only):** fixed
-  the three placement chokepoints to `insert(0, obj)` —
-  `Character.add_object` (FINDING-017), `Room.add_object` (FINDING-018),
-  `obj_manipulation._obj_to_obj` (FINDING-019). Verified against the live C oracle.
-- **Two open siblings filed (not fixed):** FINDING-020 (`remove` re-append loses
-  ROM carry-list position — equipment-dict architecture) and FINDING-021
-  (`look in <container>` header not capitalized — INV-029 territory).
-- **Scope honesty:** INV-039 covers the 3 chokepoints only; ~25 bypass `append`
-  placement sites are an open `DIVERGENCE_CLASS_ROSTER` sweep (class 13, to-do #7).
-- Three tests that asserted the old append order were corrected to ROM LIFO.
+- **Active mode**: cross-file invariants / divergence-class sweep (per-file audit
+  tracker has no ⚠️ Partial / ❌ Not Audited rows).
+- **Last completed**:
+  - **INV-039 OBJECT-LIST-HEAD-INSERT** — the prior session's complete-but-
+    uncommitted head-insert work committed intact (`cdaaa31f`): three placement
+    chokepoints `insert(0, obj)`, three corrected order tests.
+  - **FINDING-021** — ✅ FIXED (`f34efe75`): `look in <container>` header now
+    act-capitalized (`A bag holds:`) and an empty container prints `Nothing.`
+    (ROM `show_list_to_char`), replacing the invented `"a bag is empty."`. Drink-con
+    `"It is empty."` left untouched (genuine ROM).
+- **Newly filed open**: **FINDING-022** — `look in` contents lines carry a 2-space
+  indent ROM omits for a PC (source-suspected, not yet oracle-confirmed).
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-03_DIFF_HARNESS_PHASE_C_CONTAINERS_INV039.md](SESSION_SUMMARY_2026-06-03_DIFF_HARNESS_PHASE_C_CONTAINERS_INV039.md)
+  [SESSION_SUMMARY_2026-06-03_LOOK_IN_CONTAINER_FINDING021.md](SESSION_SUMMARY_2026-06-03_LOOK_IN_CONTAINER_FINDING021.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.1 |
-| Tests | Full suite `pytest` → **5391 passed, 4 skipped**; `ruff check .` clean |
+| Version | 2.13.2 |
+| Tests | Full suite `pytest` → **5393 passed, 4 skipped**; `ruff check .` clean |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Cross-file invariants | INV-039 added (object-list head-insert) |
-| Open engine bugs | FINDING-020 (remove carry-list position), FINDING-021 (`look in` header cap) — both filed in `tools/diff_harness/FINDINGS.md` |
+| Cross-file invariants | INV-039 (object-list head-insert) committed this session |
+| Open engine bugs | FINDING-020 (remove carry-list position), FINDING-022 (`look in` contents indent) — both in `tools/diff_harness/FINDINGS.md` |
 
 ## Next Intended Task
 
@@ -37,8 +35,8 @@ into every list (`obj_to_{char,room,obj}`, LIFO) while the Python port appended.
    placements should head-insert (route through the chokepoint), reconstruction
    paths (`from_orm`, `clone_object`, serializers) must stay `append`. Not a
    lexical guard.
-2. **FINDING-021** — close the `look in <container>` header-cap gap (likely a
-   one-line act-cap fix in the do_look-in-container path).
+2. **FINDING-022** — confirm the `look in` contents-line indent against the live C
+   oracle, then port `show_list_to_char` PC semantics if divergent.
 3. Continue Phase C deterministic command/watch-set widening (light hold,
    money/shop paths); add RNG-locked combat only after seed alignment is proven.
 
