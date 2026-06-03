@@ -964,6 +964,18 @@ async def _read_player_command(conn: TelnetStream, session: Session) -> str | No
         if line is None:
             return None
 
+        # INV-038: ROM src/comm.c:605 zeroes ``ch->timer`` whenever the
+        # descriptor delivers data, before ``interpret``. This is the only
+        # idle-timer reset on the normal play path; ``char_update`` no longer
+        # resets it per tick, so an active player must clear it here or they
+        # idle to the void / autoquit just like a linkdead one.
+        playing_char = getattr(session, "character", None)
+        if playing_char is not None and not getattr(playing_char, "is_npc", False):
+            try:
+                playing_char.timer = 0
+            except Exception:
+                pass
+
         command = line if line else " "
         original = command
 

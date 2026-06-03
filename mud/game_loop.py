@@ -756,24 +756,46 @@ def char_update() -> None:
                 # timer handling, and conditions run before affect ticks.
                 _decay_worn_light(character)
 
+                # INV-038: ROM increments ch->timer once per tick for EVERY
+                # non-immortal PC regardless of whether a descriptor is attached
+                # (src/update.c:738 ``++ch->timer``), voids the character at
+                # ``>= 12``, and the autosave/autoquit pass quits when the
+                # *pre-increment* timer is ``> 30`` (src/update.c:682-683 sets
+                # ``ch_quit`` at the top of the loop, before ``++ch->timer``).
+                # The timer is reset to 0 ONLY when the descriptor delivers input
+                # (src/comm.c:605, before interpret), on reconnect, and on
+                # return-from-void — never every tick. Resetting it here would
+                # defeat ROM's idle->void / idle->autoquit mechanics for every
+                # connected player; the input reset lives in
+                # mud.net.connection._read_player_command.
+                prev_timer = int(getattr(character, "timer", 0) or 0)
                 descriptor = getattr(character, "desc", None)
+                # ROM's autoquit (`ch == ch_quit` → `do_quit`) closes the
+                # socket. Python's `_auto_quit_character` runs in the synchronous
+                # game tick and cannot `await conn.close()` to tear down a live
+                # descriptor/session, so we only autoquit characters that are
+                # already link-dead (`desc is None`) — exactly the population the
+                # path handled before INV-038. A connected idler still climbs the
+                # timer and disappears into the void below; the connected-player
+                # autoquit-with-teardown leg is filed as GL-035 (OPEN).
+                if prev_timer > 30 and descriptor is None:
+                    autoquit_candidates.append(character)
+                character.timer = prev_timer + 1
+                if (
+                    character.timer >= 12
+                    and getattr(character, "was_in_room", None) is None
+                    and getattr(character, "room", None) is not None
+                ):
+                    _idle_to_limbo(character)
+
+                # Autosave stays gated on an attached descriptor + the rotation
+                # slot — ROM src/update.c:892-895 (second loop).
                 if descriptor is not None:
-                    character.timer = 0
                     descriptor_id = getattr(descriptor, "descriptor_id", None)
                     if descriptor_id is None:
                         descriptor_id = id(descriptor)
                     if descriptor_id % _AUTOSAVE_WINDOW == _AUTOSAVE_ROTATION:
                         autosave_candidates.append(character)
-                else:
-                    character.timer = int(getattr(character, "timer", 0) or 0) + 1
-                    if (
-                        character.timer >= 12
-                        and getattr(character, "was_in_room", None) is None
-                        and getattr(character, "room", None) is not None
-                    ):
-                        _idle_to_limbo(character)
-                    if character.timer > 30:
-                        autoquit_candidates.append(character)
 
                 size = Size(int(getattr(character, "size", Size.MEDIUM) or Size.MEDIUM))
                 hunger_delta = -2 if size > Size.MEDIUM else -1
