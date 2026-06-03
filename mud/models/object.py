@@ -48,6 +48,17 @@ class Object:
     in_room: Room | None = field(default=None, compare=False)  # ROM: ROOM_INDEX_DATA *in_room
     in_obj: Object | None = field(default=None, compare=False)  # ROM: OBJ_DATA *in_obj (container)
     carried_by: Character | None = field(default=None, compare=False)  # ROM: CHAR_DATA *carried_by
+    # FINDING-020: monotonic acquisition sequence stamped at every obj_to_char
+    # (Character.add_object / direct equip). ROM keeps equipped objects in
+    # ch->carrying (LIFO head-insert) with only wear_loc set, so a removed item
+    # keeps its original carry-list slot — position is RELATIVE to acquisition
+    # order, not a fixed index. The Python port splits inventory/equipment into
+    # two containers; this seq lets the unequip path re-insert the object into
+    # ``inventory`` at the position descending-acquisition order dictates,
+    # reproducing ROM's preserved position. Higher = more recently acquired
+    # (closer to the carry-list head). 0 = never entered a carry list (defensive
+    # tail fallback). compare=False is inert (eq=False per INV-034).
+    _carry_seq: int = field(default=0, compare=False)
     _short_descr_override: str | None = field(default=None, repr=False)
     _description_override: str | None = field(default=None, repr=False)
 

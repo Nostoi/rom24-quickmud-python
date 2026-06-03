@@ -664,13 +664,30 @@ def _remove_obj(char: Character, obj) -> None:
     unequip_char(char, obj)
     obj.worn_by = None
 
-    # Move to inventory (Character model uses 'inventory', not 'carrying')
+    # Move to inventory (Character model uses 'inventory', not 'carrying').
+    #
+    # FINDING-020: ROM never removes an object from ch->carrying on equip — only
+    # wear_loc is set (src/handler.c equip_char), and unequip_char merely clears
+    # it, so the object keeps its original LIFO carry-list slot. The Python port
+    # splits inventory/equipment into two containers, so unequip must re-insert
+    # the object at the position descending-acquisition order dictates rather
+    # than blindly appending (which always landed it at the tail). Insert it
+    # ahead of the first carried object acquired earlier than it (lower
+    # _carry_seq); objects with no seq (defensive / pre-FINDING-020 reload) fall
+    # through to the tail, matching the old behavior.
     inventory = getattr(char, "inventory", None)
     if inventory is None:
         char.inventory = []
         inventory = char.inventory
     if obj not in inventory:
-        inventory.append(obj)
+        seq = getattr(obj, "_carry_seq", 0)
+        index = len(inventory)
+        if seq:
+            for i, carried in enumerate(inventory):
+                if getattr(carried, "_carry_seq", 0) < seq:
+                    index = i
+                    break
+        inventory.insert(index, obj)
 
 
 # DUPL-003 — canonical at mud/game_loop.py:_extract_obj.

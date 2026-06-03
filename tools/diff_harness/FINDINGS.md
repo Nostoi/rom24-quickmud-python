@@ -8,6 +8,57 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-024 — save/load discards inventory↔equipment carry-list ordering — ⚠️ OPEN
+
+**Status:** ⚠️ OPEN 2026-06-03. Surfaced while closing the runtime FINDING-020.
+The DB save format (`mud/account/account_manager.py`) serializes carried items as
+an ordered `inventory_state` list but equipped items as a separate
+`equipment_state` **dict keyed by wear slot** — with no record of an equipped
+object's position relative to the carried list. On reload
+(`mud/models/character.py from_orm`), `inventory` is restored in order but
+equipped objects land in the dict with no `_carry_seq` (it defaults to 0 and is
+not persisted). A reloaded-then-removed item therefore falls through
+`_remove_obj`'s defensive tail-append, losing the ROM-preserved position that
+FINDING-020 now reproduces at runtime.
+
+ROM's pfile keeps equipped objects inline in the carry list with `wear_loc`, so
+their order survives the round-trip for free. Two faithful fixes: (a) persist
+`_carry_seq` per object and re-derive ordering on load, or (b) restore the carry
+list inline (re-equip in carry-list order). Distinct from FINDING-020 (runtime,
+now closed) — this is the *persistence* leg of the same divergence. Not yet
+exercised by the diff harness (the diffshim has no save/reload step). File a
+diff-harness save/reload scenario or a focused persistence test when closing.
+
+---
+
+## FINDING-025 — `MobInstance.equip` uses a different equipment representation than PCs (no dict entry) — ⚠️ OPEN
+
+**Status:** ⚠️ OPEN 2026-06-03. Surfaced while closing FINDING-020 (PC carry-list
+position). `MobInstance.equip` (`mud/spawning/templates.py:512`, marked `# stub`)
+keeps the equipped item **in** `self.inventory` (via `add_to_inventory`, head-
+insert) and sets `obj.wear_loc`, but **never populates `self.equipment[slot]`**.
+This is a different model from the PC path, where `Character.equip_object`
+*removes* the item from `inventory` and stores it in the `equipment` dict. ROM
+uses **one** carry-list+`wear_loc` model for mobs and PCs alike (`equip_char`
+sets `obj->wear_loc`; `get_eq_char` loops `ch->carrying`).
+
+Open questions to resolve when closing:
+1. Does mob disarm/remove preserve carry-list position? (The PC fix does not touch
+   the mob path — `MobInstance.remove_object` strips from `inventory`, no seq
+   logic.)
+2. Is `MobInstance.equip` not populating the equipment dict a real divergence
+   (mob equipment lookups that key the dict would miss), or just a benign
+   alternate representation (inventory + `wear_loc`) that all mob equipment
+   readers already tolerate?
+3. Does the mob model double-show equipped items anywhere `inventory` is
+   displayed without a `wear_loc != WEAR_NONE` filter?
+
+Not yet probed (the diff-harness scenarios use a PC). File a mob-equip diff-
+harness scenario or focused test when closing. Related: FINDING-020 (PC, closed),
+FINDING-024 (PC save/load ordering, open).
+
+---
+
 ## FINDING-017 — `Character.add_object` appends to inventory; ROM `obj_to_char` prepends — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-03 (v2.13.1). `Character.add_object` now
@@ -97,30 +148,63 @@ oracle — `look in bag` was avoided because it independently trips FINDING-021)
 
 ---
 
-## FINDING-020 — `remove` re-appends to inventory, losing ROM's preserved carry-list position — ⚠️ OPEN
+## FINDING-020 — `remove` re-appends to inventory, losing ROM's preserved carry-list position — ✅ RESOLVED
 
-**Status:** ⚠️ OPEN 2026-06-03. Distinct from the INV-039 head-insert class — this
-is the **equipment-storage architecture** divergence. ROM keeps equipped objects
-in `ch->carrying` with only `wear_loc` set (`get_eq_char` loops the carry list);
-removing an item (`unequip_char`) merely clears `wear_loc`, so the object keeps
-its original carry-list position. The Python port stores equipped objects in a
-separate `char.equipment` dict (removed from `inventory` on equip) and
-re-**appends** them to `inventory` on remove (`obj_manipulation._remove_obj`),
-so a removed item lands at the tail regardless of its original position.
+**Status:** ✅ RESOLVED 2026-06-03 (2.13.6). Distinct from the INV-039 head-insert
+class — this is the **equipment-storage architecture** divergence. ROM keeps
+equipped objects in `ch->carrying` with only `wear_loc` set (`get_eq_char` loops
+the carry list); removing an item (`unequip_char`) merely clears `wear_loc`, so
+the object keeps its original carry-list position. The Python port stores equipped
+objects in a separate `char.equipment` dict (removed from `inventory` on equip)
+and historically re-**appended** them to `inventory` on remove
+(`obj_manipulation._remove_obj`), so a removed item landed at the tail regardless
+of its original position.
 
-Minimal divergence (with another carried item present):
+**ROM ground truth (captured from the diffshim C oracle) — position is RELATIVE
+to acquisition order, not a fixed index and not always head/tail:**
 ```
-__oload=3032; __oload=3021; get bag; get sword; wield sword; remove sword
-→ step 6 chars[Tester].inventory · C=[3021, 3032] py=[3032, 3021]
+findings_case      get bag; get sword; wield sword; remove sword
+  sword acquired AFTER bag  → C inv=[3021, 3032]   (sword in front of bag)
+interleave_case    get sword; wield; get bag; get jacket; remove sword
+  sword acquired FIRST       → C inv=[3045, 3032, 3021]  (sword at tail)
+container_roundtrip put sword bag; get sword bag (re-acquire); wield; remove
+  re-acquisition refreshes   → C inv=[3021, 3045, 3032]  (sword back at head)
 ```
+This killed the "store an absolute index and re-insert" approach: there is no
+fixed index — new acquisitions head-insert *in front of* an equipped object while
+it stays put, so its final slot is determined by acquisition order relative to
+items that come and go.
 
-A faithful fix requires preserving the object's carry-list position across
-equip→remove, which the dict-based equipment model cannot do without
-re-architecting equipment storage to ROM's wear_loc-in-carry-list model — out of
-scope for the INV-039 session. The generated machine is gated to only `remove`
-when nothing else is carried (see `generated.py` remove rules), so it exercises
-the matching single-item path without asserting on this open bug. Filed as a
-`DIVERGENCE_CLASS_ROSTER` entry.
+**Fix (acquisition-sequence shim — behaviorally isomorphic to ROM's single carry
+list, keeps the enforced `char.equipment` dict convention intact):** a global
+monotonic counter stamps `Object._carry_seq` at every carry-list entry
+(`Character.add_object`; `equip_object`'s direct-equip else-branch). On unequip,
+`_remove_obj` re-inserts the object ahead of the first carried object acquired
+earlier than it (lower `_carry_seq`) instead of appending. ROM's `ch->carrying`
+is always in descending-acquisition order (only ops are head-insert and remove,
+both order-preserving), so a per-object seq + ordered re-insert reproduces every
+observable. Verified: Python now matches the C oracle for inventory **and**
+equipment across all three cases above plus two-equip, re-equip, and drop-mix
+scenarios; the generated state machine's `remove` rules are un-gated (the
+`_no_other_carried()` restriction removed) so Hypothesis exercises the formerly-
+divergent remove-with-other-carried path against the live C oracle.
+
+**Test:** `tests/integration/test_finding020_equip_remove_carry_position.py`
+(3 C-confirmed scenarios) + un-gated `tools/diff_harness/generated.py` remove rules.
+
+**Scope:** resolved for the **PC carry-list path** (`Character.add_object` /
+`equip_object` / `_remove_obj`), validated against a PC "Tester". Mobs use a
+*separate* equipment representation (`MobInstance.equip` keeps the item in
+`inventory` with `wear_loc` set and does not populate the equipment dict) — mob
+disarm/remove position is **not** verified by this fix and is filed as the open
+**FINDING-025** below. Do not read this RESOLVED as covering mob equipment.
+
+**Out-of-scope follow-up (filed):** save/load discards the inventory↔equipment
+ordering relationship in *both* the old and new models — `equipment_state` is a
+dict with no position relative to the ordered `inventory_state`, so a
+reloaded-then-removed item appends (its `_carry_seq` is 0 / not persisted). The
+runtime FINDING-020 is closed; this reload-ordering gap is a distinct concern
+tracked as **FINDING-024** below.
 
 ---
 

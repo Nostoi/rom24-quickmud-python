@@ -28,6 +28,25 @@ if TYPE_CHECKING:
     from mud.models.room import Room
 
 
+# FINDING-020: global monotonic acquisition counter. ROM's ch->carrying is a
+# LIFO list whose order is wholly determined by obj_to_char head-inserts; an
+# object's slot never moves once it is acquired (equip only flips wear_loc).
+# Stamping a strictly-increasing seq at every carry-list entry lets the unequip
+# path re-insert a removed object at the position descending-acquisition order
+# dictates — see Object._carry_seq. A global counter is sufficient: only the
+# relative order of objects within one character's current item set is ever
+# compared, and entries to any single list always happen in increasing-counter
+# order, so no per-character reset is needed (a later test's higher seqs never
+# corrupt an earlier character's relative ordering).
+_carry_seq_counter = 0
+
+
+def _next_carry_seq() -> int:
+    global _carry_seq_counter
+    _carry_seq_counter += 1
+    return _carry_seq_counter
+
+
 def _resolve_item_type(raw) -> ItemType | None:
     """Best-effort conversion of raw item type values into ItemType members."""
 
@@ -684,6 +703,10 @@ class Character:
         # `in_obj` per the property contract.
         self.inventory.insert(0, obj)
         obj.location = self
+        # FINDING-020: head-insert == newest, so stamp the highest seq. The
+        # unequip path uses this to restore a removed object to its preserved
+        # carry-list position (ROM keeps it in ch->carrying across equip).
+        obj._carry_seq = _next_carry_seq()
         self.carry_number += _object_carry_number(obj)
         self._recalculate_carry_weight()
 
@@ -693,6 +716,12 @@ class Character:
             self.inventory.remove(obj)
         else:
             self.carry_number += carry_delta
+            # FINDING-020: direct equip (object never passed through add_object,
+            # e.g. reset/spawn equip) still enters the carry list in ROM
+            # (obj_to_char before equip_char), so stamp an acquisition seq if it
+            # is missing so a later unequip can position it correctly.
+            if not getattr(obj, "_carry_seq", 0):
+                obj._carry_seq = _next_carry_seq()
         # ROM keys equipment by int wear slot (src/handler.c equip_char); coerce
         # legacy string slot names ("wield", "shield", …) to the canonical int.
         self.equipment[canonical_wear_slot(slot)] = obj

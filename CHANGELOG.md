@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FINDING-020 — `remove` lost ROM's preserved carry-list position.** ROM keeps
+  equipped objects in `ch->carrying` with only `wear_loc` set, so an unequipped
+  item keeps its original LIFO carry-list slot; new acquisitions head-insert in
+  front of it. The Python port stored equipped objects in a separate `equipment`
+  dict and re-**appended** them to `inventory` on remove, so a removed item always
+  landed at the tail. The C oracle confirmed the position is **relative to
+  acquisition order** (not a fixed index): a sword acquired before its bag returns
+  in front of it, a sword acquired first returns at the tail, and a sword
+  re-acquired from a container returns to the head. Fixed with an acquisition-
+  sequence shim — a monotonic `Object._carry_seq` stamped at every `add_object`
+  and direct equip; `_remove_obj` re-inserts the object by descending `_carry_seq`
+  instead of appending. Verified against the live C oracle across findings/
+  interleave/roundtrip + two-equip/re-equip/drop-mix scenarios; the diff-harness
+  generated state machine's `remove` rules are un-gated to exercise the formerly-
+  divergent remove-with-other-carried path. Tracked under divergence class 13;
+  the save/load persistence leg is filed as the open FINDING-024.
 - **Room-contents `look()` now uses `show_list_to_char` for full ROM parity.** The
   `_look_room` object-list path previously used a hand-rolled `for obj in
   room.contents` loop that emitted bare `obj.description` lines, missing the

@@ -104,20 +104,21 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
     def wear_scale_jacket(self) -> None:
         self._wear_object(self.scale_jacket)
 
-    # FINDING-020 (OPEN): Python stores equipped objects in a separate
-    # `equipment` dict and re-appends them to `inventory` on remove, whereas ROM
-    # keeps equipped objects in `ch->carrying` (only `wear_loc` changes), so a
-    # removed item keeps its original carry-list position. With any *other*
-    # carried object present, Python's re-append therefore diverges from ROM's
-    # preserved order. Until that architectural divergence is closed, only
-    # generate `remove` when nothing else is carried, so the machine exercises
-    # the (matching) single-item remove path without asserting on the open bug.
-    @precondition(lambda self: self.small_sword.equipped and self._no_other_carried())
+    # FINDING-020 (CLOSED, 2.13.6): ROM keeps equipped objects in `ch->carrying`
+    # (only `wear_loc` changes), so a removed item keeps its original carry-list
+    # position. The Python port now stamps a monotonic acquisition seq at every
+    # `add_object` and re-inserts a removed object at the position descending-
+    # acquisition order dictates (mud/commands/obj_manipulation.py:_remove_obj),
+    # reproducing ROM's preserved order even with other objects carried. The
+    # earlier `_no_other_carried()` gate is therefore removed so the machine
+    # exercises the formerly-divergent remove-with-other-carried path against the
+    # C oracle.
+    @precondition(lambda self: self.small_sword.equipped)
     @rule()
     def remove_small_sword(self) -> None:
         self._remove_object(self.small_sword)
 
-    @precondition(lambda self: self.scale_jacket.equipped and self._no_other_carried())
+    @precondition(lambda self: self.scale_jacket.equipped)
     @rule()
     def remove_scale_jacket(self) -> None:
         self._remove_object(self.scale_jacket)
@@ -167,15 +168,6 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
     @staticmethod
     def _object_exists(obj: _ObjectState) -> bool:
         return obj.room is not None or obj.inventory or obj.equipped or obj.in_container
-
-    def _no_other_carried(self) -> bool:
-        """True when no object is currently a carried, non-equipped inventory item.
-
-        Guards `remove` against FINDING-020 (see the remove rules): the divergence
-        only manifests when another carried object is present in the inventory at
-        remove time.
-        """
-        return not any(obj.inventory for obj in (self.small_sword, self.scale_jacket, self.bag))
 
     def _load_object(self, obj: _ObjectState) -> None:
         self.steps.append(obj.load_command)
