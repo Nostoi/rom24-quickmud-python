@@ -10,10 +10,10 @@
     matching ROM `src/act_info.c:1106`. Previous code used a hand-rolled for-loop
     that omitted `can_see_object` visibility, aura prefixes, and COMBINE
     coalescence. 10 new integration tests.
-  - **FINDING-022** — `look in <container>` contents indent (2.13.4, committed this session).
-  - **Class-13 bypass sweep** — 15 runtime-placement sites fixed (2.13.3, committed this session).
+  - **FINDING-022** — `look in <container>` contents indent (2.13.4).
+  - **Class-13 bypass sweep** — 15 runtime-placement sites fixed (2.13.3).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-03_FINDING022_SHOW_LIST_PARITY.md](SESSION_SUMMARY_2026-06-03_FINDING022_SHOW_LIST_PARITY.md)
+  [SESSION_SUMMARY_2026-06-03_ROOM_CONTENTS_SHOW_LIST_PARITY.md](SESSION_SUMMARY_2026-06-03_ROOM_CONTENTS_SHOW_LIST_PARITY.md)
 
 ## Project Status (snapshot)
 
