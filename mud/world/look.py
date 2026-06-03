@@ -168,14 +168,15 @@ def _look_room(char: Character, room) -> str:
         room_desc = room.description or ""
         lines.append(room_desc)
 
-    # Objects in room — ROM show_list_to_char(..., fShort=FALSE) →
-    # format_obj_to_char(obj, ch, FALSE) (src/act_info.c): each object is listed by
-    # its ground description (obj->description), and any object whose description is
-    # empty is skipped entirely. (Object analog of show_char_to_char_0's long_descr.)
-    for obj in room.contents:
-        description = getattr(obj, "description", None)
-        if description:
-            lines.append(description)
+    # Objects in room — ROM src/act_info.c:1106
+    # show_list_to_char(ch->in_room->contents, ch, FALSE, FALSE)
+    # Uses f_short=False (ground description), f_show_nothing=False (no "Nothing."),
+    # can_see_obj visibility filter, and COMBINE coalescing for NPC/COMBINE viewers.
+    from mud.utils.act import show_list_to_char
+
+    obj_text = show_list_to_char(room.contents, char, f_short=False, f_show_nothing=False)
+    if obj_text:
+        lines.append(obj_text.rstrip("\n"))
 
     # Characters in room — ROM appends raw character lines via show_char_to_char.
     for occupant in room.people:

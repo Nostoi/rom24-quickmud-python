@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Room-contents `look()` now uses `show_list_to_char` for full ROM parity.** The
+  `_look_room` object-list path previously used a hand-rolled `for obj in
+  room.contents` loop that emitted bare `obj.description` lines, missing the
+  `can_see_object` visibility filter, aura prefixes (Invis/Red Aura/Blue
+  Aura/Magical/Glowing/Humming), and COMBINE duplicate coalescence. Now calls
+  `show_list_to_char(room.contents, char, f_short=False, f_show_nothing=False)`,
+  matching ROM `src/act_info.c:1106`. Non-COMBINE PCs see one line per visible
+  object (no indent); COMBINE/NPC viewers see 5-space padding and `(N)` counts.
 - **FINDING-022 — `look in <container>` contents lines carried wrong indent.** The
   Python `_look_in` branch prepended a 2-space indent to each container content
   line, but ROM's `show_list_to_char` (`src/act_info.c:130-243`) has two formatting
