@@ -2,7 +2,7 @@
 
 **Purpose**: Systematic audit of ROM 2.4b6 act_comm.c (2,196 lines, 36 functions)  
 **Created**: January 8, 2026  
-**Status**: ✅ **100% P0-P1 ROM PARITY ACHIEVED!** - All critical gaps fixed  
+**Status**: ✅ **P0-P1 functionally complete** — one open string divergence: **QUIT-001** (interactive `do_quit` TO_CHAR farewell, see do_quit section)  
 **Priority**: P0 - Core Communication Commands
 
 ## Executive Summary
@@ -502,7 +502,7 @@ return result
 | do_bug() | 1433-1438 | feedback.py:54 | append_file() → "Bug logged" | ✅ **100%** |
 | do_typo() | 1440-1445 | feedback.py:82 | append_file() → "Typo logged" | ✅ **100%** |
 | do_save() | 1522-1532 | session.py:18 | save_char_obj() + WAIT_STATE | ✅ **100%** |
-| do_quit() | 1462-1518 | session.py:36 | Full quit sequence | ✅ **100%** |
+| do_quit() | 1462-1518 | session.py:36 | Full quit sequence | ⚠️ **~95%** (QUIT-001: TO_CHAR farewell wrong) |
 
 **do_quit() Verification** (most complex):
 
@@ -522,13 +522,19 @@ return result
 - ✅ NPC check
 - ✅ Fighting check
 - ✅ Position check (stunned/incap/mortal/dead)
-- ✅ Messages to char and room
+- ⚠️ Messages to char and room — see **QUIT-001** below (TO_ROOM correct; **TO_CHAR wrong**)
 - ✅ save_char_obj() equivalent
 - ✅ extract_char() equivalent
 - ✅ Connection cleanup
 - **Note**: Wiznet/logging handled by session layer (acceptable difference)
 
-**Parity Check**: ✅ PERFECT (all 6 utility functions)
+**Parity Check**: ⚠️ near-perfect — one TO_CHAR string divergence (QUIT-001)
+
+**QUIT-001 — interactive `do_quit` farewell string divergence** (❌ OPEN, surfaced 2026-06-03 while closing GL-037)
+- **ROM C** `src/act_comm.c:1481`: `send_to_char("Alas, all good things must come to an end.\n\r", ch)` to the quitter, then `act("$n has left the game.", ..., TO_ROOM)`.
+- **Python** `mud/commands/session.py:62-69`: broadcasts the TO_ROOM line correctly via `act_to_room(room, "$n has left the game.", ch)`, but **returns `"May your travels be safe.\n"` to the quitter** instead of ROM's "Alas, all good things must come to an end." There is no "Alas…" send anywhere on the interactive quit path (grep-verified). The pre-existing "✅ Messages to char and room" row above was a false ✅.
+- **Scope note**: the **idle-autoquit** path (`mud/game_loop.py:_auto_quit_character`) emits the correct ROM "Alas…" string as of GL-037 (2.12.97) — so after that fix the two quit paths diverge from each other, which is what surfaced this. The interactive command path remains wrong.
+- **Fix**: in `do_quit` (`session.py`), send "Alas, all good things must come to an end." to `ch` (matching ROM, e.g. via `act_to_char`/the command-return convention used elsewhere) instead of "May your travels be safe." Single-function local divergence — close via `/rom-gap-closer QUIT-001`.
 
 ---
 

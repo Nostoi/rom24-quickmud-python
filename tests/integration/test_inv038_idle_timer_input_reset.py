@@ -107,6 +107,10 @@ def test_connected_idle_player_autoquits_via_async_close(monkeypatch):
         def __init__(self) -> None:
             self.closed = False
 
+        async def send_line(self, message: str) -> None:
+            # GL-037 emits the do_quit farewell to the connected idler; absorb it.
+            return
+
         async def close(self) -> None:
             self.closed = True
 
@@ -132,6 +136,62 @@ def test_connected_idle_player_autoquits_via_async_close(monkeypatch):
     # ...and the tick did NOT synchronously extract — the playing-loop finally
     # (not modeled in this unit test) owns registry/room teardown on a live conn.
     assert idler in character_registry
+
+
+def test_connected_idle_autoquit_emits_do_quit_messaging(monkeypatch):
+    """GL-037: idle autoquit of a CONNECTED player emits ROM ``do_quit``'s
+    farewell + room departure. ROM src/act_comm.c:1481-1482 sends "Alas, all
+    good things must come to an end." (TO_CHAR) and ``act("$n has left the
+    game.", TO_ROOM)`` *before* extract/close. GL-035 routes the connected idler
+    through the clean-disconnect ``finally``, which sends neither, so the
+    idle-autoquit path (``_auto_quit_character``) must emit both itself."""
+
+    character_registry.clear()
+    room_registry.clear()
+    gl._AUTOSAVE_ROTATION = 0
+
+    area = Area(name="Idle Hall")
+    limbo = Room(vnum=ROOM_VNUM_LIMBO, area=area)
+    room_registry[limbo.vnum] = limbo
+
+    monkeypatch.setattr(gl, "save_character", lambda ch: None)
+
+    class _RecordingConn:
+        def __init__(self) -> None:
+            self.closed = False
+            self.lines: list[str] = []
+
+        async def send_line(self, message: str) -> None:
+            self.lines.append(message)
+
+        async def close(self) -> None:
+            self.closed = True
+
+    # Connected idler past threshold, already voided to limbo.
+    idler = _make_pc("Idler", timer=31, room=limbo)
+    idler.was_in_room = limbo
+    idler.desc = object()
+    conn = _RecordingConn()
+    idler.connection = conn
+
+    # Witness in the same (limbo) room — no connection → mailbox delivery.
+    witness = _make_pc("Witness", timer=0, room=limbo)
+    witness.connection = None
+    witness.messages = []
+
+    async def _run() -> None:
+        char_update()
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+
+    asyncio.run(_run())
+
+    # TO_CHAR — ROM src/act_comm.c:1481.
+    assert any("Alas, all good things must come to an end." in line for line in conn.lines)
+    # TO_ROOM — ROM src/act_comm.c:1482 act("$n has left the game.").
+    assert any("Idler has left the game." in m for m in witness.messages)
+    # GL-035 teardown still scheduled.
+    assert conn.closed is True
 
 
 def test_linkdead_idle_player_autoquits(monkeypatch):

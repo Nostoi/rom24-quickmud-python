@@ -585,6 +585,20 @@ def _auto_quit_character(character: Character) -> None:
     # re-scheduled each intervening tick. That is bounded and harmless —
     # ``close()`` is idempotent and the fire-and-forget task holds no saved
     # reference (same precedent as ``mud.utils.messaging.send_to_char``).
+    # GL-037: ROM ``do_quit`` (src/act_comm.c:1481-1482) emits the farewell to
+    # the quitter and broadcasts the departure to the room BEFORE save/extract,
+    # for any ``ch_quit`` regardless of link state. The connected leg below
+    # routes teardown through the clean-disconnect ``finally`` (which sends
+    # neither), so we must emit both here. Emit before scheduling the close so
+    # the TO_CHAR send task is queued ahead of the transport close. On the
+    # link-dead leg the TO_CHAR routes to the discarded mailbox (no socket) —
+    # a harmless no-op equivalent to ROM ``send_to_char``'s ``desc==NULL``
+    # short-circuit — while the TO_ROOM broadcast still lands.
+    _send_to_char(character, "Alas, all good things must come to an end.")
+    room = getattr(character, "room", None)
+    if room is not None:
+        _act_to_room(room, "$n has left the game.", character)
+
     connection = getattr(character, "connection", None)
     if getattr(character, "desc", None) is not None and connection is not None:
         if _schedule_connection_close(connection):
