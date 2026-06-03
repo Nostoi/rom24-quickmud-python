@@ -1,4 +1,4 @@
-# Session Summary — 2026-06-02 — MOVE-005 exit-trigger ordering (mob-trigger cross-file probe)
+# Session Summary — 2026-06-02 — MOVE-005 exit-trigger ordering + MOVE-006 encumbrance-gate removal (mob-trigger cross-file probe)
 
 ## Scope
 
@@ -54,27 +54,63 @@ This session ran that probe and closed the one divergence it surfaced.
   over-encumbered PC. Each spies `mp_exit_trigger` and asserts it is reached
   (and aborts the move) despite the would-be-earlier gate.
 
-## Out-of-scope finding filed durably — MOVE-006 (❌ OPEN)
+## Outcome 2 — MOVE-006 (✅ FIXED, 2.12.82, same session)
 
-While reading the full `move_char` body for MOVE-005: ROM `move_char` has **no
-carry-weight/carry-number movement gate anywhere** — movement is gated only on
-move points (`if (ch->move < move) "You are too exhausted."`), terrain, boats,
-and flags. The Python `"You are too encumbered to move."` early-return
-(`get_carry_weight > can_carry_w`) is a **non-ROM invention**. Filed as MOVE-006
-in `ACT_MOVE_C_AUDIT.md` (pending verification of whether any ROM derivative
-added it; if not, remove for parity). Not fixed this session (out-of-scope rule).
+Filed mid-MOVE-005 as out-of-scope, then closed in the same session after user
+confirmation (the removal changes player-facing behavior + touches a
+parity-claiming test file, so I surfaced it via `AskUserQuestion` before
+deleting).
+
+- **ROM**: `move_char` has **no carry-weight/carry-number movement gate
+  anywhere** (verified across all of `src/`) — movement is gated only on move
+  points (`if (ch->move < move) "You are too exhausted."`, lines 122–126),
+  terrain, boats, and flags. ROM enforces carry limits at **pickup/transfer**
+  time instead (`do_get` `act_obj.c:105-115`, `do_give` `:811-820`, get/wear
+  `:2313-2321` → "you can't carry that much weight."), so a PC can never
+  *become* overweight enough to need a movement gate.
+- **Gap**: Python `move_character` had a `"You are too encumbered to move."`
+  early-return (`get_carry_weight > can_carry_w or carry_number > can_carry_n`)
+  — a non-ROM invention with **no ROM basis**. **5 tests asserted the
+  `"too encumbered"` block with no ROM citation at all** (the nearby
+  `# ROM act_move.c:204` comments are *correct* — they annotate the separate
+  arrival/"Destination"-seen assertions; line 204 is `act("$n has arrived.")`).
+  My first draft of this summary wrongly called :204 a "misattribution
+  justifying the gate" — corrected here after an advisor recall check (the gate
+  was simply uncited).
+- **Fix**: removed the early-return; **kept** all carry-cap machinery
+  (`can_carry_w`/`can_carry_n`/`get_carry_weight` + the `do_get` pickup gates —
+  those *are* ROM-correct). Corrected the 5 test sites to assert ROM behavior
+  (overweight PC moves): `test_world.py` (renamed
+  `..._cannot_move`→`..._can_still_move`), `test_encumbrance.py`
+  (3 movement tests → 2 inverted + 1 `wait_state` test deleted),
+  `test_architectural_parity.py` (kept the pickup-block assertion, inverted the
+  movement portion), and reframed the MOVE-005 `..._when_encumbered` test
+  (`get_carry_weight` monkeypatch was now inert).
+- **RED-first test**: `tests/integration/test_move006_no_encumbrance_movement_gate.py`
+  — overweight PC + huge coin burden both move to dest (2 tests, failed before).
+- **Net test delta**: +2 (new file) − 1 (deleted `test_overweight_move_sets_wait_state`) = +1.
 
 ## Files Modified
 
+**MOVE-005:**
 - `mud/world/movement.py` — `move_character`: `mp_exit_trigger` block relocated
-  to the top (after `idx` lookup), before encumbrance + exit-existence gates;
-  MOVE-005 comment citing ROM.
-- `tests/integration/test_move005_exit_trigger_ordering.py` — new (2 RED→GREEN).
-- `docs/parity/ACT_MOVE_C_AUDIT.md` — MOVE-005 row (FIXED) + MOVE-006 row (OPEN);
-  corrected line-by-line items 2 & 3 (ordering note on the previously bare
-  ✅ PARITY).
-- `CHANGELOG.md` — Fixed entry under `[Unreleased]`.
-- `pyproject.toml` — 2.12.80 → 2.12.81.
+  to the top (after `idx` lookup), before encumbrance + exit-existence gates.
+- `tests/integration/test_move005_exit_trigger_ordering.py` — new (2 RED→GREEN;
+  the `..._encumbered` case later reframed for MOVE-006).
+- `docs/parity/ACT_MOVE_C_AUDIT.md` — MOVE-005 row (FIXED); corrected
+  line-by-line items 2 & 3.
+
+**MOVE-006 (same session):**
+- `mud/world/movement.py` — removed the `"You are too encumbered to move."`
+  early-return; added a MOVE-006 comment citing ROM.
+- `tests/integration/test_move006_no_encumbrance_movement_gate.py` — new (2 RED→GREEN).
+- `tests/test_world.py`, `tests/test_encumbrance.py`,
+  `tests/integration/test_architectural_parity.py` — 5 assertions corrected to
+  ROM behavior (1 wait-state test deleted).
+- `docs/parity/ACT_MOVE_C_AUDIT.md` — MOVE-006 row → ✅ FIXED.
+
+**Both:** `CHANGELOG.md` (2 Fixed entries), `pyproject.toml`
+(2.12.80 → 2.12.81 → 2.12.82).
 
 ## Test Status
 
@@ -92,20 +128,30 @@ added it; if not, remove for parity). Not fixed this session (out-of-scope rule)
 ## Commits
 
 - `8681630c` — `fix(parity): MOVE-005 — fire mob TRIG_EXIT before exit-existence/encumbrance gates (2.12.81)`
-- _(this summary + SESSION_STATUS refresh)_ — docs(session).
+- `80cbf34d` — `docs(session): MOVE-005 exit-trigger ordering summary + SESSION_STATUS (2.12.81)` (pushed to origin)
+- `0c890d57` — `fix(parity): MOVE-006 — remove non-ROM "too encumbered to move" movement gate (2.12.82)`
+- _(this MOVE-006 summary + SESSION_STATUS refresh)_ — docs(session).
+
+## Full-suite status (final)
+
+**5364 passed, 4 skipped** (180.44s) after MOVE-006 — zero regressions on the
+CRITICAL-blast-radius movement surface (11 direct callers). `ruff check` clean on
+all edited lines (`test_encumbrance.py` carries 3 pre-existing import-sort errors
+outside the edited region — not introduced here).
 
 ## Next Steps
 
-Mob-trigger ordering probe is largely exhausted (FIGHT/HPCNT/ACT/KILL/DEATH
-enforced; EXIT closed; BRIBE/GIVE read clean). Candidate next passes:
+Mob-trigger ordering probe is exhausted (FIGHT/HPCNT/ACT/KILL/DEATH enforced;
+EXIT closed via MOVE-005; BRIBE/GIVE verified at call-site ordering). Candidate
+next passes:
 
-1. **MOVE-006** — verify/remove the non-ROM encumbrance movement gate (small,
-   self-contained; has an OPEN audit row ready).
-2. **Highest-ceiling (multi-day):** `diff_harness` Hypothesis widening
+1. **Highest-ceiling (multi-day):** `diff_harness` Hypothesis widening
    (`tools/diff_harness/PROPOSAL_HYPOTHESIS_WIDENING.md`) — the only
    enumeration-independent path to *unknown* divergences.
+2. **New cross-INV probe area** — position-transition edges, affect ticks, or
+   mob random/delay (`TRIG_RANDOM`/`TRIG_DELAY` in `update.c`) ordering.
 3. **Housekeeping:** INV tracker consolidation (27 rows, past the ~20 soft cap).
 
-> **Push note:** `origin/master` is at `6b2fbd2b` (2.12.80). This session's
-> commits (`8681630c` + the docs follow-up, 2.12.81) are **unpushed**.
-> CHANGELOG/version reflect 2.12.81.
+> **Push note:** `origin/master` is at `80cbf34d` (2.12.81 — MOVE-005 pushed).
+> The MOVE-006 commit `0c890d57` (2.12.82) + this docs follow-up are
+> **unpushed**. CHANGELOG/version reflect 2.12.82.
