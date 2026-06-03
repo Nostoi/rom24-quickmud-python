@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **FINDING-022 — `look in <container>` contents lines carried wrong indent.** The
+  Python `_look_in` branch prepended a 2-space indent to each container content
+  line, but ROM's `show_list_to_char` (`src/act_info.c:130-243`) has two formatting
+  paths: 5-space padding (or `(N) ` count) for NPC/COMM_COMBINE viewers, and no
+  indent at all for non-COMBINE PCs. Ported `show_list_to_char` and
+  `format_obj_to_char` to `mud/utils/act.py` as shared utilities; `_look_in` now
+  calls `show_list_to_char` producing the correct ROM output for both viewer types.
+- **FINDING-023 — `fire_effect` burn-drop items silently lost (4 sites).** The four
+  branches in `_fire_effect` that disarmed/dropped armor/clothing/weapon/light used
+  `room.objects.append(obj)`, but `Room` has no `objects` attribute — only
+  `contents`. The `hasattr(room, "objects")` guard always returned `False`, so
+  items removed from inventory/equipment by fire never reached the room. All four
+  sites now route through `room.add_object(obj)` (head-insert per INV-039).
+- **FINDING-024 — class-13 bypass sweep: 15 placement sites bypassed INV-039
+  chokepoints.** Systematic sweep of all production `.append()` sites placing
+  objects into `inventory`/`contents`/`contained_items` found 15 runtime-placement
+  bypasses where ROM C head-inserts (LIFO) but Python was appending (FIFO). All
+  fixed to route through the canonical chokepoints or use `insert(0)`:
+  `game_loop._obj_to_obj`, `game_loop._obj_to_char`, `game_loop._obj_to_room`,
+  `MobInstance.add_to_inventory`, `ObjectInstance.move_to_room`,
+  `equipment._perform_remove`, `death._handle_corpse_item` + `make_corpse` money,
+  scavenger (spec_funs + ai), `mob_cmds.mpoload`/`mptransfer_obj`, `imm_load`,
+  `imm_search`, `shop` sell-to-keeper, `reset_handler` container-put,
+  `build.cmd_redit` container-put. 4 order-preserving reconstruction sites left
+  as `append` (DB reload, clone, conversion, mpjunk-rebuild). Dead fallback
+  branches removed from `_obj_to_room`, `_drop_object_into_room`, `_place_corpse_object_in_room`.
+
 ### Changed
 
 - **pre-commit activated and aligned to ruff (dev-workflow).** The repo's `.pre-commit-config.yaml` existed but had never been installed (no `.git/hooks/pre-commit`); it pinned a stale ruff (v0.6.9) + black. Bumped ruff-pre-commit to v0.12.12 and replaced the black hook with `ruff-format` (single formatter, matching `[tool.ruff.format]` / the repo's now-applied formatting). Activated it in-clone. Validating across all files surfaced that two **local** project hooks fail on the current codebase and had never actually run: `test-fixtures-lint` (~617 legacy test sites predate the standard fixtures) and `validate-area-parity` (a stale script path + a flawed comparison — see Fixed). Both were gated to `stages: [manual]` so they don't block everyday commits; `validate-area-parity` was then fixed and moved back to the commit stage. Active commit-stage hooks: ruff, ruff-format, validate-area-parity, equipment-key-convention, attribute-convention. NB: pre-commit is per-clone — other clones/CI need `pip install pre-commit && pre-commit install`.

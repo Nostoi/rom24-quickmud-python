@@ -986,11 +986,18 @@ def do_sell(char: Character, args: str) -> str:
             selected_obj.extra_flags = flags & ~int(ITEM_HAD_TIMER)
         # SELL-006: obj_to_keeper dedup — if keeper has ITEM_INVENTORY copy, extract sold obj
         if not _obj_to_keeper(selected_obj, keeper):
+            # INV-039 / class-13: ROM obj_to_char head-inserts.
             add_obj = getattr(keeper, "add_object", None)
             if callable(add_obj):
                 add_obj(selected_obj)
-            else:  # pragma: no cover - legacy fallback
-                keeper.inventory.append(selected_obj)
+            else:
+                add_inv = getattr(keeper, "add_to_inventory", None)
+                if callable(add_inv):
+                    add_inv(selected_obj)
+                else:
+                    inventory = getattr(keeper, "inventory", None)
+                    if isinstance(inventory, list):
+                        inventory.insert(0, selected_obj)
 
     _set_character_total_wealth(char, _character_total_wealth(char) + price)
     _set_keeper_total_wealth(keeper, total_wealth - price)

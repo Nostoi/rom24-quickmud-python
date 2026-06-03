@@ -240,7 +240,8 @@ class ObjectInstance:
         if self.location and hasattr(self.location, "contents"):
             if self in self.location.contents:
                 self.location.contents.remove(self)
-        room.contents.append(self)
+        # INV-039 / class-13: route through Room.add_object (head-insert).
+        room.add_object(self)
         self.location = room
 
 
@@ -488,8 +489,9 @@ class MobInstance:
         self.room = room
 
     def add_to_inventory(self, obj: Object) -> None:
+        # INV-039 / class-13: ROM src/handler.c:1626 obj_to_char head-inserts.
         if not any(existing is obj for existing in self.inventory):
-            self.inventory.append(obj)
+            self.inventory.insert(0, obj)
         obj.carried_by = self
 
     def remove_object(self, obj: Object) -> None:

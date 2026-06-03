@@ -816,7 +816,8 @@ def _handle_oreset_command(room: Room, args_parts: list[str]) -> str:
         if obj is None:
             return "REdit: Unable to create that object."
         obj.cost = 0
-        container.contained_items.append(obj)
+        # INV-039 / class-13: ROM obj_to_obj head-inserts for container items.
+        container.contained_items.insert(0, obj)
         container_proto = getattr(container, "prototype", None)
         container_vnum = getattr(container_proto, "vnum", 0)
         room.resets.append(ResetJson(command="P", arg1=obj_vnum, arg2=0, arg3=container_vnum, arg4=1))

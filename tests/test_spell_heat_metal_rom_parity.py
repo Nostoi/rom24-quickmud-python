@@ -85,7 +85,7 @@ def test_heat_metal_saves_spell():
 def test_heat_metal_nonmetal_items_ignored():
     """ROM L3140: NONMETAL items are not heated."""
     room = make_room()
-    room.objects = []
+    room.contents = []
 
     caster = make_character(level=30, room=room)
     victim = make_character(level=10, imm_flags=0, room=room)
@@ -109,7 +109,7 @@ def test_heat_metal_nonmetal_items_ignored():
 def test_heat_metal_burn_proof_ignored():
     """ROM L3141: BURN_PROOF items are not heated."""
     room = make_room()
-    room.objects = []
+    room.contents = []
 
     caster = make_character(level=30, room=room)
     victim = make_character(level=10, imm_flags=0, room=room)
@@ -133,7 +133,7 @@ def test_heat_metal_burn_proof_ignored():
 def test_heat_metal_armor_in_inventory():
     """ROM L3177-3201: Armor in inventory can be dropped."""
     room = make_room()
-    room.objects = []
+    room.contents = []
 
     caster = make_character(level=30, room=room)
     victim = make_character(level=10, imm_flags=0, dex=18, room=room)
@@ -155,13 +155,13 @@ def test_heat_metal_armor_in_inventory():
     # Armor should be dropped and cause damage (ROM uses /6 for inventory items)
     assert dam > 0
     assert armor not in victim.inventory
-    assert armor in room.objects
+    assert armor in room.contents
 
 
 def test_heat_metal_worn_armor_removed():
     """ROM L3146-3175: Worn armor can be removed if dex check passes."""
     room = make_room()
-    room.objects = []
+    room.contents = []
 
     caster = make_character(level=30, room=room)
     victim = make_character(level=10, imm_flags=0, dex=20, room=room)
@@ -187,7 +187,7 @@ def test_heat_metal_worn_armor_removed():
 def test_heat_metal_weapon_dropped():
     """ROM L3204-3260: Wielded weapon can be dropped."""
     room = make_room()
-    room.objects = []
+    room.contents = []
 
     caster = make_character(level=30, room=room)
     victim = make_character(level=10, imm_flags=0, room=room)
@@ -214,7 +214,7 @@ def test_heat_metal_weapon_dropped():
 def test_heat_metal_save_reduces_damage():
     """ROM L3273-3275: Final save reduces damage by 1/3."""
     room = make_room()
-    room.objects = []
+    room.contents = []
 
     caster = make_character(level=30, room=room)
     victim = make_character(level=1, imm_flags=0, dex=1, room=room)
@@ -235,7 +235,7 @@ def test_heat_metal_save_reduces_damage():
     for seed in range(20):
         victim.hit = 120
         victim.inventory = [armor]
-        room.objects = []
+        room.contents = []
 
         rng_mm.seed_mm(seed)
         dam = heat_metal(caster, victim)

@@ -773,7 +773,9 @@ def apply_resets(area: Area) -> None:
                 if obj_proto is None or not getattr(obj_proto, "new_format", False):
                     obj.level = fuzzed_level
 
-                container_obj.contained_items.append(obj)
+                # INV-039 / class-13: ROM src/db.c reset path calls obj_to_obj
+                # which head-inserts. Use insert(0) for LIFO parity.
+                container_obj.contained_items.insert(0, obj)
                 spawned_objects.setdefault(obj_vnum, []).append(obj)
                 made += 1
                 _sync_object_count(obj_vnum, object_counts)

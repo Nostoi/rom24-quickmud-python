@@ -150,7 +150,84 @@ of the ROM block). The drink-con `"It is empty."` path (`act_info.c:1143`) is
 
 ---
 
-## FINDING-022 — `look in <container>` contents lines carry a 2-space indent ROM omits for a PC — ⚠️ OPEN (source-suspected, not oracle-confirmed)
+## FINDING-022 — `look in <container>` contents lines carry a 2-space indent ROM omits for a PC — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-03. ROM `show_list_to_char` (`src/act_info.c:130-243`) has two
+formatting paths: NPC/COMM_COMBINE viewers see 5-space padding (single items) or `(N) `
+count prefix (duplicates); non-COMBINE PCs see each item on its own line with **no**
+leading indent. The Python `_look_in` container branch (`mud/world/look.py`) was
+prepending a fixed 2-space indent (`f"  {item_name}"`), matching neither the
+no-indent PC path nor the 5-space COMBINE path.
+
+**Fix:** ported `show_list_to_char` and `format_obj_to_char` from ROM
+(`src/act_info.c:87-243`) into `mud/utils/act.py` as shared utilities. The
+`_look_in` container branch now calls `show_list_to_char(contents, char,
+f_short=True, f_show_nothing=True)` instead of a hand-rolled loop, producing
+the correct no-indent output for non-COMBINE PCs and 5-space/(N) output for
+COMBINE/NPC viewers. Also includes the `format_obj_to_char` aura-prefix logic
+(Invis/Red Aura/Blue Aura/Magical/Glowing/Humming) and `can_see_object`/`WEAR_NONE`
+filtering, matching ROM's full `show_list_to_char` behavior.
+
+**Scope note:** the existing `_show_inventory_list` in
+`mud/commands/inventory.py` (called by `do_inventory`) replicates the same
+COMBINE logic independently; both now agree on behavior. A future refactor
+could unify them to call the shared `show_list_to_char`, but that is not
+required for this fix.
+
+**Test:** `tests/integration/test_finding022_show_list_to_char_parity.py`
+(7 unit tests for `show_list_to_char` + 4 end-to-end tests for `look in`).
+
+## FINDING-023 — `fire_effect` burn-drop silently drops items on the floor (4 sites) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-03 (v2.13.3). Four branches in `mud/skills/handlers.py:_fire_effect`
+used `room.objects.append(obj)`, but `Room` has no `objects` attribute — only
+`contents`. The `hasattr(room, "objects")` guard always returned `False`, so
+items disarmed/dropped by fire (ARMOR, CLOTHING left on body; WEAPON, LIGHT from
+inventory) never reached the room. All four sites now route through `room.add_object(obj)`,
+which head-inserts (INV-039). Affected: armor burn-drop (line ~5200), clothing
+burn-drop (line ~5229), weapon burn-drop (line ~5273), weapon-in-inventory
+burn-drop (line ~5300). Regression: `test_spell_heat_metal_rom_parity.py` now
+uses `room.contents` (the correct attribute).
+
+## FINDING-024 — class-13 bypass sweep: 15 runtime-placement `.append` sites bypass the INV-039 head-insert chokepoints — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-03 (v2.13.3). Systematic sweep of all production `append`
+sites placing objects into `inventory`/`contents`/`contained_items`. 15 sites that
+should head-insert (ROM `obj_to_char`/`obj_to_room`/`obj_to_obj` all head-insert
+their target list) were bypassing the three canonical chokepoints fixed by INV-039:
+
+**Canonical functions fixed to head-insert (`insert(0)`) or route through chokepoint:**
+- `game_loop.py:_obj_to_obj` — was `append`, now `insert(0)`
+- `game_loop.py:_obj_to_char` — was `append`, now routes through `add_object`/`add_to_inventory`
+- `game_loop.py:_obj_to_room` — was fallback `append`, now always `room.add_object(obj)`
+- `spawning/templates.py:MobInstance.add_to_inventory` — was `append`, now `insert(0)`
+- `spawning/templates.py:ObjectInstance.move_to_room` — was `append`, now `room.add_object`
+- `commands/equipment.py:_perform_remove` — was manual `append`, now routes through `add_object`
+- `combat/death.py:_handle_corpse_item` — was `append`, now `insert(0)` (corpse items LIFO)
+- `combat/death.py:make_corpse` money — was `append`, now `insert(0)`
+- `mobs/scavenger` (spec_funs + ai) — now route through `add_object`/`add_to_inventory`
+- `mob_cmds.mpoload` fallback — now `insert(0)` + routes through `add_to_inventory`
+- `mob_cmds.mptransfer_obj` fallback — now `insert(0)`
+- `commands/imm_load` — routes through `add_object`/`add_to_inventory`
+- `commands/imm_search` — routes through `add_object`/`add_to_inventory`
+- `commands/shop` sell-to-keeper fallback — routes through `add_to_inventory`
+- `spawning/reset_handler` container-put — `insert(0)` (reset-area LIFO parity)
+- `commands/build:cmd_redit` container-put — `insert(0)`
+
+**Correctly left as `append` (order-preserving reconstruction paths):**
+- `db/serializers.py:_deserialize_object` — DB reload, preserves save order
+- `models/object.py:recursive_clone` — clones source LIFO order, append yields same result
+- `models/conversion.py:load_objects_for_character` — DB reload
+- `mob_cmds.do_mpjunk` — filtered inventory rebuild, not object placement
+- `object_registry.append(obj)` — global object list, not a placement list
+
+**Dead code removed (fallback `hasattr(room, "objects")` / `hasattr(room, "add_object")`
+branches that could never execute because `Room` always has `add_object` and
+has no `objects` attribute):**
+- `spec_funs._drop_object_into_room` fallback
+- `game_loop._obj_to_room` fallback
+
+**Separate finding (filed during sweep):** FINDING-023 (`room.objects` in fire_effect).
 
 **Status:** ⚠️ OPEN 2026-06-03. Surfaced while reading `show_list_to_char`
 (`src/act_info.c:130-243`) to fix FINDING-021. For a non-NPC char **without**

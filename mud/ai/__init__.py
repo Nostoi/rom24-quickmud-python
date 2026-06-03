@@ -170,18 +170,22 @@ def _take_object(mob: Character, obj: Object) -> None:
         obj.location = None
     if hasattr(obj, "in_obj"):
         obj.in_obj = None
-    if hasattr(obj, "carried_by"):
-        obj.carried_by = mob
+    # obj.carried_by is set by add_object / add_to_inventory below
 
-    inventory = getattr(mob, "inventory", None)
-    if isinstance(inventory, list) and obj not in inventory:
-        inventory.append(obj)
-
-    weight = int(getattr(obj, "weight", 0) or 0)
-    if hasattr(mob, "carry_number"):
-        mob.carry_number = int(getattr(mob, "carry_number", 0) or 0) + 1
-    if hasattr(mob, "carry_weight"):
-        mob.carry_weight = int(getattr(mob, "carry_weight", 0) or 0) + weight
+    # INV-039 / class-13: route through head-insert chokepoint.
+    # Character.add_object / MobInstance.add_to_inventory handles carry_number
+    # and carry_weight internally — no manual counter update needed.
+    add_obj = getattr(mob, "add_object", None)
+    if callable(add_obj):
+        add_obj(obj)
+    else:
+        add_inv = getattr(mob, "add_to_inventory", None)
+        if callable(add_inv):
+            add_inv(obj)
+        else:
+            inventory = getattr(mob, "inventory", None)
+            if isinstance(inventory, list) and obj not in inventory:
+                inventory.insert(0, obj)
 
     room = getattr(mob, "room", None)
     if room is not None and hasattr(room, "broadcast"):

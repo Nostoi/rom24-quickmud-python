@@ -659,11 +659,15 @@ def do_mpoload(ch: Character, argument: str) -> None:
     if callable(add):
         add(obj)
         return
+    add_inv = getattr(ch, "add_to_inventory", None)
+    if callable(add_inv):
+        add_inv(obj)
+        return
     inventory = getattr(ch, "inventory", None)
     if inventory is None:
         inventory = []
         ch.inventory = inventory
-    inventory.append(obj)
+    inventory.insert(0, obj)
     obj.location = ch
 
 
@@ -755,7 +759,7 @@ def do_mpotransfer(ch: Character, argument: str) -> None:
             contents = []
             destination.contents = contents  # type: ignore[attr-defined]
         if obj not in contents:
-            contents.append(obj)
+            contents.insert(0, obj)
         if hasattr(obj, "location"):
             obj.location = destination
 

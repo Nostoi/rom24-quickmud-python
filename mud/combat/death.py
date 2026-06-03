@@ -414,7 +414,11 @@ def _handle_corpse_item(
         room.add_object(obj)
         return
 
-    corpse.contained_items.append(obj)
+    # INV-039 / class-13: ROM src/fight.c:1472 obj_to_obj head-inserts each
+    # item into the corpse. Route through the contained-items chokepoint.
+    contained = getattr(corpse, "contained_items", None)
+    if isinstance(contained, list):
+        contained.insert(0, obj)
     if hasattr(obj, "location"):
         obj.location = corpse
 
@@ -450,7 +454,8 @@ def make_corpse(victim: Character) -> Object | None:
 
         money_obj = create_money(gold, silver)
         if money_obj:
-            corpse.contained_items.append(money_obj)
+            # INV-039 / class-13: ROM src/handler.c:1968 obj_to_obj head-inserts.
+            corpse.contained_items.insert(0, money_obj)
             # ROM src/handler.c:1968 obj_to_obj — money lives inside corpse,
             # so in_obj=corpse, in_room=None, carried_by=None.
             money_obj.location = corpse

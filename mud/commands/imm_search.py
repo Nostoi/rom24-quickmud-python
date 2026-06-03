@@ -442,18 +442,22 @@ def do_clone(char: Character, args: str) -> str:
         # mirrors ROM src/act_wiz.c:2399-2402
         carrier = getattr(obj, "carried_by", None)
         if carrier is not None:
-            carrying = getattr(char, "inventory", None)
-            if carrying is None:
-                char.inventory = []
-            char.inventory.append(clone)
+            # INV-039 / class-13: ROM obj_to_char head-inserts.
+            add_obj = getattr(char, "add_object", None)
+            if callable(add_obj):
+                add_obj(clone)
+            else:
+                inventory = getattr(char, "inventory", None)
+                if inventory is None:
+                    char.inventory = []
+                inventory = char.inventory
+                inventory.insert(0, clone)
             clone.carried_by = char
         else:
             room = getattr(char, "room", None)
             if room:
-                contents = getattr(room, "contents", None)
-                if contents is None:
-                    room.contents = []
-                room.contents.append(clone)
+                # INV-039 / class-13: ROM obj_to_room head-inserts.
+                room.add_object(clone)
                 clone.in_room = room
 
         # BCAST-002 (obj branch): TO_ROOM mirroring ROM

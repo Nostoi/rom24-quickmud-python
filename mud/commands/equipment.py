@@ -86,9 +86,14 @@ def _unequip_to_inventory(ch: Character, obj: Object) -> bool:
 
     unequip_char(ch, obj)
     obj.worn_by = None
-    inventory = getattr(ch, "inventory", [])
-    if obj not in inventory:
-        inventory.append(obj)
+    # INV-039 / class-13: ROM src/act_obj.c:1386 obj_to_char(head-insert).
+    add_obj = getattr(ch, "add_object", None)
+    if callable(add_obj):
+        add_obj(obj)
+    else:
+        inventory = getattr(ch, "inventory", [])
+        if obj not in inventory:
+            inventory.insert(0, obj)
 
     obj_name = getattr(obj, "short_descr", "something")
     char_msg = f"You stop using {obj_name}."

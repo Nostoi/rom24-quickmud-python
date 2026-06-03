@@ -954,21 +954,31 @@ def _remove_from_character(obj: Object, character: Character) -> None:
 
 
 def _obj_to_room(obj: Object, room) -> None:
-    if hasattr(room, "add_object"):
-        room.add_object(obj)
-    else:
-        contents = getattr(room, "contents", None)
-        if isinstance(contents, list) and obj not in contents:
-            contents.append(obj)
+    # INV-039 / class-13: all object placement routes through Room.add_object
+    # (which head-inserts, mirroring ROM src/handler.c:1953 obj_to_room).
+    # Room always has add_object; the old hasattr fallback path was dead code.
+    room.add_object(obj)
     obj.in_room = room
     obj.carried_by = None
     obj.in_obj = None
 
 
-def _obj_to_char(obj: Object, character: Character) -> None:
-    inventory = getattr(character, "inventory", None)
-    if isinstance(inventory, list) and obj not in inventory:
-        inventory.append(obj)
+def _obj_to_char(obj: Object, character) -> None:
+    # INV-039 / class-13: all object placement routes through the head-insert
+    # chokepoint (Character.add_object or MobInstance.add_to_inventory), both of
+    # which now insert(0, ...) mirroring ROM src/handler.c:1626 obj_to_char.
+    add_obj = getattr(character, "add_object", None)
+    if callable(add_obj):
+        add_obj(obj)
+    else:
+        # Fallback for MobInstance (which has add_to_inventory, also insert(0)).
+        add_inv = getattr(character, "add_to_inventory", None)
+        if callable(add_inv):
+            add_inv(obj)
+        else:
+            inventory = getattr(character, "inventory", None)
+            if isinstance(inventory, list) and obj not in inventory:
+                inventory.insert(0, obj)
     obj.carried_by = character
     obj.in_room = None
     obj.in_obj = None
@@ -1072,10 +1082,12 @@ def _obj_to_obj(obj: Object, container: Object) -> None:
 
     ROM C Reference: handler.c:1968-1989 obj_to_obj
     """
-    # INV-012: contained_items is the single canonical field on Object.
+    # INV-039 / class-13: ROM src/handler.c:1968 obj_to_obj head-inserts
+    # (obj->next_content = obj_to->contains; obj_to->contains = obj).
+    # Mirror that with insert(0), same as the obj_manipulation.py chokepoint.
     contents = getattr(container, "contained_items", None)
     if isinstance(contents, list):
-        contents.append(obj)
+        contents.insert(0, obj)
     obj.in_obj = container
     obj.in_room = None
     obj.carried_by = None

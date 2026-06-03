@@ -1,10 +1,13 @@
-"""Helpers for ROM-style act() placeholder formatting."""
+"""Helpers for ROM-style act() placeholder formatting and list display."""
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from mud.models.constants import Sex
+
+if TYPE_CHECKING:
+    from mud.models.character import Character
 
 _SUBJECT_PRONOUNS: dict[Sex, str] = {
     Sex.MALE: "he",
@@ -258,3 +261,180 @@ def act_to_room(
 
         if dispatch_mobprog and getattr(recipient, "is_npc", False):
             mobprog.mp_act_trigger(message, recipient, actor, arg1, arg2, mobprog.Trigger.ACT)
+
+
+_OBJ_AURA_FLAGS: list[tuple[str, str]] = []
+
+
+def _ensure_aura_table() -> list[tuple[str, str]]:
+    global _OBJ_AURA_FLAGS
+    if _OBJ_AURA_FLAGS:
+        return _OBJ_AURA_FLAGS
+    from mud.models.constants import ExtraFlag
+
+    _OBJ_AURA_FLAGS = [
+        ("(Invis) ", ExtraFlag.INVIS),
+        ("(Red Aura) ", None),
+        ("(Blue Aura) ", None),
+        ("(Magical) ", ExtraFlag.MAGIC),
+        ("(Glowing) ", ExtraFlag.GLOW),
+        ("(Humming) ", ExtraFlag.HUM),
+    ]
+    return _OBJ_AURA_FLAGS
+
+
+def format_obj_to_char(obj: Any, char: Any, f_short: bool) -> str:
+    """Format an object for display to *char*.
+
+    ROM ``src/act_info.c:87-126``.  When *f_short* is True the
+    ``short_descr`` is used; when False the long ``description``.
+    Aura prefixes (Invis, Red Aura, Blue Aura, Magical, Glowing, Humming)
+    are prepend when the viewer can see them — matching ROM C lines
+    93-103, which check ``IS_OBJ_STAT``, ``IS_AFFECTED(ch, AFF_DETECT_EVIL)``,
+    etc.
+    """
+    from mud.models.constants import ExtraFlag
+
+    buf = ""
+
+    if f_short:
+        if not getattr(obj, "short_descr", None):
+            return ""
+    else:
+        if not getattr(obj, "description", None):
+            return ""
+
+    if _obj_flag(obj, ExtraFlag.INVIS):
+        buf += "(Invis) "
+    if _char_affected(char, "detect_evil") and _obj_flag(obj, ExtraFlag.EVIL):
+        buf += "(Red Aura) "
+    if _char_affected(char, "detect_good") and _obj_flag(obj, ExtraFlag.BLESS):
+        buf += "(Blue Aura) "
+    if _char_affected(char, "detect_magic") and _obj_flag(obj, ExtraFlag.MAGIC):
+        buf += "(Magical) "
+    if _obj_flag(obj, ExtraFlag.GLOW):
+        buf += "(Glowing) "
+    if _obj_flag(obj, ExtraFlag.HUM):
+        buf += "(Humming) "
+
+    if f_short:
+        buf += getattr(obj, "short_descr", "") or ""
+    else:
+        buf += getattr(obj, "description", "") or ""
+
+    return buf
+
+
+def _obj_flag(obj: Any, flag: Any) -> bool:
+    extra = getattr(obj, "extra_flags", 0)
+    if extra is None:
+        extra = 0
+    return bool(int(extra) & int(flag))
+
+
+def _char_affected(char: Any, name: str) -> bool:
+    for aff in getattr(char, "affected", []) or []:
+        if getattr(aff, "name", None) == name or getattr(aff, "spell_name", None) == name:
+            return True
+        sn = getattr(aff, "type", None)
+        if sn is not None:
+            from mud.skills.registry import skill_lookup
+
+            sk = skill_lookup(sn) if isinstance(sn, str) else None
+            if sk and getattr(sk, "name", None) == name:
+                return True
+    aff_flags = getattr(char, "affected_by", 0)
+    if aff_flags is None:
+        aff_flags = 0
+    flag_map = {
+        "detect_evil": "DETECT_EVIL",
+        "detect_good": "DETECT_GOOD",
+        "detect_magic": "DETECT_MAGIC",
+    }
+    flag_name = flag_map.get(name)
+    if flag_name:
+        from mud.models.constants import AffectFlag
+
+        if hasattr(AffectFlag, flag_name):
+            if int(aff_flags) & int(getattr(AffectFlag, flag_name)):
+                return True
+    return False
+
+
+def show_list_to_char(
+    obj_list: list[Any],
+    char: Character,
+    f_short: bool,
+    f_show_nothing: bool,
+) -> str:
+    """Format a list of objects for *char*, mirroring ROM
+    ``src/act_info.c:130-243 show_list_to_char``.
+
+    * ``f_short=True``  → use ``short_descr`` (for inventory,
+      container contents, examine victim).
+    * ``f_short=False`` → use ``description`` (for room contents).
+    * ``f_show_nothing=True`` → print ``Nothing.`` (with padding
+      for COMBINE) when no visible objects exist.
+    * ``f_show_nothing=False`` → print nothing when list is empty.
+
+    NPC / COMM_COMBINE viewers get duplicate-coalesced output with
+    ``(N)`` counts or 5-space padding; PC non-COMBINE viewers get
+    plain one-per-line with no indent — this is the FINDING-022 fix.
+    """
+    from mud.models.constants import CommFlag, WearLocation
+    from mud.world.vision import can_see_object
+
+    is_npc = getattr(char, "is_npc", False)
+    comm_flags = int(getattr(char, "comm", 0) or 0)
+    combine = is_npc or bool(comm_flags & int(CommFlag.COMBINE))
+
+    visible: list[Any] = []
+    for obj in obj_list:
+        wear_loc = getattr(obj, "wear_loc", None)
+        if wear_loc is not None and wear_loc != int(WearLocation.NONE):
+            continue
+        if not can_see_object(char, obj):
+            continue
+        visible.append(obj)
+
+    if not visible:
+        if not f_show_nothing:
+            return ""
+        if combine:
+            return "     Nothing.\n"
+        return "Nothing.\n"
+
+    if combine:
+        counts: dict[str, int] = {}
+        order: list[str] = []
+        for obj in visible:
+            desc = format_obj_to_char(obj, char, f_short)
+            if not desc:
+                continue
+            if desc in counts:
+                counts[desc] += 1
+            else:
+                counts[desc] = 1
+                order.append(desc)
+
+        lines: list[str] = []
+        for desc in order:
+            n = counts[desc]
+            if n > 1:
+                lines.append(f"({n:2d}) {desc}")
+            else:
+                lines.append(f"     {desc}")
+
+        if not lines and f_show_nothing:
+            return "     Nothing.\n"
+        if not lines:
+            return ""
+        return "\n".join(lines) + "\n"
+    else:
+        lines: list[str] = []
+        for obj in visible:
+            desc = format_obj_to_char(obj, char, f_short)
+            if not desc:
+                continue
+            lines.append(desc)
+        return "\n".join(lines) + "\n"

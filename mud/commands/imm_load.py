@@ -157,18 +157,22 @@ def do_oload(char: Character, vnum_arg: str, level_arg: str | None = None) -> st
 
     ITEM_TAKE = 1
     if wear_flags & ITEM_TAKE:
-        carrying = getattr(char, "inventory", None)
-        if carrying is None:
-            char.inventory = []
-        char.inventory.append(obj)
+        # INV-039 / class-13: ROM src/act_wiz.c obj_to_char head-inserts.
+        add_obj = getattr(char, "add_object", None)
+        if callable(add_obj):
+            add_obj(obj)
+        else:
+            inventory = getattr(char, "inventory", None)
+            if inventory is None:
+                char.inventory = []
+            inventory = char.inventory
+            inventory.insert(0, obj)
         obj.carried_by = char
     else:
         room = getattr(char, "room", None)
         if room:
-            contents = getattr(room, "contents", None)
-            if contents is None:
-                room.contents = []
-            room.contents.append(obj)
+            # INV-039 / class-13: ROM src/act_wiz.c obj_to_room head-inserts.
+            room.add_object(obj)
             obj.in_room = room
 
     # BCAST-015: TO_ROOM broadcast mirroring ROM

@@ -359,23 +359,20 @@ def _look_in(char: Character, args: str) -> str:
         # ROM src/act_info.c:1166-1167 — `act("$p holds:")` then
         # `show_list_to_char(obj->contains, ch, TRUE, TRUE)`. `act_new` caps the
         # header's first visible char (INV-029 ACT-CAP), so "a bag" → "A bag
-        # holds:". ROM has no "is empty" branch for containers; when the list is
-        # empty, show_list_to_char prints "Nothing." (fShowNothing=TRUE,
-        # nShow==0 — src/act_info.c:227-231). The listed contents themselves are
-        # not act-capped (they come from format_obj_to_char), so they stay
-        # lowercase.
+        # holds:". `show_list_to_char` then formats the contents: for NPC or
+        # COMM_COMBINE viewers, duplicates are coalesced with `(%2d) ` counts or
+        # 5-space padding; for non-COMBINE PCs, items are listed with no indent.
+        # FINDING-022: the old code always prepended 2-space indent, matching
+        # neither the no-indent PC path nor the 5-space COMBINE path.
         short = getattr(obj, "short_descr", None) or "It"
-        lines = [capitalize_act_line(f"{short} holds:")]
+        header = capitalize_act_line(f"{short} holds:")
 
         contents = getattr(obj, "contains", None) or getattr(obj, "contained_items", [])
-        if not contents:
-            lines.append("Nothing.")
-            return "\n".join(lines)
+        from mud.utils.act import show_list_to_char
 
-        for item in contents:
-            item_name = getattr(item, "short_descr", None) or getattr(item, "name", "something")
-            lines.append(f"  {item_name}")
-        return "\n".join(lines)
+        body = show_list_to_char(contents, char, f_short=True, f_show_nothing=True)
+        # show_list_to_char returns trailing \n; strip it since we join with \n
+        return header + "\n" + body.rstrip("\n")
 
     return "That is not a container."
 

@@ -440,9 +440,18 @@ def _move_object_to_mob(obj: Any, mob: Any, room: Any) -> None:
     if hasattr(obj, "in_obj"):
         obj.in_obj = None
 
-    inventory = getattr(mob, "inventory", None)
-    if isinstance(inventory, list) and obj not in inventory:
-        inventory.append(obj)
+    # INV-039 / class-13: route through head-insert chokepoint.
+    add_obj = getattr(mob, "add_object", None)
+    if callable(add_obj):
+        add_obj(obj)
+    else:
+        add_inv = getattr(mob, "add_to_inventory", None)
+        if callable(add_inv):
+            add_inv(obj)
+        else:
+            inventory = getattr(mob, "inventory", None)
+            if isinstance(inventory, list) and obj not in inventory:
+                inventory.insert(0, obj)
     if hasattr(obj, "carried_by"):
         obj.carried_by = mob
 
@@ -621,10 +630,6 @@ def _drop_object_into_room(obj: Any, room: Any) -> None:
 
     if hasattr(room, "add_object"):
         room.add_object(obj)
-    else:
-        contents = getattr(room, "contents", None)
-        if isinstance(contents, list) and obj not in contents:
-            contents.append(obj)
 
 
 def _remove_corpse_from_room(corpse: Any, room: Any) -> None:

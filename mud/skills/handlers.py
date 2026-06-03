@@ -5196,8 +5196,8 @@ def heat_metal(
                         if equipped is obj:
                             del target.equipment[slot]
                             break
-                    if room and hasattr(room, "objects"):
-                        room.objects.append(obj)
+                    if room:
+                        room.add_object(obj)
                     fail = False
                 else:
                     # ROM L3167-3174: stuck on body
@@ -5225,8 +5225,8 @@ def heat_metal(
 
                     if obj in target.inventory:
                         target.inventory.remove(obj)
-                    if room and hasattr(room, "objects"):
-                        room.objects.append(obj)
+                    if room:
+                        room.add_object(obj)
                     fail = False
                 else:
                     # Cannot drop
@@ -5269,8 +5269,8 @@ def heat_metal(
                         if equipped is obj:
                             del target.equipment[slot]
                             break
-                    if room and hasattr(room, "objects"):
-                        room.objects.append(obj)
+                    if room:
+                        room.add_object(obj)
                     fail = False
                 else:
                     # ROM L3224-3232: stuck with weapon
@@ -5296,8 +5296,8 @@ def heat_metal(
 
                     if obj in target.inventory:
                         target.inventory.remove(obj)
-                    if room and hasattr(room, "objects"):
-                        room.objects.append(obj)
+                    if room:
+                        room.add_object(obj)
                     fail = False
                 else:
                     # Cannot drop

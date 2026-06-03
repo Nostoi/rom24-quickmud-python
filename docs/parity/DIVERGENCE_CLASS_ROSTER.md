@@ -75,7 +75,7 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 | 12 | **Pointer identity** (reclassified from Layer A 2026-06-02) | C pointer `==` vs Python value-eq dataclass `__eq__` | behavioral — entity identity; root-fixed by making every entity runtime type an identity-eq dataclass, so `==`/`in`/`remove`/`index` now mean pointer-identity | **enforced (2.12.78–80)** | **INV-034 ✅** (`tests/test_inv034_pointer_identity_divergence.py`, now plain asserts passing under identity equality). Root cause (value-eq dataclasses + `instance_id`/`id` unset on spawn) **fixed** via `@dataclass(eq=False)` on all five runtime types (`Character`, `MobInstance`, `Object`, `Room`, legacy `ObjectInstance`), after the value-eq test-reliance sweep came up empty; suite green 5361. `MobInstance`/`ObjectInstance` caught by adversarial review after the first commit; `Room` flipped 2.12.80. INV-031(c) had fixed one site (`is_same_group`). Class 6 fully closed. |
 | 4 | **Async message delivery / act-cap** | C synchronous `write_to_buffer` in tick vs Python async dispatch (double-deliver, miss, mis-cap) | behavioral — single-delivery (XOR), per-recipient masking, first-letter cap, verified by integration tests, not a lexical bypass | enforced | INV-001 (×5 `test_inv001_*.py`) / 027 / 029; ACT-CAP-001..004. **Reclassified A→C 2026-06-02:** a clean static bypass-guard is INFEASIBLE — legitimate hand-rolled XOR loops (`do_yell`) correctly use `create_task(send_to_char)`, and `.messages.append` has many legitimate sites (`Character.send_to_char`, broadcast primitives, actor-self lines), so any blanket grep false-positives. The contract is contextual → Layer C, with a Layer-B "review new delivery sites" element. |
 
-| 13 | **Object-list head-insert (placement order)** | C `obj_to_{char,room,obj}` head-insert (LIFO list) vs Python `append` (FIFO) | behavioral — list ordering, observable via `do_inventory`/`do_look`/`look in`, numbered selectors, `get/drop all` | **chokepoints enforced (2.13.1); bypass-sweep OPEN** | **INV-039** (`test_inv013_..._head_inserts_lifo` + 3 diff-harness order tests). Surfaced by `tools/diff_harness` Hypothesis machine as FINDING-017/018/019. Three `obj_to_*` chokepoints fixed to `insert(0)`; **~25 other `append` placement sites remain** — split into runtime-placement (should head-insert, route through chokepoint) vs order-preserving restore/clone/serialize (must NOT flip), requiring a per-site `/rom-divergence-sweep` ROM read. Sibling **FINDING-020** (`remove` re-append loses carry-list position — equipment-dict architecture, OPEN) and **FINDING-021** (`look in <container>` header cap, OPEN) filed in `tools/diff_harness/FINDINGS.md`. |
+| 13 | **Object-list head-insert (placement order)** | C `obj_to_{char,room,obj}` head-insert (LIFO list) vs Python `append` (FIFO) | behavioral — list ordering, observable via `do_inventory`/`do_look`/`look in`, numbered selectors, `get/drop all` | **chokepoints enforced (2.13.1); bypass sweep COMPLETED (2.13.3); FINDING-022 RESOLVED (2.13.4)** | **INV-039** (`test_inv013_..._head_inserts_lifo` + 3 diff-harness order tests). 15 bypass sites fixed: `game_loop._obj_to_obj` → `insert(0)`, `game_loop._obj_to_char` → routes through chokepoint, `game_loop._obj_to_room` → always `room.add_object`, `MobInstance.add_to_inventory` → `insert(0)`, `ObjectInstance.move_to_room` → `room.add_object`, `equipment._perform_remove` → `add_object`, `death._handle_corpse_item` / `make_corpse` money → `insert(0)`, scavenger (spec_funs + ai) → `add_object`/`add_to_inventory`, `mob_cmds.mpoload`/`mptransfer_obj` fallback → `insert(0)`, `imm_load`/`imm_search` → chokepoint, `shop` sell-to-keeper → chokepoint, `reset_handler` container-put → `insert(0)`, `build.cmd_redit` → `insert(0)`. **4 correct append sites left as-is** (DB reload, clone, conversion, mpjunk-rebuild are order-preserving). **FINDING-022** (`look in` contents indent) resolved by porting `show_list_to_char` to `mud/utils/act.py`; `_look_in` now uses it for correct no-indent (non-COMBINE PC) or 5-space/(N) (COMBINE/NPC) formatting. **FINDING-023** (fire_effect `room.objects` dead code, items dropped by fire never reached room) fixed in same sweep. Remaining: FINDING-020 (equipment-dict carry-list position, architectural). |
 
 ## What "done" means, per layer
 
@@ -171,17 +171,13 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    FINDING-020 (`remove` re-append position) and FINDING-021 (`look in` header
    cap). Next is more deterministic command/watch-set widening; add RNG-locked
    combat only after seed alignment is proven.
-7. **Class 13 bypass-site sweep (`/rom-divergence-sweep`).** INV-039 locked the
-   three `obj_to_*` chokepoints, but ~25 other `append` sites place objects into
-   `inventory`/`contents`/`contained_items` (mob_cmds, game_loop decay, spec_funs,
-   death/make_corpse, reset_handler, templates, ai, build, equipment, imm_load,
-   shop, conversion, serializers, `clone_object`, `from_orm` restore). Each needs
-   a ROM read to classify: **runtime placement** (must head-insert — route through
-   the chokepoint, do NOT spread `insert(0)`) vs **reconstruction of an
-   already-ordered list** (`from_orm`, `clone_object`, serializers — leave as
-   `append`). Not a lexical guard (the two cases are grep-indistinguishable);
-   a per-site Layer-B read. Also close FINDING-020 (equipment-dict carry-list
-   position — architectural) and FINDING-021 (`look in` header cap — INV-029).
+7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
+    15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
+    or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,
+    conversion, mpjunk-rebuild). FINDING-023 (fire_effect dead-code `room.objects`)
+    fixed in same sweep. FINDING-022 (`look in` contents indent) resolved (2.13.4)
+    by porting `show_list_to_char` to `mud/utils/act.py`. Remaining: FINDING-020
+    (equipment-dict carry-list position, architectural).
 
 ## Honest caveats
 
