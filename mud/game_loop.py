@@ -579,6 +579,12 @@ def _auto_quit_character(character: Character) -> None:
     # or we race/double-remove the Character. Only when there is no running loop
     # to schedule on (a synchronous context) do we fall through to the
     # synchronous extract below, so the Character is still cleaned up.
+    #
+    # NB: a still-connected idler stays a > 30 candidate until the async teardown
+    # actually drops it from ``character_registry`` (1-2 ticks), so its close is
+    # re-scheduled each intervening tick. That is bounded and harmless —
+    # ``close()`` is idempotent and the fire-and-forget task holds no saved
+    # reference (same precedent as ``mud.utils.messaging.send_to_char``).
     connection = getattr(character, "connection", None)
     if getattr(character, "desc", None) is not None and connection is not None:
         if _schedule_connection_close(connection):
@@ -767,8 +773,12 @@ def char_update() -> None:
     autosave_candidates: list[Character] = []
     # GL-034: ROM's ``ch_quit`` is a single CHAR_DATA* overwritten each loop
     # iteration (src/update.c:682-683), so at most ONE idle char is quit per
-    # tick — the LAST char in char_list with pre-increment ``timer > 30``. Track
-    # the last candidate (last-wins), not a list, so we don't fan out.
+    # tick. ROM PREPENDS new chars to ``char_list`` (src/nanny.c:757-758,
+    # src/db.c:2256-2257 — ``ch->next = char_list; char_list = ch``), so the list
+    # runs newest→oldest and walking head→tail leaves ``ch_quit`` on the LAST
+    # (tail) idle char — i.e. the OLDEST. ``character_registry`` is the reverse
+    # (``append`` → oldest→newest), so the oldest idle char is the FIRST match:
+    # take the first candidate (first-wins) and never overwrite, not a list.
     autoquit_candidate: Character | None = None
 
     for character in list(character_registry):
@@ -832,8 +842,8 @@ def char_update() -> None:
                 # teardown itself. A connected idler still disappears into the
                 # void at ``>= 12`` (below) before it ever reaches the > 30
                 # autoquit threshold.
-                if prev_timer > 30:
-                    autoquit_candidate = character  # GL-034: last-wins, not append
+                if prev_timer > 30 and autoquit_candidate is None:
+                    autoquit_candidate = character  # GL-034: first-wins = oldest
                 character.timer = prev_timer + 1
                 if (
                     character.timer >= 12
