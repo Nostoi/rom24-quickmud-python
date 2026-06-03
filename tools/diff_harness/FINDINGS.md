@@ -8,6 +8,137 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-017 — `Character.add_object` appends to inventory; ROM `obj_to_char` prepends — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-03 (v2.13.1). `Character.add_object` now
+head-inserts (`self.inventory.insert(0, obj)`), matching ROM `obj_to_char`, and
+the contract is tracked as **INV-039 (OBJECT-LIST-HEAD-INSERT)** — which also
+covers the two sibling legs found in the same session, **FINDING-018**
+(`Room.add_object` / `obj_to_room`) and **FINDING-019** (`_obj_to_obj` /
+`obj_to_obj`). Regressions:
+`tests/integration/test_inv013_add_object_carrier.py::test_add_object_head_inserts_lifo`
+and the three `tests/test_diff_harness_generated.py` order tests
+(`..._container_round_trip_...`, `..._room_drop_order_...`,
+`..._container_contents_order_...`). Two tests asserted the old append order and
+were corrected to ROM LIFO (`test_do_inventory.py::test_inventory_duplicate_order_is_rom_lifo`,
+`test_shops.py::test_sell_numbered_selector`). The full suite is green. **Scope
+note:** INV-039 covers the three `obj_to_{char,room,obj}` *chokepoints* only;
+~25 bypass `append` sites remain (many are order-preserving restore/clone/serialize
+paths that must NOT flip) — filed as a `DIVERGENCE_CLASS_ROSTER` sweep, not closed
+here.
+
+Surfaced by Phase C generated differential coverage while adding a container
+(bag `3032`) round-trip. Minimal sequence:
+
+```
+__oload=3032
+__oload=3021
+get bag
+get sword
+```
+
+Symptom (step 4 `get sword`):
+```
+chars[Tester].inventory · C=[3021, 3032] py=[3032, 3021]
+```
+
+ROM `src/handler.c obj_to_char` inserts at the **head** of `ch->carrying`
+(`obj->next_content = ch->carrying; ch->carrying = obj;`), so the carry list is
+LIFO — the most recently acquired object is first. The C snapshot iterates
+`ch->carrying` and emits `[sword, bag]` (sword acquired last).
+
+**Root cause:** `mud/models/character.py::Character.add_object` does
+`self.inventory.append(obj)` — appends to the tail — even though its own comment
+claims `# mirroring ROM src/handler.c:1626 obj_to_char`. Every Python
+inventory-acquire path routes through `add_object` (get, get-from-container,
+give, buy, steal, auto-loot, outfit, spell-created objects), so all of them
+diverge from ROM's head-insert.
+
+**Blast radius:** `gitnexus_impact(add_object, upstream)` → **CRITICAL**, 20
+impacted symbols, 8 direct callers (`do_give`, `_get_obj`/`do_get`, `do_buy`,
+`_steal_item`, `_auto_collect_loot`, `give_school_outfit`, `create_rose`,
+`floating_disc`). Inventory ordering is observable via `do_inventory` listing,
+`get all` / `drop all` / `sacrifice` iteration order, and `get <name>` /
+keyword-match first-hit selection.
+
+**Fix direction:** make `add_object` head-insert (`self.inventory.insert(0, obj)`)
+to match `obj_to_char`, then repair any test that asserted the old append order
+(those tests assert non-ROM behavior — AGENTS.md: a test contradicting ROM is a
+test bug). The contract spans every acquire path and every iteration consumer,
+so it is a candidate cross-file invariant (carry-list head-insert / LIFO).
+
+---
+
+## FINDING-018 — `Room.add_object` appends; ROM `obj_to_room` head-inserts — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-03 (v2.13.1). Sibling of FINDING-017, same class
+(INV-039). Surfaced by the generated machine: `__oload=3032; __oload=3021; north;
+south` then `look` listed room contents in opposite order to ROM. ROM
+`src/handler.c:1953 obj_to_room` head-inserts (`obj->next_content =
+pRoomIndex->contents; pRoomIndex->contents = obj;`), so room contents are LIFO and
+`do_look` lists the most-recently-dropped/loaded object first. `Room.add_object`
+appended; fixed to `self.contents.insert(0, obj)`. Note the snapshot
+`room.contents` field is SORTED, so this was caught only via the order-preserved
+`look` **output**. Regression:
+`tests/test_diff_harness_generated.py::test_generated_room_drop_order_matches_live_c`.
+
+---
+
+## FINDING-019 — `_obj_to_obj` appends; ROM `obj_to_obj` head-inserts — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-03 (v2.13.1). Sibling of FINDING-017, same class
+(INV-039). Source-confirmed (not initially harness-observable — no container-contents
+snapshot field). ROM `src/handler.c:1968 obj_to_obj` head-inserts into
+`obj_to->contains`, so a container's contents are LIFO. `mud/commands/obj_manipulation.py::_obj_to_obj`
+appended to `contained_items`; fixed to `insert(0, obj)`. Guarded by
+`tests/test_diff_harness_generated.py::test_generated_container_contents_order_matches_live_c`
+(two items put into a bag, order observed via `get all bag` against the live C
+oracle — `look in bag` was avoided because it independently trips FINDING-021).
+
+---
+
+## FINDING-020 — `remove` re-appends to inventory, losing ROM's preserved carry-list position — ⚠️ OPEN
+
+**Status:** ⚠️ OPEN 2026-06-03. Distinct from the INV-039 head-insert class — this
+is the **equipment-storage architecture** divergence. ROM keeps equipped objects
+in `ch->carrying` with only `wear_loc` set (`get_eq_char` loops the carry list);
+removing an item (`unequip_char`) merely clears `wear_loc`, so the object keeps
+its original carry-list position. The Python port stores equipped objects in a
+separate `char.equipment` dict (removed from `inventory` on equip) and
+re-**appends** them to `inventory` on remove (`obj_manipulation._remove_obj`),
+so a removed item lands at the tail regardless of its original position.
+
+Minimal divergence (with another carried item present):
+```
+__oload=3032; __oload=3021; get bag; get sword; wield sword; remove sword
+→ step 6 chars[Tester].inventory · C=[3021, 3032] py=[3032, 3021]
+```
+
+A faithful fix requires preserving the object's carry-list position across
+equip→remove, which the dict-based equipment model cannot do without
+re-architecting equipment storage to ROM's wear_loc-in-carry-list model — out of
+scope for the INV-039 session. The generated machine is gated to only `remove`
+when nothing else is carried (see `generated.py` remove rules), so it exercises
+the matching single-item path without asserting on this open bug. Filed as a
+`DIVERGENCE_CLASS_ROSTER` entry.
+
+---
+
+## FINDING-021 — `look in <container>` header is not first-letter capitalized — ⚠️ OPEN
+
+**Status:** ⚠️ OPEN 2026-06-03. ROM renders the container-contents header via
+`act("$p holds:", …)` (or equivalent), so `act_new`'s first-visible-char cap
+(INV-029 / ACT-CAP) yields `A bag holds:`. The Python `do_look`-in-container path
+emits `a bag holds:` (lowercase). Observed:
+```
+look in bag → C=['A bag holds:', …] py=['a bag holds:', …]
+```
+Order of the listed contents matches (post-FINDING-019); only the header's first
+letter differs. Separate class (message capitalization, INV-029 territory) — filed
+for a follow-up gap-closer, not fixed in the INV-039 session.
+
+---
+
 ## FINDING-016 — `remove` left stale `worn_by`, blocking re-wear after armor removal — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-03. Surfaced by Phase C generated differential

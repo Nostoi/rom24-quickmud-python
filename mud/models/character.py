@@ -676,11 +676,13 @@ class Character:
         return base_weight + silver // 10 + (gold * 2) // 5
 
     def add_object(self, obj: Object) -> None:
-        # mirroring ROM src/handler.c:1626 obj_to_char — the carrier
-        # field is set atomically with the inventory append. Using the
-        # INV-013 `obj.location` property dispatch sets `carried_by`
-        # and clears `in_room` / `in_obj` per the property contract.
-        self.inventory.append(obj)
+        # mirroring ROM src/handler.c:1626 obj_to_char — ROM head-inserts
+        # (`obj->next_content = ch->carrying; ch->carrying = obj;`), so the
+        # carry list is LIFO (most recently acquired object first). The carrier
+        # field is set atomically with the insert via the INV-013 `obj.location`
+        # property dispatch, which sets `carried_by` and clears `in_room` /
+        # `in_obj` per the property contract.
+        self.inventory.insert(0, obj)
         obj.location = self
         self.carry_number += _object_carry_number(obj)
         self._recalculate_carry_weight()

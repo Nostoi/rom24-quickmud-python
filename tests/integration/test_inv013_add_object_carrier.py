@@ -103,6 +103,31 @@ def test_add_object_sets_carried_by(carrier: Character) -> None:
     assert obj.in_obj is None
 
 
+def test_add_object_head_inserts_lifo(carrier: Character) -> None:
+    """``Character.add_object`` must head-insert per ROM ``obj_to_char``.
+
+    ROM ``src/handler.c:1626 obj_to_char`` does ``obj->next_content =
+    ch->carrying; ch->carrying = obj;`` — it inserts at the *head*, so the
+    carry list is LIFO (most-recently-acquired first). The Python port
+    previously appended, which inverted inventory order versus ROM and was
+    surfaced by the differential harness (FINDING-017): it changes
+    ``do_inventory`` display order and numbered-selector (``2.lantern``)
+    resolution.
+    """
+
+    first = spawn_object(_TEST_VNUM)
+    second = spawn_object(_TEST_VNUM)
+    assert first is not None and second is not None
+
+    carrier.add_object(first)
+    carrier.add_object(second)
+
+    # second was acquired last → head of the carry list, exactly as ROM
+    # obj_to_char head-inserts.
+    assert carrier.inventory[0] is second
+    assert carrier.inventory[1] is first
+
+
 def test_mpoload_inventory_sets_carried_by(carrier: Character) -> None:
     """``do_mpoload`` (inventory mode) must route through
     ``Character.add_object`` so the carrier field is set.

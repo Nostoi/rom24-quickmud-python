@@ -1,49 +1,51 @@
-# Session Status — 2026-06-03 — diff-harness Hypothesis Phase C object lifecycle (2.13.0)
+# Session Status — 2026-06-03 — diff-harness Phase C containers → INV-039 object-list head-insert (2.13.1)
 
 ## Current State
 
-This session started **Phase C** of `diff_harness` Hypothesis widening by adding
-deterministic object lifecycle coverage on top of the Phase A/B live C oracle
-and generated no-RNG state machine.
+Phase C `diff_harness` Hypothesis widening added container `put`/get-from-container
+coverage, which surfaced a structural divergence class: ROM head-inserts objects
+into every list (`obj_to_{char,room,obj}`, LIFO) while the Python port appended.
 
-- **Phase A complete:** `tools/diff_harness/oracle.py` provides live C traces
-  for arbitrary in-memory scenarios.
-- **Phase B complete:** `tools/diff_harness/pyreplay.py` provides the shared
-  Python replay driver, and `tools/diff_harness/generated.py` provides the
-  bounded no-RNG generated state machine.
-- **Phase C started:** generated coverage now supports `__oload=<vnum>` object
-  injection and legal get/wield/wear/remove/drop rules for a small sword and
-  scale mail jacket.
-- **FINDING-016 fixed:** generated coverage found remove→rewear failed because
-  `_remove_obj` left stale `obj.worn_by`; `mud/commands/obj_manipulation.py`
-  now clears it after `unequip_char`.
+- **INV-039 (OBJECT-LIST-HEAD-INSERT) — ✅ ENFORCED (chokepoints only):** fixed
+  the three placement chokepoints to `insert(0, obj)` —
+  `Character.add_object` (FINDING-017), `Room.add_object` (FINDING-018),
+  `obj_manipulation._obj_to_obj` (FINDING-019). Verified against the live C oracle.
+- **Two open siblings filed (not fixed):** FINDING-020 (`remove` re-append loses
+  ROM carry-list position — equipment-dict architecture) and FINDING-021
+  (`look in <container>` header not capitalized — INV-029 territory).
+- **Scope honesty:** INV-039 covers the 3 chokepoints only; ~25 bypass `append`
+  placement sites are an open `DIVERGENCE_CLASS_ROSTER` sweep (class 13, to-do #7).
+- Three tests that asserted the old append order were corrected to ROM LIFO.
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-03_DIFF_HARNESS_HYPOTHESIS_PHASE_C_OBJECTS.md](SESSION_SUMMARY_2026-06-03_DIFF_HARNESS_HYPOTHESIS_PHASE_C_OBJECTS.md)
+  [SESSION_SUMMARY_2026-06-03_DIFF_HARNESS_PHASE_C_CONTAINERS_INV039.md](SESSION_SUMMARY_2026-06-03_DIFF_HARNESS_PHASE_C_CONTAINERS_INV039.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.0 |
-| Tests | Focused generated diff-harness + remove regression slice `python3 -m pytest -n0 tests/test_diff_harness_unit.py tests/test_diff_harness_generated.py tests/test_differential_smoke.py tests/integration/test_remove_command.py::test_do_remove_happy_path_emits_both_messages -q` → 20 passed |
+| Version | 2.13.1 |
+| Tests | Full suite `pytest` → **5391 passed, 4 skipped**; `ruff check .` clean |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Cross-file invariants | 31 active rows |
-| Open engine bugs | **None** known. |
+| Cross-file invariants | INV-039 added (object-list head-insert) |
+| Open engine bugs | FINDING-020 (remove carry-list position), FINDING-021 (`look in` header cap) — both filed in `tools/diff_harness/FINDINGS.md` |
 
 ## Next Intended Task
 
-Continue `diff_harness` Hypothesis widening with **Phase C — widen coverage**:
-
-1. Add more deterministic legal command rules and watch-set fields where useful
-   (good next targets: container put/get with `__oload` bag/box, light hold and
-   room-light snapshots, bounded money/shop paths if setup stays deterministic).
-2. Keep generated examples bounded; this test runs two engines per example.
-3. Add RNG-locked combat only after proving seed alignment per step.
-4. File every real mismatch in `tools/diff_harness/FINDINGS.md`; never overwrite
-   a golden to hide a divergence.
+1. **Class-13 bypass-site sweep** via `/rom-divergence-sweep` (roster to-do #7):
+   per-site ROM read of the ~25 remaining `append` placement sites — runtime
+   placements should head-insert (route through the chokepoint), reconstruction
+   paths (`from_orm`, `clone_object`, serializers) must stay `append`. Not a
+   lexical guard.
+2. **FINDING-021** — close the `look in <container>` header-cap gap (likely a
+   one-line act-cap fix in the do_look-in-container path).
+3. Continue Phase C deterministic command/watch-set widening (light hold,
+   money/shop paths); add RNG-locked combat only after seed alignment is proven.
 
 ## Other open / deferred items
 
-- **test-fixtures-lint** — manual-staged style lint; re-enable once legacy tests migrate or it's reworked to changed-files-only.
-- **`test_all_commands.py` `exits` attribute error** — pre-existing harness artifact (`SimpleNamespace` stub lacks `exit_info`); not an engine bug.
+- **FINDING-020** — equipment-dict carry-list-position divergence; needs a scoped
+  architectural decision (ROM keeps equipped objects in the carry list), not a
+  quick fix.
+- **test-fixtures-lint** — manual-staged style lint; re-enable once legacy tests migrate.
+- **`test_all_commands.py` `exits` attribute error** — pre-existing harness artifact.

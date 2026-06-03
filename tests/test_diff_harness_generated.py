@@ -42,3 +42,98 @@ def test_generated_object_lifecycle_sequence_matches_live_c():
     )
 
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_container_round_trip_matches_live_c():
+    """put/get-from-container round trip against the live C oracle.
+
+    Surfaced FINDING-017: ROM ``obj_to_char`` head-inserts, so after
+    ``get bag; get sword`` the carry list is LIFO ([sword, bag]); the Python
+    port appended, diverging at the ``get sword`` step. Fixed in
+    ``Character.add_object``. This deterministic sequence also exercises the
+    new ``do_put`` / get-from-container command paths.
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_container",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3032",  # a bag (open container, per-item cap 50)
+            "__oload=3021",  # a small sword (weight 30 — fits the bag)
+            "get bag",
+            "get sword",
+            "put sword bag",
+            "get sword bag",
+            "drop bag",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_room_drop_order_matches_live_c():
+    """Room contents list LIFO order (INV-039, FINDING-018).
+
+    ROM ``obj_to_room`` head-inserts, so dropping sword then bag leaves the room
+    contents [bag, sword] and ``look`` lists the bag first. The Python port
+    appended to ``room.contents``, listing the sword first; fixed in
+    ``Room.add_object``.
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_room_drop_order",
+        seed=5,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__oload=3032", "__oload=3021", "get bag", "get sword", "drop sword", "drop bag", "look"],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_container_contents_order_matches_live_c():
+    """Container contents list LIFO order (INV-039, FINDING-019).
+
+    ROM ``obj_to_obj`` head-inserts, so putting sword then ring into the bag
+    stores [ring, sword]; ``get all bag`` then pulls them in that order. The
+    Python port appended to ``contained_items``; fixed in
+    ``obj_manipulation._obj_to_obj``. (The watch is the resulting inventory, not
+    ``look in bag``, which independently trips the FINDING-021 header-cap bug.)
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_container_contents_order",
+        seed=5,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3032",  # bag
+            "__oload=3021",  # small sword (weight 30)
+            "__oload=3043",  # ring of protection (weight 10 — also fits)
+            "get bag",
+            "get sword",
+            "get ring",
+            "put sword bag",
+            "put ring bag",
+            "get all bag",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None

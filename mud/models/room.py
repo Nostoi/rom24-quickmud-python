@@ -186,8 +186,12 @@ class Room:
             char.room = None
 
     def add_object(self, obj: Object) -> None:
+        # mirroring ROM src/handler.c:1953 obj_to_room — ROM head-inserts
+        # (`obj->next_content = pRoomIndex->contents; pRoomIndex->contents = obj;`),
+        # so room contents are LIFO (most recently dropped/loaded object first),
+        # observable via do_look's contents listing (INV-039).
         if obj not in self.contents:
-            self.contents.append(obj)
+            self.contents.insert(0, obj)
         if hasattr(obj, "location"):
             obj.location = self
 

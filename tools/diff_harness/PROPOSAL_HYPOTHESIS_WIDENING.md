@@ -75,10 +75,16 @@ masquerades as a parity bug).
   Phase C owns vocabulary/watch-set widening.
 - **Phase C — widen.** IN PROGRESS 2026-06-03. Added object injection plus
   legal get/wield/wear/remove/drop rules for deterministic sword/armor
-  lifecycle paths, and kept the generated budget bounded (`max_examples=4`,
+  lifecycle paths, then an open container (bag `3032`) with put/get-from-container
+  rules, keeping the generated budget bounded (`max_examples=4`,
   `stateful_step_count=5`). This surfaced FINDING-016 (`remove` left stale
-  `worn_by`), now resolved. Continue growing deterministic command vocabulary
-  and the watch-set; add RNG-locked combat only after seed alignment is proven.
+  `worn_by`) and FINDING-017 (`add_object` appended instead of head-inserting,
+  inverting inventory order vs ROM `obj_to_char` → INV-039), both now resolved.
+  The container coverage needed no C shim or snapshot-schema change — both
+  engines route `put`/get-from-container through the existing `interpret()` path,
+  and the flat inventory/room-contents fields catch put→get round-trip
+  divergences. Continue growing deterministic command vocabulary and the
+  watch-set; add RNG-locked combat only after seed alignment is proven.
 - **Each phase:** triage every mismatch into `FINDINGS.md` → a parity gap.
   Expect an initial *burst* of findings (untrodden paths) — that is the point,
   and it is real triage load.

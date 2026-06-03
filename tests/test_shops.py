@@ -1034,9 +1034,13 @@ def test_sell_numbered_selector():
 
         assert _total_wealth(char) == before_char + price
         assert keeper.gold * 100 + keeper.silver == before_keeper - price
-        assert first in char.inventory
-        assert all(obj is not second for obj in char.inventory)
-        assert any(obj is second for obj in keeper.inventory)
+        # ROM obj_to_char head-inserts (FINDING-017), so the carry list is LIFO:
+        # [second, first] (second acquired last → head). The "2.lantern" selector
+        # counts down the carry list, so 1.lantern == second and 2.lantern ==
+        # first. Selling 2.lantern therefore sells `first`; `second` stays.
+        assert second in char.inventory
+        assert all(obj is not first for obj in char.inventory)
+        assert any(obj is first for obj in keeper.inventory)
     finally:
         time_info.hour = previous_hour
 

@@ -193,14 +193,16 @@ class TestEnter005GetObjList:
             room_a.add_object(obj)
             return obj
 
-        make_p(8911)
-        make_p(8912)
+        make_p(8911)  # created first → tail of the LIFO room-contents list
+        make_p(8912)  # created last  → head of the list
 
-        # "enter 2.portal" should go through the second portal → room_c
+        # ROM obj_to_room head-inserts (INV-039), so room contents are LIFO:
+        # [p8912, p8911]. The numbered selector `get_obj_list` counts down that
+        # list, so "2.portal" is the second entry — the first-created portal,
+        # which leads to room 8911.
         do_enter(char, "2.portal")
-        # After transit char should be in room_c (vnum 8912)
-        assert getattr(char.room, "vnum", None) == 8912, (
-            f"Expected room 8912 but char is in room {getattr(char.room, 'vnum', None)}"
+        assert getattr(char.room, "vnum", None) == 8911, (
+            f"Expected room 8911 but char is in room {getattr(char.room, 'vnum', None)}"
         )
 
         room_registry.pop(8910, None)

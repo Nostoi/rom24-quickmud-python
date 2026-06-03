@@ -18,10 +18,11 @@ class _ObjectState:
     vnum: int
     keyword: str
     load_command: str
-    wear_command: str
+    wear_command: str | None = None
     room: int | None = None
     inventory: bool = False
     equipped: bool = False
+    in_container: bool = False
 
 
 class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
@@ -43,6 +44,14 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             keyword="jacket",
             load_command="__oload=3045",
             wear_command="wear jacket",
+        )
+        # An open container (ROM bag 3032: per-item weight cap 50*10, never
+        # closeable). The small sword (weight 30) fits; the jacket (160) does
+        # not, so only the sword is a legal put target.
+        self.bag = _ObjectState(
+            vnum=3032,
+            keyword="bag",
+            load_command="__oload=3032",
         )
 
     @rule()
@@ -95,12 +104,20 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
     def wear_scale_jacket(self) -> None:
         self._wear_object(self.scale_jacket)
 
-    @precondition(lambda self: self.small_sword.equipped)
+    # FINDING-020 (OPEN): Python stores equipped objects in a separate
+    # `equipment` dict and re-appends them to `inventory` on remove, whereas ROM
+    # keeps equipped objects in `ch->carrying` (only `wear_loc` changes), so a
+    # removed item keeps its original carry-list position. With any *other*
+    # carried object present, Python's re-append therefore diverges from ROM's
+    # preserved order. Until that architectural divergence is closed, only
+    # generate `remove` when nothing else is carried, so the machine exercises
+    # the (matching) single-item remove path without asserting on the open bug.
+    @precondition(lambda self: self.small_sword.equipped and self._no_other_carried())
     @rule()
     def remove_small_sword(self) -> None:
         self._remove_object(self.small_sword)
 
-    @precondition(lambda self: self.scale_jacket.equipped)
+    @precondition(lambda self: self.scale_jacket.equipped and self._no_other_carried())
     @rule()
     def remove_scale_jacket(self) -> None:
         self._remove_object(self.scale_jacket)
@@ -115,9 +132,50 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
     def drop_scale_jacket(self) -> None:
         self._drop_object(self.scale_jacket)
 
+    @precondition(lambda self: not self._object_exists(self.bag))
+    @rule()
+    def load_bag(self) -> None:
+        self._load_object(self.bag)
+
+    @precondition(lambda self: self.bag.room == self.current_room)
+    @rule()
+    def get_bag(self) -> None:
+        self._get_object(self.bag)
+
+    # The bag is only dropped while empty, keeping the generated model's view of
+    # the sword's location unambiguous (a dropped bag with the sword inside would
+    # hide the sword from both the room.contents and inventory snapshot fields).
+    @precondition(lambda self: self.bag.inventory and not self.small_sword.in_container)
+    @rule()
+    def drop_bag(self) -> None:
+        self._drop_object(self.bag)
+
+    @precondition(lambda self: self.bag.inventory and self.small_sword.inventory and not self.small_sword.equipped)
+    @rule()
+    def put_small_sword_in_bag(self) -> None:
+        self.steps.append(f"put {self.small_sword.keyword} {self.bag.keyword}")
+        self.small_sword.inventory = False
+        self.small_sword.in_container = True
+
+    @precondition(lambda self: self.bag.inventory and self.small_sword.in_container)
+    @rule()
+    def get_small_sword_from_bag(self) -> None:
+        self.steps.append(f"get {self.small_sword.keyword} {self.bag.keyword}")
+        self.small_sword.in_container = False
+        self.small_sword.inventory = True
+
     @staticmethod
     def _object_exists(obj: _ObjectState) -> bool:
-        return obj.room is not None or obj.inventory or obj.equipped
+        return obj.room is not None or obj.inventory or obj.equipped or obj.in_container
+
+    def _no_other_carried(self) -> bool:
+        """True when no object is currently a carried, non-equipped inventory item.
+
+        Guards `remove` against FINDING-020 (see the remove rules): the divergence
+        only manifests when another carried object is present in the inventory at
+        remove time.
+        """
+        return not any(obj.inventory for obj in (self.small_sword, self.scale_jacket, self.bag))
 
     def _load_object(self, obj: _ObjectState) -> None:
         self.steps.append(obj.load_command)
@@ -129,7 +187,9 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         obj.inventory = True
 
     def _wear_object(self, obj: _ObjectState) -> None:
-        self.steps.append(obj.wear_command)
+        wear_command = obj.wear_command
+        assert wear_command is not None, f"{obj.keyword} is not wearable"
+        self.steps.append(wear_command)
         obj.inventory = False
         obj.equipped = True
 

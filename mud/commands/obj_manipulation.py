@@ -626,12 +626,18 @@ def _obj_from_char(char: Character, obj) -> None:
 
 
 def _obj_to_obj(obj, container) -> None:
-    """Put object into container."""
+    """Put object into container.
+
+    Mirroring ROM src/handler.c:1968 obj_to_obj — ROM head-inserts
+    (`obj->next_content = obj_to->contains; obj_to->contains = obj;`), so a
+    container's contents are LIFO (most recently inserted object first),
+    observable via `look in <container>` / `get all <container>` (INV-039).
+    """
     contained_items = getattr(container, "contained_items", None)
     if contained_items is None:
         container.contained_items = []
         contained_items = container.contained_items
-    contained_items.append(obj)
+    contained_items.insert(0, obj)
     obj.in_obj = container
 
 

@@ -266,8 +266,17 @@ def test_inventory_case_sensitive_combining(movable_char_factory, object_factory
     assert "( 2)" not in output
 
 
-def test_inventory_duplicate_order_preserved(movable_char_factory, object_factory):
-    """Test duplicate objects maintain first-seen order."""
+def test_inventory_duplicate_order_is_rom_lifo(movable_char_factory, object_factory):
+    """Inventory lists in ROM carry-list order: most-recently-acquired first.
+
+    ROM ``obj_to_char`` (src/handler.c) head-inserts into ``ch->carrying`` and
+    ``show_list_to_char`` walks that list without reversing, so the display is
+    LIFO and ``combine`` groups by first occurrence in that LIFO walk. Verified
+    against the instrumented C oracle (FINDING-017): acquiring bag then sword
+    lists the sword first. So adding sword, potion1, vest, potion2 yields the
+    carry list [potion2, vest, potion1, sword] and the combined display
+    potion(x2), vest, sword.
+    """
     char = movable_char_factory("TestChar", 3001)
     char.comm = int(CommFlag.COMBINE)
 
@@ -280,22 +289,22 @@ def test_inventory_duplicate_order_preserved(movable_char_factory, object_factor
     char.add_object(sword)
     char.add_object(potion1)
     char.add_object(vest)
-    char.add_object(potion2)  # Second potion added last
+    char.add_object(potion2)  # Second potion added last → head of carry list
 
     # Execute command
     from mud.commands.inventory import do_inventory
 
     output = do_inventory(char, "")
 
-    # Verify order: sword, potion (combined), vest
+    # ROM LIFO + combine order: potion (combined, x2), vest, sword.
     lines = [line.strip() for line in output.split("\n") if line.strip() and "You are carrying" not in line]
 
-    # First object line should be sword
-    assert "sword" in lines[0].lower()
-    # Second should be potion with count
-    assert "potion" in lines[1].lower() and "2" in lines[1]
-    # Third should be vest
-    assert "vest" in lines[2].lower()
+    # First object line should be the combined potion (most recent acquire).
+    assert "potion" in lines[0].lower() and "2" in lines[0]
+    # Second should be vest.
+    assert "vest" in lines[1].lower()
+    # Third should be sword (acquired first → tail of carry list).
+    assert "sword" in lines[2].lower()
 
 
 def test_inventory_combined_output_matches_rom_line_layout(movable_char_factory, object_factory):

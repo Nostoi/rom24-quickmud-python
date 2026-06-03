@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Diff-harness Hypothesis widening Phase C — container put/get coverage.**
+  Widened the generated no-RNG state machine with an open container (ROM bag
+  `3032`) and legal `get`/`drop`/`put <obj> bag`/`get <obj> bag` rules for the
+  small sword (weight 30 fits the bag's per-item cap; the jacket at 160 does
+  not, so only the sword is a legal put target). This exercises the previously
+  un-diffed `do_put` and get-from-container command paths and surfaced FINDING-017
+  (inventory acquire order). Added a deterministic container round-trip test
+  (`test_generated_container_round_trip_matches_live_c`); no C shim or snapshot
+  schema change was needed (both engines route these commands through the
+  existing `interpret()` path and the flat inventory/room-contents fields).
 - **Diff-harness Hypothesis widening Phase C started — deterministic object
   lifecycle coverage.** Added `__oload=<vnum>` support to the live C oracle and
   Python replay, then widened the generated no-RNG state machine to cover legal
@@ -44,6 +54,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FINDING-017/018/019 / INV-039 — object placement now head-inserts, matching
+  ROM `obj_to_{char,room,obj}` (every object list is LIFO).** Phase C generated
+  differential coverage (container round-trip) shrank a mismatch to
+  `__oload=3032; __oload=3021; get bag; get sword`: ROM listed the sword first
+  (`[sword, bag]`), Python listed the bag first. ROM's three placement primitives
+  all head-insert (`obj->next_content = list; list = obj;`), so carry lists, room
+  contents, and container contents are all LIFO — observable via `inventory` /
+  `look` / `look in` listings, `get all`/`drop all`/`sacrifice` iteration, and
+  numbered selectors (`2.lantern`, `sell 2.x`). The Python port appended in all
+  three. Fixed the three chokepoints to `insert(0, obj)`:
+  `Character.add_object` (carry list), `Room.add_object` (room contents),
+  `obj_manipulation._obj_to_obj` (container contents). Tracked as **INV-039
+  (OBJECT-LIST-HEAD-INSERT)**; verified against the instrumented C oracle. Two
+  tests that asserted the old append order were corrected to ROM LIFO. Regression:
+  `test_inv013_add_object_carrier.py::test_add_object_head_inserts_lifo` + three
+  `test_diff_harness_generated.py` order tests (container round-trip, room-drop,
+  container-contents). **Scope:** INV-039 covers the three chokepoints only; ~25
+  other `append` placement sites (many order-preserving restore/clone/serialize
+  paths that must not flip) are filed as an open `DIVERGENCE_CLASS_ROSTER` sweep.
+  Two distinct open siblings were filed (not fixed): **FINDING-020** (`remove`
+  re-appends, losing ROM's preserved carry-list position — the equipment-dict
+  architecture) and **FINDING-021** (`look in <container>` header is not
+  first-letter capitalized).
 - **FINDING-016 — `remove` now clears the Python-only `worn_by` back-pointer, so
   removed armor can be worn again like ROM.** Phase C generated differential
   coverage shrank the mismatch to `__oload=3045; get jacket; wear jacket; remove
