@@ -55,7 +55,7 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 | 1 | **RNG** | C Mitchell-Moore `number_mm` vs Python `random` | `mud.math.rng_mm.number_*` | ✅ | clean | `tests/test_rng_determinism.py` (bans `random.*` in combat/skills/spells) |
 | 2 | **Equipment key** | C `obj->wear_loc == iWear` (int) vs Python dict | `int(WearLocation.X)` via `canonical_wear_slot` | ✅ | clean | `tests/test_equipment_key_convention.py` (bans string-keyed access) |
 | 3 | **Attribute naming** | port-specific field names | `char.inventory` / `room.people` / `char.equipment` | ✅ | clean | `tests/test_attribute_convention.py` (bans `.carrying`/`.characters`/`.equipped`) |
-| 5 | **Flag values** | C bit-shift macros vs guessable hex | `IntEnum` flag classes | ❌ | unverified | AGENTS.md rule ("never hardcode hex bit values"); no scanner exists |
+| 5 | **Flag values** | C bit-shift macros vs guessable hex | `IntEnum` flag classes | ✅ | clean | `tests/test_flag_hex_convention.py` (bans `FLAGPREFIX_X = 0x…` outside the enum modules; `mud/wiznet.py`'s `WiznetFlag` body allowlisted as the canonical chokepoint). Added 2026-06-02. Locks "no flag-prefixed hex constant redefined outside the enum modules" — does **not** catch a decimal-literal bypass (`if act & 32768:`), which is indistinguishable from arithmetic. |
 | 6 | **Pointer identity** | C pointer `==` vs Python object `==`/`is` | `is` for character identity compares | ❌ | partial | INV-031 (`is_same_group` uses `is`), INV-006; specific sites tested, no bypass-grep across `mud/` |
 
 ### Layer B — human domain-read (enumerable, not auto-verifiable)
@@ -77,10 +77,13 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 ## What "done" means, per layer
 
 - **Layer A:** every class has a committed bypass-guard and it's green. Today:
-  3 of 5 guarded (RNG, equipment-key, attribute-naming). **To-do:** classes
-  5 (flag-hex scanner) and 6 (pointer-identity scanner) — and both may prove
-  infeasible as Layer A and reclassify, exactly as async-delivery (old class 4)
-  did on 2026-06-02 when a clean bypass-grep turned out to false-positive.
+  4 of 5 guarded (RNG, equipment-key, attribute-naming, **flag-hex** —
+  `test_flag_hex_convention.py`, added 2026-06-02). **To-do:** class
+  6 (pointer-identity scanner) — may prove infeasible as Layer A and reclassify,
+  exactly as async-delivery (old class 4) did on 2026-06-02 when a clean
+  bypass-grep turned out to false-positive. Flag-hex came back the *other* way:
+  a tight prefix-anchored grep had exactly one legitimate hit (the `WiznetFlag`
+  enum body), so it was allowlist-able → feasible, cleaner than async got.
 - **Layer B:** every signed-math site has been domain-read once. Ongoing,
   inherently point-in-time; the closest to a guard is flagging *new* `//`/`%`
   in PRs for human review.
@@ -106,9 +109,19 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    precise finding was an *internal contradiction* (stale row cell vs. current
    watch-list), found by re-verifying the source — not the looser "doc-rot" I
    first reported.
-3. **Class 5 (flag-hex) scanner.** Decide first whether a clean grep is even
-   possible (hex literals assigned to flag-typed fields) or whether it false-
-   positives too much — if so, it's a Layer-B class, not Layer-A.
+3. ~~**Class 5 (flag-hex) scanner.**~~ **Done (2026-06-02):** Layer-A
+   feasible. A tight `FLAGPREFIX_X = 0x…` grep had exactly one legitimate hit —
+   `mud/wiznet.py`'s `WiznetFlag` enum body (the canonical chokepoint, not a
+   bypass) — so it was allowlist-able. Committed `tests/test_flag_hex_convention.py`.
+   Resolving the four offenders to make it green: migrated live `PLR_*`
+   (`player_config.py`) and `COMM_DEAF` (`remaining_rom.py`) to derive from the
+   enums (correct values, no behavior change), and **deleted two dead-code
+   landmine functions** (`handler.is_friend`, `handler.check_immune`,
+   HANDLER-DEAD-001/002) that hardcoded *wrong* bit positions
+   (`ASSIST_PLAYERS = 0x1` bit 0 vs canonical `1<<18`; `IMM_WEAPON = 0x1` bit 0
+   vs `DefenseBit.WEAPON = 1<<3`). Recall validated against the past
+   PARALLEL-005 (`0x0010`→ExtraFlag.EVIL) and ACT_TRAIN (`0x200`) instances.
+   Limit recorded in the row: the guard does not catch decimal-literal bypasses.
 4. **Class 6 (pointer-identity) scanner.** Scope a pattern for `==`/`!=`
    between two `Character` references; high false-positive risk → may be
    Layer-B.

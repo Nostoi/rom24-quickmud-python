@@ -304,6 +304,33 @@ added `if getattr(ch, "room", None) is None: continue` as the first loop gate,
 mirroring `src/handler.c:2236`. Test:
 `tests/integration/test_handler005_get_char_world_skips_roomless.py`.
 
+#### HANDLER-DEAD-001 — dead `is_friend()` duplicate with wrong assist-bit values (removed)
+
+| Field | Value |
+|-------|-------|
+| Severity | MINOR (dead code; not live) |
+| ROM C | `src/handler.c:50-93` (`is_friend`) — assist flags are letter macros: `ASSIST_ALL = (P)` = bit 15, `ASSIST_PLAYERS = (S)` = bit 18, etc. |
+| Python | `mud/handler.py` `is_friend` (removed) hardcoded `ASSIST_PLAYERS = 0x00000001` (bit 0), `ASSIST_ALL = 0x00000002` (bit 1), `ASSIST_VNUM = 0x4`, `ASSIST_RACE = 0x8`, `ASSIST_ALIGN = 0x10` — bits 0–4, **all wrong**. Canonical `OffFlag` (`constants.py:560`) has the correct bits 15–20. |
+| Status | ✅ REMOVED (2026-06-02) — dead code (no callers); the live mob-assist path is `mud/combat/assist.py`, which uses the `OffFlag` enum directly. |
+
+Surfaced by the divergence-class flag-hex sweep (`DIVERGENCE_CLASS_ROSTER.md`
+class 5). A textbook instance of the AGENTS.md warning "the hex you'd guess from
+the constant name is often wrong." Not a live bug because the function had no
+callers, but a latent landmine had anyone wired it in. Removed; the
+`tests/test_flag_hex_convention.py` Layer-A guard now prevents a re-introduction.
+
+#### HANDLER-DEAD-002 — dead `check_immune()` duplicate with wrong RIV-bit values (removed)
+
+| Field | Value |
+|-------|-------|
+| Severity | MINOR (dead code; not live) |
+| ROM C | `src/handler.c:213-304` (`check_immune`) — `IMM_MAGIC = (C)` = bit 2, `IMM_WEAPON = (D)` = bit 3. |
+| Python | `mud/handler.py` `check_immune` (removed) hardcoded `IMM_WEAPON = 0x00000001` (bit 0), `IMM_MAGIC = 0x00000002` (bit 1) — **wrong**, and only handled WEAPON/MAGIC (TODO stub). Canonical `DefenseBit` (`constants.py:835`): `MAGIC = 1<<2`, `WEAPON = 1<<3`. |
+| Status | ✅ REMOVED (2026-06-02) — dead code (no callers); the live RIV path is `mud/affects/saves.py::_check_immune`, exercised by `tests/test_saves_rom_parity.py`. |
+
+Surfaced alongside HANDLER-DEAD-001. Same root cause (guessed-hex flag bits) and
+same resolution (delete the dead duplicate; the live implementation is correct).
+
 ### Object Lookup Functions (7 functions)
 
 | ROM C Function | QuickMUD Location | Status | Notes |
