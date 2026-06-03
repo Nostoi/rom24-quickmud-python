@@ -11,7 +11,7 @@
   4 offenders (2 enum migrations + 2 dead-code deletions, HANDLER-DEAD-001/002).
   No live behavior change. Commits `568639b7`, `6ce23769`.
 - **Class 6 (pointer-identity) → reclassified A→C, filed OPEN as INV-034**
-  (2.12.77, commit pending). A static guard is infeasible (`==`/`!=` not
+  (2.12.77, commit `7f8359db`). A static guard is infeasible (`==`/`!=` not
   type-discriminable by grep). The probe *discovered* the root cause is live:
   `Character`/`Object` are value-eq `@dataclass`es and the spawn path leaves
   `instance_id`/`id` unset, so distinct same-proto entities compare `==`-equal
@@ -53,6 +53,6 @@
 3. **Standing cross-INV candidate:** mob-trigger ordering (bribe/exit/fight/kill/
    hpcnt); INV tracker consolidation (now 27 rows, past the ~20 soft cap).
 
-> **Push note:** 2.12.76 (`568639b7`, `6ce23769`) + 2.12.77 (this INV-034 work,
-> commit pending) + handoff are on local `master`, **not pushed** — on top of the
-> unpushed 2.12.72–2.12.75 from prior sessions. CHANGELOG/version reflect 2.12.77.
+> **Push note:** 2.12.76 (`568639b7`, `6ce23769`, `ef3c86e3`) + 2.12.77
+> (`7f8359db`) are on local `master`, **not pushed** — on top of the unpushed
+> 2.12.72–2.12.75 from prior sessions. CHANGELOG/version reflect 2.12.77.
