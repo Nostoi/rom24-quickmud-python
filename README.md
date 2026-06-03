@@ -1,6 +1,6 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.12.65-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.12.80-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-5329%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
@@ -168,7 +168,7 @@ is complete and the test suite is green, but the project is in a **verification
 trust-rebuild phase** — "audited" means a per-file audit document exists, not that
 behavior is proven bug-free, and a small number of parity gaps remain open.
 
-- **Version**: 2.12.65
+- **Version**: 2.12.80
 - **ROM 2.4b Gameplay Parity**: ⚠️ **broadly implemented, verification hardening in
   progress** — combat, skills, spells, movement, communication, world/db, save/load,
   mob programs, and all 255 ROM commands are implemented and pass their tests. However,
@@ -192,7 +192,7 @@ behavior is proven bug-free, and a small number of parity gaps remain open.
   closed one failing-test-first commit at a time (current example: `HANDLER-004`,
   `is_name` uses a substring match rather than ROM's whole-word `str_prefix`). Open
   gaps are logged in the per-file `docs/parity/*_C_AUDIT.md` documents.
-- **Test Suite**: ✅ **5329 passed, 4 skipped** (full `pytest` run, ~152s parallel).
+- **Test Suite**: ✅ **5361 passed, 4 skipped** (full `pytest` run, ~155s parallel).
   Three layers — unit (`tests/test_*.py`), integration (`tests/integration/`), and
   command-registry (`test_all_commands.py`).
 - **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact
