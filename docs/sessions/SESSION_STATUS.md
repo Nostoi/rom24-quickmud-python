@@ -1,58 +1,51 @@
-# Session Status — 2026-06-02 — Flag-hex guard + INV-034 pointer-identity (2.12.77)
+# Session Status — 2026-06-02 — INV-034 pointer-identity root fix (2.12.78)
 
 ## Current State
 
 - **Active mode**: cross-file invariants under the **divergence-class
-  completeness lens**. This session swept two Layer-A candidate classes via
-  `/rom-divergence-sweep`: class 5 (flag-hex) and class 6 (pointer-identity).
-- **Class 5 (flag-hex) → ✅ Layer-A guarded** (`tests/test_flag_hex_convention.py`,
-  the 4th static guard). Feasible because a tight prefix-anchored grep had exactly
-  one legitimate hit (`wiznet.py`'s `WiznetFlag` enum body — allowlisted). Closed
-  4 offenders (2 enum migrations + 2 dead-code deletions, HANDLER-DEAD-001/002).
-  No live behavior change. Commits `568639b7`, `6ce23769`.
-- **Class 6 (pointer-identity) → reclassified A→C, filed OPEN as INV-034**
-  (2.12.77, commit `7f8359db`). A static guard is infeasible (`==`/`!=` not
-  type-discriminable by grep). The probe *discovered* the root cause is live:
-  `Character`/`Object` are value-eq `@dataclass`es and the spawn path leaves
-  `instance_id`/`id` unset, so distinct same-proto entities compare `==`-equal
-  (empirically verified) — poisoning ~91 `in`/`remove` sites. Recall oracle =
-  INV-031(c) (already fixed `is_same_group`→`is`). Filed INV-034 (Layer C, ⚠️
-  OPEN) + strict-xfail demo test + **new AGENTS.md "Entity identity" parity rule**
-  ("use `is`, not `==`"). **Root fix deferred** (~91-site blast radius; needs a
-  value-eq test-reliance sweep) — probe-only mandate honored.
-- **Layer A is now at its feasible ceiling**: 4/4 classes that admit a static
-  chokepoint-guard have one (RNG, equipment-key, attribute-naming, flag-hex); the
-  two that don't (async-delivery, pointer-identity) are behavioral Layer C.
+  completeness lens**. This session executed the prior session's documented
+  next task: the **root fix of INV-034** (pointer-identity, divergence class 6).
+- **INV-034 (pointer-identity) → ✅ ENFORCED, class 6 → ✅ FIXED** (2.12.78,
+  commit `199827b4`). `Character` and `Object` are now `@dataclass(eq=False)`,
+  so `__eq__`/`__hash__` are inherited from `object` (identity compare + identity
+  hash = ROM pointer semantics; entities also become hashable). The pre-flight
+  gating sweep (`grep "assert .*(obj|char|victim|item).*==" tests/`) confirmed no
+  test relied on distinct-twin value-equality. The two strict-xfail demos in
+  `tests/test_inv034_pointer_identity_divergence.py` flipped xfail→pass and were
+  converted to plain assertions. Production `attacker != victim` / decay-loop
+  `object_registry.remove` sites are *corrected*, not regressed.
+- **Layer A remains at its feasible ceiling** (4/4 static-guardable classes:
+  RNG, equipment-key, attribute-naming, flag-hex). The two behavioral classes
+  (async-delivery class 4, pointer-identity class 6) are Layer C — and class 6 is
+  now enforced via the model-level fix rather than a per-site grep.
 
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-02_FLAG_HEX_LAYER_A_GUARD.md](SESSION_SUMMARY_2026-06-02_FLAG_HEX_LAYER_A_GUARD.md)
-  (flag-hex + the class-6/INV-034 addendum).
+  [SESSION_SUMMARY_2026-06-02_INV034_POINTER_IDENTITY_ROOT_FIX.md](SESSION_SUMMARY_2026-06-02_INV034_POINTER_IDENTITY_ROOT_FIX.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.12.77 |
-| Tests | 5356 passed, 4 skipped (flag-hex full run) + 2 new xfailed (INV-034 demo) |
+| Version | 2.12.78 |
+| Tests | 5358 passed, 4 skipped (full run) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Cross-file invariants | 27 rows (INV-034 added, ⚠️ OPEN) |
-| Divergence-class lens | **Layer A at feasible ceiling** (4/4 guarded); class 6 reclassified A→C (INV-034 OPEN) |
-| Lint | `ruff check .` 1762 pre-existing errors (none introduced; edited lines clean) |
+| Cross-file invariants | 27 rows (INV-034 now ✅ ENFORCED) |
+| Divergence-class lens | Layer A 4/4 feasible; **class 6 (pointer-identity) ✅ FIXED** (Character/Object eq=False; Room follow-up open) |
+| Lint | `ruff check` clean on edited files (repo carries 1762 pre-existing errors; none introduced) |
 
 ## Next Intended Task
 
-1. **Root-fix INV-034 (scoped session — the highest-value concrete next step).**
-   Convert `Character`/`Object` to identity equality (`@dataclass(eq=False)`,
-   restoring identity `==` + identity `__hash__`). **Gate first** on
-   `grep -rn "assert .*(obj|char|victim|item).*==" tests/` to find/repair any test
-   relying on value-equality, then run the full suite. Flips the strict-xfail
-   `test_inv034_pointer_identity_divergence.py` to xpass and promotes class 6 to ✅.
+1. **`Room` identity equality (small follow-up — fully closes class 6).** Same
+   class as INV-034, lower risk (vnum-keyed singletons; world-load/area tests may
+   compare rooms by value). Write a Room identity test mirroring `test_inv034_*`,
+   see it fail, flip `mud/models/room.py:Room` → `@dataclass(eq=False)` in its
+   own commit, gated on a `Room == Room` test-reliance sweep.
 2. **Highest-ceiling (deliberate multi-day project):** `diff_harness` Hypothesis
    widening (`tools/diff_harness/PROPOSAL_HYPOTHESIS_WIDENING.md`) — the only
    enumeration-independent path to *unknown* divergences.
 3. **Standing cross-INV candidate:** mob-trigger ordering (bribe/exit/fight/kill/
    hpcnt); INV tracker consolidation (now 27 rows, past the ~20 soft cap).
 
-> **Push note:** 2.12.76 (`568639b7`, `6ce23769`, `ef3c86e3`) + 2.12.77
-> (`7f8359db`) are on local `master`, **not pushed** — on top of the unpushed
-> 2.12.72–2.12.75 from prior sessions. CHANGELOG/version reflect 2.12.77.
+> **Push note:** 2.12.78 (`199827b4`) is on local `master`, **not pushed** — on
+> top of the unpushed 2.12.72–2.12.77 from prior sessions. CHANGELOG/version
+> reflect 2.12.78.
