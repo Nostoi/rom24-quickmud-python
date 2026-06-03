@@ -11,14 +11,13 @@ repos:
       - id: ruff-format
   - repo: local
     hooks:
-      # NOTE: test-fixtures-lint and validate-area-parity are set to
-      # `stages: [manual]` — they currently FAIL on the existing codebase
-      # (many legacy test files predate the standard fixtures; the area .are↔JSON
-      # validator reports pre-existing divergences) and pre-commit was never
-      # actually installed before, so they had never run. Leaving them on the
-      # commit stage would block every tests/ and area/ commit. Run them on
-      # demand with `pre-commit run --hook-stage manual --all-files`. Move them
-      # back to the default stage once the underlying issues are resolved.
+      # NOTE: test-fixtures-lint is `stages: [manual]` — it fails on the existing
+      # codebase (~617 legacy test sites predate the standard fixtures) and with
+      # `pass_filenames: false` it can't grandfather legacy. It's a style/
+      # consistency lint, not correctness. Run on demand:
+      # `pre-commit run --hook-stage manual test-fixtures-lint --all-files`.
+      # Move it back to the commit stage once the legacy tests are migrated (or
+      # rework it to lint only changed files).
       - id: test-fixtures-lint
         name: Ensure tests use standard fixtures
         entry: python3 scripts/lint_test_fixtures.py
@@ -26,13 +25,18 @@ repos:
         files: ^tests/.*\.py$
         pass_filenames: false
         stages: [manual]
+      # validate-area-parity is back on the commit stage: its comparison was
+      # fixed to validate conversion fidelity (raw .are loader vs raw JSON
+      # resets) instead of comparing two loaders with different runtime
+      # normalizations (the prior ~34 "errors" were D-reset boot-consumption +
+      # the canyon M-arg4 0→1 loader rewrite, not real divergences). Now reports
+      # perfect parity across all 50 shipped areas.
       - id: validate-area-parity
         name: Validate ROM .are and JSON area file parity
         entry: python3 scripts/validation/validate_area_parity.py
         language: system
         pass_filenames: false
         files: ^(area/.*\.are|data/areas/.*\.json)$
-        stages: [manual]
       - id: equipment-key-convention
         name: Equipment dict must be int(WearLocation)-keyed (no string slot keys)
         entry: python3 -m pytest tests/test_equipment_key_convention.py -q

@@ -20,9 +20,9 @@ Checks:
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
-from typing import Any
 
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -90,14 +90,19 @@ class ParityValidator:
         self._compare_metadata(are_area, json_area, are_path.stem)
 
         # Compare resets (most critical for mob spawning)
-        self._compare_resets(are_area, json_area, are_path.stem)
+        self._compare_resets(are_area, json_path, are_path.stem)
 
         return self.checks_failed == 0
 
     def _compare_metadata(self, are_area: Area, json_area: Area, area_name: str) -> None:
         """Compare area metadata."""
-        # Check area name
-        if are_area.name != json_area.name:
+        # Check area name. Treat None and "" as equivalent: the .are loader
+        # leaves ``name`` as None for the 3 system areas (group/rom/social) that
+        # carry no ``#AREA`` name, while the JSON converter stores "". Both mean
+        # "no area name" — not a conversion divergence.
+        are_name = are_area.name or ""
+        json_name = json_area.name or ""
+        if are_name != json_name:
             self.error(f"{area_name}: Name mismatch - .are='{are_area.name}' vs JSON='{json_area.name}'")
         else:
             self.passed(f"{area_name}: Area name matches")
@@ -118,10 +123,35 @@ class ParityValidator:
         # This is expected behavior, so we'll skip room count comparison
         self.passed(f"{area_name}: Room data stored in room_registry (both formats)")
 
-    def _compare_resets(self, are_area: Area, json_area: Area, area_name: str) -> None:
-        """Compare reset commands (critical for mob spawning)."""
-        are_resets = are_area.resets
-        json_resets = json_area.resets
+    def _compare_resets(self, are_area: Area, json_path: Path, area_name: str) -> None:
+        """Compare reset commands (critical for mob spawning).
+
+        This validates *conversion fidelity* (`.are` → `.json`), so it compares
+        the ``.are`` loader's resets against the **raw** JSON ``resets`` array,
+        NOT the post-load ``Area.resets`` produced by ``load_area_from_json``.
+        The JSON loader applies ROM-faithful *runtime* normalizations that the
+        raw file and the ``.are`` loader do not — it consumes/free's ``D`` (door)
+        resets at boot (``src/db.c:1058-1104``) and rewrites ``M``-reset
+        ``arg4`` (per-room limit) when 0 (``mud/loaders/json_loader.py``).
+        Comparing post-load lists conflated those runtime behaviors with
+        conversion errors, producing ~34 spurious mismatches (every area's
+        D-reset count, plus the canyon arg4=0→1 case) even though the conversion
+        is byte-faithful. Reading the raw JSON resets removes that confound; the
+        loader behaviors are validated/owned elsewhere (door-state checks; the
+        JSON-loader arg4 normalization).
+        """
+
+        def _key(reset) -> tuple:
+            get = (lambda k: reset.get(k)) if isinstance(reset, dict) else (lambda k: getattr(reset, k, None))
+            return (get("command"), get("arg1"), get("arg2"), get("arg3"), get("arg4"))
+
+        are_resets = list(are_area.resets)
+        try:
+            raw = json.loads(Path(json_path).read_text())
+            json_resets = list(raw.get("resets", []))
+        except Exception as e:  # pragma: no cover - defensive
+            self.error(f"{area_name}: could not read raw JSON resets: {e}")
+            return
 
         if len(are_resets) != len(json_resets):
             self.error(f"{area_name}: Reset count mismatch - .are={len(are_resets)} vs JSON={len(json_resets)}")
@@ -129,52 +159,18 @@ class ParityValidator:
 
         self.passed(f"{area_name}: Reset count matches ({len(are_resets)} resets)")
 
-        # Compare each reset command
         mismatches = 0
         for i, (are_reset, json_reset) in enumerate(zip(are_resets, json_resets, strict=False)):
-            if not self._compare_single_reset(are_reset, json_reset, i):
+            if _key(are_reset) != _key(json_reset):
                 mismatches += 1
                 if mismatches <= 5:  # Only show first 5 mismatches
-                    # Convert ResetJson objects to dict for display
-                    are_dict = {
-                        "command": are_reset.command,
-                        "arg1": are_reset.arg1,
-                        "arg2": are_reset.arg2,
-                        "arg3": are_reset.arg3,
-                        "arg4": are_reset.arg4,
-                    }
-                    json_dict = {
-                        "command": json_reset.command,
-                        "arg1": json_reset.arg1,
-                        "arg2": json_reset.arg2,
-                        "arg3": json_reset.arg3,
-                        "arg4": json_reset.arg4,
-                    }
-                    self.error(f"{area_name}: Reset #{i} mismatch - .are={are_dict} vs JSON={json_dict}")
+                    self.error(f"{area_name}: Reset #{i} mismatch - .are={_key(are_reset)} vs JSON={_key(json_reset)}")
 
         if mismatches > 5:
             self.error(f"{area_name}: ... and {mismatches - 5} more reset mismatches")
 
         if mismatches == 0:
             self.passed(f"{area_name}: All {len(are_resets)} resets match")
-
-    def _compare_single_reset(self, are_reset: Any, json_reset: Any, index: int) -> bool:
-        """Compare a single reset command (ResetJson objects)."""
-        # Must have same command type
-        if are_reset.command != json_reset.command:
-            return False
-
-        # For all reset types, check all arguments
-        if are_reset.arg1 != json_reset.arg1:
-            return False
-        if are_reset.arg2 != json_reset.arg2:
-            return False
-        if are_reset.arg3 != json_reset.arg3:
-            return False
-        if are_reset.arg4 != json_reset.arg4:
-            return False
-
-        return True
 
     def validate_all_areas(self, are_dir: Path, json_dir: Path) -> bool:
         """
