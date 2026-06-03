@@ -789,6 +789,23 @@ class Character:
                 self.send_to_char(message)
             return True
 
+        raw_removed = False
+        for affect in list(getattr(self, "affected", []) or []):
+            affect_type = getattr(affect, "type", None)
+            affect_bitvector = getattr(affect, "bitvector", 0)
+            if affect_type == affect_name or (
+                affect_name == "sleep" and int(affect_bitvector or 0) == int(AffectFlag.SLEEP)
+            ):
+                # ROM src/handler.c:1426-1438 — affect_strip calls
+                # affect_remove for every matching AFFECT_DATA entry.
+                from mud.handler import affect_remove
+
+                affect_remove(self, affect)
+                raw_removed = True
+
+        if raw_removed:
+            return True
+
         if affect_name == "sleep" and self.has_affect(AffectFlag.SLEEP):
             self.remove_affect(AffectFlag.SLEEP)
             return True

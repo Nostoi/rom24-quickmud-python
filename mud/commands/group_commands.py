@@ -110,6 +110,11 @@ def stop_follower(char: Character) -> None:
         _send_to_char_sync(master, f"{_display_name(char)} stops following you.")
         _send_to_char_sync(char, f"You stop following {_display_name(master)}.")
 
+    # ROM src/act_comm.c:1631-1632 — stop_follower always clears
+    # ch->master->pet when it points at ch, independent of current charm state.
+    if getattr(master, "pet", None) is char:
+        master.pet = None
+
     char.master = None
     char.leader = None
 
