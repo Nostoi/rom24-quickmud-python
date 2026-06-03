@@ -227,8 +227,9 @@ KNOWN_MAPPINGS = {
     "colourconv": "ANSI color conversion",
     "bug": "do_bug",
     "log_string": "logging system",
-    "is_number": "args parsing",
-    "number_argument": "args parsing",
+    # NB: is_number / number_argument are mapped precisely under "# interp.c"
+    # above; the duplicate "args parsing" entries here were silently overriding
+    # them (F601) and have been removed.
     "one_argument": "args parsing",
 }
 

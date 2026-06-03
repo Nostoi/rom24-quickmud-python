@@ -27,7 +27,7 @@ def load_unmapped_functions() -> dict[str, list[str]]:
 
     for line in unmapped_section.split("\n"):
         if line.startswith("## "):
-            current_file = line.strip("## ").strip()
+            current_file = line.removeprefix("## ").strip()
             unmapped_by_file[current_file] = []
         elif line.strip() and current_file and not line.startswith(("-", "=", "These")):
             # Extract function name from "  funcname (line 123)"

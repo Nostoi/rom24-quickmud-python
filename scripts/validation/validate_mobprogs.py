@@ -194,6 +194,7 @@ Examples:
     total_valid = sum(r["valid_programs"] for r in all_results)
     total_invalid = sum(r["invalid_programs"] for r in all_results)
     total_errors = sum(len(r["errors"]) for r in all_results)
+    total_warnings = sum(len(r["warnings"]) for r in all_results)
     total_movement = sum(r["movement_progs"] for r in all_results)
 
     print(f"\nAreas Scanned:      {total_areas}")
