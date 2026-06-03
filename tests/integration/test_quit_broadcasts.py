@@ -61,7 +61,9 @@ def test_quit_broadcasts_to_room(quit_room_setup):
 
     result = do_quit(actor, "")
 
-    assert "May your travels be safe." in result
+    # QUIT-001 — ROM src/act_comm.c:1481 sends "Alas, all good things must come
+    # to an end." to the quitter (TO_CHAR), not "May your travels be safe."
+    assert "Alas, all good things must come to an end." in result
     assert "Departer has left the game." in witness.messages, (
         f"Witness should see '$n has left the game.'; got {witness.messages!r}"
     )

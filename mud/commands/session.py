@@ -66,7 +66,11 @@ def do_quit(ch: Character, args: str) -> str:
     # Set a flag to signal the connection handler to disconnect
     ch._quit_requested = True
 
-    return "May your travels be safe.\n"
+    # QUIT-001 — mirroring ROM src/act_comm.c:1481
+    # send_to_char("Alas, all good things must come to an end.\n\r", ch).
+    # The quitter sees this farewell (delivered as the command result before the
+    # connection handler tears down the descriptor), not "May your travels be safe."
+    return "Alas, all good things must come to an end.\n"
 
 
 def do_score(ch: Character, args: str) -> str:
