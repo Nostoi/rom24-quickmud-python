@@ -292,6 +292,62 @@ def test_mobile_update_runs_random_trigger(monkeypatch):
     assert oracle.room is room
 
 
+def test_mobile_update_mobprog_default_position_gate_precedes_standing_ai(monkeypatch):
+    area = Area(name="Shrine")
+    room = Room(vnum=202, area=area)
+    room_registry[room.vnum] = room
+
+    resting_guard = Character(
+        name="Resting Guard",
+        is_npc=True,
+        position=int(Position.RESTING),
+        default_pos=int(Position.STANDING),
+        act=int(ActFlag.SCAVENGER),
+        mprog_delay=1,
+    )
+    sleeping_oracle = Character(
+        name="Sleeping Oracle",
+        is_npc=True,
+        position=int(Position.SLEEPING),
+        default_pos=int(Position.SLEEPING),
+        act=int(ActFlag.SCAVENGER),
+    )
+    room.add_character(resting_guard)
+    room.add_character(sleeping_oracle)
+    character_registry.extend([resting_guard, sleeping_oracle])
+
+    relic = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.TRASH), short_descr="silver relic"),
+        wear_flags=int(WearFlag.TAKE),
+        cost=50,
+    )
+    room.add_object(relic)
+
+    calls: list[tuple[str, str]] = []
+
+    def fake_delay(mob: Character) -> bool:
+        calls.append(("delay", mob.name))
+        return False
+
+    def fake_random(mob: Character) -> bool:
+        calls.append(("random", mob.name))
+        return False
+
+    monkeypatch.setattr(mobprog, "mp_delay_trigger", fake_delay)
+    monkeypatch.setattr(mobprog, "mp_random_trigger", fake_random)
+    monkeypatch.setattr(rng_mm, "number_bits", lambda _: 0)
+
+    # Mirrors ROM src/update.c:443-465: delay/random fire only while the mob
+    # is at default position, then non-standing mobs stop before scavenging.
+    mobile_update()
+
+    assert calls == [("delay", "Sleeping Oracle"), ("random", "Sleeping Oracle")]
+    assert relic in getattr(room, "contents", [])
+    assert relic not in getattr(resting_guard, "inventory", [])
+    assert relic not in getattr(sleeping_oracle, "inventory", [])
+
+
 def test_mobile_update_scavenges_room_loot(monkeypatch):
     area = Area(name="Dump")
     room = Room(vnum=201, area=area)
