@@ -1,39 +1,44 @@
-# Session Status — 2026-06-03 — Room-contents show_list_to_char parity (2.13.5)
+# Session Status — 2026-06-03 — FINDING-020 carry-list position (2.13.6)
 
 ## Current State
 
 - **Active mode**: cross-file invariants / divergence-class sweep (per-file audit
   tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
-  - **Room-contents `look()` parity** — `_look_room` now calls
-    `show_list_to_char(room.contents, char, f_short=False, f_show_nothing=False)`,
-    matching ROM `src/act_info.c:1106`. Previous code used a hand-rolled for-loop
-    that omitted `can_see_object` visibility, aura prefixes, and COMBINE
-    coalescence. 10 new integration tests.
-  - **FINDING-022** — `look in <container>` contents indent (2.13.4).
-  - **Class-13 bypass sweep** — 15 runtime-placement sites fixed (2.13.3).
+  - **FINDING-020 — equip→remove carry-list position** ✅ RESOLVED (PC path,
+    2.13.6). ROM keeps equipped objects in `ch->carrying` (only `wear_loc`
+    flips), so a removed item keeps its original LIFO slot. C oracle confirmed
+    the position is *relative to acquisition order*, not a fixed index. Fixed via
+    an `Object._carry_seq` acquisition-sequence shim; `_remove_obj` re-inserts by
+    descending seq. Validated against the live C oracle (6 scenarios) + un-gated
+    diff-harness generated remove rules. 3 new integration tests.
+  - Room-contents `look()` `show_list_to_char` parity (2.13.5).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-03_ROOM_CONTENTS_SHOW_LIST_PARITY.md](SESSION_SUMMARY_2026-06-03_ROOM_CONTENTS_SHOW_LIST_PARITY.md)
+  [SESSION_SUMMARY_2026-06-03_FINDING_020_CARRY_LIST_POSITION.md](SESSION_SUMMARY_2026-06-03_FINDING_020_CARRY_LIST_POSITION.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.5 |
-| Tests | Full suite `pytest` → **5414 passed, 4 skipped**; `ruff check .` clean |
+| Version | 2.13.6 |
+| Tests | Full suite `pytest` → **5417 passed, 4 skipped**; `ruff check .` clean |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Cross-file invariants | INV-039 + INV-029 + room-contents parity resolved |
-| Open engine bugs | FINDING-020 (remove carry-list position), FINDING-022 ✅ resolved |
+| Divergence class 13 | object-list ordering — runtime legs closed (INV-039 + FINDING-020) |
+| Open engine findings | FINDING-024 (save/load order), FINDING-025 (mob equip model) |
 
 ## Next Intended Task
 
-1. **FINDING-020** — equipment-dict carry-list position divergence; needs a scoped
-   architectural decision (ROM keeps equipped objects in the carry list).
-2. Continue Phase C deterministic command/watch-set widening (light hold,
-   money/shop paths); add RNG-locked combat only after seed alignment is proven.
-3. `show_list_to_char` coverage: inventory-list path (`do_inventory` already has
-   its own COMBINE logic — could unify with `show_list_to_char` but not required
-   for parity).
+1. **FINDING-024** — save/load persistence leg of the carry-list ordering
+   divergence: `equipment_state` (dict) carries no position relative to the
+   ordered `inventory_state`, and `_carry_seq` is not persisted, so a reloaded-
+   then-removed item appends. Persist `_carry_seq` or restore the carry list
+   inline; needs a diff-harness save/reload scenario or a focused persistence test.
+2. **FINDING-025** — probe `MobInstance.equip`: it keeps equipped items in
+   `inventory` + `wear_loc` and never populates the equipment dict (different
+   model from PCs). Verify mob disarm position and whether the missing dict entry
+   is a real divergence. ROM uses one carry-list+`wear_loc` model for both.
+3. Continue Phase C deterministic diff-harness widening (light hold, money/shop
+   paths); add RNG-locked combat only after seed alignment is proven.
 
 ## Other open / deferred items
 
