@@ -765,7 +765,11 @@ def char_update() -> None:
     _AUTOSAVE_ROTATION = (_AUTOSAVE_ROTATION + 1) % _AUTOSAVE_WINDOW
 
     autosave_candidates: list[Character] = []
-    autoquit_candidates: list[Character] = []
+    # GL-034: ROM's ``ch_quit`` is a single CHAR_DATA* overwritten each loop
+    # iteration (src/update.c:682-683), so at most ONE idle char is quit per
+    # tick — the LAST char in char_list with pre-increment ``timer > 30``. Track
+    # the last candidate (last-wins), not a list, so we don't fan out.
+    autoquit_candidate: Character | None = None
 
     for character in list(character_registry):
         position = Position(int(getattr(character, "position", Position.STANDING)))
@@ -829,7 +833,7 @@ def char_update() -> None:
                 # void at ``>= 12`` (below) before it ever reaches the > 30
                 # autoquit threshold.
                 if prev_timer > 30:
-                    autoquit_candidates.append(character)
+                    autoquit_candidate = character  # GL-034: last-wins, not append
                 character.timer = prev_timer + 1
                 if (
                     character.timer >= 12
@@ -872,8 +876,9 @@ def char_update() -> None:
         except Exception:  # pragma: no cover - defensive safeguard
             pass
 
-    for candidate in autoquit_candidates:
-        _auto_quit_character(candidate)
+    # GL-034: ROM quits only ``ch_quit`` (the last timer>30 char) per tick.
+    if autoquit_candidate is not None:
+        _auto_quit_character(autoquit_candidate)
 
 
 def _render_obj_message(obj: Object, template: str) -> str:

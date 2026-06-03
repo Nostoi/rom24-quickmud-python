@@ -160,6 +160,47 @@ def test_linkdead_idle_player_autoquits(monkeypatch):
     assert ghost not in character_registry
 
 
+def test_only_last_idle_player_autoquits_per_tick(monkeypatch):
+    """GL-034: ROM auto-quits at most ONE idle char per ``char_update`` tick —
+    ``ch_quit`` is a single pointer overwritten each loop iteration
+    (src/update.c:682-683), so it holds the LAST char with pre-increment
+    ``timer > 30``; the second loop quits only that one (:897-900). Two
+    simultaneously-idle PCs must therefore stagger one-per-tick, not quit en
+    masse. Uses link-dead chars so the autoquit stays synchronous."""
+
+    character_registry.clear()
+    room_registry.clear()
+    gl._AUTOSAVE_ROTATION = 0
+
+    area = Area(name="Ghost Hall")
+    room = Room(vnum=4103, area=area)
+    limbo = Room(vnum=ROOM_VNUM_LIMBO, area=area)
+    room_registry[room.vnum] = room
+    room_registry[limbo.vnum] = limbo
+
+    monkeypatch.setattr(gl, "save_character", lambda ch: None)
+
+    # Two link-dead idlers, both past the threshold; registry order [first, last].
+    first = _make_pc("FirstGhost", timer=31, room=limbo)
+    first.desc = None
+    first.was_in_room = room
+    last = _make_pc("LastGhost", timer=31, room=limbo)
+    last.desc = None
+    last.was_in_room = room
+
+    char_update()
+
+    # ROM quits only ``ch_quit`` (the LAST timer>30 char in registry order).
+    assert last not in character_registry
+    assert first in character_registry
+    # The survivor's timer still climbed (31 → 32) and it remains the sole
+    # candidate next tick.
+    assert first.timer == 32
+
+    char_update()
+    assert first not in character_registry
+
+
 def test_input_read_resets_idle_timer():
     """ROM src/comm.c:605 zeroes ``ch->timer`` when the descriptor delivers a
     line, before ``interpret``. The command-read chokepoint must do the same so
