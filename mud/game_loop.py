@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
@@ -537,7 +538,53 @@ def _idle_to_limbo(character: Character) -> None:
         limbo.add_character(character)
 
 
+def _schedule_connection_close(connection: object) -> bool:
+    """Schedule an async close of a live player connection from the synchronous
+    game tick (GL-035).
+
+    Returns True if the close was scheduled on a running event loop, False if
+    there is no running loop (e.g. a synchronous test context). Mirrors the
+    fire-and-forget ``asyncio.create_task`` pattern documented in
+    docs/divergences/MESSAGE_DELIVERY.md and used by
+    ``mud.utils.messaging.send_to_char``.
+    """
+    closer = getattr(connection, "close", None)
+    if not callable(closer):
+        return False
+    try:
+        asyncio.get_running_loop()
+    except RuntimeError:
+        return False
+
+    async def _close() -> None:
+        try:
+            await closer()
+        except Exception:  # pragma: no cover - defensive; playing-loop finally also closes
+            pass
+
+    asyncio.create_task(_close())
+    return True
+
+
 def _auto_quit_character(character: Character) -> None:
+    # GL-035: ROM src/update.c:897-900 quits an idle char via
+    # ``do_function(ch, &do_quit, "")`` regardless of link state — ``do_quit``
+    # saves, extracts, and ``close_socket``s synchronously. For a CONNECTED
+    # idler the Python game tick is synchronous and cannot await the transport
+    # teardown, so we schedule an async close of the live connection: the parked
+    # ``readline`` in the playing loop (mud/net/connection.py) then returns
+    # ``None`` and that loop's ``finally`` runs the full ROM
+    # ``do_quit``-equivalent teardown (save + nuke_pets + die_follower +
+    # char_from_room + registry removal + close). We must NOT also extract here
+    # or we race/double-remove the Character. Only when there is no running loop
+    # to schedule on (a synchronous context) do we fall through to the
+    # synchronous extract below, so the Character is still cleaned up.
+    connection = getattr(character, "connection", None)
+    if getattr(character, "desc", None) is not None and connection is not None:
+        if _schedule_connection_close(connection):
+            return
+
+    # Link-dead (``desc is None``) — no live socket to tear down — extract here.
     try:
         save_character(character)
     except Exception:  # pragma: no cover - defensive safeguard
@@ -770,15 +817,18 @@ def char_update() -> None:
                 # mud.net.connection._read_player_command.
                 prev_timer = int(getattr(character, "timer", 0) or 0)
                 descriptor = getattr(character, "desc", None)
-                # ROM's autoquit (`ch == ch_quit` → `do_quit`) closes the
-                # socket. Python's `_auto_quit_character` runs in the synchronous
-                # game tick and cannot `await conn.close()` to tear down a live
-                # descriptor/session, so we only autoquit characters that are
-                # already link-dead (`desc is None`) — exactly the population the
-                # path handled before INV-038. A connected idler still climbs the
-                # timer and disappears into the void below; the connected-player
-                # autoquit-with-teardown leg is filed as GL-035 (OPEN).
-                if prev_timer > 30 and descriptor is None:
+                # ROM src/update.c:682-683 sets ``ch_quit = ch`` for ANY PC whose
+                # *pre-increment* timer is > 30, regardless of link state, and
+                # the second loop quits it via ``do_quit`` (:897-900). GL-035:
+                # ``_auto_quit_character`` now handles BOTH populations — link-dead
+                # chars are extracted synchronously, while a connected idler has
+                # its live connection closed asynchronously (the parked readline
+                # returns None → the playing loop's ``finally`` runs the full
+                # teardown), since the synchronous tick cannot await the socket
+                # teardown itself. A connected idler still disappears into the
+                # void at ``>= 12`` (below) before it ever reaches the > 30
+                # autoquit threshold.
+                if prev_timer > 30:
                     autoquit_candidates.append(character)
                 character.timer = prev_timer + 1
                 if (

@@ -55,9 +55,7 @@ def _make_pc(name: str, *, timer: int, room: Room) -> Character:
 def test_connected_idle_player_climbs_timer_and_voids(monkeypatch):
     """A logged-in PC who never types must accumulate idle time and disappear
     into the void at ``timer >= 12`` — ROM gates the void on ``level < IMMORTAL``
-    and the per-tick increment, not on ``desc``. (The connected-player *autoquit*
-    leg requires async descriptor teardown the synchronous tick cannot perform;
-    it is deferred to GL-035 — see test below.)"""
+    and the per-tick increment, not on ``desc``."""
 
     character_registry.clear()
     room_registry.clear()
@@ -82,13 +80,57 @@ def test_connected_idle_player_climbs_timer_and_voids(monkeypatch):
     assert idler.room is limbo
     assert idler.was_in_room is room
 
-    # Past the autoquit threshold, still connected: the timer keeps climbing but
-    # the character is NOT yanked from the registry (GL-035 — no live-socket
-    # teardown from the synchronous tick). It stays parked in limbo, connected.
-    idler.timer = 31
-    char_update()
 
+def test_connected_idle_player_autoquits_via_async_close(monkeypatch):
+    """GL-035: a CONNECTED idler past the autoquit threshold (pre-increment
+    ``timer > 30``) is quit by ``char_update`` — ROM src/update.c:682-683 +
+    897-900 (``ch_quit`` → ``do_quit``) quits idlers regardless of link state.
+
+    The synchronous tick cannot await the socket teardown, so it schedules an
+    async close of the live connection (the parked ``readline`` then returns
+    ``None`` → the playing loop's ``finally`` runs the real teardown). This test
+    asserts the close is scheduled and fired, and that the tick does NOT itself
+    synchronously extract the connected Character (the connection ``finally``
+    owns that, to avoid a double-remove race)."""
+
+    character_registry.clear()
+    room_registry.clear()
+    gl._AUTOSAVE_ROTATION = 0
+
+    area = Area(name="Idle Hall")
+    limbo = Room(vnum=ROOM_VNUM_LIMBO, area=area)
+    room_registry[limbo.vnum] = limbo
+
+    monkeypatch.setattr(gl, "save_character", lambda ch: None)
+
+    class _FakeConn:
+        def __init__(self) -> None:
+            self.closed = False
+
+        async def close(self) -> None:
+            self.closed = True
+
+    # Already voided into limbo (was_in_room set), connected, past threshold.
+    idler = _make_pc("Idler", timer=31, room=limbo)
+    idler.was_in_room = limbo
+    idler.desc = object()
+    conn = _FakeConn()
+    idler.connection = conn
+
+    async def _run() -> None:
+        char_update()
+        # Let the fire-and-forget close task scheduled by char_update run.
+        await asyncio.sleep(0)
+        await asyncio.sleep(0)
+
+    asyncio.run(_run())
+
+    # GL-035: the live connection was closed asynchronously...
+    assert conn.closed is True
+    # ...the timer still climbed (pre-increment 31 → 32)...
     assert idler.timer == 32
+    # ...and the tick did NOT synchronously extract — the playing-loop finally
+    # (not modeled in this unit test) owns registry/room teardown on a live conn.
     assert idler in character_registry
 
 
