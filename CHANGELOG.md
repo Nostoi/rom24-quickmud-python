@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FINDING-024 — DB save/load lost equipped-item carry-list position.** ROM saves
+  equipped objects inline in `ch->carrying` with `wear_loc`, so a pfile
+  round-trip preserves their position relative to carried inventory. Python saved
+  inventory and equipment in separate JSON blobs and did not persist
+  `Object._carry_seq`, so a reloaded equipped object appended when removed. Object
+  snapshots now persist `carry_seq`, reload restores it, and `from_orm` advances
+  the runtime sequence counter past restored values so future acquisitions remain
+  newer than loaded objects.
 - **FINDING-020 — `remove` lost ROM's preserved carry-list position.** ROM keeps
   equipped objects in `ch->carrying` with only `wear_loc` set, so an unequipped
   item keeps its original LIFO carry-list slot; new acquisitions head-insert in

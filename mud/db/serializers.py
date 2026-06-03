@@ -207,6 +207,7 @@ class ObjectSave:
     level: int = 0
     timer: int = 0
     cost: int = 0
+    carry_seq: int = 0
     value: list[int] = field(default_factory=lambda: [0, 0, 0, 0, 0])
     extra_flags: int = 0
     condition: int | str | None = None
@@ -348,6 +349,7 @@ def _serialize_object(obj: Any, *, wear_slot: int | str | None = None) -> Object
         level=_safe_int(getattr(obj, "level", getattr(proto, "level", 0))),
         timer=_safe_int(getattr(obj, "timer", 0)),
         cost=_safe_int(getattr(obj, "cost", getattr(proto, "cost", 0))),
+        carry_seq=_safe_int(getattr(obj, "_carry_seq", 0)),
         value=_normalize_int_list(value_source, 5),
         extra_flags=_safe_int(getattr(obj, "extra_flags", getattr(proto, "extra_flags", 0))),
         condition=getattr(obj, "condition", getattr(proto, "condition", None)),
@@ -368,6 +370,11 @@ def _deserialize_object(snapshot: ObjectSave) -> Any:
     obj.level = _safe_int(snapshot.level, getattr(obj, "level", 0))
     obj.timer = _safe_int(snapshot.timer, getattr(obj, "timer", 0))
     obj.cost = _safe_int(snapshot.cost, getattr(obj, "cost", 0))
+    # FINDING-024: ROM src/save.c writes equipped objects inline in the
+    # carrying list with wear_loc, so their relative list position survives
+    # fread_obj for free. Python persists inventory/equipment separately; the
+    # FINDING-020 carry sequence is the ordering bridge across save/load.
+    obj._carry_seq = _safe_int(getattr(snapshot, "carry_seq", 0))
     obj.value = _normalize_int_list(snapshot.value, 5)
     obj.extra_flags = _safe_int(snapshot.extra_flags, getattr(obj, "extra_flags", 0))
     obj.condition = snapshot.condition if snapshot.condition is not None else getattr(obj, "condition", 0)

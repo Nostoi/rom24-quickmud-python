@@ -47,6 +47,14 @@ def _next_carry_seq() -> int:
     return _carry_seq_counter
 
 
+def _sync_carry_seq_counter(value: int) -> None:
+    """Ensure future carry-list acquisitions sort after restored objects."""
+
+    global _carry_seq_counter
+    if value > _carry_seq_counter:
+        _carry_seq_counter = value
+
+
 def _resolve_item_type(raw) -> ItemType | None:
     """Best-effort conversion of raw item type values into ItemType members."""
 
@@ -1291,6 +1299,7 @@ def from_orm(db_char: DBCharacter) -> Character:
     # The legacy load_objects_for_character (ObjectInstance table) is NOT used
     # in the DB-canonical path — it only restores prototype defaults.
     inventory_state = getattr(db_char, "inventory_state", None)
+    restored_carry_seq_max = 0
     if inventory_state and isinstance(inventory_state, list):
         from mud.db.serializers import ObjectSave, _deserialize_object
         from mud.models.json_io import dataclass_from_dict
@@ -1301,6 +1310,7 @@ def from_orm(db_char: DBCharacter) -> Character:
                 snapshot = dataclass_from_dict(ObjectSave, obj_dict)
                 obj = _deserialize_object(snapshot)
                 if obj is not None:
+                    restored_carry_seq_max = max(restored_carry_seq_max, int(getattr(obj, "_carry_seq", 0) or 0))
                     restored_inventory.append(obj)
             except Exception:
                 pass
@@ -1317,6 +1327,7 @@ def from_orm(db_char: DBCharacter) -> Character:
                 snapshot = dataclass_from_dict(ObjectSave, obj_dict)
                 obj = _deserialize_object(snapshot)
                 if obj is not None:
+                    restored_carry_seq_max = max(restored_carry_seq_max, int(getattr(obj, "_carry_seq", 0) or 0))
                     # JSON forces string dict keys, so the canonical int wear
                     # slot reloads as e.g. "0"; coerce it back to int so live
                     # int-keyed readers find it (ROM src/handler.c get_eq_char).
@@ -1324,6 +1335,7 @@ def from_orm(db_char: DBCharacter) -> Character:
             except Exception:
                 pass
         char.equipment = restored_equipment
+    _sync_carry_seq_counter(restored_carry_seq_max)
 
     # --- INV-008 Phase 2: deserialize pet JSON blob ---
     pet_state = getattr(db_char, "pet_state", None)

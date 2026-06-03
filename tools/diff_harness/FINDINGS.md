@@ -8,9 +8,9 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-024 — save/load discards inventory↔equipment carry-list ordering — ⚠️ OPEN
+## FINDING-024 — save/load discards inventory↔equipment carry-list ordering — ✅ RESOLVED
 
-**Status:** ⚠️ OPEN 2026-06-03. Surfaced while closing the runtime FINDING-020.
+**Status:** ✅ RESOLVED 2026-06-03 (2.13.7). Surfaced while closing the runtime FINDING-020.
 The DB save format (`mud/account/account_manager.py`) serializes carried items as
 an ordered `inventory_state` list but equipped items as a separate
 `equipment_state` **dict keyed by wear slot** — with no record of an equipped
@@ -28,6 +28,15 @@ list inline (re-equip in carry-list order). Distinct from FINDING-020 (runtime,
 now closed) — this is the *persistence* leg of the same divergence. Not yet
 exercised by the diff harness (the diffshim has no save/reload step). File a
 diff-harness save/reload scenario or a focused persistence test when closing.
+
+**Fix:** `ObjectSave` now persists `carry_seq`, `_serialize_object` writes
+`Object._carry_seq`, `_deserialize_object` restores it, and `from_orm` advances
+the runtime carry-sequence counter past the highest restored value so future
+acquisitions sort newer than loaded objects. Regression:
+`tests/integration/test_db_canonical_round_trip.py::test_db_round_trip_preserves_equipped_item_carry_position_after_remove`
+uses the focused save/load boundary: bag acquired first, sword acquired/equipped
+second, jacket acquired after reload; removing the sword after DB round-trip must
+produce `[3045, 3021, 3032]`, matching ROM's inline pfile carry-list order.
 
 ---
 

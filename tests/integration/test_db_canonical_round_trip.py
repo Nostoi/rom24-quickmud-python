@@ -322,6 +322,38 @@ def test_db_round_trip_equipment_state():
         session.close()
 
 
+def test_db_round_trip_preserves_equipped_item_carry_position_after_remove():
+    """Reloaded equipment keeps ROM carry-list position when later removed."""
+    from mud.commands.equipment import do_wield
+    from mud.commands.obj_manipulation import do_remove
+    from mud.spawning.obj_spawner import spawn_object
+
+    created = create_character(None, "Eqpostest", starting_room_vnum=ROOM_VNUM_SCHOOL)
+    assert created
+
+    session = SessionLocal()
+    char: Character = from_orm(session.query(DBCharacter).filter_by(name="Eqpostest").first())
+    session.close()
+
+    sword = spawn_object(3021)
+    bag = spawn_object(3032)
+    jacket = spawn_object(3045)
+    if sword is None or bag is None or jacket is None:
+        pytest.skip("midgaard object prototypes not loaded")
+
+    # mirrors ROM src/save.c:fwrite_obj/fread_obj — equipped objects are saved
+    # inline in ch->carrying with wear_loc, so their order survives reload.
+    char.add_object(bag)
+    char.add_object(sword)
+    assert do_wield(char, "sword").startswith("You wield a small sword.")
+    char.add_object(jacket)
+
+    reloaded = _save_and_reload(char)
+
+    assert do_remove(reloaded, "sword") == "You stop using a small sword."
+    assert [obj.prototype.vnum for obj in reloaded.inventory] == [3045, 3021, 3032]
+
+
 # ---------------------------------------------------------------------------
 # Comprehensive single round-trip: one test covering all categories
 # ---------------------------------------------------------------------------
