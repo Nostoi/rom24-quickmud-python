@@ -70,16 +70,33 @@ def test_distinct_characters_are_not_equal_or_members():
     assert a not in [b]
 
 
+def test_distinct_rooms_are_not_equal_or_members():
+    """Two distinct rooms with identical fields must NOT be `==` and must not
+    confuse membership — ROM compares rooms by pointer (`ROOM_INDEX_DATA *`).
+    Rooms are normally vnum-keyed singletons, but nothing enforces that, so a
+    value-equal twin (e.g. a freshly built OLC room before registration, or a
+    test scratch room) must never be mistaken for another."""
+    from mud.models.room import Room
+
+    a = Room(vnum=1234, name="a room")
+    b = Room(vnum=1234, name="a room")
+
+    assert a is not b
+    assert a != b  # identity equality under @dataclass(eq=False)
+    assert a not in [b]
+
+
 def test_entity_runtime_types_use_identity_equality():
     """Regression guard for the INV-034 root fix: every live entity runtime type
-    (PCs `Character`, mobs `MobInstance`, objects `Object`, plus the legacy
-    `ObjectInstance`) must inherit `object`'s identity `__eq__`/`__hash__`, not a
-    dataclass-generated value-based one. A failure here means a model dataclass
-    regressed to `eq=True` — restore `@dataclass(eq=False)`."""
+    (PCs `Character`, mobs `MobInstance`, objects `Object`, rooms `Room`, plus the
+    legacy `ObjectInstance`) must inherit `object`'s identity `__eq__`/`__hash__`,
+    not a dataclass-generated value-based one. A failure here means a model
+    dataclass regressed to `eq=True` — restore `@dataclass(eq=False)`."""
     from mud.models.character import Character
     from mud.models.object import Object
+    from mud.models.room import Room
     from mud.spawning.templates import MobInstance, ObjectInstance
 
-    for cls in (Character, Object, MobInstance, ObjectInstance):
+    for cls in (Character, Object, MobInstance, ObjectInstance, Room):
         assert cls.__eq__ is object.__eq__, f"{cls.__name__} has value-based __eq__ (regressed to eq=True)"
         assert cls.__hash__ is object.__hash__, f"{cls.__name__} is not identity-hashable"

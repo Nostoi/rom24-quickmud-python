@@ -1,4 +1,4 @@
-# Session Summary — 2026-06-02 — INV-034 pointer-identity root fix
+# Session Summary — 2026-06-02 — INV-034 pointer-identity root fix (class 6 fully closed)
 
 ## Scope
 
@@ -44,12 +44,31 @@ that scoped fix.
   strict-xfail demonstrations flipped xfail→pass; converted to plain assertions
   (a future failure now means a model dataclass regressed to `eq=True`).
 
-### Divergence class 6 (pointer-identity) — ✅ FIXED
+### `Room` identity equality — ✅ FIXED (2.12.80, same session)
 
-Roster class 6 and Layer-C row 12 flipped to FIXED/enforced; the to-do item 5
-(root-fix INV-034) marked DONE. Follow-up noted: `Room` is the same class (still
-`eq=True`), lower risk (vnum-keyed singletons) — a Room identity test +
-`eq=False` flip can land independently.
+- **Python**: `mud/models/room.py:101` (`Room`) → `@dataclass(eq=False)`.
+- **ROM C**: rooms are `ROOM_INDEX_DATA *` pointer compares.
+- **Gap**: `Room` was the last value-eq entity dataclass. Rooms are normally
+  vnum-keyed singletons in `room_registry`, but nothing structurally enforces
+  that, so a value-equal twin (a freshly built OLC room before registration, a
+  test scratch room) could be confused for another.
+- **Method**: RED-first — added `test_distinct_rooms_are_not_equal_or_members`
+  and extended the regression guard to include `Room` (both failed: `Room` had
+  value-based `__eq__`), then flipped. Gating sweep for `Room == Room`
+  reliance came up empty — the 5 `char.room == room` test sites all compare a
+  char's `.room` reference against the *same* room object (identity-preserving).
+  Single-room runtime type (the `mud/db/models.py:Room` is the separate
+  SQLAlchemy ORM model; no subclasses, no sibling runtime room types — the
+  MobInstance lesson applied proactively).
+- **Tests**: full suite **5361 passed, 4 skipped** — zero regressions on the
+  heavily-exercised world-load/movement/area paths.
+
+### Divergence class 6 (pointer-identity) — ✅ FULLY CLOSED
+
+All five entity runtime types are now identity-eq (`Character`, `MobInstance`,
+`Object`, `Room`, legacy `ObjectInstance`). Roster class 6 and Layer-C row 12
+flipped to FULLY CLOSED; to-do item 5 marked DONE with **no follow-up
+remaining**.
 
 ## Files Modified
 
@@ -94,17 +113,15 @@ runtime type needs its own — verified by the new class-level regression guard.
 
 ## Next Steps
 
-1. **`Room` identity equality (small follow-up).** Same class as INV-034, lower
-   risk (vnum-keyed singletons, but world-load/area tests may compare rooms by
-   value). Write a Room identity test mirroring `test_inv034_*`, see it fail,
-   flip `mud/models/room.py:Room` to `@dataclass(eq=False)` in its own commit.
-   This fully closes divergence class 6 for all three entity types.
-2. **Highest-ceiling (deliberate multi-day project):** `diff_harness` Hypothesis
+Divergence class 6 is **fully closed** (all five entity runtime types identity-eq)
+— no INV-034 follow-up remains.
+
+1. **Highest-ceiling (deliberate multi-day project):** `diff_harness` Hypothesis
    widening (`tools/diff_harness/PROPOSAL_HYPOTHESIS_WIDENING.md`) — the only
    enumeration-independent path to *unknown* divergences.
-3. **Standing cross-INV candidate:** mob-trigger ordering (bribe/exit/fight/kill/
+2. **Standing cross-INV candidate:** mob-trigger ordering (bribe/exit/fight/kill/
    hpcnt); INV tracker consolidation (now 27 rows, past the ~20 soft cap).
 
-> **Push note:** 2.12.78–79 (`199827b4` + this follow-up) are on local `master`, **not
-> pushed** — on top of the unpushed 2.12.72–2.12.77 from prior sessions. CHANGELOG/version
-> reflect 2.12.79.
+> **Push note:** 2.12.78–80 (`199827b4`, `fb4b6c0f`, `8ceb2561` + this Room
+> commit) are on local `master`, **not pushed** — on top of the unpushed
+> 2.12.72–2.12.77 from prior sessions. CHANGELOG/version reflect 2.12.80.

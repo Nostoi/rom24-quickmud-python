@@ -97,9 +97,20 @@ class Exit:
     orig_door: int = 0
 
 
-@dataclass
+@dataclass(eq=False)
 class Room:
-    """Runtime room container built from area files (ROM ROOM_INDEX_DATA)."""
+    """Runtime room container built from area files (ROM ROOM_INDEX_DATA).
+
+    ROM parity (INV-034 / divergence class 6): rooms are compared by **pointer**
+    (`ROOM_INDEX_DATA *`), so this dataclass uses ``eq=False`` — ``__eq__``/
+    ``__hash__`` are inherited from ``object`` (identity compare + identity hash).
+    Rooms are normally vnum-keyed singletons in ``room_registry``, but nothing
+    structurally enforces that, so identity equality keeps ``room is other`` and
+    any ``room in <list>`` honest against a value-equal twin (e.g. a freshly
+    built OLC room before registration). Completes class 6 alongside
+    ``Character``/``MobInstance``/``Object``. See
+    ``docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`` INV-034.
+    """
 
     # Core properties
     vnum: int
