@@ -72,7 +72,9 @@ class TestResetsIntegration:
 
 
 class TestEncumbranceIntegration:
-    def test_inventory_limits_block_pickup_and_movement(self):
+    def test_inventory_limits_block_pickup_not_movement(self):
+        # MOVE-006: ROM enforces carry caps at pickup time (do_get) but has NO
+        # carry-weight movement gate — an overweight character still moves.
         area = Area(vnum=9100, name="Encumbrance Area")
         start = Room(vnum=9101, name="Start", area=area)
         dest = Room(vnum=9102, name="Destination", area=area)
@@ -99,20 +101,14 @@ class TestEncumbranceIntegration:
         assert "can't carry that much weight" in denial
         assert heavy_obj in start.contents
 
+        # Over both caps + a heavy coin burden — in ROM this is unreachable via
+        # do_get, but if forced it must NOT block movement (no movement gate).
         walker = Character(name="Walker", move=10)
         walker.room = start
         start.add_character(walker)
         walker.gold = 1000
         walker.carry_number = can_carry_n(walker) + 5
         walker.carry_weight = can_carry_w(walker) + 5
-        blocked = move_character(walker, "north")
-        assert blocked == "You are too encumbered to move."
-        assert walker.wait >= 1
-        assert walker.room is start
-
-        walker.gold = 0
-        walker.carry_number = 0
-        walker.carry_weight = 0
         success = move_character(walker, "north")
         assert "Destination" in success  # ROM act_move.c:204 — mover sees room
         assert walker.room is dest

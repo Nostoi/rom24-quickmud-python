@@ -368,11 +368,13 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
         if mobprog.mp_exit_trigger(char, idx):
             return ""
 
-    if get_carry_weight(char) > can_carry_w(char) or char.carry_number > can_carry_n(char):
-        current_wait = int(getattr(char, "wait", 0) or 0)
-        char.wait = max(current_wait, 1)
-        return "You are too encumbered to move."
-
+    # MOVE-006: ROM src/act_move.c:move_char has NO carry-weight/carry-number
+    # movement gate — movement is gated only on move points (`if (ch->move <
+    # move) "You are too exhausted."`, lines 122-126), terrain, boats, and flags.
+    # ROM enforces carry limits at pickup/transfer time instead (do_get/do_give/
+    # wear), so a PC can never become overweight enough to need a movement gate.
+    # The former "You are too encumbered to move." early-return here was a
+    # non-ROM invention and has been removed.
     exit = char.room.exits[idx]
     if exit is None or exit.to_room is None:
         return "You cannot go that way."

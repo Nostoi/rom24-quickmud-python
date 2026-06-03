@@ -102,15 +102,18 @@ def test_immortal_and_pet_caps():
     assert can_carry_w(pet) == 0
 
 
-def test_encumbrance_movement_gating_respects_caps():
+def test_movement_is_not_gated_by_carry_caps():
+    # MOVE-006: ROM src/act_move.c:move_char has NO carry-weight/carry-number
+    # movement gate (caps are enforced at pickup time via do_get). A character
+    # over its caps — even a pet, whose caps are 0 — still moves freely.
     start, dest = _build_rooms()
 
     pet = Character(name="Fido", is_npc=True, level=5, act=int(ActFlag.PET), move=10)
     start.add_character(pet)
     pet.carry_number = 1
     pet.carry_weight = 5
-    assert move_character(pet, "north") == "You are too encumbered to move."
-    assert pet.room is start
+    assert "Destination" in move_character(pet, "north")  # ROM act_move.c:204
+    assert pet.room is dest
 
     immortal = Character(name="Immortal", is_npc=False, level=LEVEL_IMMORTAL, move=10)
     start.add_character(immortal)
@@ -120,41 +123,17 @@ def test_encumbrance_movement_gating_respects_caps():
     assert immortal.room is dest
 
 
-def test_coin_weight_limits_movement():
+def test_coin_weight_does_not_limit_movement():
+    # MOVE-006: ROM has no coin-weight movement penalty — only pickup-time caps.
     start, dest = _build_rooms()
 
     hoarder = Character(name="Hoarder", move=10)
     start.add_character(hoarder)
-    hoarder.gold = 1000  # 1000 * 2 / 5 = 400 weight, exceeding the 100 cap
-
-    denial = move_character(hoarder, "north")
-    assert denial == "You are too encumbered to move."
-    assert hoarder.room is start
-
-    hoarder.gold = 0
-    hoarder.silver = 990  # 990 // 10 = 99 weight, under the default cap
-    hoarder.move = 10
+    hoarder.gold = 1000  # huge coin burden — irrelevant to movement in ROM
 
     success = move_character(hoarder, "north")
     assert "Destination" in success  # ROM act_move.c:204 — mover sees room
     assert hoarder.room is dest
-
-
-def test_overweight_move_sets_wait_state():
-    start, _ = _build_rooms()
-
-    ch = Character(name="Burdened", move=10)
-    start.add_character(ch)
-
-    ch.carry_weight = can_carry_w(ch) + 5
-    ch.carry_number = can_carry_n(ch) + 1
-    ch.wait = 0
-
-    denial = move_character(ch, "north")
-
-    assert denial == "You are too encumbered to move."
-    assert ch.room is start
-    assert ch.wait >= 1
 
 
 def test_do_get_blocked_by_weight_limit(object_factory):

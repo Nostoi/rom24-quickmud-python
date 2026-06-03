@@ -58,20 +58,24 @@ def test_exit_trigger_fires_when_no_exit_exists(monkeypatch) -> None:
     assert pc.room is room
 
 
-def test_exit_trigger_fires_when_encumbered(monkeypatch) -> None:
-    """An over-encumbered PC still fires the exit trigger (ROM has no carry gate)."""
+def test_exit_trigger_fires_when_over_carry_caps(monkeypatch) -> None:
+    """A heavily-laden PC still fires the exit trigger.
+
+    Before MOVE-005 the trigger sat after the (non-ROM) encumbrance early
+    return; MOVE-006 then removed that gate entirely (ROM has no carry-weight
+    movement gate). Either way, a character over its carry caps fires the exit
+    trigger — this pins that the trigger does not depend on the mover's load.
+    """
 
     room = Room(vnum=6001, name="Heavy Room")
     pc = Character(name="Packmule", is_npc=False, move=100)
     room.add_character(pc)
-
-    # Force the encumbrance early-return path: pretend the PC is over weight.
-    monkeypatch.setattr("mud.world.movement.get_carry_weight", lambda ch: 10**9)
+    pc.carry_weight = 10**9  # far over any cap
 
     seen = _spy_exit_trigger(monkeypatch)
 
     result = move_character(pc, "north")
 
-    assert seen == [0], "mp_exit_trigger must fire before the encumbrance gate"
+    assert seen == [0], "mp_exit_trigger must fire regardless of carry load"
     assert result == ""
     assert pc.room is room

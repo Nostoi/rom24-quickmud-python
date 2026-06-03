@@ -7,8 +7,8 @@ from mud.world import initialize_world, look, move_character
 
 
 def test_movement_and_look(movable_char_factory):
-    from mud.models.room import Exit
     from mud.models.constants import Direction
+    from mud.models.room import Exit
 
     initialize_world("area/area.lst")
     char = movable_char_factory("Tester", 3001)
@@ -28,13 +28,19 @@ def test_movement_and_look(movable_char_factory):
     assert "temple" in out2.lower() or "altar" in out2.lower()
 
 
-def test_overweight_character_cannot_move(movable_char_factory):
+def test_overweight_character_can_still_move(movable_char_factory):
+    # MOVE-006: ROM src/act_move.c:move_char has no carry-weight movement gate
+    # (caps are enforced at pickup time via do_get). An overweight PC moves freely.
+    from mud.models.constants import Direction
+    from mud.models.room import Exit
+
     initialize_world("area/area.lst")
     char = movable_char_factory("Tester", 3001)
+    room_to = room_registry[3054]
+    char.room.exits[Direction.NORTH.value] = Exit(to_room=room_to, vnum=3054)
     char.carry_weight = 200
-    msg = move_character(char, "north")
-    assert msg == "You are too encumbered to move."
-    assert char.room.vnum == 3001
+    move_character(char, "north")
+    assert char.room.vnum == 3054
 
 
 def test_area_list_requires_sentinel(tmp_path):
