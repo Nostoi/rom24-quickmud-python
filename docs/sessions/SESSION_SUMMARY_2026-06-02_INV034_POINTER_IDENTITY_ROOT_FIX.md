@@ -122,6 +122,9 @@ Divergence class 6 is **fully closed** (all five entity runtime types identity-e
 2. **Standing cross-INV candidate:** mob-trigger ordering (bribe/exit/fight/kill/
    hpcnt); INV tracker consolidation (now 27 rows, past the ~20 soft cap).
 
-> **Push note:** 2.12.78–80 (`199827b4`, `fb4b6c0f`, `8ceb2561` + this Room
-> commit) are on local `master`, **not pushed** — on top of the unpushed
-> 2.12.72–2.12.77 from prior sessions. CHANGELOG/version reflect 2.12.80.
+> **Push note (re-verified 2026-06-02):** `origin/master` is at `e0071711`
+> (2.12.77 — this session's starting point), so prior work **is** pushed. Only
+> this session's 4 commits are unpushed: `199827b4`, `fb4b6c0f`, `8ceb2561`,
+> `420ffe66` (2.12.78–80). CHANGELOG/version reflect 2.12.80. (The inherited
+> "2.12.72–2.12.77 unpushed" note was stale — corrected against
+> `git log origin/master..master`.)
