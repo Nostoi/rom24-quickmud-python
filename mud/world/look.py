@@ -319,6 +319,7 @@ def _look_obj(char: Character, obj) -> str:
 def _look_in(char: Character, args: str) -> str:
     """Look inside a container - ROM src/act_info.c lines 1070-1130"""
     from mud.models.constants import LIQUID_TABLE, ContainerFlag, ItemType
+    from mud.utils.act import capitalize_act_line
     from mud.world.obj_find import get_obj_here
 
     obj = get_obj_here(char, args)
@@ -355,12 +356,22 @@ def _look_in(char: Character, args: str) -> str:
         if len(value) > 1 and (value[1] & int(ContainerFlag.CLOSED)):
             return "It is closed."
 
+        # ROM src/act_info.c:1166-1167 — `act("$p holds:")` then
+        # `show_list_to_char(obj->contains, ch, TRUE, TRUE)`. `act_new` caps the
+        # header's first visible char (INV-029 ACT-CAP), so "a bag" → "A bag
+        # holds:". ROM has no "is empty" branch for containers; when the list is
+        # empty, show_list_to_char prints "Nothing." (fShowNothing=TRUE,
+        # nShow==0 — src/act_info.c:227-231). The listed contents themselves are
+        # not act-capped (they come from format_obj_to_char), so they stay
+        # lowercase.
+        short = getattr(obj, "short_descr", None) or "It"
+        lines = [capitalize_act_line(f"{short} holds:")]
+
         contents = getattr(obj, "contains", None) or getattr(obj, "contained_items", [])
         if not contents:
-            short = getattr(obj, "short_descr", None) or "It"
-            return f"{short} is empty."
+            lines.append("Nothing.")
+            return "\n".join(lines)
 
-        lines = [f"{getattr(obj, 'short_descr', 'It')} holds:"]
         for item in contents:
             item_name = getattr(item, "short_descr", None) or getattr(item, "name", "something")
             lines.append(f"  {item_name}")

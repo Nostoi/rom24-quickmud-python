@@ -124,18 +124,48 @@ the matching single-item path without asserting on this open bug. Filed as a
 
 ---
 
-## FINDING-021 — `look in <container>` header is not first-letter capitalized — ⚠️ OPEN
+## FINDING-021 — `look in <container>` header is not first-letter capitalized — ✅ RESOLVED
 
-**Status:** ⚠️ OPEN 2026-06-03. ROM renders the container-contents header via
-`act("$p holds:", …)` (or equivalent), so `act_new`'s first-visible-char cap
-(INV-029 / ACT-CAP) yields `A bag holds:`. The Python `do_look`-in-container path
-emits `a bag holds:` (lowercase). Observed:
+**Status:** ✅ RESOLVED 2026-06-03. ROM renders the container-contents view via
+two unconditional steps (`src/act_info.c:1166-1167`):
+```c
+act ("$p holds:", ch, obj, NULL, TO_CHAR);    /* header — act-capitalized */
+show_list_to_char (obj->contains, ch, TRUE, TRUE);
 ```
-look in bag → C=['A bag holds:', …] py=['a bag holds:', …]
-```
-Order of the listed contents matches (post-FINDING-019); only the header's first
-letter differs. Separate class (message capitalization, INV-029 territory) — filed
-for a follow-up gap-closer, not fixed in the INV-039 session.
+`act_new`'s first-visible-char cap (INV-029 / ACT-CAP) yields `A bag holds:`. The
+Python `_look_in` CONTAINER branch (`mud/world/look.py`) emitted `a bag holds:`
+(lowercase header). Fixed by routing the header through `capitalize_act_line`.
+
+Reading the ROM block to fix the header surfaced an adjacent divergence in the
+**same branch**: Python had invented a `"{short} is empty."` branch for empty
+containers, but ROM has no such branch — `show_list_to_char` with
+`fShowNothing == TRUE` and `nShow == 0` prints `Nothing.` (`act_info.c:227-231`).
+So ROM yields `A bag holds:` + `Nothing.` for an empty container. Fixed in the
+same commit (one root cause: the branch was a Python invention rather than a port
+of the ROM block). The drink-con `"It is empty."` path (`act_info.c:1143`) is
+**correct ROM** and was left untouched.
+
+**Test:** `tests/integration/test_finding021_look_in_container_header.py`
+(capitalized header + empty-container `Nothing.`).
+
+---
+
+## FINDING-022 — `look in <container>` contents lines carry a 2-space indent ROM omits for a PC — ⚠️ OPEN (source-suspected, not oracle-confirmed)
+
+**Status:** ⚠️ OPEN 2026-06-03. Surfaced while reading `show_list_to_char`
+(`src/act_info.c:130-243`) to fix FINDING-021. For a non-NPC char **without**
+`COMM_COMBINE`, ROM adds **no** leading indent to each listed object — the indent
+block (`     ` 5-space pad, or `(%2d) ` count) is gated on `IS_NPC (ch) ||
+IS_SET (ch->comm, COMM_COMBINE)` (`act_info.c:210-221`). The Python `_look_in`
+CONTAINER branch prepends a fixed 2-space indent (`f"  {item_name}"`), which
+matches neither the no-indent PC path nor the 5-space COMBINE path.
+
+Not yet confirmed against the live C oracle (the generated machine still avoids
+`look in` for the contents lines — only the header was hand-observed). Left out of
+the FINDING-021 fix to keep that commit atomic; the documented FINDING-021 note
+said contents "match", so this needs an oracle run before fixing. A faithful fix
+also implies porting `show_list_to_char`'s combine/count semantics for PCs with
+`COMM_COMBINE`, so scope it deliberately. Filed for follow-up.
 
 ---
 

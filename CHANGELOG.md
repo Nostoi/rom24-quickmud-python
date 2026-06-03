@@ -54,6 +54,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FINDING-021 — `look in <container>` now matches ROM's header and empty
+  rendering.** ROM `src/act_info.c:1166-1167` shows a container via
+  `act("$p holds:")` (header, act-capitalized via INV-029) + `show_list_to_char`.
+  The Python `_look_in` CONTAINER branch emitted a lowercase `a bag holds:` header
+  and, for empty containers, an invented `"a bag is empty."` line ROM never sends.
+  Fixed to capitalize the header (`A bag holds:`) and, when empty, print `Nothing.`
+  exactly as `show_list_to_char` does (`fShowNothing`, `nShow==0`). The drink-con
+  `"It is empty."` path (`act_info.c:1143`) is genuine ROM and was left untouched.
+  Surfaced FINDING-022 (contents lines carry a 2-space indent ROM omits for a PC —
+  filed open, not oracle-confirmed).
 - **FINDING-017/018/019 / INV-039 — object placement now head-inserts, matching
   ROM `obj_to_{char,room,obj}` (every object list is LIFO).** Phase C generated
   differential coverage (container round-trip) shrank a mismatch to
