@@ -217,9 +217,17 @@ def _parse_damage_type(primary: object, fallback: object) -> int:
     return 0
 
 
-@dataclass
+@dataclass(eq=False)
 class ObjectInstance:
-    """Runtime instance of an object."""
+    """Runtime instance of an object.
+
+    ROM parity (INV-034 / divergence class 6): identity (`eq=False`) for the same
+    reason as `Object`/`MobInstance`. Currently *not instantiated* anywhere (the
+    live object spawn path is `spawn_object` → `mud.models.object.Object`); this
+    is an entity-shaped legacy dataclass kept identity-eq so it can never become a
+    value-equality landmine if revived. See
+    ``docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`` INV-034.
+    """
 
     name: str | None
     item_type: int
@@ -236,9 +244,20 @@ class ObjectInstance:
         self.location = room
 
 
-@dataclass
+@dataclass(eq=False)
 class MobInstance:
-    """Runtime instance of a mob (NPC)."""
+    """Runtime instance of a mob (NPC).
+
+    ROM parity (INV-034 / divergence class 6): NPCs are compared by **pointer**.
+    `MobInstance` is the live runtime type for mobs (`spawn_mob` returns it) and
+    sits in `room.people` alongside `Character` PCs, so it uses ``eq=False`` for
+    the same reason — ``__eq__``/``__hash__`` inherited from ``object`` (identity
+    compare + identity hash). This is the **highest-risk** twin case: two
+    same-vnum mobs spawned into a room have identical fields until combat mutates
+    one, so value equality would make ``mob in room.people`` / ``room.people.
+    remove(mob)`` confuse the two. See
+    ``docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`` INV-034.
+    """
 
     name: str | None
     level: int

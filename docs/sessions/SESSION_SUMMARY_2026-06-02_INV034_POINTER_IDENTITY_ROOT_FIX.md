@@ -14,8 +14,16 @@ that scoped fix.
 
 ### `INV-034` POINTER-IDENTITY-COMPARISON — ✅ ENFORCED (root cause FIXED)
 
-- **Python**: `mud/models/character.py:392` (`Character`),
-  `mud/models/object.py:14` (`Object`) — both now `@dataclass(eq=False)`.
+- **Python**: every entity **runtime** type flipped to `@dataclass(eq=False)`:
+  `mud/models/character.py:392` (`Character`, PCs),
+  `mud/spawning/templates.py:240` (`MobInstance`, the live `spawn_mob` mob type
+  — **highest-risk** twin case), `mud/models/object.py:14` (`Object`,
+  `spawn_object`), and `mud/spawning/templates.py:221` (`ObjectInstance`, legacy
+  / uninstantiated, flipped for consistency). `MobInstance`/`ObjectInstance` were
+  **caught by adversarial review after the first `Character`/`Object` commit** —
+  a single class's `eq=False` does not propagate to sibling non-subclass entity
+  dataclasses, and `MobInstance` (not a `Character` subclass) is the actual
+  runtime type for mobs in `room.people`.
 - **ROM C**: entity compares are pointer (address) compares throughout
   (`src/handler.c` passim; `src/fight.c` `is_same_group`/`stop_fighting` sweep
   `char_list` by pointer). No value-equality concept in C.
@@ -47,25 +55,42 @@ Roster class 6 and Layer-C row 12 flipped to FIXED/enforced; the to-do item 5
 
 - `mud/models/character.py` — `@dataclass` → `@dataclass(eq=False)` + INV-034 docstring note.
 - `mud/models/object.py` — `@dataclass` → `@dataclass(eq=False)` + docstring note; updated stale `compare=False` comment.
-- `tests/test_inv034_pointer_identity_divergence.py` — removed strict-xfail markers; converted to plain assertions; docstring → ENFORCED.
+- `mud/spawning/templates.py` — `MobInstance` + `ObjectInstance` → `@dataclass(eq=False)` + INV-034 docstring notes (the post-commit adversarial-review extension).
+- `tests/test_inv034_pointer_identity_divergence.py` — removed strict-xfail markers; converted to plain assertions; added a Character behavioral test + `test_entity_runtime_types_use_identity_equality` regression guard (all four runtime types); docstring → ENFORCED.
 - `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` — INV-034 row → ✅ ENFORCED (root cause FIXED).
 - `docs/parity/DIVERGENCE_CLASS_ROSTER.md` — class 6 → ✅ FIXED; Layer-C row 12 → enforced; to-do item 5 → DONE.
-- `AGENTS.md` — "Entity identity" rule updated: `Character`/`Object` now `eq=False` (`==`/`is` agree); `Room` still `eq=True` (value-compare landmine); use `is` for all three regardless.
-- `CHANGELOG.md` — added Fixed entry under `[Unreleased]`.
-- `pyproject.toml` — 2.12.77 → 2.12.78.
+- `AGENTS.md` — "Entity identity" rule updated: the runtime types `Character`/`MobInstance`/`Object`/`ObjectInstance` now `eq=False` (`==`/`is` agree); `Room` still `eq=True` (value-compare landmine); use `is` for all regardless; added the "`eq=False` doesn't propagate to sibling entity dataclasses" lesson.
+- `CHANGELOG.md` — Fixed entry under `[Unreleased]`.
+- `pyproject.toml` — 2.12.77 → 2.12.78 → 2.12.79.
 
 ## Test Status
 
-- `tests/test_inv034_pointer_identity_divergence.py` — 2/2 passing (was 2 xfailed).
-- Full suite: **5358 passed, 4 skipped** in 195.35s — +2 vs the 2.12.77 baseline
-  (5356) are the two inv034 demos flipping xfail→pass; **zero regressions**.
-- `ruff check` on the three edited code files: clean.
-- `gitnexus_detect_changes`: **low risk, 0 affected processes** — changed
-  symbols are exactly the two model classes + their fields/properties.
+- `tests/test_inv034_pointer_identity_divergence.py` — 4/4 passing (was 2 xfailed
+  + 2 new regression guards).
+- Full suite: **5360 passed, 4 skipped** in 189.81s — +4 vs the 2.12.77 baseline
+  (5356) = 2 inv034 demos flipping xfail→pass + 2 new guards; **zero
+  regressions**, including the heavily-exercised mob membership/combat paths.
+- `ruff check` on edited code lines: clean (templates.py carries pre-existing
+  import-sort/UP037 errors, none at the edited lines).
+- `gitnexus_impact` on `MobInstance`: LOW (3 importers, 0 processes).
 
 ## Commits
 
 - `199827b4` — `fix(parity): root-fix INV-034 — Character/Object identity equality (eq=False) (2.12.78)`
+- `fb4b6c0f` — `docs(session): INV-034 pointer-identity root fix summary + SESSION_STATUS (2.12.78)`
+- _(this follow-up)_ — `MobInstance`/`ObjectInstance` `eq=False` extension + regression guards (2.12.79), caught by adversarial review.
+
+## Process note (worth keeping)
+
+The first commit (2.12.78) shipped `Character`/`Object` only and claimed class 6
+"FIXED" — but `MobInstance` (mobs) and `ObjectInstance` (legacy) are **separate,
+non-subclass** `@dataclass`es that regenerate their own value-based `__eq__`, so
+they escaped the fix entirely. An `advisor` review caught this before the claim
+was relied upon: a green suite **cannot** detect it (the demo test is
+Object-only; combat tests use mobs that differ in hp/position, so
+`attacker != victim` stays `True` even under value-eq). Lesson now durable in
+AGENTS.md: `eq=False` does not propagate to sibling entity dataclasses; each
+runtime type needs its own — verified by the new class-level regression guard.
 
 ## Next Steps
 
@@ -80,6 +105,6 @@ Roster class 6 and Layer-C row 12 flipped to FIXED/enforced; the to-do item 5
 3. **Standing cross-INV candidate:** mob-trigger ordering (bribe/exit/fight/kill/
    hpcnt); INV tracker consolidation (now 27 rows, past the ~20 soft cap).
 
-> **Push note:** 2.12.78 (`199827b4`) is on local `master`, **not pushed** — on
-> top of the unpushed 2.12.72–2.12.77 from prior sessions. CHANGELOG/version
-> reflect 2.12.78.
+> **Push note:** 2.12.78–79 (`199827b4` + this follow-up) are on local `master`, **not
+> pushed** — on top of the unpushed 2.12.72–2.12.77 from prior sessions. CHANGELOG/version
+> reflect 2.12.79.

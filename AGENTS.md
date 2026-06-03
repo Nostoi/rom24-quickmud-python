@@ -86,22 +86,28 @@ These are non-negotiable. Violations are bugs even if tests pass.
   same pattern as `test_rng_determinism.py`).
 - **Character inventory:** `char.inventory`, not `char.carrying`.
 - **Room occupants:** `room.people`, not `room.characters`.
-- **Entity identity:** compare `Character`/`Object`/`Room` instances with
-  `is`/`is not`, NEVER `==`/`!=`. ROM compares entities by **pointer**.
-  `Character` and `Object` are now `@dataclass(eq=False)` (INV-034, 2.12.78), so
-  for *those two* `==`/`is` agree — `__eq__`/`__hash__` are identity, exactly ROM
+- **Entity identity:** compare entity instances (`Character`, `MobInstance`,
+  `Object`, `Room`) with `is`/`is not`, NEVER `==`/`!=`. ROM compares entities by
+  **pointer**. The live runtime types are `Character` (PCs), `MobInstance`
+  (mobs — `spawn_mob` returns it, NOT a `Character` subclass), and `Object`
+  (`spawn_object`); all three are now `@dataclass(eq=False)` (INV-034, 2.12.78),
+  so for them `==`/`is` agree — `__eq__`/`__hash__` are identity, exactly ROM
   pointer semantics. **`Room` is still `@dataclass` (`eq=True`)** (its `eq=False`
   flip is a tracked follow-up), so `Room == Room` is a genuine **value** compare
   landmine: two distinct same-vnum rooms can compare equal. Always use `is` for
-  all three regardless — it documents pointer intent, is grep-auditable, and is
+  all of them regardless — it documents pointer intent, is grep-auditable, and is
   immune to a future dataclass-decorator regression.
   - Wrong: `if victim == ch:` / `if obj in ch.inventory:` to mean *this exact
     object* / `room.people.remove(target)`
   - Right: `if victim is ch:` and identity-keyed membership checks
-  This is structural divergence class 6. The root cause for `Character`/`Object`
-  (model value-equality) is **fixed and tracked ✅ ENFORCED as INV-034** in
-  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` (`Character`/`Object` `eq=False`);
-  `Room` remains value-eq pending its follow-up. (Not grep-enforceable —
+  This is structural divergence class 6. The root cause for the runtime types
+  (`Character`/`MobInstance`/`Object`/`ObjectInstance` value-equality) is **fixed
+  and tracked ✅ ENFORCED as INV-034** in
+  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` (all four `eq=False`); `Room`
+  remains value-eq pending its follow-up. Note `eq=False` does **not** propagate
+  to sibling/subclass entity dataclasses — each entity runtime type needs its own
+  `eq=False` (the `MobInstance`/`ObjectInstance` miss, caught post-commit by
+  review). (Not grep-enforceable —
   `==`/`!=` can't be type-discriminated lexically; cite the ROM C pointer
   compare on identity sites, as INV-031(c) did for `is_same_group`.)
 - **Comments:** reference ROM C source on parity-sensitive code, e.g.
