@@ -1,0 +1,444 @@
+{
+  "scenario": "shop_sell_weapon",
+  "c_commit": "c38cabb4a7a53a309b46dd8a917dbaa79425ba22",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__hour=12",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "list",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\r[Lv Price Qty] Item",
+        "\r[ 1    92 -- ] a flail",
+        "\r[ 9   696 -- ] a wooden staff",
+        "\r[ 4   100 -- ] a spear",
+        "\r[ 5   780 -- ] a battle axe",
+        "\r[ 1   372 -- ] a hand axe",
+        "\r[ 6   468 -- ] a mace",
+        "\r[ 3   264 -- ] a club",
+        "\r[ 7   732 -- ] a long sword",
+        "\r[ 0   300 -- ] a small sword",
+        "\r[ 0   188 -- ] a dagger",
+        ""
+      ]
+    },
+    {
+      "step": 3,
+      "command": "__oload=3028",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": [
+            3028
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "get staff",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3028
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou get a wooden staff.",
+        ""
+      ]
+    },
+    {
+      "step": 5,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3028
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     a wooden staff",
+        ""
+      ]
+    },
+    {
+      "step": 6,
+      "command": "value staff",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3028
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe weaponsmith tells you 'I'll give you 16 silver and 1 gold coins for a wooden staff'.",
+        ""
+      ]
+    },
+    {
+      "step": 7,
+      "command": "sell staff",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 1,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou sell a wooden staff for 16 silver and 1 gold pieces.",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 1,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "step": 9,
+      "command": "list",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3011,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 1,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3011,
+          "people": [
+            "Tester",
+            "weaponsmith"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\r[Lv Price Qty] Item",
+        "\r[ 1    92 -- ] a flail",
+        "\r[ 9   696 -- ] a wooden staff",
+        "\r[ 4   100 -- ] a spear",
+        "\r[ 5   780 -- ] a battle axe",
+        "\r[ 1   372 -- ] a hand axe",
+        "\r[ 6   468 -- ] a mace",
+        "\r[ 3   264 -- ] a club",
+        "\r[ 7   732 -- ] a long sword",
+        "\r[ 0   300 -- ] a small sword",
+        "\r[ 0   188 -- ] a dagger",
+        ""
+      ]
+    }
+  ]
+}

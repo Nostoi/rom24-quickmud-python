@@ -57,6 +57,11 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object]) ->
     if command.startswith("__seed="):
         rng_mm.seed_mm(int(command[len("__seed=") :]))
         return ""
+    if command.startswith("__hour="):
+        from mud.time import time_info
+
+        time_info.hour = int(command[len("__hour=") :])
+        return ""
     if command.startswith("__learn="):
         from mud.skills import skill_registry
 

@@ -8,6 +8,43 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-026 — shop sell/value duplicate-stock pricing + ROM act wording — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-03 (2.13.9). Surfaced by deterministic
+diff-harness widening while adding `shop_sell_weapon` (`list; __oload=3028; get
+staff; value staff; sell staff`). The C golden quoted the oloaded wooden staff
+at **116 coins** (`16 silver and 1 gold`) while Python quoted **174 coins**.
+The same step also exposed two output-format divergences: Python returned
+lowercase keeper speech (`the weaponsmith...`) and put the period inside the
+quoted `$p` phrase, while ROM `act()` first-letter-capitalizes the line and uses
+the literal `src/act_obj.c:3011-3015` punctuation:
+`"$n tells you 'I'll give you ... for $p'."`
+
+**Root cause:** `mud/commands/shop.py:_get_cost` attempted to mirror ROM
+`src/act_obj.c:get_cost`, but its duplicate-stock discount checked
+`op.extra_flags` (the prototype) instead of the keeper's carried object flags.
+Reset shop inventory uses carried `Object` instances; an `ITEM_INVENTORY` stock
+copy therefore failed the ROM `IS_OBJ_STAT(obj2, ITEM_INVENTORY)` branch and
+used the 3/4 non-inventory duplicate discount instead of `/ 2`. `do_value`
+also bypassed ROM `act_new` capitalization, and `do_sell` had a Python-invented
+zero-gold wording branch plus singular/plural based on `gold == 1` instead of
+ROM's `cost == 1`.
+
+**Fix:** `_get_cost` now combines carried-object and prototype extra flags for
+the duplicate-stock check, preserving the existing prototype-backed fixture
+convention for item type/cost/charge values. `do_value` now formats the ROM
+`act()` line with `capitalize_act_line`, sets `reply`, and preserves the quote
+punctuation. `do_sell` always emits ROM's
+`You sell $p for %d silver and %d gold piece%s.` shape, with the suffix keyed to
+the total cost exactly as ROM does.
+
+**Regression:** `tools/diff_harness/scenarios/shop_sell_weapon.json` +
+`tests/data/golden/diff/shop_sell_weapon.golden.json` lock the C/Python replay.
+`tests/test_shops.py` expectations for zero-gold sell output, duplicate wand
+discount compounding, and keeper value speech were updated to the ROM source.
+
+---
+
 ## FINDING-024 — save/load discards inventory↔equipment carry-list ordering — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-03 (2.13.7). Surfaced while closing the runtime FINDING-020.

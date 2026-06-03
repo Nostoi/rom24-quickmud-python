@@ -581,6 +581,15 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __hour=<n>: set the in-game hour directly. Shop commands read
+         * time_info.hour (src/act_obj.c:find_keeper), while OLD_RAND remains
+         * controlled by __seed. */
+        if (strncmp (line, "__hour=", 7) == 0)
+        {
+            time_info.hour = atoi (line + 7);
+            continue;
+        }
+
         /* __mload=<vnum>: spawn a fresh mob into the PC's current room
          * (ROM create_mobile + char_to_room). */
         if (strncmp (line, "__mload=", 8) == 0)

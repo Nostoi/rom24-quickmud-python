@@ -976,9 +976,9 @@ def test_value_lists_offer():
         keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
         expected_message = (
             f"{keeper_name} tells you "
-            f"'I'll give you {expected_cost % 100} silver and {expected_cost // 100} gold coins for {descriptor}.'"
+            f"'I'll give you {expected_cost % 100} silver and {expected_cost // 100} gold coins for {descriptor}'."
         )
-        assert response == expected_message
+        assert response == expected_message[:1].upper() + expected_message[1:]
         assert char.reply is keeper
         assert lantern in char.inventory
     finally:
@@ -1074,7 +1074,7 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
     try:
         time_info.hour = 10
         out = process_command(ch, "sell wand")
-        assert out.endswith("7 silver.")
+        assert out.endswith("7 silver and 0 gold pieces.")
 
         # If shop already has an inventory copy of the same wand, price halves
         copy = spawn_object(3031)
@@ -1096,8 +1096,10 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
         wand2.prototype.value[2] = 5
         ch.add_object(wand2)
         out2 = process_command(ch, "sell wand")
-        # Base 15 → charge scaling 7 → inventory half → 3
-        assert out2.endswith("3 silver.")
+        # The first sold non-inventory copy stays with the keeper, then the
+        # ITEM_INVENTORY copy also matches. ROM compounds both duplicate
+        # discounts before charge scaling: 15 * 3 / 4 / 2 * 5 / 10 = 5.
+        assert out2.endswith("5 silver and 0 gold pieces.")
     finally:
         time_info.hour = previous_hour
 
@@ -1660,7 +1662,8 @@ def test_value_uses_keeper_voice_with_item_name():
         response = process_command(char, "value lantern")
         keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
         item_name = getattr(lantern, "short_descr", None) or getattr(lantern, "name", None) or "it"
-        assert response.startswith(f"{keeper_name} tells you '")
+        expected_prefix = f"{keeper_name} tells you '"
+        assert response.startswith(expected_prefix[:1].upper() + expected_prefix[1:])
         assert item_name in response
         assert "silver" in response
         assert "gold coins" in response

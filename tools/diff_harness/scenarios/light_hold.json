@@ -1,0 +1,8 @@
+{
+  "name": "light_hold",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": ["__oload=3030", "look", "get torch", "inventory", "hold torch", "inventory", "remove torch", "inventory", "drop torch"]
+}

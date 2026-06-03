@@ -27,7 +27,7 @@ from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.time import time_info
 from mud.utils import rng_mm
-from mud.utils.act import act_to_room
+from mud.utils.act import act_to_room, capitalize_act_line
 from mud.utils.messaging import push_message
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
 from mud.world.vision import room_is_dark
@@ -438,38 +438,38 @@ def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
     - wand/staff charge scaling: value[1]==0 → base/=4; else base = base * value[2] / value[1]
     """
     proto = obj.prototype
+    if proto is None:
+        return 0
     shop = _get_shop(keeper)
     if not shop:
         return 0
     cost = 0
     if buy:
-        cost = c_div(getattr(proto, "cost", 0) * shop.profit_buy, 100)
+        cost = c_div(int(getattr(proto, "cost", getattr(obj, "cost", 0)) or 0) * shop.profit_buy, 100)
     else:
         # ensure shop buys this type
-        item_type = getattr(proto, "item_type", 0)
+        item_type = int(getattr(proto, "item_type", getattr(obj, "item_type", 0)) or 0)
         if shop.buy_types and item_type not in shop.buy_types:
             return 0
-        cost = c_div(getattr(proto, "cost", 0) * shop.profit_sell, 100)
+        cost = c_div(int(getattr(proto, "cost", getattr(obj, "cost", 0)) or 0) * shop.profit_sell, 100)
         # inventory discount if keeper already has same item
+        obj_descr = (getattr(obj, "short_descr", None) or "").strip().lower()
         for other in getattr(keeper, "inventory", []) or []:
             op = getattr(other, "prototype", None)
             if not op:
                 continue
-            if op is proto or (
-                getattr(op, "vnum", None) == getattr(proto, "vnum", None)
-                and (getattr(op, "short_descr", None) or "") == (getattr(proto, "short_descr", None) or "")
-            ):
-                # treat bit 1<<18 as ITEM_INVENTORY in this port
-                ITEM_INVENTORY = 1 << 18
-                if getattr(op, "extra_flags", 0) & ITEM_INVENTORY:
+            other_descr = (getattr(other, "short_descr", None) or "").strip().lower()
+            if op is proto or (getattr(op, "vnum", None) == getattr(proto, "vnum", None) and other_descr == obj_descr):
+                flags = int(getattr(other, "extra_flags", 0) or 0) | int(getattr(op, "extra_flags", 0) or 0)
+                if flags & int(ITEM_INVENTORY):
                     cost = c_div(cost, 2)
                 else:
                     cost = c_div(cost * 3, 4)
                 break
 
     # Charge scaling for wand/staff
-    if getattr(proto, "item_type", 0) in (int(ItemType.WAND), int(ItemType.STAFF)):
-        vals = getattr(proto, "value", [0, 0, 0, 0, 0])
+    if int(getattr(proto, "item_type", getattr(obj, "item_type", 0)) or 0) in (int(ItemType.WAND), int(ItemType.STAFF)):
+        vals = getattr(proto, "value", getattr(obj, "value", [0, 0, 0, 0, 0]))
         total = vals[1]
         rem = vals[2]
         if total == 0:
@@ -1005,11 +1005,7 @@ def do_sell(char: Character, args: str) -> str:
     silver = price % 100
     gold = price // 100
     descriptor = selected_obj.short_descr or selected_obj.name or "item"
-
-    if gold <= 0:
-        return f"You sell {descriptor} for {silver} silver."
-
-    suffix = "" if gold == 1 else "s"
+    suffix = "" if price == 1 else "s"
     return f"You sell {descriptor} for {silver} silver and {gold} gold piece{suffix}."
 
 
@@ -1056,4 +1052,10 @@ def do_value(char: Character, args: str) -> str:
     # VAL-004: price quote via keeper voice with $p substitution (ROM line 3011-3015)
     silver = price % 100
     gold = price // 100
-    return _keeper_says(keeper, char, f"I'll give you {silver} silver and {gold} gold coins for $p.", obj=selected_obj)
+    keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", "The shopkeeper")
+    obj_name = getattr(selected_obj, "short_descr", None) or getattr(selected_obj, "name", "it") or "it"
+    if hasattr(char, "reply"):
+        char.reply = keeper
+    return capitalize_act_line(
+        f"{keeper_name} tells you 'I'll give you {silver} silver and {gold} gold coins for {obj_name}'."
+    )

@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FINDING-026 — shop `value`/`sell` pricing and wording now match ROM for
+  duplicate inventory stock.** The new deterministic `shop_sell_weapon`
+  differential scenario surfaced that Python quoted `value staff` at 174 silver
+  while ROM quoted 116 silver, and rendered keeper speech/sell output with
+  non-ROM capitalization and punctuation. `_get_cost` now reads duplicate-stock
+  `ITEM_INVENTORY` from the keeper's carried object flags (not only prototype
+  flags), `do_value` applies ROM `act()` first-letter capitalization and quote
+  punctuation, and `do_sell` always emits ROM's `"<silver> silver and <gold> gold
+  piece(s)"` form. Verified by the C golden-backed `shop_sell_weapon` replay.
+- **Diff-harness deterministic widening — light/hold and shop/money paths.**
+  Added `light_hold` and `shop_sell_weapon` scenarios plus committed C goldens.
+  The harness also gained a symmetric `__hour=<n>` meta-command in the C shim and
+  Python replay so shop scenarios can force an open shop hour without disturbing
+  RNG seed alignment.
 - **FINDING-025 — reset-equipped mobs looked unarmed to shared combat lookups.**
   ROM `get_eq_char` scans `ch->carrying` for `wear_loc`, and `MobInstance.equip`
   already used that faithful inventory+`wear_loc` model. The Python shared
