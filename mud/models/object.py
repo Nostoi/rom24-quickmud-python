@@ -11,9 +11,19 @@ from .constants import WearLocation
 from .obj import Affect, ObjIndex
 
 
-@dataclass
+@dataclass(eq=False)
 class Object:
-    """Instance of an object tied to a prototype."""
+    """Instance of an object tied to a prototype.
+
+    ROM parity (INV-034 / divergence class 6): objects are compared by
+    **pointer**, so this dataclass uses ``eq=False`` — ``__eq__``/``__hash__``
+    are inherited from ``object`` (identity compare + identity hash). ROM's
+    ``obj == X`` is an address compare; under identity equality ``obj in
+    <list>`` / ``list.remove(obj)`` / ``.index(obj)`` can no longer be fooled by
+    a value-identical twin (same prototype, ``instance_id`` unset on spawn) in
+    another container. See ``docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md``
+    INV-034.
+    """
 
     instance_id: int | None
     prototype: ObjIndex
@@ -32,7 +42,9 @@ class Object:
     affected: list[Affect] = field(default_factory=list)
     # ROM-faithful container fields (INV-012). Initially None; populated by
     # spawn / obj_to_room / obj_to_char / obj_to_obj at runtime.
-    # compare=False prevents __eq__ recursion through Room/Object/Character graphs.
+    # compare=False is now inert (the class is eq=False per INV-034, so no
+    # __eq__ is generated) but is retained as harmless documentation that these
+    # back-reference graph edges must never participate in value comparison.
     in_room: Room | None = field(default=None, compare=False)  # ROM: ROOM_INDEX_DATA *in_room
     in_obj: Object | None = field(default=None, compare=False)  # ROM: OBJ_DATA *in_obj (container)
     carried_by: Character | None = field(default=None, compare=False)  # ROM: CHAR_DATA *carried_by

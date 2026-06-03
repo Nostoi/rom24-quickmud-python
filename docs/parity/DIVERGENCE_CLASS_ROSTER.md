@@ -56,7 +56,7 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 | 2 | **Equipment key** | C `obj->wear_loc == iWear` (int) vs Python dict | `int(WearLocation.X)` via `canonical_wear_slot` | ✅ | clean | `tests/test_equipment_key_convention.py` (bans string-keyed access) |
 | 3 | **Attribute naming** | port-specific field names | `char.inventory` / `room.people` / `char.equipment` | ✅ | clean | `tests/test_attribute_convention.py` (bans `.carrying`/`.characters`/`.equipped`) |
 | 5 | **Flag values** | C bit-shift macros vs guessable hex | `IntEnum` flag classes | ✅ | clean | `tests/test_flag_hex_convention.py` (bans `FLAGPREFIX_X = 0x…` outside the enum modules; `mud/wiznet.py`'s `WiznetFlag` body allowlisted as the canonical chokepoint). Added 2026-06-02. Locks "no flag-prefixed hex constant redefined outside the enum modules" — does **not** catch a decimal-literal bypass (`if act & 32768:`), which is indistinguishable from arithmetic. |
-| 6 | **Pointer identity** | C pointer `==` vs Python object `==`/`is` | `is` for entity identity compares | ❌ → **Layer C** | **open** | **Reclassified A→C + filed OPEN 2026-06-02** (see Layer C row 12). A static bypass-guard is infeasible — `==`/`!=` cannot be type-discriminated by line-grep (most `==` is int/str/enum). Probe found the root cause is live: `Character`/`Object` are value-eq dataclasses + `instance_id`/`id` unset on spawn → distinct same-proto entities compare `==`. INV-031(c)/INV-006 fixed/tested specific sites; the broad surface is now **INV-034**. |
+| 6 | **Pointer identity** | C pointer `==` vs Python object `==`/`is` | `Character`/`Object` are `@dataclass(eq=False)` → identity `==`/`__hash__` (ROM pointer semantics); `is` still used to document intent | ❌→C→**✅ FIXED** | **resolved (2.12.78)** | **Reclassified A→C 2026-06-02 (see Layer C row 12), root-fixed 2.12.78.** A static bypass-guard is infeasible — `==`/`!=` cannot be type-discriminated by line-grep. Root cause was `Character`/`Object` value-eq dataclasses + `instance_id`/`id` unset on spawn → distinct same-proto entities compared `==`. Fixed by `@dataclass(eq=False)` on both (suite green, +2 = inv034 demo xfail→pass; no test relied on value-eq). INV-031(c)/INV-006 fixed/tested specific sites; the root cause is **INV-034 (✅ ENFORCED)**. Follow-up: `Room` (same class, lower risk) not yet flipped. |
 
 ### Layer B — human domain-read (enumerable, not auto-verifiable)
 
@@ -72,7 +72,7 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 | 9 | **Ordering / temporal** | C single-threaded tick vs Python async (e.g. prompt rendering `<-15hp>` between `update_pos` and `raw_kill` clamp) | no single chokepoint — sequencing | enforced (point) | INV-002 (PROMPT-CLAMP); `tools/diff_harness` |
 | 10 | **Object / affect lifecycle** | C `extract_obj`/affect expiry vs Python registry add/remove | behavioral lifecycle on `object_registry` / expiry loop | enforced | INV-014/015 tests |
 | 11 | **Data-load round-trip** | C `fread_flag` letter-decode vs Python `.are`→JSON→runtime | boot world, assert flags survive end-to-end | enforced | INV-032/033; `test_inv032_room_flags_survive_load.py` |
-| 12 | **Pointer identity** (reclassified from Layer A 2026-06-02) | C pointer `==` vs Python value-eq dataclass `__eq__` | behavioral — entity identity must use `is`; `==` cannot be type-discriminated by grep, and the divergence only manifests when value-equal-but-distinct entities coexist in a list (`in`/`remove`/`index`) | **open** | **INV-034** (`tests/test_inv034_pointer_identity_divergence.py`, strict-xfail demonstration). Root cause (value-eq dataclasses + `instance_id`/`id` unset on spawn) unfixed; ~91 dependent `in`/`remove` sites. Proposed root fix = `@dataclass(eq=False)`, gated on a value-eq test-reliance sweep. INV-031(c) fixed one site (`is_same_group`). |
+| 12 | **Pointer identity** (reclassified from Layer A 2026-06-02) | C pointer `==` vs Python value-eq dataclass `__eq__` | behavioral — entity identity; root-fixed by making `Character`/`Object` identity-eq dataclasses, so `==`/`in`/`remove`/`index` now mean pointer-identity | **enforced (2.12.78)** | **INV-034 ✅** (`tests/test_inv034_pointer_identity_divergence.py`, now plain asserts passing under identity equality). Root cause (value-eq dataclasses + `instance_id`/`id` unset on spawn) **fixed** via `@dataclass(eq=False)` on both, after the value-eq test-reliance sweep came up empty; suite green (+2 = demo xfail→pass). INV-031(c) had fixed one site (`is_same_group`). Follow-up: `Room` (same class, lower risk) not yet flipped. |
 | 4 | **Async message delivery / act-cap** | C synchronous `write_to_buffer` in tick vs Python async dispatch (double-deliver, miss, mis-cap) | behavioral — single-delivery (XOR), per-recipient masking, first-letter cap, verified by integration tests, not a lexical bypass | enforced | INV-001 (×5 `test_inv001_*.py`) / 027 / 029; ACT-CAP-001..004. **Reclassified A→C 2026-06-02:** a clean static bypass-guard is INFEASIBLE — legitimate hand-rolled XOR loops (`do_yell`) correctly use `create_task(send_to_char)`, and `.messages.append` has many legitimate sites (`Character.send_to_char`, broadcast primitives, actor-self lines), so any blanket grep false-positives. The contract is contextual → Layer C, with a Layer-B "review new delivery sites" element. |
 
 ## What "done" means, per layer
@@ -137,10 +137,17 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    radius + needs a value-eq test-reliance sweep first. An AGENTS.md ROM Parity
    Rule ("use `is`, not `==`, for entity identity") was added so new code doesn't
    re-introduce the pattern.
-5. **NEXT — root-fix INV-034 (scoped session).** Convert the model dataclasses to
-   identity equality, gated on `grep -rn "assert .*(obj|char|victim|item).*==" tests/`
-   to find/repair value-equality reliance. Promotes class 6 to ✅ and flips the
-   strict-xfail demonstration to xpass.
+5. ~~**Root-fix INV-034 (scoped session).**~~ **DONE (2.12.78).** Converted
+   `Character` and `Object` to `@dataclass(eq=False)` (identity `==`/`__hash__` =
+   ROM pointer semantics). The gating sweep
+   (`grep -rn "assert .*(obj|char|victim|item).*==" tests/`) found **no** test
+   relying on distinct-twin value-equality — every entity-vs-entity comparison
+   was an `.attr` compare or two references to the *same* object. Full suite
+   green (5358 passed, +2 = the inv034 demo flipping xfail→pass); class 6 → ✅,
+   INV-034 → ✅ ENFORCED, demo test converted to plain assertions.
+   **Follow-up (separate, lower priority):** `Room` is the same class with the
+   same trivial fix but lower risk (vnum-keyed singletons) — write a Room
+   identity test, see it fail, flip `eq=False` in its own commit.
 6. **Class 11 dynamic widening (optional).** Hypothesis `RuleBasedStateMachine`
    driving `diff_harness` to attack the scenario-enumeration limit.
 

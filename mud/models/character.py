@@ -389,9 +389,18 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
         )
 
 
-@dataclass
+@dataclass(eq=False)
 class Character:
-    """Python representation of CHAR_DATA"""
+    """Python representation of CHAR_DATA.
+
+    ROM parity (INV-034 / divergence class 6): entities are compared by
+    **pointer**, so this dataclass uses ``eq=False`` — ``__eq__``/``__hash__``
+    are inherited from ``object`` (identity compare + identity hash). This makes
+    ``ch == victim`` an address compare like ROM C, and keeps ``obj in
+    room.people`` / ``list.remove`` / ``.index`` honest when two distinct but
+    value-identical characters (same prototype, ``id`` unset on spawn) coexist.
+    See ``docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`` INV-034.
+    """
 
     # Core identity (ROM parity fields)
     name: str | None = None

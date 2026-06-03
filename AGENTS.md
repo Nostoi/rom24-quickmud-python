@@ -87,20 +87,21 @@ These are non-negotiable. Violations are bugs even if tests pass.
 - **Character inventory:** `char.inventory`, not `char.carrying`.
 - **Room occupants:** `room.people`, not `room.characters`.
 - **Entity identity:** compare `Character`/`Object`/`Room` instances with
-  `is`/`is not`, NEVER `==`/`!=`. ROM compares entities by **pointer**; the
-  Python models are plain `@dataclass` (`eq=True`), so `==` is a **value**
-  compare — and the spawn path leaves `Object.instance_id`/`Character.id` unset
-  (None/0), so two distinct same-prototype entities compare `==`-equal. This
-  also poisons every `obj in <list>` / `<list>.remove(obj)` / `.index(obj)`
-  idiom (they use `==`), so a value-identical duplicate in another container can
-  be found/removed in place of the intended object.
+  `is`/`is not`, NEVER `==`/`!=`. ROM compares entities by **pointer**.
+  `Character` and `Object` are now `@dataclass(eq=False)` (INV-034, 2.12.78), so
+  for *those two* `==`/`is` agree — `__eq__`/`__hash__` are identity, exactly ROM
+  pointer semantics. **`Room` is still `@dataclass` (`eq=True`)** (its `eq=False`
+  flip is a tracked follow-up), so `Room == Room` is a genuine **value** compare
+  landmine: two distinct same-vnum rooms can compare equal. Always use `is` for
+  all three regardless — it documents pointer intent, is grep-auditable, and is
+  immune to a future dataclass-decorator regression.
   - Wrong: `if victim == ch:` / `if obj in ch.inventory:` to mean *this exact
     object* / `room.people.remove(target)`
   - Right: `if victim is ch:` and identity-keyed membership checks
-  This is structural divergence class 6. The root cause (model value-equality)
-  is tracked OPEN as **INV-034** in
-  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`; until the model dataclasses are
-  switched to identity equality, new code must use `is`. (Not grep-enforceable —
+  This is structural divergence class 6. The root cause for `Character`/`Object`
+  (model value-equality) is **fixed and tracked ✅ ENFORCED as INV-034** in
+  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` (`Character`/`Object` `eq=False`);
+  `Room` remains value-eq pending its follow-up. (Not grep-enforceable —
   `==`/`!=` can't be type-discriminated lexically; cite the ROM C pointer
   compare on identity sites, as INV-031(c) did for `is_same_group`.)
 - **Comments:** reference ROM C source on parity-sensitive code, e.g.
