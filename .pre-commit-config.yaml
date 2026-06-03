@@ -1,13 +1,14 @@
+# Activate per clone with:  pip install pre-commit && pre-commit install
+# ruff is the single source of truth for both lint and format (see
+# pyproject.toml [tool.ruff] / [tool.ruff.format]); black was removed to avoid
+# formatter drift with `ruff format`, which the repo is now formatted against.
 repos:
-  - repo: https://github.com/psf/black
-    rev: 24.8.0
-    hooks:
-      - id: black
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
+    rev: v0.12.12
     hooks:
       - id: ruff
         args: ["--fix"]
+      - id: ruff-format
   - repo: local
     hooks:
       - id: test-fixtures-lint
