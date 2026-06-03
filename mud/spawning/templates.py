@@ -567,6 +567,13 @@ class MobInstance:
             return False
         return bool(getattr(self, "affected_by", 0) & bit)
 
+    def has_spell_effect(self, name: str) -> bool:
+        """Check if a named spell affect is active — ROM ``is_affected``
+        equivalent, symmetric with ``Character.has_spell_effect`` so combat
+        guards (e.g. ``do_berserk``'s ``is_affected(ch, gsn_berserk)``) work on a
+        mob actor without crashing the game tick."""
+        return name in self.spell_effects
+
     def is_awake(self) -> bool:
         """Mirror Character.is_awake (DUPL-010 consolidation)."""
         return self.position > Position.SLEEPING
