@@ -184,15 +184,18 @@ def do_practice(char: Character, args: str) -> str:
     new_value = min(adept, current + increment)
     char.skills[skill_key] = new_value
 
-    # ROM C parity: Send messages to both char and room (src/act_info.c:2767-2777)
+    # ROM C parity: ROM delivers the self line via act(..., TO_CHAR) and the
+    # room line via act(..., TO_ROOM) — src/act_info.c:2777-2788.
+    # INV-001 SINGLE-DELIVERY: the self line is delivered via the RETURN value
+    # only. The connection read loop (mud/net/connection.py) sends a command's
+    # return AND drains char.messages, so a mailbox append here would
+    # double-deliver every practice line (the live "You practice X." x2 bug).
     if new_value >= adept:
         char_msg = f"You are now learned at {skill.name}."
-        char.messages.append(char_msg)
         if char.room:
             act_to_room(char.room, f"$n is now learned at {skill.name}.", char, exclude=char)  # ROM act_info.c:2787
     else:
         char_msg = f"You practice {skill.name}."
-        char.messages.append(char_msg)
         if char.room:
             act_to_room(char.room, f"$n practices {skill.name}.", char, exclude=char)  # ROM act_info.c:2779
 

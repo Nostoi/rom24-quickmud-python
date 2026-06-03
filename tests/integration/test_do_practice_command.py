@@ -211,12 +211,14 @@ def test_practice_success_not_at_adept(practice_char, practice_trainer, test_ski
     """Practice increases skill when not at adept (ROM C lines 2761-2777)"""
     practice_char.skills["fireball"] = 50
 
-    do_practice(practice_char, "fireball")
+    output = do_practice(practice_char, "fireball")
 
     assert practice_char.practice == 9
     assert practice_char.skills["fireball"] > 50
 
-    assert len(practice_char.messages) > 0
+    # INV-001 SINGLE-DELIVERY: the self line is returned, not mailboxed.
+    assert "practice" in output.lower() or "learned" in output.lower()
+    assert practice_char.messages == []
 
 
 def test_practice_low_int_high_rating_skill_yields_zero_increment(
@@ -237,13 +239,14 @@ def test_practice_low_int_high_rating_skill_yields_zero_increment(
     test_skill.rating = {practice_char.ch_class: 10}
     practice_char.skills["fireball"] = 50
 
-    do_practice(practice_char, "fireball")
+    output = do_practice(practice_char, "fireball")
 
     # Practice still decremented (ROM act_info.c:2771)
     assert practice_char.practice == 9
     # Skill unchanged because 3 / 10 = 0 in ROM (act_info.c:2772-2774)
     assert practice_char.skills["fireball"] == 50
-    message = practice_char.messages[0].lower()
+    # INV-001 SINGLE-DELIVERY: the self line is returned, not mailboxed.
+    message = output.lower()
     assert "practice" in message or "learned" in message
 
 
@@ -257,9 +260,9 @@ def test_practice_success_at_adept(practice_char, practice_trainer, test_skill):
     # Should reach adept
     assert practice_char.skills["fireball"] == 95
 
-    # Check learned message
-    assert len(practice_char.messages) > 0
-    assert "You are now learned at fireball" in practice_char.messages[0]
+    # INV-001 SINGLE-DELIVERY: the learned self line is returned, not mailboxed.
+    assert "You are now learned at fireball" in output
+    assert practice_char.messages == []
 
 
 def test_practice_already_learned(practice_char, practice_trainer, test_skill):
