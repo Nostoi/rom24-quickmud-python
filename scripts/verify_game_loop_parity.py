@@ -173,8 +173,9 @@ def verify_violence_tick_behavior() -> bool:
     print("=" * 70)
     print("\nChecking violence_tick() implementation details:\n")
 
-    from mud.game_loop import violence_tick
     import inspect
+
+    from mud.game_loop import violence_tick
 
     source = inspect.getsource(violence_tick)
 
@@ -205,8 +206,9 @@ def verify_game_tick_order() -> bool:
     print("=" * 70)
     print("\nVerifying ROM update_handler call order is preserved:\n")
 
-    from mud.game_loop import game_tick
     import inspect
+
+    from mud.game_loop import game_tick
 
     source = inspect.getsource(game_tick)
 

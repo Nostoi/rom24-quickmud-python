@@ -1,18 +1,18 @@
 from __future__ import annotations
 
-from mud.models.character import Character
-from mud.math.c_compat import c_div
 from typing import Any
 
+from mud.math.c_compat import c_div
+from mud.models.character import Character
 from mud.models.constants import (
     MAX_LEVEL,
     AffectFlag,
+    ExtraFlag,
+    ItemType,
     PlayerFlag,
     RoomFlag,
     Sector,
     Stat,
-    ExtraFlag,
-    ItemType,
 )
 from mud.models.room import Room
 from mud.time import Sunlight, time_info

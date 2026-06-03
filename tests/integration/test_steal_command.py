@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import pytest
 
-from mud.commands.dispatcher import process_command
 from mud.commands.thief_skills import do_steal
 from mud.models.constants import (
     AffectFlag,
     ExtraFlag,
-    ItemType,
     PlayerFlag,
     Position,
-    WearLocation,
 )
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import initialize_world

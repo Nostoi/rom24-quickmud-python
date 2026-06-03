@@ -39,8 +39,7 @@ def test_arith_107_remove_character_allows_negative_nplayer_on_desync():
     room.remove_character(pc)
 
     assert area.nplayer == -1, (
-        "ROM src/handler.c:1502 does bare --area->nplayer with no floor; "
-        "Python must not clamp to 0 (ARITH-107)."
+        "ROM src/handler.c:1502 does bare --area->nplayer with no floor; Python must not clamp to 0 (ARITH-107)."
     )
 
 

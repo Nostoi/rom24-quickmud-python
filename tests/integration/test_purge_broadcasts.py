@@ -77,9 +77,7 @@ def test_purge_room_emits_to_room_broadcast() -> None:
     result = do_purge(admin, "")
     assert "Ok" in result
     msgs = "\n".join(bystander.messages)
-    assert "Admin purges the room!" in msgs, (
-        f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
-    )
+    assert "Admin purges the room!" in msgs, f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
     actor_msgs = "\n".join(admin.messages)
     assert "Admin purges the room!" not in actor_msgs
 
@@ -95,8 +93,6 @@ def test_purge_npc_emits_to_notvict_broadcast() -> None:
     result = do_purge(admin, "rat")
     assert "Ok" in result
     msgs = "\n".join(bystander.messages)
-    assert "Admin purges a small rat." in msgs, (
-        f"missing TO_NOTVICT broadcast; got: {bystander.messages!r}"
-    )
+    assert "Admin purges a small rat." in msgs, f"missing TO_NOTVICT broadcast; got: {bystander.messages!r}"
     actor_msgs = "\n".join(admin.messages)
     assert "Admin purges a small rat." not in actor_msgs

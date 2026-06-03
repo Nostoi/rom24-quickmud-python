@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Mapping, Sequence
+from collections.abc import Mapping
 
 from mud.registry import mob_registry
 

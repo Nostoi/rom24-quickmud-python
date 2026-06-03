@@ -3,6 +3,7 @@ Integration test for complete new player workflow.
 
 This simulates a brand new player's first 30 minutes in the game.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -12,11 +13,11 @@ import pytest
 class TestNewPlayerWorkflow:
     """
     Complete end-to-end test of new player experience.
-    
+
     This test will FAIL until all P0 commands are implemented.
     Use it as a progress tracker.
     """
-    
+
     def test_complete_new_player_experience(self, test_player, test_mob, test_room):
         """
         A new player should be able to:
@@ -30,18 +31,18 @@ class TestNewPlayerWorkflow:
         8. Group with an NPC guide ✅
         9. Fight a weak mob ✅
         10. Return to town safely ✅
-        
+
         This represents ~30 minutes of gameplay.
         """
         from mud.commands.dispatcher import process_command
-        
+
         # 1. Enter game - player in room
         assert test_player.room == test_room
-        
+
         # 2. Look around and see NPCs
         result = process_command(test_player, "look")
         assert "test mob" in result.lower()
-        
+
         # 3. Examine NPCs (target "mob": player is "TestPlayer" and ROM
         # get_char_room has no self-skip — "test" would resolve to self.)
         result = process_command(test_player, "look mob")
@@ -50,29 +51,29 @@ class TestNewPlayerWorkflow:
         # 4. Assess danger
         result = process_command(test_player, "consider mob")
         assert "easy" in result.lower() or "match" in result.lower()
-        
+
         # 5. Talk to NPCs
         result = process_command(test_player, "say Hello!")
         assert "you say" in result.lower()
-        
+
         # 6-7. Shop interaction (commands exist even if no shop data)
         result = process_command(test_player, "list")
         assert result is not None
-        
+
         # 8. Group with NPC
         result = process_command(test_player, "follow mob")
         assert test_player.master == test_mob
-        
+
         # 9-10. Combat would need more setup, but consider works
         # This test verifies all P0 commands are functional
-        
+
         # Success - new player workflow is complete!
         assert True, "All P0 commands functional!"
-    
+
     def test_current_player_limitations(self):
         """
         Document what DOESN'T work currently.
-        
+
         This test passes - it's documentation of limitations.
         """
         limitations = [
@@ -83,10 +84,10 @@ class TestNewPlayerWorkflow:
             "✅ Can form groups (group implemented)",
             "✅ Tell to NPCs works correctly (ROM behavior: only online players)",
         ]
-        
+
         # This test documents current state - ALL P0 FEATURES IMPLEMENTED
         assert len(limitations) == 6, "All P0 features now implemented as of 2025-12-22"
-    
+
     def test_shopkeeper_interaction_workflow(self, test_player, test_room):
         """
         Test complete shop interaction:
@@ -100,7 +101,7 @@ class TestNewPlayerWorkflow:
         """
         from mud.commands.dispatcher import process_command
         from mud.models.character import Character
-        
+
         # Create shopkeeper inline
         shopkeeper = Character(
             name="shopkeeper",
@@ -111,27 +112,27 @@ class TestNewPlayerWorkflow:
             is_npc=True,
         )
         test_room.people.append(shopkeeper)
-        
+
         # See shopkeeper in room
         result = process_command(test_player, "look")
         assert "shopkeeper" in result.lower()
-        
+
         # Look at shopkeeper
         result = process_command(test_player, "look shopkeeper")
         assert result is not None
-        
+
         # List items (command works even without shop data)
         result = process_command(test_player, "list")
         assert result is not None
-        
+
         # Buy/sell commands exist and execute
         test_player.gold = 1000
         result = process_command(test_player, "buy sword")
         assert result is not None
-        
+
         # Commands are implemented and functional
         assert True, "Shop interaction workflow complete!"
-    
+
     def test_group_quest_workflow(self, test_player, test_mob, test_room):
         """
         Test grouping and simple quest:
@@ -145,13 +146,13 @@ class TestNewPlayerWorkflow:
         - Give quest item ✅
         """
         from mud.commands.dispatcher import process_command
-        from mud.models.object import Object
         from mud.models.obj import ObjIndex
-        
+        from mud.models.object import Object
+
         # Meet quest NPC
         result = process_command(test_player, "look")
         assert "test mob" in result.lower()
-        
+
         # Assess difficulty
         result = process_command(test_player, "consider mob")
         assert "easy" in result.lower() or "match" in result.lower()
@@ -159,7 +160,7 @@ class TestNewPlayerWorkflow:
         # Follow NPC
         result = process_command(test_player, "follow mob")
         assert test_player.master == test_mob
-        
+
         # Create quest item
         quest_proto = ObjIndex(
             vnum=9000,
@@ -170,15 +171,15 @@ class TestNewPlayerWorkflow:
             value=[0, 0, 0, 0, 0],
         )
         quest_item = Object(instance_id=999, prototype=quest_proto)
-        
+
         if not hasattr(test_player, "inventory"):
             test_player.inventory = []
         test_player.inventory.append(quest_item)
         quest_item.carried_by = test_player
-        
+
         # Give quest item to NPC
         result = process_command(test_player, "give gem mob")
         assert "give" in result.lower()
-        
+
         # Quest workflow complete!
         assert True, "Group quest workflow complete!"

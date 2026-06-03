@@ -121,9 +121,7 @@ def tick_spell_effects(character: Character) -> list[str]:
 
         for spell_name in touched_names:
             remaining = [
-                affect
-                for affect in getattr(character, "affected", [])
-                if getattr(affect, "type", None) == spell_name
+                affect for affect in getattr(character, "affected", []) if getattr(affect, "type", None) == spell_name
             ]
             if remaining:
                 primary = remaining[0]

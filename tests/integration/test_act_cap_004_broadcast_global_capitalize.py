@@ -21,17 +21,12 @@ import pytest
 
 from mud.commands.communication import (
     do_auction,
+    do_clantalk,
     do_gossip,
     do_grats,
-    do_quote,
-    do_question,
-    do_answer,
-    do_music,
-    do_clantalk,
     do_immtalk,
 )
 from mud.models.character import Character, character_registry
-from mud.models.constants import CommFlag
 from mud.world import create_test_character, initialize_world
 
 _ROM_COLOR_RE = __import__("re").compile(r"\{[a-zA-Z0-9]")
@@ -93,7 +88,6 @@ class TestClanCap:
         speaker = create_test_character(name="Clanner", room_vnum=3001)
         listener = _make_online_imm(name="Listener", room_vnum=3002)
         # Set up clan membership
-        from mud.characters import is_clan_member, is_same_clan
         speaker.clan = 1
         listener.clan = 1
         do_clantalk(speaker, "hello clan")
@@ -120,9 +114,7 @@ class TestWeatherNoCap:
             channel="weather",
             should_send=_should_receive,
         )
-        assert any("The day has begun." in m for m in listener.messages), (
-            f"weather not received: {listener.messages}"
-        )
+        assert any("The day has begun." in m for m in listener.messages), f"weather not received: {listener.messages}"
 
 
 class TestImmtalkCap:

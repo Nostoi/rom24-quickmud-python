@@ -75,9 +75,7 @@ _CASES = [
 
 
 @pytest.mark.parametrize("handler_name,self_msg,room_msg", _CASES)
-def test_affect_spell_delivers_to_connected_pc_via_async_channel(
-    monkeypatch, handler_name, self_msg, room_msg
-) -> None:
+def test_affect_spell_delivers_to_connected_pc_via_async_channel(monkeypatch, handler_name, self_msg, room_msg) -> None:
     # blindness/weaken roll saves_spell; force the affect to land so the
     # delivery channel — not the save roll — is what's under test.
     monkeypatch.setattr(handlers, "saves_spell", lambda *a, **k: False)

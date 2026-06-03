@@ -13,6 +13,7 @@ ROM was hand-ordered to disambiguate, and asserts Python's
 Skipped automatically when ROM's winner has no Python counterpart at all
 (cross-table command).
 """
+
 from __future__ import annotations
 
 import re
@@ -91,8 +92,26 @@ def _build_cases() -> list[tuple[str, str]]:
     prefixes: list[str] = list(string.ascii_lowercase)
     # Common 2-letter prefixes ROM disambiguates by hand-ordering.
     prefixes += [
-        "go", "gr", "mu", "we", "wi", "ho", "he", "re", "qu", "sa",
-        "sc", "st", "sh", "sn", "so", "sp", "tr", "un", "wh", "wo",
+        "go",
+        "gr",
+        "mu",
+        "we",
+        "wi",
+        "ho",
+        "he",
+        "re",
+        "qu",
+        "sa",
+        "sc",
+        "st",
+        "sh",
+        "sn",
+        "so",
+        "sp",
+        "tr",
+        "un",
+        "wh",
+        "wo",
     ]
     cases: list[tuple[str, str]] = []
     for prefix in prefixes:
@@ -115,14 +134,11 @@ def test_interp_017_prefix_winner_matches_rom(prefix: str, expected_name: str) -
     # interpret() at lines 442-453: first entry whose name starts with
     # the user input wins (trust gating already applied).
     cmd = resolve_command(prefix, trust=60)
-    assert cmd is not None, (
-        f"Python returned no command for prefix {prefix!r}; ROM resolves to {expected_name!r}"
-    )
+    assert cmd is not None, f"Python returned no command for prefix {prefix!r}; ROM resolves to {expected_name!r}"
     # ROM cmd_table rows that share a do_fun (e.g. "hit" + "kill" both
     # call do_kill) are modelled in Python as a Command plus aliases, so
     # the matched name may be the canonical Command.name OR an alias.
     matched = (cmd.name, *cmd.aliases)
     assert expected_name in matched, (
-        f"prefix {prefix!r}: Python -> {cmd.name!r} (aliases {cmd.aliases}), "
-        f"ROM -> {expected_name!r}"
+        f"prefix {prefix!r}: Python -> {cmd.name!r} (aliases {cmd.aliases}), ROM -> {expected_name!r}"
     )

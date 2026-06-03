@@ -3,6 +3,7 @@ Misc info commands - motd, rules, story, socials, skills, spells, rent.
 
 ROM Reference: src/act_info.c, src/skills.c, src/act_comm.c
 """
+
 from __future__ import annotations
 
 from mud.models.character import Character
@@ -11,70 +12,76 @@ from mud.models.character import Character
 def do_motd(char: Character, args: str) -> str:
     """
     Display the Message of the Day.
-    
+
     ROM Reference: src/act_info.c do_motd (line 631)
-    
+
     Just calls help motd.
     """
     from mud.commands.help import do_help
+
     return do_help(char, "motd")
 
 
 def do_imotd(char: Character, args: str) -> str:
     """
     Display the Immortal Message of the Day.
-    
+
     ROM Reference: src/act_info.c do_imotd (line 636)
     """
     from mud.commands.help import do_help
+
     return do_help(char, "imotd")
 
 
 def do_rules(char: Character, args: str) -> str:
     """
     Display the game rules.
-    
+
     ROM Reference: src/act_info.c do_rules (line 641)
     """
     from mud.commands.help import do_help
+
     return do_help(char, "rules")
 
 
 def do_story(char: Character, args: str) -> str:
     """
     Display the game backstory.
-    
+
     ROM Reference: src/act_info.c do_story (line 646)
     """
     from mud.commands.help import do_help
+
     return do_help(char, "story")
 
 
 def do_socials(char: Character, args: str) -> str:
     """
     List all available social commands.
-    
+
     ROM Reference: src/act_info.c do_socials (lines 606-625)
     """
     # Try to import socials from various locations
     socials = []
-    
+
     try:
         from mud.data.social_data import SOCIALS
+
         socials = list(SOCIALS.keys())
     except ImportError:
         try:
             from mud import registry
+
             soc_table = getattr(registry, "social_table", {})
             socials = list(soc_table.keys())
         except (ImportError, AttributeError):
             pass
-    
+
     if not socials:
         return "No socials found."
-    
+
     socials = sorted(socials)
-    
+
     # Format in 6 columns
     lines = []
     row = []
@@ -83,10 +90,10 @@ def do_socials(char: Character, args: str) -> str:
         if len(row) == 6:
             lines.append("".join(row))
             row = []
-    
+
     if row:
         lines.append("".join(row))
-    
+
     return "\n".join(lines)
 
 
@@ -271,9 +278,9 @@ def do_spells(char: Character, args: str) -> str:
 def do_rent(char: Character, args: str) -> str:
     """
     Rent message - ROM has no rent system.
-    
+
     ROM Reference: src/act_comm.c do_rent (line 1447)
-    
+
     Just tells players there's no rent.
     """
     return "There is no rent here. Just save and quit."

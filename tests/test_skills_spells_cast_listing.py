@@ -201,8 +201,12 @@ def test_do_cast_offensive_no_target_defaults_to_fighting_victim():
     room = Room(vnum=99001, name="Arena", description="A clean test room")
     caster = _make_mage(level=20, mana=200, skills={"magic missile": 100})
     victim = Character(
-        name="wimpy monster", level=10, ch_class=0, is_npc=True,
-        hit=200, max_hit=200,
+        name="wimpy monster",
+        level=10,
+        ch_class=0,
+        is_npc=True,
+        hit=200,
+        max_hit=200,
     )
     caster.room = room
     victim.room = room
@@ -220,12 +224,8 @@ def test_do_cast_offensive_no_target_defaults_to_fighting_victim():
     # "You cast <spell>." confirmation line. The meaningful assertions below
     # (fighting victim takes damage, caster unharmed) prove the cast resolved.
     assert result == "", result
-    assert victim.hit < victim_initial_hp, (
-        f"fighting victim should take damage; got victim.hit={victim.hit}"
-    )
-    assert caster.hit == caster_initial_hp, (
-        f"caster must not damage self when fighting; got caster.hit={caster.hit}"
-    )
+    assert victim.hit < victim_initial_hp, f"fighting victim should take damage; got victim.hit={victim.hit}"
+    assert caster.hit == caster_initial_hp, f"caster must not damage self when fighting; got caster.hit={caster.hit}"
 
 
 def test_do_cast_offensive_no_target_no_fight_errors():

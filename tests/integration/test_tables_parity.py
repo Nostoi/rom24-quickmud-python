@@ -9,8 +9,6 @@ See ``docs/parity/TABLES_C_AUDIT.md`` for the gap catalogue.
 
 from __future__ import annotations
 
-import pytest
-
 from mud.models.constants import (
     ActFlag,
     AffectFlag,
@@ -94,8 +92,11 @@ _PREFIX_TO_ENUM: dict[str, tuple[type, dict[str, str]]] = {}
 def _build_prefix_map() -> dict[str, tuple[type, dict[str, str]]]:
     if _PREFIX_TO_ENUM:
         return _PREFIX_TO_ENUM
+    # Member-rename overrides where Python member name differs from the
+    # merc.h macro suffix. Format: {macro_suffix: python_member_name}.
     from mud.models.constants import (
         ActFlag,
+        AffectFlag,
         CommFlag,
         FormFlag,
         FurnitureFlag,
@@ -109,10 +110,6 @@ def _build_prefix_map() -> dict[str, tuple[type, dict[str, str]]]:
         VulnFlag,
         WeaponFlag,
     )
-
-    # Member-rename overrides where Python member name differs from the
-    # merc.h macro suffix. Format: {macro_suffix: python_member_name}.
-    from mud.models.constants import AffectFlag
 
     _PREFIX_TO_ENUM.update(
         {
@@ -180,9 +177,9 @@ def test_merc_h_letter_macros_match_python_intflag_values() -> None:
         checked += 1
         if int(member) != expected_bit:
             mismatches.append(
-                f"  {macro_name} = {expected_bit:#x} (bit {expected_bit.bit_length()-1}) "
+                f"  {macro_name} = {expected_bit:#x} (bit {expected_bit.bit_length() - 1}) "
                 f"but {enum_cls.__name__}.{member.name} = {int(member):#x} "
-                f"(bit {int(member).bit_length()-1})"
+                f"(bit {int(member).bit_length() - 1})"
             )
 
     assert not mismatches, "merc.h letter-macro / Python IntFlag value drift:\n" + "\n".join(mismatches)
@@ -204,8 +201,7 @@ def test_affect_flag_letters_match_rom_merc_h() -> None:
     """
     decoded_g = int(convert_flags_from_letters("G", AffectFlag))
     assert decoded_g == int(AffectFlag.DETECT_GOOD), (
-        f"ROM G should be AFF_DETECT_GOOD; got {decoded_g:#x}, "
-        f"AffectFlag.DETECT_GOOD={int(AffectFlag.DETECT_GOOD):#x}"
+        f"ROM G should be AFF_DETECT_GOOD; got {decoded_g:#x}, AffectFlag.DETECT_GOOD={int(AffectFlag.DETECT_GOOD):#x}"
     )
 
     decoded_h = int(convert_flags_from_letters("H", AffectFlag))

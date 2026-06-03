@@ -7,6 +7,7 @@ ROM reference: src/olc_save.c
 - OLC_SAVE-016: "changed" empty case returns "Saved zones:\\n\\r" + "None.\\n\\r" (src/olc_save.c:1059-1064)
 - OLC_SAVE-017: "area" branch returns "Area saved.\\n\\r" (src/olc_save.c:1126)
 """
+
 from __future__ import annotations
 
 import pytest
@@ -62,14 +63,22 @@ def builder_char(tmp_path):
 
 @pytest.fixture()
 def test_area(tmp_path):
-    area = Area(name="TestArea014", vnum=19001, min_vnum=19001, max_vnum=19100,
-                file_name=str(tmp_path / "test_014.json"), builders="None", security=1)
+    area = Area(
+        name="TestArea014",
+        vnum=19001,
+        min_vnum=19001,
+        max_vnum=19100,
+        file_name=str(tmp_path / "test_014.json"),
+        builders="None",
+        security=1,
+    )
     area_registry[19001] = area
     yield area
     area_registry.pop(19001, None)
 
 
 # ── OLC_SAVE-014: numeric-vnum branch silent on success ──────────────────────
+
 
 def test_asave_numeric_vnum_silent_on_success(builder_char, test_area, tmp_path):
     """ROM numeric-vnum asave returns nothing (silent) on success.
@@ -83,6 +92,7 @@ def test_asave_numeric_vnum_silent_on_success(builder_char, test_area, tmp_path)
 
 # ── OLC_SAVE-015: "world" branch exact message ───────────────────────────────
 
+
 def test_asave_world_exact_message(builder_char):
     """ROM 'world' branch sends "You saved the world.\\n\\r".
 
@@ -93,6 +103,7 @@ def test_asave_world_exact_message(builder_char):
 
 
 # ── OLC_SAVE-016: "changed" empty case ──────────────────────────────────────
+
 
 def test_asave_changed_empty_sends_header_then_none(builder_char):
     """ROM 'changed' with nothing to save: 'Saved zones:\\n\\r' + 'None.\\n\\r'.
@@ -120,6 +131,7 @@ def test_asave_changed_saved_area_no_none_suffix(builder_char, test_area, tmp_pa
 
 
 # ── OLC_SAVE-017: "area" branch exact message ────────────────────────────────
+
 
 def test_asave_area_exact_message(builder_char, test_area):
     """ROM 'area' branch sends "Area saved.\\n\\r".

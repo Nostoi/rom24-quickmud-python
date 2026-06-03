@@ -198,10 +198,14 @@ def test_inv008_equipment_and_carry_state_survive_round_trip():
 
     reloaded = load_character("Outfitstate")
     assert reloaded is not None
-    assert sorted(reloaded.equipment.keys()) == sorted([
-        int(WearLocation.LIGHT), int(WearLocation.BODY),
-        int(WearLocation.SHIELD), int(WearLocation.WIELD),
-    ])
+    assert sorted(reloaded.equipment.keys()) == sorted(
+        [
+            int(WearLocation.LIGHT),
+            int(WearLocation.BODY),
+            int(WearLocation.SHIELD),
+            int(WearLocation.WIELD),
+        ]
+    )
     assert len(reloaded.inventory) == 1
     assert reloaded.carry_number == 5
     assert reloaded.carry_weight == 120

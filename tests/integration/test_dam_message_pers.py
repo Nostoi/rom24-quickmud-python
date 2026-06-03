@@ -71,12 +71,8 @@ class TestDamMessagePers:
             assert "someone" in joined, (
                 f"PERS render missing for invisible attacker in TO_NOTVICT: {observer.messages!r}"
             )
-            assert "bobbb" in joined, (
-                f"visible victim should render real name in TO_NOTVICT: {observer.messages!r}"
-            )
-            assert "aliceee" not in joined, (
-                f"invisible attacker name leaked to room observer: {observer.messages!r}"
-            )
+            assert "bobbb" in joined, f"visible victim should render real name in TO_NOTVICT: {observer.messages!r}"
+            assert "aliceee" not in joined, f"invisible attacker name leaked to room observer: {observer.messages!r}"
         finally:
             room_registry.pop(2200, None)
             character_registry.clear()
@@ -94,12 +90,8 @@ class TestDamMessagePers:
             _broadcast_damage_messages(attacker, victim, messages)
 
             joined = "\n".join(victim.messages).lower()
-            assert "someone" in joined, (
-                f"PERS render missing for invisible attacker in TO_VICT: {victim.messages!r}"
-            )
-            assert "aliceee" not in joined, (
-                f"invisible attacker name leaked to victim: {victim.messages!r}"
-            )
+            assert "someone" in joined, f"PERS render missing for invisible attacker in TO_VICT: {victim.messages!r}"
+            assert "aliceee" not in joined, f"invisible attacker name leaked to victim: {victim.messages!r}"
         finally:
             room_registry.pop(2201, None)
             character_registry.clear()
@@ -119,12 +111,8 @@ class TestDamMessagePers:
             _broadcast_damage_messages(attacker, victim, messages)
 
             joined = "\n".join(attacker.messages).lower()
-            assert "someone" in joined, (
-                f"PERS render missing for invisible victim in TO_CHAR: {attacker.messages!r}"
-            )
-            assert "bobbb" not in joined, (
-                f"invisible victim name leaked to attacker: {attacker.messages!r}"
-            )
+            assert "someone" in joined, f"PERS render missing for invisible victim in TO_CHAR: {attacker.messages!r}"
+            assert "bobbb" not in joined, f"invisible victim name leaked to attacker: {attacker.messages!r}"
         finally:
             room_registry.pop(2202, None)
             character_registry.clear()

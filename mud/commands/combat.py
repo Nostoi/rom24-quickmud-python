@@ -731,7 +731,7 @@ def do_flee(char: Character, args: str) -> str:
 
     # Move character
     messages = []
-    messages.append(f"You flee from combat!")
+    messages.append("You flee from combat!")
 
     # Notify others in room
     # PARALLEL-010: iterate the canonical `room.people` set, not the
@@ -819,11 +819,7 @@ def do_cast(char: Character, args: str) -> str:
             except (TypeError, ValueError, IndexError):
                 required_level = None
 
-    if (
-        skill is None
-        or spell_level <= 0
-        or (required_level is not None and char_level < required_level)
-    ):
+    if skill is None or spell_level <= 0 or (required_level is not None and char_level < required_level):
         return "You don't know any spells of that name."
 
     if char.position < Position.FIGHTING:

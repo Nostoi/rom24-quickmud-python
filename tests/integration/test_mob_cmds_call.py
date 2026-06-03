@@ -102,8 +102,7 @@ class TestMpCallForwardsObjectArgs:
             " — ROM src/mob_cmds.c:1244-1246 requires obj1 lookup."
         )
         assert captured["arg2"] is shield, (
-            "obj2 token 'shield' was not resolved — ROM"
-            " src/mob_cmds.c:1247-1249 requires obj2 lookup."
+            "obj2 token 'shield' was not resolved — ROM src/mob_cmds.c:1247-1249 requires obj2 lookup."
         )
 
     def test_missing_obj_args_pass_none(self, monkeypatch):

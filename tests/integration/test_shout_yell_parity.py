@@ -48,9 +48,7 @@ def test_shout_001_to_char_wording_drops_comma() -> None:
     """SHOUT-001 — TO_CHAR `"You shout '$T'"` (no comma)."""
     shouter = create_test_character("Shoutsender", 3001)
     out = do_shout(shouter, "hello")
-    assert out == "You shout 'hello'", (
-        f"TO_CHAR wording diverges from ROM `You shout '$T'`; got {out!r}"
-    )
+    assert out == "You shout 'hello'", f"TO_CHAR wording diverges from ROM `You shout '$T'`; got {out!r}"
 
 
 def test_shout_002_to_vict_wording_drops_comma() -> None:
@@ -64,9 +62,7 @@ def test_shout_002_to_vict_wording_drops_comma() -> None:
     assert any("Shoutsrc shouts 'world'" in m for m in delivered), (
         f"TO_VICT wording diverges from ROM; got {delivered!r}"
     )
-    assert not any("shouts, '" in m for m in delivered), (
-        f"comma after `shouts` leaked through; got {delivered!r}"
-    )
+    assert not any("shouts, '" in m for m in delivered), f"comma after `shouts` leaked through; got {delivered!r}"
 
 
 def test_shout_003_invisible_shouter_renders_as_someone_to_listener() -> None:
@@ -81,9 +77,7 @@ def test_shout_003_invisible_shouter_renders_as_someone_to_listener() -> None:
     do_shout(shouter, "boo")
     delivered = [_strip(m) for m in listener.messages if "shouts" in m]
     assert delivered, f"listener received no shout; messages={listener.messages}"
-    assert any("Someone shouts 'boo'" in m for m in delivered), (
-        f"PERS missing for invisible shouter; got {delivered!r}"
-    )
+    assert any("Someone shouts 'boo'" in m for m in delivered), f"PERS missing for invisible shouter; got {delivered!r}"
     assert not any("Shoutghost" in m for m in delivered), (
         f"invisible shouter's real name leaked through PERS; got {delivered!r}"
     )
@@ -106,9 +100,7 @@ def test_yell_001_invisible_yeller_renders_as_someone_to_listener() -> None:
     do_yell(yeller, "boo")
     delivered = [_strip(m) for m in listener.messages if "yells" in m]
     assert delivered, f"listener received no yell; messages={listener.messages}"
-    assert any("Someone yells 'boo'" in m for m in delivered), (
-        f"PERS missing for invisible yeller; got {delivered!r}"
-    )
+    assert any("Someone yells 'boo'" in m for m in delivered), f"PERS missing for invisible yeller; got {delivered!r}"
     assert not any("Yellghost" in m for m in delivered), (
         f"invisible yeller's real name leaked through PERS; got {delivered!r}"
     )

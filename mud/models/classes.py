@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Final, Tuple
+from typing import Final
 
 from mud.models.constants import (
     OBJ_VNUM_SCHOOL_DAGGER,
@@ -21,7 +21,7 @@ class ClassType:
     who_name: str
     prime_stat: Stat
     first_weapon_vnum: int
-    guild_vnums: Tuple[int, int]
+    guild_vnums: tuple[int, int]
     skill_adept: int
     thac0_00: int
     thac0_32: int
@@ -109,4 +109,3 @@ def get_player_class(name: str) -> ClassType | None:
     """Case-insensitive lookup for class metadata."""
 
     return _CLASS_BY_NAME.get(name.lower())
-

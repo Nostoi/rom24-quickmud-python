@@ -28,6 +28,7 @@ from mud.registry import room_registry
 
 class _SimpleObj:
     """Minimal object stub for testing."""
+
     def __init__(self, vnum: int, extra_flags: int) -> None:
         self.vnum = vnum
         self.extra_flags = extra_flags
@@ -38,11 +39,7 @@ class _SimpleObj:
 def purge_room():
     """Create a test room for purge operations."""
     room = Room(
-        vnum=10000,
-        name="Purge Test Room",
-        description="A room for testing purge.",
-        room_flags=0,
-        sector_type=0
+        vnum=10000, name="Purge Test Room", description="A room for testing purge.", room_flags=0, sector_type=0
     )
     room.people = []
     room.contents = []
@@ -54,24 +51,14 @@ def purge_room():
 @pytest.fixture
 def immortal(purge_room):
     """Create an immortal in the test room."""
-    char = Character(
-        name="TestImmortal",
-        level=50,
-        is_npc=False,
-        room=purge_room
-    )
+    char = Character(name="TestImmortal", level=50, is_npc=False, room=purge_room)
     purge_room.people.append(char)
     return char
 
 
 def test_nopurge_npc_is_not_purged(immortal: Character, purge_room: Room) -> None:
     """NPC with ActFlag.NOPURGE set should survive purge."""
-    mob = Character(
-        name="protected_mob",
-        level=10,
-        is_npc=True,
-        room=purge_room
-    )
+    mob = Character(name="protected_mob", level=10, is_npc=True, room=purge_room)
     mob.act = int(ActFlag.NOPURGE)
     purge_room.people.append(mob)
 
@@ -99,12 +86,7 @@ def test_nopurge_object_is_not_purged(immortal: Character, purge_room: Room) -> 
 
 def test_npc_without_nopurge_is_purged(immortal: Character, purge_room: Room) -> None:
     """NPC without NOPURGE should be purged."""
-    mob = Character(
-        name="purgeable_mob",
-        level=10,
-        is_npc=True,
-        room=purge_room
-    )
+    mob = Character(name="purgeable_mob", level=10, is_npc=True, room=purge_room)
     mob.act = 0  # No flags
     purge_room.people.append(mob)
 

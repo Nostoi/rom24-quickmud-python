@@ -20,8 +20,8 @@ from mud.commands.auto_settings import (
     do_autosac,
     do_autosplit,
     do_brief,
-    do_compact,
     do_combine,
+    do_compact,
     do_telnetga,
 )
 from mud.models.character import Character

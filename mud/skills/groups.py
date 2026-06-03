@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Final, Iterable, Tuple
+from typing import Final
 
 
 @dataclass(frozen=True)
@@ -11,8 +12,8 @@ class GroupType:
     """Representation of ROM's ``group_type`` entries from ``src/const.c``."""
 
     name: str
-    ratings: Tuple[int, int, int, int]
-    skills: Tuple[str, ...]
+    ratings: tuple[int, int, int, int]
+    skills: tuple[str, ...]
 
     def cost_for_class_index(self, class_index: int) -> int | None:
         """Return the creation point cost for the class index or ``None``.
@@ -29,7 +30,7 @@ class GroupType:
         return cost
 
 
-GROUP_TABLE: Final[Tuple[GroupType, ...]] = (
+GROUP_TABLE: Final[tuple[GroupType, ...]] = (
     GroupType(
         name="rom basics",
         ratings=(0, 0, 0, 0),
@@ -305,12 +306,10 @@ GROUP_TABLE: Final[Tuple[GroupType, ...]] = (
 )
 
 
-_GROUP_BY_NAME: Final[dict[str, GroupType]] = {
-    group.name.lower(): group for group in GROUP_TABLE
-}
+_GROUP_BY_NAME: Final[dict[str, GroupType]] = {group.name.lower(): group for group in GROUP_TABLE}
 
 
-def list_groups() -> Tuple[GroupType, ...]:
+def list_groups() -> tuple[GroupType, ...]:
     """Return all group definitions in ROM order."""
 
     return GROUP_TABLE
@@ -322,7 +321,7 @@ def get_group(name: str) -> GroupType | None:
     return _GROUP_BY_NAME.get(name.strip().lower())
 
 
-def iter_group_names(groups: Iterable[str]) -> Tuple[str, ...]:
+def iter_group_names(groups: Iterable[str]) -> tuple[str, ...]:
     """Normalize an iterable of group names into a tuple preserving order."""
 
     seen: set[str] = set()
@@ -334,4 +333,3 @@ def iter_group_names(groups: Iterable[str]) -> Tuple[str, ...]:
         seen.add(lowered)
         ordered.append(lowered)
     return tuple(ordered)
-

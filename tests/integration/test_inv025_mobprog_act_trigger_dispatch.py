@@ -170,10 +170,7 @@ def test_disable_mobtrigger_suppresses_act_trigger_dispatch():
     finally:
         mobprog.mp_act_trigger = original
 
-    assert fired == [], (
-        f"MOBtrigger=FALSE must suppress mp_act_trigger dispatch "
-        f"(ROM src/comm.c:2384); fired: {fired}"
-    )
+    assert fired == [], f"MOBtrigger=FALSE must suppress mp_act_trigger dispatch (ROM src/comm.c:2384); fired: {fired}"
 
 
 def test_act_trigger_skipped_when_actor_is_npc():
@@ -222,9 +219,7 @@ def test_act_trigger_skipped_when_actor_is_npc():
     finally:
         mobprog.mp_act_trigger = original
 
-    assert fired == [], (
-        f"actor must not self-fire its own TRIG_ACT; fired: {fired}"
-    )
+    assert fired == [], f"actor must not self-fire its own TRIG_ACT; fired: {fired}"
 
 
 def test_position_act_room_broadcast_fires_act_trigger_on_listening_npc():
@@ -249,9 +244,6 @@ def test_position_act_room_broadcast_fires_act_trigger_on_listening_npc():
     finally:
         mobprog.mp_act_trigger = original
 
-    assert len(fired) == 1, (
-        f"expected exactly one mp_act_trigger fire for the stand room act(); "
-        f"got: {fired}"
-    )
+    assert len(fired) == 1, f"expected exactly one mp_act_trigger fire for the stand room act(); got: {fired}"
     assert fired[0][0] == "listener"
     assert "stands" in fired[0][1]

@@ -20,8 +20,8 @@ import pytest
 
 from mud.commands.inventory import do_get
 from mud.handler import create_money
-from mud.models.constants import AffectFlag, ItemType, PlayerFlag, WearFlag
-from mud.models.object import ObjIndex, Object
+from mud.models.constants import ItemType, PlayerFlag, WearFlag
+from mud.models.object import Object, ObjIndex
 
 OBJ_VNUM_PIT = 3010
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry

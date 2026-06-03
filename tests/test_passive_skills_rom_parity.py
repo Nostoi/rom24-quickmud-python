@@ -7,13 +7,12 @@ These skills are NOT in handlers.py - they're integrated into game systems.
 
 from __future__ import annotations
 
-import pytest
 from unittest.mock import patch
 
+import pytest
+
 from mud.game_loop import hit_gain, mana_gain
-from mud.combat.engine import multi_hit
-from mud.models.character import Character
-from mud.models.constants import Position, AffectFlag
+from mud.models.constants import Position
 from mud.world import initialize_world
 
 
@@ -235,7 +234,7 @@ class TestMagicItemSkillsNotInHandlers:
 
         # staves skill should either not exist or be a redirect stub
         if hasattr(handlers, "staves"):
-            staves_func = getattr(handlers, "staves")
+            staves_func = handlers.staves
             # If it exists, it should be a redirect stub
             assert callable(staves_func), "staves should be callable if present"
             # Call it to verify it redirects to brandish command
@@ -259,7 +258,7 @@ class TestMagicItemSkillsNotInHandlers:
 
         # wands skill should either not exist or be a redirect stub
         if hasattr(handlers, "wands"):
-            wands_func = getattr(handlers, "wands")
+            wands_func = handlers.wands
             # If it exists, it should be a redirect stub
             assert callable(wands_func), "wands should be callable if present"
             # Call it to verify it redirects to zap command

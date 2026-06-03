@@ -2,6 +2,7 @@
 
 Mirrors ROM 2.4b6 src/update.c behaviour verified against the C source.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -17,6 +18,7 @@ from mud.utils import rng_mm
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_room(vnum: int) -> Room:
     room = Room(vnum=vnum, name=f"Room {vnum}", description="", room_flags=0, sector_type=0)
@@ -79,6 +81,7 @@ def _cleanup():
 # GL-009: NPC wanders home — ROM src/update.c:688-696
 # ---------------------------------------------------------------------------
 
+
 class TestNpcWandersHome:
     def test_out_of_zone_npc_extracted_on_5pct_roll(self):
         """NPC out of its home zone is extracted (despawned) when RNG < 5."""
@@ -101,6 +104,7 @@ class TestNpcWandersHome:
         original = rng_mm.number_percent
 
         call_count = 0
+
         def _always_low():
             nonlocal call_count
             call_count += 1
@@ -205,6 +209,7 @@ class TestNpcWandersHome:
 # GL-012: Poison tick — ROM src/update.c:848-862
 # ---------------------------------------------------------------------------
 
+
 class TestPoisonTick:
     def test_poison_tick_deals_damage(self):
         """Poisoned character takes (level // 10 + 1) damage per char_update tick."""
@@ -259,9 +264,7 @@ class TestPoisonTick:
         ch.desc = object()
 
         char_update()
-        assert any("shiver" in m.lower() for m in ch.messages), (
-            "Poisoned character should receive shiver message"
-        )
+        assert any("shiver" in m.lower() for m in ch.messages), "Poisoned character should receive shiver message"
 
 
 class TestAffectWearOffSuppression:
@@ -322,6 +325,7 @@ class TestAffectWearOffSuppression:
 # GL-013/GL-014: Incap/Mortal tick damage — ROM src/update.c:864-871
 # ---------------------------------------------------------------------------
 
+
 class TestIncapMortalTick:
     def test_incap_50pct_chance_deals_1_damage(self):
         """INCAP position: 50% RNG chance of 1 HP damage per tick."""
@@ -372,6 +376,7 @@ class TestIncapMortalTick:
 # GL-018: Pit-corpse decay message suppression — ROM src/update.c:1017-1018
 # ---------------------------------------------------------------------------
 
+
 class TestPitDecaySuppression:
     def test_decay_message_suppressed_inside_untakeable_pit(self):
         """Objects inside an untakeable pit (vnum 3010) suppress their decay message."""
@@ -384,20 +389,19 @@ class TestPitDecaySuppression:
         room.people = [_make_player(room)]
 
         # Create pit container (vnum 3010, not takeable — WearFlag.TAKE not set)
-        pit_proto = ObjIndex(vnum=3010, name="the pit", short_descr="a large pit",
-                             wear_flags=0)
+        pit_proto = ObjIndex(vnum=3010, name="the pit", short_descr="a large pit", wear_flags=0)
         pit = Object(instance_id=3010, prototype=pit_proto)
         pit.in_room = room
         pit.wear_flags = 0  # not takeable
 
         # Create item inside pit
-        proto = ObjIndex(vnum=100, name="a coin", short_descr="a gold coin",
-                         wear_flags=int(WearFlag.TAKE))
+        proto = ObjIndex(vnum=100, name="a coin", short_descr="a gold coin", wear_flags=int(WearFlag.TAKE))
         item = Object(instance_id=100, prototype=proto)
         item.in_room = room
         item.in_obj = pit
 
         import mud.game_loop as gl
+
         original = gl._message_room
         captured = []
         gl._message_room = lambda r, msg, **kw: captured.append(msg)
@@ -406,9 +410,7 @@ class TestPitDecaySuppression:
         finally:
             gl._message_room = original
 
-        assert len(captured) == 0, (
-            "Decay message should be suppressed when item is inside an untakeable pit"
-        )
+        assert len(captured) == 0, "Decay message should be suppressed when item is inside an untakeable pit"
 
     def test_decay_message_shown_inside_takeable_container(self):
         """Objects inside a takeable container DO show their decay message."""
@@ -421,19 +423,18 @@ class TestPitDecaySuppression:
         room.people = [_make_player(room)]
 
         # Takeable container (not vnum 3010)
-        bag_proto = ObjIndex(vnum=200, name="a bag", short_descr="a bag",
-                             wear_flags=int(WearFlag.TAKE))
+        bag_proto = ObjIndex(vnum=200, name="a bag", short_descr="a bag", wear_flags=int(WearFlag.TAKE))
         bag = Object(instance_id=200, prototype=bag_proto)
         bag.in_room = room
         bag.wear_flags = int(WearFlag.TAKE)
 
-        proto = ObjIndex(vnum=101, name="a coin", short_descr="a gold coin",
-                         wear_flags=int(WearFlag.TAKE))
+        proto = ObjIndex(vnum=101, name="a coin", short_descr="a gold coin", wear_flags=int(WearFlag.TAKE))
         item = Object(instance_id=101, prototype=proto)
         item.in_room = room
         item.in_obj = bag
 
         import mud.game_loop as gl
+
         captured = []
         original = gl._message_room
         gl._message_room = lambda r, msg, **kw: captured.append(msg)
@@ -442,6 +443,4 @@ class TestPitDecaySuppression:
         finally:
             gl._message_room = original
 
-        assert len(captured) == 1, (
-            "Decay message should be sent when item is inside a takeable container"
-        )
+        assert len(captured) == 1, "Decay message should be sent when item is inside a takeable container"

@@ -152,12 +152,7 @@ def _split_for_paging(text: str) -> list[str]:
 
 
 def _segment_ends_line(segment: str) -> bool:
-    return (
-        segment.endswith("\n\r")
-        or segment.endswith("\r\n")
-        or segment.endswith("\n")
-        or segment.endswith("\r")
-    )
+    return segment.endswith("\n\r") or segment.endswith("\r\n") or segment.endswith("\n") or segment.endswith("\r")
 
 
 SESSIONS: dict[str, Session] = {}

@@ -70,9 +70,9 @@ def test_restore_strips_poison_plague_blindness_sleep_curse() -> None:
     room.add_character(victim)
     character_registry.extend([immortal, victim])
 
-    assert all(
-        victim.has_spell_effect(n) for n in ("plague", "poison", "blindness", "sleep", "curse")
-    ), "pre-condition: all 5 negative affects applied"
+    assert all(victim.has_spell_effect(n) for n in ("plague", "poison", "blindness", "sleep", "curse")), (
+        "pre-condition: all 5 negative affects applied"
+    )
 
     do_restore(immortal, "")
 

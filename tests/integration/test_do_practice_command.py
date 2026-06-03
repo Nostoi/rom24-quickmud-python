@@ -221,9 +221,7 @@ def test_practice_success_not_at_adept(practice_char, practice_trainer, test_ski
     assert practice_char.messages == []
 
 
-def test_practice_low_int_high_rating_skill_yields_zero_increment(
-    practice_char, practice_trainer, test_skill
-):
+def test_practice_low_int_high_rating_skill_yields_zero_increment(practice_char, practice_trainer, test_skill):
     """ARITH-010 — ROM src/act_info.c:2772-2774 does
     `learned[sn] += int_app[INT].learn / skill_table[sn].rating[class]` raw,
     no UMAX(1,...) guard. When learn < rating the integer division floors to

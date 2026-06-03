@@ -56,13 +56,7 @@ def test_nested_if_inside_else_executes_inner_branch(monkeypatch):
         trig_phrase="hello",
         vnum=4501,
         code=(
-            "if isnpc $n\n"
-            "  mob echoat $n outer-true\n"
-            "else\n"
-            "  if ispc $n\n"
-            "    mob echoat $n inner-pc\n"
-            "  endif\n"
-            "endif\n"
+            "if isnpc $n\n  mob echoat $n outer-true\nelse\n  if ispc $n\n    mob echoat $n inner-pc\n  endif\nendif\n"
         ),
     )
     mob.mob_programs = [program]
@@ -100,12 +94,7 @@ def test_invalid_if_keyword_aborts_program(monkeypatch):
         trig_type=int(Trigger.SPEECH),
         trig_phrase="hello",
         vnum=4601,
-        code=(
-            "if foozle $n\n"
-            "  mob echoat $n should-not-fire\n"
-            "endif\n"
-            "mob echoat $n after-bad-if\n"
-        ),
+        code=("if foozle $n\n  mob echoat $n should-not-fire\nendif\nmob echoat $n after-bad-if\n"),
     )
     mob.mob_programs = [program]
 

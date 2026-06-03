@@ -3363,9 +3363,7 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
             act_format("{5$n tries to disarm you, but fails.{x", recipient=victim, actor=caster, arg2=victim),
         )
         if room is not None:
-            act_to_room(
-                room, "{5$n tries to disarm $N, but fails.{x", caster, arg2=victim, exclude=victim
-            )
+            act_to_room(room, "{5$n tries to disarm $N, but fails.{x", caster, arg2=victim, exclude=victim)
         check_improve(caster, "disarm", False, 1)
         return False
 
@@ -3383,9 +3381,7 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
             ),
         )
         if room is not None:
-            act_to_room(
-                room, "{5$n tries to disarm $N, but fails.{x", caster, arg2=victim, exclude=victim
-            )
+            act_to_room(room, "{5$n tries to disarm $N, but fails.{x", caster, arg2=victim, exclude=victim)
         # FIGHT-038: ROM reaches NOREMOVE via do_disarm's successful-roll branch,
         # which still calls check_improve(..., TRUE, 1) (src/fight.c:3206).
         check_improve(caster, "disarm", True, 1)
@@ -3394,9 +3390,7 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
     # ROM src/fight.c:2252-2255 (disarm success — TO_VICT, TO_CHAR, TO_NOTVICT).
     _send_to_char(
         victim,
-        act_format(
-            "{5$n DISARMS you and sends your weapon flying!{x", recipient=victim, actor=caster, arg2=victim
-        ),
+        act_format("{5$n DISARMS you and sends your weapon flying!{x", recipient=victim, actor=caster, arg2=victim),
     )
     _send_to_char(caster, act_format("{5You disarm $N!{x", recipient=caster, actor=caster, arg2=victim))
     if room is not None:
@@ -6559,9 +6553,7 @@ def poison(
             # witness to "something").
             # MAGIC-011: ROM act(TO_ALL) caps buf[0] for every recipient incl.
             # the caster (src/comm.c:2376-2379), matching the weapon leg below.
-            _send_to_char(
-                caster, capitalize_act_line(f"{_object_short_descr(obj)} is infused with poisonous vapors.")
-            )
+            _send_to_char(caster, capitalize_act_line(f"{_object_short_descr(obj)} is infused with poisonous vapors."))
             room = getattr(caster, "room", None)
             if room is not None:
                 act_to_room(room, "$p is infused with poisonous vapors.", caster, arg1=obj, exclude=caster)

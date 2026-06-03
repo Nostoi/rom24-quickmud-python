@@ -207,10 +207,7 @@ def convert_area(path: str) -> dict:
         "specials": specials,
     }
     if mob_program_records:
-        data["mob_programs"] = [
-            {"vnum": vnum, **record}
-            for vnum, record in sorted(mob_program_records.items())
-        ]
+        data["mob_programs"] = [{"vnum": vnum, **record} for vnum, record in sorted(mob_program_records.items())]
     return data
 
 

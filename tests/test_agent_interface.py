@@ -3,8 +3,8 @@ from mud.world import initialize_world
 
 
 def test_character_agent_actions(movable_char_factory):
-    from mud.models.room import Exit
     from mud.models.constants import Direction
+    from mud.models.room import Exit
     from mud.registry import room_registry
 
     initialize_world("area/area.lst")
@@ -29,8 +29,8 @@ def test_character_agent_actions(movable_char_factory):
 
 
 def test_mob_agent_movement(movable_mob_factory):
-    from mud.models.room import Exit
     from mud.models.constants import Direction
+    from mud.models.room import Exit
     from mud.registry import room_registry
 
     initialize_world("area/area.lst")

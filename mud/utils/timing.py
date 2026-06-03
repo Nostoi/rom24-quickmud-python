@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from mud.models.character import Character
 
 
-def apply_wait_state(char: "Character", beats: int) -> None:
+def apply_wait_state(char: Character, beats: int) -> None:
     """ROM WAIT_STATE: char.wait = max(char.wait, beats).
 
     Beats are 1/4-second ticks. Zero/negative is a no-op so callers can

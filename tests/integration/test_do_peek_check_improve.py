@@ -57,9 +57,7 @@ def test_do_peek_invokes_canonical_check_improve_with_rom_args() -> None:
     assert args[0] is peeker
     assert args[1] == "peek"
     assert args[2] is True
-    assert multiplier == 4, (
-        f"ROM passes multiplier=4 (src/act_info.c:505); got {multiplier!r}"
-    )
+    assert multiplier == 4, f"ROM passes multiplier=4 (src/act_info.c:505); got {multiplier!r}"
     # Sanity: peek succeeded (target's empty-inventory branch reached).
     assert "Mark is not carrying anything." in result
 

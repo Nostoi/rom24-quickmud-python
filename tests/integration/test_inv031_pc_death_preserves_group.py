@@ -24,8 +24,8 @@ from __future__ import annotations
 
 import pytest
 
-from mud.combat.death import raw_kill
 from mud.characters import is_same_group
+from mud.combat.death import raw_kill
 from mud.models.character import Character, character_registry
 from mud.models.constants import Position
 from mud.models.room import Room

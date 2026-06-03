@@ -260,6 +260,7 @@ def test_envenom_skill_improves_on_success():
 
 # --- ENV-001: WAIT_STATE tests ---
 
+
 def test_envenom_applies_wait_state_on_food_success():
     """ENV-001: ROM L894 WAIT_STATE fires on food-envenom success."""
     thief = make_character(level=30, skills={"envenom": 99})
@@ -322,6 +323,7 @@ def test_envenom_applies_wait_state_on_weapon_failure():
 
 
 # --- ENV-002: Bash-weapon rejection test ---
+
 
 def test_envenom_rejects_bash_weapon_with_positive_index():
     """ENV-002: ROM L920-925 rejects weapon with bash damage type (value[3] >= 0 but DAM_BASH).

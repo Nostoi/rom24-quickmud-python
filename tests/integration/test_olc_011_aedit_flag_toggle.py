@@ -38,6 +38,7 @@ def _builder_in_aedit(area_vnum: int = 3000):
     char.desc = session
     session.editor = "aedit"
     from mud.registry import area_registry
+
     area = area_registry.get(area_vnum)
     if area is None:
         # pick any available area
@@ -47,6 +48,7 @@ def _builder_in_aedit(area_vnum: int = 3000):
 
 
 # ── Flag toggled on (bit was clear) ─────────────────────────────────────────
+
 
 def test_typing_loading_flag_name_toggles_bit():
     """``loading`` typed in aedit session toggles AREA_LOADING on area_flags.
@@ -86,6 +88,7 @@ def test_typing_added_flag_name_toggles_bit():
 
 # ── Toggle off (bit was set) ─────────────────────────────────────────────────
 
+
 def test_toggling_already_set_flag_clears_it():
     """TOGGLE_BIT clears the flag if it was already set.
 
@@ -105,6 +108,7 @@ def test_toggling_already_set_flag_clears_it():
 
 # ── Prefix matching via flag_value ────────────────────────────────────────────
 
+
 def test_prefix_load_matches_loading():
     """``load`` is a prefix of ``loading``; flag_value must match via prefix_lookup.
 
@@ -123,6 +127,7 @@ def test_prefix_load_matches_loading():
 
 
 # ── Flag toggle does NOT shadow real subcommands ─────────────────────────────
+
 
 def test_show_command_not_shadowed_by_flag_toggle():
     """``show`` is not an area_flags name; it must dispatch to aedit_show, not flag-toggle.
@@ -144,7 +149,12 @@ def test_done_command_not_shadowed():
     char, session, area = _builder_in_aedit()
     result = _interpret_aedit(session, char, "done")
     assert "Flag toggled" not in result
-    assert session.editor is None or session.editor != "aedit" or session.editor_state is None or "area" not in (session.editor_state or {})
+    assert (
+        session.editor is None
+        or session.editor != "aedit"
+        or session.editor_state is None
+        or "area" not in (session.editor_state or {})
+    )
 
 
 def test_name_command_not_shadowed():
@@ -155,6 +165,7 @@ def test_name_command_not_shadowed():
 
 
 # ── OLC-006: aedit_age — ROM src/olc_act.c:770-790 ──────────────────────────
+
 
 def test_aedit_age_sets_value():
     """``age <n>`` sets pArea->age — ROM src/olc_act.c:785."""

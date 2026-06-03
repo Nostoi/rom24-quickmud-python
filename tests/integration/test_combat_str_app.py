@@ -28,9 +28,7 @@ from mud.models.constants import DamageType, Position, Stat
 def _make_attacker(strength: int, hitroll: int = 0, damroll: int = 0) -> Character:
     """Build a Character with permanent STR set to ``strength``, given hitroll/damroll."""
 
-    char = Character(
-        name=f"Str{strength}", level=20, hitroll=hitroll, damroll=damroll, is_npc=False
-    )
+    char = Character(name=f"Str{strength}", level=20, hitroll=hitroll, damroll=damroll, is_npc=False)
     char.perm_stat = [13, 13, 13, 13, 13]
     char.perm_stat[Stat.STR] = strength
     char.mod_stat = [0, 0, 0, 0, 0]
@@ -40,11 +38,11 @@ def _make_attacker(strength: int, hitroll: int = 0, damroll: int = 0) -> Charact
 @pytest.mark.parametrize(
     "strength, expected_tohit",
     [
-        (3, -3),   # str_app[3].tohit  (src/const.c:732)
-        (8, 0),    # str_app[8].tohit  — neutral band
-        (13, 0),   # str_app[13].tohit — neutral band
-        (18, 2),   # str_app[18].tohit (src/const.c:746)
-        (25, 6),   # str_app[25].tohit (src/const.c:753)
+        (3, -3),  # str_app[3].tohit  (src/const.c:732)
+        (8, 0),  # str_app[8].tohit  — neutral band
+        (13, 0),  # str_app[13].tohit — neutral band
+        (18, 2),  # str_app[18].tohit (src/const.c:746)
+        (25, 6),  # str_app[25].tohit (src/const.c:753)
     ],
 )
 def test_get_hitroll_adds_str_app_tohit(strength: int, expected_tohit: int) -> None:
@@ -114,11 +112,11 @@ def test_engine_thac0_path_uses_str_app_tohit(monkeypatch: pytest.MonkeyPatch) -
 @pytest.mark.parametrize(
     "strength, expected_todam",
     [
-        (3, -1),   # str_app[3].todam  (src/const.c:732)
-        (8, 0),    # str_app[8].todam  — neutral band
-        (13, 0),   # str_app[13].todam — neutral band
-        (18, 3),   # str_app[18].todam (src/const.c:746)
-        (25, 9),   # str_app[25].todam (src/const.c:753)
+        (3, -1),  # str_app[3].todam  (src/const.c:732)
+        (8, 0),  # str_app[8].todam  — neutral band
+        (13, 0),  # str_app[13].todam — neutral band
+        (18, 3),  # str_app[18].todam (src/const.c:746)
+        (25, 9),  # str_app[25].todam (src/const.c:753)
     ],
 )
 def test_get_damroll_adds_str_app_todam(strength: int, expected_todam: int) -> None:
@@ -163,9 +161,7 @@ def test_calculate_weapon_damage_uses_str_app_todam(
     victim.armor = [0, 0, 0, 0]
 
     # Pin number_range so both calls return the same base damage.
-    monkeypatch.setattr(
-        combat_engine.rng_mm, "number_range", lambda lo, hi: lo + (hi - lo) // 2
-    )
+    monkeypatch.setattr(combat_engine.rng_mm, "number_range", lambda lo, hi: lo + (hi - lo) // 2)
     # Pin enhanced-damage gate to off.
     monkeypatch.setattr(combat_engine.rng_mm, "number_percent", lambda: 100)
 

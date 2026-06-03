@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import time
 from types import SimpleNamespace
 
 import pytest
@@ -10,11 +9,11 @@ import mud.net.connection as net_connection
 from mud import registry as global_registry
 from mud.commands.info_extended import do_whois, do_worth
 from mud.commands.session import do_score
+from mud.handler import class_name, race_name
 from mud.models.character import PCData
 from mud.models.constants import CommFlag, PlayerFlag, Sex
-from mud.handler import class_name, race_name
-from mud.world import create_test_character, initialize_world
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
+from mud.world import create_test_character, initialize_world
 
 
 @pytest.fixture(autouse=True)

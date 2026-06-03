@@ -3,8 +3,8 @@ from __future__ import annotations
 import pytest
 
 from mud.commands.character import do_description, do_title
-from mud.world import create_test_character, initialize_world
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
+from mud.world import create_test_character, initialize_world
 
 
 @pytest.fixture(autouse=True)

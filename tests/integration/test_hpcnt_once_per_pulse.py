@@ -74,8 +74,7 @@ def test_hpcnt_does_not_fire_inside_apply_damage(monkeypatch) -> None:
     attack_round(attacker, victim)
 
     assert calls == [], (
-        "ROM src/fight.c:damage does not fire mp_hprct_trigger on the "
-        f"victim NPC; got {len(calls)} call(s): {calls}"
+        f"ROM src/fight.c:damage does not fire mp_hprct_trigger on the victim NPC; got {len(calls)} call(s): {calls}"
     )
 
 
@@ -124,6 +123,4 @@ def test_hpcnt_fires_exactly_once_per_violence_tick(monkeypatch) -> None:
         f"violence pulse on the NPC attacker; got {len(calls)} call(s): "
         f"{calls}"
     )
-    assert calls[0] == ("AttackerMob", "VictimPC"), (
-        f"HPCNT must fire on (attacker NPC, victim) per ROM; got {calls[0]}"
-    )
+    assert calls[0] == ("AttackerMob", "VictimPC"), f"HPCNT must fire on (attacker NPC, victim) per ROM; got {calls[0]}"

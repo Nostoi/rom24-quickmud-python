@@ -82,8 +82,7 @@ def test_incognito_toggle_off_broadcasts_no_longer_cloaked() -> None:
 
     msg = " ".join(witness.messages)
     assert "no longer cloaked" in msg, (
-        "ROM src/act_wiz.c:4389 emits TO_ROOM 'is no longer cloaked.' "
-        f"on uncloak. Got: {witness.messages!r}"
+        f"ROM src/act_wiz.c:4389 emits TO_ROOM 'is no longer cloaked.' on uncloak. Got: {witness.messages!r}"
     )
 
 

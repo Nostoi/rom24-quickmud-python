@@ -266,12 +266,14 @@ def test_board_switching_persists_last_note(tmp_path):
     orig_board_dir = _setup_boards(boards_dir)
     from mud.account.account_manager import load_character, save_character
     from mud.account.account_service import clear_active_accounts, create_character
-    from mud.db.models import Base, Character as DBCharacter
+    from mud.db.models import Base
+    from mud.db.models import Character as DBCharacter
     from mud.db.session import SessionLocal, engine
     from mud.models.character import from_orm
     from mud.models.constants import ROOM_VNUM_SCHOOL
     from mud.security import bans
     from mud.world.world_state import reset_lockdowns
+
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     bans.clear_all_bans()

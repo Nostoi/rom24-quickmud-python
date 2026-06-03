@@ -8,7 +8,7 @@ ROM Reference: src/act_move.c do_sit
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import Position, ItemType
+from mud.models.constants import ItemType
 
 
 def do_examine(char: Character, args: str) -> str:
@@ -145,9 +145,9 @@ def do_whois(char: Character, args: str) -> str:
 
     ROM Reference: src/act_info.c do_whois (lines 1916-2010)
     """
-    from mud.models.classes import CLASS_TABLE
     from mud.models.clans import CLAN_TABLE
-    from mud.models.constants import CommFlag, LEVEL_HERO, MAX_LEVEL, PlayerFlag
+    from mud.models.classes import CLASS_TABLE
+    from mud.models.constants import LEVEL_HERO, MAX_LEVEL, CommFlag, PlayerFlag
     from mud.models.races import PC_RACE_TABLE
     from mud.net.connection import CON_PLAYING
     from mud.world.vision import can_see_character

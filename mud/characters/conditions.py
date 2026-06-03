@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import Condition, LEVEL_IMMORTAL
+from mud.models.constants import LEVEL_IMMORTAL, Condition
 from mud.utils.messaging import send_to_char_buffered as _send_to_char
-
 
 __all__ = ["gain_condition"]
 

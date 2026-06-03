@@ -30,7 +30,6 @@ from mud.models.room import Room
 from mud.registry import room_registry
 from mud.skills.handlers import locate_object
 
-
 _ROOM_VNUM = 9601
 
 
@@ -82,16 +81,11 @@ def test_decay_of_carried_obj_updates_carry_counters_and_registry(
     obj_update()
 
     assert potion not in object_registry, (
-        "INV-014: decayed obj must be removed from object_registry by "
-        "_extract_obj (mud/game_loop.py)."
+        "INV-014: decayed obj must be removed from object_registry by _extract_obj (mud/game_loop.py)."
     )
     assert potion not in carrier.inventory
-    assert carrier.carry_weight < initial_weight, (
-        "INV-011: decay of carried obj must decrement carry_weight."
-    )
-    assert carrier.carry_number < initial_number, (
-        "INV-011: decay of carried obj must decrement carry_number."
-    )
+    assert carrier.carry_weight < initial_weight, "INV-011: decay of carried obj must decrement carry_weight."
+    assert carrier.carry_number < initial_number, "INV-011: decay of carried obj must decrement carry_number."
 
 
 def test_npc_corpse_decay_recursively_extracts_contents(
@@ -146,17 +140,14 @@ def test_npc_corpse_decay_recursively_extracts_contents(
 
     obj_update()
 
-    assert corpse not in object_registry, (
-        "INV-014: decayed corpse must be removed from registry."
-    )
+    assert corpse not in object_registry, "INV-014: decayed corpse must be removed from registry."
     assert pouch not in object_registry, (
         "ROM extract_obj recurses through contents; INV-014 contract "
         "requires the pouch nested inside the corpse to leave the "
         "registry too."
     )
     assert gem not in object_registry, (
-        "Deeply nested items (gem in pouch in corpse) must also be "
-        "extracted by the recursion."
+        "Deeply nested items (gem in pouch in corpse) must also be extracted by the recursion."
     )
 
 

@@ -374,6 +374,7 @@ def test_rstat_private_room_blocks_non_owner() -> None:
     private_room = _room(9212, owner="Owner", name="Private Room", room_flags=0)
     private_room.owner = "Owner"
     from mud.models.constants import RoomFlag
+
     private_room.room_flags = int(RoomFlag.ROOM_PRIVATE)
     private_room.people = []
     _imm("Occupant", private_room.vnum, trust=10)
@@ -394,8 +395,39 @@ def test_ostat_shows_object_info() -> None:
     room = _room(9220, name="StatRoom")
     admin = _imm("Admin", room.vnum, trust=60)
 
-    proto = ObjIndex(vnum=92200, name="stat sword test", short_descr="a stat test sword", description="A test sword lies here.", item_type=5, level=10, wear_flags=0, extra_flags=0, value=[0, 2, 8, 0, 0], weight=50, cost=100, condition=100)
-    obj = Object(instance_id=77001, prototype=proto, contained_items=[], level=10, value=[0, 2, 8, 0, 0], timer=0, wear_loc=-1, cost=100, extra_flags=0, wear_flags=0, condition=100, enchanted=False, item_type=5, owner=None, affected=[], _short_descr_override=None, _description_override=None)
+    proto = ObjIndex(
+        vnum=92200,
+        name="stat sword test",
+        short_descr="a stat test sword",
+        description="A test sword lies here.",
+        item_type=5,
+        level=10,
+        wear_flags=0,
+        extra_flags=0,
+        value=[0, 2, 8, 0, 0],
+        weight=50,
+        cost=100,
+        condition=100,
+    )
+    obj = Object(
+        instance_id=77001,
+        prototype=proto,
+        contained_items=[],
+        level=10,
+        value=[0, 2, 8, 0, 0],
+        timer=0,
+        wear_loc=-1,
+        cost=100,
+        extra_flags=0,
+        wear_flags=0,
+        condition=100,
+        enchanted=False,
+        item_type=5,
+        owner=None,
+        affected=[],
+        _short_descr_override=None,
+        _description_override=None,
+    )
     obj.in_room = room
     room.contents.append(obj)
     object_registry.append(obj)
@@ -579,8 +611,39 @@ def test_ostat_number_and_weight_uses_helpers() -> None:
     room = _room(9244, name="StatRoom")
     admin = _imm("Admin", room.vnum, trust=60)
 
-    proto = ObjIndex(vnum=92440, name="weight test sword", short_descr="a weighty sword", description="A heavy sword lies here.", item_type=5, level=10, wear_flags=0, extra_flags=0, value=[0, 2, 8, 0, 0], weight=50, cost=100, condition=100)
-    obj = Object(instance_id=77002, prototype=proto, contained_items=[], level=10, value=[0, 2, 8, 0, 0], timer=0, wear_loc=-1, cost=100, extra_flags=0, wear_flags=0, condition=100, enchanted=False, item_type=5, owner=None, affected=[], _short_descr_override=None, _description_override=None)
+    proto = ObjIndex(
+        vnum=92440,
+        name="weight test sword",
+        short_descr="a weighty sword",
+        description="A heavy sword lies here.",
+        item_type=5,
+        level=10,
+        wear_flags=0,
+        extra_flags=0,
+        value=[0, 2, 8, 0, 0],
+        weight=50,
+        cost=100,
+        condition=100,
+    )
+    obj = Object(
+        instance_id=77002,
+        prototype=proto,
+        contained_items=[],
+        level=10,
+        value=[0, 2, 8, 0, 0],
+        timer=0,
+        wear_loc=-1,
+        cost=100,
+        extra_flags=0,
+        wear_flags=0,
+        condition=100,
+        enchanted=False,
+        item_type=5,
+        owner=None,
+        affected=[],
+        _short_descr_override=None,
+        _description_override=None,
+    )
     obj.in_room = room
     room.contents.append(obj)
     object_registry.append(obj)
@@ -1007,7 +1070,11 @@ def test_holylight_toggles() -> None:
 
     result = cmd_holylight(admin, "")
     assert "Holy light mode" in result
-    assert int(PlayerFlag.HOLYLIGHT) & int(getattr(admin, "act", 0)) == 0 or "off" in result.lower() or "on" in result.lower()
+    assert (
+        int(PlayerFlag.HOLYLIGHT) & int(getattr(admin, "act", 0)) == 0
+        or "off" in result.lower()
+        or "on" in result.lower()
+    )
 
 
 # ── WIZ-015: slookup ────────────────────────────────────────────
@@ -1078,7 +1145,6 @@ def test_deny_not_found() -> None:
 def test_deny_rejects_npc() -> None:
     # mirrors ROM src/act_wiz.c:535-538
     from mud.commands.admin_commands import cmd_deny
-    from mud.models.constants import PlayerFlag
 
     room = _room(10002, name="DenyRoom")
     admin = _imm("Admin", 10002, trust=60)
@@ -1610,9 +1676,9 @@ def test_mload_success_places_mob_in_room() -> None:
     try:
         result = do_mload(admin, "88150")
         assert "Ok" in result
-        assert any(
-            getattr(p, "prototype", None) is proto for p in getattr(room, "people", [])
-        ), "spawned mob not placed in admin's room"
+        assert any(getattr(p, "prototype", None) is proto for p in getattr(room, "people", [])), (
+            "spawned mob not placed in admin's room"
+        )
     finally:
         mob_registry.pop(88150, None)
 
@@ -1664,7 +1730,9 @@ def test_clone_mob_success_no_import_error_and_places_clone() -> None:
         result = do_clone(admin, "rat")
         # ROM returns "You clone $N.\n\r" — substitution not expanded.
         assert "clone" in result.lower(), f"unexpected result: {result!r}"
-        clones = [p for p in (getattr(room, "people", []) or []) if p is not target and getattr(p, "prototype", None) is proto]
+        clones = [
+            p for p in (getattr(room, "people", []) or []) if p is not target and getattr(p, "prototype", None) is proto
+        ]
         assert clones, "clone mob not produced"
     finally:
         mob_registry.pop(88650, None)
@@ -1691,7 +1759,11 @@ def test_clone_object_success_places_clone() -> None:
         result = do_clone(admin, "amulet")
         # ROM returns "You clone $p.\n\r" — substitution not expanded here.
         assert "clone" in result.lower()
-        clones = [o for o in (getattr(room, "contents", []) or []) if o is not original and getattr(o, "prototype", None) is proto]
+        clones = [
+            o
+            for o in (getattr(room, "contents", []) or [])
+            if o is not original and getattr(o, "prototype", None) is proto
+        ]
         clones += [o for o in (getattr(admin, "inventory", []) or []) if getattr(o, "prototype", None) is proto]
         assert clones, "clone not produced"
     finally:

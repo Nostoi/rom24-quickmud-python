@@ -4,6 +4,7 @@ Thief skill commands - sneak, hide, visible, steal.
 ROM Reference: src/act_move.c do_sneak, do_hide, do_visible
 ROM Reference: src/act_obj.c do_steal
 """
+
 from __future__ import annotations
 
 from mud.math.c_compat import c_div
@@ -136,10 +137,7 @@ def do_steal(char: Character, args: str) -> str:
     victim_is_npc = bool(getattr(victim, "is_npc", False))
     victim_position = getattr(victim, "position", Position.STANDING)
     if victim_is_npc and victim_position == Position.FIGHTING:
-        return (
-            "Kill stealing is not permitted.\n"
-            "You'd better not -- you might get hit.\n"
-        )
+        return "Kill stealing is not permitted.\nYou'd better not -- you might get hit.\n"
 
     # ROM L2201: WAIT_STATE(ch, skill_table[gsn_steal].beats)
     _apply_wait_state(char, 24)
@@ -162,9 +160,7 @@ def do_steal(char: Character, args: str) -> str:
     skill_level = _get_skill(char, "steal")
 
     level_gap = (
-        (char_level + 7 < victim_level or char_level - 7 > victim_level)
-        and not victim_is_npc
-        and not char_is_npc
+        (char_level + 7 < victim_level or char_level - 7 > victim_level) and not victim_is_npc and not char_is_npc
     )
     skill_failed = (not char_is_npc) and percent > skill_level
     no_clan = (not char_is_npc) and not _is_clan(char)
@@ -193,12 +189,8 @@ def _steal_failure(char: Character, victim: Character) -> str:
     # ROM L2222-2223: act("$n tried to steal from you.", ..., TO_VICT)
     #                act("$n tried to steal from $N.", ..., TO_NOTVICT)
     room = getattr(char, "room", None)
-    victim_msg = act_format(
-        "$n tried to steal from you.\n", recipient=victim, actor=char, arg1=None, arg2=victim
-    )
-    notvict_msg = act_format(
-        "$n tried to steal from $N.\n", recipient=None, actor=char, arg1=None, arg2=victim
-    )
+    victim_msg = act_format("$n tried to steal from you.\n", recipient=victim, actor=char, arg1=None, arg2=victim)
+    notvict_msg = act_format("$n tried to steal from $N.\n", recipient=None, actor=char, arg1=None, arg2=victim)
     # mirroring ROM src/act_obj.c:2222-2223 — TO_VICT and TO_NOTVICT via socket
     _send_to_char_sync(victim, victim_msg)
     if room is not None:
@@ -334,6 +326,7 @@ def _steal_item(char: Character, victim: Character, item_name: str) -> str:
 
 # Helper functions
 
+
 def _get_skill(char: Character, skill_name: str) -> int:
     """Get character's skill level (canonical: char.skills, ROM `get_skill`)."""
 
@@ -379,8 +372,6 @@ def _apply_sneak_affect(char: Character) -> None:
     char.affected.append(affect)
 
     char.affected_by = getattr(char, "affected_by", 0) | AffectFlag.SNEAK
-
-
 
 
 def _can_see_char(observer: Character, target: Character) -> bool:

@@ -72,9 +72,7 @@ def test_mob_spell_effect_ticks_to_expiry_without_crashing():
     testing the crash-free-expiry contract, not the buggy timing."""
     mob = _spawn_mob_in_room()
     # Faithful to the production cast path (every spell handler does this).
-    mob.apply_spell_effect(
-        SpellEffect(name="weaken", duration=1, level=20, wear_off_message="You feel stronger.")
-    )
+    mob.apply_spell_effect(SpellEffect(name="weaken", duration=1, level=20, wear_off_message="You feel stronger."))
     assert "weaken" in mob.spell_effects
 
     # Tick a bounded number of times; none may raise out of char_update.

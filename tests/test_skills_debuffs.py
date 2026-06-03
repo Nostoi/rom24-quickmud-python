@@ -138,14 +138,14 @@ def test_poison_envenoms_weapon_and_messages(monkeypatch: pytest.MonkeyPatch) ->
     assert skill_handlers.poison(caster, weapon) is True
 
     assert weapon.value[4] & int(WeaponFlag.POISON)
-    assert getattr(weapon, "weapon_flags") & int(WeaponFlag.POISON)
+    assert weapon.weapon_flags & int(WeaponFlag.POISON)
     assert weapon.affected
 
     effect = weapon.affected[-1]
     assert effect.level == skill_handlers.c_div(caster.level, 2)
     assert effect.duration == skill_handlers.c_div(caster.level, 8)
     assert effect.bitvector == int(WeaponFlag.POISON)
-    assert getattr(effect, "wear_off_message") == "The poison on $p dries up."
+    assert effect.wear_off_message == "The poison on $p dries up."
 
     # ACT-CAP-002: ROM act("$p is coated with
     # deadly venom.", ch, obj, NULL, TO_ALL) caps for all including caster.
@@ -294,9 +294,7 @@ def test_slow_uses_override_item_level(monkeypatch: pytest.MonkeyPatch) -> None:
 
     override_level = 24
 
-    assert (
-        skill_handlers.slow(caster, target, override_level=override_level) is True
-    )
+    assert skill_handlers.slow(caster, target, override_level=override_level) is True
 
     effect = target.spell_effects["slow"]
     expected_modifier = -1

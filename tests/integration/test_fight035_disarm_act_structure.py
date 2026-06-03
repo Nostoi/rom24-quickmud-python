@@ -64,8 +64,11 @@ def _pc(name: str, room: Room, *, level: int = 30, sex: Sex | None = None, stats
 def _wield(victim: Character, *, extra_flags: int = 0) -> SimpleNamespace:
     weapon = SimpleNamespace(
         prototype=SimpleNamespace(
-            name="longsword", short_descr="a longsword", item_type="weapon",
-            value=[int(WeaponType.SWORD), 0, 0, 0], level=20,
+            name="longsword",
+            short_descr="a longsword",
+            item_type="weapon",
+            value=[int(WeaponType.SWORD), 0, 0, 0],
+            level=20,
         ),
         value=[int(WeaponType.SWORD), 0, 0, 0],
         extra_flags=extra_flags,
@@ -134,9 +137,7 @@ class TestDisarmActStructure:
         assert bystander.messages.count(notvict) == 1, bystander.messages
         assert notvict not in victim.messages, f"victim double-received TO_NOTVICT: {victim.messages}"
 
-    def test_noremove_path_uses_gendered_possessive_and_excludes_caster(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    def test_noremove_path_uses_gendered_possessive_and_excludes_caster(self, monkeypatch: pytest.MonkeyPatch) -> None:
         # ROM src/fight.c:2244-2248 — roll succeeds but weapon is ITEM_NOREMOVE.
         from mud.models.constants import ExtraFlag
 

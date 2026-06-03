@@ -397,10 +397,7 @@ class TestGroupLootSharing:
         # Each member should get 100 silver and 100 gold (300 / 3).
         expected = 100
         assert (
-            "You split" in result
-            or leader.gold == expected
-            or follower1.gold == expected
-            or follower2.gold == expected
+            "You split" in result or leader.gold == expected or follower1.gold == expected or follower2.gold == expected
         ), "Gold should be split among group members"
 
 
@@ -553,8 +550,12 @@ class TestGroupLeadership:
 
         raw_kill(leader)
 
-        assert follower.master is leader, "Follower's master must survive PC death — ROM extract_char(ch, FALSE) does not call die_follower"
-        assert follower.leader is leader, "Follower's leader must survive PC death — ROM extract_char(ch, FALSE) does not call die_follower"
+        assert follower.master is leader, (
+            "Follower's master must survive PC death — ROM extract_char(ch, FALSE) does not call die_follower"
+        )
+        assert follower.leader is leader, (
+            "Follower's leader must survive PC death — ROM extract_char(ch, FALSE) does not call die_follower"
+        )
 
 
 class TestGroupMovement:

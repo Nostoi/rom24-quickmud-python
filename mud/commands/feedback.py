@@ -7,7 +7,6 @@ ROM Reference: src/act_info.c lines 100-160
 from __future__ import annotations
 
 import datetime
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -23,7 +22,7 @@ def _write_feedback(filename: str, ch: Character, args: str) -> str:
     """
     args = args.strip()
     if not args:
-        return f"Please include a description."
+        return "Please include a description."
 
     # Create log directory if it doesn't exist
     log_dir = Path("log")
@@ -46,7 +45,7 @@ def _write_feedback(filename: str, ch: Character, args: str) -> str:
     try:
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(log_entry)
-        return f"Thank you, your feedback has been recorded."
+        return "Thank you, your feedback has been recorded."
     except Exception as e:
         return f"Error recording feedback: {e}"
 

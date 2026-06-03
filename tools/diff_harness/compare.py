@@ -77,10 +77,25 @@ def _render_step_diff(c: StepSnap, py: StepSnap) -> str:
     for key in c_by_key:
         cc, pc = c_by_key[key], py_by_key[key]
         if cc != pc:
-            for f in ("room", "position", "hp", "max_hp", "mana", "move", "level",
-                      "align", "gold", "fighting", "eff_hitroll", "eff_damroll", "eff_ac",
-                      "affects", "affect_flags",
-                      "inventory", "equipment"):
+            for f in (
+                "room",
+                "position",
+                "hp",
+                "max_hp",
+                "mana",
+                "move",
+                "level",
+                "align",
+                "gold",
+                "fighting",
+                "eff_hitroll",
+                "eff_damroll",
+                "eff_ac",
+                "affects",
+                "affect_flags",
+                "inventory",
+                "equipment",
+            ):
                 if getattr(cc, f) != getattr(pc, f):
                     return f"{prefix} · chars[{key}].{f} · C={getattr(cc, f)} py={getattr(pc, f)}"
     c_rooms = {r.vnum: r for r in c.rooms}

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import DamageType, ExtraFlag, ImmFlag, ItemType, Position
+from mud.models.constants import ExtraFlag, ImmFlag, ItemType, Position
 from mud.models.object import Object, ObjIndex
 from mud.models.room import Room
 from mud.skills.handlers import heat_metal

@@ -75,9 +75,7 @@ def test_serialize_affect_normalizes_a_line_dict():
 
 def test_serialize_affect_preserves_f_line_dict():
     """F-line dicts (where + bitvector) survive with all fields."""
-    payload = _serialize_affect(
-        {"where": "OBJECT", "location": 0, "modifier": 0, "bitvector": 4}
-    )
+    payload = _serialize_affect({"where": "OBJECT", "location": 0, "modifier": 0, "bitvector": 4})
     assert payload["where"] == "OBJECT"
     assert payload["bitvector"] == 4
 
@@ -129,9 +127,7 @@ def test_object_with_affect_dataclass_survives_json_dump(tmp_path: Path):
     obj = ObjIndex(
         vnum=9002,
         short_descr="dataclass affects",
-        affects=[
-            Affect(where=1, type=-1, level=15, duration=-1, location=18, modifier=2, bitvector=0)
-        ],
+        affects=[Affect(where=1, type=-1, level=15, duration=-1, location=18, modifier=2, bitvector=0)],
         area=area,
     )
     obj_registry[obj.vnum] = obj

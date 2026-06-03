@@ -22,19 +22,16 @@ Coverage:
 from __future__ import annotations
 
 import pytest
+from helpers_player import set_conditions
 
-from mud.characters.conditions import gain_condition
 from mud.game_loop import hit_gain, mana_gain, move_gain
-from mud.models.character import Character, PCData
+from mud.models.character import PCData
 from mud.models.constants import (
     AffectFlag,
-    Condition,
     ItemType,
     Position,
-    Stat,
 )
 from mud.models.object import Object, ObjIndex
-from mud.models.room import Room
 from mud.registry import (
     area_registry,
     mob_registry,
@@ -42,7 +39,6 @@ from mud.registry import (
     room_registry,
 )
 from mud.world import create_test_character, initialize_world
-from helpers_player import set_conditions
 
 
 @pytest.fixture(scope="module", autouse=True)

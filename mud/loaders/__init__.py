@@ -10,7 +10,7 @@ __all__ = ["load_area_file", "load_all_areas_from_json", "load_all_areas"]
 
 def load_all_areas(list_path: str = "area/area.lst", use_json: bool = True):
     """Load all areas from either JSON or .are files.
-    
+
     Args:
         list_path: Path to area.lst file (only used if use_json=False)
         use_json: If True, load from data/areas/*.json; if False, load from .are files
@@ -21,12 +21,12 @@ def load_all_areas(list_path: str = "area/area.lst", use_json: bool = True):
     mob_registry.clear()
     obj_registry.clear()
     shop_registry.clear()
-    
+
     if use_json:
         # Load from JSON files (modern, with resets)
         load_all_areas_from_json("data/areas")
         return
-    
+
     # Legacy: Load from .are files
     sentinel_found = False
     with open(list_path, encoding="latin-1") as f:

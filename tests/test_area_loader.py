@@ -87,14 +87,7 @@ def test_area_header_requires_two_vnum_integers(tmp_path):
 
 def test_area_header_rejects_descending_vnum_range(tmp_path):
     area_registry.clear()
-    content = (
-        "#AREA\n"
-        "reverse.are~\n"
-        "Reverse~\n"
-        "Credits~\n"
-        "4000 3999\n"
-        "#$\n"
-    )
+    content = "#AREA\nreverse.are~\nReverse~\nCredits~\n4000 3999\n#$\n"
     path = tmp_path / "reverse.are"
     path.write_text(content, encoding="latin-1")
 
@@ -317,14 +310,7 @@ def test_json_room_loader_preserves_negative_sector_without_warning(tmp_path, ca
 
 def test_area_loader_seeds_rom_defaults(tmp_path):
     area_registry.clear()
-    content = (
-        "#AREA\n"
-        "defaults.are~\n"
-        "Defaults~\n"
-        "Credits~\n"
-        "0 0\n"
-        "#$\n"
-    )
+    content = "#AREA\ndefaults.are~\nDefaults~\nCredits~\n0 0\n#$\n"
     path = tmp_path / "defaults.are"
     path.write_text(content, encoding="latin-1")
 
@@ -795,9 +781,7 @@ def test_object_potion_and_container_values(tmp_path):
     bottle = obj_registry[21]
     assert bottle.value[0] == 12
     assert bottle.value[1] == 12
-    firebreather_index = next(
-        idx for idx, liquid in enumerate(LIQUID_TABLE) if liquid.name == "firebreather"
-    )
+    firebreather_index = next(idx for idx, liquid in enumerate(LIQUID_TABLE) if liquid.name == "firebreather")
     assert bottle.value[2] == firebreather_index
     assert bottle.value[3] == 0
     assert bottle.value[4] == 0
@@ -1130,9 +1114,7 @@ def test_json_loader_links_exit_targets(tmp_path):
                 "description": "",
                 "sector_type": "inside",
                 "flags": 0,
-                "exits": {
-                    "north": {"to_room": 101, "flags": north_flags, "description": "", "keyword": "door"}
-                },
+                "exits": {"north": {"to_room": 101, "flags": north_flags, "description": "", "keyword": "door"}},
             },
             {
                 "id": 101,
@@ -1140,9 +1122,7 @@ def test_json_loader_links_exit_targets(tmp_path):
                 "description": "",
                 "sector_type": "inside",
                 "flags": 0,
-                "exits": {
-                    "south": {"to_room": 100, "flags": south_flags, "description": "", "keyword": "door"}
-                },
+                "exits": {"south": {"to_room": 100, "flags": south_flags, "description": "", "keyword": "door"}},
             },
             {
                 "id": 102,
@@ -1210,9 +1190,7 @@ def test_json_loader_preserves_one_way_exit_flags(tmp_path):
                 "description": "",
                 "sector_type": "inside",
                 "flags": 0,
-                "exits": {
-                    "north": {"to_room": 401, "flags": door_flags, "description": "", "keyword": "door"}
-                },
+                "exits": {"north": {"to_room": 401, "flags": door_flags, "description": "", "keyword": "door"}},
             },
             {
                 "id": 401,
@@ -1220,9 +1198,7 @@ def test_json_loader_preserves_one_way_exit_flags(tmp_path):
                 "description": "",
                 "sector_type": "inside",
                 "flags": 0,
-                "exits": {
-                    "south": {"to_room": 400, "flags": 0, "description": "", "keyword": ""}
-                },
+                "exits": {"south": {"to_room": 400, "flags": 0, "description": "", "keyword": ""}},
             },
         ],
         "mobs": [],

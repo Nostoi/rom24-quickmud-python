@@ -10,11 +10,8 @@ import glob
 import json
 import re
 import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
-
 
 # Subsystem to test file mapping
 SUBSYSTEM_TEST_MAP = {
@@ -144,14 +141,14 @@ SUBSYSTEM_TEST_MAP = {
 }
 
 
-def run_pytest(patterns: List[str], verbose: bool = False) -> Tuple[int, int, int, str]:
+def run_pytest(patterns: list[str], verbose: bool = False) -> tuple[int, int, int, str]:
     """
     Run pytest with given file patterns.
 
     Returns:
         (passed, failed, total, output)
     """
-    expanded: List[str] = []
+    expanded: list[str] = []
     for pattern in patterns:
         matches = glob.glob(pattern)
         if matches:
@@ -227,7 +224,7 @@ def calculate_confidence(passed: int, total: int) -> float:
         return max(0.20, pass_rate * 0.60)
 
 
-def analyze_subsystem(subsystem: str, verbose: bool = False) -> Dict:
+def analyze_subsystem(subsystem: str, verbose: bool = False) -> dict:
     """
     Run tests for a specific subsystem and return metrics.
     """
@@ -258,7 +255,7 @@ def analyze_subsystem(subsystem: str, verbose: bool = False) -> Dict:
     }
 
 
-def analyze_all_subsystems(verbose: bool = False) -> Dict[str, Dict]:
+def analyze_all_subsystems(verbose: bool = False) -> dict[str, dict]:
     """
     Run tests for all subsystems and return comprehensive metrics.
     """

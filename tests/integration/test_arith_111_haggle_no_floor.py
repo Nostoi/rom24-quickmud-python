@@ -83,12 +83,7 @@ def test_buy_haggle_negative_cost_refunds_player():
     char.skills = {"haggle": 100}
 
     keeper = next(
-        (
-            p
-            for p in char.room.people
-            if getattr(p, "prototype", None)
-            and p.prototype.vnum in shop_registry
-        ),
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
         None,
     )
     if keeper is None:
@@ -134,9 +129,7 @@ def test_buy_haggle_negative_cost_refunds_player():
     expected_discount = c_div(c_div(100, 2) * 99, 100)
     expected_unit_price = base_unit_price - expected_discount
 
-    assert expected_unit_price < 0, (
-        f"test setup must drive unit_price negative; got {expected_unit_price}"
-    )
+    assert expected_unit_price < 0, f"test setup must drive unit_price negative; got {expected_unit_price}"
 
     # ROM: player wealth increases by |negative cost|.
     after_wealth = _total_wealth(char)

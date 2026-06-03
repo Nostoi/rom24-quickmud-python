@@ -10,16 +10,16 @@ ROM Reference: src/olc.c
 from __future__ import annotations
 
 import pytest
-from mud.commands.dispatcher import process_command
-from mud.commands.build import cmd_aedit, cmd_redit, cmd_medit, cmd_oedit, cmd_hedit, cmd_asave
+
+from mud.commands.build import cmd_aedit, cmd_asave, cmd_hedit, cmd_medit, cmd_oedit, cmd_redit
 from mud.models.area import Area
-from mud.models.room import Room
 from mud.models.character import Character
+from mud.models.constants import LEVEL_HERO
 from mud.models.mob import MobIndex
 from mud.models.obj import ObjIndex
-from mud.models.constants import LEVEL_HERO
+from mud.models.room import Room
 from mud.net.session import Session
-from mud.registry import area_registry, room_registry, mob_registry, obj_registry
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 
 
 @pytest.fixture

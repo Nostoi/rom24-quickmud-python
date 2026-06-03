@@ -9,10 +9,8 @@ All tests use ROM C formulas and golden file methodology.
 
 from __future__ import annotations
 
-from mud.affects.saves import saves_spell
-from mud.math.c_compat import c_div
 from mud.models.character import Character
-from mud.models.constants import DamageType, Position
+from mud.models.constants import Position
 from mud.skills.handlers import (
     acid_breath,
     fire_breath,

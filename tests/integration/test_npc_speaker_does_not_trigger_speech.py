@@ -208,6 +208,5 @@ def test_npc_teller_does_not_fire_speech_trigger_on_target():
         mobprog.mp_act_trigger = original
 
     assert fired == [], (
-        f"NPC teller must not fire SPEECH trigger on NPC target "
-        f"(ROM src/act_comm.c:946); fired triggers: {fired}"
+        f"NPC teller must not fire SPEECH trigger on NPC target (ROM src/act_comm.c:946); fired triggers: {fired}"
     )

@@ -25,20 +25,13 @@ from mud.world import create_test_character, initialize_world
 
 def _grocer_in_room(char):
     return next(
-        (
-            p
-            for p in char.room.people
-            if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry
-        ),
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
         None,
     )
 
 
 def _ensure_lantern(keeper):
-    if not any(
-        (obj.short_descr or "").lower().startswith("a hooded brass lantern")
-        for obj in keeper.inventory
-    ):
+    if not any((obj.short_descr or "").lower().startswith("a hooded brass lantern") for obj in keeper.inventory):
         lantern = spawn_object(3031)
         assert lantern is not None
         lantern.prototype.short_descr = "a hooded brass lantern"
@@ -69,8 +62,7 @@ def test_do_buy_broadcasts_to_room():
 
     joined = "\n".join(witness.messages)
     assert "buys" in joined.lower() and "lantern" in joined.lower(), (
-        f"witness must see `$n buys $p.` broadcast (ROM src/act_obj.c:2742); "
-        f"witness.messages = {witness.messages!r}"
+        f"witness must see `$n buys $p.` broadcast (ROM src/act_obj.c:2742); witness.messages = {witness.messages!r}"
     )
     # Buyer should be excluded from the room broadcast.
     assert not any("buys" in m.lower() for m in getattr(char, "messages", []) or []), (
@@ -111,8 +103,7 @@ def test_do_sell_broadcasts_to_room():
 
     joined = "\n".join(witness.messages)
     assert "sells" in joined.lower() and "lantern" in joined.lower(), (
-        f"witness must see `$n sells $p.` broadcast (ROM src/act_obj.c:2923); "
-        f"witness.messages = {witness.messages!r}"
+        f"witness must see `$n sells $p.` broadcast (ROM src/act_obj.c:2923); witness.messages = {witness.messages!r}"
     )
     assert not any("sells" in m.lower() for m in getattr(char, "messages", []) or []), (
         "seller should not receive the TO_ROOM `$n sells $p.` broadcast"

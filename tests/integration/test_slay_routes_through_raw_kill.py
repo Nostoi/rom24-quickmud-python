@@ -74,6 +74,5 @@ def test_slay_produces_corpse_for_npc() -> None:
         f"Room contents: {[getattr(o, 'name', o) for o in getattr(room, 'contents', [])]}"
     )
     assert npc not in room.people, (
-        "ROM src/fight.c raw_kill unlinks the victim from char_list. "
-        "Victim should have been removed from room.people."
+        "ROM src/fight.c raw_kill unlinks the victim from char_list. Victim should have been removed from room.people."
     )

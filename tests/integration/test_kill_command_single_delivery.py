@@ -126,11 +126,7 @@ def test_kill_to_death_delivers_killing_blow_once_no_kill_line(monkeypatch: pyte
     # exactly once, not dropped). ROM-faithful damage messages render as
     # `{2...{x` (fight_yhit, green) to the attacker.
     killing_dam_message = [s for s in sent if s.startswith("{2") and "Victim" in s]
-    assert len(killing_dam_message) == 1, (
-        f"killing-blow dam_message must be pushed exactly once; sends={sent}"
-    )
+    assert len(killing_dam_message) == 1, f"killing-blow dam_message must be pushed exactly once; sends={sent}"
     # ROM (src/fight.c:859-862) sends the killer NOTHING on the death branch —
     # `You kill X.` is a non-ROM line that only surfaced via do_kill's return.
-    assert not any("You kill" in s for s in sent), (
-        f"ROM sends the killer no 'You kill' line on death; got: {sent}"
-    )
+    assert not any("You kill" in s for s in sent), f"ROM sends the killer no 'You kill' line on death; got: {sent}"

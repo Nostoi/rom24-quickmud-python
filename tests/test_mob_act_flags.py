@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import pytest
 
-from mud.models.character import Character, character_registry
-from mud.models.constants import ActFlag, Position
+from mud.models.character import character_registry
+from mud.models.constants import ActFlag
 from mud.models.mob import MobIndex
 from mud.models.room import Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.templates import MobInstance
-from mud.world import create_test_character, initialize_world
+from mud.world import initialize_world
 
 
 @pytest.fixture(autouse=True)
@@ -28,7 +28,7 @@ def create_mob_with_act_flag(act_flag: ActFlag, level: int = 10, vnum: int = 999
         proto = MobIndex(
             vnum=vnum,
             short_descr=f"test mob with {act_flag.name}",
-            long_descr=f"A test mob is here.",
+            long_descr="A test mob is here.",
             race="human",
             level=level,
             act_flags=ActFlag.IS_NPC | act_flag,

@@ -216,7 +216,7 @@ def test_check_dispel_strips_affect(monkeypatch):
         duration=5,
         level=20,
         affect_flag=AffectFlag.SANCTUARY,
-        wear_off_message="The white aura fades away."
+        wear_off_message="The white aura fades away.",
     )
     assert target.apply_spell_effect(effect) is True
 
@@ -232,7 +232,7 @@ def test_check_dispel_strips_affect(monkeypatch):
         duration=-1,
         level=18,
         affect_flag=AffectFlag.SANCTUARY,
-        wear_off_message="The white aura fades away."
+        wear_off_message="The white aura fades away.",
     )
     assert target.apply_spell_effect(perm_effect) is True
 
@@ -266,9 +266,7 @@ def test_wear_off_messages_include_rom_newline(monkeypatch):
 
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 5)
     assert check_dispel(50, dispel_target, dispel_effect.name) is True
-    assert dispel_target.messages[-1] == (
-        f"{dispel_effect.wear_off_message}{ROM_NEWLINE}"
-    )
+    assert dispel_target.messages[-1] == (f"{dispel_effect.wear_off_message}{ROM_NEWLINE}")
 
 
 def test_tick_spell_effects_keeps_spell_effect_when_same_spell_affect_remains_active():

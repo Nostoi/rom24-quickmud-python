@@ -77,9 +77,7 @@ def test_emote_001_visible_emoter_renders_real_name_to_listener() -> None:
 
     delivered = [_strip(m) for m in listener.messages if "waves" in m]
     assert delivered, f"listener received no emote broadcast; messages={listener.messages}"
-    assert any("Emovisible waves" in m for m in delivered), (
-        f"visible emoter should render by name; got {delivered!r}"
-    )
+    assert any("Emovisible waves" in m for m in delivered), f"visible emoter should render by name; got {delivered!r}"
 
 
 def test_emote_002_self_message_renders_you_not_actor_name() -> None:
@@ -95,6 +93,4 @@ def test_emote_002_self_message_renders_you_not_actor_name() -> None:
     """
     emoter = create_test_character("Emoself", 3001)
     out = process_command(emoter, "emote nods")
-    assert _strip(out) == "You nods", (
-        f"TO_CHAR `$n` should render as 'You'; got {out!r}"
-    )
+    assert _strip(out) == "You nods", f"TO_CHAR `$n` should render as 'You'; got {out!r}"

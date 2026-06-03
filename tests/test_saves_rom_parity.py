@@ -12,9 +12,8 @@ ROM C References:
 
 from __future__ import annotations
 
-import pytest
 from mud.affects.saves import check_dispel, saves_dispel, saves_spell
-from mud.models.character import Character, SpellEffect
+from mud.models.character import SpellEffect
 from mud.models.constants import AffectFlag, DamageType, DefenseBit
 from mud.utils import rng_mm
 

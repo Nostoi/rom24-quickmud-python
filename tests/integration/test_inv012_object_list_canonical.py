@@ -117,9 +117,7 @@ def test_extract_recursively_removes_nested_contents():
         _extract_obj(sack)
 
         assert sack not in object_registry
-        assert coin not in object_registry, (
-            "extract_obj must recurse into contents (src/handler.c:2063-2067)"
-        )
+        assert coin not in object_registry, "extract_obj must recurse into contents (src/handler.c:2063-2067)"
     finally:
         obj_registry.pop(93012, None)
         obj_registry.pop(93013, None)
@@ -172,9 +170,7 @@ def test_obj_update_smoke_decrements_timer_on_spawned_object():
 
         obj_update()
 
-        assert inst.timer == 2, (
-            f"obj_update must decrement timers on spawned objects; got {inst.timer}"
-        )
+        assert inst.timer == 2, f"obj_update must decrement timers on spawned objects; got {inst.timer}"
     finally:
         if inst is not None and inst in object_registry:
             object_registry.remove(inst)

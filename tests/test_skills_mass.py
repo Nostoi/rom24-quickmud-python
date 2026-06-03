@@ -1,5 +1,5 @@
-from mud.math.c_compat import c_div
 from mud.combat import engine as combat_engine
+from mud.math.c_compat import c_div
 from mud.models.character import Character, SpellEffect
 from mud.models.constants import ActFlag, AffectFlag, DamageType, ImmFlag, Position
 from mud.models.room import Room

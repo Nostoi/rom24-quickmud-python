@@ -280,9 +280,7 @@ class TestCharacterRegistryRegistration:
         from mud.models.character import character_registry
 
         before = list(character_registry)
-        runtime_char = create_and_load_character(
-            "registryuser", "password", "RegEddol"
-        )
+        runtime_char = create_and_load_character("registryuser", "password", "RegEddol")
         assert runtime_char is not None
         try:
             # Use identity check: dataclass __eq__ on Character recurses into
@@ -302,6 +300,6 @@ class TestCharacterRegistryRegistration:
                 pass
             # Restore prior snapshot using identity comparison.
             char_ids_before = {id(c) for c in before}
-            character_registry[:] = [
-                c for c in before if c is not runtime_char
-            ] + [c for c in character_registry if id(c) not in char_ids_before]
+            character_registry[:] = [c for c in before if c is not runtime_char] + [
+                c for c in character_registry if id(c) not in char_ids_before
+            ]

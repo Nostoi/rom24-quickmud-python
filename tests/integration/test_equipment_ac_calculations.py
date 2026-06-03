@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import pytest
 
-from mud.handler import apply_ac, equip_char, unequip_char
+from mud.handler import apply_ac
 from mud.models.constants import ItemType, WearLocation
 from mud.models.obj import ObjIndex
 from mud.models.object import Object

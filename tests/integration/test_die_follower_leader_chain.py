@@ -54,9 +54,7 @@ def test_die_follower_resets_leader_to_self_for_each_ex_member():
 
     assert member_a.leader is member_a, "ex-member must become own leader"
     assert member_b.leader is member_b, "ex-member must become own leader"
-    assert not is_same_group(member_a, member_b), (
-        "ex-members of a dead leader's group are no longer in the same group"
-    )
+    assert not is_same_group(member_a, member_b), "ex-members of a dead leader's group are no longer in the same group"
 
 
 def test_die_follower_detaches_ch_from_its_own_master():

@@ -39,6 +39,5 @@ def test_no_legacy_attribute_names_in_production() -> None:
                 offenders.append(f"{path}:{lineno}: {line.strip()}")
     assert not offenders, (
         "legacy attribute name found — use `char.inventory` (not `.carrying`) and "
-        "`room.people` (not `.characters`) per AGENTS.md ROM Parity Rules:\n"
-        + "\n".join(offenders)
+        "`room.people` (not `.characters`) per AGENTS.md ROM Parity Rules:\n" + "\n".join(offenders)
     )

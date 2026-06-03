@@ -118,8 +118,12 @@ class TestCastOffensiveObjectFallback:
         caster.room = room
         room.people.append(caster)
         victim = Character(
-            name="Fido", level=10, ch_class=0, is_npc=True,
-            hit=200, max_hit=200,
+            name="Fido",
+            level=10,
+            ch_class=0,
+            is_npc=True,
+            hit=200,
+            max_hit=200,
         )
         victim.room = room
         room.people.append(victim)
@@ -138,12 +142,8 @@ class TestCastOffensiveObjectFallback:
         caster.inventory.append(obj)
 
         result = do_cast(caster, "curse amulet")
-        assert result != "They aren't here.", (
-            "offensive spell must fall back to object search before erroring"
-        )
-        assert result != "You don't see that here.", (
-            "object should be found via get_obj_here fallback"
-        )
+        assert result != "They aren't here.", "offensive spell must fall back to object search before erroring"
+        assert result != "You don't see that here.", "object should be found via get_obj_here fallback"
 
     def test_offensive_char_spell_no_char_no_object_errors(self):
         room = Room(vnum=99400, name="Empty", description="Empty room")
@@ -188,8 +188,12 @@ class TestCastDefensiveObjectFallback:
         caster.room = room
         room.people.append(caster)
         target = Character(
-            name="Paladin", level=20, ch_class=1, is_npc=False,
-            hit=200, max_hit=200,
+            name="Paladin",
+            level=20,
+            ch_class=1,
+            is_npc=False,
+            hit=200,
+            max_hit=200,
         )
         target.room = room
         room.people.append(target)
@@ -210,12 +214,8 @@ class TestCastDefensiveObjectFallback:
 
         result = do_cast(caster, "bless 'holy sword'")
 
-        assert result != "They aren't here.", (
-            "defensive spell must fall back to object search before erroring"
-        )
-        assert result != "You don't see that here.", (
-            "object should be found via get_obj_carry fallback"
-        )
+        assert result != "They aren't here.", "defensive spell must fall back to object search before erroring"
+        assert result != "You don't see that here.", "object should be found via get_obj_carry fallback"
 
     def test_defensive_char_spell_no_char_no_object_errors(self):
         room = Room(vnum=99700, name="Empty", description="Empty room")

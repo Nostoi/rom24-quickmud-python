@@ -6,7 +6,7 @@ from collections.abc import Iterable
 
 from mud.combat import multi_hit
 from mud.models.character import Character, character_registry
-from mud.models.constants import ActFlag, AffectFlag, LEVEL_IMMORTAL, RoomFlag
+from mud.models.constants import LEVEL_IMMORTAL, ActFlag, AffectFlag, RoomFlag
 from mud.utils import rng_mm
 
 

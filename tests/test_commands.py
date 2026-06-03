@@ -1,5 +1,5 @@
 from mud.commands import process_command
-from mud.models.constants import AffectFlag, OBJ_VNUM_SCHOOL_SWORD, PlayerFlag, Position, WearFlag
+from mud.models.constants import OBJ_VNUM_SCHOOL_SWORD, AffectFlag, PlayerFlag, Position, WearFlag
 from mud.registry import room_registry
 from mud.spawning.obj_spawner import spawn_object
 from mud.world import create_test_character, initialize_world
@@ -194,7 +194,8 @@ def test_alias_persists_in_save_load():
     # Verify alias persistence via DB-canonical path.
     from mud.account.account_manager import load_character, save_character
     from mud.account.account_service import clear_active_accounts, create_character
-    from mud.db.models import Base, Character as DBCharacter
+    from mud.db.models import Base
+    from mud.db.models import Character as DBCharacter
     from mud.db.session import SessionLocal, engine
     from mud.models.character import from_orm
     from mud.models.constants import ROOM_VNUM_SCHOOL
@@ -318,11 +319,7 @@ def test_commands_lists_accessible_commands():
     from mud.models.constants import LEVEL_HERO
 
     trust = char.trust if getattr(char, "trust", 0) > 0 else getattr(char, "level", 0)
-    expected = [
-        cmd.name
-        for cmd in COMMANDS
-        if cmd.show and cmd.min_trust < LEVEL_HERO and cmd.min_trust <= trust
-    ]
+    expected = [cmd.name for cmd in COMMANDS if cmd.show and cmd.min_trust < LEVEL_HERO and cmd.min_trust <= trust]
 
     flattened: list[str] = []
     for line in lines:
@@ -363,11 +360,7 @@ def test_wizhelp_lists_immortal_commands():
     from mud.commands.dispatcher import COMMANDS
 
     trust = char.trust if getattr(char, "trust", 0) > 0 else getattr(char, "level", 0)
-    expected = [
-        cmd.name
-        for cmd in COMMANDS
-        if cmd.show and cmd.min_trust >= LEVEL_HERO and cmd.min_trust <= trust
-    ]
+    expected = [cmd.name for cmd in COMMANDS if cmd.show and cmd.min_trust >= LEVEL_HERO and cmd.min_trust <= trust]
 
     flattened: list[str] = []
     for line in lines:

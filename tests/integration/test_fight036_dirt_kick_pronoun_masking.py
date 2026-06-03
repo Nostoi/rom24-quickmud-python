@@ -90,6 +90,4 @@ class TestDirtKickPronounMasking:
         assert "{5Someone is blinded by the dirt in his eyes!{x" in witness.messages, (
             f"Invisible victim name leaked (no $n PERS masking): {witness.messages}"
         )
-        assert not any("Garrick" in m for m in witness.messages), (
-            f"Invisible victim name leaked: {witness.messages}"
-        )
+        assert not any("Garrick" in m for m in witness.messages), f"Invisible victim name leaked: {witness.messages}"

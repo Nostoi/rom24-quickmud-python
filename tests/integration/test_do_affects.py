@@ -17,9 +17,8 @@ from __future__ import annotations
 import pytest
 
 from mud.commands.affects import do_affects
-from mud.models.character import Character, SpellEffect, AffectData
+from mud.models.character import AffectData, Character, SpellEffect
 from mud.models.constants import Stat
-
 
 # ROM C APPLY_* constants (from src/merc.h lines 1205-1231)
 APPLY_STR = 1

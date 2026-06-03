@@ -94,10 +94,7 @@ class TestMpOloadLevelArgument:
         obj = _find_inv_obj(script_mob)
         assert obj is not None
         # script_mob has level=30, trust=30 → get_trust returns 30
-        assert obj.level == 30, (
-            f"obj.level={obj.level}; expected get_trust(mob)=30 when level"
-            " arg is omitted."
-        )
+        assert obj.level == 30, f"obj.level={obj.level}; expected get_trust(mob)=30 when level arg is omitted."
 
     def test_level_above_trust_refused(self, script_mob, oload_room):
         # mirrors ROM src/mob_cmds.c:575-580 — `level < 0 || level > get_trust(ch)`

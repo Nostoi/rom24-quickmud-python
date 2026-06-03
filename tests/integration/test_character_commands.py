@@ -15,10 +15,8 @@ import pytest
 
 from mud.commands.character import do_description, do_title
 from mud.commands.compare import do_compare
-from mud.models.character import Character
-from mud.models.character import PCData
+from mud.models.character import Character, PCData
 from mud.models.room import Room
-
 
 # ============================================================================
 # FIXTURES

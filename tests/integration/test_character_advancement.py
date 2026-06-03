@@ -442,9 +442,7 @@ def test_group_gain_zero_xp_still_delivers_message_and_gain_exp(monkeypatch):
     assert any("You receive 0 experience points." in m for m in char.messages), (
         "ROM fight.c:1787-1788 sends the zero-xp message unconditionally"
     )
-    assert calls == [0], (
-        f"ROM fight.c:1789 calls gain_exp(gch, xp) unconditionally; got {calls!r}"
-    )
+    assert calls == [0], f"ROM fight.c:1789 calls gain_exp(gch, xp) unconditionally; got {calls!r}"
 
 
 def test_group_xp_split_among_members(test_character):

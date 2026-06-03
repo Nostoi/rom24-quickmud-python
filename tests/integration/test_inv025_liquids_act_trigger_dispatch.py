@@ -137,7 +137,9 @@ def test_fill_room_act_fires_act_trigger_on_listening_npc():
     pc = _make_pc(room)
     _make_listener(room, "fills")
     _make_item(holder=pc, item_type=ItemType.DRINK_CON, name="flask", short_descr="a tin flask", value=[10, 0, 0, 0, 0])
-    _make_item(room=room, item_type=ItemType.FOUNTAIN, name="fountain", short_descr="a marble fountain", value=[0, 0, 0, 0, 0])
+    _make_item(
+        room=room, item_type=ItemType.FOUNTAIN, name="fountain", short_descr="a marble fountain", value=[0, 0, 0, 0, 0]
+    )
 
     fired = _recorded_act_triggers(lambda: do_fill(pc, "flask"))
 

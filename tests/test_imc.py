@@ -1,22 +1,22 @@
 from __future__ import annotations
 
-from collections.abc import Iterator, Mapping
-from typing import Any
-from pathlib import Path
 import socket
 import time
+from collections.abc import Iterator, Mapping
+from pathlib import Path
+from typing import Any
 
 import pytest
 
 import mud.game_loop as game_loop
 from mud.commands import process_command
 from mud.imc import (
-    IMCCHAN_LOG,
+    _UCACHE_REFRESH_INTERVAL,
     IMC_HISTORY_LIMIT,
+    IMCCHAN_LOG,
     IMCChannel,
     IMCColor,
     IMCState,
-    _UCACHE_REFRESH_INTERVAL,
     _handle_disconnect,
     _load_channel_history,
     _parse_channels,
@@ -432,9 +432,7 @@ def test_append_channel_history_logs_when_enabled(monkeypatch: pytest.MonkeyPatc
     assert state.channel_history["QuickMud"][-1].endswith("Logged message")
 
 
-def test_imc_channel_command_shows_history(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_imc_channel_command_shows_history(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     config, channels, helps = _write_imc_fixture(tmp_path)
     monkeypatch.setenv("IMC_ENABLED", "true")
     monkeypatch.setenv("IMC_CONFIG_PATH", str(config))
@@ -581,6 +579,8 @@ def test_imc_channel_command_toggles_logging(monkeypatch: pytest.MonkeyPatch, tm
     assert not (state.channels[0].flags & IMCCHAN_LOG)
     contents = state.channels_path.read_text(encoding="latin-1")
     assert "ChanFlags 0" in contents
+
+
 def test_parse_frame_accepts_additional_whitespace():
     frame = parse_frame("chat   alice@quickmud    *   :Hello there")
     assert frame == Frame(type="chat", source="alice@quickmud", target="*", message="Hello there")
@@ -626,9 +626,7 @@ def test_imc_command_enabled_lists_topics(monkeypatch, tmp_path):
 
     summary = process_command(ch, "imc")
     assert "Help is available for the following commands." in summary
-    assert (
-        "For information about a specific command, see imchelp <command>." in summary
-    )
+    assert "For information about a specific command, see imchelp <command>." in summary
     assert "Mort helps:" in summary
     assert "imc2" in summary.lower()
     # Mortal users should not see immortal or admin-only topics.
@@ -1032,6 +1030,8 @@ def test_pump_idle_handles_socket_disconnect(monkeypatch, tmp_path):
     assert state.connection.socket is replacement_socket
     assert replacement_socket.sent, "keepalive frame should be sent after reconnect"
     assert b"keepalive-request" in replacement_socket.sent[0]
+
+
 @pytest.fixture
 def imc_default_environment(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     root = _default_imc_dir()
@@ -1116,9 +1116,7 @@ def test_maybe_open_socket_loads_bans(monkeypatch: pytest.MonkeyPatch, tmp_path:
         reset_state()
 
 
-def test_maybe_open_socket_loads_color_table(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_maybe_open_socket_loads_color_table(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     config, channels, helps = _write_imc_fixture(tmp_path)
     color_path = tmp_path / "imc.color"
     color_path.write_text(
@@ -1163,9 +1161,7 @@ def test_maybe_open_socket_loads_color_table(
     assert calm.imc_tag == "~g"
 
 
-def test_maybe_open_socket_loads_who_template(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_maybe_open_socket_loads_who_template(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     config, channels, helps = _write_imc_fixture(tmp_path)
     who_path = tmp_path / "imc.who"
     who_path.write_text(
@@ -1206,9 +1202,7 @@ def test_maybe_open_socket_loads_who_template(
     assert template.master == "master template"
 
 
-def test_maybe_open_socket_opens_connection(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_maybe_open_socket_opens_connection(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     config, channels, helps = _write_imc_fixture(tmp_path)
 
     monkeypatch.setenv("IMC_ENABLED", "true")

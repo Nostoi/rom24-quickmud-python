@@ -20,7 +20,6 @@ from mud.models.constants import WearLocation, canonical_wear_slot
 from mud.models.json_io import dataclass_from_dict
 from mud.models.obj import Affect
 
-
 # ---------------------------------------------------------------------------
 # Integer list helper
 # ---------------------------------------------------------------------------
@@ -472,8 +471,7 @@ def _serialize_pet(pet: Any) -> PetSave | None:
                 affect_flag=int(affect_flag) if affect_flag is not None else None,
                 wear_off_message=getattr(effect, "wear_off_message", None),
                 stat_modifiers=[
-                    [int(stat), int(delta)]
-                    for stat, delta in (getattr(effect, "stat_modifiers", {}) or {}).items()
+                    [int(stat), int(delta)] for stat, delta in (getattr(effect, "stat_modifiers", {}) or {}).items()
                 ],
                 sex_delta=_safe_int(getattr(effect, "sex_delta", 0)),
             )
@@ -552,8 +550,8 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
 
     ROM C Reference: src/save.c:1406-1595 (fread_pet)
     """
-    from mud.spawning.mob_spawner import spawn_mob
     from mud.skills.registry import skill_registry
+    from mud.spawning.mob_spawner import spawn_mob
 
     # ROM C constant: #define MOB_VNUM_FIDO 3006 (src/merc.h)
     MOB_VNUM_FIDO = 3006
@@ -575,11 +573,11 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
     # MobInstance doesn't have short_descr/long_descr/description as instance attrs
     # (they're on prototype), but if we saved custom ones, restore them
     if snapshot.short_descr is not None:
-        setattr(pet, "short_descr", snapshot.short_descr)
+        pet.short_descr = snapshot.short_descr
     if snapshot.long_descr is not None:
-        setattr(pet, "long_descr", snapshot.long_descr)
+        pet.long_descr = snapshot.long_descr
     if snapshot.description is not None:
-        setattr(pet, "description", snapshot.description)
+        pet.description = snapshot.description
 
     # Restore race
     if snapshot.race is not None:
@@ -591,7 +589,7 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
     if snapshot.clan is not None:
         from mud.models.clans import lookup_clan_id
 
-        setattr(pet, "clan", lookup_clan_id(snapshot.clan))
+        pet.clan = lookup_clan_id(snapshot.clan)
 
     pet.sex = snapshot.sex
     if snapshot.level is not None:
@@ -607,7 +605,7 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
 
     pet.gold = snapshot.gold
     pet.silver = snapshot.silver
-    setattr(pet, "exp", snapshot.exp)
+    pet.exp = snapshot.exp
 
     if snapshot.act is not None:
         pet.act = snapshot.act
@@ -619,7 +617,7 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
     pet.position = snapshot.position
 
     if snapshot.saving_throw is not None:
-        setattr(pet, "saving_throw", snapshot.saving_throw)
+        pet.saving_throw = snapshot.saving_throw
     if snapshot.alignment is not None:
         pet.alignment = snapshot.alignment
     if snapshot.hitroll is not None:
@@ -630,7 +628,7 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
     pet.armor = list(snapshot.armor)  # Convert tuple to list if needed
     pet.perm_stat = list(snapshot.perm_stat)
     # MobInstance might not have mod_stat
-    setattr(pet, "mod_stat", list(snapshot.mod_stat))
+    pet.mod_stat = list(snapshot.mod_stat)
 
     # Restore affects (ROM save.c lines 1464-1552)
     pet_affects = []
@@ -679,7 +677,7 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
             )
 
     # Store affects on pet (MobInstance doesn't have affected by default)
-    setattr(pet, "affected", pet_affects)
+    pet.affected = pet_affects
 
     # GL-031: restore spell-cast buffs (MobInstance.spell_effects). ROM's
     # fread_pet (src/save.c:1544-1573) links each affect straight onto
@@ -713,7 +711,7 @@ def _deserialize_pet(snapshot: PetSave | dict, owner: Any) -> Any:
         sync_spell_effect_to_affected(pet, effect)
 
     # Set owner relationship (MobInstance might not have master/leader by default)
-    setattr(pet, "master", owner)
-    setattr(pet, "leader", owner)
+    pet.master = owner
+    pet.leader = owner
 
     return pet

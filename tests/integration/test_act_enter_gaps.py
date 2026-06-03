@@ -7,8 +7,6 @@ ROM Reference: src/act_enter.c lines 44-229
 
 from __future__ import annotations
 
-import pytest
-
 from mud.commands.movement import do_enter
 from mud.models.character import Character, PCData
 from mud.models.constants import (
@@ -17,10 +15,8 @@ from mud.models.constants import (
     ItemType,
     PortalFlag,
     Position,
-    RoomFlag,
 )
 from mud.models.room import Room
-
 
 # ---------------------------------------------------------------------------
 # Shared helpers
@@ -37,7 +33,9 @@ def _make_room(vnum: int, *, room_flags: int = 0) -> Room:
 
 
 def _make_char(name: str, room: Room, *, level: int = 10) -> Character:
-    char = Character(name=name, level=level, room=room, is_npc=False, hit=100, max_hit=100, position=int(Position.STANDING))
+    char = Character(
+        name=name, level=level, room=room, is_npc=False, hit=100, max_hit=100, position=int(Position.STANDING)
+    )
     char.pcdata = PCData()
     char.messages = []
     char.send_to_char = lambda msg: char.messages.append(msg)
@@ -45,8 +43,16 @@ def _make_char(name: str, room: Room, *, level: int = 10) -> Character:
     return char
 
 
-def _make_portal(room: Room, *, to_vnum: int, charges: int = 1, exit_flags: int = 0, gate_flags: int = 0,
-                 short_descr: str = "a shimmering portal", item_type: int = int(ItemType.PORTAL)):
+def _make_portal(
+    room: Room,
+    *,
+    to_vnum: int,
+    charges: int = 1,
+    exit_flags: int = 0,
+    gate_flags: int = 0,
+    short_descr: str = "a shimmering portal",
+    item_type: int = int(ItemType.PORTAL),
+):
     from mud.models.obj import ObjIndex
     from mud.models.object import Object
 
@@ -178,7 +184,9 @@ class TestEnter005GetObjList:
         from mud.models.object import Object
 
         def make_p(to_vnum: int) -> object:
-            proto = ObjIndex(vnum=9001, name="blue portal portal", short_descr="a blue portal", item_type=int(ItemType.PORTAL))
+            proto = ObjIndex(
+                vnum=9001, name="blue portal portal", short_descr="a blue portal", item_type=int(ItemType.PORTAL)
+            )
             proto.value = [1, 0, 0, to_vnum, 0]
             obj = Object(instance_id=None, prototype=proto)
             obj.value = proto.value.copy()
@@ -268,9 +276,7 @@ class TestEnter008010ToRoomMessages:
         do_enter(traveller, "portal")
 
         # NORMAL_EXIT → "$n has arrived." (no "through $p")
-        arrived_simple = any(
-            "has arrived" in m and "through" not in m for m in waiting.messages
-        )
+        arrived_simple = any("has arrived" in m and "through" not in m for m in waiting.messages)
         assert arrived_simple, f"Expected simple arrival. Bob messages: {waiting.messages}"
 
         room_registry.pop(8924, None)
@@ -300,9 +306,7 @@ class TestEnter009ToCharEntryDelivered:
         do_enter(traveller, "portal")
 
         # Traveller must have received an entry message in messages list
-        entry_received = any(
-            "enter" in m.lower() or "walk through" in m.lower() for m in traveller.messages
-        )
+        entry_received = any("enter" in m.lower() or "walk through" in m.lower() for m in traveller.messages)
         assert entry_received, f"Traveller did not receive entry message. Messages: {traveller.messages}"
 
         room_registry.pop(8930, None)
@@ -412,7 +416,7 @@ class TestEnter011PortalFadeOut:
 
         traveller = _make_char("Alice", room_a)
         bystander = _make_char("Bystander", room_a)  # stays in old room
-        waiting = _make_char("Waiting", room_b)       # in destination room
+        waiting = _make_char("Waiting", room_b)  # in destination room
 
         _make_portal(room_a, to_vnum=8943, charges=1)
 
@@ -455,7 +459,6 @@ class TestEnter012FollowerMessages:
 
     def test_follower_traverses_portal_and_ends_in_destination(self):
         from mud.registry import room_registry
-        from mud.world.movement import move_character_through_portal
 
         room_a = _make_room(8950)
         room_b = _make_room(8951)
@@ -623,9 +626,7 @@ class TestEnter016FightingSilent:
         result = do_enter(char, "portal")
 
         # ROM returns silently — empty string (not a message)
-        assert result == "" or result is None, (
-            f"Expected silent return when fighting, got: {result!r}"
-        )
+        assert result == "" or result is None, f"Expected silent return when fighting, got: {result!r}"
 
     def test_fighting_char_receives_no_message_in_buffer(self):
         room_a = _make_room(8982)
@@ -640,9 +641,7 @@ class TestEnter016FightingSilent:
 
         do_enter(char, "portal")
 
-        assert not char.messages, (
-            f"ROM sends no message when fighting, but got: {char.messages}"
-        )
+        assert not char.messages, f"ROM sends no message when fighting, but got: {char.messages}"
 
 
 # ---------------------------------------------------------------------------

@@ -46,9 +46,7 @@ def test_banlist_type_text_empty_when_no_type_bits():
     # Construct an entry with only PREFIX set (no type bit). ROM ban_site
     # cannot create this directly, but load_bans/manual entries can.
     bans.clear_all_bans()
-    bans._ban_entries.append(
-        BanEntry(pattern="weird", flags=BanFlag.PREFIX | BanFlag.PERMANENT, level=60)
-    )
+    bans._ban_entries.append(BanEntry(pattern="weird", flags=BanFlag.PREFIX | BanFlag.PERMANENT, level=60))
     output = _render_ban_listing()
     # mirrors ROM src/ban.c:166-168 — when none of NEWBIES/PERMIT/ALL is set, "" is printed
     # In Python listing, the column should not say "all".
@@ -72,7 +70,5 @@ def test_check_ban_skips_entries_without_prefix_or_suffix():
     """BAN-004 — ROM `check_ban` only matches entries with PREFIX or SUFFIX flag set."""
     bans.clear_all_bans()
     # mirrors ROM src/ban.c:104-132 — entries lacking both PREFIX and SUFFIX never match
-    bans._ban_entries.append(
-        BanEntry(pattern="exact.host", flags=BanFlag.ALL | BanFlag.PERMANENT, level=60)
-    )
+    bans._ban_entries.append(BanEntry(pattern="exact.host", flags=BanFlag.ALL | BanFlag.PERMANENT, level=60))
     assert bans.is_host_banned("exact.host", BanFlag.ALL) is False

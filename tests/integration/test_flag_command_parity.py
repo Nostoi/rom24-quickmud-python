@@ -215,8 +215,7 @@ def test_flag_prefix_match_accepts_abbreviation():
     do_flag(immortal, "char Bob plr +holy")
 
     assert victim.act & int(PlayerFlag.HOLYLIGHT), (
-        "ROM accepts `holy` as a prefix abbreviation of HOLYLIGHT; "
-        "Python must use prefix-match, not exact-match."
+        "ROM accepts `holy` as a prefix abbreviation of HOLYLIGHT; Python must use prefix-match, not exact-match."
     )
 
 
@@ -247,9 +246,7 @@ def test_flag_rom_name_alias_npc_matches_is_npc():
 
     do_flag(immortal, "char Bob plr +npc")
 
-    assert victim.act & int(PlayerFlag.IS_NPC), (
-        "ROM `npc` must resolve to PlayerFlag.IS_NPC via TABLES-002 alias map."
-    )
+    assert victim.act & int(PlayerFlag.IS_NPC), "ROM `npc` must resolve to PlayerFlag.IS_NPC via TABLES-002 alias map."
 
 
 def test_flag_unknown_flag_name_rejected():

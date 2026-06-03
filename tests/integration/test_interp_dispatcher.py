@@ -3,15 +3,16 @@
 ROM Reference: src/interp.c interpret() — empty input, snoop forwarding,
 wiznet log mirror, punctuation aliases, prefix-match table order.
 """
+
 from __future__ import annotations
 
 from types import SimpleNamespace
 
 import pytest
 
-from mud.commands.dispatcher import COMMAND_INDEX, process_command
 from mud.commands.combat import do_kill
 from mud.commands.communication import do_emote, do_gossip, do_immtalk
+from mud.commands.dispatcher import COMMAND_INDEX, process_command
 from mud.commands.equipment import do_wear
 from mud.commands.inventory import do_get
 from mud.commands.movement import do_enter
@@ -203,6 +204,7 @@ def test_interp_005_murder_requires_trust_5():
 def test_interp_006_music_min_position_sleeping():
     # mirrors ROM src/interp.c:93 — {"music", do_music, POS_SLEEPING, 0, ...}
     from mud.models.constants import Position
+
     cmd = COMMAND_INDEX["music"]
     assert cmd.min_position == Position.SLEEPING
 
@@ -279,9 +281,5 @@ def test_interp_013_wear_wield_hold_share_do_wear():
     cmd_hold = COMMAND_INDEX["hold"]
 
     assert cmd_wear.func is do_wear
-    assert cmd_wield.func is do_wear, (
-        f"wield should dispatch to do_wear, got {cmd_wield.func.__name__}"
-    )
-    assert cmd_hold.func is do_wear, (
-        f"hold should dispatch to do_wear, got {cmd_hold.func.__name__}"
-    )
+    assert cmd_wield.func is do_wear, f"wield should dispatch to do_wear, got {cmd_wield.func.__name__}"
+    assert cmd_hold.func is do_wear, f"hold should dispatch to do_wear, got {cmd_hold.func.__name__}"

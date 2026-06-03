@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, List
 
 from .help_json import HelpJson
 
@@ -20,8 +19,8 @@ class HelpEntry:
 
 
 # placeholder registry to track loaded help entries
-help_registry: Dict[str, List[HelpEntry]] = {}
-help_entries: List[HelpEntry] = []
+help_registry: dict[str, list[HelpEntry]] = {}
+help_entries: list[HelpEntry] = []
 
 
 def clear_help_registry() -> None:

@@ -4,13 +4,15 @@ Quick diagnostic test to understand the current issues.
 """
 
 import sys
-sys.path.insert(0, 'mud')
 
-from mud.world.world_state import initialize_world, get_room
-from mud.models.character import Character
+sys.path.insert(0, "mud")
+
+from mud.account.account_service import create_account, login
 from mud.commands.inspection import do_look
+from mud.models.character import Character
 from mud.models.constants import Position
-from mud.account.account_service import login, create_account
+from mud.world.world_state import get_room, initialize_world
+
 
 def test_world_state():
     """Test if world is properly initialized."""
@@ -27,6 +29,7 @@ def test_world_state():
     except Exception as e:
         print(f"✗ World initialization failed: {e}")
 
+
 def test_look_command():
     """Test if look command works with a test character."""
     print("\n=== LOOK COMMAND TEST ===")
@@ -36,21 +39,23 @@ def test_look_command():
         if not temple:
             print("✗ No temple room for testing")
             return
-            
+
         # Create test character
         char = Character()
         char.name = "TestChar"
         char.room = temple
         char.position = Position.STANDING
-        
+
         # Test look command
         result = do_look(char)
         print(f"✓ Look command result:\n{result}")
-        
+
     except Exception as e:
         print(f"✗ Look command failed: {e}")
         import traceback
+
         traceback.print_exc()
+
 
 def test_authentication():
     """Test authentication system."""
@@ -59,15 +64,17 @@ def test_authentication():
         # Try to create account
         result = create_account("testuser", "testpass")
         print(f"Create account result: {result}")
-        
+
         # Try to login
         login_result = login("testuser", "testpass")
         print(f"Login result: {login_result}")
-        
+
     except Exception as e:
         print(f"✗ Authentication test failed: {e}")
         import traceback
+
         traceback.print_exc()
+
 
 if __name__ == "__main__":
     test_world_state()

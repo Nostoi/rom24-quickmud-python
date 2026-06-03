@@ -15,7 +15,6 @@ from mud.models.constants import LEVEL_HERO, ExtraFlag, WearFlag
 from mud.models.obj import Affect, ObjIndex
 from mud.net.session import Session
 from mud.world import create_test_character, initialize_world
-from mud.registry import obj_registry
 
 
 def setup_module(module):
@@ -46,6 +45,7 @@ def _builder_in_oedit(vnum: int = 50001):
 
 # ── extra ────────────────────────────────────────────────────────────────────
 
+
 def test_extra_toggle_sets_flag():
     """``extra glow`` toggles GLOW bit on extra_flags.
 
@@ -56,10 +56,10 @@ def test_extra_toggle_sets_flag():
 
     result = _interpret_oedit(session, char, "extra glow")
 
-    assert "toggled" in result.lower() or "Extra flag toggled" in result, \
+    assert "toggled" in result.lower() or "Extra flag toggled" in result, (
         f"Expected toggle confirmation, got: {result!r}"
-    assert int(proto.extra_flags) & int(ExtraFlag.GLOW), \
-        "GLOW bit should be set after extra glow"
+    )
+    assert int(proto.extra_flags) & int(ExtraFlag.GLOW), "GLOW bit should be set after extra glow"
 
 
 def test_extra_toggle_clears_flag():
@@ -73,8 +73,7 @@ def test_extra_toggle_clears_flag():
     result = _interpret_oedit(session, char, "extra glow")
 
     assert "toggled" in result.lower() or "Extra flag toggled" in result
-    assert not (int(proto.extra_flags) & int(ExtraFlag.GLOW)), \
-        "GLOW bit should be cleared after second toggle"
+    assert not (int(proto.extra_flags) & int(ExtraFlag.GLOW)), "GLOW bit should be cleared after second toggle"
 
 
 def test_extra_no_arg_returns_syntax():
@@ -84,8 +83,9 @@ def test_extra_no_arg_returns_syntax():
     """
     char, session, proto = _builder_in_oedit()
     result = _interpret_oedit(session, char, "extra")
-    assert "Syntax" in result or "syntax" in result or "extra" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "extra" in result.lower(), (
         f"Expected syntax hint, got: {result!r}"
+    )
 
 
 def test_extra_invalid_flag_returns_syntax():
@@ -95,11 +95,13 @@ def test_extra_invalid_flag_returns_syntax():
     """
     char, session, proto = _builder_in_oedit()
     result = _interpret_oedit(session, char, "extra xyzzy_not_a_flag")
-    assert "Syntax" in result or "syntax" in result or "extra" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "extra" in result.lower(), (
         f"Expected syntax hint, got: {result!r}"
+    )
 
 
 # ── wear ─────────────────────────────────────────────────────────────────────
+
 
 def test_wear_toggle_sets_flag():
     """``wear take`` toggles TAKE bit on wear_flags.
@@ -111,10 +113,10 @@ def test_wear_toggle_sets_flag():
 
     result = _interpret_oedit(session, char, "wear take")
 
-    assert "toggled" in result.lower() or "Wear flag toggled" in result, \
+    assert "toggled" in result.lower() or "Wear flag toggled" in result, (
         f"Expected toggle confirmation, got: {result!r}"
-    assert int(proto.wear_flags) & int(WearFlag.TAKE), \
-        "TAKE bit should be set after wear take"
+    )
+    assert int(proto.wear_flags) & int(WearFlag.TAKE), "TAKE bit should be set after wear take"
 
 
 def test_wear_toggle_clears_flag():
@@ -128,8 +130,7 @@ def test_wear_toggle_clears_flag():
     result = _interpret_oedit(session, char, "wear take")
 
     assert "toggled" in result.lower() or "Wear flag toggled" in result
-    assert not (int(proto.wear_flags) & int(WearFlag.TAKE)), \
-        "TAKE bit should be cleared after second toggle"
+    assert not (int(proto.wear_flags) & int(WearFlag.TAKE)), "TAKE bit should be cleared after second toggle"
 
 
 def test_wear_no_arg_returns_syntax():
@@ -139,11 +140,13 @@ def test_wear_no_arg_returns_syntax():
     """
     char, session, proto = _builder_in_oedit()
     result = _interpret_oedit(session, char, "wear")
-    assert "Syntax" in result or "syntax" in result or "wear" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "wear" in result.lower(), (
         f"Expected syntax hint, got: {result!r}"
+    )
 
 
 # ── addaffect ────────────────────────────────────────────────────────────────
+
 
 def test_addaffect_adds_affect_to_list():
     """``addaffect strength 5`` appends an Affect with location=STR, modifier=5.
@@ -174,8 +177,9 @@ def test_addaffect_no_args_returns_syntax():
     """
     char, session, proto = _builder_in_oedit()
     result = _interpret_oedit(session, char, "addaffect")
-    assert "Syntax" in result or "syntax" in result or "addaffect" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "addaffect" in result.lower(), (
         f"Expected syntax hint, got: {result!r}"
+    )
 
 
 def test_addaffect_invalid_location_returns_error():
@@ -185,8 +189,9 @@ def test_addaffect_invalid_location_returns_error():
     """
     char, session, proto = _builder_in_oedit()
     result = _interpret_oedit(session, char, "addaffect xyzzy_invalid_loc 5")
-    assert "Valid" in result or "valid" in result or "Unknown" in result or "Invalid" in result, \
+    assert "Valid" in result or "valid" in result or "Unknown" in result or "Invalid" in result, (
         f"Expected error for invalid location, got: {result!r}"
+    )
 
 
 def test_addaffect_non_numeric_modifier_returns_syntax():
@@ -196,11 +201,13 @@ def test_addaffect_non_numeric_modifier_returns_syntax():
     """
     char, session, proto = _builder_in_oedit()
     result = _interpret_oedit(session, char, "addaffect strength abc")
-    assert "Syntax" in result or "syntax" in result or "number" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "number" in result.lower(), (
         f"Expected syntax/number error, got: {result!r}"
+    )
 
 
 # ── delaffect ────────────────────────────────────────────────────────────────
+
 
 def test_delaffect_removes_first_affect():
     """``delaffect 0`` removes the first affect in the list.
@@ -215,8 +222,7 @@ def test_delaffect_removes_first_affect():
 
     result = _interpret_oedit(session, char, "delaffect 0")
 
-    assert "removed" in result.lower() or "Affect removed" in result, \
-        f"Expected removal confirmation, got: {result!r}"
+    assert "removed" in result.lower() or "Affect removed" in result, f"Expected removal confirmation, got: {result!r}"
     assert len(proto.affected) == 1
     assert proto.affected[0].location == 2, "Second affect should remain"
 
@@ -248,8 +254,9 @@ def test_delaffect_no_args_returns_syntax():
     """
     char, session, proto = _builder_in_oedit()
     result = _interpret_oedit(session, char, "delaffect")
-    assert "Syntax" in result or "syntax" in result or "delaffect" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "delaffect" in result.lower(), (
         f"Expected syntax hint, got: {result!r}"
+    )
 
 
 def test_delaffect_on_empty_list_returns_error():
@@ -262,8 +269,7 @@ def test_delaffect_on_empty_list_returns_error():
 
     result = _interpret_oedit(session, char, "delaffect 0")
 
-    assert "affect" in result.lower(), \
-        f"Expected affect-not-found error, got: {result!r}"
+    assert "affect" in result.lower(), f"Expected affect-not-found error, got: {result!r}"
 
 
 def test_delaffect_out_of_range_returns_error():
@@ -278,5 +284,4 @@ def test_delaffect_out_of_range_returns_error():
 
     result = _interpret_oedit(session, char, "delaffect 5")
 
-    assert "affect" in result.lower() or "No such" in result, \
-        f"Expected out-of-range error, got: {result!r}"
+    assert "affect" in result.lower() or "No such" in result, f"Expected out-of-range error, got: {result!r}"

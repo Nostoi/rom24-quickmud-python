@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from mud.models.character import Character
 
 
-def get_char_room(char: "Character", name: str) -> "Character | None":
+def get_char_room(char: Character, name: str) -> Character | None:
     """
     Find a character in the same room by name.
 
@@ -73,7 +73,7 @@ def get_char_room(char: "Character", name: str) -> "Character | None":
     return None
 
 
-def get_char_world(char: "Character", name: str) -> "Character | None":
+def get_char_world(char: Character, name: str) -> Character | None:
     """
     Find a character anywhere in the world by name.
 

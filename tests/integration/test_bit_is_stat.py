@@ -16,8 +16,8 @@ from mud.models.constants import (
     AffectFlag,
     PlayerFlag,
     Position,
-    Sex,
     Sector,
+    Sex,
 )
 from mud.utils.bit import is_stat
 

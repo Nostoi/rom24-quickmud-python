@@ -32,8 +32,11 @@ class _MockWeapon:
 
 def _setup(vnum: int, weapon_flags: int):
     test_room = Room(
-        vnum=vnum, name="Test Room", description="A test room.",
-        room_flags=0, sector_type=0,
+        vnum=vnum,
+        name="Test Room",
+        description="A test room.",
+        room_flags=0,
+        sector_type=0,
     )
     test_room.people = []
     test_room.contents = []

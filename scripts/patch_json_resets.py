@@ -10,6 +10,7 @@ in the existing JSON — including hand-edited ROM-parity fixes like
 ``midgaard.json:room 3001 → up exit → key: 0`` and the JSONLD-018
 ``ROOM_NO_MOB`` removal — are preserved untouched.
 """
+
 from __future__ import annotations
 
 import json

@@ -65,9 +65,7 @@ def test_tell_001_to_char_wording_drops_comma() -> None:
 
     out = do_tell(sender, f"{target.name} hello there")
     plain = _strip(out)
-    assert plain == "You tell Tellrecv 'hello there'", (
-        f"TO_CHAR wording diverges from ROM; got {out!r}"
-    )
+    assert plain == "You tell Tellrecv 'hello there'", f"TO_CHAR wording diverges from ROM; got {out!r}"
 
 
 def test_tell_002_to_vict_wording_drops_comma() -> None:
@@ -81,9 +79,7 @@ def test_tell_002_to_vict_wording_drops_comma() -> None:
     assert any("Tellsender2 tells you 'hello again'" in m for m in delivered), (
         f"TO_VICT wording diverges from ROM `$n tells you '$t'`; got {delivered!r}"
     )
-    assert not any("tells you, '" in m for m in delivered), (
-        f"comma after `you` leaked through; got {delivered!r}"
-    )
+    assert not any("tells you, '" in m for m in delivered), f"comma after `you` leaked through; got {delivered!r}"
 
 
 def test_tell_003_invisible_sender_renders_as_someone_to_target() -> None:
@@ -136,8 +132,7 @@ def test_tell_004_to_char_uses_pers_for_target_name() -> None:
     out = do_tell(sender, f"{target.name} hi there")
     plain = _strip(out)
     assert plain == "You tell Tellvis 'hi there'", (
-        f"TO_CHAR PERS-routed name must equal real name for visible target; "
-        f"got {out!r}"
+        f"TO_CHAR PERS-routed name must equal real name for visible target; got {out!r}"
     )
 
 
@@ -147,9 +142,7 @@ def test_tell_005_to_char_wraps_rom_color_codes() -> None:
     target = _make_online(create_test_character("Telltarget", 3001))
 
     out = do_tell(sender, f"{target.name} hi")
-    assert out == "{kYou tell Telltarget '{Khi{k'{x", (
-        f"TO_CHAR colour wrapping diverges from ROM; got {out!r}"
-    )
+    assert out == "{kYou tell Telltarget '{Khi{k'{x", f"TO_CHAR colour wrapping diverges from ROM; got {out!r}"
 
 
 def test_tell_005_to_vict_wraps_rom_color_codes() -> None:
@@ -160,6 +153,5 @@ def test_tell_005_to_vict_wraps_rom_color_codes() -> None:
     do_tell(sender, f"{target.name} hi")
     expected = "{kTellhue2 tells you '{Khi{k'{x"
     assert expected in target.messages, (
-        f"TO_VICT colour wrapping diverges from ROM; "
-        f"expected {expected!r} in {target.messages!r}"
+        f"TO_VICT colour wrapping diverges from ROM; expected {expected!r} in {target.messages!r}"
     )

@@ -7,8 +7,7 @@ import uvicorn
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 
-from mud.config import CORS_ORIGINS, HOST, PORT
-from mud.config import load_qmconfig
+from mud.config import CORS_ORIGINS, HOST, PORT, load_qmconfig
 from mud.db.migrations import run_migrations
 from mud.game_loop import async_game_loop
 from mud.net.connection import handle_connection_with_stream

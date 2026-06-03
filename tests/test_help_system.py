@@ -1,5 +1,4 @@
 from pathlib import Path
-
 from types import SimpleNamespace
 
 from mud.commands.dispatcher import process_command

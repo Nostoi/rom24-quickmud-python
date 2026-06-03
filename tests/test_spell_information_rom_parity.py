@@ -17,7 +17,7 @@ from collections.abc import Iterator
 import pytest
 
 from mud.models.character import Character, SpellEffect, character_registry
-from mud.models.constants import AffectFlag, ContainerFlag, ExtraFlag, ItemType, LEVEL_IMMORTAL, Sex
+from mud.models.constants import LEVEL_IMMORTAL, AffectFlag, ContainerFlag, ExtraFlag, ItemType, Sex
 from mud.models.obj import Affect, ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room

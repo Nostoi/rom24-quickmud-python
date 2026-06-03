@@ -9,7 +9,7 @@ All tests use ROM C formulas and golden file methodology.
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import AffectFlag, Position, Stat
+from mud.models.constants import Position, Stat
 from mud.skills.handlers import frenzy, giant_strength, haste, slow, stone_skin, weaken
 from mud.utils import rng_mm
 

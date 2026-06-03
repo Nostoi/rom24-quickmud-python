@@ -47,7 +47,9 @@ def two_rooms_with_closed_door(object_factory):
     actor.pcdata = PCData()
     actor.messages = []
     # Give the actor the key
-    key = object_factory({"vnum": 99799, "name": "iron key", "short_descr": "an iron key", "item_type": int(ItemType.KEY)})
+    key = object_factory(
+        {"vnum": 99799, "name": "iron key", "short_descr": "an iron key", "item_type": int(ItemType.KEY)}
+    )
     actor.inventory = [key]
     room1.people.append(actor)
 

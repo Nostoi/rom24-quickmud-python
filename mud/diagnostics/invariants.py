@@ -45,9 +45,7 @@ def _check_fighting_coherence() -> None:
                 f"{getattr(target_room, 'vnum', None)})"
             )
         if getattr(target, "position", None) == Position.DEAD:
-            raise InvariantViolation(
-                f"FIGHTING-COHERENCE: {_ident(char)} fighting {_ident(target)} which is DEAD"
-            )
+            raise InvariantViolation(f"FIGHTING-COHERENCE: {_ident(char)} fighting {_ident(target)} which is DEAD")
 
 
 def _check_room_people_coherence() -> None:

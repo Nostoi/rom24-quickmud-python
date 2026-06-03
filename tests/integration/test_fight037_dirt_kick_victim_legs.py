@@ -95,9 +95,7 @@ class TestDirtKickVictimLegs:
         assert "{5Someone kicks dirt in your eyes!{x" in victim.messages, (
             f"Invisible kicker name leaked (no $n PERS masking): {victim.messages}"
         )
-        assert not any("Scout" in m for m in victim.messages), (
-            f"Invisible kicker name leaked: {victim.messages}"
-        )
+        assert not any("Scout" in m for m in victim.messages), f"Invisible kicker name leaked: {victim.messages}"
 
     def test_kicker_gets_no_invented_self_line(self, monkeypatch: pytest.MonkeyPatch) -> None:
         # ROM's success branch sends the kicker NO self message — only the

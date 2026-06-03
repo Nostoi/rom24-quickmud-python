@@ -4,12 +4,9 @@ Tests for check_assist combat mechanics (ROM src/fight.c:105-181)
 
 from __future__ import annotations
 
-from types import SimpleNamespace
-
 import pytest
 
 from mud.combat.assist import check_assist
-from mud.combat.engine import is_good, is_evil, is_neutral
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, OffFlag, PlayerFlag, Position
 from mud.models.room import Room

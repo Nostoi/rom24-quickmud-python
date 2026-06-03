@@ -44,6 +44,7 @@ def _npc(room_vnum: int = 3001):
 
 # ── NPC guard ────────────────────────────────────────────────────────────────
 
+
 def test_npc_is_rejected():
     """ROM IS_NPC guard — NPC input must produce empty string."""
     mob = _npc()
@@ -52,6 +53,7 @@ def test_npc_is_rejected():
 
 
 # ── No-arg / unknown → help ───────────────────────────────────────────────────
+
 
 def test_no_arg_returns_help():
     char = _builder()
@@ -67,12 +69,12 @@ def test_unknown_subcmd_returns_help():
 
 # ── Exact subcmd routing ──────────────────────────────────────────────────────
 
+
 def test_routes_area_to_cmd_aedit(monkeypatch):
     """``olc area`` must delegate to ``cmd_aedit``."""
     char = _builder()
     calls = []
 
-    import mud.commands.imm_olc as mod
     import mud.commands.build as build_mod
 
     original = build_mod.cmd_aedit
@@ -170,6 +172,7 @@ def test_routes_hedit_to_cmd_hedit(monkeypatch):
 
 # ── Prefix matching (str_prefix) ─────────────────────────────────────────────
 
+
 def test_prefix_mob_matches_mobile(monkeypatch):
     """``olc mob`` is a prefix of ``mobile`` and must route to cmd_medit."""
     char = _builder()
@@ -219,6 +222,7 @@ def test_prefix_obj_matches_object(monkeypatch):
 
 
 # ── Remainder args passed through ─────────────────────────────────────────────
+
 
 def test_remainder_args_passed_correctly(monkeypatch):
     """Args after subcmd must be passed verbatim as the remainder."""

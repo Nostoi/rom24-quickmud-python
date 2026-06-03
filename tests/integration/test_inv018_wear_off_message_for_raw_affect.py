@@ -100,8 +100,7 @@ def test_raw_affect_emits_dynamic_wear_off_message_on_expiry():
     msgs = _tick_until_expiry(ch)
 
     assert any(sentinel in m for m in msgs), (
-        f"raw AffectData with dynamic wear_off_message must surface it on "
-        f"expiry; got {msgs!r}"
+        f"raw AffectData with dynamic wear_off_message must surface it on expiry; got {msgs!r}"
     )
 
 

@@ -129,7 +129,9 @@ class TestObjectAffectDuration:
             Affect(where=0, type=1, duration=0, modifier=10, location=1, bitvector=0, level=10),
         ]
         seen: list[tuple[object, object]] = []
-        monkeypatch.setattr(game_loop, "_broadcast_object_wear_off", lambda obj_arg, aff_arg: seen.append((obj_arg, aff_arg)))
+        monkeypatch.setattr(
+            game_loop, "_broadcast_object_wear_off", lambda obj_arg, aff_arg: seen.append((obj_arg, aff_arg))
+        )
 
         _tick_object_affects(obj)
 

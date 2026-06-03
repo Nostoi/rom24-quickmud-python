@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 from mud.admin_logging.admin import log_orphan_help_request
@@ -219,7 +219,7 @@ def _suggest_command_topics(ch: Character, term: str) -> list[str]:
     is_admin = getattr(ch, "is_admin", False)
     can_view_hidden = is_admin or effective_trust >= LEVEL_HERO
 
-    def _visible(command: "Command") -> bool:
+    def _visible(command: Command) -> bool:
         if command.min_trust > effective_trust:
             return False
         if command.admin_only and not is_admin:

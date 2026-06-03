@@ -35,7 +35,6 @@ from mud.handler import affect_modify
 from mud.models.character import AffectData, Character
 from mud.models.constants import AffectFlag, Stat
 
-
 APPLY_STR = 1
 TO_AFFECTS = 0
 
@@ -89,8 +88,7 @@ def test_affect_with_stat_mod_undoes_on_tick_expiry() -> None:
         "(src/handler.c:1317 affect_remove -> affect_modify(FALSE))"
     )
     assert ch.mod_stat[int(Stat.STR)] == baseline_str, (
-        "expired affect's stat modifier must be subtracted "
-        "(src/handler.c:1317 affect_remove -> affect_modify(FALSE))"
+        "expired affect's stat modifier must be subtracted (src/handler.c:1317 affect_remove -> affect_modify(FALSE))"
     )
     assert ch.affected_by == baseline_affected_by
 
@@ -135,8 +133,7 @@ def test_affect_check_preserves_bit_if_another_affect_provides_it() -> None:
     assert short not in ch.affected
     assert long in ch.affected
     assert ch.affected_by & int(AffectFlag.HASTE), (
-        "HASTE bit must survive — `long` still provides it "
-        "(src/handler.c:1182 affect_check re-sets after clear)"
+        "HASTE bit must survive — `long` still provides it (src/handler.c:1182 affect_check re-sets after clear)"
     )
     assert ch.mod_stat[int(Stat.STR)] == baseline_str_with_long_only, (
         "only short's +2 must unwind; long's +3 must remain"

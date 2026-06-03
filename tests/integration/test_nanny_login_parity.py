@@ -810,12 +810,10 @@ def test_class_invalid_retry_wording(monkeypatch):
 
     # mirrors ROM src/nanny.c:538 — "That's not a class." (no "valid")
     assert any(m == "That's not a class." for m in sent_lines), (
-        f"Expected \"That's not a class.\" in sent_lines={sent_lines!r}"
+        f'Expected "That\'s not a class." in sent_lines={sent_lines!r}'
     )
     # mirrors ROM src/nanny.c:539 — re-prompt with capital IS
-    assert "What IS your class? " in prompts, (
-        f"Expected 'What IS your class? ' in prompts={prompts!r}"
-    )
+    assert "What IS your class? " in prompts, f"Expected 'What IS your class? ' in prompts={prompts!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -980,9 +978,7 @@ def test_weapon_invalid_uses_crlf(monkeypatch):
 
     # mirrors ROM src/nanny.c:648 — retry prompt must use \n\r before "Your choice? "
     retry_prompts = [p for p in prompts if "Your choice?" in p]
-    assert len(retry_prompts) >= 2, (
-        f"Expected at least 2 'Your choice?' prompts (initial + retry), got {prompts!r}"
-    )
+    assert len(retry_prompts) >= 2, f"Expected at least 2 'Your choice?' prompts (initial + retry), got {prompts!r}"
     assert all("\n\rYour choice? " in p for p in retry_prompts), (
         f"Weapon retry prompt must use \\n\\r before 'Your choice?', got {retry_prompts!r}"
     )

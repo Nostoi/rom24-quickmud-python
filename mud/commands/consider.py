@@ -3,21 +3,22 @@ Consider command - assess mob difficulty relative to player level.
 
 ROM Reference: src/act_info.c do_consider (lines 2469-2510)
 """
+
 from __future__ import annotations
 
+from mud.combat.safety import is_safe
 from mud.models.character import Character
 from mud.world.char_find import get_char_room
-from mud.combat.safety import is_safe
 
 
 def do_consider(char: Character, args: str) -> str:
     """
     Assess the difficulty of fighting a mob.
-    
+
     ROM Reference: src/act_info.c lines 2469-2510
-    
+
     Usage: consider <target>
-    
+
     Shows relative difficulty based on level difference:
     - 10+ levels below: "You can kill $N naked and weaponless."
     - 5-9 levels below: "$N is no match for you."
@@ -28,27 +29,27 @@ def do_consider(char: Character, args: str) -> str:
     - 10+ levels above: "Death will thank you for your gift."
     """
     args = args.strip()
-    
+
     if not args:
         return "Consider killing whom?"
-    
+
     # Find target in room
     victim = get_char_room(char, args)
     if not victim:
         return "They're not here."
-    
+
     # Check if safe to attack
     if is_safe(char, victim):
         return "Don't even think about it."
-    
+
     # Calculate level difference - ROM src/act_info.c line 2492
     char_level = getattr(char, "level", 1)
     victim_level = getattr(victim, "level", 1)
     diff = victim_level - char_level
-    
+
     # Get victim's name for message
     victim_name = getattr(victim, "short_descr", None) or getattr(victim, "name", "someone")
-    
+
     # ROM exact messages based on level difference - src/act_info.c lines 2494-2507
     if diff <= -10:
         msg = f"You can kill {victim_name} naked and weaponless."
@@ -64,5 +65,5 @@ def do_consider(char: Character, args: str) -> str:
         msg = f"{victim_name} laughs at you mercilessly."
     else:
         msg = "Death will thank you for your gift."
-    
+
     return msg

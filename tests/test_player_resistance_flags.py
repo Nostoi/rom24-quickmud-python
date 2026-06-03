@@ -6,8 +6,6 @@ ROM Reference: src/fight.c, src/magic.c
 
 from __future__ import annotations
 
-import pytest
-
 from mud.models.constants import ImmFlag, ResFlag, VulnFlag
 from mud.world import create_test_character
 

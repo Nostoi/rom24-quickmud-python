@@ -34,10 +34,7 @@ def test_identify_reports_scroll_spells() -> None:
     assert skill_handlers.identify(caster, scroll) is True
     assert caster.messages[0] == "Object 'scroll of knowledge' is type scroll, extra flags glow magic."
     assert caster.messages[1] == "Weight is 2, value is 250, level is 12."
-    assert (
-        caster.messages[2]
-        == "Level 12 spells of: 'acid blast' 'armor' 'bless' 'blindness'."
-    )
+    assert caster.messages[2] == "Level 12 spells of: 'acid blast' 'armor' 'bless' 'blindness'."
 
 
 def test_identify_formats_weapon_stats_and_affects() -> None:

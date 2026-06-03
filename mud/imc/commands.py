@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, Iterable, Tuple
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -13,7 +14,7 @@ class IMCCommand:
     function: str
     permission: str
     requires_connection: bool
-    aliases: Tuple[str, ...] = ()
+    aliases: tuple[str, ...] = ()
 
 
 PacketHandler = Callable[["IMCPacket"], None]
@@ -24,7 +25,7 @@ class IMCPacket:
     """Minimal packet container used for handler registration tests."""
 
     type: str
-    payload: Dict[str, Any] | None = None
+    payload: dict[str, Any] | None = None
     handled_by: str | None = None
 
 
@@ -32,7 +33,7 @@ def _normalise_key(value: str) -> str:
     return value.strip().lower()
 
 
-def _finalise_command(fields: Dict[str, Any]) -> IMCCommand | None:
+def _finalise_command(fields: dict[str, Any]) -> IMCCommand | None:
     name = fields.get("name")
     function = fields.get("function")
     permission = fields.get("permission")
@@ -53,14 +54,14 @@ def _finalise_command(fields: Dict[str, Any]) -> IMCCommand | None:
     )
 
 
-def load_command_table(path: Path) -> Dict[str, IMCCommand]:
+def load_command_table(path: Path) -> dict[str, IMCCommand]:
     """Parse ``imc.commands`` into a lookup keyed by name and aliases."""
 
     if not path.exists():
         raise FileNotFoundError(path)
 
-    commands: Dict[str, IMCCommand] = {}
-    current: Dict[str, Any] | None = None
+    commands: dict[str, IMCCommand] = {}
+    current: dict[str, Any] | None = None
 
     def store(command: IMCCommand) -> None:
         key = _normalise_key(command.name)
@@ -121,7 +122,7 @@ def _make_handler(target: str) -> PacketHandler:
     return handler
 
 
-def build_default_packet_handlers() -> Dict[str, PacketHandler]:
+def build_default_packet_handlers() -> dict[str, PacketHandler]:
     """Return ROM's default packet handlers keyed by packet type."""
 
     bindings = {

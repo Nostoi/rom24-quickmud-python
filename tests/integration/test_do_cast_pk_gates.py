@@ -278,9 +278,7 @@ class TestCastOffensiveCharmGate:
         master.room = unsafe_room
 
         result = do_cast(npc_caster, "'magic missile' Master")
-        assert "follower" in result.lower(), (
-            "Charmed NPC should be blocked from attacking their master"
-        )
+        assert "follower" in result.lower(), "Charmed NPC should be blocked from attacking their master"
 
     def test_charmed_npc_can_attack_non_master(self):
         npc_caster = Character(
@@ -395,12 +393,9 @@ class TestCastOffensiveCharmGate:
 
         result = do_cast(caster, "'magic missile' Bystander")
         assert "follower" not in result.lower(), (
-            "Charmed PC attacking non-master PC: check_killer strips charm, "
-            "so the charm gate does not fire"
+            "Charmed PC attacking non-master PC: check_killer strips charm, so the charm gate does not fire"
         )
-        assert not caster.has_affect(AffectFlag.CHARM), (
-            "check_killer should strip charm via stop_follower"
-        )
+        assert not caster.has_affect(AffectFlag.CHARM), "check_killer should strip charm via stop_follower"
 
 
 class TestCastOffensiveObjCharSafeRoomBlock:
@@ -519,9 +514,7 @@ class TestCastOffensiveObjCharCharmGate:
         master.room = unsafe_room
 
         result = do_cast(npc_caster, "curse Master")
-        assert "follower" in result.lower(), (
-            "Charmed NPC should be blocked from cursing their master"
-        )
+        assert "follower" in result.lower(), "Charmed NPC should be blocked from cursing their master"
 
 
 class TestCastDefensiveNoSafeRoomBlock:

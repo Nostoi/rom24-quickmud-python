@@ -516,9 +516,7 @@ class TestJSONLD001ObjectKeywords:
     def test_name_falls_back_to_display_name(self, tmp_path: pathlib.Path):
         """When JSON lacks a keywords field, fall back to the display name so is_name() works."""
         area_data = dict(_MINIMAL_AREA)
-        area_data["objects"] = [
-            {"id": 3001, "name": "a battle axe", "item_type": "weapon"}
-        ]
+        area_data["objects"] = [{"id": 3001, "name": "a battle axe", "item_type": "weapon"}]
         p = _write_json(tmp_path, area_data)
         load_area_from_json(str(p))
         obj = obj_registry[3001]
@@ -546,9 +544,7 @@ class TestJSONLD003ObjectLevel:
 
     def test_level_read_from_json_when_present(self, tmp_path: pathlib.Path):
         area_data = dict(_MINIMAL_AREA)
-        area_data["objects"] = [
-            {"id": 3000, "name": "a sword", "level": 42, "item_type": "weapon"}
-        ]
+        area_data["objects"] = [{"id": 3000, "name": "a sword", "level": 42, "item_type": "weapon"}]
         p = _write_json(tmp_path, area_data)
         load_area_from_json(str(p))
         obj = obj_registry[3000]
@@ -556,9 +552,7 @@ class TestJSONLD003ObjectLevel:
 
     def test_level_defaults_to_zero_when_absent(self, tmp_path: pathlib.Path):
         area_data = dict(_MINIMAL_AREA)
-        area_data["objects"] = [
-            {"id": 3001, "name": "a rock", "item_type": "treasure"}
-        ]
+        area_data["objects"] = [{"id": 3001, "name": "a rock", "item_type": "treasure"}]
         p = _write_json(tmp_path, area_data)
         load_area_from_json(str(p))
         obj = obj_registry[3001]
@@ -696,9 +690,7 @@ class TestJSONLD017RoomLight:
 
     def test_room_light_defaults_to_zero(self, tmp_path: pathlib.Path):
         area_data = dict(_MINIMAL_AREA)
-        area_data["rooms"] = [
-            {"id": 3000, "name": "Test Room", "description": "A test room.", "sector_type": "inside"}
-        ]
+        area_data["rooms"] = [{"id": 3000, "name": "Test Room", "description": "A test room.", "sector_type": "inside"}]
         p = _write_json(tmp_path, area_data)
         load_area_from_json(str(p))
         room = room_registry[3000]

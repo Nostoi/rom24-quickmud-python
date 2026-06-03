@@ -20,7 +20,6 @@ Checks:
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 from pathlib import Path
 from typing import Any
@@ -132,7 +131,7 @@ class ParityValidator:
 
         # Compare each reset command
         mismatches = 0
-        for i, (are_reset, json_reset) in enumerate(zip(are_resets, json_resets)):
+        for i, (are_reset, json_reset) in enumerate(zip(are_resets, json_resets, strict=False)):
             if not self._compare_single_reset(are_reset, json_reset, i):
                 mismatches += 1
                 if mismatches <= 5:  # Only show first 5 mismatches

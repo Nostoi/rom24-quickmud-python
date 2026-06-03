@@ -2,6 +2,7 @@
 
 ROM Reference: src/interp.c:63-381 cmd_table[], src/interp.h:34-44 trust macros.
 """
+
 from __future__ import annotations
 
 import pytest

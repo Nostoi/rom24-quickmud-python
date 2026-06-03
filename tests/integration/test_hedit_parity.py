@@ -18,6 +18,7 @@ Gaps covered:
 - HEDIT-013: do_hedit is_name (word-level) match, not exact key match
 - HEDIT-014: level/keyword handlers return "Ok.\\n\\r" (mark changed)
 """
+
 from __future__ import annotations
 
 import pytest
@@ -84,16 +85,13 @@ def session_with_entry(builder_char, help_entry):
 
 # ── HEDIT-001: hedit_show format ─────────────────────────────────────────────
 
+
 def test_hedit_show_exact_format(help_entry):
     """ROM src/hedit.c:53-67 — exact sprintf format."""
     result = _hedit_show(help_entry)
-    assert result == (
-        "Keyword : [SWORD SWORDS]\n\r"
-        "Level   : [0]\n\r"
-        "Text    :\n\r"
-        "A sharp blade.\n"
-        "-END-\n\r"
-    ), repr(result)
+    assert result == ("Keyword : [SWORD SWORDS]\n\rLevel   : [0]\n\rText    :\n\rA sharp blade.\n-END-\n\r"), repr(
+        result
+    )
 
 
 def test_hedit_show_via_empty_input(builder_char, session_with_entry, help_entry):
@@ -104,6 +102,7 @@ def test_hedit_show_via_empty_input(builder_char, session_with_entry, help_entry
 
 
 # ── HEDIT-002: hedit_level range -1..MAX_LEVEL ───────────────────────────────
+
 
 def test_hedit_level_accepts_minus_one(builder_char, help_entry):
     """ROM src/hedit.c:84: lev >= -1 is valid."""
@@ -137,6 +136,7 @@ def test_hedit_level_empty_arg_syntax(builder_char, help_entry):
 
 # ── HEDIT-003/004: hedit_keyword ─────────────────────────────────────────────
 
+
 def test_hedit_keyword_success_ok(builder_char, help_entry):
     """HEDIT-003: ROM src/hedit.c:111 — "Ok.\\n\\r" on success."""
     result = _hedit_keyword(builder_char, help_entry, "DAGGER DAGGERS")
@@ -152,6 +152,7 @@ def test_hedit_keyword_empty_arg_syntax(builder_char, help_entry):
 
 # ── HEDIT-005: hedit_text ────────────────────────────────────────────────────
 
+
 def test_hedit_text_no_arg_returns_true(builder_char, help_entry):
     """HEDIT-005: ROM src/hedit.c:194-202 — no-arg is valid (string_append)."""
     result = _hedit_text(builder_char, help_entry, "")
@@ -166,6 +167,7 @@ def test_hedit_text_with_arg_returns_syntax_error(builder_char, help_entry):
 
 # ── HEDIT-006: security message exact ───────────────────────────────────────
 
+
 def test_hedit_security_message_has_newline_cr(builder_char, help_entry):
     """HEDIT-006: ROM src/hedit.c:230 — 'HEdit: Insufficient security to edit helps.\\n\\r'."""
     builder_char.is_admin = False
@@ -177,6 +179,7 @@ def test_hedit_security_message_has_newline_cr(builder_char, help_entry):
 
 # ── HEDIT-008: done is silent ────────────────────────────────────────────────
 
+
 def test_done_is_silent(builder_char, session_with_entry):
     """HEDIT-008: ROM src/hedit.c:242-246 — 'done' → edit_done, no message."""
     result = _interpret_hedit(session_with_entry, builder_char, "done")
@@ -185,6 +188,7 @@ def test_done_is_silent(builder_char, session_with_entry):
 
 
 # ── HEDIT-010: hedit_delete ──────────────────────────────────────────────────
+
 
 def test_hedit_delete_removes_entry(builder_char, help_entry, session_with_entry):
     """HEDIT-010: ROM src/hedit.c:336-398 — removes from help_entries."""
@@ -203,6 +207,7 @@ def test_hedit_delete_returns_false_if_not_found(builder_char):
 
 
 # ── HEDIT-011: hedit_list ────────────────────────────────────────────────────
+
 
 def test_hedit_list_all_format(builder_char, help_entry):
     """HEDIT-011: ROM src/hedit.c:409-426 — %3d. %-14.14s format."""
@@ -226,6 +231,7 @@ def test_hedit_list_unknown_arg_syntax(builder_char, help_entry):
 
 
 # ── HEDIT-012/013: do_hedit is_name match ────────────────────────────────────
+
 
 def test_do_hedit_matches_by_keyword_word(builder_char, help_entry):
     """HEDIT-013: ROM src/hedit.c:306 — is_name word match (sword matches SWORD SWORDS)."""
@@ -256,6 +262,7 @@ def test_do_hedit_new_no_topic_syntax_error(builder_char):
 
 
 # ── HEDIT-014: level/keyword mark changed ────────────────────────────────────
+
 
 def test_level_returns_ok_string_for_changed_tracking(builder_char, help_entry):
     """HEDIT-014: level returns 'Ok.\\n\\r' — dispatcher uses non-False/True to mark changed."""

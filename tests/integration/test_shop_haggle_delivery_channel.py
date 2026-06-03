@@ -62,8 +62,7 @@ def _assert_haggle_immediate(sent_before_drain: list[str], mailbox_before_drain:
         f"mailbox before drain={mailbox_before_drain!r}"
     )
     assert not any(expected in line for line in mailbox_before_drain), (
-        f"shop haggle line must not be stranded in connected PC mailbox; "
-        f"mailbox before drain={mailbox_before_drain!r}"
+        f"shop haggle line must not be stranded in connected PC mailbox; mailbox before drain={mailbox_before_drain!r}"
     )
 
 
@@ -131,7 +130,9 @@ def test_item_buy_haggle_delivers_immediately_to_connected_pc() -> None:
     char.connection = _RecordingConn()
     char.messages = []
 
-    keeper = next((p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry), None)
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry), None
+    )
     if keeper is None:
         keeper = spawn_mob(3002)
         assert keeper is not None
@@ -173,7 +174,9 @@ def test_item_sell_haggle_delivers_immediately_to_connected_pc() -> None:
     char.connection = _RecordingConn()
     char.messages = []
 
-    keeper = next((p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry), None)
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry), None
+    )
     if keeper is None:
         keeper = spawn_mob(3002)
         assert keeper is not None
@@ -193,6 +196,7 @@ def test_item_sell_haggle_delivers_immediately_to_connected_pc() -> None:
 
         char.messages.clear()
         char.skills = {"haggle": 100}
+
         async def scenario() -> tuple[list[str], list[str], list[str]]:
             response = do_sell(char, "ration")
             assert "sell haggle ration" in response.lower()

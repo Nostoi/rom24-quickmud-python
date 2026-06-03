@@ -881,7 +881,7 @@ def create_money(gold: int, silver: int) -> Object:
         ItemType,
     )
     from mud.models.obj import ObjIndex
-    from mud.models.object import Object, create_object
+    from mud.models.object import create_object
 
     # ROM C handler.c:2432-2437 (validate input)
     if gold < 0 or silver < 0 or (gold == 0 and silver == 0):

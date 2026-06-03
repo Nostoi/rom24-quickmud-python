@@ -1,7 +1,7 @@
 import asyncio
 from types import SimpleNamespace
 
-from mud.models.constants import PlayerFlag, ROOM_VNUM_LIMBO
+from mud.models.constants import ROOM_VNUM_LIMBO, PlayerFlag
 from mud.models.room import Room
 from mud.net import connection
 from mud.net.connection import _read_player_command, _stop_idling

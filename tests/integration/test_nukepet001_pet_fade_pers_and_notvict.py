@@ -104,7 +104,11 @@ def test_pet_fade_fires_act_trigger_on_listening_npc(monkeypatch: pytest.MonkeyP
     watcher = Character(name="watcher", is_npc=True, level=5, room=room, position=int(Position.STANDING))
     watcher.messages = []
     proto = MobIndex(vnum=9423, short_descr="a watcher", level=5)
-    proto.mprogs = [type("_P", (), {"trig_type": int(Trigger.ACT), "trig_phrase": "fades", "code": 'mob echo "X"\n', "vnum": 9423})()]
+    proto.mprogs = [
+        type(
+            "_P", (), {"trig_type": int(Trigger.ACT), "trig_phrase": "fades", "code": 'mob echo "X"\n', "vnum": 9423}
+        )()
+    ]
     watcher.prototype = proto
     room.people.append(watcher)
     character_registry.append(watcher)

@@ -14,7 +14,7 @@ from mud.commands.info import do_where
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, RoomFlag, Sector
 from mud.models.room import Room
-from mud.net.session import Session, SESSIONS
+from mud.net.session import SESSIONS, Session
 from mud.world.world_state import character_registry
 
 

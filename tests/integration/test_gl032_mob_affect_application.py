@@ -55,9 +55,7 @@ def test_mob_apply_spell_effect_applies_ac_saves_stat_sex():
 
     # giant strength: APPLY_STR raises effective STR (ROM handler.c:1072-1074),
     # which the mob reads through get_curr_stat (perm_stat + mod_stat).
-    pet.apply_spell_effect(
-        SpellEffect(name="giant strength", duration=10, level=15, stat_modifiers={Stat.STR: 2})
-    )
+    pet.apply_spell_effect(SpellEffect(name="giant strength", duration=10, level=15, stat_modifiers={Stat.STR: 2}))
     assert pet.get_curr_stat(Stat.STR) == base_str + 2
 
     # a save-modifying buff: APPLY_SAVES adjusts saving_throw (ROM handler.c:1123-1124).
@@ -78,9 +76,7 @@ def test_mob_remove_spell_effect_unwinds_ac_saves_stat_sex():
     base_sex = int(pet.sex)
 
     pet.apply_spell_effect(SpellEffect(name="armor", duration=24, level=10, ac_mod=-20))
-    pet.apply_spell_effect(
-        SpellEffect(name="giant strength", duration=10, level=15, stat_modifiers={Stat.STR: 2})
-    )
+    pet.apply_spell_effect(SpellEffect(name="giant strength", duration=10, level=15, stat_modifiers={Stat.STR: 2}))
     pet.apply_spell_effect(SpellEffect(name="protection", duration=8, level=10, saving_throw_mod=-5))
     pet.apply_spell_effect(SpellEffect(name="change sex", duration=12, level=8, sex_delta=1))
 
@@ -99,9 +95,7 @@ def test_mob_affect_bonuses_round_trip_counted_once():
     pet, owner = _make_pet_and_owner()
 
     pet.apply_spell_effect(SpellEffect(name="armor", duration=24, level=10, ac_mod=-20))
-    pet.apply_spell_effect(
-        SpellEffect(name="giant strength", duration=10, level=15, stat_modifiers={Stat.STR: 2})
-    )
+    pet.apply_spell_effect(SpellEffect(name="giant strength", duration=10, level=15, stat_modifiers={Stat.STR: 2}))
     pet.apply_spell_effect(SpellEffect(name="protection", duration=8, level=10, saving_throw_mod=-5))
     pet.apply_spell_effect(SpellEffect(name="change sex", duration=12, level=8, sex_delta=1))
 

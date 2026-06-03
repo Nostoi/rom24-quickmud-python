@@ -2,11 +2,12 @@
 
 Mirrors ROM src/olc_mpcode.c MPROG_CODE linked-list / recycle.c new_mpcode().
 """
+
 from __future__ import annotations
 
 import pytest
 
-from mud.models.mob import MprogCode, mprog_code_registry, get_mprog_index
+from mud.models.mob import MprogCode, get_mprog_index, mprog_code_registry
 
 
 @pytest.fixture(autouse=True)
@@ -20,6 +21,7 @@ def clear_registry():
 # ---------------------------------------------------------------------------
 # MprogCode model
 # ---------------------------------------------------------------------------
+
 
 def test_mprog_code_has_vnum_and_code():
     """MprogCode stores vnum and code — mirrors ROM MPROG_CODE fields."""
@@ -37,6 +39,7 @@ def test_mprog_code_default_code_is_empty_string():
 # ---------------------------------------------------------------------------
 # Registry / get_mprog_index
 # ---------------------------------------------------------------------------
+
 
 def test_get_mprog_index_returns_none_when_missing():
     """get_mprog_index returns None for unknown vnum — mirrors ROM NULL return."""

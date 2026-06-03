@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rom24-quickmud-python"
-version = "2.12.88"
+version = "2.12.89"
 description = "A modern Python port of the ROM 2.4b6 MUD engine with full telnet server and JSON world loading"
 readme = "README.md"
 license = "MIT"
@@ -113,6 +113,7 @@ exclude = [
     "*.db",
     "*.log",
     "startup",
+    "scripts/agent_loop.py",  # bash script with a .py extension — not Python
 ]
 
 [tool.ruff.lint]

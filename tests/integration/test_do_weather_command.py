@@ -11,7 +11,7 @@ from __future__ import annotations
 import pytest
 
 from mud.commands.info import do_weather
-from mud.game_loop import weather, SkyState
+from mud.game_loop import SkyState, weather
 from mud.models.character import Character
 from mud.models.constants import RoomFlag, Sector
 from mud.models.room import Room

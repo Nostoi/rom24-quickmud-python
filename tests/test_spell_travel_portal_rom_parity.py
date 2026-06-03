@@ -4,12 +4,8 @@ import pytest
 
 from mud.models.character import Character
 from mud.models.constants import (
-    LEVEL_IMMORTAL,
     OBJ_VNUM_DISC,
     OBJ_VNUM_PORTAL,
-    ActFlag,
-    AffectFlag,
-    DamageType,
     ExtraFlag,
     ItemType,
     PlayerFlag,

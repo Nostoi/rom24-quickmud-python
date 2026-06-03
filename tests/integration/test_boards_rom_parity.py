@@ -564,6 +564,7 @@ def test_board_010_note_read_again_is_noop(movable_char_factory, tmp_path):
     try:
         author = movable_char_factory("Tester", 3001)
         from mud.commands.notes import do_note
+
         result = do_note(author, "read again")
         # ROM: empty if-body → no output (empty string or None)
         assert result == "" or result is None

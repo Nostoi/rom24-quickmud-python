@@ -71,9 +71,7 @@ def test_clone_object_emits_to_room_broadcast() -> None:
         result = do_clone(admin, "amulet")
         assert "clone" in result.lower()
         msgs = "\n".join(bystander.messages)
-        assert "Admin has created a silver amulet" in msgs, (
-            f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
-        )
+        assert "Admin has created a silver amulet" in msgs, f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
         actor_msgs = "\n".join(getattr(admin, "messages", []))
         assert "Admin has created a silver amulet" not in actor_msgs
     finally:

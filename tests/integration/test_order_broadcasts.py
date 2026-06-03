@@ -94,12 +94,8 @@ def test_do_order_wiz_invis_orderer_renders_as_someone(monkeypatch):
     assert follower_msgs, f"follower received nothing: {delivered!r}"
     msg = follower_msgs[0]
     # Visibility-gated rendering: orderer hidden → "Someone orders you to 'smile'."
-    assert "Bigwiz" not in msg, (
-        f"wiz-invis orderer name leaked to low-trust follower: {msg!r}"
-    )
-    assert "someone" in msg.lower() and "orders you to 'smile'" in msg, (
-        f"expected someone-rendered order; got {msg!r}"
-    )
+    assert "Bigwiz" not in msg, f"wiz-invis orderer name leaked to low-trust follower: {msg!r}"
+    assert "someone" in msg.lower() and "orders you to 'smile'" in msg, f"expected someone-rendered order; got {msg!r}"
 
 
 def test_do_order_visible_orderer_renders_with_name(monkeypatch):

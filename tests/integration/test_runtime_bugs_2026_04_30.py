@@ -83,9 +83,7 @@ def test_look_obj_handles_dict_extra_descr(crash_char):
         short_descr="a marble fountain",
         description="A marble fountain.",
     )
-    proto.extra_descr = [
-        {"keyword": "fountain marble", "description": "Sparkling water."}
-    ]
+    proto.extra_descr = [{"keyword": "fountain marble", "description": "Sparkling water."}]
     obj = Object(instance_id=None, prototype=proto)
 
     result = _look_obj(crash_char, obj)

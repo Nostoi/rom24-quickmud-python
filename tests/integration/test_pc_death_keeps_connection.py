@@ -16,7 +16,7 @@ import asyncio
 
 import pytest
 
-from mud.combat.engine import apply_damage, multi_hit
+from mud.combat.engine import apply_damage
 from mud.models.character import Character, character_registry
 from mud.models.constants import Position
 from mud.utils.prompt import bust_a_prompt

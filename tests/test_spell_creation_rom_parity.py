@@ -19,13 +19,13 @@ from mud.game_loop import SkyState, weather
 from mud.math.c_compat import c_div
 from mud.models.character import Character
 from mud.models.constants import (
-    ExtraFlag,
-    ItemType,
     LIQ_WATER,
     OBJ_VNUM_LIGHT_BALL,
     OBJ_VNUM_MUSHROOM,
     OBJ_VNUM_ROSE,
     OBJ_VNUM_SPRING,
+    ExtraFlag,
+    ItemType,
     Position,
     Sex,
 )

@@ -206,7 +206,9 @@ class TestWearRemoveWield:
 
         output = do_wear(player, "plate")
 
-        assert "wear" in output.lower() or armor2 in player.equipment.values(), "Should either confirm wear or replace item"
+        assert "wear" in output.lower() or armor2 in player.equipment.values(), (
+            "Should either confirm wear or replace item"
+        )
         assert player.equipment[WearLocation.BODY] == armor2, "New armor should replace old"
 
     def test_remove_updates_equipment_list(self):

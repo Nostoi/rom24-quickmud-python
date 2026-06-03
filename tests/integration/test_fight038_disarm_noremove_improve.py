@@ -46,8 +46,11 @@ def _pc(name: str, room: Room, *, level: int = 30, stats: int = 18) -> Character
 def _wield_noremove(victim: Character) -> SimpleNamespace:
     weapon = SimpleNamespace(
         prototype=SimpleNamespace(
-            name="cursed blade", short_descr="a cursed blade", item_type="weapon",
-            value=[int(WeaponType.SWORD), 0, 0, 0], level=20,
+            name="cursed blade",
+            short_descr="a cursed blade",
+            item_type="weapon",
+            value=[int(WeaponType.SWORD), 0, 0, 0],
+            level=20,
         ),
         value=[int(WeaponType.SWORD), 0, 0, 0],
         extra_flags=int(ExtraFlag.NOREMOVE),
@@ -80,6 +83,4 @@ def test_noremove_disarm_credits_improve_true(monkeypatch: pytest.MonkeyPatch) -
     _wield_noremove(victim)
 
     assert skill_handlers.disarm(caster, target=victim) is False
-    assert recorded == [(True, 1)], (
-        f"NOREMOVE disarm should credit skill improvement TRUE (ROM :3206), got: {recorded}"
-    )
+    assert recorded == [(True, 1)], f"NOREMOVE disarm should credit skill improvement TRUE (ROM :3206), got: {recorded}"

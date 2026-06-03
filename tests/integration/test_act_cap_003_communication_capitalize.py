@@ -20,7 +20,7 @@ import re as _re
 
 import pytest
 
-from mud.commands.communication import do_say, do_tell, do_reply, do_shout
+from mud.commands.communication import do_reply, do_say, do_shout, do_tell
 from mud.models.character import character_registry
 from mud.world import create_test_character, initialize_world
 
@@ -61,9 +61,7 @@ class TestSayCapitalization:
         # After capitalization: '{6' prefix → cap at position 2 → 'S'
         # "Speaker says 'hello'" not "speaker says 'hello'"
         plain = _strip(msg)
-        assert plain.startswith("Speaker "), (
-            f"say room message not capitalized: {msg!r} → {plain!r}"
-        )
+        assert plain.startswith("Speaker "), f"say room message not capitalized: {msg!r} → {plain!r}"
 
     def test_say_invisible_speaker_capitalized(self) -> None:
         """Invisible speaker renders as 'Someone' (PERS) — still capitalized."""
@@ -75,9 +73,7 @@ class TestSayCapitalization:
         do_say(speaker, "boo")
         msg = listener.messages[-1]
         plain = _strip(msg)
-        assert plain.startswith("Someone "), (
-            f"invisible say not capitalized/PERS: {msg!r} → {plain!r}"
-        )
+        assert plain.startswith("Someone "), f"invisible say not capitalized/PERS: {msg!r} → {plain!r}"
 
 
 class TestTellCapitalization:
@@ -96,9 +92,7 @@ class TestTellCapitalization:
         assert delivered, f"target received no tell; messages={target.messages}"
         msg = delivered[-1]
         plain = _strip(msg)
-        assert plain.startswith("Tellsender "), (
-            f"tell target message not capitalized: {msg!r} → {plain!r}"
-        )
+        assert plain.startswith("Tellsender "), f"tell target message not capitalized: {msg!r} → {plain!r}"
 
     def test_tell_invisible_sender_capitalized(self) -> None:
         from mud.models.constants import AffectFlag
@@ -111,9 +105,7 @@ class TestTellCapitalization:
         assert delivered, f"target received no tell; messages={target.messages}"
         msg = delivered[-1]
         plain = _strip(msg)
-        assert plain.startswith("Someone "), (
-            f"invisible tell not capitalized/PERS: {msg!r} → {plain!r}"
-        )
+        assert plain.startswith("Someone "), f"invisible tell not capitalized/PERS: {msg!r} → {plain!r}"
 
 
 class TestReplyCapitalization:
@@ -129,9 +121,7 @@ class TestReplyCapitalization:
         assert delivered, f"target received no reply; messages={target.messages}"
         msg = delivered[-1]
         plain = _strip(msg)
-        assert plain.startswith("Replyer "), (
-            f"reply target message not capitalized: {msg!r} → {plain!r}"
-        )
+        assert plain.startswith("Replyer "), f"reply target message not capitalized: {msg!r} → {plain!r}"
 
 
 class TestShoutCapitalization:
@@ -150,6 +140,4 @@ class TestShoutCapitalization:
         msg = listener.messages[-1]
         # "Shouter shouts 'hello'" — first letter capitalized
         plain = _strip(msg)
-        assert plain[0].isupper(), (
-            f"shout listener message not capitalized: {msg!r} → {plain!r}"
-        )
+        assert plain[0].isupper(), f"shout listener message not capitalized: {msg!r} → {plain!r}"

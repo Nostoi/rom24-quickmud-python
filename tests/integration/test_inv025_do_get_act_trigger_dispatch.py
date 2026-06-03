@@ -131,8 +131,7 @@ def test_do_get_floor_fires_act_trigger_on_listening_npc():
         mobprog.mp_act_trigger = original
 
     assert fired, (
-        "do_get must dispatch mp_act_trigger on its TO_ROOM broadcast — "
-        "ROM src/act_obj.c:158, no MOBtrigger wrap"
+        "do_get must dispatch mp_act_trigger on its TO_ROOM broadcast — ROM src/act_obj.c:158, no MOBtrigger wrap"
     )
     assert fired[0][0] == "watcher"
     assert "gets" in fired[0][1]

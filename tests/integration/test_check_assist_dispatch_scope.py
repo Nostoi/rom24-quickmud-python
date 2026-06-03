@@ -117,8 +117,7 @@ def test_violence_tick_calls_check_assist_after_multi_hit(monkeypatch) -> None:
     game_loop.violence_tick(do_combat=True)
 
     assert ("Guard", "Hero") in calls, (
-        f"ROM src/fight.c:90 calls check_assist(ch, victim) from "
-        f"violence_update after multi_hit returns; got {calls}"
+        f"ROM src/fight.c:90 calls check_assist(ch, victim) from violence_update after multi_hit returns; got {calls}"
     )
 
 
@@ -164,7 +163,4 @@ def test_violence_tick_skips_check_assist_when_victim_died(monkeypatch) -> None:
 
     game_loop.violence_tick(do_combat=True)
 
-    assert calls == [], (
-        "ROM src/fight.c:84-85 skips check_assist when the victim died "
-        f"during multi_hit; got {calls}"
-    )
+    assert calls == [], f"ROM src/fight.c:84-85 skips check_assist when the victim died during multi_hit; got {calls}"

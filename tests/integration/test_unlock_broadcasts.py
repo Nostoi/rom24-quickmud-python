@@ -46,7 +46,9 @@ def two_rooms_with_locked_door(object_factory):
     actor = Character(name="Unlocker", level=10, room=room1, is_npc=False, position=5)
     actor.pcdata = PCData()
     actor.messages = []
-    key = object_factory({"vnum": 99899, "name": "brass key", "short_descr": "a brass key", "item_type": int(ItemType.KEY)})
+    key = object_factory(
+        {"vnum": 99899, "name": "brass key", "short_descr": "a brass key", "item_type": int(ItemType.KEY)}
+    )
     actor.inventory = [key]
     room1.people.append(actor)
 

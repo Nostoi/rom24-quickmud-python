@@ -401,22 +401,22 @@ class FurnitureFlag(IntFlag):
     Capacity is value[0]; max weight is value[1]; heal/mana mods are value[3]/value[4].
     """
 
-    STAND_AT = 1 << 0   # A
-    STAND_ON = 1 << 1   # B
-    STAND_IN = 1 << 2   # C
-    SIT_AT = 1 << 3     # D
-    SIT_ON = 1 << 4     # E
-    SIT_IN = 1 << 5     # F
-    REST_AT = 1 << 6    # G
-    REST_ON = 1 << 7    # H
-    REST_IN = 1 << 8    # I
-    SLEEP_AT = 1 << 9   # J
+    STAND_AT = 1 << 0  # A
+    STAND_ON = 1 << 1  # B
+    STAND_IN = 1 << 2  # C
+    SIT_AT = 1 << 3  # D
+    SIT_ON = 1 << 4  # E
+    SIT_IN = 1 << 5  # F
+    REST_AT = 1 << 6  # G
+    REST_ON = 1 << 7  # H
+    REST_IN = 1 << 8  # I
+    SLEEP_AT = 1 << 9  # J
     SLEEP_ON = 1 << 10  # K
     SLEEP_IN = 1 << 11  # L
-    PUT_AT = 1 << 12    # M
-    PUT_ON_FURN = 1 << 13   # N
-    PUT_IN = 1 << 14    # O
-    PUT_INSIDE = 1 << 15    # P
+    PUT_AT = 1 << 12  # M
+    PUT_ON_FURN = 1 << 13  # N
+    PUT_IN = 1 << 14  # O
+    PUT_INSIDE = 1 << 15  # P
 
 
 LIQ_WATER = 0
@@ -431,51 +431,51 @@ class Liquid(NamedTuple):
 
     name: str
     color: str
-    proof: int   # liq_affect[0] — drunk gain per unit
-    full: int    # liq_affect[1] — full gain per unit
+    proof: int  # liq_affect[0] — drunk gain per unit
+    full: int  # liq_affect[1] — full gain per unit
     thirst: int  # liq_affect[2] — thirst gain per unit
-    food: int    # liq_affect[3] — hunger gain per unit
-    ssize: int   # liq_affect[4] — serving size (units per sip)
+    food: int  # liq_affect[3] — hunger gain per unit
+    ssize: int  # liq_affect[4] — serving size (units per sip)
 
 
 LIQUID_TABLE: tuple[Liquid, ...] = (
     # name,                color,           proof, full, thirst, food, ssize
-    Liquid("water",              "clear",        0,   1,  10,  0, 16),
-    Liquid("beer",               "amber",       12,   1,   8,  1, 12),
-    Liquid("red wine",           "burgundy",    30,   1,   8,  1,  5),
-    Liquid("ale",                "brown",       15,   1,   8,  1, 12),
-    Liquid("dark ale",           "dark",        16,   1,   8,  1, 12),
-    Liquid("whisky",             "golden",     120,   1,   5,  0,  2),
-    Liquid("lemonade",           "pink",         0,   1,   9,  2, 12),
-    Liquid("firebreather",       "boiling",    190,   0,   4,  0,  2),
-    Liquid("local specialty",    "clear",      151,   1,   3,  0,  2),
-    Liquid("slime mold juice",   "green",        0,   2,  -8,  1,  2),
-    Liquid("milk",               "white",        0,   2,   9,  3, 12),
-    Liquid("tea",                "tan",          0,   1,   8,  0,  6),
-    Liquid("coffee",             "black",        0,   1,   8,  0,  6),
-    Liquid("blood",              "red",          0,   2,  -1,  2,  6),
-    Liquid("salt water",         "clear",        0,   1,  -2,  0,  1),
-    Liquid("coke",               "brown",        0,   2,   9,  2, 12),
-    Liquid("root beer",          "brown",        0,   2,   9,  2, 12),
-    Liquid("elvish wine",        "green",       35,   2,   8,  1,  5),
-    Liquid("white wine",         "golden",      28,   1,   8,  1,  5),
-    Liquid("champagne",          "golden",      32,   1,   8,  1,  5),
-    Liquid("mead",               "honey-colored", 34, 2,   8,  2, 12),
-    Liquid("rose wine",          "pink",        26,   1,   8,  1,  5),
-    Liquid("benedictine wine",   "burgundy",    40,   1,   8,  1,  5),
-    Liquid("vodka",              "clear",      130,   1,   5,  0,  2),
-    Liquid("cranberry juice",    "red",          0,   1,   9,  2, 12),
-    Liquid("orange juice",       "orange",       0,   2,   9,  3, 12),
-    Liquid("absinthe",           "green",      200,   1,   4,  0,  2),
-    Liquid("brandy",             "golden",      80,   1,   5,  0,  4),
-    Liquid("aquavit",            "clear",      140,   1,   5,  0,  2),
-    Liquid("schnapps",           "clear",       90,   1,   5,  0,  2),
-    Liquid("icewine",            "purple",      50,   2,   6,  1,  5),
-    Liquid("amontillado",        "burgundy",    35,   2,   8,  1,  5),
-    Liquid("sherry",             "red",         38,   2,   7,  1,  5),
-    Liquid("framboise",          "red",         50,   1,   7,  1,  5),
-    Liquid("rum",                "amber",      151,   1,   4,  0,  2),
-    Liquid("cordial",            "clear",      100,   1,   5,  0,  2),
+    Liquid("water", "clear", 0, 1, 10, 0, 16),
+    Liquid("beer", "amber", 12, 1, 8, 1, 12),
+    Liquid("red wine", "burgundy", 30, 1, 8, 1, 5),
+    Liquid("ale", "brown", 15, 1, 8, 1, 12),
+    Liquid("dark ale", "dark", 16, 1, 8, 1, 12),
+    Liquid("whisky", "golden", 120, 1, 5, 0, 2),
+    Liquid("lemonade", "pink", 0, 1, 9, 2, 12),
+    Liquid("firebreather", "boiling", 190, 0, 4, 0, 2),
+    Liquid("local specialty", "clear", 151, 1, 3, 0, 2),
+    Liquid("slime mold juice", "green", 0, 2, -8, 1, 2),
+    Liquid("milk", "white", 0, 2, 9, 3, 12),
+    Liquid("tea", "tan", 0, 1, 8, 0, 6),
+    Liquid("coffee", "black", 0, 1, 8, 0, 6),
+    Liquid("blood", "red", 0, 2, -1, 2, 6),
+    Liquid("salt water", "clear", 0, 1, -2, 0, 1),
+    Liquid("coke", "brown", 0, 2, 9, 2, 12),
+    Liquid("root beer", "brown", 0, 2, 9, 2, 12),
+    Liquid("elvish wine", "green", 35, 2, 8, 1, 5),
+    Liquid("white wine", "golden", 28, 1, 8, 1, 5),
+    Liquid("champagne", "golden", 32, 1, 8, 1, 5),
+    Liquid("mead", "honey-colored", 34, 2, 8, 2, 12),
+    Liquid("rose wine", "pink", 26, 1, 8, 1, 5),
+    Liquid("benedictine wine", "burgundy", 40, 1, 8, 1, 5),
+    Liquid("vodka", "clear", 130, 1, 5, 0, 2),
+    Liquid("cranberry juice", "red", 0, 1, 9, 2, 12),
+    Liquid("orange juice", "orange", 0, 2, 9, 3, 12),
+    Liquid("absinthe", "green", 200, 1, 4, 0, 2),
+    Liquid("brandy", "golden", 80, 1, 5, 0, 4),
+    Liquid("aquavit", "clear", 140, 1, 5, 0, 2),
+    Liquid("schnapps", "clear", 90, 1, 5, 0, 2),
+    Liquid("icewine", "purple", 50, 2, 6, 1, 5),
+    Liquid("amontillado", "burgundy", 35, 2, 8, 1, 5),
+    Liquid("sherry", "red", 38, 2, 7, 1, 5),
+    Liquid("framboise", "red", 50, 1, 7, 1, 5),
+    Liquid("rum", "amber", 151, 1, 4, 0, 2),
+    Liquid("cordial", "clear", 100, 1, 5, 0, 2),
 )
 
 

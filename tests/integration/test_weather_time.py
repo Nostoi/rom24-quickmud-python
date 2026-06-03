@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import pytest
 
-from mud.game_loop import SkyState, game_tick, time_tick, weather, weather_tick
+from mud.game_loop import SkyState, time_tick, weather, weather_tick
 from mud.models.character import Character
 from mud.models.constants import Position, RoomFlag
 from mud.models.room import Room

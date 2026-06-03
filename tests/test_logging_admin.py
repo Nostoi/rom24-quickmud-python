@@ -2,24 +2,23 @@ import asyncio
 from asyncio import StreamReader
 from datetime import datetime
 from pathlib import Path
-from typing import Any, cast
 from types import SimpleNamespace
+from typing import Any, cast
 
-from mud.models.constants import MAX_LEVEL
-from mud.models.room import Room
-from mud.net.connection import TelnetStream
-
-from mud.commands import process_command
 import mud.logging as mud_logging
-from mud.logging import log_game_event
+import mud.net.connection as net_connection
 from mud.admin_logging.admin import (
     is_log_all_enabled,
     log_admin_command,
     rotate_admin_log,
     set_log_all,
 )
+from mud.commands import process_command
+from mud.logging import log_game_event
 from mud.models.character import character_registry
-import mud.net.connection as net_connection
+from mud.models.constants import MAX_LEVEL
+from mud.models.room import Room
+from mud.net.connection import TelnetStream
 from mud.net.session import SESSIONS, Session
 from mud.wiznet import WiznetFlag
 from mud.world import create_test_character, initialize_world
@@ -137,7 +136,8 @@ def test_log_flag_persists_in_save(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     from mud.account.account_manager import load_character, save_character
     from mud.account.account_service import clear_active_accounts, create_character
-    from mud.db.models import Base, Character as DBCharacter
+    from mud.db.models import Base
+    from mud.db.models import Character as DBCharacter
     from mud.db.session import SessionLocal, engine
     from mud.models.character import from_orm
     from mud.models.constants import ROOM_VNUM_SCHOOL
@@ -247,10 +247,13 @@ def test_forced_disconnect_logs_closing_link(monkeypatch):
     dummy_conn = DummyConnection()
     player.connection = dummy_conn
     broadcasted: list[str] = []
-    player.room = cast(Room, SimpleNamespace(
-        broadcast=lambda message, exclude=None: broadcasted.append(message),
-        remove_character=lambda character: None,
-    ))
+    player.room = cast(
+        Room,
+        SimpleNamespace(
+            broadcast=lambda message, exclude=None: broadcasted.append(message),
+            remove_character=lambda character: None,
+        ),
+    )
     assert player.name is not None
     session = Session(
         name=player.name,

@@ -8,10 +8,7 @@ ROM Reference: src/act_info.c lines 1771-1804
 
 from __future__ import annotations
 
-import pytest
-
 from mud.commands.info import do_time
-from mud.models.character import Character
 from mud.time import time_info
 
 

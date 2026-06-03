@@ -22,9 +22,9 @@ import pytest
 
 from mud.game_loop import SkyState
 from mud.models.character import Character, SpellEffect
-from mud.models.constants import AffectFlag, DamageType, Position, ExtraFlag, ItemType
-from mud.models.object import Object
+from mud.models.constants import AffectFlag, ExtraFlag, ItemType, Position
 from mud.models.obj import ObjIndex
+from mud.models.object import Object
 from mud.skills.handlers import (
     acid_blast,
     burning_hands,

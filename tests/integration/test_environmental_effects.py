@@ -20,8 +20,8 @@ from mud.magic.effects import (
 )
 from mud.models.character import Character
 from mud.models.constants import ITEM_BLESS, ITEM_BURN_PROOF, ITEM_NOPURGE, ItemType
-from mud.models.object import Object
 from mud.models.obj import ObjIndex
+from mud.models.object import Object
 from mud.models.room import Room
 from mud.utils import rng_mm
 

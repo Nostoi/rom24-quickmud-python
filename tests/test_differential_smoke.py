@@ -93,7 +93,7 @@ def test_python_matches_c_golden(scen_path):
         # __tick runs one violence_update() combat pulse. Everything else is an
         # ordinary ROM command.
         if command.startswith("__seed="):
-            rng_mm.seed_mm(int(command[len("__seed="):]))
+            rng_mm.seed_mm(int(command[len("__seed=") :]))
             response = ""
         elif command.startswith("__learn="):
             # Teach the PC a skill/spell at 100% (mirrors the C shim's __learn,
@@ -103,7 +103,7 @@ def test_python_matches_c_golden(scen_path):
             # while C succeeds (a harness artifact, not a parity bug).
             from mud.skills import skill_registry
 
-            spell_name = command[len("__learn="):].strip()
+            spell_name = command[len("__learn=") :].strip()
             resolved = skill_registry.find_spell(char, spell_name)
             assert resolved is not None, f"__learn: unknown skill {spell_name!r}"
             if char.skills is None:
@@ -111,7 +111,7 @@ def test_python_matches_c_golden(scen_path):
             char.skills[resolved.name] = 100
             response = ""
         elif command.startswith("__mload="):
-            mob = spawn_mob(int(command[len("__mload="):]))
+            mob = spawn_mob(int(command[len("__mload=") :]))
             assert mob is not None, f"spawn_mob failed for {command!r}"
             char.room.add_character(mob)
             chars_by_name[_person_key(mob)] = mob
@@ -141,8 +141,10 @@ def test_python_matches_c_golden(scen_path):
             lines.extend(chunk.split("\n"))
         py_trace.append(
             snapshot_python(
-                step=i, command=command,
-                chars_by_name=chars_by_name, rooms_by_vnum=rooms_by_vnum,
+                step=i,
+                command=command,
+                chars_by_name=chars_by_name,
+                rooms_by_vnum=rooms_by_vnum,
                 output=lines,
             )
         )

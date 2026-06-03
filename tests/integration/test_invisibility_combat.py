@@ -266,15 +266,11 @@ class TestPositionChangeBroadcastPers:
             _position_change_message(victim, Position.STANDING)
 
             joined = "\n".join(observer.messages).lower()
-            assert "is incapacitated" in joined, (
-                f"POS_INCAP broadcast not delivered: {observer.messages!r}"
-            )
+            assert "is incapacitated" in joined, f"POS_INCAP broadcast not delivered: {observer.messages!r}"
             assert "someone is incapacitated" in joined, (
                 f"PERS render missing for invisible victim: {observer.messages!r}"
             )
-            assert "aliceee" not in joined, (
-                f"invisible victim name leaked: {observer.messages!r}"
-            )
+            assert "aliceee" not in joined, f"invisible victim name leaked: {observer.messages!r}"
 
         finally:
             room_registry.pop(1001, None)
@@ -305,15 +301,9 @@ class TestPositionChangeBroadcastPers:
             _position_change_message(victim, Position.STANDING)
 
             joined = "\n".join(observer.messages).lower()
-            assert "is stunned" in joined, (
-                f"POS_STUNNED broadcast not delivered: {observer.messages!r}"
-            )
-            assert "someone is stunned" in joined, (
-                f"PERS render missing for invisible victim: {observer.messages!r}"
-            )
-            assert "aliceee" not in joined, (
-                f"invisible victim name leaked: {observer.messages!r}"
-            )
+            assert "is stunned" in joined, f"POS_STUNNED broadcast not delivered: {observer.messages!r}"
+            assert "someone is stunned" in joined, f"PERS render missing for invisible victim: {observer.messages!r}"
+            assert "aliceee" not in joined, f"invisible victim name leaked: {observer.messages!r}"
 
         finally:
             room_registry.pop(1002, None)
@@ -351,24 +341,16 @@ class TestPositionChangeBroadcastPers:
 
             _position_change_message(victim, Position.STANDING)
 
-            assert observer.messages, (
-                f"POS_DEAD broadcast not delivered: {observer.messages!r}"
-            )
+            assert observer.messages, f"POS_DEAD broadcast not delivered: {observer.messages!r}"
             msg = observer.messages[-1]
             # (a) PERS render — invisible victim → "someone" (INV-027), then ROM
             # act_new's `{`-kludge caps buf[2] (the char after the {R colour
             # code) → "Someone" (FIGHT-031 / src/comm.c:2376-2379). The mask
             # still holds; only the first letter is upper-cased.
-            assert "Someone is DEAD!!" in msg, (
-                f"PERS render missing for invisible victim: {msg!r}"
-            )
-            assert "Aliceee" not in msg, (
-                f"invisible victim name leaked: {msg!r}"
-            )
+            assert "Someone is DEAD!!" in msg, f"PERS render missing for invisible victim: {msg!r}"
+            assert "Aliceee" not in msg, f"invisible victim name leaked: {msg!r}"
             # (b) ROM red colour wrap.
-            assert msg.startswith("{R") and msg.endswith("{x"), (
-                f"missing ROM red colour codes {{R...{{x: {msg!r}"
-            )
+            assert msg.startswith("{R") and msg.endswith("{x"), f"missing ROM red colour codes {{R...{{x: {msg!r}"
             # (c) Two exclamation marks, not three.
             assert "DEAD!!{x" in msg and "DEAD!!!" not in msg, (
                 f"ROM wording is 'DEAD!!' (two bangs), Python emitted: {msg!r}"
@@ -411,21 +393,13 @@ class TestPositionChangeBroadcastPers:
             # Test path: function returns the self-message string;
             # caller in apply_damage delivers via _push_message.
             assert _push_msg, "POS_DEAD self-message should not be empty"
-            assert _push_msg.startswith("{R"), (
-                f"missing ROM red colour open code {{R: {_push_msg!r}"
-            )
-            assert "You have been KILLED!!" in _push_msg, (
-                f"ROM-exact wording missing: {_push_msg!r}"
-            )
-            assert "{x" in _push_msg, (
-                f"missing ROM red colour close code {{x: {_push_msg!r}"
-            )
+            assert _push_msg.startswith("{R"), f"missing ROM red colour open code {{R: {_push_msg!r}"
+            assert "You have been KILLED!!" in _push_msg, f"ROM-exact wording missing: {_push_msg!r}"
+            assert "{x" in _push_msg, f"missing ROM red colour close code {{x: {_push_msg!r}"
             # Trailing blank-line newline (the second of ROM's two
             # \\n\\r pairs — Python's protocol layer auto-appends the
             # first one as \\r\\n).
-            assert _push_msg.endswith("\n"), (
-                f"missing trailing \\n for ROM's blank-line spacing: {_push_msg!r}"
-            )
+            assert _push_msg.endswith("\n"), f"missing trailing \\n for ROM's blank-line spacing: {_push_msg!r}"
 
         finally:
             room_registry.pop(1004, None)

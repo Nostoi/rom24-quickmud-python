@@ -12,12 +12,11 @@ Oracle Edge Case #10: PK flags set on attack, cleared on death, persist through 
 from __future__ import annotations
 
 import pytest
+from helpers_player import set_player_flags
 
 from mud.models.constants import PlayerFlag
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import create_test_character, initialize_world
-from helpers_player import set_player_flags
-
 
 PLR_KILLER = PlayerFlag.KILLER
 PLR_THIEF = PlayerFlag.THIEF

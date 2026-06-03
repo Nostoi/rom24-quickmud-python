@@ -2,6 +2,7 @@
 
 ROM Reference: src/act_obj.c lines 1765-1862 (do_sacrifice).
 """
+
 from __future__ import annotations
 
 import pytest
@@ -42,18 +43,27 @@ def actor(test_room) -> Character:
     return char
 
 
-def _make_sacrificeable_obj(object_factory, *, vnum: int = 9001, name: str = "sword",
-                             short_descr: str = "a rusty sword", level: int = 5,
-                             cost: int = 30, item_type: ItemType = ItemType.WEAPON):
+def _make_sacrificeable_obj(
+    object_factory,
+    *,
+    vnum: int = 9001,
+    name: str = "sword",
+    short_descr: str = "a rusty sword",
+    level: int = 5,
+    cost: int = 30,
+    item_type: ItemType = ItemType.WEAPON,
+):
     """Create a basic object that can be sacrificed (TAKE flag set)."""
-    obj = object_factory({
-        "vnum": vnum,
-        "name": name,
-        "short_descr": short_descr,
-        "item_type": int(item_type),
-        "value": [0, 0, 0, 0, 0],
-        "level": level,
-    })
+    obj = object_factory(
+        {
+            "vnum": vnum,
+            "name": name,
+            "short_descr": short_descr,
+            "item_type": int(item_type),
+            "value": [0, 0, 0, 0, 0],
+            "level": level,
+        }
+    )
     obj.item_type = int(item_type)
     obj.level = level
     obj.cost = cost
@@ -64,6 +74,7 @@ def _make_sacrificeable_obj(object_factory, *, vnum: int = 9001, name: str = "sw
 # ---------------------------------------------------------------------------
 # SAC-001: TO_ROOM broadcast on normal sacrifice
 # ---------------------------------------------------------------------------
+
 
 def test_sacrifice_broadcasts_to_room(test_room, actor, object_factory):
     """SAC-001: observer in the same room sees '$n sacrifices $p to Mota.'
@@ -89,6 +100,7 @@ def test_sacrifice_broadcasts_to_room(test_room, actor, object_factory):
 # ---------------------------------------------------------------------------
 # SAC-002: TO_ROOM broadcast on self-sacrifice
 # ---------------------------------------------------------------------------
+
 
 def test_sacrifice_self_broadcasts_to_room(test_room, actor, object_factory):
     """SAC-002: observer sees '$n offers <self> to Mota, who graciously declines.'
@@ -127,6 +139,7 @@ def test_sacrifice_self_by_name_broadcasts_to_room(test_room, actor):
 # SAC-003: NO_SAC flag rejects item
 # ---------------------------------------------------------------------------
 
+
 def test_sacrifice_no_sac_item_rejected(test_room, actor, object_factory):
     """SAC-003: item with WearFlag.NO_SAC is rejected with correct ROM message.
 
@@ -141,15 +154,14 @@ def test_sacrifice_no_sac_item_rejected(test_room, actor, object_factory):
 
     result = do_sacrifice(actor, "relic")
 
-    assert "not an acceptable sacrifice" in result.lower(), (
-        f"Expected rejection message; got: {result!r}"
-    )
+    assert "not an acceptable sacrifice" in result.lower(), f"Expected rejection message; got: {result!r}"
     assert actor.silver == 0, "Silver should not be granted for a NO_SAC item"
 
 
 # ---------------------------------------------------------------------------
 # SAC-004: AUTOSPLIT with group members splits silver
 # ---------------------------------------------------------------------------
+
 
 def test_sacrifice_autosplit_with_group(test_room, actor, object_factory, movable_char_factory):
     """SAC-004: PlayerFlag.AUTOSPLIT + 2+ group members causes silver to split.
@@ -158,8 +170,7 @@ def test_sacrifice_autosplit_with_group(test_room, actor, object_factory, movabl
     PLR_AUTOSPLIT = 1 << 7 = 128 (not 0x00002000 which was the old wrong value).
     """
     # Level 10 object: silver = max(1, 10*3) = 30, cost=100 => min(30,100) = 30
-    obj = _make_sacrificeable_obj(object_factory, short_descr="a silver dagger",
-                                  level=10, cost=100)
+    obj = _make_sacrificeable_obj(object_factory, short_descr="a silver dagger", level=10, cost=100)
     test_room.contents.append(obj)
     obj.location = test_room
 
@@ -178,17 +189,14 @@ def test_sacrifice_autosplit_with_group(test_room, actor, object_factory, movabl
 
     assert "silver" in result.lower(), f"Actor should get silver msg; got: {result!r}"
     # After autosplit of 30 silver between 2 members, actor should have 15 (split gives each 15)
-    assert actor.silver < 30, (
-        f"AUTOSPLIT should have reduced actor silver below 30; got {actor.silver}"
-    )
-    assert follower.silver > 0, (
-        f"Follower should have received split silver; got {follower.silver}"
-    )
+    assert actor.silver < 30, f"AUTOSPLIT should have reduced actor silver below 30; got {actor.silver}"
+    assert follower.silver > 0, f"Follower should have received split silver; got {follower.silver}"
 
 
 # ---------------------------------------------------------------------------
 # SAC-005: Zero-cost non-corpse gives zero silver
 # ---------------------------------------------------------------------------
+
 
 def test_sacrifice_zero_cost_non_corpse_gives_zero_silver(test_room, actor, object_factory):
     """SAC-005: UMIN(silver, obj->cost) is unconditional — zero cost gives 0 silver.
@@ -197,8 +205,7 @@ def test_sacrifice_zero_cost_non_corpse_gives_zero_silver(test_room, actor, obje
     Old Python code had 'if obj_cost > 0' guard which wrongly gave level*3 silver.
     """
     # Level 10 gives silver=30 before cap; cost=0 => min(30, 0) = 0
-    obj = _make_sacrificeable_obj(object_factory, short_descr="a worthless trinket",
-                                  level=10, cost=0)
+    obj = _make_sacrificeable_obj(object_factory, short_descr="a worthless trinket", level=10, cost=0)
     test_room.contents.append(obj)
     obj.location = test_room
 
@@ -209,6 +216,4 @@ def test_sacrifice_zero_cost_non_corpse_gives_zero_silver(test_room, actor, obje
     # The TO_CHAR message in ROM is only sent after silver is calculated, and silver=0
     # means ROM says "one silver coin" only when silver==1. silver=0 is an edge case.
     # The key invariant: actor.silver should be 0 (not 30).
-    assert actor.silver == 0, (
-        f"Zero-cost non-corpse should yield 0 silver (SAC-005); got {actor.silver}"
-    )
+    assert actor.silver == 0, f"Zero-cost non-corpse should yield 0 silver (SAC-005); got {actor.silver}"

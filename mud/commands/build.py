@@ -1281,6 +1281,7 @@ def _redit_mlist(room: Room, arg: str) -> str:
         return "Mobile(s) not found in this area."
     f_all = arg.lower() == "all"
     from mud.world.char_find import is_name
+
     lines: list[str] = []
     col = 0
     for vnum in range(int(area.min_vnum), int(area.max_vnum) + 1):
@@ -1310,6 +1311,7 @@ def _redit_olist(room: Room, arg: str) -> str:
     f_all = arg.lower() == "all"
     from mud.models.constants import ItemType
     from mud.world.char_find import is_name
+
     # check if arg matches an item type name (mirrors flag_value(type_flags, arg))
     type_match: int | None = None
     for member in ItemType:
@@ -2303,13 +2305,13 @@ def _oedit_addaffect(obj_proto, arg: str) -> str:
         return "Valid affects are:\n(use 'strength', 'dexterity', 'hp', 'mana', 'ac', 'hitroll', 'damroll', etc.)"
     modifier = int(mod_str)
     af = Affect(
-        where=_TO_OBJECT,   # mirroring ROM src/olc_act.c:2843 — pAf->where = TO_OBJECT
-        type=-1,            # mirroring ROM src/olc_act.c:2844 — pAf->type = -1
+        where=_TO_OBJECT,  # mirroring ROM src/olc_act.c:2843 — pAf->where = TO_OBJECT
+        type=-1,  # mirroring ROM src/olc_act.c:2844 — pAf->type = -1
         level=int(getattr(obj_proto, "level", 0) or 0),
-        duration=-1,        # mirroring ROM src/olc_act.c:2845 — pAf->duration = -1
+        duration=-1,  # mirroring ROM src/olc_act.c:2845 — pAf->duration = -1
         location=loc_val,
         modifier=modifier,
-        bitvector=0,        # mirroring ROM src/olc_act.c:2846 — pAf->bitvector = 0
+        bitvector=0,  # mirroring ROM src/olc_act.c:2846 — pAf->bitvector = 0
     )
     obj_proto.affected.append(af)
     _mark_obj_changed(obj_proto)
@@ -2375,7 +2377,7 @@ def _oedit_delaffect(obj_proto, arg: str) -> str:
         if value >= len(affected):
             return "No such affect."
         # mirroring ROM src/olc_act.c:2963-2976 — splice at index
-        obj_proto.affected = affected[:value] + affected[value + 1:]
+        obj_proto.affected = affected[:value] + affected[value + 1 :]
     _mark_obj_changed(obj_proto)
     return "Affect removed."
 
@@ -3078,6 +3080,7 @@ def _parse_dice(arg: str) -> tuple[int, int, int] | None:
     Returns None on parse error.
     """
     import re
+
     # strip inner non-digit separators so both "3 8 10" and "3d8+10" work
     tokens = re.split(r"[^\d]+", arg.strip())
     tokens = [t for t in tokens if t]
@@ -3239,7 +3242,7 @@ def _medit_addmprog(mob_proto, arg: str) -> str:
         vnum=vnum,
         code=getattr(mob_index, "mprog_code", None),
     )
-    mob_proto.mprogs.insert(0, mp)   # mirroring ROM list->next = pMob->mprogs; pMob->mprogs = list
+    mob_proto.mprogs.insert(0, mp)  # mirroring ROM list->next = pMob->mprogs; pMob->mprogs = list
     mob_proto.mprog_flags |= trig_val
     _mark_mob_changed(mob_proto)
     return "Mprog Added."
@@ -3264,7 +3267,7 @@ def _medit_delmprog(mob_proto, arg: str) -> str:
         if value >= len(mprogs):
             return "No such mprog."
         removed = mprogs[value]
-        mob_proto.mprogs = mprogs[:value] + mprogs[value + 1:]
+        mob_proto.mprogs = mprogs[:value] + mprogs[value + 1 :]
         mob_proto.mprog_flags &= ~removed.trig_type
     _mark_mob_changed(mob_proto)
     return "Mprog removed."
@@ -3647,7 +3650,9 @@ def _medit_show(mob_proto) -> str:
     area_vnum = -1 if area is None else int(getattr(area, "vnum", 0) or 0)
     area_name = "No Area" if area is None else (getattr(area, "name", None) or "No Area")
     name = mob_proto.player_name or ""
-    act_bits = int(mob_proto.get_act_flags()) if hasattr(mob_proto, "get_act_flags") else _coerce_int(mob_proto.act_flags)
+    act_bits = (
+        int(mob_proto.get_act_flags()) if hasattr(mob_proto, "get_act_flags") else _coerce_int(mob_proto.act_flags)
+    )
     sex = _format_sex(getattr(mob_proto, "sex", 0))
     race = _format_race(getattr(mob_proto, "race", ""))
     level = _coerce_int(getattr(mob_proto, "level", 0))

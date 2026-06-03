@@ -35,7 +35,6 @@ from mud.registry import room_registry
 
 @pytest.fixture(autouse=True)
 def _reset_registry():  # noqa: PT004 — autouse fixture
-
     snapshot = list(character_registry)
     character_registry.clear()
     yield
@@ -67,18 +66,13 @@ def _assert_coherent(*rooms: Room) -> None:
                 f"{getattr(ch, 'name', '?')} sits in room {room.vnum}.people "
                 f"but ch.room is {getattr(ch.room, 'vnum', None)}"
             )
-            assert id(ch) not in seen, (
-                f"{getattr(ch, 'name', '?')} appears in multiple rooms"
-            )
+            assert id(ch) not in seen, f"{getattr(ch, 'name', '?')} appears in multiple rooms"
             seen.add(id(ch))
     for ch in character_registry:
         room = getattr(ch, "room", None)
         if room is None or room not in rooms:
             continue
-        assert ch in room.people, (
-            f"{getattr(ch, 'name', '?')}.room == {room.vnum} "
-            f"but missing from room.people"
-        )
+        assert ch in room.people, f"{getattr(ch, 'name', '?')}.room == {room.vnum} but missing from room.people"
 
 
 def test_canonical_helpers_keep_bidirectional_state():
@@ -158,8 +152,8 @@ def test_mob_instance_move_to_room_preserves_coherence():
     """MobInstance.move_to_room (mud/spawning/templates.py:436-440) is a
     direct room.people mutator used by mob respawn / patrol. Must keep
     both sides in sync."""
-    from mud.spawning.templates import MobInstance
     from mud.models.mob import MobIndex
+    from mud.spawning.templates import MobInstance
 
     room_a = _mk_room(91021)
     room_b = _mk_room(91022)
@@ -227,8 +221,7 @@ def test_global_registry_coherence_at_rest():
             if room is None:
                 continue
             assert ch in room.people, (
-                f"{getattr(ch, 'name', '?')}.room={room.vnum} but "
-                f"missing from room.people — broken contract"
+                f"{getattr(ch, 'name', '?')}.room={room.vnum} but missing from room.people — broken contract"
             )
 
         for room in room_registry.values():

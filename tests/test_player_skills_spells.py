@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import pytest
 
-from mud.models.character import Character
 from mud.models.classes import get_player_class
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import create_test_character, initialize_world

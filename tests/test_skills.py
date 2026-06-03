@@ -16,8 +16,8 @@ from mud.models.constants import (
     Position,
     RoomFlag,
     Stat,
-    WearLocation,
     WeaponType,
+    WearLocation,
 )
 from mud.models.object import Object, ObjIndex
 from mud.models.room import Room
@@ -955,7 +955,12 @@ def test_fire_breath_hits_room_targets(monkeypatch: pytest.MonkeyPatch) -> None:
     assert result.lag == max(1, skill.lag)
 
     room_effects = getattr(room, "last_spell_effects", [])
-    assert {"effect": "fire", "level": 40, "damage": 101, "target": magic_effects.SpellTarget.TARGET_ROOM} in room_effects
+    assert {
+        "effect": "fire",
+        "level": 40,
+        "damage": 101,
+        "target": magic_effects.SpellTarget.TARGET_ROOM,
+    } in room_effects
 
     target_effects = getattr(target, "last_spell_effects", [])
     assert target_effects

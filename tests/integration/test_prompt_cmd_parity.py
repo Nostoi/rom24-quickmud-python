@@ -111,9 +111,7 @@ def test_prompt_cmd_001_preserves_trailing_whitespace_on_template() -> None:
             # prompt: dispatch any cheap command to force a fresh prompt
             # render.
             _, prompt = _send_command(websocket, "look")
-            assert "BOB> " in prompt["text"], (
-                f"trailing space not preserved in rendered prompt; got {prompt['text']!r}"
-            )
+            assert "BOB> " in prompt["text"], f"trailing space not preserved in rendered prompt; got {prompt['text']!r}"
 
 
 def test_prompt_cmd_004_truncates_template_to_50_chars() -> None:
@@ -142,9 +140,7 @@ def test_prompt_cmd_004_truncates_template_to_50_chars() -> None:
             assert f"Prompt set to {expected_stored}" in transcript, (
                 f"do_prompt did not truncate to 50 chars; transcript:\n{transcript}"
             )
-            assert "A" * 51 not in transcript, (
-                "stored prompt template exceeded ROM's 50-char cap"
-            )
+            assert "A" * 51 not in transcript, "stored prompt template exceeded ROM's 50-char cap"
 
 
 def test_prompt_cmd_005_appends_trailing_space_unless_pct_c_suffix() -> None:
@@ -168,16 +164,14 @@ def test_prompt_cmd_005_appends_trailing_space_unless_pct_c_suffix() -> None:
             _create_elf_mage(websocket, "Promwe")
             transcript, _ = _send_command(websocket, "prompt TAG>")
             assert "Prompt set to TAG> \n" in transcript or "Prompt set to TAG> \r" in transcript, (
-                f"do_prompt did not append trailing space to non-%c template; "
-                f"transcript:\n{transcript!r}"
+                f"do_prompt did not append trailing space to non-%c template; transcript:\n{transcript!r}"
             )
 
         with client.websocket_connect("/ws") as websocket:
             _create_elf_mage(websocket, "Promwf")
             transcript, _ = _send_command(websocket, "prompt TAG%c")
             assert "Prompt set to TAG%c\n" in transcript or "Prompt set to TAG%c\r" in transcript, (
-                f"do_prompt incorrectly appended space to %c-suffixed template; "
-                f"transcript:\n{transcript!r}"
+                f"do_prompt incorrectly appended space to %c-suffixed template; transcript:\n{transcript!r}"
             )
             assert "Prompt set to TAG%c " not in transcript, (
                 "ROM does not append a trailing space when buf ends with %c"
@@ -204,9 +198,7 @@ def test_prompt_cmd_003_smash_tilde_on_custom_template() -> None:
         with client.websocket_connect("/ws") as websocket:
             _create_elf_mage(websocket, "Promwc")
             transcript, _ = _send_command(websocket, "prompt T~AG>")
-            assert "Prompt set to T-AG>" in transcript, (
-                f"smash_tilde not applied; transcript:\n{transcript}"
-            )
+            assert "Prompt set to T-AG>" in transcript, f"smash_tilde not applied; transcript:\n{transcript}"
             assert "Prompt set to T~AG>" not in transcript, (
                 "tilde leaked through to stored template — would corrupt pfile"
             )

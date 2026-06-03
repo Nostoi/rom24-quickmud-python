@@ -133,8 +133,7 @@ def test_do_drop_fires_act_trigger_on_listening_npc():
 
     _ = inv_module  # keep import alive for diagnostics
     assert fired, (
-        "do_drop must dispatch mp_act_trigger on its TO_ROOM broadcast — "
-        "ROM src/act_obj.c:608, no MOBtrigger wrap"
+        "do_drop must dispatch mp_act_trigger on its TO_ROOM broadcast — ROM src/act_obj.c:608, no MOBtrigger wrap"
     )
     assert fired[0][0] == "watcher"
     assert "drops" in fired[0][1]

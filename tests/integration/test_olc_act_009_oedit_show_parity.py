@@ -67,10 +67,12 @@ def test_wear_and_extra_flags_use_flag_string() -> None:
 
 def test_extra_descr_keywords_row_conditional() -> None:
     """ROM olc_act.c:2776-2790 — `Ex desc kwd: [kw1][kw2]\\n\\r`."""
-    proto = _make_proto(extra_descr=[
-        {"keyword": "rune", "description": "ignored"},
-        {"keyword": "engraving", "description": "ignored"},
-    ])
+    proto = _make_proto(
+        extra_descr=[
+            {"keyword": "rune", "description": "ignored"},
+            {"keyword": "engraving", "description": "ignored"},
+        ]
+    )
     output = _oedit_show(proto)
     assert "Ex desc kwd: [rune][engraving]" in output
 

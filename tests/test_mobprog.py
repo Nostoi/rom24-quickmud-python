@@ -1,5 +1,5 @@
-from mud.mobprog import Trigger
 import mud.mobprog as mobprog
+from mud.mobprog import Trigger
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, Position
 from mud.models.mob import MobProgram

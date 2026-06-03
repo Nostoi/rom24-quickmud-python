@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import pytest
 
-from mud.commands.communication import do_emote, do_pose, do_say, do_tell, do_reply, do_shout, do_yell
+from mud.commands.communication import do_emote, do_pose, do_reply, do_say, do_shout, do_tell, do_yell
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
 from mud.registry import room_registry

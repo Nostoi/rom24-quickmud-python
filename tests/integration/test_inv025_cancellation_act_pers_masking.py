@@ -14,8 +14,6 @@ the ROM ``act(TO_ROOM)`` contract.
 
 from __future__ import annotations
 
-import pytest
-
 from mud.models.character import Character, SpellEffect
 from mud.models.constants import AffectFlag, Sector
 from mud.models.room import Room
@@ -59,9 +57,7 @@ class TestCancellationPERSMasking:
 
         onlooker = _pc("Bystan", room)
 
-        target.apply_spell_effect(
-            SpellEffect(name="blindness", duration=10, level=31, affect_flag=AffectFlag.BLIND)
-        )
+        target.apply_spell_effect(SpellEffect(name="blindness", duration=10, level=31, affect_flag=AffectFlag.BLIND))
         assert target.has_affect(AffectFlag.BLIND)
 
         cancellation(caster, target)
@@ -80,9 +76,7 @@ class TestCancellationPERSMasking:
 
         onlooker = _pc("Bystan", room)
 
-        target.apply_spell_effect(
-            SpellEffect(name="blindness", duration=10, level=31, affect_flag=AffectFlag.BLIND)
-        )
+        target.apply_spell_effect(SpellEffect(name="blindness", duration=10, level=31, affect_flag=AffectFlag.BLIND))
 
         cancellation(caster, target)
 

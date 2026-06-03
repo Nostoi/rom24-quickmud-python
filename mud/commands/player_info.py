@@ -219,5 +219,3 @@ def do_info(char: Character, args: str) -> str:
     from mud.commands.group_commands import do_group
 
     return do_group(char, "")
-
-

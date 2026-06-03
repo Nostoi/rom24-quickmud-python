@@ -16,8 +16,8 @@ import pytest
 from mud.models.constants import ItemType, WearLocation
 from mud.models.mob import MobIndex
 from mud.models.obj import ObjIndex
-from mud.models.room_json import ResetJson
 from mud.models.room import Room
+from mud.models.room_json import ResetJson
 from mud.registry import mob_registry, obj_registry, room_registry
 
 # ---------------------------------------------------------------------------
@@ -118,9 +118,7 @@ def call_resets(builder_char, args: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def test_do_resets_obj_inside_container_adds_p_reset(
-    builder_char, olc_room, obj_proto_sword, obj_proto_bag
-):
+def test_do_resets_obj_inside_container_adds_p_reset(builder_char, olc_room, obj_proto_sword, obj_proto_bag):
     """<n> obj <vnum> inside <containerVnum> -> P-reset with correct fields.
 
     mirrors ROM src/olc.c:1376-1391
@@ -133,13 +131,11 @@ def test_do_resets_obj_inside_container_adds_p_reset(
     assert r.command == "P"
     assert r.arg1 == 9020
     assert r.arg3 == 9021
-    assert r.arg2 == 1   # default limit
-    assert r.arg4 == 1   # default count
+    assert r.arg2 == 1  # default limit
+    assert r.arg4 == 1  # default count
 
 
-def test_do_resets_obj_inside_with_explicit_limit_count(
-    builder_char, olc_room, obj_proto_sword, obj_proto_bag
-):
+def test_do_resets_obj_inside_with_explicit_limit_count(builder_char, olc_room, obj_proto_sword, obj_proto_bag):
     """<n> obj <vnum> inside <containerVnum> 3 2 -> uses explicit limit/count.
 
     mirrors ROM src/olc.c:1388-1390
@@ -152,9 +148,7 @@ def test_do_resets_obj_inside_with_explicit_limit_count(
     assert r.arg4 == 2
 
 
-def test_do_resets_obj_inside_corpse_npc_ok(
-    builder_char, olc_room, obj_proto_sword, obj_proto_corpse
-):
+def test_do_resets_obj_inside_corpse_npc_ok(builder_char, olc_room, obj_proto_sword, obj_proto_corpse):
     """ITEM_CORPSE_NPC is a valid container (ROM accepts it alongside ITEM_CONTAINER).
 
     mirrors ROM src/olc.c:1381-1382
@@ -166,9 +160,7 @@ def test_do_resets_obj_inside_corpse_npc_ok(
     assert r.arg3 == 9022
 
 
-def test_do_resets_obj_inside_non_container_rejected(
-    builder_char, olc_room, obj_proto_sword
-):
+def test_do_resets_obj_inside_non_container_rejected(builder_char, olc_room, obj_proto_sword):
     """Non-container vnum -> 'Object 2 is not a container.\n\r'.
 
     mirrors ROM src/olc.c:1383-1385
@@ -215,9 +207,7 @@ def test_do_resets_obj_room_bad_vnum_rejected(builder_char, olc_room):
 # ---------------------------------------------------------------------------
 
 
-def test_do_resets_obj_wear_loc_lfinger_adds_e_reset(
-    builder_char, olc_room, obj_proto_sword
-):
+def test_do_resets_obj_wear_loc_lfinger_adds_e_reset(builder_char, olc_room, obj_proto_sword):
     """<n> obj <vnum> lfinger -> E-reset with arg3=FINGER_L.
 
     mirrors ROM src/olc.c:1409-1431
@@ -230,9 +220,7 @@ def test_do_resets_obj_wear_loc_lfinger_adds_e_reset(
     assert r.arg3 == int(WearLocation.FINGER_L)
 
 
-def test_do_resets_obj_wear_loc_hold_adds_e_reset(
-    builder_char, olc_room, obj_proto_sword
-):
+def test_do_resets_obj_wear_loc_hold_adds_e_reset(builder_char, olc_room, obj_proto_sword):
     """<n> obj <vnum> hold -> E-reset with arg3=HOLD.
 
     mirrors ROM src/olc.c:1409-1431
@@ -244,9 +232,7 @@ def test_do_resets_obj_wear_loc_hold_adds_e_reset(
     assert r.arg3 == int(WearLocation.HOLD)
 
 
-def test_do_resets_obj_wear_loc_none_adds_g_reset(
-    builder_char, olc_room, obj_proto_sword
-):
+def test_do_resets_obj_wear_loc_none_adds_g_reset(builder_char, olc_room, obj_proto_sword):
     """<n> obj <vnum> none -> G-reset (WEAR_NONE means inventory).
 
     mirrors ROM src/olc.c:1427-1429
@@ -352,9 +338,9 @@ def test_do_resets_mob_with_optional_max_args(builder_char, olc_room, mob_proto)
     r = olc_room.resets[0]
     assert r.command == "M"
     assert r.arg1 == 9010
-    assert r.arg2 == 5    # max # in area
+    assert r.arg2 == 5  # max # in area
     assert r.arg3 == 9001  # room vnum
-    assert r.arg4 == 2    # max # in room
+    assert r.arg4 == 2  # max # in room
 
 
 def test_do_resets_mob_defaults_max_args(builder_char, olc_room, mob_proto):

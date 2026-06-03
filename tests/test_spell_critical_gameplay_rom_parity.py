@@ -13,9 +13,9 @@ from mud.math.c_compat import c_div
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, DamageType, Position, RoomFlag
 from mud.models.room import Room
+from mud.registry import room_registry
 from mud.skills.handlers import fireball, heal, sanctuary, teleport, word_of_recall
 from mud.utils import rng_mm
-from mud.registry import room_registry
 
 
 def make_character(**overrides) -> Character:

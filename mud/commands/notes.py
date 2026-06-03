@@ -359,8 +359,7 @@ def do_note(char: Character, args: str) -> str:
             _clear_note_afk(char, existing)
             pcdata.in_progress = None
             cancellation = (
-                "Note in progress cancelled because you did not manage to write any text\n"
-                "before losing link.\n\n"
+                "Note in progress cancelled because you did not manage to write any text\nbefore losing link.\n\n"
             )
         draft = _ensure_draft(char, board)
         _set_note_afk(char, draft)

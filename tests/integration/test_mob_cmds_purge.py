@@ -67,10 +67,7 @@ class TestMpPurgeNoLiteralAllKeyword:
             " (see src/mob_cmds.c:655-665) — the token must be treated as"
             " a name, not a wildcard."
         )
-        assert any(
-            "Mppurge" in record.message and "Bad argument" in record.message
-            for record in caplog.records
-        ), (
+        assert any("Mppurge" in record.message and "Bad argument" in record.message for record in caplog.records), (
             "expected an Mppurge bug log when the named target cannot be"
             f" resolved; got {[r.message for r in caplog.records]!r}."
         )
@@ -80,7 +77,6 @@ class TestMpPurgeNoLiteralAllKeyword:
         do_mppurge(controller, "")
 
         assert ally not in controller.room.people, (
-            "do_mppurge('') with empty arg must purge non-NOPURGE NPCs"
-            " (ROM src/mob_cmds.c:631-652)."
+            "do_mppurge('') with empty arg must purge non-NOPURGE NPCs (ROM src/mob_cmds.c:631-652)."
         )
         assert controller in controller.room.people, "self never purged"

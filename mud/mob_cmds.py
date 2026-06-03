@@ -24,6 +24,7 @@ def _bug(message: str, ch: Character) -> None:
     vnum = int(getattr(proto, "vnum", 0) or 0) if getattr(ch, "is_npc", False) else 0
     logger.warning("%s from vnum %d.", message, vnum)
 
+
 if TYPE_CHECKING:
     from mud.models.character import Character
     from mud.models.object import Object
@@ -537,9 +538,7 @@ def do_mpcast(ch: Character, argument: str) -> None:
         return
 
     target_token = rest.strip()
-    target_kind = _TARGET_STRINGS.get(
-        (getattr(spell, "target", "") or "").strip().lower()
-    )
+    target_kind = _TARGET_STRINGS.get((getattr(spell, "target", "") or "").strip().lower())
 
     # Mirroring ROM src/mob_cmds.c:1043-1066 — switch on skill_table[sn].target
     # (TAR_*). ROM resolves both vch=get_char_room and obj=get_obj_here up
@@ -937,9 +936,7 @@ def do_mptransfer(ch: Character, argument: str) -> None:
             occupant_name = getattr(occupant, "name", "") or ""
             if not occupant_name:
                 continue
-            recurse_arg = (
-                f"{occupant_name} {location_token}" if location_token else occupant_name
-            )
+            recurse_arg = f"{occupant_name} {location_token}" if location_token else occupant_name
             _self.do_mptransfer(ch, recurse_arg)
         return
     victim = _find_char_world(target_name)
@@ -1050,11 +1047,7 @@ def do_mpkill(ch: Character, argument: str) -> None:
         return
     # mirroring ROM src/mob_cmds.c:364-369 — a charmed mob refuses to attack
     # its master, otherwise scripts could weaponise charm to break it.
-    if (
-        hasattr(ch, "has_affect")
-        and ch.has_affect(AffectFlag.CHARM)
-        and getattr(ch, "master", None) is target
-    ):
+    if hasattr(ch, "has_affect") and ch.has_affect(AffectFlag.CHARM) and getattr(ch, "master", None) is target:
         return
     from mud.combat import multi_hit
 
@@ -1338,9 +1331,7 @@ def do_mpflee(ch: Character, argument: str) -> None:
             continue
         # mirroring ROM src/mob_cmds.c:1277-1280 — NPCs skip exits whose dest
         # is flagged ROOM_NO_MOB.
-        if is_npc and (
-            int(getattr(target_room, "room_flags", 0) or 0) & int(RoomFlag.ROOM_NO_MOB)
-        ):
+        if is_npc and (int(getattr(target_room, "room_flags", 0) or 0) & int(RoomFlag.ROOM_NO_MOB)):
             continue
         # mirroring ROM src/mob_cmds.c:1283 — `move_char(ch, door, FALSE)`
         move_character(ch, _DIR_NAMES[door])

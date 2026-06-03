@@ -22,6 +22,7 @@ from collections.abc import Callable
 
 import pytest
 
+import mud.skills.handlers as spell_handlers
 from mud.math.c_compat import c_div
 from mud.models.character import Character, character_registry
 from mud.models.constants import AffectFlag, DamageType, Position, Stat
@@ -43,8 +44,6 @@ from mud.skills.handlers import (
     magic_missile,
 )
 from mud.utils import rng_mm
-
-import mud.skills.handlers as spell_handlers
 
 
 def make_character(**overrides) -> Character:

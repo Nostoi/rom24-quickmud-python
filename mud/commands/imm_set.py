@@ -3,10 +3,11 @@ Set/string commands - set, mset, oset, rset, sset, string.
 
 ROM Reference: src/act_wiz.c
 """
+
 from __future__ import annotations
 
+from mud.commands.imm_commands import get_char_world, get_trust
 from mud.models.character import Character
-from mud.commands.imm_commands import get_trust, get_char_world
 from mud.utils.text import smash_tilde
 
 
@@ -19,12 +20,14 @@ def do_set(char: Character, args: str) -> str:
     Dispatches to do_mset/do_sset/do_oset/do_rset based on first argument.
     """
     if not args or not args.strip():
-        return ("Syntax:\n\r"
-                "  set mob       <name> <field> <value>\n\r"
-                "  set character <name> <field> <value>\n\r"
-                "  set obj       <name> <field> <value>\n\r"
-                "  set room      <room> <field> <value>\n\r"
-                "  set skill     <name> <spell or skill> <value>\n\r")
+        return (
+            "Syntax:\n\r"
+            "  set mob       <name> <field> <value>\n\r"
+            "  set character <name> <field> <value>\n\r"
+            "  set obj       <name> <field> <value>\n\r"
+            "  set room      <room> <field> <value>\n\r"
+            "  set skill     <name> <spell or skill> <value>\n\r"
+        )
 
     parts = args.strip().split(None, 1)
     first_arg = parts[0].lower()
@@ -61,13 +64,15 @@ def do_mset(char: Character, args: str) -> str:
     parts = smash.split(None, 2)
 
     if len(parts) < 3 or not parts[0] or not parts[1] or not parts[2]:
-        return ("Syntax:\n\r"
-                "  set char <name> <field> <value>\n\r"
-                "  Field being one of:\n\r"
-                "    str int wis dex con sex class level\n\r"
-                "    race group gold silver hp mana move prac\n\r"
-                "    align train thirst hunger drunk full\n\r"
-                "    security hours\n\r")
+        return (
+            "Syntax:\n\r"
+            "  set char <name> <field> <value>\n\r"
+            "  Field being one of:\n\r"
+            "    str int wis dex con sex class level\n\r"
+            "    race group gold silver hp mana move prac\n\r"
+            "    align train thirst hunger drunk full\n\r"
+            "    security hours\n\r"
+        )
 
     target_name, field, value_str = parts[0], parts[1].lower(), parts[2]
 
@@ -79,8 +84,8 @@ def do_mset(char: Character, args: str) -> str:
 
     value = int(value_str) if value_str.lstrip("-").isdigit() else -1
 
-    from mud.models.constants import STAT_STR, STAT_INT, STAT_WIS, STAT_DEX, STAT_CON
     from mud.handler import get_max_train
+    from mud.models.constants import STAT_CON, STAT_DEX, STAT_INT, STAT_STR, STAT_WIS
 
     victim_name = getattr(victim, "name", "someone")
 
@@ -256,7 +261,7 @@ def do_mset(char: Character, args: str) -> str:
         return ""
 
     if field.startswith("race"):
-        from mud.models.races import RACE_TABLE, PC_RACE_TABLE
+        from mud.models.races import PC_RACE_TABLE, RACE_TABLE
 
         race_found = None
         for r in RACE_TABLE:
@@ -314,10 +319,12 @@ def do_sset(char: Character, args: str) -> str:
     parts = args.strip().split(None, 2)
 
     if len(parts) < 3 or not parts[0] or not parts[1] or not parts[2]:
-        return ("Syntax:\n\r"
-                "  set skill <name> <spell or skill> <value>\n\r"
-                "  set skill <name> all <value>\n\r"
-                "   (use the name of the skill, not the number)\n\r")
+        return (
+            "Syntax:\n\r"
+            "  set skill <name> <spell or skill> <value>\n\r"
+            "  set skill <name> all <value>\n\r"
+            "   (use the name of the skill, not the number)\n\r"
+        )
 
     target_name, skill_name, value_str = parts[0], parts[1].lower(), parts[2]
 
@@ -343,6 +350,7 @@ def do_sset(char: Character, args: str) -> str:
 
     if skill_name == "all":
         from mud import registry
+
         skill_table = getattr(registry, "skill_table", [])
         for sn, skill in enumerate(skill_table):
             if skill and getattr(skill, "name", None):
@@ -351,6 +359,7 @@ def do_sset(char: Character, args: str) -> str:
         return ""
 
     from mud import registry
+
     skill_table = getattr(registry, "skill_table", [])
 
     for sn, skill in enumerate(skill_table):
@@ -377,15 +386,18 @@ def do_oset(char: Character, args: str) -> str:
     parts = smash.split(None, 2)
 
     if len(parts) < 3 or not parts[0] or not parts[1] or not parts[2]:
-        return ("Syntax:\n\r"
-                "  set obj <object> <field> <value>\n\r"
-                "  Field being one of:\n\r"
-                "    value0 value1 value2 value3 value4 (v1-v4)\n\r"
-                "    extra wear level weight cost timer\n\r")
+        return (
+            "Syntax:\n\r"
+            "  set obj <object> <field> <value>\n\r"
+            "  Field being one of:\n\r"
+            "    value0 value1 value2 value3 value4 (v1-v4)\n\r"
+            "    extra wear level weight cost timer\n\r"
+        )
 
     target_name, field, value_str = parts[0], parts[1].lower(), parts[2]
 
     from mud.world.obj_find import get_obj_world
+
     obj = get_obj_world(char, target_name)
     if obj is None:
         return "Nothing like that in heaven or earth.\n\r"
@@ -453,21 +465,23 @@ def do_rset(char: Character, args: str) -> str:
     parts = smash.split(None, 2)
 
     if len(parts) < 3 or not parts[0] or not parts[1] or not parts[2]:
-        return ("Syntax:\n\r"
-                "  set room <location> <field> <value>\n\r"
-                "  Field being one of:\n\r"
-                "    flags sector\n\r")
+        return "Syntax:\n\r  set room <location> <field> <value>\n\r  Field being one of:\n\r    flags sector\n\r"
 
     location_name, field, value_str = parts[0], parts[1].lower(), parts[2]
 
-    from mud.commands.imm_commands import find_location, _is_room_owner, _room_is_private
+    from mud.commands.imm_commands import _is_room_owner, _room_is_private, find_location
     from mud.models.constants import MAX_LEVEL
 
     location = find_location(char, location_name)
     if location is None:
         return "No such location.\n\r"
 
-    if not _is_room_owner(char, location) and char.room is not location and _room_is_private(location) and get_trust(char) < MAX_LEVEL:
+    if (
+        not _is_room_owner(char, location)
+        and char.room is not location
+        and _room_is_private(location)
+        and get_trust(char) < MAX_LEVEL
+    ):
         return "That room is private right now.\n\r"
 
     if not value_str.lstrip("-").isdigit():
@@ -503,11 +517,13 @@ def do_string(char: Character, args: str) -> str:
     parts = smash.split(None, 3)
 
     if len(parts) < 4 or not parts[0] or not parts[1] or not parts[2] or not parts[3]:
-        return ("Syntax:\n\r"
-                "  string char <name> <field> <string>\n\r"
-                "    fields: name short long desc title spec\n\r"
-                "  string obj  <name> <field> <string>\n\r"
-                "    fields: name short long extended\n\r")
+        return (
+            "Syntax:\n\r"
+            "  string char <name> <field> <string>\n\r"
+            "    fields: name short long desc title spec\n\r"
+            "  string obj  <name> <field> <string>\n\r"
+            "    fields: name short long extended\n\r"
+        )
 
     str_type, target_name, field, value = parts[0].lower(), parts[1], parts[2].lower(), parts[3]
 
@@ -541,6 +557,7 @@ def do_string(char: Character, args: str) -> str:
                 return "Not on NPC's.\n\r"
 
             from mud.commands.character import set_title
+
             set_title(victim, value)
             return ""
 

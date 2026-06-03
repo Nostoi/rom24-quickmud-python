@@ -143,8 +143,7 @@ def test_say_room_act_fires_act_trigger_on_npc_listener():
 
     listener_triggers = [(n, m) for n, m in fired if n == "listener" and "says" in m.lower()]
     assert listener_triggers, (
-        "do_say must dispatch TRIG_ACT for its unsuppressed TO_ROOM act() "
-        f"(ROM src/act_comm.c:776); fired: {fired}"
+        f"do_say must dispatch TRIG_ACT for its unsuppressed TO_ROOM act() (ROM src/act_comm.c:776); fired: {fired}"
     )
 
 

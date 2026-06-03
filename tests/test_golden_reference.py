@@ -11,27 +11,17 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict
-from unittest.mock import patch
+from typing import Any
 
 import pytest
 
-from mud.combat.engine import (
-    apply_damage,
-    check_dodge,
-    check_parry,
-    check_shield_block,
-)
 from mud.math.c_compat import c_div, c_mod, urange
-from mud.models.character import Character
-from mud.models.constants import DamageType
 from mud.utils import rng_mm
-
 
 GOLDEN_DIR = Path(__file__).parent / "data" / "golden"
 
 
-def load_golden_file(name: str) -> Dict[str, Any]:
+def load_golden_file(name: str) -> dict[str, Any]:
     """Load a golden reference file."""
     path = GOLDEN_DIR / f"{name}.golden.json"
     if not path.exists():
@@ -258,36 +248,42 @@ class TestSavingThrowGoldenReference:
 class TestCDivisionParity:
     """Critical: Verify c_div matches C integer division semantics."""
 
-    @pytest.mark.parametrize("a,b,expected", [
-        # Positive cases
-        (10, 3, 3),
-        (9, 3, 3),
-        (8, 3, 2),
-        (7, 3, 2),
-        (1, 3, 0),
-        (0, 3, 0),
-        # CRITICAL: Negative cases where C differs from Python //
-        (-10, 3, -3),   # C: -3, Python //: -4
-        (-9, 3, -3),    # C: -3, Python //: -3
-        (-8, 3, -2),    # C: -2, Python //: -3
-        (-7, 3, -2),    # C: -2, Python //: -3
-        (-1, 3, 0),     # C: 0, Python //: -1
-        (10, -3, -3),   # C: -3, Python //: -4
-        (-10, -3, 3),   # C: 3, Python //: 3
-    ])
+    @pytest.mark.parametrize(
+        "a,b,expected",
+        [
+            # Positive cases
+            (10, 3, 3),
+            (9, 3, 3),
+            (8, 3, 2),
+            (7, 3, 2),
+            (1, 3, 0),
+            (0, 3, 0),
+            # CRITICAL: Negative cases where C differs from Python //
+            (-10, 3, -3),  # C: -3, Python //: -4
+            (-9, 3, -3),  # C: -3, Python //: -3
+            (-8, 3, -2),  # C: -2, Python //: -3
+            (-7, 3, -2),  # C: -2, Python //: -3
+            (-1, 3, 0),  # C: 0, Python //: -1
+            (10, -3, -3),  # C: -3, Python //: -4
+            (-10, -3, 3),  # C: 3, Python //: 3
+        ],
+    )
     def test_c_div_matches_c_semantics(self, a, b, expected):
         """Verify c_div truncates toward zero like C."""
         result = c_div(a, b)
         assert result == expected, f"c_div({a}, {b}) = {result}, expected {expected}"
 
-    @pytest.mark.parametrize("a,b,expected", [
-        # c_mod must satisfy: a == b * c_div(a, b) + c_mod(a, b)
-        (-10, 3, -1),
-        (-9, 3, 0),
-        (-8, 3, -2),
-        (10, -3, 1),
-        (-10, -3, -1),
-    ])
+    @pytest.mark.parametrize(
+        "a,b,expected",
+        [
+            # c_mod must satisfy: a == b * c_div(a, b) + c_mod(a, b)
+            (-10, 3, -1),
+            (-9, 3, 0),
+            (-8, 3, -2),
+            (10, -3, 1),
+            (-10, -3, -1),
+        ],
+    )
     def test_c_mod_matches_c_semantics(self, a, b, expected):
         """Verify c_mod matches C modulo semantics."""
         result = c_mod(a, b)
@@ -300,14 +296,17 @@ class TestCDivisionParity:
 class TestURANGEParity:
     """Verify URANGE clamping matches ROM macro."""
 
-    @pytest.mark.parametrize("low,val,high,expected", [
-        (0, 5, 10, 5),      # In range
-        (0, -5, 10, 0),     # Below min
-        (0, 15, 10, 10),    # Above max
-        (-10, -5, 10, -5),  # Negative range
-        (5, 5, 5, 5),       # Edge: all equal
-        (0, 0, 0, 0),       # Zero
-    ])
+    @pytest.mark.parametrize(
+        "low,val,high,expected",
+        [
+            (0, 5, 10, 5),  # In range
+            (0, -5, 10, 0),  # Below min
+            (0, 15, 10, 10),  # Above max
+            (-10, -5, 10, -5),  # Negative range
+            (5, 5, 5, 5),  # Edge: all equal
+            (0, 0, 0, 0),  # Zero
+        ],
+    )
     def test_urange_clamping(self, low, val, high, expected):
         """Verify urange matches C URANGE macro."""
         result = urange(low, val, high)

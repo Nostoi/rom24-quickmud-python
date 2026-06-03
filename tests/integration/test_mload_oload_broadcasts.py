@@ -65,9 +65,7 @@ def test_mload_emits_to_room_broadcast_with_victim_short_descr() -> None:
         result = do_mload(admin, "88160")
         assert "Ok" in result
         msgs = "\n".join(bystander.messages)
-        assert "Admin has created a small rat" in msgs, (
-            f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
-        )
+        assert "Admin has created a small rat" in msgs, f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
         # actor must not see the room broadcast (ROM TO_ROOM excludes ch)
         actor_msgs = "\n".join(getattr(admin, "messages", []))
         assert "Admin has created a small rat" not in actor_msgs
@@ -88,12 +86,8 @@ def test_oload_emits_to_room_broadcast_with_obj_short_descr() -> None:
         result = do_oload(admin, "88260")
         assert "Ok" in result
         msgs = "\n".join(bystander.messages)
-        assert "Admin has created a shiny widget" in msgs, (
-            f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
-        )
+        assert "Admin has created a shiny widget" in msgs, f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
         actor_msgs = "\n".join(getattr(admin, "messages", []))
         assert "Admin has created a shiny widget" not in actor_msgs
     finally:
         obj_registry.pop(88260, None)
-
-

@@ -52,8 +52,7 @@ def test_character_remove_object_allows_negative_carry_number() -> None:
     ch.remove_object(obj)
 
     assert ch.carry_number == -1, (
-        f"carry_number={ch.carry_number}; ROM src/handler.c:1678 does "
-        "bare subtraction with no floor"
+        f"carry_number={ch.carry_number}; ROM src/handler.c:1678 does bare subtraction with no floor"
     )
 
 
@@ -69,12 +68,10 @@ def test_obj_from_char_allows_negative_carry_weight_and_number() -> None:
     _obj_from_char(ch, obj)
 
     assert ch.carry_weight == -5, (
-        f"carry_weight={ch.carry_weight}; ROM src/handler.c:1679 does "
-        "bare subtraction with no floor"
+        f"carry_weight={ch.carry_weight}; ROM src/handler.c:1679 does bare subtraction with no floor"
     )
     assert ch.carry_number == -1, (
-        f"carry_number={ch.carry_number}; ROM src/handler.c:1678 does "
-        "bare subtraction with no floor"
+        f"carry_number={ch.carry_number}; ROM src/handler.c:1678 does bare subtraction with no floor"
     )
 
 
@@ -91,10 +88,8 @@ def test_destroy_object_allows_negative_carry_weight_and_number() -> None:
     _destroy_object(ch, obj)
 
     assert ch.carry_weight == -5, (
-        f"carry_weight={ch.carry_weight}; ROM src/handler.c:1679 does "
-        "bare subtraction with no floor"
+        f"carry_weight={ch.carry_weight}; ROM src/handler.c:1679 does bare subtraction with no floor"
     )
     assert ch.carry_number == -1, (
-        f"carry_number={ch.carry_number}; ROM src/handler.c:1678 does "
-        "bare subtraction with no floor"
+        f"carry_number={ch.carry_number}; ROM src/handler.c:1678 does bare subtraction with no floor"
     )

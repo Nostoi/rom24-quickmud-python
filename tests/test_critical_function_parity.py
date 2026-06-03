@@ -29,10 +29,7 @@ The function mappings are:
 
 from __future__ import annotations
 
-from collections import deque
 from unittest.mock import MagicMock, patch
-
-import pytest
 
 from mud.combat.engine import (
     apply_damage,
@@ -47,7 +44,6 @@ from mud.models.character import Character
 from mud.models.constants import AffectFlag, DamageType, Position
 from mud.models.room import Room
 from mud.utils import rng_mm
-
 
 # ============================================================================
 # Affect System Tests (handler.c: affect_to_char, affect_remove, affect_strip)
@@ -448,7 +444,7 @@ class TestWeatherUpdate:
         from mud.game_loop import weather
 
         # Verify weather object exists and has mmhg
-        assert hasattr(weather, 'mmhg')
+        assert hasattr(weather, "mmhg")
         assert weather.mmhg is not None
         # Pressure should be in reasonable range
         assert 960 <= weather.mmhg <= 1040
@@ -458,8 +454,8 @@ class TestWeatherUpdate:
         from mud.game_loop import time_info, weather
 
         # Verify time_info and weather exist
-        assert hasattr(time_info, 'hour')
-        assert hasattr(weather, 'mmhg')
+        assert hasattr(time_info, "hour")
+        assert hasattr(weather, "mmhg")
         # Weather pressure should be positive
         assert weather.mmhg > 0
 

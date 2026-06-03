@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from mud.account import clear_active_accounts, create_character, login
+from mud.account import clear_active_accounts, login
 from mud.commands.admin_commands import cmd_telnetga
 from mud.config import (
     get_qmconfig,
@@ -15,8 +15,9 @@ from mud.config import (
     set_telnetga,
 )
 from mud.db.models import Base
-from mud.db.session import SessionLocal, engine
-from mud.security.hash_utils import hash_password
+from mud.db.session import engine
+from mud.models.character import Character
+from mud.models.constants import CommFlag
 from mud.net.connection import (
     SPAM_REPEAT_THRESHOLD,
     TelnetStream,
@@ -26,8 +27,6 @@ from mud.net.connection import (
 )
 from mud.net.session import Session
 from mud.net.telnet_server import create_server
-from mud.models.character import Character
-from mud.models.constants import CommFlag
 
 TELNET_IAC = 255
 TELNET_WILL = 251
@@ -234,6 +233,7 @@ def test_telnet_server_handles_look_command():
     async def run():
         clear_active_accounts()
         from mud.account.account_service import create_account
+
         assert create_account("Looker", "pass")
 
         account = login("Looker", "pass")
@@ -457,9 +457,9 @@ def test_telnet_negotiates_iac_and_disables_echo():
 @pytest.mark.telnet
 @pytest.mark.timeout(30)
 def test_telnet_server_handles_multiple_connections():
-    from mud.account.account_service import create_account, clear_active_accounts
-    from mud.world.world_state import reset_lockdowns
+    from mud.account.account_service import clear_active_accounts
     from mud.security import bans
+    from mud.world.world_state import reset_lockdowns
 
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
@@ -469,6 +469,7 @@ def test_telnet_server_handles_multiple_connections():
 
     # ROM model: characters are their own identities — create them directly
     from mud.account.account_service import create_character_record
+
     assert create_character_record("Alice", "pw", level=1)
     assert create_character_record("Bob", "pw", level=1)
 
@@ -533,6 +534,7 @@ def test_telnet_break_connect_prompts_and_reconnects():
     async def run():
         clear_active_accounts()
         from mud.account.account_service import create_character_record
+
         assert create_character_record("Breaker", "pw", level=1)
 
         server = await create_server(host="127.0.0.1", port=0)

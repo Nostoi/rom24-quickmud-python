@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
-
-room_registry: Dict[int, Any] = {}
-mob_registry: Dict[int, Any] = {}
-obj_registry: Dict[int, Any] = {}
-area_registry: Dict[int, Any] = {}
-shop_registry: Dict[int, Any] = {}
+room_registry: dict[int, Any] = {}
+mob_registry: dict[int, Any] = {}
+obj_registry: dict[int, Any] = {}
+area_registry: dict[int, Any] = {}
+shop_registry: dict[int, Any] = {}

@@ -381,7 +381,7 @@ def test_npc_corpse_uses_short_descr_for_name(test_mob):
 
     assert corpse is not None, "Should create corpse"
     short_descr = getattr(corpse, "short_descr", "")
-    assert len(short_descr) > 0, f"Corpse should have a short_descr"
+    assert len(short_descr) > 0, "Corpse should have a short_descr"
 
 
 def test_corpse_level_matches_victim_level(test_character):

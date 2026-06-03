@@ -151,13 +151,8 @@ def test_steal_failure_to_vict_fires_act_trigger_on_npc_victim():
 
     fired = _recorded_act_triggers(lambda: do_steal(pc, "coin target"))
 
-    victim_steal_triggers = [
-        (n, m) for n, m in fired
-        if n == "target" and "tried to steal" in m.lower()
-    ]
-    assert len(victim_steal_triggers) >= 1, (
-        f"Expected 'tried to steal' in victim NPC triggers, got: {fired}"
-    )
+    victim_steal_triggers = [(n, m) for n, m in fired if n == "target" and "tried to steal" in m.lower()]
+    assert len(victim_steal_triggers) >= 1, f"Expected 'tried to steal' in victim NPC triggers, got: {fired}"
 
 
 def test_steal_failure_to_notvict_fires_act_trigger_on_npc_bystander():
@@ -176,13 +171,8 @@ def test_steal_failure_to_notvict_fires_act_trigger_on_npc_bystander():
 
     fired = _recorded_act_triggers(lambda: do_steal(pc, "coin target"))
 
-    bystander_steal_triggers = [
-        (n, m) for n, m in fired
-        if n == "bystander" and "tried to steal" in m.lower()
-    ]
-    assert len(bystander_steal_triggers) >= 1, (
-        f"Expected 'tried to steal' in bystander NPC triggers, got: {fired}"
-    )
+    bystander_steal_triggers = [(n, m) for n, m in fired if n == "bystander" and "tried to steal" in m.lower()]
+    assert len(bystander_steal_triggers) >= 1, f"Expected 'tried to steal' in bystander NPC triggers, got: {fired}"
 
 
 def test_steal_failure_pc_victim_sees_message():
@@ -221,9 +211,5 @@ def test_steal_failure_no_act_trigger_when_mobtrigger_suppressed():
     fired = _recorded_act_triggers(lambda: do_steal(pc, "coin target"))
     mobprog.MOBtrigger = True
 
-    steal_triggers = [
-        (n, m) for n, m in fired if "tried to steal" in m.lower()
-    ]
-    assert len(steal_triggers) == 0, (
-        f"Expected no steal TRIG_ACT when MOBtrigger=False, got: {fired}"
-    )
+    steal_triggers = [(n, m) for n, m in fired if "tried to steal" in m.lower()]
+    assert len(steal_triggers) == 0, f"Expected no steal TRIG_ACT when MOBtrigger=False, got: {fired}"

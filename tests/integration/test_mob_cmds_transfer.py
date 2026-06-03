@@ -15,7 +15,6 @@ from __future__ import annotations
 import pytest
 
 from mud import mob_cmds as mob_cmds_mod
-from mud.mob_cmds import do_mptransfer
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
 from mud.models.room import Room

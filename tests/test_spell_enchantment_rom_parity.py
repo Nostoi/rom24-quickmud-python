@@ -8,7 +8,6 @@ from mud.models.object import Object
 from mud.skills.handlers import enchant_armor, enchant_weapon, fireproof
 from mud.utils import rng_mm
 
-
 _TO_OBJECT = 1
 _APPLY_NONE = 0
 _APPLY_AC = 17

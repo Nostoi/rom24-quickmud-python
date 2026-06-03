@@ -4,9 +4,6 @@ ROM src/update.c:update_handler order:
     area → music → mobile → violence → point(time/weather/char/obj) → aggr
 """
 
-from mud import config as mud_config
-from mud.game_loop import game_tick
-
 
 def test_rom_order_when_all_cadence_boundaries_coincide(monkeypatch):
     """All counters fire on this tick — verify exact ROM C ordering."""

@@ -52,11 +52,18 @@ def _make_pc(*, wis: int, ch_class: int = 0) -> Character:
 @pytest.mark.parametrize(
     "wis, expected",
     [
-        (0, 0), (3, 0), (4, 0),
-        (5, 1), (10, 1), (14, 1),
-        (15, 2), (17, 2),
-        (18, 3), (21, 3),
-        (22, 4), (24, 4),
+        (0, 0),
+        (3, 0),
+        (4, 0),
+        (5, 1),
+        (10, 1),
+        (14, 1),
+        (15, 2),
+        (17, 2),
+        (18, 3),
+        (21, 3),
+        (22, 4),
+        (24, 4),
         (25, 5),
     ],
 )
@@ -95,8 +102,8 @@ def test_wis_practice_bonus_respects_mod_stat() -> None:
 @pytest.mark.parametrize(
     "wis, expected_practices",
     [
-        (3, 0),    # WIS-3 dunce: gains zero practices per level (ROM)
-        (13, 1),   # default
+        (3, 0),  # WIS-3 dunce: gains zero practices per level (ROM)
+        (13, 1),  # default
         (18, 3),
         (25, 5),
     ],

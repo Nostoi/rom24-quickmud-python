@@ -108,9 +108,7 @@ def test_flag_only_affect_ticks_alongside_modifier_affect():
     """
     mob = _mob()
     mob.apply_spell_effect(SpellEffect(name="curse", duration=4, level=20, hitroll_mod=-5))
-    mob.apply_spell_effect(
-        SpellEffect(name="sanctuary", duration=1, level=20, affect_flag=AffectFlag.SANCTUARY)
-    )
+    mob.apply_spell_effect(SpellEffect(name="sanctuary", duration=1, level=20, affect_flag=AffectFlag.SANCTUARY))
 
     # sanctuary (duration 1) must decrement-and-stay one tick, then expire on the
     # next — NOT freeze behind curse (duration 4).

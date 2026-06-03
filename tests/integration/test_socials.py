@@ -447,12 +447,8 @@ class TestSocialNpcAutoReact:
         # Player got the original vict_found ("Alice smiles at you" → no, Bob's
         # social) PLUS the echoed vict_found from the NPC. Two messages where
         # the NPC name appears as the smiler.
-        npc_smile_count = sum(
-            1 for m in alice.messages if "cityguard" in m.lower()
-        )
-        assert npc_smile_count >= 1, (
-            f"Expected at least one message naming the NPC as smiler, got: {alice.messages}"
-        )
+        npc_smile_count = sum(1 for m in alice.messages if "cityguard" in m.lower())
+        assert npc_smile_count >= 1, f"Expected at least one message naming the NPC as smiler, got: {alice.messages}"
 
     def test_silent_branch_emits_no_extra_messages(self, alice, npc_victim, monkeypatch):
         # mirrors ROM src/interp.c:656-685 — number_bits(4) in {13..15} hits
@@ -468,9 +464,7 @@ class TestSocialNpcAutoReact:
 
         # Player only sees the original char_found from their own social
         # (one message). No extra slap or echoed smile.
-        assert len(alice.messages) == 1, (
-            f"Expected exactly 1 message (no auto-react), got: {alice.messages}"
-        )
+        assert len(alice.messages) == 1, f"Expected exactly 1 message (no auto-react), got: {alice.messages}"
 
     def test_no_react_when_npc_charmed(self, alice, npc_victim, monkeypatch):
         # mirrors ROM src/interp.c:653 — IS_AFFECTED(victim, AFF_CHARM) skips reaction.

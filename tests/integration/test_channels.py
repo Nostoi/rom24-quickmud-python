@@ -16,7 +16,7 @@ from __future__ import annotations
 import pytest
 
 from mud.commands.channels import do_channels
-from mud.commands.communication import do_gossip, do_auction, do_music, do_grats
+from mud.commands.communication import do_auction, do_gossip, do_grats, do_music
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
 from mud.registry import room_registry

@@ -1,19 +1,19 @@
-from mud.commands.dispatcher import process_command
-from mud.commands.shop import _get_cost, do_buy
 import re
 
+from mud.commands.dispatcher import process_command
+from mud.commands.shop import _get_cost, do_buy
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
-    ActFlag,
-    AffectFlag,
-    CommFlag,
-    ItemType,
-    RoomFlag,
     ITEM_HAD_TIMER,
     ITEM_INVENTORY,
     ITEM_INVIS,
     ITEM_NODROP,
     ITEM_SELL_EXTRACT,
+    ActFlag,
+    AffectFlag,
+    CommFlag,
+    ItemType,
+    RoomFlag,
 )
 from mud.models.mob import MobIndex
 from mud.models.object import Object
@@ -1002,7 +1002,8 @@ def test_sell_numbered_selector():
     keeper.silver = 500
     # Clear any existing lanterns so _obj_to_keeper dedup doesn't extract sold items
     keeper.inventory = [
-        obj for obj in getattr(keeper, "inventory", [])
+        obj
+        for obj in getattr(keeper, "inventory", [])
         if "lantern" not in (getattr(getattr(obj, "prototype", None), "short_descr", "") or "").lower()
     ]
 
@@ -1450,6 +1451,7 @@ def test_buy_haggle_reduces_cost_on_success():
 
         # Expected discount: c_div(c_div(100, 2) * 40, 100) = c_div(50 * 40, 100) = c_div(2000, 100) = 20
         from mud.math.c_compat import c_div
+
         expected_discount = c_div(c_div(100, 2) * 40, 100)
         expected_unit_price = max(0, base_unit_price - expected_discount)
         assert paid == expected_unit_price

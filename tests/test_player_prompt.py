@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import pytest
+from helpers_player import set_comm_flags
 
 from mud.commands.auto_settings import do_prompt
 from mud.models.constants import CommFlag
-from mud.world import create_test_character, initialize_world
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
-from helpers_player import set_comm_flags
+from mud.world import create_test_character, initialize_world
 
 
 @pytest.fixture(autouse=True)

@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-import pytest
 from typing import TYPE_CHECKING
 
-from mud.models.area import Area
+import pytest
+
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     ActFlag,
-    AffectFlag,
     ItemType,
     PlayerFlag,
     Position,
-    DamageType,
 )
 from mud.models.mob import MobIndex
 from mud.models.object import Object
@@ -19,36 +17,11 @@ from mud.models.room import Room
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spec_funs import (
-    get_spec_fun,
-    register_spec_fun,
-    run_npc_specs,
-    spec_breath_fire,
-    spec_breath_acid,
-    spec_breath_frost,
-    spec_breath_gas,
-    spec_breath_lightning,
-    spec_breath_any,
-    spec_cast_adept,
-    spec_cast_cleric,
-    spec_cast_judge,
-    spec_cast_mage,
-    spec_cast_undead,
-    spec_executioner,
-    spec_fido,
-    spec_guard,
-    spec_janitor,
-    spec_mayor,
-    spec_nasty,
-    spec_ogre_member,
-    spec_patrolman,
-    spec_poison,
-    spec_thief,
-    spec_troll_member,
     _reset_spec_mayor_state,
+    run_npc_specs,
 )
-from mud.world import create_test_character, initialize_world
 from mud.time import time_info
-from mud.utils import rng_mm
+from mud.world import create_test_character, initialize_world
 
 if TYPE_CHECKING:
     from mud.spawning.templates import MobInstance
@@ -102,8 +75,8 @@ def create_corpse(is_pc: bool = True, room_vnum: int = 3001) -> Object:
     room = room_registry.get(room_vnum)
     assert room is not None
 
-    from mud.models.obj import ObjIndex
     from mud.models.constants import WearFlag
+    from mud.models.obj import ObjIndex
 
     corpse_proto = ObjIndex(
         vnum=10,
@@ -125,8 +98,8 @@ def create_trash_object(room_vnum: int = 3001) -> Object:
     room = room_registry.get(room_vnum)
     assert room is not None
 
-    from mud.models.obj import ObjIndex
     from mud.models.constants import WearFlag
+    from mud.models.obj import ObjIndex
 
     trash_proto = ObjIndex(
         vnum=11,
@@ -195,8 +168,8 @@ class TestSpecJanitor:
         janitor = create_mob_with_spec("spec_janitor", level=10)
         room = place_mob_in_room(janitor, 3001)
 
-        from mud.models.obj import ObjIndex
         from mud.models.constants import WearFlag
+        from mud.models.obj import ObjIndex
 
         sword_proto = ObjIndex(
             vnum=12,

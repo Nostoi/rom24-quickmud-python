@@ -77,18 +77,14 @@ def test_do_follow_notifies_master():
 
         # ROM: master sees "follower now follows you."
         joined_master = "\n".join(master.messages).lower()
-        assert (
-            "follower" in joined_master and "now follows you" in joined_master
-        ), (
+        assert "follower" in joined_master and "now follows you" in joined_master, (
             f"master must receive `$n now follows you.` broadcast "
             f"(ROM src/act_comm.c:1603); master.messages = {master.messages!r}"
         )
 
         # ROM: follower sees "You now follow master."
         joined_follower = "\n".join(follower.messages).lower()
-        assert (
-            "now follow" in joined_follower and "master" in joined_follower
-        ), (
+        assert "now follow" in joined_follower and "master" in joined_follower, (
             f"follower must receive `You now follow $N.` "
             f"(ROM src/act_comm.c:1605); follower.messages = {follower.messages!r}"
         )

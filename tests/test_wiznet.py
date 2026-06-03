@@ -138,9 +138,7 @@ def test_wiznet_broadcasts_include_rom_newline():
 
 
 def test_wiznet_broadcast_color_reset_order():
-    listener = _connected_character(
-        name="Order", is_admin=True, is_npc=False, level=LEVEL_IMMORTAL
-    )
+    listener = _connected_character(name="Order", is_admin=True, is_npc=False, level=LEVEL_IMMORTAL)
     listener.wiznet = int(WiznetFlag.WIZ_ON)
     character_registry.append(listener)
 
@@ -151,7 +149,7 @@ def test_wiznet_broadcast_color_reset_order():
     newline_index = message.index(ROM_NEWLINE)
     assert message.startswith("{Z")
     assert message.endswith("{x")
-    assert message[newline_index + len(ROM_NEWLINE):] == "{x"
+    assert message[newline_index + len(ROM_NEWLINE) :] == "{x"
 
 
 def test_wiznet_command_toggles_flag():
@@ -443,9 +441,7 @@ def test_wiznet_act_uses_sender_pronouns():
         0,
     )
 
-    assert listener.messages == [
-        _wiznet_payload("Kestrel greets the staff. she nods politely.")
-    ]
+    assert listener.messages == [_wiznet_payload("Kestrel greets the staff. she nods politely.")]
 
 
 def test_wiznet_flag_skip_excludes_secure_listeners():
@@ -456,11 +452,7 @@ def test_wiznet_flag_skip_excludes_secure_listeners():
         is_npc=False,
         level=LEVEL_IMMORTAL,
         trust=LEVEL_IMMORTAL,
-        wiznet=int(
-            WiznetFlag.WIZ_ON
-            | WiznetFlag.WIZ_LOAD
-            | WiznetFlag.WIZ_SECURE
-        ),
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOAD | WiznetFlag.WIZ_SECURE),
     )
     plain_listener = _connected_character(
         name="Chronicler",
@@ -581,12 +573,7 @@ def test_wiznet_logins_channel_broadcasts():
         is_npc=False,
         level=60,
         trust=60,
-        wiznet=int(
-            WiznetFlag.WIZ_ON
-            | WiznetFlag.WIZ_LOGINS
-            | WiznetFlag.WIZ_SITES
-            | WiznetFlag.WIZ_PREFIX
-        ),
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS | WiznetFlag.WIZ_SITES | WiznetFlag.WIZ_PREFIX),
     )
     low_trust = _connected_character(
         name="Low",
@@ -608,12 +595,8 @@ def test_wiznet_logins_channel_broadcasts():
 
     announce_wiznet_login(logging_char, host="aurora.example")
 
-    assert _wiznet_payload(
-        "Artemis has left real life behind.", prefix=True
-    ) in watcher.messages
-    assert _wiznet_payload(
-        "Artemis@aurora.example has connected.", prefix=True
-    ) in skip_sites.messages
+    assert _wiznet_payload("Artemis has left real life behind.", prefix=True) in watcher.messages
+    assert _wiznet_payload("Artemis@aurora.example has connected.", prefix=True) in skip_sites.messages
     assert not any("has left real life behind" in msg for msg in skip_sites.messages)
     assert low_trust.messages == []
 
@@ -623,19 +606,13 @@ def test_wiznet_logins_channel_broadcasts():
 
     announce_wiznet_logout(logging_char)
 
-    assert _wiznet_payload(
-        "Artemis rejoins the real world.", prefix=True
-    ) in watcher.messages
-    assert _wiznet_payload(
-        "Artemis rejoins the real world.", prefix=True
-    ) in skip_sites.messages
+    assert _wiznet_payload("Artemis rejoins the real world.", prefix=True) in watcher.messages
+    assert _wiznet_payload("Artemis rejoins the real world.", prefix=True) in skip_sites.messages
     assert low_trust.messages == []
 
 
 def test_wiznet_login_broadcasts_survive_preseeded_descriptor_list():
-    global_registry.descriptor_list.append(
-        SimpleNamespace(character=None, connected=1, original=None, host=None)
-    )
+    global_registry.descriptor_list.append(SimpleNamespace(character=None, connected=1, original=None, host=None))
 
     watcher = _connected_character(
         name="Watcher",
@@ -672,9 +649,7 @@ def test_reconnect_wiz_links_ignores_reconnect_trust_gate(monkeypatch):
     broadcasted: list[str] = []
     reconnecting.connection = SimpleNamespace(peer_host="midgaard.example")
     reconnecting.desc = SimpleNamespace(connection=reconnecting.connection)
-    reconnecting.room = SimpleNamespace(
-        broadcast=lambda message, exclude=None: broadcasted.append(message)
-    )
+    reconnecting.room = SimpleNamespace(broadcast=lambda message, exclude=None: broadcasted.append(message))
 
     high_listener = _connected_character(
         name="ImmHigh",
@@ -768,9 +743,7 @@ def test_wiz_sites_announces_successful_login(capsys):
         is_npc=False,
     )
 
-    character_registry.extend(
-        [prefix_listener, plain_listener, uninterested, low_trust, logging_char]
-    )
+    character_registry.extend([prefix_listener, plain_listener, uninterested, low_trust, logging_char])
 
     announce_wiznet_login(logging_char, host="academy.example")
 
@@ -778,16 +751,9 @@ def test_wiz_sites_announces_successful_login(capsys):
     assert captured.out == ""
     assert "Lyra@academy.example has connected." in captured.err
 
-    assert plain_listener.messages == [
-        _wiznet_payload("Lyra@academy.example has connected.")
-    ]
-    assert _wiznet_payload(
-        "Lyra@academy.example has connected.", prefix=True
-    ) in prefix_listener.messages
-    assert all(
-        "Lyra@academy.example has connected." not in msg
-        for msg in uninterested.messages
-    )
+    assert plain_listener.messages == [_wiznet_payload("Lyra@academy.example has connected.")]
+    assert _wiznet_payload("Lyra@academy.example has connected.", prefix=True) in prefix_listener.messages
+    assert all("Lyra@academy.example has connected." not in msg for msg in uninterested.messages)
     assert low_trust.messages == []
 
 
@@ -825,9 +791,7 @@ def test_announce_wiznet_login_without_host_broadcasts_sites(capsys):
         wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS),
     )
 
-    character_registry.extend(
-        [prefix_listener, plain_listener, uninterested, logging_char]
-    )
+    character_registry.extend([prefix_listener, plain_listener, uninterested, logging_char])
 
     announce_wiznet_login(logging_char, host="   ")
 
@@ -847,9 +811,7 @@ def test_announce_wiznet_login_includes_logging_immortal(capsys):
         is_npc=False,
         level=LEVEL_IMMORTAL,
         trust=LEVEL_IMMORTAL,
-        wiznet=int(
-            WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS | WiznetFlag.WIZ_SITES
-        ),
+        wiznet=int(WiznetFlag.WIZ_ON | WiznetFlag.WIZ_LOGINS | WiznetFlag.WIZ_SITES),
     )
     fellow_listener = _connected_character(
         name="Watcher",
@@ -931,9 +893,7 @@ def test_announce_wiznet_login_without_extra_stdout(capsys):
     assert site_payload in site_listener.messages
     assert site_payload in newbie_listener.messages
 
-    net_connection.announce_wiznet_new_player(
-        "Nova", host="nebula.example", trust_level=LEVEL_IMMORTAL, sex=Sex.FEMALE
-    )
+    net_connection.announce_wiznet_new_player("Nova", host="nebula.example", trust_level=LEVEL_IMMORTAL, sex=Sex.FEMALE)
 
     new_capture = capsys.readouterr()
     assert new_capture.out == ""
@@ -974,12 +934,9 @@ def test_announce_wiznet_new_player_logs_creation(monkeypatch):
 
     monkeypatch.setattr(net_connection, "log_game_event", _capture)
 
-    net_connection.announce_wiznet_new_player(
-        "Lyra", host="academy.example", trust_level=1, sex=Sex.FEMALE
-    )
+    net_connection.announce_wiznet_new_player("Lyra", host="academy.example", trust_level=1, sex=Sex.FEMALE)
 
     assert captured == ["Lyra@academy.example new player."]
-
 
 
 def test_announce_wiznet_new_player_without_host_broadcasts_sites(capsys):
@@ -1001,9 +958,7 @@ def test_announce_wiznet_new_player_without_host_broadcasts_sites(capsys):
     )
     character_registry.extend([prefix_listener, plain_listener])
 
-    net_connection.announce_wiznet_new_player(
-        "Lyra", host="   ", trust_level=1, sex=Sex.FEMALE
-    )
+    net_connection.announce_wiznet_new_player("Lyra", host="   ", trust_level=1, sex=Sex.FEMALE)
 
     captured = capsys.readouterr()
     assert captured.out == ""

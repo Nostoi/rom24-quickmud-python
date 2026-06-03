@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from mud.models.obj import Obj
 
 
-def get_obj_carry(char: "Character", name: str) -> "Obj | None":
+def get_obj_carry(char: Character, name: str) -> Obj | None:
     """
     Find an object in character's inventory by name.
 
@@ -52,7 +52,7 @@ def get_obj_carry(char: "Character", name: str) -> "Obj | None":
     return None
 
 
-def get_obj_wear(char: "Character", name: str) -> "Obj | None":
+def get_obj_wear(char: Character, name: str) -> Obj | None:
     """
     Find an object in character's equipment by name.
 
@@ -92,7 +92,7 @@ def get_obj_wear(char: "Character", name: str) -> "Obj | None":
     return None
 
 
-def get_obj_here(char: "Character", name: str) -> "Obj | None":
+def get_obj_here(char: Character, name: str) -> Obj | None:
     """
     Find an object in the room or in inventory/equipment.
 
@@ -128,7 +128,7 @@ def get_obj_here(char: "Character", name: str) -> "Obj | None":
     return None
 
 
-def get_obj_world(char: "Character", name: str) -> "Obj | None":
+def get_obj_world(char: Character, name: str) -> Obj | None:
     """
     Find an object anywhere in the world by name.
 
@@ -166,7 +166,7 @@ def get_obj_world(char: "Character", name: str) -> "Obj | None":
     return None
 
 
-def get_obj_type(prototype_vnum: int) -> "Obj | None":
+def get_obj_type(prototype_vnum: int) -> Obj | None:
     """
     Find the first object instance with a given prototype vnum.
 

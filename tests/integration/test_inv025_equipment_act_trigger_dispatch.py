@@ -142,8 +142,7 @@ def test_do_wear_fires_act_trigger_on_listening_npc():
 
     _ = obj  # keep reference
     assert fired, (
-        "do_wear must dispatch mp_act_trigger on its TO_ROOM broadcast — "
-        "ROM src/act_obj.c:1487, no MOBtrigger wrap"
+        "do_wear must dispatch mp_act_trigger on its TO_ROOM broadcast — ROM src/act_obj.c:1487, no MOBtrigger wrap"
     )
     assert "wears" in fired[0][1]
 

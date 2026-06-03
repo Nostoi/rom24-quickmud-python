@@ -10,10 +10,11 @@ Priority: P0 (critical player quality-of-life features)
 from __future__ import annotations
 
 import pytest
+from helpers_player import enable_autos, set_player_flags
 
 from mud.commands.auto_settings import (
-    do_autoassist,
     do_autoall,
+    do_autoassist,
     do_autoexit,
     do_autogold,
     do_autolist,
@@ -22,15 +23,13 @@ from mud.commands.auto_settings import (
     do_autosplit,
     do_brief,
     do_colour,
-    do_compact,
     do_combine,
+    do_compact,
     do_prompt,
 )
 from mud.models.constants import CommFlag, PlayerFlag
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import create_test_character, initialize_world
-from helpers_player import enable_autos, set_comm_flags, set_player_flags
-
 
 PLR_AUTOASSIST = PlayerFlag.AUTOASSIST
 PLR_AUTOEXIT = PlayerFlag.AUTOEXIT

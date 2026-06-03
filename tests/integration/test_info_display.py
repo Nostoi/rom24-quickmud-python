@@ -13,13 +13,12 @@ from __future__ import annotations
 
 import pytest
 
-from mud.commands.misc_info import do_motd, do_imotd, do_rules, do_story
 from mud.commands.help import do_wizlist
 from mud.commands.info import do_credits, do_report
+from mud.commands.misc_info import do_imotd, do_motd, do_rules, do_story
 from mud.commands.remaining_rom import do_wimpy
 from mud.models.character import Character
 from mud.models.room import Room
-
 
 # ============================================================================
 # FIXTURES

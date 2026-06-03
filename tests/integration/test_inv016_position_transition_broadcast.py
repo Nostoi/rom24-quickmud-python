@@ -64,9 +64,7 @@ def test_spell_damage_broadcasts_death_transition_to_room() -> None:
     damage = acid_blast(caster, target)
     assert damage > 0, "acid_blast must do non-trivial damage"
     assert target.hit <= -11, "target hp should have crossed the DEAD threshold"
-    assert target.position == Position.DEAD, (
-        "update_pos should have set DEAD per src/fight.c:1399-1402"
-    )
+    assert target.position == Position.DEAD, "update_pos should have set DEAD per src/fight.c:1399-1402"
 
     observer_msgs = " ".join(getattr(observer, "messages", []))
     assert "is DEAD!!" in observer_msgs, (

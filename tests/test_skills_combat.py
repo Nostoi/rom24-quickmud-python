@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-
 from types import SimpleNamespace
 
 import pytest
 
 from mud.combat import engine as combat_engine
 from mud.models import Character
-from mud.models.constants import AffectFlag, Position, Sector, WearLocation, WeaponType
+from mud.models.constants import AffectFlag, Position, Sector, WeaponType, WearLocation
 from mud.models.room import Room
 from mud.skills import handlers as skill_handlers
 

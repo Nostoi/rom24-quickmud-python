@@ -15,7 +15,6 @@ must not also append to it.
 from __future__ import annotations
 
 import asyncio
-from typing import List
 
 from mud.combat.engine import _push_message
 from mud.models.character import Character
@@ -26,7 +25,7 @@ class _RecordingConn:
     ``mud.net.protocol.send_to_char`` uses."""
 
     def __init__(self) -> None:
-        self.sent: List[str] = []
+        self.sent: list[str] = []
         self.closed = False
 
     async def send_line(self, msg: str) -> None:

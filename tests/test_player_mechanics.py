@@ -6,11 +6,7 @@ ROM Reference: src/act_move.c, src/fight.c
 
 from __future__ import annotations
 
-import pytest
-
-from mud.models.character import Character
 from mud.models.constants import Position
-from mud.registry import room_registry
 from mud.world import create_test_character
 
 

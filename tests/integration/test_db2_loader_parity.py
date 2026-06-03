@@ -3,6 +3,7 @@
 Each test pins a single behavior of the area-file loaders against the
 canonical ROM C reference. Gap IDs reference ``docs/parity/DB2_C_AUDIT.md``.
 """
+
 from __future__ import annotations
 
 from mud.loaders.base_loader import BaseTokenizer

@@ -3,6 +3,7 @@ Typo guard commands - prevents accidental execution of dangerous commands.
 
 ROM Reference: src/interp.c
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

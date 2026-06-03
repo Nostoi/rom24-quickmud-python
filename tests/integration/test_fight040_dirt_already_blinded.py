@@ -66,9 +66,7 @@ def test_dirt_rekick_hits_aff_blind_branch_after_guard_removed() -> None:
         room.add_character(ch)
 
     # Mirror a landed dirt-kick: the effect sets AFF_BLIND (handlers.py:3289).
-    victim.apply_spell_effect(
-        SpellEffect(name="dirt kicking", duration=0, level=50, affect_flag=AffectFlag.BLIND)
-    )
+    victim.apply_spell_effect(SpellEffect(name="dirt kicking", duration=0, level=50, affect_flag=AffectFlag.BLIND))
     assert victim.has_affect(AffectFlag.BLIND)
 
     caster.messages.clear()

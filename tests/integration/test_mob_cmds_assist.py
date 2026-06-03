@@ -61,9 +61,7 @@ class TestMpAssistRomGates:
     ``src/mob_cmds.c:393``: ``victim == ch``, ``ch->fighting != NULL``,
     and ``victim->fighting == NULL``."""
 
-    def test_already_fighting_mob_does_not_call_multi_hit(
-        self, monkeypatch, script_mob, ally, opponent, assist_room
-    ):
+    def test_already_fighting_mob_does_not_call_multi_hit(self, monkeypatch, script_mob, ally, opponent, assist_room):
         # script_mob is already fighting an existing enemy; assisting an ally
         # in another fight must not call multi_hit at all (ROM gates before
         # multi_hit on `ch->fighting != NULL`).
@@ -92,9 +90,7 @@ class TestMpAssistRomGates:
             " (ROM src/mob_cmds.c:393, `ch->fighting != NULL`)."
         )
 
-    def test_self_assist_does_not_call_multi_hit(
-        self, monkeypatch, script_mob, opponent
-    ):
+    def test_self_assist_does_not_call_multi_hit(self, monkeypatch, script_mob, opponent):
         # ROM src/mob_cmds.c:393 — `victim == ch` must short-circuit before
         # multi_hit. Even if "self" is in a fight (opponent fighting us, so
         # ally->fighting is non-NULL), self-assist must refuse.
@@ -112,6 +108,5 @@ class TestMpAssistRomGates:
         do_mpassist(script_mob, "Helper")
 
         assert invocations == [], (
-            "do_mpassist invoked multi_hit on a self-assist (ROM"
-            " src/mob_cmds.c:393, `victim == ch`)."
+            "do_mpassist invoked multi_hit on a self-assist (ROM src/mob_cmds.c:393, `victim == ch`)."
         )

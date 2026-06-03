@@ -1,26 +1,27 @@
 import asyncio
 import json
+from collections.abc import Sequence
 from contextlib import suppress
 from pathlib import Path
 from socket import socket as Socket
 from types import SimpleNamespace
-from collections.abc import Sequence
 from typing import Protocol, cast
 
 import pytest
-from sqlalchemy import create_engine, inspect, text
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
 
 import mud.net.connection as net_connection
 from mud import registry as global_registry
-
 from mud.account import (
     load_character as load_player_character,
+)
+from mud.account import (
     save_character as save_player_character,
 )
 from mud.account.account_service import (
-    LoginFailureReason,
     CreationSelection,
+    LoginFailureReason,
     clear_active_accounts,
     create_account,
     create_character,
@@ -35,23 +36,28 @@ from mud.account.account_service import (
     lookup_creation_race,
     release_account,
 )
+from mud.commands.inventory import give_school_outfit
 from mud.db.models import Base, Character
 from mud.db.session import SessionLocal, engine
-from mud.skills.groups import get_group
+from mud.models.character import (
+    Character as RuntimeCharacter,
+)
+from mud.models.character import (
+    PCData,
+    _decode_creation_skills,
+    character_registry,
+)
 from mud.models.constants import (
-    CommFlag,
     DEFAULT_PAGE_LINES,
     OBJ_VNUM_MAP,
-    OBJ_VNUM_SCHOOL_BANNER,
     OBJ_VNUM_SCHOOL_DAGGER,
     OBJ_VNUM_SCHOOL_MACE,
-    OBJ_VNUM_SCHOOL_SHIELD,
     OBJ_VNUM_SCHOOL_SWORD,
-    OBJ_VNUM_SCHOOL_VEST,
     ROOM_VNUM_LIMBO,
     ROOM_VNUM_SCHOOL,
     ActFlag,
     AffectFlag,
+    CommFlag,
     ImmFlag,
     OffFlag,
     PartFlag,
@@ -63,12 +69,6 @@ from mud.models.constants import (
     VulnFlag,
     WearLocation,
 )
-from mud.models.character import (
-    Character as RuntimeCharacter,
-    PCData,
-    _decode_creation_skills,
-    character_registry,
-)
 from mud.models.room import Room
 from mud.net.connection import (
     RECONNECT_MESSAGE,
@@ -78,12 +78,12 @@ from mud.net.connection import (
 from mud.net.session import SESSIONS
 from mud.net.telnet_server import create_server
 from mud.security import bans
-from mud.world import initialize_world
-from mud.commands.inventory import give_school_outfit
 from mud.security.bans import BanFlag
 from mud.security.hash_utils import verify_password
-from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
+from mud.skills.groups import get_group
 from mud.wiznet import WiznetFlag
+from mud.world import initialize_world
+from mud.world.world_state import reset_lockdowns, set_newlock, set_wizlock
 
 TELNET_IAC = 255
 TELNET_WILL = 251
@@ -1180,8 +1180,8 @@ def test_existing_database_gains_true_sex_column(tmp_path, monkeypatch):
 
     legacy_session_factory = sessionmaker(bind=legacy_engine)
 
-    from mud.db import session as db_session
     from mud.account import account_manager
+    from mud.db import session as db_session
 
     monkeypatch.setattr(db_session, "engine", legacy_engine, raising=False)
     monkeypatch.setattr(db_session, "SessionLocal", legacy_session_factory, raising=False)
@@ -1314,7 +1314,9 @@ def test_new_character_receives_starting_outfit():
     provided = give_school_outfit(newbie)
     assert provided is True
 
-    assert {int(WearLocation.LIGHT), int(WearLocation.BODY), int(WearLocation.WIELD), int(WearLocation.SHIELD)} <= set(newbie.equipment.keys())
+    assert {int(WearLocation.LIGHT), int(WearLocation.BODY), int(WearLocation.WIELD), int(WearLocation.SHIELD)} <= set(
+        newbie.equipment.keys()
+    )
 
     wielded = newbie.equipment[int(WearLocation.WIELD)]
     assert getattr(getattr(wielded, "prototype", None), "vnum", None) in {
@@ -1664,7 +1666,7 @@ def test_character_login_rejects_wrong_password_once(monkeypatch):
     monkeypatch.setattr(net_connection, "character_exists", lambda _name: True, raising=False)
 
     # login_with_host is what _run_character_login actually calls
-    from mud.account.account_service import LoginResult, LoginFailureReason
+    from mud.account.account_service import LoginFailureReason, LoginResult
 
     bad_result = LoginResult(account=None, failure=LoginFailureReason.BAD_CREDENTIALS, was_reconnect=False)
     monkeypatch.setattr(net_connection, "login_with_host", lambda *a, **kw: bad_result, raising=False)

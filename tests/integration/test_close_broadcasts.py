@@ -76,9 +76,7 @@ def test_close_door_broadcasts_to_actor_room(two_rooms_with_open_door):
     assert "Closer closes the door." in witness_here.messages, (
         f"Witness in actor's room should see '$n closes the $d.'; got {witness_here.messages!r}"
     )
-    assert "Closer closes the door." not in actor.messages, (
-        "Actor must be excluded from the TO_ROOM broadcast"
-    )
+    assert "Closer closes the door." not in actor.messages, "Actor must be excluded from the TO_ROOM broadcast"
 
 
 def test_close_door_notifies_linked_room(two_rooms_with_open_door):

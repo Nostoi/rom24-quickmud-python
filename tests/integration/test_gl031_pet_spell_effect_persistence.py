@@ -46,9 +46,7 @@ def test_pet_spell_effects_survive_save_reload():
     # Buff the pet the way casting a spell on a charmed follower does. Cover the
     # tricky-to-serialize SpellEffect fields: ac_mod, an AffectFlag, and a
     # stat_modifiers dict keyed by the Stat IntEnum.
-    pet.apply_spell_effect(
-        SpellEffect(name="armor", duration=24, level=10, ac_mod=-20)
-    )
+    pet.apply_spell_effect(SpellEffect(name="armor", duration=24, level=10, ac_mod=-20))
     pet.apply_spell_effect(
         SpellEffect(
             name="sanctuary",
@@ -71,9 +69,7 @@ def test_pet_spell_effects_survive_save_reload():
     # This is what makes the "no double-application" assertion below non-vacuous —
     # restoring via apply_spell_effect (instead of data-only) would re-add +2,
     # leaving the reloaded pet at base+4 instead of the saved base+2.
-    pet.apply_spell_effect(
-        SpellEffect(name="bless", duration=6, level=10, hitroll_mod=2, damroll_mod=2)
-    )
+    pet.apply_spell_effect(SpellEffect(name="bless", duration=6, level=10, hitroll_mod=2, damroll_mod=2))
 
     # Snapshot the modified stats at save time — ROM saves these *with* the
     # affect bonuses already folded in, so a correct reload must NOT re-apply.

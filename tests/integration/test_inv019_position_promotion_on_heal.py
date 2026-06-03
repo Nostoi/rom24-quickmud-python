@@ -103,15 +103,12 @@ def test_heal_spell_promotes_stunned_to_standing_silently():
     cure_light(pc, pc)  # caster == target
 
     assert pc.hit > 0, "test sanity: cure_light must restore positive hp"
-    assert pc.position == Position.STANDING, (
-        f"STUNNED PC with hp>0 must promote to STANDING (got {pc.position!r})"
-    )
+    assert pc.position == Position.STANDING, f"STUNNED PC with hp>0 must promote to STANDING (got {pc.position!r})"
     # Silent promotion: only the self-line "You feel better!" is emitted,
     # no position-transition broadcast like INV-016's downward lines.
     broadcasts = [m for m in pc.messages if "stand" in m.lower() or "feet" in m.lower()]
     assert broadcasts == [], (
-        f"Upward promotion must be silent (ROM update_pos is silent); "
-        f"saw broadcast-like messages: {broadcasts}"
+        f"Upward promotion must be silent (ROM update_pos is silent); saw broadcast-like messages: {broadcasts}"
     )
 
 
@@ -132,14 +129,12 @@ def test_regen_tick_promotes_stunned_to_standing():
 
     if pc.hit > 0:
         assert pc.position == Position.STANDING, (
-            f"After regen tick lifted hp to {pc.hit}, STUNNED PC must promote "
-            f"to STANDING (got {pc.position!r})"
+            f"After regen tick lifted hp to {pc.hit}, STUNNED PC must promote to STANDING (got {pc.position!r})"
         )
     else:
         # Regen wasn't enough this tick — must remain STUNNED, not demote.
         assert pc.position == Position.STUNNED, (
-            f"hp still <= 0 ({pc.hit}); position must stay STUNNED "
-            f"(got {pc.position!r})"
+            f"hp still <= 0 ({pc.hit}); position must stay STUNNED (got {pc.position!r})"
         )
 
 
@@ -154,6 +149,5 @@ def test_update_pos_does_not_promote_above_stunned():
     update_pos(pc)
 
     assert pc.position == Position.RESTING, (
-        f"update_pos must not promote positions > STUNNED "
-        f"(RESTING PC ended up {pc.position!r})"
+        f"update_pos must not promote positions > STUNNED (RESTING PC ended up {pc.position!r})"
     )

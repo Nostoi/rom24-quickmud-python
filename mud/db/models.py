@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from sqlalchemy import Boolean, ForeignKey, Integer, JSON, String
+from sqlalchemy import JSON, Boolean, ForeignKey, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -21,7 +21,7 @@ class Area(Base):
     name: Mapped[str] = mapped_column(String)
     min_vnum: Mapped[int] = mapped_column(Integer)
     max_vnum: Mapped[int] = mapped_column(Integer)
-    rooms: Mapped[list["Room"]] = relationship("Room", back_populates="area")
+    rooms: Mapped[list[Room]] = relationship("Room", back_populates="area")
 
 
 class Room(Base):
@@ -35,7 +35,7 @@ class Room(Base):
     room_flags: Mapped[int] = mapped_column(Integer)
     area_id: Mapped[int | None] = mapped_column(ForeignKey("areas.id"), nullable=True)
     area: Mapped[Area | None] = relationship("Area", back_populates="rooms")
-    exits: Mapped[list["Exit"]] = relationship("Exit", back_populates="room")
+    exits: Mapped[list[Exit]] = relationship("Exit", back_populates="room")
 
 
 class Exit(Base):
@@ -85,7 +85,7 @@ class ObjectInstance(Base):
     character_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("characters.id"), nullable=True)
 
     prototype: Mapped[ObjPrototype | None] = relationship("ObjPrototype")
-    character: Mapped["Character | None"] = relationship("Character", back_populates="objects")
+    character: Mapped[Character | None] = relationship("Character", back_populates="objects")
 
 
 class Character(Base):

@@ -64,7 +64,9 @@ def test_wait_and_daze_decrement_each_pulse_before_violence_combat(monkeypatch):
     gl._violence_counter = get_pulse_violence()
 
     calls: list[int] = []
-    monkeypatch.setattr("mud.combat.engine.multi_hit", lambda attacker, victim, dt=None: calls.append(gl._pulse_counter))
+    monkeypatch.setattr(
+        "mud.combat.engine.multi_hit", lambda attacker, victim, dt=None: calls.append(gl._pulse_counter)
+    )
     monkeypatch.setattr("mud.combat.engine.stop_fighting", lambda ch, both=False: None)
 
     game_tick()

@@ -3,6 +3,7 @@ OLC (Online Creation) commands - resets, alist, edit.
 
 ROM Reference: src/olc.c
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -72,8 +73,8 @@ def _display_resets(room) -> str:
 
             pMob = pMobIndex  # mirroring ROM src/olc.c:1026 pMob = pMobIndex
 
-            short_descr = (pMobIndex.short_descr or "")
-            room_name = (pRoomIndex.name or "")
+            short_descr = pMobIndex.short_descr or ""
+            room_name = pRoomIndex.name or ""
 
             # mirroring ROM src/olc.c:1027-1030
             # "M[%5d] %-13.13s in room             R[%5d] %2d-%2d %-15.15s\n\r"
@@ -106,14 +107,13 @@ def _display_resets(room) -> str:
                 # ROM src/olc.c:1059-1064 continue — skip send_to_char
                 continue
 
-            short_descr = (pObjIndex.short_descr or "")
-            room_name = (pRoomIndex.name or "")
+            short_descr = pObjIndex.short_descr or ""
+            room_name = pRoomIndex.name or ""
 
             # mirroring ROM src/olc.c:1067-1070
             # "O[%5d] %-13.13s in room             R[%5d]       %-15.15s\n\r"
             reset_line = (
-                f"O[{arg1:5d}] {short_descr:<13.13s} in room             "
-                f"R[{arg3:5d}]       {room_name:<15.15s}\n\r"
+                f"O[{arg1:5d}] {short_descr:<13.13s} in room             R[{arg3:5d}]       {room_name:<15.15s}\n\r"
             )
             lines.append((prefix + reset_line).rstrip("\n\r"))
 
@@ -129,8 +129,8 @@ def _display_resets(room) -> str:
                 # ROM src/olc.c:1086-1090 continue — skip send_to_char
                 continue
 
-            short_descr = (pObjIndex.short_descr or "")
-            to_short_descr = (pObjToIndex.short_descr or "")
+            short_descr = pObjIndex.short_descr or ""
+            to_short_descr = pObjToIndex.short_descr or ""
 
             # mirroring ROM src/olc.c:1094-1100
             # "O[%5d] %-13.13s inside              O[%5d] %2d-%2d %-15.15s\n\r"
@@ -153,12 +153,12 @@ def _display_resets(room) -> str:
                 lines.append((prefix + err_line).rstrip("\n\r"))
                 break
 
-            short_descr = (pObjIndex.short_descr or "")
+            short_descr = pObjIndex.short_descr or ""
 
             if pMob.pShop:
                 # mirroring ROM src/olc.c:1125-1131
                 # "O[%5d] %-13.13s in the inventory of S[%5d]       %-15.15s\n\r"
-                mob_short = (pMob.short_descr or "")
+                mob_short = pMob.short_descr or ""
                 reset_line = (
                     f"O[{arg1:5d}] {short_descr:<13.13s} in the inventory of "
                     f"S[{pMob.vnum:5d}]       {mob_short:<15.15s}\n\r"
@@ -172,7 +172,7 @@ def _display_resets(room) -> str:
                 else:
                     # flag_string(wear_loc_strings, pReset->arg3)
                     wear_str = wear_loc_string_for(arg3)
-                mob_short = (pMob.short_descr or "")
+                mob_short = pMob.short_descr or ""
                 reset_line = (
                     f"O[{arg1:5d}] {short_descr:<13.13s} {wear_str:<19.19s} "
                     f"M[{pMob.vnum:5d}]       {mob_short:<15.15s}\n\r"
@@ -193,9 +193,7 @@ def _display_resets(room) -> str:
             door_str = door_reset_string_for(arg3)
 
             # "R[%5d] %s door of %-19.19s reset to %s\n\r"
-            reset_line = (
-                f"R[{arg1:5d}] {dir_cap} door of {room_name:<19.19s} reset to {door_str}\n\r"
-            )
+            reset_line = f"R[{arg1:5d}] {dir_cap} door of {room_name:<19.19s} reset to {door_str}\n\r"
             lines.append((prefix + reset_line).rstrip("\n\r"))
 
         elif cmd == "R":
@@ -205,7 +203,7 @@ def _display_resets(room) -> str:
                 # ROM src/olc.c:1166-1170 continue — skip send_to_char
                 continue
 
-            room_name = (pRoomIndex.name or "")
+            room_name = pRoomIndex.name or ""
             # "R[%5d] Exits are randomized in %s\n\r"
             reset_line = f"R[{arg1:5d}] Exits are randomized in {room_name}\n\r"
             lines.append((prefix + reset_line).rstrip("\n\r"))
@@ -435,7 +433,9 @@ def do_alist(char: Character, args: str) -> str:
     # (was: 1-indexed enumerate counter), and `file_name` not `filename`.
     from mud.registry import area_registry
 
-    lines = [f"[{'Num':>3s}] [{'Area Name':<27s}] ({'lvnum':>5s}-{'uvnum':>5s}) [{'Filename':<10s}] {'Sec':>3s} [{'Builders':<10s}]"]
+    lines = [
+        f"[{'Num':>3s}] [{'Area Name':<27s}] ({'lvnum':>5s}-{'uvnum':>5s}) [{'Filename':<10s}] {'Sec':>3s} [{'Builders':<10s}]"
+    ]
 
     for area in area_registry.values():
         name = (getattr(area, "name", None) or "Unknown")[:29]
@@ -488,12 +488,12 @@ def do_edit(char: Character, args: str) -> str:
 
     # editor_table[] — ROM src/olc.c:646-657
     _EDITOR_TABLE: list[tuple[str, object]] = [
-        ("area",   cmd_aedit),
-        ("room",   cmd_redit),
+        ("area", cmd_aedit),
+        ("room", cmd_redit),
         ("object", cmd_oedit),
         ("mobile", cmd_medit),
         ("mpcode", do_mpedit),
-        ("hedit",  cmd_hedit),
+        ("hedit", cmd_hedit),
     ]
 
     arg = (args or "").strip()
@@ -625,6 +625,7 @@ def _mpedit_create(char: Character, argument: str) -> str:
 # mpedit session subcommand helpers
 # ---------------------------------------------------------------------------
 
+
 def _mpedit_show(pMcode) -> str:
     """Show mprog code details — ROM src/olc_mpcode.c:198-211 mpedit_show().
 
@@ -648,6 +649,7 @@ def _mpedit_code(session, pMcode, argument: str) -> str:
         session.string_edit_target = pMcode
         session.string_edit_field = "code"
         from mud.commands.dispatcher import DescriptorRoute
+
         session.route = DescriptorRoute.STRING_EDIT
         return ""
     return "Syntax: code\n\r"
@@ -663,7 +665,7 @@ def _mpedit_list(char, argument: str) -> str:
     from mud.models.mob import mprog_code_registry
 
     # mirroring ROM src/olc_mpcode.c:234
-    f_all = (argument.strip().lower() == "all")
+    f_all = argument.strip().lower() == "all"
 
     # ROM: ch->in_room->area->min_vnum / max_vnum for area filter
     char_room = getattr(char, "room", None) or getattr(char, "in_room", None)
@@ -698,12 +700,12 @@ def _mpedit_list(char, argument: str) -> str:
 
 # mpedit dispatch table — mirrors ROM src/olc_mpcode.c:22-33 mpedit_table[]
 _MPEDIT_TABLE: list[tuple[str, object]] = [
-    ("commands", None),   # show_commands — placeholder
-    ("create",   None),   # mpedit_create — handled in do_mpedit
-    ("code",     "_code"),
-    ("show",     "_show"),
-    ("list",     "_list"),
-    ("?",        None),   # show_help — placeholder
+    ("commands", None),  # show_commands — placeholder
+    ("create", None),  # mpedit_create — handled in do_mpedit
+    ("code", "_code"),
+    ("show", "_show"),
+    ("list", "_list"),
+    ("?", None),  # show_help — placeholder
 ]
 
 
@@ -753,12 +755,11 @@ def _interpret_mpedit(session, char: Character, raw_input: str) -> str:
     if "list".startswith(command) and command:
         return _mpedit_list(char, remainder)
     if "commands".startswith(command) and command:
-        return (
-            "MPEdit commands: code, show, list [all], commands, done\n\r"
-        )
+        return "MPEdit commands: code, show, list [all], commands, done\n\r"
 
     # ROM src/olc_mpcode.c:91 — fallback to interpret(ch, arg)
     from mud.commands.dispatcher import process_command
+
     return process_command(char, raw_input) or ""
 
 

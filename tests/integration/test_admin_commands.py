@@ -10,26 +10,27 @@ ROM Reference: src/act_wiz.c
 from __future__ import annotations
 
 import pytest
-from mud.commands.dispatcher import process_command
-from mud.commands.imm_commands import do_goto, do_transfer
+
 from mud.commands.admin_commands import (
+    cmd_allow,
+    cmd_ban,
+    cmd_newlock,
+    cmd_permban,
     cmd_spawn,
     cmd_wizlock,
-    cmd_newlock,
-    cmd_ban,
-    cmd_allow,
-    cmd_permban,
 )
-from mud.models.character import Character, character_registry
-from mud.models.room import Room
+from mud.commands.dispatcher import process_command
+from mud.commands.imm_commands import do_goto
+from mud.models.character import Character
+from mud.models.constants import LEVEL_IMMORTAL
 from mud.models.mob import MobIndex
-from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL
-from mud.net.session import Session, SESSIONS
-from mud.registry import room_registry, mob_registry
+from mud.models.room import Room
+from mud.net.session import SESSIONS
+from mud.registry import mob_registry, room_registry
 from mud.security import bans
 from mud.world.world_state import (
-    is_wizlock_enabled,
     is_newlock_enabled,
+    is_wizlock_enabled,
     reset_lockdowns,
 )
 

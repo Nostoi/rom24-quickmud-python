@@ -12,8 +12,6 @@ This test suite verifies:
 
 from __future__ import annotations
 
-import pytest
-
 
 def test_equipment_header_separate_line(movable_char_factory, object_factory):
     """Test that 'You are using:' header is on separate line (ROM C line 2268)."""
@@ -71,7 +69,7 @@ def test_equipment_visible_shows_object_name(movable_char_factory, object_factor
 
 def test_equipment_invisible_shows_something(movable_char_factory, object_factory):
     """Test that invisible equipment shows 'something.' (ROM C line 2283)."""
-    from mud.models.constants import WearLocation, ExtraFlag
+    from mud.models.constants import ExtraFlag, WearLocation
 
     char = movable_char_factory("TestChar", 3001)
 
@@ -171,7 +169,7 @@ def test_equipment_slot_name_formatting(movable_char_factory, object_factory):
 
 def test_equipment_mixed_visible_invisible(movable_char_factory, object_factory):
     """Test mixed visible and invisible equipment."""
-    from mud.models.constants import WearLocation, ExtraFlag
+    from mud.models.constants import ExtraFlag, WearLocation
 
     char = movable_char_factory("TestChar", 3001)
 
@@ -302,8 +300,4 @@ def test_equipment_follows_rom_slot_order_not_dict_insertion(movable_char_factor
 
     output = do_equipment(char, "")
 
-    assert output == (
-        "You are using:\n"
-        "<worn as shield>    a wooden shield\n"
-        "<wielded>           a steel sword\n"
-    )
+    assert output == ("You are using:\n<worn as shield>    a wooden shield\n<wielded>           a steel sword\n")

@@ -116,9 +116,7 @@ def _make_pc(room: Room, name: str = "Victim") -> Character:
     return pc
 
 
-def _make_listener(
-    room: Room, phrase: str, vnum: int = 9801, name: str | None = None
-) -> Character:
+def _make_listener(room: Room, phrase: str, vnum: int = 9801, name: str | None = None) -> Character:
     from mud import registry
     from mud.mobprog import Trigger
 
@@ -180,16 +178,10 @@ def test_transfer_departure_fires_act_trigger_on_npc_bystander():
     _make_pc(old_room, name="Victim")
     _make_listener(old_room, "mushroom cloud", vnum=9802, name="bystander")
 
-    fired = _recorded_act_triggers(
-        lambda: do_transfer(imm, f"Victim {new_room.vnum}")
-    )
+    fired = _recorded_act_triggers(lambda: do_transfer(imm, f"Victim {new_room.vnum}"))
 
-    bystander_triggers = [
-        (n, m) for n, m in fired if n == "bystander" and "mushroom" in m.lower()
-    ]
-    assert len(bystander_triggers) >= 1, (
-        f"Expected 'mushroom cloud' ACT trigger on departure bystander, got: {fired}"
-    )
+    bystander_triggers = [(n, m) for n, m in fired if n == "bystander" and "mushroom" in m.lower()]
+    assert len(bystander_triggers) >= 1, f"Expected 'mushroom cloud' ACT trigger on departure bystander, got: {fired}"
 
 
 def test_transfer_arrival_fires_act_trigger_on_npc_bystander():
@@ -200,16 +192,10 @@ def test_transfer_arrival_fires_act_trigger_on_npc_bystander():
     _make_pc(old_room, name="Victim")
     _make_listener(new_room, "puff of smoke", vnum=9803, name="arriver")
 
-    fired = _recorded_act_triggers(
-        lambda: do_transfer(imm, f"Victim {new_room.vnum}")
-    )
+    fired = _recorded_act_triggers(lambda: do_transfer(imm, f"Victim {new_room.vnum}"))
 
-    arriver_triggers = [
-        (n, m) for n, m in fired if n == "arriver" and "puff" in m.lower()
-    ]
-    assert len(arriver_triggers) >= 1, (
-        f"Expected 'puff of smoke' ACT trigger on arrival bystander, got: {fired}"
-    )
+    arriver_triggers = [(n, m) for n, m in fired if n == "arriver" and "puff" in m.lower()]
+    assert len(arriver_triggers) >= 1, f"Expected 'puff of smoke' ACT trigger on arrival bystander, got: {fired}"
 
 
 def test_transfer_vict_fires_act_trigger_on_npc_victim():
@@ -246,16 +232,10 @@ def test_transfer_vict_fires_act_trigger_on_npc_victim():
     character_registry.append(victim)
     registry.char_list.append(victim)
 
-    fired = _recorded_act_triggers(
-        lambda: do_transfer(imm, f"target_npc {new_room.vnum}")
-    )
+    fired = _recorded_act_triggers(lambda: do_transfer(imm, f"target_npc {new_room.vnum}"))
 
-    victim_triggers = [
-        (n, m) for n, m in fired if n == "target_npc" and "transferred" in m.lower()
-    ]
-    assert len(victim_triggers) >= 1, (
-        f"Expected 'transferred' ACT trigger on NPC victim, got: {fired}"
-    )
+    victim_triggers = [(n, m) for n, m in fired if n == "target_npc" and "transferred" in m.lower()]
+    assert len(victim_triggers) >= 1, f"Expected 'transferred' ACT trigger on NPC victim, got: {fired}"
 
 
 # ---------------------------------------------------------------------------
@@ -272,12 +252,8 @@ def test_goto_bamfout_fires_act_trigger_on_npc_witness():
 
     fired = _recorded_act_triggers(lambda: do_goto(imm, str(new_room.vnum)))
 
-    watcher_triggers = [
-        (n, m) for n, m in fired if n == "watcher" and "mist" in m.lower()
-    ]
-    assert len(watcher_triggers) >= 1, (
-        f"Expected 'swirling mist' ACT trigger on goto departure, got: {fired}"
-    )
+    watcher_triggers = [(n, m) for n, m in fired if n == "watcher" and "mist" in m.lower()]
+    assert len(watcher_triggers) >= 1, f"Expected 'swirling mist' ACT trigger on goto departure, got: {fired}"
 
 
 def test_goto_bamfin_fires_act_trigger_on_npc_witness():
@@ -289,12 +265,8 @@ def test_goto_bamfin_fires_act_trigger_on_npc_witness():
 
     fired = _recorded_act_triggers(lambda: do_goto(imm, str(new_room.vnum)))
 
-    arrival_triggers = [
-        (n, m) for n, m in fired if n == "arrival_watcher" and "mist" in m.lower()
-    ]
-    assert len(arrival_triggers) >= 1, (
-        f"Expected 'mist' ACT trigger on goto arrival, got: {fired}"
-    )
+    arrival_triggers = [(n, m) for n, m in fired if n == "arrival_watcher" and "mist" in m.lower()]
+    assert len(arrival_triggers) >= 1, f"Expected 'mist' ACT trigger on goto arrival, got: {fired}"
 
 
 # ---------------------------------------------------------------------------
@@ -315,12 +287,8 @@ def test_violate_bamfout_fires_act_trigger_on_npc_witness():
 
     fired = _recorded_act_triggers(lambda: do_violate(imm, str(private_room.vnum)))
 
-    dep_triggers = [
-        (n, m) for n, m in fired if n == "dep_watcher" and "mist" in m.lower()
-    ]
-    assert len(dep_triggers) >= 1, (
-        f"Expected 'mist' ACT trigger on violate departure, got: {fired}"
-    )
+    dep_triggers = [(n, m) for n, m in fired if n == "dep_watcher" and "mist" in m.lower()]
+    assert len(dep_triggers) >= 1, f"Expected 'mist' ACT trigger on violate departure, got: {fired}"
 
 
 # ---------------------------------------------------------------------------
@@ -337,12 +305,8 @@ def test_force_single_npc_target_fires_act_trigger():
 
     fired = _recorded_act_triggers(lambda: do_force(imm, "forced_npc smile"))
 
-    npc_triggers = [
-        (n, m) for n, m in fired if n == "forced_npc" and "forces you to" in m.lower()
-    ]
-    assert len(npc_triggers) >= 1, (
-        f"Expected 'forces you to' ACT trigger on forced NPC, got: {fired}"
-    )
+    npc_triggers = [(n, m) for n, m in fired if n == "forced_npc" and "forces you to" in m.lower()]
+    assert len(npc_triggers) >= 1, f"Expected 'forces you to' ACT trigger on forced NPC, got: {fired}"
 
 
 def test_force_single_pc_target_does_not_fire_act_trigger():
@@ -370,6 +334,4 @@ def test_force_single_pc_target_does_not_fire_act_trigger():
     finally:
         mobprog.mp_act_trigger = original
 
-    assert fired_count[0] == 0, (
-        f"Expected no TRIG_ACT fires on PC force target, got {fired_count[0]} triggers"
-    )
+    assert fired_count[0] == 0, f"Expected no TRIG_ACT fires on PC force target, got {fired_count[0]} triggers"

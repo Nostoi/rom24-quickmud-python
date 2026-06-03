@@ -3,6 +3,7 @@
 Covers EMOTE-001..002, PMOTE-001..003, COLOUR-001..004, SPLIT-001..003,
 and POSE-001..002 from ``docs/parity/ACT_COMM_C_AUDIT.md``.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -72,6 +73,7 @@ def bob(room):
 # EMOTE-001 / EMOTE-002: COMM_NOEMOTE check + first-char validation
 # -----------------------------------------------------------------------------
 
+
 class TestEmoteGaps:
     def test_emote_blocked_by_noemote_flag(self, alice):
         alice.comm = int(CommFlag.NOEMOTE)
@@ -96,6 +98,7 @@ class TestEmoteGaps:
 # -----------------------------------------------------------------------------
 # PMOTE-001 / PMOTE-002 / PMOTE-003: pronoun substitution faithfulness
 # -----------------------------------------------------------------------------
+
 
 class TestPmoteGaps:
     def test_pmote_blocked_by_noemote_flag(self, alice):
@@ -166,6 +169,7 @@ class TestPmoteGaps:
 # COLOUR-001..004: ROM colour menu/toggle/default/all/per-field
 # -----------------------------------------------------------------------------
 
+
 class TestColourGaps:
     def test_colour_no_arg_toggles_on(self, alice):
         alice.act = 0
@@ -194,8 +198,8 @@ class TestColourGaps:
         assert alice.pcdata.colour == {}
 
     def test_colour_all_sets_every_field(self, alice):
-        from mud.models.character import PCData
         from mud.commands.auto_settings import _COLOUR_FIELDS
+        from mud.models.character import PCData
 
         alice.pcdata = PCData()
         out = do_colour(alice, "all {R")
@@ -222,6 +226,7 @@ class TestColourGaps:
 # -----------------------------------------------------------------------------
 # SPLIT-001 / SPLIT-002 / SPLIT-003: ROM dual silver+gold split
 # -----------------------------------------------------------------------------
+
 
 class TestSplitGaps:
     def _setup_group(self, alice, bob):
@@ -305,6 +310,7 @@ class TestSplitGaps:
 # -----------------------------------------------------------------------------
 # POSE-001 / POSE-002: pose_table by class+level
 # -----------------------------------------------------------------------------
+
 
 class TestPoseGaps:
     def test_pose_npc_returns_empty(self, alice):

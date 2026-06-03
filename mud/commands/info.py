@@ -3,7 +3,6 @@ from __future__ import annotations
 from mud.models.character import Character
 from mud.models.constants import LEVEL_HERO
 
-
 ROM_NEWLINE = "\n\r"
 _COLUMNS_PER_ROW = 6
 _COLUMN_WIDTH = 12
@@ -94,13 +93,13 @@ def do_who(char: Character, args: str) -> str:
     """
     from mud.models.classes import CLASS_TABLE, get_player_class
     from mud.models.constants import (
-        CommFlag,
         LEVEL_HERO,
         LEVEL_IMMORTAL,
         MAX_LEVEL,
+        CommFlag,
         PlayerFlag,
     )
-    from mud.models.races import get_race, PC_RACE_TABLE
+    from mud.models.races import PC_RACE_TABLE, get_race
     from mud.net.session import SESSIONS
     from mud.world.vision import can_see_character
 
@@ -153,7 +152,7 @@ def do_who(char: Character, args: str) -> str:
                                 break
                     else:
                         # Invalid argument
-                        return f"That's not a valid race, class, or clan." + ROM_NEWLINE
+                        return "That's not a valid race, class, or clan." + ROM_NEWLINE
 
     # Build player list (mirroring ROM C lines 2130-2219)
     lines = []
@@ -282,10 +281,10 @@ def do_where(char: Character, args: str) -> str:
 
     Note: Both modes only search current area, not the entire world.
     """
-    from mud.net.session import SESSIONS
-    from mud.world.vision import can_see_character
     from mud.models.constants import RoomFlag
+    from mud.net.session import SESSIONS
     from mud.world.movement import _is_room_owner, _room_is_private
+    from mud.world.vision import can_see_character
 
     char_room = getattr(char, "room", None)
     if not char_room:
@@ -348,8 +347,8 @@ def do_where(char: Character, args: str) -> str:
     else:
         from mud.models.character import character_registry
         from mud.models.constants import AffectFlag
-        from mud.world.char_find import is_name
         from mud.utils.act import _pers
+        from mud.world.char_find import is_name
 
         found = False
 
@@ -467,6 +466,7 @@ def do_time(char: Character, args: str) -> str:
     # ROM C lines 1797-1798: Boot time and system time display
     # sprintf(buf, "ROM started up at %s\n\rThe system time is %s.\n\r", str_boot_time, (char *) ctime(&current_time));
     from datetime import datetime
+
     import mud.game_loop
 
     # Get boot time (stored at server startup)
@@ -495,7 +495,7 @@ def do_weather(char: Character, args: str) -> str:
 
     Shows current weather (sky and wind direction).
     """
-    from mud.game_loop import weather, SkyState
+    from mud.game_loop import weather
     from mud.models.constants import RoomFlag
 
     char_room = getattr(char, "room", None)

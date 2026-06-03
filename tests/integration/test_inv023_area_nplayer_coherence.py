@@ -88,12 +88,10 @@ def test_inv023_recall_decrements_source_area_and_increments_temple_area(
 
     assert pc.room is temple_room, "do_recall must move the PC to the temple"
     assert src_area.nplayer == 0, (
-        "do_recall must decrement source area.nplayer "
-        "(ROM src/handler.c:1501-1502 via char_from_room)"
+        "do_recall must decrement source area.nplayer (ROM src/handler.c:1501-1502 via char_from_room)"
     )
     assert temple_area.nplayer == 1, (
-        "do_recall must increment temple area.nplayer "
-        "(ROM src/handler.c:1561-1568 via char_to_room)"
+        "do_recall must increment temple area.nplayer (ROM src/handler.c:1561-1568 via char_to_room)"
     )
 
 

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import pytest
 
-from mud.models.character import Character
 from mud.models.constants import AffectFlag
 from mud.skills.handlers import hide
 

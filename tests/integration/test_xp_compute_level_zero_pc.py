@@ -112,8 +112,7 @@ def test_level_zero_pc_receives_zero_xp_in_xp_compute():
     rng_mm.seed_mm(12345)
     awarded = xp_compute(pc, victim, total_levels=1)
     assert awarded == 0, (
-        f"Level-0 PC should receive 0 XP per ROM src/fight.c:1818 "
-        f"(xp * gch->level == 0), got {awarded}"
+        f"Level-0 PC should receive 0 XP per ROM src/fight.c:1818 (xp * gch->level == 0), got {awarded}"
     )
 
 
@@ -127,7 +126,4 @@ def test_level_one_pc_unchanged_after_fix():
 
     rng_mm.seed_mm(12345)
     awarded = xp_compute(pc, victim, total_levels=1)
-    assert awarded > 0, (
-        f"Level-1 PC should still receive positive XP after the floor "
-        f"is removed, got {awarded}"
-    )
+    assert awarded > 0, f"Level-1 PC should still receive positive XP after the floor is removed, got {awarded}"

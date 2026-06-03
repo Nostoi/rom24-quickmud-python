@@ -5,6 +5,7 @@ ROM reference: src/hedit.c (do_hedit lines 284-333, hedit dispatcher 205-260)
 These tests verify the ROM-faithful implementation introduced in HEDIT-001..014.
 All expected strings mirror the exact send_to_char() calls in ROM hedit.c.
 """
+
 from __future__ import annotations
 
 import json
@@ -50,6 +51,7 @@ def builder_char():
 
 # ── Entry-point: no args ─────────────────────────────────────────────────────
 
+
 def test_hedit_requires_keyword(builder_char):
     """ROM src/hedit.c:284-286 — no arg → 'HEdit:  There is no default help to edit.'"""
     result = cmd_hedit(builder_char, "")
@@ -57,6 +59,7 @@ def test_hedit_requires_keyword(builder_char):
 
 
 # ── Entry-point: 'new' subcommand ────────────────────────────────────────────
+
 
 def test_hedit_new_without_topic_returns_syntax(builder_char):
     """ROM src/hedit.c:317-321 — 'new' alone → syntax error."""
@@ -77,6 +80,7 @@ def test_hedit_new_with_topic_opens_editor(builder_char):
 
 # ── Entry-point: existing keyword ────────────────────────────────────────────
 
+
 def test_hedit_existing_keyword_opens_editor(builder_char, test_help_entry):
     """ROM src/hedit.c:296-313 — matching keyword opens hedit session silently."""
     result = cmd_hedit(builder_char, "magic")
@@ -94,6 +98,7 @@ def test_hedit_nonexistent_keyword_returns_no_default(builder_char):
 
 # ── In-session: empty input ───────────────────────────────────────────────────
 
+
 def test_hedit_empty_in_session_shows_entry(builder_char, test_help_entry):
     """ROM src/hedit.c:236-240 — empty input while in session → hedit_show."""
     cmd_hedit(builder_char, "magic")
@@ -106,6 +111,7 @@ def test_hedit_empty_in_session_shows_entry(builder_char, test_help_entry):
 
 # ── In-session: show ──────────────────────────────────────────────────────────
 
+
 def test_hedit_show_command(builder_char, test_help_entry):
     """ROM src/hedit.c:53-67 — hedit_show exact format."""
     cmd_hedit(builder_char, "magic")
@@ -117,6 +123,7 @@ def test_hedit_show_command(builder_char, test_help_entry):
 
 
 # ── In-session: keyword ───────────────────────────────────────────────────────
+
 
 def test_hedit_keyword_command_sets_keywords(builder_char, test_help_entry):
     """ROM src/hedit.c:96-113 — keyword subcommand → Ok."""
@@ -134,6 +141,7 @@ def test_hedit_keyword_requires_value(builder_char, test_help_entry):
 
 
 # ── In-session: level ─────────────────────────────────────────────────────────
+
 
 def test_hedit_level_command_sets_level(builder_char, test_help_entry):
     """ROM src/hedit.c:69-94 — level <n> → Ok."""
@@ -167,6 +175,7 @@ def test_hedit_level_out_of_range_rejected(builder_char, test_help_entry):
 
 # ── In-session: text ──────────────────────────────────────────────────────────
 
+
 def test_hedit_text_with_no_arg_marks_changed(builder_char, test_help_entry):
     """ROM src/hedit.c:188-203 — text with no arg invokes string_append (Python: marks changed)."""
     cmd_hedit(builder_char, "magic")
@@ -183,6 +192,7 @@ def test_hedit_text_with_arg_returns_syntax(builder_char, test_help_entry):
 
 
 # ── In-session: done ──────────────────────────────────────────────────────────
+
 
 def test_hedit_done_saves_new_entry_to_registry(builder_char):
     """ROM src/hedit.c:242-246 — done on new entry registers it silently."""
@@ -211,6 +221,7 @@ def test_hedit_done_updates_existing_entry(builder_char, test_help_entry):
 
 # ── In-session: session integrity ────────────────────────────────────────────
 
+
 def test_hedit_session_lost_returns_error(builder_char, test_help_entry):
     """ROM src/hedit.c:209-212 — missing help_entry in state → error message."""
     cmd_hedit(builder_char, "magic")
@@ -220,6 +231,7 @@ def test_hedit_session_lost_returns_error(builder_char, test_help_entry):
 
 
 # ── In-session: unknown command falls through to dispatcher ──────────────────
+
 
 def test_hedit_unknown_command_does_not_recurse(builder_char, test_help_entry):
     """ROM src/hedit.c:258 — unknown cmd falls through to normal command table (no RecursionError)."""
@@ -233,6 +245,7 @@ def test_hedit_unknown_command_does_not_recurse(builder_char, test_help_entry):
 
 
 # ── hesave ────────────────────────────────────────────────────────────────────
+
 
 def test_hesave_saves_entries_to_file(builder_char, test_help_entry, tmp_path):
     """cmd_hesave writes JSON array with all registered entries."""
@@ -271,6 +284,7 @@ def test_hesave_preserves_all_fields(builder_char, tmp_path):
 
 
 # ── Full workflow ─────────────────────────────────────────────────────────────
+
 
 def test_hedit_workflow_new_edit_save(builder_char, tmp_path):
     """End-to-end: create via 'new', set keyword+level, done, hesave."""

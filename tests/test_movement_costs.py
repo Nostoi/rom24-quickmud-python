@@ -6,8 +6,8 @@ from mud.world import move_character as move
 
 
 def setup_world_at(vnum_from: int, vnum_to: int) -> tuple:
-    from mud.models.room import Exit
     from mud.models.constants import Direction
+    from mud.models.room import Exit
 
     initialize_world("area/area.lst")
     time_info.sunlight = Sunlight.LIGHT

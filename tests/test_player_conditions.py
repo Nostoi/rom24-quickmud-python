@@ -15,13 +15,12 @@ Oracle Edge Cases Tested:
 from __future__ import annotations
 
 import pytest
+from helpers_player import set_conditions
 
 from mud.characters.conditions import gain_condition
-from mud.models.character import Character, PCData
 from mud.models.constants import Condition
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import create_test_character, initialize_world
-from helpers_player import set_conditions
 
 
 @pytest.fixture(scope="module", autouse=True)

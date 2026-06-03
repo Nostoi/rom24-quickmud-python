@@ -35,7 +35,6 @@ from mud.models.room import Exit, Room
 from mud.models.room_json import ResetJson
 from mud.models.shop import Shop
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
-from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
 from mud.spawning.reset_handler import apply_resets, reset_tick
 from mud.spawning.templates import MobInstance
@@ -787,7 +786,6 @@ def test_ge_reset_non_shopkeeper_probability_check():
         ]
 
     # Create a dummy object 3022 in another room to reach the limit of 1
-    from mud.spawning.obj_spawner import spawn_object
 
     dummy_obj = spawn_object(3022)
     assert dummy_obj is not None

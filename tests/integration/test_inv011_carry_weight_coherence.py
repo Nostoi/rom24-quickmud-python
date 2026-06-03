@@ -57,12 +57,10 @@ def _expected_carry_number(ch: Character) -> int:
 
 def _assert_coherent(ch: Character) -> None:
     assert ch.carry_weight == _expected_carry_weight(ch), (
-        f"carry_weight={ch.carry_weight} but inventory+equipment sum to "
-        f"{_expected_carry_weight(ch)}"
+        f"carry_weight={ch.carry_weight} but inventory+equipment sum to {_expected_carry_weight(ch)}"
     )
     assert ch.carry_number == _expected_carry_number(ch), (
-        f"carry_number={ch.carry_number} but inventory+equipment count is "
-        f"{_expected_carry_number(ch)}"
+        f"carry_number={ch.carry_number} but inventory+equipment count is {_expected_carry_number(ch)}"
     )
 
 

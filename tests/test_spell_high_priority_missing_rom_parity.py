@@ -15,10 +15,8 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from mud.models.character import Character, SpellEffect
-from mud.models.constants import AffectFlag, DamageType, Position, RoomFlag, ROOM_VNUM_TEMPLE
+from mud.models.constants import ROOM_VNUM_TEMPLE, Position, RoomFlag
 from mud.skills.handlers import (
     dispel_magic,
     fireball,

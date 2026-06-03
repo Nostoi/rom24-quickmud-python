@@ -4,7 +4,6 @@ from pathlib import Path
 
 from mud.scripts.convert_skills_to_json import parse_skill_table
 
-
 ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
     "acid blast": {"levels": [28, 53, 35, 32], "ratings": [1, 1, 2, 2], "slot": 70, "min_mana": 20, "beats": 12},
     "acid breath": {"levels": [31, 32, 33, 34], "ratings": [1, 1, 2, 2], "slot": 200, "min_mana": 100, "beats": 24},

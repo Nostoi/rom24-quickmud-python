@@ -59,7 +59,9 @@ def test_gain_exp_logs_level_gain_before_wiznet(monkeypatch: pytest.MonkeyPatch)
     events: list[tuple[str, str]] = []
 
     monkeypatch.setattr(advancement_module, "wiznet", lambda *args, **kwargs: events.append(("wiznet", args[0])))
-    monkeypatch.setattr(advancement_module, "log_game_event", lambda message: events.append(("log", message)), raising=False)
+    monkeypatch.setattr(
+        advancement_module, "log_game_event", lambda message: events.append(("log", message)), raising=False
+    )
     monkeypatch.setattr("mud.account.account_manager.save_character", lambda ch: events.append(("save", ch.name)))
 
     gain_exp(char, base)

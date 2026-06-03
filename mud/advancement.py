@@ -53,9 +53,7 @@ def exp_per_level(char: Character) -> int:
     return _creation_exp_floor(char, BASE_XP_PER_LEVEL)
 
 
-def exp_per_level_for_creation(
-    race: PcRaceType, class_type: ClassType, creation_points: int
-) -> int:
+def exp_per_level_for_creation(race: PcRaceType, class_type: ClassType, creation_points: int) -> int:
     """ROM-style experience curve based on creation points."""
 
     points = max(0, int(creation_points))
@@ -232,4 +230,5 @@ def gain_exp(char: Character, amount: int) -> None:
         advance_level(char)
         # Lazy import to avoid circular dependency
         from mud.account.account_manager import save_character
+
         save_character(char)

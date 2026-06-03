@@ -25,8 +25,11 @@ from mud.world.world_state import create_test_character
 
 def _setup(vnum: int = 5500):
     test_room = Room(
-        vnum=vnum, name="Test Room", description="A test room.",
-        room_flags=0, sector_type=0,
+        vnum=vnum,
+        name="Test Room",
+        description="A test room.",
+        room_flags=0,
+        sector_type=0,
     )
     test_room.people = []
     test_room.contents = []
@@ -71,9 +74,7 @@ class TestAutoSplitPersAndCap:
 
             do_split(npc, "60")
             joined = "\n".join(pc.messages).lower()
-            assert "the city guard splits" in joined, (
-                f"NPC should render short_descr via PERS: {pc.messages!r}"
-            )
+            assert "the city guard splits" in joined, f"NPC should render short_descr via PERS: {pc.messages!r}"
         finally:
             _cleanup(5500)
 
@@ -95,12 +96,8 @@ class TestAutoSplitPersAndCap:
 
             do_split(splitter, "60")
             joined = "\n".join(member.messages).lower()
-            assert "someone splits" in joined, (
-                f"PERS should mask invisible splitter: {member.messages!r}"
-            )
-            assert "hider" not in joined, (
-                f"invisible splitter name leaked: {member.messages!r}"
-            )
+            assert "someone splits" in joined, f"PERS should mask invisible splitter: {member.messages!r}"
+            assert "hider" not in joined, f"invisible splitter name leaked: {member.messages!r}"
         finally:
             _cleanup(5501)
 
@@ -126,9 +123,7 @@ class TestAutoSplitPersAndCap:
 
             do_split(splitter, "100")
             joined = "\n".join(member.messages).lower()
-            assert "the old warrior splits 100 silver" in joined, (
-                f"should render short_descr: {member.messages!r}"
-            )
+            assert "the old warrior splits 100 silver" in joined, f"should render short_descr: {member.messages!r}"
             assert member.messages[0].startswith("The old warrior splits"), (
                 f"first letter must be capitalized (INV-029): {member.messages!r}"
             )
@@ -157,9 +152,7 @@ class TestAutoSplitPersAndCap:
             assert member.messages[0].startswith("Richie splits"), (
                 f"first letter must be capitalized: {member.messages!r}"
             )
-            assert "splits 50 gold" in joined, (
-                f"gold split message missing: {member.messages!r}"
-            )
+            assert "splits 50 gold" in joined, f"gold split message missing: {member.messages!r}"
         finally:
             _cleanup(5503)
 
@@ -182,9 +175,7 @@ class TestAutoSplitPersAndCap:
 
             do_split(splitter, "100 100")
             joined = "\n".join(member.messages).lower()
-            assert "splits 100 silver and 100 gold" in joined, (
-                f"mixed message missing: {member.messages!r}"
-            )
+            assert "splits 100 silver and 100 gold" in joined, f"mixed message missing: {member.messages!r}"
             assert member.messages[0].startswith("SplitMixed splits"), (
                 f"first letter must be capitalized: {member.messages!r}"
             )

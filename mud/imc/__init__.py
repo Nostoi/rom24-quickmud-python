@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
-from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional
-
 import os
 import select
 import time
+from collections.abc import Mapping
+from dataclasses import dataclass, replace
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
 from .commands import (
     IMCCommand,
@@ -32,7 +32,7 @@ class IMCChannel:
 
     name: str
     local_name: str
-    level: Optional[int]
+    level: int | None
     reg_format: str
     emote_format: str
     social_format: str
@@ -83,7 +83,7 @@ class IMCUserCacheEntry:
     """Cached router metadata from `imc.ucache`."""
 
     name: str
-    gender: Optional[int]
+    gender: int | None
     last_seen: int
 
 
@@ -91,11 +91,11 @@ class IMCUserCacheEntry:
 class IMCState:
     """Runtime IMC state used by the Python port."""
 
-    config: Dict[str, str]
-    channels: List[IMCChannel]
-    helps: Dict[str, IMCHelp]
-    commands: Dict[str, IMCCommand]
-    packet_handlers: Dict[str, PacketHandler]
+    config: dict[str, str]
+    channels: list[IMCChannel]
+    helps: dict[str, IMCHelp]
+    commands: dict[str, IMCCommand]
+    packet_handlers: dict[str, PacketHandler]
     connected: bool
     config_path: Path
     channels_path: Path
@@ -104,13 +104,13 @@ class IMCState:
     ignores_path: Path
     ucache_path: Path
     history_dir: Path
-    router_bans: List[IMCBan]
-    colors: Dict[str, IMCColor]
-    who_template: Optional[IMCWhoTemplate]
-    user_cache: Dict[str, IMCUserCacheEntry]
-    channel_history: Dict[str, List[str]]
-    connection: Optional[IMCConnection]
-    outgoing_queue: List[str]
+    router_bans: list[IMCBan]
+    colors: dict[str, IMCColor]
+    who_template: IMCWhoTemplate | None
+    user_cache: dict[str, IMCUserCacheEntry]
+    channel_history: dict[str, list[str]]
+    connection: IMCConnection | None
+    outgoing_queue: list[str]
     idle_pulses: int = 0
     ucache_refresh_deadline: int = 0
     color_path: Path | None = None
@@ -162,7 +162,7 @@ class IMCState:
             pass
 
 
-_state: Optional[IMCState] = None
+_state: IMCState | None = None
 
 _REQUIRED_CONFIG_FIELDS = {
     "LocalName",
@@ -193,11 +193,11 @@ def _resolve_path(env_name: str, default_filename: str) -> Path:
     return _default_imc_dir() / default_filename
 
 
-def _parse_config(path: Path) -> Dict[str, str]:
+def _parse_config(path: Path) -> dict[str, str]:
     if not path.exists():
         raise FileNotFoundError(path)
 
-    config: Dict[str, str] = {}
+    config: dict[str, str] = {}
     with path.open(encoding="latin-1") as handle:
         for raw in handle:
             line = raw.strip()
@@ -221,7 +221,7 @@ def _parse_config(path: Path) -> Dict[str, str]:
     return config
 
 
-def _config_truthy(config: Dict[str, str], key: str) -> bool:
+def _config_truthy(config: dict[str, str], key: str) -> bool:
     value = config.get(key)
     if value is None:
         return False
@@ -265,12 +265,12 @@ def _persist_config_value(path: Path, key: str, value: str) -> None:
     os.replace(tmp_path, path)
 
 
-def _parse_channels(path: Path) -> List[IMCChannel]:
+def _parse_channels(path: Path) -> list[IMCChannel]:
     if not path.exists():
         return []
 
-    channels: List[IMCChannel] = []
-    current: Dict[str, str] = {}
+    channels: list[IMCChannel] = []
+    current: dict[str, str] = {}
 
     def finalize() -> None:
         if "ChanName" not in current:
@@ -329,14 +329,14 @@ def _parse_channels(path: Path) -> List[IMCChannel]:
     return channels
 
 
-def _parse_helps(path: Path) -> Dict[str, IMCHelp]:
+def _parse_helps(path: Path) -> dict[str, IMCHelp]:
     if not path.exists():
         return {}
 
-    helps: Dict[str, IMCHelp] = {}
-    name: Optional[str] = None
+    helps: dict[str, IMCHelp] = {}
+    name: str | None = None
     permission: str = ""
-    text_lines: List[str] = []
+    text_lines: list[str] = []
     capturing_text = False
 
     def flush() -> None:
@@ -382,12 +382,12 @@ def _parse_helps(path: Path) -> Dict[str, IMCHelp]:
     return helps
 
 
-def _parse_color_table(path: Path) -> Dict[str, IMCColor]:
+def _parse_color_table(path: Path) -> dict[str, IMCColor]:
     if not path.exists():
         return {}
 
-    colors: Dict[str, IMCColor] = {}
-    current: Dict[str, str] = {}
+    colors: dict[str, IMCColor] = {}
+    current: dict[str, str] = {}
 
     def store_current() -> None:
         if "Name" not in current:
@@ -421,7 +421,7 @@ def _parse_color_table(path: Path) -> Dict[str, IMCColor]:
     return colors
 
 
-def _parse_who_template(path: Path) -> Optional[IMCWhoTemplate]:
+def _parse_who_template(path: Path) -> IMCWhoTemplate | None:
     if not path.exists():
         return None
 
@@ -472,11 +472,11 @@ def _parse_who_template(path: Path) -> Optional[IMCWhoTemplate]:
     )
 
 
-def _parse_router_bans(path: Path) -> List[IMCBan]:
+def _parse_router_bans(path: Path) -> list[IMCBan]:
     if not path.exists():
         return []
 
-    bans: List[IMCBan] = []
+    bans: list[IMCBan] = []
     with path.open(encoding="latin-1") as handle:
         header = handle.readline().strip()
         if header.upper() != "#IGNORES":
@@ -491,13 +491,13 @@ def _parse_router_bans(path: Path) -> List[IMCBan]:
     return bans
 
 
-def _parse_ucache(path: Path, previous: Optional[Dict[str, IMCUserCacheEntry]] = None) -> Dict[str, IMCUserCacheEntry]:
+def _parse_ucache(path: Path, previous: dict[str, IMCUserCacheEntry] | None = None) -> dict[str, IMCUserCacheEntry]:
     if not path.exists():
         return previous.copy() if previous else {}
 
-    entries: Dict[str, IMCUserCacheEntry] = {}
-    current_name: Optional[str] = None
-    gender: Optional[int] = None
+    entries: dict[str, IMCUserCacheEntry] = {}
+    current_name: str | None = None
+    gender: int | None = None
     last_seen = 0
 
     def flush() -> None:
@@ -557,15 +557,15 @@ def _parse_ucache(path: Path, previous: Optional[Dict[str, IMCUserCacheEntry]] =
     return entries
 
 
-def _load_channel_history(channels: List[IMCChannel], history_dir: Path) -> Dict[str, List[str]]:
-    history: Dict[str, List[str]] = {}
+def _load_channel_history(channels: list[IMCChannel], history_dir: Path) -> dict[str, list[str]]:
+    history: dict[str, list[str]] = {}
     for channel in channels:
         if not channel.local_name:
             continue
         path = history_dir / f"{channel.local_name}.hist"
         if not path.exists():
             continue
-        entries: List[str] = []
+        entries: list[str] = []
         with path.open(encoding="latin-1") as handle:
             for raw_line in handle:
                 trimmed_lead = raw_line.lstrip()
@@ -589,15 +589,12 @@ def _load_channel_history(channels: List[IMCChannel], history_dir: Path) -> Dict
     return history
 
 
-def _format_history_entry(message: str, timestamp: Optional[int] = None) -> str:
+def _format_history_entry(message: str, timestamp: int | None = None) -> str:
     """Return a ROM-formatted channel history entry."""
 
     current_time = int(time.time()) if timestamp is None else int(timestamp)
     local = time.localtime(current_time)
-    return (
-        f"~R[{local.tm_mon:02d}/{local.tm_mday:02d} "
-        f"{local.tm_hour:02d}:{local.tm_min:02d}] ~G{message}"
-    )
+    return f"~R[{local.tm_mon:02d}/{local.tm_mday:02d} {local.tm_hour:02d}:{local.tm_min:02d}] ~G{message}"
 
 
 def _strip_color_codes(message: str, colors: Mapping[str, IMCColor]) -> str:
@@ -710,12 +707,7 @@ def send_channel_message(state: IMCState, channel: IMCChannel, char: Any, messag
     packet_type, target = _channel_target(channel)
     sender = _format_sender(char, state)
     translated = _translate_to_imc_codes(message, state.colors)
-    payload = (
-        f"channel={channel.name} "
-        f"text={translated} "
-        f"emote={emote} "
-        "echo=1"
-    )
+    payload = f"channel={channel.name} text={translated} emote={emote} echo=1"
     frame = f"{packet_type} {sender} {target} :{payload}"
     state.outgoing_queue.append(frame)
 
@@ -732,7 +724,7 @@ def update_channel_flags(state: IMCState, channel: IMCChannel, flags: int) -> IM
     return updated
 
 
-def save_channel_history(state: Optional[IMCState] = None) -> None:
+def save_channel_history(state: IMCState | None = None) -> None:
     """Persist in-memory channel history snapshots like ROM's ``imc_savehistory``."""
 
     target = state or _state
@@ -776,11 +768,11 @@ def reset_state() -> None:
     _state = None
 
 
-def get_state() -> Optional[IMCState]:
+def get_state() -> IMCState | None:
     return _state
 
 
-def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
+def maybe_open_socket(force_reload: bool = False) -> IMCState | None:
     """Load configuration tables when IMC is enabled."""
 
     if not imc_enabled():
@@ -832,16 +824,11 @@ def maybe_open_socket(force_reload: bool = False) -> Optional[IMCState]:
     else:
         ucache_refresh_deadline = idle_pulses + _UCACHE_REFRESH_INTERVAL
     autoconnect = autoconnect_enabled(config)
-    connection: Optional[IMCConnection] = None
+    connection: IMCConnection | None = None
     connected = False
 
     if autoconnect:
-        if (
-            previous_state
-            and previous_state.connected
-            and not force_reload
-            and previous_state.connection
-        ):
+        if previous_state and previous_state.connected and not force_reload and previous_state.connection:
             connection = previous_state.connection
             connected = previous_state.connected
         else:
@@ -1059,9 +1046,7 @@ def _save_user_cache(state: IMCState) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
 
     lines: list[str] = []
-    for entry in sorted(
-        state.user_cache.values(), key=lambda item: (item.name or "").lower()
-    ):
+    for entry in sorted(state.user_cache.values(), key=lambda item: (item.name or "").lower()):
         entry_name = entry.name or ""
         try:
             gender = int(entry.gender) if entry.gender is not None else -1
@@ -1089,7 +1074,7 @@ def _refresh_user_cache(state: IMCState) -> None:
     """Prune stale IMC user cache entries and reschedule the next refresh."""
 
     now = int(time.time())
-    retained: Dict[str, IMCUserCacheEntry] = {}
+    retained: dict[str, IMCUserCacheEntry] = {}
     for key, entry in state.user_cache.items():
         try:
             last_seen = int(entry.last_seen)
@@ -1144,18 +1129,11 @@ def pump_idle() -> None:
     if not state.connection.handshake_complete:
         return
 
-    if (
-        state.ucache_refresh_deadline
-        and state.idle_pulses >= state.ucache_refresh_deadline
-    ):
+    if state.ucache_refresh_deadline and state.idle_pulses >= state.ucache_refresh_deadline:
         _refresh_user_cache(state)
 
     _poll_router_socket(state)
     _flush_outgoing_queue(state)
 
-    if (
-        state.connected
-        and state.connection
-        and state.idle_pulses - state.last_keepalive_pulse >= _KEEPALIVE_INTERVAL
-    ):
+    if state.connected and state.connection and state.idle_pulses - state.last_keepalive_pulse >= _KEEPALIVE_INTERVAL:
         _send_keepalive(state)

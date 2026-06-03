@@ -14,7 +14,7 @@ import pytest
 from mud.commands.advancement import do_train
 from mud.commands.session import do_recall
 from mud.models.character import Character, PCData
-from mud.models.constants import ROOM_VNUM_TEMPLE, AffectFlag, Position, RoomFlag
+from mud.models.constants import ROOM_VNUM_TEMPLE, Position, RoomFlag
 from mud.models.room import Room
 
 
@@ -348,10 +348,7 @@ def test_train_nonprime_stat_costs_one_session(train_test_setup):
     result = do_train(char, "con")  # CON: non-prime for a warrior
 
     assert char.perm_stat[4] == 16, "constitution should increase by 1 (STAT_CON)"
-    assert char.train == 4, (
-        "non-prime stat training must cost exactly 1 session; ROM do_train "
-        "never sets cost=2"
-    )
+    assert char.train == 4, "non-prime stat training must cost exactly 1 session; ROM do_train never sets cost=2"
     assert "constitution increases" in result.lower()
 
 
@@ -371,9 +368,7 @@ def test_train_without_trainer_in_room_fails():
     room = Room(vnum=8011, name="No Trainer Here", description="An empty room.", room_flags=0, sector_type=0)
     room.people = []
     room.contents = []
-    char = Character(
-        name="Lonely", level=10, room=room, is_npc=False, train=5, position=Position.STANDING
-    )
+    char = Character(name="Lonely", level=10, room=room, is_npc=False, train=5, position=Position.STANDING)
     char.pcdata = PCData()
     room.people.append(char)
 

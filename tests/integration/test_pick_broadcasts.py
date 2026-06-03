@@ -80,9 +80,7 @@ def test_pick_container_emits_to_room_broadcast() -> None:
     result = do_pick(picker, "chest")
     assert "pick the lock" in result.lower()
     msgs = "\n".join(bystander.messages)
-    assert "Thief picks the lock on a wooden chest" in msgs, (
-        f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
-    )
+    assert "Thief picks the lock on a wooden chest" in msgs, f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
     actor_msgs = "\n".join(picker.messages)
     assert "Thief picks the lock on a wooden chest" not in actor_msgs
 
@@ -108,8 +106,6 @@ def test_pick_door_emits_to_room_broadcast_with_keyword() -> None:
     assert result == "*Click*"
     msgs = "\n".join(bystander.messages)
     # ROM `$d` substitution uses first word of keyword.
-    assert "Thief picks the gate." in msgs, (
-        f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
-    )
+    assert "Thief picks the gate." in msgs, f"missing TO_ROOM broadcast; got: {bystander.messages!r}"
     actor_msgs = "\n".join(picker.messages)
     assert "Thief picks the gate." not in actor_msgs

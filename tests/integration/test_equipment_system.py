@@ -19,7 +19,6 @@ import pytest
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character
 from mud.models.constants import ItemType, WearFlag, WearLocation
-from mud.models.object import Object
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import create_test_character
 
@@ -231,7 +230,9 @@ def test_cannot_wear_two_shields(test_character, object_factory):
     result = process_command(char, "wear bronze")
 
     assert "wear" in result.lower() or "shield" in result.lower(), f"Should confirm wear, got: {result}"
-    assert int(WearLocation.SHIELD) in char.equipment and char.equipment.get(int(WearLocation.SHIELD)) is shield2, "Second shield should replace first"
+    assert int(WearLocation.SHIELD) in char.equipment and char.equipment.get(int(WearLocation.SHIELD)) is shield2, (
+        "Second shield should replace first"
+    )
 
 
 def test_wear_all_wears_multiple_items(test_character, object_factory):
@@ -416,7 +417,7 @@ def test_two_handed_weapon_prevents_shield(test_character, object_factory):
     Then: Shield wear fails (hands occupied)
     """
     from mud.commands.dispatcher import process_command
-    from mud.models.constants import ItemType, WearFlag, WeaponFlag
+    from mud.models.constants import ItemType, WeaponFlag, WearFlag
 
     char = test_character
 
@@ -854,7 +855,9 @@ def test_wear_two_handed_blocks_shield_and_versa(test_character, object_factory)
     result = do_wear(char, "tower")
 
     assert "hand" in result.lower() or "tied" in result.lower(), f"Should reject shield with two-hand, got: {result}"
-    shield_worn = int(WearLocation.SHIELD) in char.equipment and char.equipment.get(int(WearLocation.SHIELD)) is not None
+    shield_worn = (
+        int(WearLocation.SHIELD) in char.equipment and char.equipment.get(int(WearLocation.SHIELD)) is not None
+    )
     assert not shield_worn, "Shield should not be worn"
 
 

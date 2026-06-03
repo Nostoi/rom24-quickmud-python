@@ -33,15 +33,15 @@ ANSI_CODES: dict[str, str] = {
     "{H": "\x1b[1;36m",
     "{D": "\x1b[1;30m",
     # ROM per-player colour fields (numeric codes)
-    "{1": "\x1b[31m",       # fight_death  (NORMAL, RED)
-    "{2": "\x1b[32m",       # fight_yhit   (NORMAL, GREEN)
-    "{3": "\x1b[33m",       # fight_ohit   (NORMAL, YELLOW)
-    "{4": "\x1b[31m",       # fight_thit   (NORMAL, RED)
-    "{5": "\x1b[37m",       # fight_skill  (NORMAL, WHITE)
-    "{6": "\x1b[32m",       # say          (NORMAL, GREEN)
-    "{7": "\x1b[32m",       # tell         (NORMAL, GREEN)
-    "{8": "\x1b[32m",       # reply        (NORMAL, GREEN)
-    "{9": "\x1b[1;35m",     # gossip_text  (BRIGHT, MAGENTA)
+    "{1": "\x1b[31m",  # fight_death  (NORMAL, RED)
+    "{2": "\x1b[32m",  # fight_yhit   (NORMAL, GREEN)
+    "{3": "\x1b[33m",  # fight_ohit   (NORMAL, YELLOW)
+    "{4": "\x1b[31m",  # fight_thit   (NORMAL, RED)
+    "{5": "\x1b[37m",  # fight_skill  (NORMAL, WHITE)
+    "{6": "\x1b[32m",  # say          (NORMAL, GREEN)
+    "{7": "\x1b[32m",  # tell         (NORMAL, GREEN)
+    "{8": "\x1b[32m",  # reply        (NORMAL, GREEN)
+    "{9": "\x1b[1;35m",  # gossip_text  (BRIGHT, MAGENTA)
     # Specials
     "{*": "\x07",
     "{/": "\n\r",

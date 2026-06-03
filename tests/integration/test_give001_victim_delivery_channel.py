@@ -100,8 +100,7 @@ def test_give_object_to_connected_pc_delivers_on_async_channel(movable_char_fact
     victim_sent, victim_mailbox = asyncio.run(scenario())
 
     assert any("gives you" in s.lower() for s in victim_sent), (
-        f"recipient's TO_VICT line not on the async channel (MAGIC-003 wrong-channel "
-        f"shape); sent={victim_sent}"
+        f"recipient's TO_VICT line not on the async channel (MAGIC-003 wrong-channel shape); sent={victim_sent}"
     )
     assert victim_mailbox == [], f"recipient line stranded in mailbox: {victim_mailbox}"
     assert apple in victim.inventory
@@ -125,7 +124,6 @@ def test_give_coins_to_connected_pc_delivers_on_async_channel(movable_char_facto
     victim_sent, victim_mailbox = asyncio.run(scenario())
 
     assert any("gives you" in s.lower() for s in victim_sent), (
-        f"recipient's coins TO_VICT line not on the async channel (MAGIC-003 wrong-channel "
-        f"shape); sent={victim_sent}"
+        f"recipient's coins TO_VICT line not on the async channel (MAGIC-003 wrong-channel shape); sent={victim_sent}"
     )
     assert victim_mailbox == [], f"recipient coins line stranded in mailbox: {victim_mailbox}"

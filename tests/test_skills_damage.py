@@ -247,6 +247,8 @@ def test_recharge_failure_paths(monkeypatch: pytest.MonkeyPatch) -> None:
         assert "explodes" in caster.messages[-1]
     finally:
         character_registry.remove(caster)
+
+
 def test_cause_light_deals_level_scaled_damage(monkeypatch: pytest.MonkeyPatch) -> None:
     caster = Character(name="Cleric", level=18, is_npc=False)
     victim = Character(name="Raider", level=14, is_npc=False, hit=120, max_hit=120)
@@ -457,10 +459,7 @@ def test_earthquake_damages_grounded_targets(monkeypatch: pytest.MonkeyPatch) ->
         assert grounded.hit == 150 - expected_damage
         assert flying.hit == 140
         assert any(message == "The earth trembles beneath your feet!" for message in caster.messages)
-        assert any(
-            message == "Geomancer makes the earth tremble and shiver."
-            for message in witness.messages
-        )
+        assert any(message == "Geomancer makes the earth tremble and shiver." for message in witness.messages)
     finally:
         character_registry.clear()
 
@@ -494,10 +493,7 @@ def test_earthquake_sends_area_messages(monkeypatch: pytest.MonkeyPatch) -> None
         skill_handlers.earthquake(caster)
 
         assert any(message == "The earth trembles and shivers." for message in area_listener.messages)
-        assert all(
-            message != "The earth trembles and shivers."
-            for message in far_listener.messages
-        )
+        assert all(message != "The earth trembles and shivers." for message in far_listener.messages)
     finally:
         character_registry.clear()
 
@@ -746,4 +742,3 @@ def test_flamestrike_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> None
 
     assert damage == c_div(96, 2)
     assert victim.hit == 260 - c_div(96, 2)
-

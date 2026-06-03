@@ -63,8 +63,13 @@ def test_train_durability_masks_invisible_actor() -> None:
     room_registry[9303] = room
     try:
         ch = Character(
-            name="Trainee", level=10, is_npc=False, room=room,
-            hit=100, max_hit=100, position=Position.STANDING,
+            name="Trainee",
+            level=10,
+            is_npc=False,
+            room=room,
+            hit=100,
+            max_hit=100,
+            position=Position.STANDING,
         )
         ch.pcdata = PCData()
         ch.train = 5

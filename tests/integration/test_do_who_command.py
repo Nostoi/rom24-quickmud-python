@@ -20,15 +20,13 @@ from __future__ import annotations
 import pytest
 
 from mud.commands.info import do_who
-from mud.models.character import Character
-from mud.models.character import PCData
+from mud.models.character import Character, PCData
 from mud.models.constants import (
-    CommFlag,
     LEVEL_HERO,
     MAX_LEVEL,
+    CommFlag,
     PlayerFlag,
 )
-from mud.models.races import PC_RACE_TABLE
 from mud.net.session import SESSIONS
 
 
@@ -43,8 +41,8 @@ def clear_sessions():
 @pytest.fixture
 def create_test_session():
     """Factory for creating test sessions with characters."""
-    from mud.net.session import Session
     from mud.models.room import Room
+    from mud.net.session import Session
 
     def _create(name: str, level: int, ch_class: int, race: int, **kwargs):
         """Create a test session with a character."""

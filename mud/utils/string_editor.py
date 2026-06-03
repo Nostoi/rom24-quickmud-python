@@ -290,12 +290,7 @@ def format_string(string: str) -> str:  # mirrors ROM src/string.c:299-451
 
         elif c == ")":  # mirrors ROM src/string.c:330-346
             # Paren rebalance: if buf ends in '<punct><space><space>' rewrite
-            if (
-                len(buf) >= 3
-                and buf[-1] == " "
-                and buf[-2] == " "
-                and buf[-3] in (".", "?", "!")
-            ):
+            if len(buf) >= 3 and buf[-1] == " " and buf[-2] == " " and buf[-3] in (".", "?", "!"):
                 # Replace the two trailing spaces: buf[-2]= ')', buf[-1]= ' ', append ' '
                 buf[-2] = ")"
                 buf[-1] = " "
@@ -305,12 +300,7 @@ def format_string(string: str) -> str:  # mirrors ROM src/string.c:299-451
 
         elif c in (".", "?", "!"):  # mirrors ROM src/string.c:347-388
             # Check if buf already ends in '<punct><space><space>' (consecutive sentence-end)
-            if (
-                len(buf) >= 3
-                and buf[-1] == " "
-                and buf[-2] == " "
-                and buf[-3] in (".", "?", "!")
-            ):
+            if len(buf) >= 3 and buf[-1] == " " and buf[-2] == " " and buf[-3] in (".", "?", "!"):
                 # Overwrite the earlier trailing punct with new one
                 buf[-3] = c
                 # Check if next char is '"'

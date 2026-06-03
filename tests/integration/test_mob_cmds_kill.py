@@ -50,9 +50,7 @@ class TestMpKillPositionGate:
     but fighting=None: ROM refuses, old Python proceeded.
     """
 
-    def test_position_fighting_blocks_even_with_no_fighting_target(
-        self, script_mob, victim
-    ):
+    def test_position_fighting_blocks_even_with_no_fighting_target(self, script_mob, victim):
         # Inconsistent state: position FIGHTING but fighting attr None.
         script_mob.position = Position.FIGHTING
         script_mob.fighting = None
@@ -100,6 +98,5 @@ class TestMpKillCharmedMasterGuard:
         do_mpkill(script_mob, "Target")
 
         assert script_mob.fighting is None, (
-            "do_mpkill must refuse when ch is charmed and ch.master is the"
-            " victim (ROM src/mob_cmds.c:364-369)."
+            "do_mpkill must refuse when ch is charmed and ch.master is the victim (ROM src/mob_cmds.c:364-369)."
         )

@@ -70,8 +70,7 @@ def test_inv021_extract_obj_removes_container_and_all_contents():
 
     assert not _is_in_registry(container), "container must leave the registry"
     assert not _is_in_registry(item_a), (
-        "nested item must be recursively extracted from object_registry "
-        "(ROM src/handler.c:2063-2067)"
+        "nested item must be recursively extracted from object_registry (ROM src/handler.c:2063-2067)"
     )
     assert not _is_in_registry(item_b), "nested item must be recursively extracted"
 
@@ -93,6 +92,4 @@ def test_inv021_extract_obj_recurses_to_arbitrary_depth():
     _extract_obj(outer)
 
     for o in (outer, middle, inner, leaf):
-        assert not _is_in_registry(o), (
-            f"{o.short_descr!r} must be recursively extracted (depth-N nesting)"
-        )
+        assert not _is_in_registry(o), f"{o.short_descr!r} must be recursively extracted (depth-N nesting)"

@@ -1,6 +1,6 @@
 from mud.commands.inventory import do_get
 from mud.models.character import Character
-from mud.models.constants import ActFlag, Direction, ItemType, LEVEL_IMMORTAL, WearFlag
+from mud.models.constants import LEVEL_IMMORTAL, ActFlag, Direction, ItemType, WearFlag
 from mud.models.room import Exit, Room
 from mud.world.movement import can_carry_n, can_carry_w, move_character
 
@@ -144,7 +144,9 @@ def test_do_get_blocked_by_weight_limit(object_factory):
 
     ch.carry_weight = can_carry_w(ch)
 
-    heavy_obj = object_factory({"vnum": 100, "short_descr": "a heavy stone", "weight": 5, "wear_flags": int(WearFlag.TAKE)})
+    heavy_obj = object_factory(
+        {"vnum": 100, "short_descr": "a heavy stone", "weight": 5, "wear_flags": int(WearFlag.TAKE)}
+    )
     room.add_object(heavy_obj)
 
     result = do_get(ch, "stone")
@@ -239,7 +241,7 @@ def test_obj_from_obj_decreases_carrier_weight(object_factory):
     Bug Discovery: January 2, 2026 - handler.c audit
     ROM C: handler.c:1996-2044 obj_from_obj
     """
-    from mud.game_loop import _obj_to_obj, _obj_from_obj
+    from mud.game_loop import _obj_from_obj, _obj_to_obj
 
     ch = Character(name="Carrier")
     ch.carry_number = 0
@@ -281,7 +283,7 @@ def test_nested_containers_update_all_carriers(object_factory):
     Bug Discovery: January 2, 2026 - handler.c audit
     ROM C: The for loop in obj_to_obj walks up container hierarchy
     """
-    from mud.game_loop import _obj_to_obj, _obj_from_obj
+    from mud.game_loop import _obj_from_obj, _obj_to_obj
 
     ch = Character(name="Carrier")
     ch.carry_number = 0

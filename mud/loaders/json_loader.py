@@ -508,7 +508,6 @@ def _link_exits_for_area(area: Area) -> None:
         # so that stub/disconnected rooms follow ROM semantics exactly.
 
 
-
 def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
     """Load mobs from JSON data with complete field mapping."""
 
@@ -550,7 +549,9 @@ def _load_mobs_from_json(mobs_data: list[dict[str, Any]], area: Area) -> None:
             race=race_index,
             # Mirrors ROM src/db2.c:239 — force ``ACT_IS_NPC`` (letter
             # ``A``) into every mob's act_flags string.
-            act_flags=("A" + mob_data.get("act_flags", "")) if "A" not in mob_data.get("act_flags", "") else mob_data.get("act_flags", ""),
+            act_flags=("A" + mob_data.get("act_flags", ""))
+            if "A" not in mob_data.get("act_flags", "")
+            else mob_data.get("act_flags", ""),
             affected_by=mob_data.get("affected_by", ""),
             alignment=mob_data.get("alignment", 0),
             group=mob_data.get("group", 0),
@@ -621,7 +622,11 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
         # _parse_flag_field(wear_flags_token, WearFlag).
         wear_flags_raw = obj_data.get("wear_flags", "")
         if isinstance(wear_flags_raw, str):
-            wear_flags = int(convert_flags_from_letters(wear_flags_raw, WearFlag)) if wear_flags_raw and wear_flags_raw != "0" else 0
+            wear_flags = (
+                int(convert_flags_from_letters(wear_flags_raw, WearFlag))
+                if wear_flags_raw and wear_flags_raw != "0"
+                else 0
+            )
         elif isinstance(wear_flags_raw, int):
             wear_flags = wear_flags_raw
         else:
@@ -650,14 +655,22 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
         for af in raw_affects:
             if isinstance(af, dict):
                 affects_list.append(af)
-                location = int(af.get("location", 0)) if not isinstance(af.get("location"), int) else af.get("location", 0)
-                modifier = int(af.get("modifier", 0)) if not isinstance(af.get("modifier"), int) else af.get("modifier", 0)
+                location = (
+                    int(af.get("location", 0)) if not isinstance(af.get("location"), int) else af.get("location", 0)
+                )
+                modifier = (
+                    int(af.get("modifier", 0)) if not isinstance(af.get("modifier"), int) else af.get("modifier", 0)
+                )
                 where = af.get("where", "TO_OBJECT")
                 if isinstance(where, str):
-                    where_int = {"TO_OBJECT": 1, "TO_AFFECTS": 0, "TO_IMMUNE": 2, "TO_RESIST": 3, "TO_VULN": 4}.get(where.upper(), 1)
+                    where_int = {"TO_OBJECT": 1, "TO_AFFECTS": 0, "TO_IMMUNE": 2, "TO_RESIST": 3, "TO_VULN": 4}.get(
+                        where.upper(), 1
+                    )
                 else:
                     where_int = int(where) if isinstance(where, int) else 1
-                bitvector = int(af.get("bitvector", 0)) if not isinstance(af.get("bitvector"), int) else af.get("bitvector", 0)
+                bitvector = (
+                    int(af.get("bitvector", 0)) if not isinstance(af.get("bitvector"), int) else af.get("bitvector", 0)
+                )
                 affected_list.append(
                     Affect(
                         where=where_int,
@@ -696,6 +709,7 @@ def _load_objects_from_json(objects_data: list[dict[str, Any]], area: Area) -> N
         raw_values = obj_data.get("values", [0, 0, 0, 0, 0])
         item_type_int = _resolve_item_type_code(obj_data.get("item_type"))
         from .obj_loader import _parse_item_values
+
         values = _parse_item_values(item_type_int, [str(v) for v in raw_values])
 
         # Create object with all fields

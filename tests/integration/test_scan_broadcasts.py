@@ -73,9 +73,7 @@ def test_scan_directional_emits_peer_intently_pair(two_char_room):
     result = do_scan(scanner, "north")
 
     # TO_CHAR: returned to scanner
-    assert "You peer intently north." in result, (
-        f"Scanner missing TO_CHAR 'You peer intently north.' Got: {result!r}"
-    )
+    assert "You peer intently north." in result, f"Scanner missing TO_CHAR 'You peer intently north.' Got: {result!r}"
     # TO_ROOM: broadcast to observer
     assert any("Scanner peers intently north." in msg for msg in observer.messages), (
         f"Observer missing TO_ROOM peer broadcast. Got: {observer.messages!r}"
@@ -100,9 +98,7 @@ def test_scan_empty_room_emits_no_fallback(two_char_room):
     no_arg_result = do_scan(scanner, "")
     dir_result = do_scan(scanner, "north")
 
-    assert "No one is nearby." not in no_arg_result, (
-        f"ROM emits no fallback when room is empty. Got: {no_arg_result!r}"
-    )
+    assert "No one is nearby." not in no_arg_result, f"ROM emits no fallback when room is empty. Got: {no_arg_result!r}"
     assert "Nothing of note" not in dir_result, (
         f"ROM emits no fallback when no exit/visible characters. Got: {dir_result!r}"
     )

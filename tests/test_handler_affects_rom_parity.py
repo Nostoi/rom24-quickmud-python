@@ -13,7 +13,6 @@ import pytest
 
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, Stat
-from mud.models.obj import Affect
 
 
 @pytest.fixture

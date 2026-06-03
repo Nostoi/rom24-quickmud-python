@@ -16,7 +16,6 @@ secondary delivery channel.
 from __future__ import annotations
 
 import asyncio
-from typing import List
 
 from mud.combat.engine import _push_message
 from mud.models.character import Character
@@ -24,7 +23,7 @@ from mud.models.character import Character
 
 class _RecordingConn:
     def __init__(self) -> None:
-        self.sent: List[str] = []
+        self.sent: list[str] = []
 
     async def send_line(self, msg: str) -> None:
         self.sent.append(msg)
@@ -82,8 +81,7 @@ def test_combat_messages_then_drain_does_not_replay() -> None:
 
     assert sent_during_tick.count("You have been KILLED!!") == 1
     assert sent_after_drain.count("You have been KILLED!!") == 1, (
-        "KILLED!! was replayed by the read-loop drain — the duplicate-"
-        "delivery bug is back."
+        "KILLED!! was replayed by the read-loop drain — the duplicate-delivery bug is back."
     )
     assert len(sent_after_drain) == len(sent_during_tick), (
         "drain re-sent messages that already went out via the async path"

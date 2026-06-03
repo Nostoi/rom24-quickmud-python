@@ -16,9 +16,10 @@ import pytest
 
 from mud.account.account_manager import save_character_to_db
 from mud.account.account_service import clear_active_accounts, create_character
-from mud.db.models import Base, Character as DBCharacter
+from mud.db.models import Base
+from mud.db.models import Character as DBCharacter
 from mud.db.session import SessionLocal, engine
-from mud.models.character import Character, PCData, character_registry, from_orm
+from mud.models.character import Character, PCData, from_orm
 from mud.models.constants import ROOM_VNUM_SCHOOL, WearLocation
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.security import bans
@@ -253,8 +254,8 @@ def test_db_round_trip_board_name():
 
 def test_db_round_trip_inventory_state():
     """Inventory items are serialized to inventory_state JSON and reloadable."""
-    from mud.spawning.obj_spawner import spawn_object
     from mud.models.constants import OBJ_VNUM_SCHOOL_SWORD
+    from mud.spawning.obj_spawner import spawn_object
 
     created = create_character(None, "Invtest", starting_room_vnum=ROOM_VNUM_SCHOOL)
     assert created
@@ -290,8 +291,8 @@ def test_db_round_trip_inventory_state():
 
 def test_db_round_trip_equipment_state():
     """Equipped items are serialized to equipment_state JSON and reloadable."""
-    from mud.spawning.obj_spawner import spawn_object
     from mud.models.constants import OBJ_VNUM_SCHOOL_SWORD
+    from mud.spawning.obj_spawner import spawn_object
 
     created = create_character(None, "Eqtest", starting_room_vnum=ROOM_VNUM_SCHOOL)
     assert created

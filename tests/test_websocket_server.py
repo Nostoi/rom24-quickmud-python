@@ -197,9 +197,7 @@ def test_websocket_reconnect_preserves_school_outfit_state() -> None:
             seen, prompt = _receive_until_prompt(websocket)
             assert prompt["session_state"] == "game"
             score_text = "".join(payload.get("text", "") for payload in seen)
-            created_carry_line = next(
-                line for line in score_text.splitlines() if line.startswith("You are carrying ")
-            )
+            created_carry_line = next(line for line in score_text.splitlines() if line.startswith("You are carrying "))
 
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _receive_until_prompt(websocket)
@@ -221,9 +219,7 @@ def test_websocket_reconnect_preserves_school_outfit_state() -> None:
             seen, prompt = _receive_until_prompt(websocket)
             assert prompt["session_state"] == "game"
             score_text = "".join(payload.get("text", "") for payload in seen)
-            reloaded_carry_line = next(
-                line for line in score_text.splitlines() if line.startswith("You are carrying ")
-            )
+            reloaded_carry_line = next(line for line in score_text.splitlines() if line.startswith("You are carrying "))
             assert reloaded_carry_line == created_carry_line
 
 
@@ -431,9 +427,7 @@ def test_websocket_reconnect_initial_prompt_reflects_loaded_resources() -> None:
 
         # Guard against falling back to defaults (0/0/0) or a stale snapshot.
         prompt_match = re.search(r"<(\d+)hp (\d+)m (\d+)mv>", initial_prompt_text)
-        assert prompt_match, (
-            f"initial prompt missing ROM default <Nhp Nm Nmv> shape: {initial_prompt_text!r}"
-        )
+        assert prompt_match, f"initial prompt missing ROM default <Nhp Nm Nmv> shape: {initial_prompt_text!r}"
         prompt_hp, prompt_mana, prompt_move = (int(x) for x in prompt_match.groups())
         assert (prompt_hp, prompt_mana, prompt_move) == (live_hp, live_mana, live_move), (
             f"initial prompt hp/mana/move {prompt_hp}/{prompt_mana}/{prompt_move} "
@@ -442,8 +436,7 @@ def test_websocket_reconnect_initial_prompt_reflects_loaded_resources() -> None:
         )
         # And reset_char (NANNY-014) guarantees the live hit equals max_hit on login.
         assert live_hp == live_max_hp, (
-            f"live hit {live_hp} != live max_hit {live_max_hp} after reconnect "
-            f"(NANNY-014 reset_char regression)"
+            f"live hit {live_hp} != live max_hit {live_max_hp} after reconnect (NANNY-014 reset_char regression)"
         )
 
 

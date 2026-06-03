@@ -33,9 +33,7 @@ def _room(vnum: int = 3044) -> Room:
 
 
 def _give_plague(victim: Character) -> None:
-    victim.apply_spell_effect(
-        SpellEffect(name="plague", duration=5, level=10, affect_flag=AffectFlag.PLAGUE)
-    )
+    victim.apply_spell_effect(SpellEffect(name="plague", duration=5, level=10, affect_flag=AffectFlag.PLAGUE))
 
 
 def test_cure_disease_room_line_uses_gendered_possessive() -> None:

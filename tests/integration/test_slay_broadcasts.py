@@ -64,8 +64,7 @@ def test_slay_sends_to_vict_and_notvict() -> None:
 
     vict_messages = " ".join(npc.messages)
     assert "slays you in cold blood" in vict_messages, (
-        "ROM src/fight.c:3283 calls act(..., TO_VICT). Victim must "
-        f"see the slay message. Got: {npc.messages!r}"
+        f"ROM src/fight.c:3283 calls act(..., TO_VICT). Victim must see the slay message. Got: {npc.messages!r}"
     )
 
     bystander_messages = " ".join(bystander.messages)

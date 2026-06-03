@@ -16,7 +16,7 @@ from __future__ import annotations
 from unittest.mock import patch
 
 from mud.combat.engine import process_weapon_special_attacks
-from mud.models.character import Character, character_registry
+from mud.models.character import character_registry
 from mud.models.constants import (
     WEAPON_FLAMING,
     WEAPON_FROST,
@@ -77,15 +77,11 @@ class TestWeaponProcBroadcastPers:
             process_weapon_special_attacks(attacker, victim)
 
             joined = "\n".join(observer.messages).lower()
-            assert "is poisoned by the venom" in joined, (
-                f"poison broadcast not delivered: {observer.messages!r}"
-            )
+            assert "is poisoned by the venom" in joined, f"poison broadcast not delivered: {observer.messages!r}"
             assert "someone is poisoned by the venom on the sword" in joined, (
                 f"PERS render missing for invisible victim: {observer.messages!r}"
             )
-            assert "aliceee" not in joined, (
-                f"invisible victim name leaked: {observer.messages!r}"
-            )
+            assert "aliceee" not in joined, f"invisible victim name leaked: {observer.messages!r}"
         finally:
             room_registry.pop(2000, None)
             character_registry.clear()
@@ -101,15 +97,11 @@ class TestWeaponProcBroadcastPers:
             process_weapon_special_attacks(attacker, victim)
 
             joined = "\n".join(observer.messages).lower()
-            assert "draws life from" in joined, (
-                f"vampiric broadcast not delivered: {observer.messages!r}"
-            )
+            assert "draws life from" in joined, f"vampiric broadcast not delivered: {observer.messages!r}"
             assert "the sword draws life from someone" in joined, (
                 f"PERS render missing for invisible victim: {observer.messages!r}"
             )
-            assert "aliceee" not in joined, (
-                f"invisible victim name leaked: {observer.messages!r}"
-            )
+            assert "aliceee" not in joined, f"invisible victim name leaked: {observer.messages!r}"
         finally:
             room_registry.pop(2001, None)
             character_registry.clear()
@@ -125,15 +117,11 @@ class TestWeaponProcBroadcastPers:
             process_weapon_special_attacks(attacker, victim)
 
             joined = "\n".join(observer.messages).lower()
-            assert "is burned by" in joined, (
-                f"flaming broadcast not delivered: {observer.messages!r}"
-            )
+            assert "is burned by" in joined, f"flaming broadcast not delivered: {observer.messages!r}"
             assert "someone is burned by the sword" in joined, (
                 f"PERS render missing for invisible victim: {observer.messages!r}"
             )
-            assert "aliceee" not in joined, (
-                f"invisible victim name leaked: {observer.messages!r}"
-            )
+            assert "aliceee" not in joined, f"invisible victim name leaked: {observer.messages!r}"
         finally:
             room_registry.pop(2002, None)
             character_registry.clear()
@@ -157,9 +145,7 @@ class TestWeaponProcBroadcastPers:
 
             joined = "\n".join(observer.messages).lower()
             # ROM wording — "the sword freezes Alice/someone."
-            assert "the sword freezes" in joined, (
-                f"ROM wording '$p freezes $n' missing: {observer.messages!r}"
-            )
+            assert "the sword freezes" in joined, f"ROM wording '$p freezes $n' missing: {observer.messages!r}"
             assert "the sword freezes someone" in joined, (
                 f"PERS render missing for invisible victim: {observer.messages!r}"
             )
@@ -167,9 +153,7 @@ class TestWeaponProcBroadcastPers:
             assert "is frozen by" not in joined, (
                 f"old Python wording 'X is frozen by Y' still present: {observer.messages!r}"
             )
-            assert "aliceee" not in joined, (
-                f"invisible victim name leaked: {observer.messages!r}"
-            )
+            assert "aliceee" not in joined, f"invisible victim name leaked: {observer.messages!r}"
         finally:
             room_registry.pop(2003, None)
             character_registry.clear()
@@ -186,15 +170,11 @@ class TestWeaponProcBroadcastPers:
             process_weapon_special_attacks(attacker, victim)
 
             joined = "\n".join(observer.messages).lower()
-            assert "is struck by lightning from" in joined, (
-                f"shocking broadcast not delivered: {observer.messages!r}"
-            )
+            assert "is struck by lightning from" in joined, f"shocking broadcast not delivered: {observer.messages!r}"
             assert "someone is struck by lightning from the sword" in joined, (
                 f"PERS render missing for invisible victim: {observer.messages!r}"
             )
-            assert "aliceee" not in joined, (
-                f"invisible victim name leaked: {observer.messages!r}"
-            )
+            assert "aliceee" not in joined, f"invisible victim name leaked: {observer.messages!r}"
         finally:
             room_registry.pop(2004, None)
             character_registry.clear()

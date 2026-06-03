@@ -8,6 +8,7 @@ functionality beyond unit testing of individual components.
 from __future__ import annotations
 
 import pytest
+
 from mud.models.character import Character
 from mud.models.room import Room
 from mud.registry import room_registry

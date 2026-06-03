@@ -29,7 +29,9 @@ from mud.utils.act import act_format
 def _lit_room() -> Room:
     # sector INSIDE is never dark (mud/world/vision.py:room_is_dark), so the
     # only visibility variable is the invisible/detect-invis pairing.
-    room = Room(vnum=42700, name="Lit Hall", description="A well-lit hall.", room_flags=0, sector_type=int(Sector.INSIDE))
+    room = Room(
+        vnum=42700, name="Lit Hall", description="A well-lit hall.", room_flags=0, sector_type=int(Sector.INSIDE)
+    )
     room.people = []
     room.contents = []
     return room

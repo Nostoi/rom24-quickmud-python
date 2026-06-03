@@ -5,10 +5,7 @@ ROM Reference: src/act_info.c do_inventory (lines 2254-2259)
 
 from __future__ import annotations
 
-import pytest
-
 from mud.models.constants import CommFlag
-
 
 # P0 Tests (Critical - ROM C Behavioral Parity)
 
@@ -318,11 +315,7 @@ def test_inventory_combined_output_matches_rom_line_layout(movable_char_factory,
 
     output = do_inventory(char, "")
 
-    assert output == (
-        "You are carrying:\n"
-        "( 2) a healing potion\n"
-        "     a wooden sword\n"
-    )
+    assert output == ("You are carrying:\n( 2) a healing potion\n     a wooden sword\n")
 
 
 # P2 Tests (Optional - Advanced Features)

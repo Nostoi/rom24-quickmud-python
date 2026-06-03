@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from mud.combat.engine import set_fighting
 from mud.math.c_compat import c_div
+from mud.models.character import Character
 from mud.models.constants import AffectFlag, Position
 from mud.models.room import Room
 from mud.skills.handlers import (
@@ -33,7 +34,6 @@ from mud.skills.handlers import (
     shield,
 )
 from mud.utils import rng_mm
-from mud.models.character import Character
 
 
 def make_character(**overrides) -> Character:

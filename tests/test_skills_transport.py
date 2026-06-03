@@ -2,7 +2,7 @@ import pytest
 
 from mud.math.c_compat import c_div
 from mud.models.character import Character
-from mud.models.constants import AffectFlag, ItemType, OBJ_VNUM_PORTAL, RoomFlag, WearLocation
+from mud.models.constants import OBJ_VNUM_PORTAL, AffectFlag, ItemType, RoomFlag, WearLocation
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room

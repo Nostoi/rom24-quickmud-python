@@ -85,16 +85,12 @@ def test_inv020_raw_kill_resets_followers_leader_to_self():
     member_a.leader = leader
     member_b.leader = leader
 
-    assert is_same_group(member_a, member_b), (
-        "precondition: members of the same group test as same-group"
-    )
+    assert is_same_group(member_a, member_b), "precondition: members of the same group test as same-group"
 
     raw_kill(leader)
 
     # raw_kill (NPC path) removes leader from the registry.
-    assert leader not in character_registry, (
-        "raw_kill must extract NPC victims from character_registry"
-    )
+    assert leader not in character_registry, "raw_kill must extract NPC victims from character_registry"
 
     # The load-bearing INV: followers no longer point at the extracted leader.
     assert member_a.leader is member_a, (

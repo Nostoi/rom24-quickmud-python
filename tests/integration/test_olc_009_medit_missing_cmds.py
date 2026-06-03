@@ -21,10 +21,9 @@ ROM reference (src/olc_act.c):
 
 from __future__ import annotations
 
-import pytest
-
 from mud.commands.build import _interpret_medit
 from mud.models.constants import (
+    LEVEL_HERO,
     ActFlag,
     AffectFlag,
     FormFlag,
@@ -34,7 +33,6 @@ from mud.models.constants import (
     ResFlag,
     Size,
     VulnFlag,
-    LEVEL_HERO,
 )
 from mud.models.mob import MobIndex, MobProgram
 from mud.net.session import Session
@@ -85,6 +83,7 @@ def _builder_in_medit(vnum: int = 60001):
 
 # ── act ──────────────────────────────────────────────────────────────────────
 
+
 def test_act_toggle_sets_flag():
     """``act sentinel`` sets SENTINEL bit — mirrors ROM src/olc_act.c:4142-4165 medit_act."""
     char, session, proto = _builder_in_medit()
@@ -120,6 +119,7 @@ def test_act_no_arg_returns_syntax():
 
 # ── affect ────────────────────────────────────────────────────────────────────
 
+
 def test_affect_toggle_sets_flag():
     """``affect sanctuary`` toggles SANCTUARY on affected_by — mirrors ROM src/olc_act.c:4167-4191."""
     char, session, proto = _builder_in_medit()
@@ -142,6 +142,7 @@ def test_affect_toggle_clears_flag():
 
 
 # ── armor ─────────────────────────────────────────────────────────────────────
+
 
 def test_armor_sets_all_four_values():
     """``armor 10 20 30 40`` sets pierce/bash/slash/exotic — mirrors ROM src/olc_act.c:4192-4254."""
@@ -180,6 +181,7 @@ def test_armor_no_arg_returns_syntax():
 
 # ── form ──────────────────────────────────────────────────────────────────────
 
+
 def test_form_toggle_sets_flag():
     """``form edible`` toggles EDIBLE on form — mirrors ROM src/olc_act.c:4256-4278."""
     char, session, proto = _builder_in_medit()
@@ -203,6 +205,7 @@ def test_form_toggle_clears_flag():
 
 # ── part ──────────────────────────────────────────────────────────────────────
 
+
 def test_part_toggle_sets_flag():
     """``part head`` toggles HEAD on parts — mirrors ROM src/olc_act.c:4278-4300."""
     char, session, proto = _builder_in_medit()
@@ -215,6 +218,7 @@ def test_part_toggle_sets_flag():
 
 
 # ── imm ───────────────────────────────────────────────────────────────────────
+
 
 def test_imm_toggle_sets_flag():
     """``imm fire`` toggles FIRE on imm_flags — mirrors ROM src/olc_act.c:4300-4322."""
@@ -229,6 +233,7 @@ def test_imm_toggle_sets_flag():
 
 # ── res ───────────────────────────────────────────────────────────────────────
 
+
 def test_res_toggle_sets_flag():
     """``res cold`` toggles COLD on res_flags — mirrors ROM src/olc_act.c:4322-4344."""
     char, session, proto = _builder_in_medit()
@@ -241,6 +246,7 @@ def test_res_toggle_sets_flag():
 
 
 # ── vuln ──────────────────────────────────────────────────────────────────────
+
 
 def test_vuln_toggle_sets_flag():
     """``vuln lightning`` toggles LIGHTNING on vuln_flags — mirrors ROM src/olc_act.c:4344-4366."""
@@ -255,6 +261,7 @@ def test_vuln_toggle_sets_flag():
 
 # ── off ───────────────────────────────────────────────────────────────────────
 
+
 def test_off_toggle_sets_flag():
     """``off area_attack`` toggles AREA_ATTACK on off_flags — mirrors ROM src/olc_act.c:4385-4407."""
     char, session, proto = _builder_in_medit()
@@ -267,6 +274,7 @@ def test_off_toggle_sets_flag():
 
 
 # ── size ──────────────────────────────────────────────────────────────────────
+
 
 def test_size_sets_value():
     """``size large`` sets size — mirrors ROM src/olc_act.c:4407-4429."""
@@ -286,6 +294,7 @@ def test_size_no_arg_returns_syntax():
 
 
 # ── hitdice ───────────────────────────────────────────────────────────────────
+
 
 def test_hitdice_sets_dice_tuple():
     """``hitdice 3 8 10`` sets hit to (3,8,10) — mirrors ROM src/olc_act.c:4429-4480."""
@@ -312,6 +321,7 @@ def test_hitdice_invalid_returns_syntax():
 
 # ── manadice ──────────────────────────────────────────────────────────────────
 
+
 def test_manadice_sets_dice_tuple():
     """``manadice 5 6 20`` sets mana to (5,6,20) — mirrors ROM src/olc_act.c:4480-4531."""
     char, session, proto = _builder_in_medit()
@@ -325,6 +335,7 @@ def test_manadice_sets_dice_tuple():
 
 # ── damdice ───────────────────────────────────────────────────────────────────
 
+
 def test_damdice_sets_dice_tuple():
     """``damdice 2 4 5`` sets damage to (2,4,5) — mirrors ROM src/olc_act.c:4531-4588."""
     char, session, proto = _builder_in_medit()
@@ -337,6 +348,7 @@ def test_damdice_sets_dice_tuple():
 
 
 # ── position ──────────────────────────────────────────────────────────────────
+
 
 def test_position_start_sets_start_pos():
     """``position start standing`` sets start_pos — mirrors ROM src/olc_act.c:4639-4699."""
@@ -366,6 +378,7 @@ def test_position_no_arg_returns_syntax():
 
 # ── addmprog ──────────────────────────────────────────────────────────────────
 
+
 def test_addmprog_no_arg_returns_syntax():
     """``addmprog`` with no args returns syntax — mirrors ROM src/olc_act.c:4864-4910."""
     char, session, proto = _builder_in_medit()
@@ -378,14 +391,13 @@ def test_addmprog_invalid_vnum_returns_error():
     char, session, proto = _builder_in_medit()
     result = _interpret_medit(session, char, "addmprog 99999 greet hello")
     # ROM returns "No such MOBProgram." or "Valid flags are:" for bad trigger
-    assert (
-        "no such" in result.lower()
-        or "valid flags" in result.lower()
-        or "syntax" in result.lower()
-    ), f"Got: {result!r}"
+    assert "no such" in result.lower() or "valid flags" in result.lower() or "syntax" in result.lower(), (
+        f"Got: {result!r}"
+    )
 
 
 # ── delmprog ──────────────────────────────────────────────────────────────────
+
 
 def test_delmprog_no_arg_returns_syntax():
     """``delmprog`` with no args returns syntax — mirrors ROM src/olc_act.c:4911-4969."""

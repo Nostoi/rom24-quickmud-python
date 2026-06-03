@@ -22,10 +22,10 @@ import pytest
 from mud.commands.inspection import do_exits
 from mud.models.character import Character
 from mud.models.constants import (
-    AffectFlag,
-    Direction,
     EX_CLOSED,
     EX_ISDOOR,
+    AffectFlag,
+    Direction,
     RoomFlag,
     Sector,
 )

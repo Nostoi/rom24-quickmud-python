@@ -9,6 +9,7 @@ no-op silently for a 0% skill).  Earlier QuickMUD code returned
 "You don't know how to ..." which violated parity.  These tests lock in the
 ROM-faithful behavior.
 """
+
 from __future__ import annotations
 
 from mud.commands.thief_skills import do_hide, do_sneak

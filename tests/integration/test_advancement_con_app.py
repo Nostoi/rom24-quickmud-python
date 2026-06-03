@@ -94,9 +94,7 @@ def _expected_hp_gain(ch_class: int, con: int, hp_roll: int) -> int:
 
 
 @pytest.mark.parametrize("ch_class", [0, 1, 2, 3])
-def test_advance_level_hp_uses_class_table_range_and_con_app(
-    ch_class: int, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_advance_level_hp_uses_class_table_range_and_con_app(ch_class: int, monkeypatch: pytest.MonkeyPatch) -> None:
     """advance_level must roll number_range(class.hp_min, class.hp_max) and add con_app[CON].hitp.
 
     Pins number_range to always return ``hp_min`` and asserts the resulting

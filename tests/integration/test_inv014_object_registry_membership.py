@@ -28,11 +28,10 @@ from mud.db.models import ObjectInstance as DBObjectInstance
 from mud.handler import create_money
 from mud.models.character import Character, character_registry
 from mud.models.constants import LEVEL_IMMORTAL, ItemType
-from mud.models.obj import ObjIndex, object_registry
-from mud.models.object import Object
 from mud.models.conversion import load_objects_for_character
+from mud.models.obj import ObjIndex, object_registry
+from mud.models.object import Object, recursive_clone
 from mud.registry import obj_registry, room_registry
-from mud.models.object import recursive_clone
 from mud.skills.handlers import locate_object
 from mud.spawning.obj_spawner import spawn_object
 

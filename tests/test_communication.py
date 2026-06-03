@@ -1,6 +1,6 @@
 from mud.commands import process_command
 from mud.models.character import character_registry
-from mud.models.constants import CommFlag, LEVEL_HERO, LEVEL_IMMORTAL
+from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, CommFlag
 from mud.registry import (
     area_registry,
     mob_registry,

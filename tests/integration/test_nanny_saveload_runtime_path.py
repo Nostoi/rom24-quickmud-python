@@ -112,9 +112,7 @@ def test_nanny_saveload_002_prompt_template_round_trips_through_reconnect() -> N
             transcript, _ = _send_command(websocket, f"prompt {custom_prompt}")
             # mirroring ROM src/act_info.c:953-954 — success reply echoes
             # the stored template (PROMPT-CMD-002).
-            assert f"Prompt set to {custom_prompt}" in transcript, (
-                f"do_prompt did not confirm set:\n{transcript}"
-            )
+            assert f"Prompt set to {custom_prompt}" in transcript, f"do_prompt did not confirm set:\n{transcript}"
 
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _reconnect(websocket, "Promter")
@@ -142,9 +140,7 @@ def test_nanny_saveload_003_alias_round_trips_through_reconnect() -> None:
         with client.websocket_connect("/ws") as websocket:
             _create_elf_mage(websocket, "Aliaser")
             transcript, _ = _send_command(websocket, "alias k kill")
-            assert "k is now aliased to 'kill'." in transcript, (
-                f"set-alias response not ROM-exact:\n{transcript}"
-            )
+            assert "k is now aliased to 'kill'." in transcript, f"set-alias response not ROM-exact:\n{transcript}"
 
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _reconnect(websocket, "Aliaser")
@@ -168,9 +164,7 @@ def test_nanny_saveload_001_wimpy_round_trips_through_reconnect() -> None:
         with client.websocket_connect("/ws") as websocket:
             _create_elf_mage(websocket, "Wimper")
             transcript, _ = _send_command(websocket, "wimpy 30")
-            assert "Wimpy set to 30 hit points." in transcript, (
-                f"set-wimpy response not ROM-exact:\n{transcript}"
-            )
+            assert "Wimpy set to 30 hit points." in transcript, f"set-wimpy response not ROM-exact:\n{transcript}"
 
         # Reconnect and read back via score.
         with client.websocket_connect("/ws") as websocket:

@@ -16,8 +16,6 @@ string, ``_process_descriptor_input`` returns ``None``, causing
 
 from __future__ import annotations
 
-import pytest
-
 from mud.commands.build import (
     _interpret_medit,
     _interpret_oedit,
@@ -27,7 +25,6 @@ from mud.commands.dispatcher import _should_fallback_from_olc, process_command
 from mud.models.constants import LEVEL_HERO
 from mud.models.mob import MobIndex
 from mud.models.obj import ObjIndex
-from mud.models.room import Room
 from mud.net.session import Session
 from mud.world import create_test_character, initialize_world
 
@@ -38,6 +35,7 @@ def setup_module(module):
 
 # ── Unit: _should_fallback_from_olc ─────────────────────────────────────────
 # mirrors ROM src/olc.c:474-527 — "Default to Standard Interpreter" branch.
+
 
 def test_should_fallback_room_editor():
     """``_should_fallback_from_olc`` triggers on unknown room editor command."""
@@ -67,8 +65,10 @@ def test_should_not_fallback_on_valid_result():
 
 # ── Unit: _interpret_* returns correct sentinel strings ──────────────────────
 
+
 def _make_redit_session():
     from mud.registry import room_registry
+
     char = create_test_character("Builder", 3001)
     char.level = LEVEL_HERO
     char.is_admin = True
@@ -111,9 +111,7 @@ def test_redit_unknown_cmd_returns_fallback_sentinel():
     """
     char, session = _make_redit_session()
     result = _interpret_redit(session, char, "say hello world")
-    assert _should_fallback_from_olc(result), (
-        f"Expected a fallback-triggering string from redit, got: {result!r}"
-    )
+    assert _should_fallback_from_olc(result), f"Expected a fallback-triggering string from redit, got: {result!r}"
 
 
 def test_oedit_unknown_cmd_returns_fallback_sentinel():
@@ -123,9 +121,7 @@ def test_oedit_unknown_cmd_returns_fallback_sentinel():
     """
     char, session = _make_oedit_session()
     result = _interpret_oedit(session, char, "say hello world")
-    assert _should_fallback_from_olc(result), (
-        f"Expected a fallback-triggering string from oedit, got: {result!r}"
-    )
+    assert _should_fallback_from_olc(result), f"Expected a fallback-triggering string from oedit, got: {result!r}"
 
 
 def test_medit_unknown_cmd_returns_fallback_sentinel():
@@ -135,12 +131,11 @@ def test_medit_unknown_cmd_returns_fallback_sentinel():
     """
     char, session = _make_medit_session()
     result = _interpret_medit(session, char, "say hello world")
-    assert _should_fallback_from_olc(result), (
-        f"Expected a fallback-triggering string from medit, got: {result!r}"
-    )
+    assert _should_fallback_from_olc(result), f"Expected a fallback-triggering string from medit, got: {result!r}"
 
 
 # ── Integration: process_command routes fallback through normal dispatch ──────
+
 
 def test_redit_fallback_executes_normal_command():
     """Unknown command in active redit session falls through to normal interpreter.
@@ -151,9 +146,7 @@ def test_redit_fallback_executes_normal_command():
     char, session = _make_redit_session()
     result = process_command(char, "look")
     # 'look' is a standard command; should not return an "Unknown ... command:" string
-    assert not _should_fallback_from_olc(result), (
-        f"look should have been dispatched normally, got: {result!r}"
-    )
+    assert not _should_fallback_from_olc(result), f"look should have been dispatched normally, got: {result!r}"
     assert "unknown" not in result.lower() or "editor" not in result.lower(), (
         f"look should not produce an editor error, got: {result!r}"
     )
@@ -166,9 +159,7 @@ def test_oedit_fallback_executes_normal_command():
     """
     char, session = _make_oedit_session()
     result = process_command(char, "look")
-    assert not _should_fallback_from_olc(result), (
-        f"look should have been dispatched normally, got: {result!r}"
-    )
+    assert not _should_fallback_from_olc(result), f"look should have been dispatched normally, got: {result!r}"
     assert "unknown" not in result.lower() or "editor" not in result.lower(), (
         f"look should not produce an editor error, got: {result!r}"
     )
@@ -181,9 +172,7 @@ def test_medit_fallback_executes_normal_command():
     """
     char, session = _make_medit_session()
     result = process_command(char, "look")
-    assert not _should_fallback_from_olc(result), (
-        f"look should have been dispatched normally, got: {result!r}"
-    )
+    assert not _should_fallback_from_olc(result), f"look should have been dispatched normally, got: {result!r}"
     assert "unknown" not in result.lower() or "editor" not in result.lower(), (
         f"look should not produce an editor error, got: {result!r}"
     )

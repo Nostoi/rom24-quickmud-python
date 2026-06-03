@@ -10,8 +10,7 @@ from mud.models.constants import LEVEL_IMMORTAL, MAX_LEVEL
 from mud.models.json_io import dump_dataclass, load_dataclass
 
 if False:  # TYPE_CHECKING
-    from mud.models.character import Character
-    from mud.models.note import Note
+    pass
 
 
 _IMMORTAL_TOKENS = frozenset({"imm", "imms", "immortal", "immortals", "god", "gods"})
@@ -56,6 +55,7 @@ def is_note_to(char, note) -> bool:
         return True
 
     return False
+
 
 BOARDS_DIR = Path("data/boards")
 

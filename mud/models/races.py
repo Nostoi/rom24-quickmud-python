@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import IntFlag
-from typing import Final, Tuple, Type, TypeVar
+from typing import Final, TypeVar
 
 from mud.models.constants import (
     ActFlag,
@@ -18,7 +18,6 @@ from mud.models.constants import (
     VulnFlag,
     convert_flags_from_letters,
 )
-
 
 F = TypeVar("F", bound=IntFlag)
 
@@ -46,14 +45,14 @@ class PcRaceType:
     name: str
     who_name: str
     points: int
-    class_multipliers: Tuple[int, int, int, int]
-    bonus_skills: Tuple[str, ...]
-    base_stats: Tuple[int, int, int, int, int]
-    max_stats: Tuple[int, int, int, int, int]
+    class_multipliers: tuple[int, int, int, int]
+    bonus_skills: tuple[str, ...]
+    base_stats: tuple[int, int, int, int, int]
+    max_stats: tuple[int, int, int, int, int]
     size: Size
 
 
-def _letters(letters: str, flag_enum: Type[F]) -> F:
+def _letters(letters: str, flag_enum: type[F]) -> F:
     """Convert ROM letter masks into concrete IntFlag values."""
 
     if not letters:
@@ -247,13 +246,7 @@ _NPC_RACES: Final[tuple[RaceType, ...]] = (
             | ImmFlag.DROWNING
         ),
         resistance_flags=ResFlag.BASH | ResFlag.LIGHT,
-        vulnerability_flags=(
-            VulnFlag.SLASH
-            | VulnFlag.FIRE
-            | VulnFlag.ACID
-            | VulnFlag.LIGHTNING
-            | VulnFlag.ENERGY
-        ),
+        vulnerability_flags=(VulnFlag.SLASH | VulnFlag.FIRE | VulnFlag.ACID | VulnFlag.LIGHTNING | VulnFlag.ENERGY),
         form_flags=_letters("EJMcc", FormFlag),
         part_flags=_letters("ABCGHK", PartFlag),
     ),
@@ -347,9 +340,7 @@ _NPC_RACES: Final[tuple[RaceType, ...]] = (
         act_flags=ActFlag(0),
         affect_flags=AffectFlag.INFRARED,
         offensive_flags=OffFlag.ASSIST_RACE | OffFlag.ASSIST_ALIGN,
-        immunity_flags=(
-            ImmFlag.CHARM | ImmFlag.DISEASE | ImmFlag.MENTAL | ImmFlag.HOLY | ImmFlag.NEGATIVE
-        ),
+        immunity_flags=(ImmFlag.CHARM | ImmFlag.DISEASE | ImmFlag.MENTAL | ImmFlag.HOLY | ImmFlag.NEGATIVE),
         resistance_flags=ResFlag.FIRE | ResFlag.COLD | ResFlag.ACID,
         vulnerability_flags=VulnFlag(0),
         form_flags=_letters("H", FormFlag),
@@ -431,9 +422,7 @@ _NPC_RACES: Final[tuple[RaceType, ...]] = (
         name="troll",
         is_playable=False,
         act_flags=ActFlag(0),
-        affect_flags=(
-            AffectFlag.REGENERATION | AffectFlag.INFRARED | AffectFlag.DETECT_HIDDEN
-        ),
+        affect_flags=(AffectFlag.REGENERATION | AffectFlag.INFRARED | AffectFlag.DETECT_HIDDEN),
         offensive_flags=OffFlag.BERSERK,
         immunity_flags=ImmFlag(0),
         resistance_flags=ResFlag.CHARM | ResFlag.BASH,
@@ -469,9 +458,7 @@ _NPC_RACES: Final[tuple[RaceType, ...]] = (
         name="wyvern",
         is_playable=False,
         act_flags=ActFlag(0),
-        affect_flags=(
-            AffectFlag.FLYING | AffectFlag.DETECT_INVIS | AffectFlag.DETECT_HIDDEN
-        ),
+        affect_flags=(AffectFlag.FLYING | AffectFlag.DETECT_INVIS | AffectFlag.DETECT_HIDDEN),
         offensive_flags=OffFlag.BASH | OffFlag.FAST | OffFlag.DODGE,
         immunity_flags=ImmFlag.POISON,
         resistance_flags=ResFlag(0),
@@ -548,4 +535,3 @@ def race_lookup(name: str | None) -> int:
         if race.name and race.name.lower().startswith(needle):
             return index
     return 0
-

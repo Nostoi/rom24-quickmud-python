@@ -95,8 +95,7 @@ def test_inv022_equip_char_applies_hitroll_modifier():
     equip_char(char, sword, int(WearLocation.WIELD))
 
     assert char.hitroll == 5, (
-        f"equip_char must propagate +5 hitroll from obj.affected "
-        f"(ROM src/handler.c:1796); got {char.hitroll}"
+        f"equip_char must propagate +5 hitroll from obj.affected (ROM src/handler.c:1796); got {char.hitroll}"
     )
     assert sword.wear_loc == int(WearLocation.WIELD)
 
@@ -112,8 +111,7 @@ def test_inv022_unequip_char_strips_hitroll_modifier():
     unequip_char(char, sword)
 
     assert char.hitroll == 0, (
-        f"unequip_char must strip the +5 hitroll bonus "
-        f"(ROM src/handler.c:1804-1877); got {char.hitroll}"
+        f"unequip_char must strip the +5 hitroll bonus (ROM src/handler.c:1804-1877); got {char.hitroll}"
     )
 
 
@@ -126,9 +124,7 @@ def test_inv022_equip_unequip_round_trip_zero_delta_damroll():
     equip_char(char, sword, int(WearLocation.WIELD))
     assert char.damroll == initial_damroll + 7
     unequip_char(char, sword)
-    assert char.damroll == initial_damroll, (
-        "equip → unequip must be a zero-sum operation on damroll"
-    )
+    assert char.damroll == initial_damroll, "equip → unequip must be a zero-sum operation on damroll"
 
 
 @pytest.mark.parametrize(

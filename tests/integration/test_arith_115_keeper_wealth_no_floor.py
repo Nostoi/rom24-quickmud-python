@@ -60,12 +60,7 @@ def test_buy_haggle_negative_cost_drives_keeper_wealth_below_zero():
     char.skills = {"haggle": 100}
 
     keeper = next(
-        (
-            p
-            for p in char.room.people
-            if getattr(p, "prototype", None)
-            and p.prototype.vnum in shop_registry
-        ),
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
         None,
     )
     if keeper is None:

@@ -94,10 +94,7 @@ class TestMpDamageNonNumericArgsBugLog:
         with caplog.at_level(logging.WARNING, logger="mud.mob_cmds"):
             do_mpdamage(script_mob, "Victim notanumber 100")
 
-        assert any(
-            "MpDamage" in record.message and "min" in record.message.lower()
-            for record in caplog.records
-        ), (
+        assert any("MpDamage" in record.message and "min" in record.message.lower() for record in caplog.records), (
             f"expected an MpDamage bug log for the non-numeric min arg; got"
             f" {[r.message for r in caplog.records]!r}. ROM"
             " src/mob_cmds.c:1105-1107 calls bug() and returns."
@@ -110,10 +107,7 @@ class TestMpDamageNonNumericArgsBugLog:
         with caplog.at_level(logging.WARNING, logger="mud.mob_cmds"):
             do_mpdamage(script_mob, "Victim 10 notanumber")
 
-        assert any(
-            "MpDamage" in record.message and "max" in record.message.lower()
-            for record in caplog.records
-        ), (
+        assert any("MpDamage" in record.message and "max" in record.message.lower() for record in caplog.records), (
             f"expected an MpDamage bug log for the non-numeric max arg; got"
             f" {[r.message for r in caplog.records]!r}. ROM"
             " src/mob_cmds.c:1113-1115 calls bug() and returns."

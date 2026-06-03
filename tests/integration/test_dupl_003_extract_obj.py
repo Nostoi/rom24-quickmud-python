@@ -64,14 +64,16 @@ def test_do_quaff_actually_removes_potion_from_inventory(actor, object_factory) 
     attribute) instead of char.inventory. The potion stayed in
     inventory, making it infinitely consumable.
     """
-    potion = object_factory({
-        "vnum": 9100,
-        "name": "potion blue",
-        "short_descr": "a blue potion",
-        "item_type": int(ItemType.POTION),
-        "value": [1, 0, 0, 0, 0],
-        "level": 1,
-    })
+    potion = object_factory(
+        {
+            "vnum": 9100,
+            "name": "potion blue",
+            "short_descr": "a blue potion",
+            "item_type": int(ItemType.POTION),
+            "value": [1, 0, 0, 0, 0],
+            "level": 1,
+        }
+    )
     potion.item_type = int(ItemType.POTION)
     potion.level = 1
     potion.value = [1, 0, 0, 0, 0]
@@ -98,29 +100,33 @@ def test_do_sacrifice_recursively_extracts_container_contents(actor, room, objec
     still pointing at the (now-extracted) parent — orphaned objects
     leaked into the world state.
     """
-    chest = object_factory({
-        "vnum": 9101,
-        "name": "chest",
-        "short_descr": "a wooden chest",
-        "item_type": int(ItemType.CONTAINER),
-        "value": [0, 0, 0, 0, 0],
-        "level": 1,
-        "cost": 10,
-    })
+    chest = object_factory(
+        {
+            "vnum": 9101,
+            "name": "chest",
+            "short_descr": "a wooden chest",
+            "item_type": int(ItemType.CONTAINER),
+            "value": [0, 0, 0, 0, 0],
+            "level": 1,
+            "cost": 10,
+        }
+    )
     chest.item_type = int(ItemType.CONTAINER)
     chest.wear_flags = int(WearFlag.TAKE)
     chest.cost = 10
     chest.level = 1
 
-    coin = object_factory({
-        "vnum": 9102,
-        "name": "coin",
-        "short_descr": "a copper coin",
-        "item_type": int(ItemType.TRASH),
-        "value": [0, 0, 0, 0, 0],
-        "level": 1,
-        "cost": 1,
-    })
+    coin = object_factory(
+        {
+            "vnum": 9102,
+            "name": "coin",
+            "short_descr": "a copper coin",
+            "item_type": int(ItemType.TRASH),
+            "value": [0, 0, 0, 0, 0],
+            "level": 1,
+            "cost": 1,
+        }
+    )
     chest.contained_items.append(coin)
     coin.in_obj = chest
 

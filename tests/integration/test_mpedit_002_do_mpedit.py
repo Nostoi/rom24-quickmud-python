@@ -2,6 +2,7 @@
 
 Mirrors ROM src/olc_mpcode.c:96-151 do_mpedit().
 """
+
 from __future__ import annotations
 
 import pytest
@@ -20,8 +21,10 @@ def clear_registry():
 # No args → syntax
 # ---------------------------------------------------------------------------
 
+
 def test_do_mpedit_no_args_returns_syntax(movable_char_factory):
     from mud.commands.imm_olc import do_mpedit
+
     char = movable_char_factory("builder", 1)
     result = do_mpedit(char, "")
     assert "mpedit" in result.lower() or "sintaxis" in result.lower() or "syntax" in result.lower()
@@ -31,8 +34,10 @@ def test_do_mpedit_no_args_returns_syntax(movable_char_factory):
 # Non-numeric arg (not "create") → double syntax lines
 # ---------------------------------------------------------------------------
 
+
 def test_do_mpedit_non_numeric_returns_syntax(movable_char_factory):
     from mud.commands.imm_olc import do_mpedit
+
     char = movable_char_factory("builder", 1)
     result = do_mpedit(char, "abc")
     assert "mpedit" in result.lower() or "sintaxis" in result.lower()
@@ -42,8 +47,10 @@ def test_do_mpedit_non_numeric_returns_syntax(movable_char_factory):
 # Numeric vnum not in registry → error
 # ---------------------------------------------------------------------------
 
+
 def test_do_mpedit_vnum_not_exist(movable_char_factory):
     from mud.commands.imm_olc import do_mpedit
+
     char = movable_char_factory("builder", 1)
     result = do_mpedit(char, "9999")
     # ROM: "MPEdit : That vnum does not exist.\n\r"
@@ -54,12 +61,12 @@ def test_do_mpedit_vnum_not_exist(movable_char_factory):
 # Numeric vnum exists → opens mpedit session silently
 # ---------------------------------------------------------------------------
 
+
 def test_do_mpedit_vnum_exists_opens_session(movable_char_factory):
     from mud.commands.imm_olc import do_mpedit
-    from mud.net.session import Session
-    from mud.olc.editor_state import EditorMode
-    from mud.registry import area_registry
     from mud.models.area import Area
+    from mud.net.session import Session
+    from mud.registry import area_registry
 
     # Register a test area covering vnum 100
     test_area = Area(name="Test Area", min_vnum=100, max_vnum=199, security=9, builders="None")
@@ -89,8 +96,10 @@ def test_do_mpedit_vnum_exists_opens_session(movable_char_factory):
 # "create" with no vnum arg → syntax
 # ---------------------------------------------------------------------------
 
+
 def test_do_mpedit_create_no_arg_returns_syntax(movable_char_factory):
     from mud.commands.imm_olc import do_mpedit
+
     char = movable_char_factory("builder", 1)
     result = do_mpedit(char, "create")
     assert "mpedit" in result.lower() or "sintaxis" in result.lower()
@@ -100,8 +109,10 @@ def test_do_mpedit_create_no_arg_returns_syntax(movable_char_factory):
 # "create" with existing vnum → error
 # ---------------------------------------------------------------------------
 
+
 def test_do_mpedit_create_existing_vnum_error(movable_char_factory):
     from mud.commands.imm_olc import do_mpedit
+
     char = movable_char_factory("builder", 1)
     if hasattr(char, "pcdata") and char.pcdata:
         char.pcdata.security = 10

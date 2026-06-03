@@ -272,7 +272,11 @@ def acid_effect(target: Any, level: int, damage: int, target_type: int | SpellTa
         message = ""
         is_armor = False
 
-        if item_type_int == int(ItemType.CONTAINER) or item_type_int == int(ItemType.CORPSE_NPC) or item_type_int == int(ItemType.CORPSE_PC):
+        if (
+            item_type_int == int(ItemType.CONTAINER)
+            or item_type_int == int(ItemType.CORPSE_NPC)
+            or item_type_int == int(ItemType.CORPSE_PC)
+        ):
             message = "fumes and dissolves"
         elif item_type_int == int(ItemType.ARMOR):
             is_armor = True
@@ -341,7 +345,11 @@ def acid_effect(target: Any, level: int, damage: int, target_type: int | SpellTa
             return  # Don't destroy armor, just degrade it
 
         # ROM L169-187: Container dumping (recursively apply acid to contents)
-        if item_type_int == int(ItemType.CONTAINER) or item_type_int == int(ItemType.CORPSE_NPC) or item_type_int == int(ItemType.CORPSE_PC):
+        if (
+            item_type_int == int(ItemType.CONTAINER)
+            or item_type_int == int(ItemType.CORPSE_NPC)
+            or item_type_int == int(ItemType.CORPSE_PC)
+        ):
             _dump_container_contents(obj, level, damage, acid_effect)
 
         # ROM L189: Object destruction

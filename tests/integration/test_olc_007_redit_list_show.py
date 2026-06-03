@@ -17,8 +17,8 @@ from __future__ import annotations
 from mud.commands.build import _interpret_redit
 from mud.models.constants import LEVEL_HERO
 from mud.net.session import Session
+from mud.registry import mob_registry, obj_registry, room_registry
 from mud.world import create_test_character, initialize_world
-from mud.registry import room_registry, mob_registry, obj_registry
 
 
 def setup_module(module):
@@ -41,6 +41,7 @@ def _builder_in_redit(room_vnum: int = 3001):
 
 
 # ── rlist ────────────────────────────────────────────────────────────────────
+
 
 def test_rlist_returns_room_entries():
     """``rlist`` lists rooms in the current area with [vnum] name columns.
@@ -67,6 +68,7 @@ def test_rlist_no_args_still_works():
 
 # ── mlist ────────────────────────────────────────────────────────────────────
 
+
 def test_mlist_requires_argument():
     """``mlist`` without argument returns syntax hint.
 
@@ -74,8 +76,9 @@ def test_mlist_requires_argument():
     """
     char, session, room = _builder_in_redit()
     result = _interpret_redit(session, char, "mlist")
-    assert "Syntax" in result or "syntax" in result or "mlist" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "mlist" in result.lower(), (
         f"Expected syntax hint for bare mlist, got: {result!r}"
+    )
 
 
 def test_mlist_all_returns_listing_or_not_found():
@@ -87,8 +90,7 @@ def test_mlist_all_returns_listing_or_not_found():
     result = _interpret_redit(session, char, "mlist all")
     assert "Unknown room editor command" not in result
     # either a list with vnums or a "not found" message
-    assert "[" in result or "not found" in result.lower(), \
-        f"Expected mob listing or not-found, got: {result!r}"
+    assert "[" in result or "not found" in result.lower(), f"Expected mob listing or not-found, got: {result!r}"
 
 
 def test_mlist_unknown_name_returns_not_found():
@@ -103,6 +105,7 @@ def test_mlist_unknown_name_returns_not_found():
 
 # ── olist ────────────────────────────────────────────────────────────────────
 
+
 def test_olist_requires_argument():
     """``olist`` without argument returns syntax hint.
 
@@ -110,8 +113,9 @@ def test_olist_requires_argument():
     """
     char, session, room = _builder_in_redit()
     result = _interpret_redit(session, char, "olist")
-    assert "Syntax" in result or "syntax" in result or "olist" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "olist" in result.lower(), (
         f"Expected syntax hint for bare olist, got: {result!r}"
+    )
 
 
 def test_olist_all_returns_listing_or_not_found():
@@ -122,8 +126,7 @@ def test_olist_all_returns_listing_or_not_found():
     char, session, room = _builder_in_redit()
     result = _interpret_redit(session, char, "olist all")
     assert "Unknown room editor command" not in result
-    assert "[" in result or "not found" in result.lower(), \
-        f"Expected obj listing or not-found, got: {result!r}"
+    assert "[" in result or "not found" in result.lower(), f"Expected obj listing or not-found, got: {result!r}"
 
 
 def test_olist_unknown_name_returns_not_found():
@@ -138,6 +141,7 @@ def test_olist_unknown_name_returns_not_found():
 
 # ── mshow ────────────────────────────────────────────────────────────────────
 
+
 def test_mshow_requires_argument():
     """``mshow`` without vnum returns syntax hint.
 
@@ -145,8 +149,9 @@ def test_mshow_requires_argument():
     """
     char, session, room = _builder_in_redit()
     result = _interpret_redit(session, char, "mshow")
-    assert "Syntax" in result or "syntax" in result or "mshow" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "mshow" in result.lower(), (
         f"Expected syntax hint, got: {result!r}"
+    )
 
 
 def test_mshow_nonexistent_vnum_returns_error():
@@ -156,8 +161,9 @@ def test_mshow_nonexistent_vnum_returns_error():
     """
     char, session, room = _builder_in_redit()
     result = _interpret_redit(session, char, "mshow 99999")
-    assert "does not exist" in result.lower() or "not exist" in result.lower(), \
+    assert "does not exist" in result.lower() or "not exist" in result.lower(), (
         f"Expected 'does not exist', got: {result!r}"
+    )
 
 
 def test_mshow_nonnumeric_returns_error():
@@ -183,11 +189,13 @@ def test_mshow_valid_vnum_returns_mob_info():
     result = _interpret_redit(session, char, f"mshow {vnum}")
     assert "Unknown room editor command" not in result
     # medit_show output should contain Name or Vnum label
-    assert "Name" in result or "Vnum" in result or "vnum" in result.lower(), \
+    assert "Name" in result or "Vnum" in result or "vnum" in result.lower(), (
         f"Expected mob stats in mshow output, got: {result!r}"
+    )
 
 
 # ── oshow ────────────────────────────────────────────────────────────────────
+
 
 def test_oshow_requires_argument():
     """``oshow`` without vnum returns syntax hint.
@@ -196,8 +204,9 @@ def test_oshow_requires_argument():
     """
     char, session, room = _builder_in_redit()
     result = _interpret_redit(session, char, "oshow")
-    assert "Syntax" in result or "syntax" in result or "oshow" in result.lower(), \
+    assert "Syntax" in result or "syntax" in result or "oshow" in result.lower(), (
         f"Expected syntax hint, got: {result!r}"
+    )
 
 
 def test_oshow_nonexistent_vnum_returns_error():
@@ -207,8 +216,9 @@ def test_oshow_nonexistent_vnum_returns_error():
     """
     char, session, room = _builder_in_redit()
     result = _interpret_redit(session, char, "oshow 99999")
-    assert "does not exist" in result.lower() or "not exist" in result.lower(), \
+    assert "does not exist" in result.lower() or "not exist" in result.lower(), (
         f"Expected 'does not exist', got: {result!r}"
+    )
 
 
 def test_oshow_nonnumeric_returns_error():
@@ -232,5 +242,6 @@ def test_oshow_valid_vnum_returns_obj_info():
     vnum = next(iter(obj_registry))
     result = _interpret_redit(session, char, f"oshow {vnum}")
     assert "Unknown room editor command" not in result
-    assert "Name" in result or "Vnum" in result or "vnum" in result.lower(), \
+    assert "Name" in result or "Vnum" in result or "vnum" in result.lower(), (
         f"Expected obj stats in oshow output, got: {result!r}"
+    )

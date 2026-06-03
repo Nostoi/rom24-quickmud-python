@@ -969,9 +969,7 @@ class TestSpellPassDoorIntegration:
         assert not char.has_spell_effect("pass door")
         assert not char.has_affect(AffectFlag.PASS_DOOR)
         assert [affect for affect in char.affected if affect.type == "pass door"] == []
-        wear_off_messages = [
-            message for message in char.messages if "You feel solid again." in message
-        ]
+        wear_off_messages = [message for message in char.messages if "You feel solid again." in message]
         assert wear_off_messages == ["You feel solid again.\n\r"]
 
     def test_pass_door_duplicate_cast_during_active_affect_is_rejected(self, movable_char_factory):

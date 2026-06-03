@@ -49,8 +49,6 @@ def test_serialize_pet_still_persists_integer_sn_affects():
     # Raw SN affect as produced by affect_to_char (sanctuary SN is registry-specific;
     # use a plain non-negative int type that won't match a skill slot is fine — the
     # point is the comparison no longer crashes and non-negative ints are considered).
-    pet.affected.append(
-        AffectData(type=0, level=10, duration=6, location=0, modifier=0, bitvector=0)
-    )
+    pet.affected.append(AffectData(type=0, level=10, duration=6, location=0, modifier=0, bitvector=0))
     snapshot = _serialize_pet(pet)
     assert snapshot is not None  # no crash on the int-typed affect either

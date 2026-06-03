@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import pytest
-
-from mud.commands.auto_settings import do_autoall, do_autoloot, do_autogold, do_autosac, do_autosplit
-from mud.models.constants import PlayerFlag
-from mud.world import create_test_character, initialize_world
-from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from helpers_player import enable_autos
+
+from mud.commands.auto_settings import do_autoall, do_autogold, do_autoloot, do_autosac, do_autosplit
+from mud.models.constants import PlayerFlag
+from mud.registry import area_registry, mob_registry, obj_registry, room_registry
+from mud.world import create_test_character, initialize_world
 
 
 @pytest.fixture(autouse=True)

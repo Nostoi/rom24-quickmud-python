@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import pytest
 
-from mud.account.account_manager import save_character
 from mud.commands.character import do_password
 from mud.models.character import Character, PCData
 from mud.models.room import Room

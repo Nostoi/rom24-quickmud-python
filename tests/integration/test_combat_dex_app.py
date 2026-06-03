@@ -41,11 +41,11 @@ def _make_victim(dex: int, armor: int = 0, position: Position = Position.STANDIN
 @pytest.mark.parametrize(
     "dex, expected_defensive",
     [
-        (3, 40),    # dex_app[3].defensive  (src/const.c:824)
-        (8, 0),     # dex_app[8].defensive  — neutral band
-        (13, 0),    # dex_app[13].defensive — neutral band
+        (3, 40),  # dex_app[3].defensive  (src/const.c:824)
+        (8, 0),  # dex_app[8].defensive  — neutral band
+        (13, 0),  # dex_app[13].defensive — neutral band
         (15, -10),  # dex_app[15].defensive (src/const.c:836)
-        (25, -120), # dex_app[25].defensive (src/const.c:846)
+        (25, -120),  # dex_app[25].defensive (src/const.c:846)
     ],
 )
 def test_get_ac_adds_dex_app_defensive_when_awake(dex: int, expected_defensive: int) -> None:

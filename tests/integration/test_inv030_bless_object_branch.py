@@ -114,11 +114,7 @@ class TestBlessObjectBranch:
             assert obj.extra_flags & int(ExtraFlag.BLESS), "bless should set ITEM_BLESS"
 
             # Object should have a bless affect with ITEM_BLESS bitvector
-            bless_affects = [
-                a
-                for a in obj.affected
-                if hasattr(a, "bitvector") and a.bitvector == int(ExtraFlag.BLESS)
-            ]
+            bless_affects = [a for a in obj.affected if hasattr(a, "bitvector") and a.bitvector == int(ExtraFlag.BLESS)]
             assert len(bless_affects) == 1, "bless should add one ITEM_BLESS affect"
             aff = bless_affects[0]
             assert aff.where == _TO_OBJECT
@@ -193,9 +189,7 @@ class TestBlessObjectBranch:
             result = bless(caster, obj)
             assert result is True
             # Curse affect should be removed
-            curse_affects = [
-                a for a in obj.affected if hasattr(a, "spell_name") and a.spell_name == "curse"
-            ]
+            curse_affects = [a for a in obj.affected if hasattr(a, "spell_name") and a.spell_name == "curse"]
             assert len(curse_affects) == 0, "dispel success should remove the curse affect"
         finally:
             _cleanup(caster)
@@ -217,9 +211,9 @@ class TestBlessObjectBranch:
 
             # The saving_throw should be decremented by 1
             # (APPLY_SAVES modifier -1, ROM :831-832)
-            assert (
-                getattr(caster, "saving_throw", 0) == base_saving_throw - 1
-            ), f"worn bless should give saving_throw -= 1, got {getattr(caster, 'saving_throw', 0)} vs {base_saving_throw - 1}"
+            assert getattr(caster, "saving_throw", 0) == base_saving_throw - 1, (
+                f"worn bless should give saving_throw -= 1, got {getattr(caster, 'saving_throw', 0)} vs {base_saving_throw - 1}"
+            )
         finally:
             _cleanup(caster)
             _cleanup_obj(obj)
@@ -245,7 +239,9 @@ class TestDoCastBlessObjectRouting:
                 result = do_cast(caster, "'bless' robe")
 
             # Should not crash; bless on a clean object should set ITEM_BLESS
-            assert obj.extra_flags & int(ExtraFlag.BLESS), f"cast bless on object should set ITEM_BLESS, got result={result!r} extra_flags={obj.extra_flags}"
+            assert obj.extra_flags & int(ExtraFlag.BLESS), (
+                f"cast bless on object should set ITEM_BLESS, got result={result!r} extra_flags={obj.extra_flags}"
+            )
         finally:
             _cleanup(caster)
             _cleanup_obj(obj)

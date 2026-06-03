@@ -112,9 +112,7 @@ class Board:
             subject=subject,
             text=text,
             timestamp=actual_timestamp,
-            expire=self.default_expire(base_timestamp=actual_timestamp)
-            if expire is None
-            else expire,
+            expire=self.default_expire(base_timestamp=actual_timestamp) if expire is None else expire,
         )
         self.notes.append(note)
         return note

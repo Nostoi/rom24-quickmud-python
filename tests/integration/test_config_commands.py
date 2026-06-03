@@ -9,8 +9,8 @@ These tests verify ROM C behavioral parity for player configuration commands.
 
 import pytest
 
+from mud.commands.auto_settings import do_autolist, do_prompt
 from mud.commands.player_info import do_scroll, do_show
-from mud.commands.auto_settings import do_prompt, do_autolist
 from mud.models.character import Character
 from mud.models.constants import CommFlag, PlayerFlag
 from mud.models.room import Room

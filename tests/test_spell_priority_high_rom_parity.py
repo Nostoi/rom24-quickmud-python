@@ -13,10 +13,8 @@ All tests follow ROM parity test style with deterministic RNG.
 
 from __future__ import annotations
 
-import pytest
-
 from mud.models.character import Character
-from mud.models.constants import ActFlag, AffectFlag, DamageType, Position, Stat
+from mud.models.constants import ActFlag, AffectFlag, Position, Stat
 from mud.skills.handlers import (
     armor,
     bless,
@@ -209,8 +207,9 @@ def test_plague_save_prevents_disease(monkeypatch):
 
 
 def test_plague_applies_str_penalty_and_affect():
-    import mud.skills.handlers as spell_handlers
     from unittest.mock import patch
+
+    import mud.skills.handlers as spell_handlers
 
     def _no_save(level, victim, dam_type):
         return False
@@ -230,8 +229,9 @@ def test_plague_applies_str_penalty_and_affect():
 
 
 def test_plague_undead_immune():
-    import mud.skills.handlers as spell_handlers
     from unittest.mock import patch
+
+    import mud.skills.handlers as spell_handlers
 
     caster = make_character(level=20)
     target = make_character()
@@ -261,8 +261,9 @@ def test_poison_save_prevents_poison(monkeypatch):
 
 
 def test_poison_applies_poison_affect():
-    import mud.skills.handlers as spell_handlers
     from unittest.mock import patch
+
+    import mud.skills.handlers as spell_handlers
 
     caster = make_character(level=20)
     target = make_character()
@@ -282,8 +283,9 @@ def test_poison_applies_poison_affect():
 
 
 def test_poison_self_target_defaults():
-    import mud.skills.handlers as spell_handlers
     from unittest.mock import patch
+
+    import mud.skills.handlers as spell_handlers
 
     caster = make_character(level=15)
 

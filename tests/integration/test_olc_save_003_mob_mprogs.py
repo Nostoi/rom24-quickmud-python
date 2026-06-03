@@ -85,9 +85,7 @@ def test_multiple_mobs_share_one_program(tmp_path: Path):
     code = "say shared script"
     for vnum, trigger in ((9001, Trigger.GREET), (9002, Trigger.SPEECH)):
         mob = MobIndex(vnum=vnum, short_descr=f"mob {vnum}", area=area)
-        mob.mprogs.append(
-            MobProgram(trig_type=int(trigger), trig_phrase="x", vnum=9100, code=code)
-        )
+        mob.mprogs.append(MobProgram(trig_type=int(trigger), trig_phrase="x", vnum=9100, code=code))
         mob_registry[mob.vnum] = mob
 
     assert save_area_to_json(area, output_dir=tmp_path) is True

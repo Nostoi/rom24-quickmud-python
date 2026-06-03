@@ -69,9 +69,7 @@ def test_say_001_room_broadcast_drops_comma() -> None:
     assert any("Sayspeaker says 'hello'" in m for m in delivered), (
         f"TO_ROOM wording diverges from ROM `$n says '$T'`; got {delivered!r}"
     )
-    assert not any("says, '" in m for m in delivered), (
-        f"comma after `says` leaked through; got {delivered!r}"
-    )
+    assert not any("says, '" in m for m in delivered), f"comma after `says` leaked through; got {delivered!r}"
 
 
 def test_say_001_to_char_drops_comma() -> None:
@@ -82,9 +80,7 @@ def test_say_001_to_char_drops_comma() -> None:
     """
     speaker = create_test_character("Sayself", 3001)
     out = process_command(speaker, "say hello")
-    assert _strip_rom_colors(out) == "You say 'hello'", (
-        f"TO_CHAR wording diverges from ROM `You say '$T'`; got {out!r}"
-    )
+    assert _strip_rom_colors(out) == "You say 'hello'", f"TO_CHAR wording diverges from ROM `You say '$T'`; got {out!r}"
 
 
 def test_say_004_listener_receives_broadcast_exactly_once() -> None:
@@ -131,9 +127,7 @@ def test_say_003_to_char_wraps_rom_color_codes() -> None:
     """
     speaker = create_test_character("Sayhue", 3001)
     out = process_command(speaker, "say hi")
-    assert out == "{6You say '{7hi{6'{x", (
-        f"TO_CHAR colour wrapping diverges from ROM; got {out!r}"
-    )
+    assert out == "{6You say '{7hi{6'{x", f"TO_CHAR colour wrapping diverges from ROM; got {out!r}"
 
 
 def test_say_003_to_room_wraps_rom_color_codes() -> None:
@@ -149,8 +143,7 @@ def test_say_003_to_room_wraps_rom_color_codes() -> None:
 
     expected = "{6Sayhuesrc says '{7hi{6'{x"
     assert expected in listener.messages, (
-        f"TO_ROOM colour wrapping diverges from ROM; "
-        f"expected {expected!r} in {listener.messages!r}"
+        f"TO_ROOM colour wrapping diverges from ROM; expected {expected!r} in {listener.messages!r}"
     )
 
 

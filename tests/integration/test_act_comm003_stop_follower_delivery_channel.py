@@ -102,15 +102,13 @@ def test_stop_follower_delivers_both_lines_on_connection_channel() -> None:
 
         # TO_CHAR — follower sees "You stop following bob." on the async channel.
         assert any("stop following" in s.lower() for s in follower_sent), (
-            f"follower's TO_CHAR line not on the async channel (MAGIC-003 wrong-channel "
-            f"shape); sent={follower_sent}"
+            f"follower's TO_CHAR line not on the async channel (MAGIC-003 wrong-channel shape); sent={follower_sent}"
         )
         assert follower_mailbox == [], f"follower line stranded in mailbox: {follower_mailbox}"
 
         # TO_VICT — master sees "alice stops following you." on the async channel.
         assert any("stops following you" in s.lower() for s in master_sent), (
-            f"master's TO_VICT line not on the async channel (MAGIC-003 wrong-channel "
-            f"shape); sent={master_sent}"
+            f"master's TO_VICT line not on the async channel (MAGIC-003 wrong-channel shape); sent={master_sent}"
         )
         assert master_mailbox == [], f"master line stranded in mailbox: {master_mailbox}"
     finally:

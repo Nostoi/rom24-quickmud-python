@@ -28,16 +28,16 @@ from mud.db.session import SessionLocal
 
 if TYPE_CHECKING:
     from sqlalchemy.orm import Session
-from mud.models.character import Character, character_registry, from_orm
-from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
 from mud.db.serializers import (
     _normalize_int_list,
     _serialize_colour_table,
+    _serialize_groups,
     _serialize_object,
     _serialize_pet,
     _serialize_skill_map,
-    _serialize_groups,
 )
+from mud.models.character import Character, character_registry, from_orm
+from mud.models.constants import ROOM_VNUM_LIMBO, ROOM_VNUM_TEMPLE
 
 
 def load_character(char_name: str, _ignored: str | None = None) -> Character | None:
@@ -265,10 +265,12 @@ def save_character_to_db(session: Session, character: Character) -> None:
 
     # perm_stats JSON (already stored as string, keep existing column)
     from mud.models.character import _encode_perm_stats
+
     db_char.perm_stats = _encode_perm_stats(getattr(character, "perm_stat", []))
 
     # creation_groups / creation_skills (keep in sync)
     from mud.models.character import _encode_creation_groups, _encode_creation_skills
+
     db_char.creation_groups = _encode_creation_groups(getattr(character, "creation_groups", ()))
     db_char.creation_skills = _encode_creation_skills(getattr(character, "creation_skills", ()))
     db_char.creation_points = int(getattr(character, "creation_points", 0) or 0)
@@ -312,6 +314,7 @@ def save_character_to_db(session: Session, character: Character) -> None:
 def _dataclass_to_dict(obj: object) -> dict:
     """Recursively convert a dataclass instance to a plain dict for JSON storage."""
     import dataclasses
+
     if dataclasses.is_dataclass(obj) and not isinstance(obj, type):
         result = {}
         for f in dataclasses.fields(obj):  # type: ignore[arg-type]
@@ -320,7 +323,9 @@ def _dataclass_to_dict(obj: object) -> dict:
                 result[f.name] = _dataclass_to_dict(val)
             elif isinstance(val, list):
                 result[f.name] = [
-                    _dataclass_to_dict(item) if (dataclasses.is_dataclass(item) and not isinstance(item, type)) else item
+                    _dataclass_to_dict(item)
+                    if (dataclasses.is_dataclass(item) and not isinstance(item, type))
+                    else item
                     for item in val
                 ]
             elif isinstance(val, dict):

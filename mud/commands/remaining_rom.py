@@ -77,13 +77,7 @@ _NON_SETTABLE_FLAGS_BY_FIELD: dict[str, int] = {
         | PlayerFlag.KILLER
     ),
     # src/tables.c:271-295 — these comm flags are settable FALSE.
-    "comm": int(
-        CommFlag.NOEMOTE
-        | CommFlag.NOSHOUT
-        | CommFlag.NOTELL
-        | CommFlag.NOCHANNELS
-        | CommFlag.SNOOP_PROOF
-    ),
+    "comm": int(CommFlag.NOEMOTE | CommFlag.NOSHOUT | CommFlag.NOTELL | CommFlag.NOCHANNELS | CommFlag.SNOOP_PROOF),
 }
 
 

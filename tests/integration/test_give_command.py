@@ -143,7 +143,6 @@ def test_give_rejects_item_victim_cannot_see(movable_char_factory, object_factor
     assert hidden_gem not in victim.inventory
 
 
-
 def test_give_money_does_not_echo_room_message_back_to_giver(movable_char_factory, test_room_3001):
     """ROM TO_NOTVICT excludes the giver; they should only get the direct char message."""
     giver = movable_char_factory("Giver", 3001)
@@ -164,9 +163,7 @@ def test_give_money_does_not_echo_room_message_back_to_giver(movable_char_factor
     assert "some coins" in observer_text
 
 
-def test_give_object_does_not_echo_room_message_back_to_giver(
-    movable_char_factory, object_factory, test_room_3001
-):
+def test_give_object_does_not_echo_room_message_back_to_giver(movable_char_factory, object_factory, test_room_3001):
     """ROM TO_NOTVICT excludes the giver on object GIVE as well."""
     giver = movable_char_factory("Giver", 3001)
     victim = movable_char_factory("Receiver", 3001)
@@ -186,9 +183,8 @@ def test_give_object_does_not_echo_room_message_back_to_giver(
     assert "gives a red apple to receiver" not in giver_text
     assert "gives a red apple to receiver" in observer_text
 
-def test_give_rejects_when_object_consumes_multiple_carry_slots(
-    movable_char_factory, object_factory, test_room_3001
-):
+
+def test_give_rejects_when_object_consumes_multiple_carry_slots(movable_char_factory, object_factory, test_room_3001):
     """ROM act_obj.c:811-814 uses get_obj_number(obj), not a flat +1 carry-count check."""
     giver = movable_char_factory("Giver", 3001)
     victim = movable_char_factory("Receiver", 3001)
@@ -213,7 +209,6 @@ def test_give_rejects_when_object_consumes_multiple_carry_slots(
     assert result == "Receiver has their hands full."
     assert satchel in giver.inventory
     assert satchel not in victim.inventory
-
 
 
 def test_give_rejects_when_object_would_put_victim_over_carry_weight(
@@ -270,6 +265,7 @@ def test_give_all_is_not_supported_by_rom_and_falls_back_to_missing_item(
     assert result == "You do not have that item."
     assert apple in giver.inventory
     assert apple not in receiver.inventory
+
 
 def test_give_gold_to_npc_fires_bribe_trigger_with_gold_scaled_to_copper(
     movable_char_factory, test_room_3001, monkeypatch

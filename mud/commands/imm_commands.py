@@ -181,7 +181,11 @@ def do_goto(char: Character, args: str) -> str:
 
     # Check private room
     room_count = len(getattr(location, "people", []))
-    if not _is_room_owner(char, location) and _room_is_private(location) and (room_count > 1 or get_trust(char) < MAX_LEVEL):
+    if (
+        not _is_room_owner(char, location)
+        and _room_is_private(location)
+        and (room_count > 1 or get_trust(char) < MAX_LEVEL)
+    ):
         return "That room is private right now."
 
     # Stop fighting
@@ -270,7 +274,7 @@ def do_transfer(char: Character, args: str) -> str:
     if getattr(victim, "fighting", None):
         victim.fighting = None
 
-# Announce and transfer
+    # Announce and transfer
     old_room = getattr(victim, "room", None)
     if old_room:
         _act_room(old_room, victim, "$n disappears in a mushroom cloud.")
@@ -279,9 +283,7 @@ def do_transfer(char: Character, args: str) -> str:
         import mud.mobprog as mobprog
         from mud.utils.act import act_format
 
-        departure_msg = act_format(
-            "$n disappears in a mushroom cloud.", recipient=None, actor=victim
-        )
+        departure_msg = act_format("$n disappears in a mushroom cloud.", recipient=None, actor=victim)
         mobprog.mp_act_trigger_room(departure_msg, old_room, victim)
 
     _char_from_room(victim)
@@ -292,9 +294,7 @@ def do_transfer(char: Character, args: str) -> str:
     import mud.mobprog as mobprog
     from mud.utils.act import act_format
 
-    arrival_msg = act_format(
-        "$n arrives from a puff of smoke.", recipient=None, actor=victim
-    )
+    arrival_msg = act_format("$n arrives from a puff of smoke.", recipient=None, actor=victim)
     mobprog.mp_act_trigger_room(arrival_msg, location, victim)
 
     if char is not victim:
@@ -313,9 +313,7 @@ def do_transfer(char: Character, args: str) -> str:
         if getattr(victim, "is_npc", False):
             import mud.mobprog as mobprog
 
-            mobprog.mp_act_trigger(
-                transferred_msg, victim, char, None, victim, mobprog.Trigger.ACT
-            )
+            mobprog.mp_act_trigger(transferred_msg, victim, char, None, victim, mobprog.Trigger.ACT)
 
     # Make victim look
     from mud.commands.inspection import do_look
@@ -367,6 +365,7 @@ def do_force(char: Character, args: str) -> str:
                 # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
                 _send_to_char(vch, capitalize_act_line(f"{pers(char, vch)} forces you to '{command}'.\n\r"))
                 from mud.commands import process_command
+
                 process_command(vch, command)
 
         return "Ok.\n\r"
@@ -379,10 +378,15 @@ def do_force(char: Character, args: str) -> str:
         from mud import registry
 
         for vch in list(getattr(registry, "char_list", [])):
-            if not getattr(vch, "is_npc", False) and get_trust(vch) < get_trust(char) and getattr(vch, "level", 1) < LEVEL_HERO:
+            if (
+                not getattr(vch, "is_npc", False)
+                and get_trust(vch) < get_trust(char)
+                and getattr(vch, "level", 1) < LEVEL_HERO
+            ):
                 # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
                 _send_to_char(vch, capitalize_act_line(f"{pers(char, vch)} forces you to '{command}'.\n\r"))
                 from mud.commands import process_command
+
                 process_command(vch, command)
 
         return "Ok.\n\r"
@@ -395,10 +399,15 @@ def do_force(char: Character, args: str) -> str:
         from mud import registry
 
         for vch in list(getattr(registry, "char_list", [])):
-            if not getattr(vch, "is_npc", False) and get_trust(vch) < get_trust(char) and getattr(vch, "level", 1) >= LEVEL_HERO:
+            if (
+                not getattr(vch, "is_npc", False)
+                and get_trust(vch) < get_trust(char)
+                and getattr(vch, "level", 1) >= LEVEL_HERO
+            ):
                 # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
                 _send_to_char(vch, capitalize_act_line(f"{pers(char, vch)} forces you to '{command}'.\n\r"))
                 from mud.commands import process_command
+
                 process_command(vch, command)
 
         return "Ok.\n\r"
@@ -416,7 +425,12 @@ def do_force(char: Character, args: str) -> str:
     # mirroring ROM src/act_wiz.c:4295-4301 — private room check
     victim_room = getattr(victim, "room", None)
     if victim_room is not None:
-        if not _is_room_owner(char, victim_room) and char.room is not victim_room and _room_is_private(victim_room) and get_trust(char) < MAX_LEVEL:
+        if (
+            not _is_room_owner(char, victim_room)
+            and char.room is not victim_room
+            and _room_is_private(victim_room)
+            and get_trust(char) < MAX_LEVEL
+        ):
             return "That character is in a private room.\n\r"
 
     # mirroring ROM src/act_wiz.c:4304-4308

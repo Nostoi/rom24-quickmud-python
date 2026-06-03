@@ -3,11 +3,11 @@ from __future__ import annotations
 from collections import defaultdict
 from collections.abc import Iterable
 from types import SimpleNamespace
-from typing import Any, Optional
+from typing import Any
 
 from mud.imc import (
-    IMCCHAN_LOG,
     IMC_HISTORY_LIMIT,
+    IMCCHAN_LOG,
     IMCChannel,
     IMCHelp,
     IMCState,
@@ -193,7 +193,7 @@ def _render_columns(topics: Iterable[str]) -> list[str]:
     return columns
 
 
-def try_imc_command(char: Any, command: str, argument: str) -> Optional[str]:
+def try_imc_command(char: Any, command: str, argument: str) -> str | None:
     """Handle IMC channel-style commands when IMC is enabled."""
 
     if getattr(char, "is_npc", False):
@@ -319,7 +319,7 @@ def _split_first_token(text: str) -> tuple[str, str]:
     return parts[0], parts[1]
 
 
-def _parse_social_target(raw: str) -> tuple[str, str, Optional[str]]:
+def _parse_social_target(raw: str) -> tuple[str, str, str | None]:
     if "@" not in raw:
         return "", "", "You need to specify a person@mud for a target.\r\n"
     person, mud = raw.split("@", 1)
@@ -336,10 +336,10 @@ def _select_social_template(
     social: Social,
     target_name: str,
     target_mud: str,
-) -> tuple[str, Optional[Any], Optional[str]]:
+) -> tuple[str, Any | None, str | None]:
     local_name = (state.config.get("LocalName") or "QuickMUD").lower()
     actor_name = getattr(char, "name", "")
-    victim: Optional[Any] = None
+    victim: Any | None = None
 
     if target_name and target_mud:
         if target_name.lower() == actor_name.lower() and target_mud.lower() == local_name:

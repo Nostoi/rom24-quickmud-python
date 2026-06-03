@@ -80,7 +80,7 @@ def _duplicate_wiznet_chars(text: str) -> str:
     return "".join(duplicated)
 
 
-def _get_effective_trust(character: "Character") -> int:
+def _get_effective_trust(character: Character) -> int:
     """Mirror ROM's ``get_trust`` helper used for wiznet broadcasts."""
 
     trust = getattr(character, "trust", 0)
@@ -91,7 +91,7 @@ def log_admin_command(
     actor: str,
     command_line: str,
     *,
-    character: "Character" | None = None,
+    character: Character | None = None,
 ) -> None:
     """Append a single admin-command entry to log/admin.log.
 

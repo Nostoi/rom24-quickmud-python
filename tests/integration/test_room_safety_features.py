@@ -13,13 +13,11 @@ import logging
 
 import pytest
 
+# Import char_to_room directly from the module
+import mud.models.room as room_module
 from mud.models.constants import ROOM_VNUM_TEMPLE
 from mud.models.room import Room, room_registry
 from mud.world import create_test_character
-
-
-# Import char_to_room directly from the module
-import mud.models.room as room_module
 
 
 @pytest.fixture(autouse=True)

@@ -29,8 +29,11 @@ from mud.world.world_state import create_test_character
 
 def _setup_room(vnum: int = 4200):
     test_room = Room(
-        vnum=vnum, name="Test Room", description="A test room.",
-        room_flags=0, sector_type=0,
+        vnum=vnum,
+        name="Test Room",
+        description="A test room.",
+        room_flags=0,
+        sector_type=0,
     )
     test_room.people = []
     test_room.contents = []
@@ -72,12 +75,8 @@ class TestCheckParryPers:
 
             # defender sees "someone" (PERS masks invisible attacker)
             joined = "\n".join(defender.messages).lower()
-            assert "you parry someone" in joined, (
-                f"PERS did not mask invisible attacker: {defender.messages!r}"
-            )
-            assert "attaq" not in joined, (
-                f"invisible attacker name leaked: {defender.messages!r}"
-            )
+            assert "you parry someone" in joined, f"PERS did not mask invisible attacker: {defender.messages!r}"
+            assert "attaq" not in joined, f"invisible attacker name leaked: {defender.messages!r}"
         finally:
             _cleanup(4200)
 
@@ -110,9 +109,7 @@ class TestCheckParryPers:
             assert "someone parries your attack" in joined, (
                 f"PERS did not mask invisible defender: {attacker.messages!r}"
             )
-            assert "defender" not in joined, (
-                f"invisible defender name leaked: {attacker.messages!r}"
-            )
+            assert "defender" not in joined, f"invisible defender name leaked: {attacker.messages!r}"
         finally:
             _cleanup(4201)
 
@@ -182,12 +179,8 @@ class TestCheckShieldBlockPers:
             assert result is True
 
             joined = "\n".join(defender.messages).lower()
-            assert "you block someone" in joined, (
-                f"PERS did not mask invisible attacker: {defender.messages!r}"
-            )
-            assert "attaq" not in joined, (
-                f"invisible attacker name leaked: {defender.messages!r}"
-            )
+            assert "you block someone" in joined, f"PERS did not mask invisible attacker: {defender.messages!r}"
+            assert "attaq" not in joined, f"invisible attacker name leaked: {defender.messages!r}"
         finally:
             _cleanup(4300)
 
@@ -220,9 +213,7 @@ class TestCheckShieldBlockPers:
             assert "someone blocks your attack" in joined, (
                 f"PERS did not mask invisible defender: {attacker.messages!r}"
             )
-            assert "defender" not in joined, (
-                f"invisible defender name leaked: {attacker.messages!r}"
-            )
+            assert "defender" not in joined, f"invisible defender name leaked: {attacker.messages!r}"
         finally:
             _cleanup(4301)
 
@@ -255,12 +246,8 @@ class TestCheckDodgePers:
             assert result is True
 
             joined = "\n".join(defender.messages).lower()
-            assert "you dodge someone" in joined, (
-                f"PERS did not mask invisible attacker: {defender.messages!r}"
-            )
-            assert "attaq" not in joined, (
-                f"invisible attacker name leaked: {defender.messages!r}"
-            )
+            assert "you dodge someone" in joined, f"PERS did not mask invisible attacker: {defender.messages!r}"
+            assert "attaq" not in joined, f"invisible attacker name leaked: {defender.messages!r}"
         finally:
             _cleanup(4400)
 
@@ -292,8 +279,6 @@ class TestCheckDodgePers:
             assert "someone dodges your attack" in joined, (
                 f"PERS did not mask invisible defender: {attacker.messages!r}"
             )
-            assert "defender" not in joined, (
-                f"invisible defender name leaked: {attacker.messages!r}"
-            )
+            assert "defender" not in joined, f"invisible defender name leaked: {attacker.messages!r}"
         finally:
             _cleanup(4401)

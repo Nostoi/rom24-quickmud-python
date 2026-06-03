@@ -101,6 +101,7 @@ _WEAPON_CHOICES: Final[dict[str, tuple[str, ...]]] = {
     "warrior": ("sword", "mace"),
 }
 
+
 @lru_cache(maxsize=1)
 def _load_skill_data() -> dict[str, dict[str, object]]:
     """Return ROM skill metadata (type/ratings) keyed by lower-case name."""
@@ -962,7 +963,9 @@ def list_characters(
     if not name:
         return []
     if require_act_flags is not None:
-        required_bits = int(require_act_flags) if not isinstance(require_act_flags, PlayerFlag) else int(require_act_flags)
+        required_bits = (
+            int(require_act_flags) if not isinstance(require_act_flags, PlayerFlag) else int(require_act_flags)
+        )
         act_flags = int(getattr(account, "act", 0) or 0)
         if act_flags & required_bits != required_bits:
             return []

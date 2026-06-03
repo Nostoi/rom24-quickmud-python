@@ -16,10 +16,9 @@ from __future__ import annotations
 import pytest
 
 from mud.commands.dispatcher import process_command
-from mud.game_loop import game_tick
-from mud.models.constants import Position, ItemType, WearFlag, WearLocation, AffectFlag
-from mud.world import initialize_world
+from mud.models.constants import ItemType, Position, WearFlag, WearLocation
 from mud.utils import rng_mm
+from mud.world import initialize_world
 
 
 @pytest.fixture(autouse=True)

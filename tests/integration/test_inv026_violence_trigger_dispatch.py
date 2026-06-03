@@ -182,6 +182,5 @@ def test_violence_tick_skips_triggers_when_victim_died(monkeypatch) -> None:
     game_loop.violence_tick(do_combat=True)
 
     assert calls == [], (
-        "ROM src/fight.c:84-85 skips TRIG_FIGHT / TRIG_HPCNT when the "
-        f"victim died during multi_hit; got {calls}"
+        f"ROM src/fight.c:84-85 skips TRIG_FIGHT / TRIG_HPCNT when the victim died during multi_hit; got {calls}"
     )

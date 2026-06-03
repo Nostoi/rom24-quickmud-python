@@ -83,9 +83,7 @@ def test_void_quit_nukes_pets() -> None:
         "Python void-quit must do the same; the pet remained in "
         "character_registry."
     )
-    assert master.pet is None, (
-        "ROM src/handler.c:2118 sets ch->pet = NULL after nuke_pets."
-    )
+    assert master.pet is None, "ROM src/handler.c:2118 sets ch->pet = NULL after nuke_pets."
 
 
 def test_void_quit_calls_die_follower() -> None:
@@ -146,9 +144,7 @@ def test_disconnect_nukes_pets() -> None:
         "ROM src/handler.c:2117 nuke_pets → extract_char(pet, TRUE). "
         "Disconnect path must do the same; pet remained in registry."
     )
-    assert master.pet is None, (
-        "ROM src/handler.c:2118 sets ch->pet = NULL after nuke_pets."
-    )
+    assert master.pet is None, "ROM src/handler.c:2118 sets ch->pet = NULL after nuke_pets."
 
 
 def test_disconnect_calls_die_follower() -> None:

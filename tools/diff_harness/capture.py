@@ -32,8 +32,11 @@ def _drive(sc: Scenario, binary: Path) -> list[dict]:
         lines.append(step)
         lines.append(f"__snapshot chars={','.join(sc.watch_chars)} rooms={','.join(map(str, sc.watch_rooms))}")
     proc = subprocess.run(
-        [str(binary)], input="\n".join(lines) + "\n",
-        capture_output=True, text=True, cwd=REPO / "src",
+        [str(binary)],
+        input="\n".join(lines) + "\n",
+        capture_output=True,
+        text=True,
+        cwd=REPO / "src",
     )
     if proc.returncode != 0:
         raise RuntimeError(f"C binary exited {proc.returncode}\nstderr:\n{proc.stderr}")

@@ -5,7 +5,6 @@ from mud.models.character import Character
 from mud.models.constants import AffectFlag, DamageType, DefenseBit
 from mud.utils import rng_mm
 
-
 ROM_NEWLINE = "\n\r"
 
 # Minimal fMana mapping from ROM const.c order: mage, cleric → True; thief, warrior → False

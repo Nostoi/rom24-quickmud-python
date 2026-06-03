@@ -8,12 +8,10 @@ from __future__ import annotations
 
 import pytest
 
-from mud.models.character import Character
-from mud.models.constants import AffectFlag, RoomFlag, ROOM_VNUM_TEMPLE
+from mud.models.constants import ROOM_VNUM_TEMPLE, AffectFlag, RoomFlag
 from mud.registry import room_registry
 from mud.skills.handlers import recall
 from mud.world import initialize_world
-
 
 TEST_ROOM_VNUM = 3010
 TEST_MOB_VNUM = 3000

@@ -11,12 +11,11 @@ from __future__ import annotations
 
 import pytest
 
-from mud import mob_cmds
-from mud import mobprog
+from mud import mob_cmds, mobprog
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.constants import ActFlag, ITEM_NOPURGE, RoomFlag
-from mud.models.mob import MobIndex, MobProgram
+from mud.models.constants import ITEM_NOPURGE, ActFlag, RoomFlag
+from mud.models.mob import MobIndex
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Exit, Room

@@ -61,15 +61,11 @@ def test_fight_014_auto_sacrifice_broadcast_uses_pers_for_invisible_attacker():
         _auto_sacrifice(attacker, corpse)
 
         joined = "\n".join(observer.messages).lower()
-        assert "sacrifices" in joined, (
-            f"AUTOSAC broadcast not delivered: {observer.messages!r}"
-        )
+        assert "sacrifices" in joined, f"AUTOSAC broadcast not delivered: {observer.messages!r}"
         assert "someone sacrifices the corpse of an orc to mota." in joined, (
             f"PERS render missing for invisible attacker: {observer.messages!r}"
         )
-        assert "aliceee" not in joined, (
-            f"invisible attacker name leaked: {observer.messages!r}"
-        )
+        assert "aliceee" not in joined, f"invisible attacker name leaked: {observer.messages!r}"
 
     finally:
         room_registry.pop(2100, None)

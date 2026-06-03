@@ -797,7 +797,11 @@ def do_buy(char: Character, args: str) -> str:
     if haggle_skill > 0 and not (flags & int(ITEM_SELL_EXTRACT)):
         roll = rng_mm.number_percent()
         if roll < haggle_skill:
-            base_cost = int(getattr(proto, "cost", getattr(selected_obj, "cost", 0)) or 0) if proto is not None else int(getattr(selected_obj, "cost", 0) or 0)
+            base_cost = (
+                int(getattr(proto, "cost", getattr(selected_obj, "cost", 0)) or 0)
+                if proto is not None
+                else int(getattr(selected_obj, "cost", 0) or 0)
+            )
             discount = c_div(c_div(base_cost, 2) * roll, 100)
             # ROM src/act_obj.c:2727 — `cost -= obj->cost / 2 * roll / 100;`
             # is raw subtraction. When shop.profit_buy < 50, the discount can

@@ -17,7 +17,7 @@ import pytest
 
 from mud.commands.position import do_rest, do_sit, do_sleep, do_stand, do_wake
 from mud.models.constants import AffectFlag, FurnitureFlag, ItemType, Position, WearFlag
-from mud.models.object import ObjIndex, Object
+from mud.models.object import Object, ObjIndex
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import initialize_world
 
@@ -64,8 +64,9 @@ def _next_vnum() -> int:
     return _vnum_counter
 
 
-def _make_furn(*, flags: FurnitureFlag, capacity: int = 1, name: str = "chair wooden",
-               short: str = "a wooden chair") -> Object:
+def _make_furn(
+    *, flags: FurnitureFlag, capacity: int = 1, name: str = "chair wooden", short: str = "a wooden chair"
+) -> Object:
     vnum = _next_vnum()
     proto = ObjIndex(
         vnum=vnum,
@@ -133,8 +134,9 @@ class TestDoStand:
     def test_stand_at_furniture(self, movable_char_factory, test_room):
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.RESTING
-        desk = _place(test_room, _make_furn(flags=FurnitureFlag.STAND_AT, capacity=4,
-                                            name="desk oak", short="an oak desk"))
+        desk = _place(
+            test_room, _make_furn(flags=FurnitureFlag.STAND_AT, capacity=4, name="desk oak", short="an oak desk")
+        )
         assert "stand at an oak desk" in do_stand(ch, "desk")
         assert ch.on is desk
 
@@ -154,8 +156,11 @@ class TestDoStand:
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.RESTING
         proto = ObjIndex(
-            vnum=_next_vnum(), name="rock", short_descr="a rock",
-            item_type=int(ItemType.TREASURE), value=[0, 0, 0, 0, 0],
+            vnum=_next_vnum(),
+            name="rock",
+            short_descr="a rock",
+            item_type=int(ItemType.TREASURE),
+            value=[0, 0, 0, 0, 0],
         )
         obj_registry[proto.vnum] = proto
         rock = Obj(instance_id=proto.vnum, prototype=proto)
@@ -207,16 +212,14 @@ class TestDoRest:
     def test_rest_on_sofa(self, movable_char_factory, test_room):
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.STANDING
-        sofa = _place(test_room, _make_furn(flags=FurnitureFlag.REST_ON, capacity=3,
-                                            name="sofa", short="a sofa"))
+        sofa = _place(test_room, _make_furn(flags=FurnitureFlag.REST_ON, capacity=3, name="sofa", short="a sofa"))
         assert "sit on a sofa and rest" in do_rest(ch, "sofa")
         assert ch.on is sofa
 
     def test_rest_default_uses_ch_on(self, movable_char_factory, test_room):
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.STANDING
-        bed = _place(test_room, _make_furn(flags=FurnitureFlag.REST_ON, capacity=2,
-                                           name="bed", short="a bed"))
+        bed = _place(test_room, _make_furn(flags=FurnitureFlag.REST_ON, capacity=2, name="bed", short="a bed"))
         ch.on = bed
         result = do_rest(ch, "")
         assert "sit on a bed and rest" in result
@@ -226,8 +229,7 @@ class TestDoRest:
         ch = movable_char_factory("Tester", 3001)
         other = movable_char_factory("Other", 3001)
         ch.position = Position.STANDING
-        sofa = _place(test_room, _make_furn(flags=FurnitureFlag.REST_ON, capacity=1,
-                                            name="sofa", short="a sofa"))
+        sofa = _place(test_room, _make_furn(flags=FurnitureFlag.REST_ON, capacity=1, name="sofa", short="a sofa"))
         other.on = sofa
         assert "no more room on a sofa" in do_rest(ch, "sofa")
         assert ch.on is None
@@ -243,8 +245,11 @@ class TestDoRest:
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.STANDING
         proto = ObjIndex(
-            vnum=_next_vnum(), name="rock", short_descr="a rock",
-            item_type=int(ItemType.TREASURE), value=[0, 0, 0, 0, 0],
+            vnum=_next_vnum(),
+            name="rock",
+            short_descr="a rock",
+            item_type=int(ItemType.TREASURE),
+            value=[0, 0, 0, 0, 0],
         )
         obj_registry[proto.vnum] = proto
         rock = Object(instance_id=proto.vnum, prototype=proto)
@@ -279,8 +284,7 @@ class TestDoSit:
     def test_sit_at_desk(self, movable_char_factory, test_room):
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.STANDING
-        desk = _place(test_room, _make_furn(flags=FurnitureFlag.SIT_AT, capacity=4,
-                                            name="desk", short="a desk"))
+        desk = _place(test_room, _make_furn(flags=FurnitureFlag.SIT_AT, capacity=4, name="desk", short="a desk"))
         assert "You sit down at a desk." in do_sit(ch, "desk")
         assert ch.on is desk
         assert ch.position == Position.SITTING
@@ -341,8 +345,7 @@ class TestDoSleep:
     def test_sleep_on_bed(self, movable_char_factory, test_room):
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.STANDING
-        bed = _place(test_room, _make_furn(flags=FurnitureFlag.SLEEP_ON, capacity=1,
-                                           name="bed", short="a bed"))
+        bed = _place(test_room, _make_furn(flags=FurnitureFlag.SLEEP_ON, capacity=1, name="bed", short="a bed"))
         assert "You go to sleep on a bed." in do_sleep(ch, "bed")
         assert ch.on is bed
         assert ch.position == Position.SLEEPING
@@ -350,8 +353,7 @@ class TestDoSleep:
     def test_sleep_default_uses_ch_on(self, movable_char_factory, test_room):
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.STANDING
-        bed = _place(test_room, _make_furn(flags=FurnitureFlag.SLEEP_ON, capacity=1,
-                                           name="bed", short="a bed"))
+        bed = _place(test_room, _make_furn(flags=FurnitureFlag.SLEEP_ON, capacity=1, name="bed", short="a bed"))
         ch.on = bed
         assert "go to sleep on a bed" in do_sleep(ch, "")
 
@@ -359,8 +361,7 @@ class TestDoSleep:
         ch = movable_char_factory("Tester", 3001)
         other = movable_char_factory("Other", 3001)
         ch.position = Position.STANDING
-        bed = _place(test_room, _make_furn(flags=FurnitureFlag.SLEEP_ON, capacity=1,
-                                           name="bed", short="a bed"))
+        bed = _place(test_room, _make_furn(flags=FurnitureFlag.SLEEP_ON, capacity=1, name="bed", short="a bed"))
         other.on = bed
         assert "no room on a bed for you" in do_sleep(ch, "bed")
 
@@ -368,8 +369,11 @@ class TestDoSleep:
         ch = movable_char_factory("Tester", 3001)
         ch.position = Position.STANDING
         proto = ObjIndex(
-            vnum=_next_vnum(), name="rock", short_descr="a rock",
-            item_type=int(ItemType.TREASURE), value=[0, 0, 0, 0, 0],
+            vnum=_next_vnum(),
+            name="rock",
+            short_descr="a rock",
+            item_type=int(ItemType.TREASURE),
+            value=[0, 0, 0, 0, 0],
         )
         obj_registry[proto.vnum] = proto
         rock = Object(instance_id=proto.vnum, prototype=proto)

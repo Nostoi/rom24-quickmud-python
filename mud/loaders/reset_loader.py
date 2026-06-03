@@ -122,21 +122,15 @@ def validate_resets(area) -> list[str]:
                 target_vnum = container_vnum
             else:
                 target_vnum = last_obj_vnum
-            if not target_vnum or (
-                target_vnum not in obj_registry and _is_local(int(target_vnum))
-            ):
-                errors.append(
-                    f"Reset P has no container context for object {obj_vnum}"
-                )
+            if not target_vnum or (target_vnum not in obj_registry and _is_local(int(target_vnum))):
+                errors.append(f"Reset P has no container context for object {obj_vnum}")
             last_obj_vnum = obj_vnum if obj_vnum in obj_registry else last_obj_vnum
         elif command in {"G", "E"}:
             obj_vnum = int(reset.arg1 or 0)
             if obj_vnum not in obj_registry and _is_local(obj_vnum):
                 errors.append(f"Reset {command} references missing object {obj_vnum}")
             if last_mob_vnum is None or last_mob_vnum not in mob_registry:
-                errors.append(
-                    f"Reset {command} lacks LastMob context before object {obj_vnum}"
-                )
+                errors.append(f"Reset {command} lacks LastMob context before object {obj_vnum}")
             last_obj_vnum = obj_vnum if obj_vnum in obj_registry else last_obj_vnum
         elif command == "D":
             error = _validate_exit(reset)

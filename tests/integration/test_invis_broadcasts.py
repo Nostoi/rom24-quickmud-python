@@ -86,8 +86,7 @@ def test_invis_toggle_off_matches_rom_wording_no_back() -> None:
     # NOT "fades back into existence".
     assert "fades into existence" in msg, witness.messages
     assert "fades back into existence" not in msg, (
-        "ROM src/act_wiz.c:4343 — message is 'fades into existence.', "
-        f"with no 'back'. Got: {witness.messages!r}"
+        f"ROM src/act_wiz.c:4343 — message is 'fades into existence.', with no 'back'. Got: {witness.messages!r}"
     )
 
 

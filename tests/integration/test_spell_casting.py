@@ -12,13 +12,12 @@ Tests complete spell casting scenarios including:
 from __future__ import annotations
 
 import pytest
+
 from mud.commands.dispatcher import process_command
 from mud.models.character import Character
-from mud.models.room import Room
-from mud.models.object import Object
-from mud.models.obj import ObjIndex
 from mud.models.constants import ItemType
-from mud.registry import room_registry
+from mud.models.obj import ObjIndex
+from mud.models.object import Object
 from mud.skills.registry import skill_registry
 
 

@@ -57,10 +57,7 @@ def test_weapon_table_matches_rom_const_c_rows() -> None:
     """Mirror ROM `src/const.c:76-86` weapon_table exactly."""
     from mud.models.weapon_table import WEAPON_TABLE
 
-    assert [
-        (entry.name, entry.school_vnum, entry.weapon_type, entry.skill_name)
-        for entry in WEAPON_TABLE
-    ] == [
+    assert [(entry.name, entry.school_vnum, entry.weapon_type, entry.skill_name) for entry in WEAPON_TABLE] == [
         ("sword", OBJ_VNUM_SCHOOL_SWORD, WeaponType.SWORD, "sword"),
         ("mace", OBJ_VNUM_SCHOOL_MACE, WeaponType.MACE, "mace"),
         ("dagger", OBJ_VNUM_SCHOOL_DAGGER, WeaponType.DAGGER, "dagger"),

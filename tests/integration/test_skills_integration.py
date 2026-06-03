@@ -234,6 +234,7 @@ class TestPassiveSkillsIntegration:
         mob.position = Position.FIGHTING
 
         import mud.game_loop as gl
+
         gl._violence_counter = 1  # fires on tick 1 (1 - 1 = 0 → do_combat)
         initial_hp = char.hit
         for _ in range(5):
@@ -283,6 +284,7 @@ class TestPassiveSkillsIntegration:
         # Reset violence counter so combat fires within the first PULSE_VIOLENCE
         # window (12 pulses). 200 ticks = ~16 combat rounds at ROM 3-second cadence.
         import mud.game_loop as gl
+
         gl._violence_counter = 1  # fires on tick 1 (1 - 1 = 0 → do_combat)
         for _ in range(200):
             game_tick()
@@ -478,7 +480,9 @@ class TestSkillCommandIntegration:
         When: Character practices a skill
         Then: Skill % increases
         """
-        pytest.skip("Duplicate historical slice; canonical practice coverage lives in tests/integration/test_do_practice_command.py")
+        pytest.skip(
+            "Duplicate historical slice; canonical practice coverage lives in tests/integration/test_do_practice_command.py"
+        )
 
     def test_skills_command_lists_character_skills(self, skilled_character):
         """

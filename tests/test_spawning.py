@@ -1,8 +1,8 @@
+import logging
+
 import pytest
 
 import mud.spawning.reset_handler as reset_handler
-import logging
-
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
@@ -11,18 +11,18 @@ from mud.models.constants import (
     EX_LOCKED,
     EX_PICKPROOF,
     ITEM_INVENTORY,
+    LEVEL_HERO,
     MAX_STATS,
     ActFlag,
     AffectFlag,
     CommFlag,
     DamageType,
     Direction,
+    ExtraFlag,
     ImmFlag,
     ItemType,
-    LEVEL_HERO,
     OffFlag,
     Position,
-    ExtraFlag,
     ResFlag,
     RoomFlag,
     Sex,
@@ -832,8 +832,7 @@ def test_reset_P_fills_mob_carried_container():
     assert container is not None
 
     contents = [
-        getattr(getattr(item, "prototype", None), "vnum", None)
-        for item in getattr(container, "contained_items", [])
+        getattr(getattr(item, "prototype", None), "vnum", None) for item in getattr(container, "contained_items", [])
     ]
     assert loot_proto.vnum in contents
 
@@ -857,11 +856,7 @@ def test_room_reset_zeroes_object_cost():
     reset_handler.apply_resets(area)
 
     idol = next(
-        (
-            obj
-            for obj in room.contents
-            if getattr(getattr(obj, "prototype", None), "vnum", None) == idol_proto.vnum
-        ),
+        (obj for obj in room.contents if getattr(getattr(obj, "prototype", None), "vnum", None) == idol_proto.vnum),
         None,
     )
     assert idol is not None
@@ -889,9 +884,7 @@ def test_room_reset_does_not_stack_duplicate_objects():
     reset_handler.apply_resets(area)
 
     fountains = [
-        obj
-        for obj in room.contents
-        if getattr(getattr(obj, "prototype", None), "vnum", None) == fountain_proto.vnum
+        obj for obj in room.contents if getattr(getattr(obj, "prototype", None), "vnum", None) == fountain_proto.vnum
     ]
 
     assert len(fountains) == 1
@@ -931,11 +924,7 @@ def test_room_reset_fuzzes_object_level(monkeypatch):
     reset_handler.apply_resets(area)
 
     loot = next(
-        (
-            obj
-            for obj in room.contents
-            if getattr(getattr(obj, "prototype", None), "vnum", None) == loot_proto.vnum
-        ),
+        (obj for obj in room.contents if getattr(getattr(obj, "prototype", None), "vnum", None) == loot_proto.vnum),
         None,
     )
 
@@ -1030,10 +1019,7 @@ def test_reset_G_allows_multiple_copies_up_to_limit(monkeypatch):
     mob = next((m for m in room.people if isinstance(m, MobInstance)), None)
     assert mob is not None
 
-    carried = [
-        getattr(getattr(item, "prototype", None), "vnum", None)
-        for item in getattr(mob, "inventory", [])
-    ]
+    carried = [getattr(getattr(item, "prototype", None), "vnum", None) for item in getattr(mob, "inventory", [])]
     assert carried.count(loot_proto.vnum) == 2
     assert getattr(obj_registry.get(loot_proto.vnum), "count", 0) == 2
 
@@ -1192,7 +1178,9 @@ def test_reset_equips_preserves_new_format_level(monkeypatch):
     keeper = next((m for m in room_shop.people if isinstance(m, MobInstance)), None)
     assert keeper is not None
     shop_inventory = [
-        item for item in getattr(keeper, "inventory", []) if getattr(getattr(item, "prototype", None), "vnum", None) == shop_item_proto.vnum
+        item
+        for item in getattr(keeper, "inventory", [])
+        if getattr(getattr(item, "prototype", None), "vnum", None) == shop_item_proto.vnum
     ]
     assert shop_inventory, "shopkeeper should receive new-format stock"
     assert shop_inventory[0].level == shop_item_proto.level
@@ -1553,18 +1541,30 @@ def test_reset_shopkeeper_inventory_does_not_mutate_prototype():
     apply_resets(area)
 
     keeper = next(
-        (p for p in room.people if isinstance(p, MobInstance) and getattr(getattr(p, "prototype", None), "vnum", None) == keeper_proto.vnum),
+        (
+            p
+            for p in room.people
+            if isinstance(p, MobInstance) and getattr(getattr(p, "prototype", None), "vnum", None) == keeper_proto.vnum
+        ),
         None,
     )
     guard = next(
-        (p for p in room.people if isinstance(p, MobInstance) and getattr(getattr(p, "prototype", None), "vnum", None) == guard_proto.vnum),
+        (
+            p
+            for p in room.people
+            if isinstance(p, MobInstance) and getattr(getattr(p, "prototype", None), "vnum", None) == guard_proto.vnum
+        ),
         None,
     )
 
     assert keeper is not None and guard is not None
 
-    keeper_item = next(o for o in keeper.inventory if getattr(getattr(o, "prototype", None), "vnum", None) == trinket_proto.vnum)
-    guard_item = next(o for o in guard.inventory if getattr(getattr(o, "prototype", None), "vnum", None) == trinket_proto.vnum)
+    keeper_item = next(
+        o for o in keeper.inventory if getattr(getattr(o, "prototype", None), "vnum", None) == trinket_proto.vnum
+    )
+    guard_item = next(
+        o for o in guard.inventory if getattr(getattr(o, "prototype", None), "vnum", None) == trinket_proto.vnum
+    )
 
     proto_flags = int(getattr(trinket_proto, "extra_flags", 0) or 0)
     assert keeper_item.extra_flags & int(ITEM_INVENTORY)
@@ -1584,7 +1584,7 @@ def test_spawn_object_preserves_extra_flags_from_letters():
     assert inst is not None
     expected_flags = int(convert_flags_from_letters("AG", ExtraFlag))
     assert inst.extra_flags == expected_flags
-    assert getattr(proto, "extra_flags") == "AG"
+    assert proto.extra_flags == "AG"
 
 
 def test_reset_shopkeeper_potion_levels_use_skill_metadata():

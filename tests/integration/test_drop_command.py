@@ -126,9 +126,7 @@ def test_drop_melt_drop_item_dissolves_instead_of_remaining_in_room(
     assert "dissolves into smoke" in result.lower()
 
 
-def test_drop_melt_drop_item_broadcasts_smoke_message_to_room(
-    movable_char_factory, object_factory, test_room_3001
-):
+def test_drop_melt_drop_item_broadcasts_smoke_message_to_room(movable_char_factory, object_factory, test_room_3001):
     """ROM act_obj.c:612: room observers also see the dissolve message."""
     player = movable_char_factory("Dropper", 3001)
     observer = movable_char_factory("Observer", 3001)

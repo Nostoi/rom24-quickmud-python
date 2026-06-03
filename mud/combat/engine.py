@@ -585,9 +585,7 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
             attacker.level, 0, hitroll=get_hitroll(attacker), skill=skill_total, thac0_pair=(20, npc_t32)
         )
     else:
-        th = compute_thac0(
-            attacker.level, attacker.ch_class, hitroll=get_hitroll(attacker), skill=skill_total
-        )
+        th = compute_thac0(attacker.level, attacker.ch_class, hitroll=get_hitroll(attacker), skill=skill_total)
     vac = c_div(victim_ac, 10)
     # ROM src/fight.c:510 — miss on nat 0, or (not 19 and diceroll < thac0 - victim_ac).
     if diceroll == 0 or (diceroll != 19 and diceroll < (th - vac)):
@@ -725,6 +723,7 @@ def apply_damage(
     if damage <= 0:
         if message_bundle and message_bundle.attacker:
             from mud.combat.messages import render_for as _render
+
             return _render(message_bundle.attacker, attacker, victim, attacker) or ""
         return "Your attack has no effect."
 
@@ -760,6 +759,7 @@ def apply_damage(
 
     if message_bundle and message_bundle.attacker:
         from mud.combat.messages import render_for as _render
+
         return _render(message_bundle.attacker, attacker, victim, attacker) or ""
     return ""
 
@@ -1212,7 +1212,9 @@ def _auto_sacrifice(attacker: Character, corpse) -> None:
             continue
         member.silver = max(0, int(getattr(member, "silver", 0) or 0)) + share
         # Per-recipient PERS + capitalize, matching ROM act(TO_VICT).
-        member_msg = capitalize_act_line(f"{pers(attacker, member)} splits {silver_reward} silver coins. Your share is {share} silver.")
+        member_msg = capitalize_act_line(
+            f"{pers(attacker, member)} splits {silver_reward} silver coins. Your share is {share} silver."
+        )
         # INV-001: single-channel delivery (push_message XOR).
         push_message(member, member_msg)
 

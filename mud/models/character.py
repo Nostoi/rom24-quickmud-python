@@ -938,6 +938,7 @@ class Character:
         # Add to affected list (ROM C linked list)
         self.affected.append(affect)
 
+
 # END affects_saves
 
 
@@ -1239,6 +1240,7 @@ def from_orm(db_char: DBCharacter) -> Character:
     saved_colours = getattr(db_char, "colours", None)
     if saved_colours and isinstance(saved_colours, dict):
         from mud.db.serializers import _apply_colour_table, _normalize_int_list
+
         _apply_colour_table(pcdata, saved_colours)
     else:
         from mud.db.serializers import _normalize_int_list
@@ -1261,6 +1263,7 @@ def from_orm(db_char: DBCharacter) -> Character:
     if inventory_state and isinstance(inventory_state, list):
         from mud.db.serializers import ObjectSave, _deserialize_object
         from mud.models.json_io import dataclass_from_dict
+
         restored_inventory = []
         for obj_dict in inventory_state:
             try:
@@ -1276,6 +1279,7 @@ def from_orm(db_char: DBCharacter) -> Character:
     if equipment_state and isinstance(equipment_state, dict):
         from mud.db.serializers import ObjectSave, _deserialize_object
         from mud.models.json_io import dataclass_from_dict
+
         restored_equipment = {}
         for slot, obj_dict in equipment_state.items():
             try:
@@ -1294,6 +1298,7 @@ def from_orm(db_char: DBCharacter) -> Character:
     pet_state = getattr(db_char, "pet_state", None)
     if pet_state and isinstance(pet_state, dict):
         from mud.db.serializers import _deserialize_pet
+
         try:
             pet = _deserialize_pet(pet_state, char)
             if pet is not None:

@@ -34,32 +34,32 @@ class StrAppRow(NamedTuple):
 
 # ROM src/const.c:728-755 — verbatim port of str_app[26].
 STR_APP: tuple[StrAppRow, ...] = (
-    StrAppRow(-5, -4, 0, 0),     # STR  0
-    StrAppRow(-5, -4, 3, 1),     # STR  1
-    StrAppRow(-3, -2, 3, 2),     # STR  2
-    StrAppRow(-3, -1, 10, 3),    # STR  3
-    StrAppRow(-2, -1, 25, 4),    # STR  4
-    StrAppRow(-2, -1, 55, 5),    # STR  5
-    StrAppRow(-1, 0, 80, 6),     # STR  6
-    StrAppRow(-1, 0, 90, 7),     # STR  7
-    StrAppRow(0, 0, 100, 8),     # STR  8
-    StrAppRow(0, 0, 100, 9),     # STR  9
-    StrAppRow(0, 0, 115, 10),    # STR 10
-    StrAppRow(0, 0, 115, 11),    # STR 11
-    StrAppRow(0, 0, 130, 12),    # STR 12
-    StrAppRow(0, 0, 130, 13),    # STR 13
-    StrAppRow(0, 1, 140, 14),    # STR 14
-    StrAppRow(1, 1, 150, 15),    # STR 15
-    StrAppRow(1, 2, 165, 16),    # STR 16
-    StrAppRow(2, 3, 180, 22),    # STR 17
-    StrAppRow(2, 3, 200, 25),    # STR 18
-    StrAppRow(3, 4, 225, 30),    # STR 19
-    StrAppRow(3, 5, 250, 35),    # STR 20
-    StrAppRow(4, 6, 300, 40),    # STR 21
-    StrAppRow(4, 6, 350, 45),    # STR 22
-    StrAppRow(5, 7, 400, 50),    # STR 23
-    StrAppRow(5, 8, 450, 55),    # STR 24
-    StrAppRow(6, 9, 500, 60),    # STR 25
+    StrAppRow(-5, -4, 0, 0),  # STR  0
+    StrAppRow(-5, -4, 3, 1),  # STR  1
+    StrAppRow(-3, -2, 3, 2),  # STR  2
+    StrAppRow(-3, -1, 10, 3),  # STR  3
+    StrAppRow(-2, -1, 25, 4),  # STR  4
+    StrAppRow(-2, -1, 55, 5),  # STR  5
+    StrAppRow(-1, 0, 80, 6),  # STR  6
+    StrAppRow(-1, 0, 90, 7),  # STR  7
+    StrAppRow(0, 0, 100, 8),  # STR  8
+    StrAppRow(0, 0, 100, 9),  # STR  9
+    StrAppRow(0, 0, 115, 10),  # STR 10
+    StrAppRow(0, 0, 115, 11),  # STR 11
+    StrAppRow(0, 0, 130, 12),  # STR 12
+    StrAppRow(0, 0, 130, 13),  # STR 13
+    StrAppRow(0, 1, 140, 14),  # STR 14
+    StrAppRow(1, 1, 150, 15),  # STR 15
+    StrAppRow(1, 2, 165, 16),  # STR 16
+    StrAppRow(2, 3, 180, 22),  # STR 17
+    StrAppRow(2, 3, 200, 25),  # STR 18
+    StrAppRow(3, 4, 225, 30),  # STR 19
+    StrAppRow(3, 5, 250, 35),  # STR 20
+    StrAppRow(4, 6, 300, 40),  # STR 21
+    StrAppRow(4, 6, 350, 45),  # STR 22
+    StrAppRow(5, 7, 400, 50),  # STR 23
+    StrAppRow(5, 8, 450, 55),  # STR 24
+    StrAppRow(6, 9, 500, 60),  # STR 25
 )
 
 
@@ -90,30 +90,30 @@ class ConAppRow(NamedTuple):
 
 # ROM src/const.c:821-848 — verbatim port of dex_app[26].
 DEX_APP: tuple[DexAppRow, ...] = (
-    DexAppRow(60),    # DEX  0
-    DexAppRow(50),    # DEX  1
-    DexAppRow(50),    # DEX  2
-    DexAppRow(40),    # DEX  3
-    DexAppRow(30),    # DEX  4
-    DexAppRow(20),    # DEX  5
-    DexAppRow(10),    # DEX  6
-    DexAppRow(0),     # DEX  7
-    DexAppRow(0),     # DEX  8
-    DexAppRow(0),     # DEX  9
-    DexAppRow(0),     # DEX 10
-    DexAppRow(0),     # DEX 11
-    DexAppRow(0),     # DEX 12
-    DexAppRow(0),     # DEX 13
-    DexAppRow(0),     # DEX 14
-    DexAppRow(-10),   # DEX 15
-    DexAppRow(-15),   # DEX 16
-    DexAppRow(-20),   # DEX 17
-    DexAppRow(-30),   # DEX 18
-    DexAppRow(-40),   # DEX 19
-    DexAppRow(-50),   # DEX 20
-    DexAppRow(-60),   # DEX 21
-    DexAppRow(-75),   # DEX 22
-    DexAppRow(-90),   # DEX 23
+    DexAppRow(60),  # DEX  0
+    DexAppRow(50),  # DEX  1
+    DexAppRow(50),  # DEX  2
+    DexAppRow(40),  # DEX  3
+    DexAppRow(30),  # DEX  4
+    DexAppRow(20),  # DEX  5
+    DexAppRow(10),  # DEX  6
+    DexAppRow(0),  # DEX  7
+    DexAppRow(0),  # DEX  8
+    DexAppRow(0),  # DEX  9
+    DexAppRow(0),  # DEX 10
+    DexAppRow(0),  # DEX 11
+    DexAppRow(0),  # DEX 12
+    DexAppRow(0),  # DEX 13
+    DexAppRow(0),  # DEX 14
+    DexAppRow(-10),  # DEX 15
+    DexAppRow(-15),  # DEX 16
+    DexAppRow(-20),  # DEX 17
+    DexAppRow(-30),  # DEX 18
+    DexAppRow(-40),  # DEX 19
+    DexAppRow(-50),  # DEX 20
+    DexAppRow(-60),  # DEX 21
+    DexAppRow(-75),  # DEX 22
+    DexAppRow(-90),  # DEX 23
     DexAppRow(-105),  # DEX 24
     DexAppRow(-120),  # DEX 25
 )
@@ -121,63 +121,63 @@ DEX_APP: tuple[DexAppRow, ...] = (
 
 # ROM src/const.c:790-817 — verbatim port of wis_app[26].
 WIS_APP: tuple[WisAppRow, ...] = (
-    WisAppRow(0),    # WIS  0
-    WisAppRow(0),    # WIS  1
-    WisAppRow(0),    # WIS  2
-    WisAppRow(0),    # WIS  3
-    WisAppRow(0),    # WIS  4
-    WisAppRow(1),    # WIS  5
-    WisAppRow(1),    # WIS  6
-    WisAppRow(1),    # WIS  7
-    WisAppRow(1),    # WIS  8
-    WisAppRow(1),    # WIS  9
-    WisAppRow(1),    # WIS 10
-    WisAppRow(1),    # WIS 11
-    WisAppRow(1),    # WIS 12
-    WisAppRow(1),    # WIS 13
-    WisAppRow(1),    # WIS 14
-    WisAppRow(2),    # WIS 15
-    WisAppRow(2),    # WIS 16
-    WisAppRow(2),    # WIS 17
-    WisAppRow(3),    # WIS 18
-    WisAppRow(3),    # WIS 19
-    WisAppRow(3),    # WIS 20
-    WisAppRow(3),    # WIS 21
-    WisAppRow(4),    # WIS 22
-    WisAppRow(4),    # WIS 23
-    WisAppRow(4),    # WIS 24
-    WisAppRow(5),    # WIS 25
+    WisAppRow(0),  # WIS  0
+    WisAppRow(0),  # WIS  1
+    WisAppRow(0),  # WIS  2
+    WisAppRow(0),  # WIS  3
+    WisAppRow(0),  # WIS  4
+    WisAppRow(1),  # WIS  5
+    WisAppRow(1),  # WIS  6
+    WisAppRow(1),  # WIS  7
+    WisAppRow(1),  # WIS  8
+    WisAppRow(1),  # WIS  9
+    WisAppRow(1),  # WIS 10
+    WisAppRow(1),  # WIS 11
+    WisAppRow(1),  # WIS 12
+    WisAppRow(1),  # WIS 13
+    WisAppRow(1),  # WIS 14
+    WisAppRow(2),  # WIS 15
+    WisAppRow(2),  # WIS 16
+    WisAppRow(2),  # WIS 17
+    WisAppRow(3),  # WIS 18
+    WisAppRow(3),  # WIS 19
+    WisAppRow(3),  # WIS 20
+    WisAppRow(3),  # WIS 21
+    WisAppRow(4),  # WIS 22
+    WisAppRow(4),  # WIS 23
+    WisAppRow(4),  # WIS 24
+    WisAppRow(5),  # WIS 25
 )
 
 
 # ROM src/const.c:850-878 — verbatim port of con_app[26].
 CON_APP: tuple[ConAppRow, ...] = (
-    ConAppRow(-4, 20),   # CON  0
-    ConAppRow(-3, 25),   # CON  1
-    ConAppRow(-2, 30),   # CON  2
-    ConAppRow(-2, 35),   # CON  3
-    ConAppRow(-1, 40),   # CON  4
-    ConAppRow(-1, 45),   # CON  5
-    ConAppRow(-1, 50),   # CON  6
-    ConAppRow(0, 55),    # CON  7
-    ConAppRow(0, 60),    # CON  8
-    ConAppRow(0, 65),    # CON  9
-    ConAppRow(0, 70),    # CON 10
-    ConAppRow(0, 75),    # CON 11
-    ConAppRow(0, 80),    # CON 12
-    ConAppRow(0, 85),    # CON 13
-    ConAppRow(0, 88),    # CON 14
-    ConAppRow(1, 90),    # CON 15
-    ConAppRow(2, 95),    # CON 16
-    ConAppRow(2, 97),    # CON 17
-    ConAppRow(3, 99),    # CON 18
-    ConAppRow(3, 99),    # CON 19
-    ConAppRow(4, 99),    # CON 20
-    ConAppRow(4, 99),    # CON 21
-    ConAppRow(5, 99),    # CON 22
-    ConAppRow(6, 99),    # CON 23
-    ConAppRow(7, 99),    # CON 24
-    ConAppRow(8, 99),    # CON 25
+    ConAppRow(-4, 20),  # CON  0
+    ConAppRow(-3, 25),  # CON  1
+    ConAppRow(-2, 30),  # CON  2
+    ConAppRow(-2, 35),  # CON  3
+    ConAppRow(-1, 40),  # CON  4
+    ConAppRow(-1, 45),  # CON  5
+    ConAppRow(-1, 50),  # CON  6
+    ConAppRow(0, 55),  # CON  7
+    ConAppRow(0, 60),  # CON  8
+    ConAppRow(0, 65),  # CON  9
+    ConAppRow(0, 70),  # CON 10
+    ConAppRow(0, 75),  # CON 11
+    ConAppRow(0, 80),  # CON 12
+    ConAppRow(0, 85),  # CON 13
+    ConAppRow(0, 88),  # CON 14
+    ConAppRow(1, 90),  # CON 15
+    ConAppRow(2, 95),  # CON 16
+    ConAppRow(2, 97),  # CON 17
+    ConAppRow(3, 99),  # CON 18
+    ConAppRow(3, 99),  # CON 19
+    ConAppRow(4, 99),  # CON 20
+    ConAppRow(4, 99),  # CON 21
+    ConAppRow(5, 99),  # CON 22
+    ConAppRow(6, 99),  # CON 23
+    ConAppRow(7, 99),  # CON 24
+    ConAppRow(8, 99),  # CON 25
 )
 
 

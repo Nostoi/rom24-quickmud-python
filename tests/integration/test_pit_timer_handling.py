@@ -20,8 +20,8 @@ from __future__ import annotations
 import pytest
 
 from mud.commands.inventory import do_get
-from mud.models.constants import ExtraFlag, ItemType, OBJ_VNUM_PIT, WearFlag
-from mud.models.object import ObjIndex, Object
+from mud.models.constants import OBJ_VNUM_PIT, ExtraFlag, ItemType, WearFlag
+from mud.models.object import Object, ObjIndex
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry
 from mud.world import initialize_world
 

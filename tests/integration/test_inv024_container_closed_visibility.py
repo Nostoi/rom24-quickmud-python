@@ -40,9 +40,7 @@ from mud.models.room import Room
 
 def _make_pc_in_room() -> tuple[Character, Room]:
     room = Room(vnum=9500, name="test-room")
-    pc = Character(
-        name="testpc", is_npc=False, level=10, position=Position.STANDING
-    )
+    pc = Character(name="testpc", is_npc=False, level=10, position=Position.STANDING)
     room.add_character(pc)
     return pc, room
 
@@ -82,9 +80,7 @@ def test_inv024_get_all_from_closed_container_is_blocked():
     result = process_command(pc, "get all chest")
 
     assert "closed" in result.lower(), f"expected 'closed' refusal, got: {result!r}"
-    assert ruby in chest.contained_items, (
-        "ruby must still be inside the closed chest (no transfer through lid)"
-    )
+    assert ruby in chest.contained_items, "ruby must still be inside the closed chest (no transfer through lid)"
     assert ruby not in pc.inventory, "ruby must not have moved to PC inventory"
 
 
@@ -100,9 +96,7 @@ def test_inv024_put_into_closed_container_is_blocked():
     result = process_command(pc, "put ruby chest")
 
     assert "closed" in result.lower(), f"expected 'closed' refusal, got: {result!r}"
-    assert ruby not in chest.contained_items, (
-        "ruby must not pass through the closed lid"
-    )
+    assert ruby not in chest.contained_items, "ruby must not pass through the closed lid"
     assert ruby in pc.inventory, "ruby must remain in PC inventory"
 
 
@@ -118,9 +112,7 @@ def test_inv024_look_in_closed_container_hides_contents():
     result = process_command(pc, "look in chest")
 
     assert "closed" in result.lower(), f"expected closed message, got: {result!r}"
-    assert "ruby" not in result.lower(), (
-        f"closed container must not leak its contents (got: {result!r})"
-    )
+    assert "ruby" not in result.lower(), f"closed container must not leak its contents (got: {result!r})"
 
 
 def test_inv024_get_all_from_OPEN_container_succeeds():
@@ -134,7 +126,5 @@ def test_inv024_get_all_from_OPEN_container_succeeds():
 
     process_command(pc, "get all chest")
 
-    assert ruby not in chest.contained_items, (
-        "open chest must allow transfer"
-    )
+    assert ruby not in chest.contained_items, "open chest must allow transfer"
     assert ruby in pc.inventory, "ruby must have moved to PC inventory"

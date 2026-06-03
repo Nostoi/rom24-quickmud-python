@@ -9,7 +9,6 @@ from __future__ import annotations
 from mud.models.character import Character
 from mud.models.constants import AffectFlag
 
-
 # Mapping of affect flags to human-readable names
 _AFFECT_NAMES = {
     AffectFlag.BLIND: "blindness",

@@ -179,4 +179,3 @@ def test_remove_curse_object_caps_caster_leg() -> None:
     assert caster_msgs[0][0].isupper(), f"remove_curse caster leg uncapped: {caster_msgs[0]!r}"
     if listener_msgs:
         assert listener_msgs[0][0].isupper(), f"remove_curse room leg uncapped: {listener_msgs[0]!r}"
-

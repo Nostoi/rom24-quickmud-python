@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
+from mud.mobprog import format_trigger_flag
 from mud.models.character import Character, character_registry
 from mud.models.mob import MobIndex, MobProgram
-from mud.mobprog import format_trigger_flag
 
 ROM_NEWLINE = "\n\r"
 

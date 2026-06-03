@@ -63,9 +63,7 @@ def _listener(room: Room, phrase: str, vnum: int) -> Character:
     )
     listener.messages = []
     proto = MobIndex(vnum=vnum, short_descr="a watcher", level=5)
-    proto.mprogs = [
-        _FakeProg(trig_type=int(Trigger.ACT), trig_phrase=phrase, code='mob echo "HEARD"\n', vnum=vnum)
-    ]
+    proto.mprogs = [_FakeProg(trig_type=int(Trigger.ACT), trig_phrase=phrase, code='mob echo "HEARD"\n', vnum=vnum)]
     listener.prototype = proto
     room.people.append(listener)
     character_registry.append(listener)

@@ -22,6 +22,7 @@ _POSSESSIVE_PRONOUNS: dict[Sex, str] = {
     Sex.NONE: "its",
 }
 
+
 def _sex_of(target: Any) -> Sex | None:
     sex = getattr(target, "sex", None)
     if isinstance(sex, Sex):

@@ -92,9 +92,7 @@ def _make_imm(room: Room, name: str = "Immortal", trust: int = 60) -> Character:
     return imm
 
 
-def _make_listener(
-    room: Room, phrase: str, vnum: int = 9701, name: str | None = None
-) -> Character:
+def _make_listener(room: Room, phrase: str, vnum: int = 9701, name: str | None = None) -> Character:
     from mud import registry
     from mud.mobprog import Trigger
 
@@ -157,12 +155,8 @@ def test_invis_fade_in_fires_act_trigger_on_npc():
 
     fired = _recorded_act_triggers(lambda: do_invis(imm, ""))
 
-    watcher_triggers = [
-        (n, m) for n, m in fired if n == "watcher" and "fades into existence" in m.lower()
-    ]
-    assert len(watcher_triggers) >= 1, (
-        f"Expected 'fades into existence' ACT trigger on NPC, got: {fired}"
-    )
+    watcher_triggers = [(n, m) for n, m in fired if n == "watcher" and "fades into existence" in m.lower()]
+    assert len(watcher_triggers) >= 1, f"Expected 'fades into existence' ACT trigger on NPC, got: {fired}"
 
 
 def test_invis_fade_out_fires_act_trigger_on_npc():
@@ -173,12 +167,8 @@ def test_invis_fade_out_fires_act_trigger_on_npc():
 
     fired = _recorded_act_triggers(lambda: do_invis(imm, ""))
 
-    watcher_triggers = [
-        (n, m) for n, m in fired if n == "watcher" and "fades into thin air" in m.lower()
-    ]
-    assert len(watcher_triggers) >= 1, (
-        f"Expected 'fades into thin air' ACT trigger on NPC, got: {fired}"
-    )
+    watcher_triggers = [(n, m) for n, m in fired if n == "watcher" and "fades into thin air" in m.lower()]
+    assert len(watcher_triggers) >= 1, f"Expected 'fades into thin air' ACT trigger on NPC, got: {fired}"
 
 
 def test_invis_level_set_fires_act_trigger_on_npc():
@@ -189,12 +179,8 @@ def test_invis_level_set_fires_act_trigger_on_npc():
 
     fired = _recorded_act_triggers(lambda: do_invis(imm, "30"))
 
-    watcher_triggers = [
-        (n, m) for n, m in fired if n == "watcher" and "fades into thin air" in m.lower()
-    ]
-    assert len(watcher_triggers) >= 1, (
-        f"Expected 'fades into thin air' ACT trigger on level-set invis, got: {fired}"
-    )
+    watcher_triggers = [(n, m) for n, m in fired if n == "watcher" and "fades into thin air" in m.lower()]
+    assert len(watcher_triggers) >= 1, f"Expected 'fades into thin air' ACT trigger on level-set invis, got: {fired}"
 
 
 # ---------------------------------------------------------------------------
@@ -211,12 +197,8 @@ def test_incognito_uncloak_fires_act_trigger_on_npc():
 
     fired = _recorded_act_triggers(lambda: do_incognito(imm, ""))
 
-    watcher_triggers = [
-        (n, m) for n, m in fired if n == "watcher" and "no longer cloaked" in m.lower()
-    ]
-    assert len(watcher_triggers) >= 1, (
-        f"Expected 'no longer cloaked' ACT trigger on NPC, got: {fired}"
-    )
+    watcher_triggers = [(n, m) for n, m in fired if n == "watcher" and "no longer cloaked" in m.lower()]
+    assert len(watcher_triggers) >= 1, f"Expected 'no longer cloaked' ACT trigger on NPC, got: {fired}"
 
 
 def test_incognito_cloak_fires_act_trigger_on_npc():
@@ -227,12 +209,8 @@ def test_incognito_cloak_fires_act_trigger_on_npc():
 
     fired = _recorded_act_triggers(lambda: do_incognito(imm, ""))
 
-    watcher_triggers = [
-        (n, m) for n, m in fired if n == "watcher" and "cloaks" in m.lower()
-    ]
-    assert len(watcher_triggers) >= 1, (
-        f"Expected 'cloaks' ACT trigger on NPC, got: {fired}"
-    )
+    watcher_triggers = [(n, m) for n, m in fired if n == "watcher" and "cloaks" in m.lower()]
+    assert len(watcher_triggers) >= 1, f"Expected 'cloaks' ACT trigger on NPC, got: {fired}"
 
 
 def test_incognito_level_set_fires_act_trigger_on_npc():
@@ -243,12 +221,8 @@ def test_incognito_level_set_fires_act_trigger_on_npc():
 
     fired = _recorded_act_triggers(lambda: do_incognito(imm, "30"))
 
-    watcher_triggers = [
-        (n, m) for n, m in fired if n == "watcher" and "cloaks" in m.lower()
-    ]
-    assert len(watcher_triggers) >= 1, (
-        f"Expected 'cloaks' ACT trigger on level-set incognito, got: {fired}"
-    )
+    watcher_triggers = [(n, m) for n, m in fired if n == "watcher" and "cloaks" in m.lower()]
+    assert len(watcher_triggers) >= 1, f"Expected 'cloaks' ACT trigger on level-set incognito, got: {fired}"
 
 
 def test_invis_pc_bystander_no_trigger():
@@ -272,9 +246,7 @@ def test_invis_pc_bystander_no_trigger():
     finally:
         mobprog.mp_act_trigger = original
 
-    assert fired_count[0] == 0, (
-        f"Expected no TRIG_ACT fires on PC bystander, got {fired_count[0]}"
-    )
+    assert fired_count[0] == 0, f"Expected no TRIG_ACT fires on PC bystander, got {fired_count[0]}"
 
 
 def _make_pc_listener(room: Room, name: str = "pc_watcher") -> Character:

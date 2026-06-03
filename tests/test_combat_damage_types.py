@@ -9,7 +9,7 @@ import pytest
 
 from mud.combat.engine import apply_damage
 from mud.models.character import Character
-from mud.models.constants import DamageType, Position, DefenseBit
+from mud.models.constants import DamageType, DefenseBit, Position
 
 
 @pytest.fixture

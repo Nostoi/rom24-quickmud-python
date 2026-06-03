@@ -1,24 +1,26 @@
+from types import SimpleNamespace
 from typing import Any
 
+import mud.spec_funs as spec_module
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
+    EX_CLOSED,
     GROUP_VNUM_OGRES,
     GROUP_VNUM_TROLLS,
     MOB_VNUM_PATROLMAN,
     OBJ_VNUM_WHISTLE,
     AffectFlag,
     CommFlag,
+    Direction,
+    ItemType,
     PlayerFlag,
     Position,
     Sex,
+    WearFlag,
 )
 from mud.models.mob import MobIndex, MobProgram
 from mud.models.obj import ObjIndex
-from types import SimpleNamespace
-
-import mud.spec_funs as spec_module
-from mud.models.constants import Direction, EX_CLOSED, ItemType, Position, WearFlag
 from mud.models.object import Object
 from mud.models.room import Exit, Room
 from mud.models.room_json import ResetJson
@@ -26,6 +28,7 @@ from mud.registry import area_registry, mob_registry, obj_registry, room_registr
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.templates import MobInstance
 from mud.spec_funs import (
+    _reset_spec_mayor_state,
     get_spec_fun,
     register_spec_fun,
     run_npc_specs,
@@ -33,17 +36,16 @@ from mud.spec_funs import (
     spec_cast_judge,
     spec_cast_mage,
     spec_cast_undead,
-    spec_fun_registry,
     spec_fido,
+    spec_fun_registry,
     spec_janitor,
-    spec_poison,
     spec_mayor,
+    spec_poison,
     spec_thief,
-    _reset_spec_mayor_state,
 )
+from mud.time import time_info
 from mud.utils import rng_mm
 from mud.world import create_test_character, initialize_world, world_state
-from mud.time import time_info
 
 
 def test_case_insensitive_lookup() -> None:
@@ -117,7 +119,9 @@ def test_spec_cast_adept_casts_support_spells(monkeypatch) -> None:
 
     cast_calls: list[tuple[Any, Any, str]] = []
 
-    monkeypatch.setattr(spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell)) or True)
+    monkeypatch.setattr(
+        spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell)) or True
+    )
 
     bit_values = iter([0, 0])
 
@@ -159,7 +163,9 @@ def test_spec_cast_adept_skips_high_level_players(monkeypatch) -> None:
     room.add_mob(adept)
 
     cast_calls: list[tuple[Any, Any, str]] = []
-    monkeypatch.setattr(spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell)))
+    monkeypatch.setattr(
+        spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell))
+    )
     monkeypatch.setattr(rng_mm, "number_bits", lambda width: 0)
 
     try:
@@ -192,7 +198,9 @@ def test_spec_cast_adept_requires_visibility(monkeypatch) -> None:
     room.add_mob(adept)
 
     cast_calls: list[tuple[Any, Any, str]] = []
-    monkeypatch.setattr(spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell)))
+    monkeypatch.setattr(
+        spec_module, "_cast_spell", lambda caster, target, spell: cast_calls.append((caster, target, spell))
+    )
 
     try:
         result = spec_module.spec_cast_adept(adept)
@@ -1210,9 +1218,7 @@ def test_spec_thief_fails_against_awake_player(monkeypatch) -> None:
         assert victim.gold == 500
         assert victim.silver == 800
         assert victim.messages == ["You discover a lurking thief's hands in your wallet!"]
-        assert observer.messages == [
-            "Watcher discovers a lurking thief's hands in his wallet!"
-        ]
+        assert observer.messages == ["Watcher discovers a lurking thief's hands in his wallet!"]
     finally:
         room.people.remove(thief)
         room.remove_character(victim)
@@ -1247,6 +1253,7 @@ def test_spec_nasty_ambushes_stronger_players(monkeypatch) -> None:
     room.add_mob(assassin)
 
     calls: list[tuple[object, object]] = []
+
     def fake_issue(mob, command, argument):
         calls.append((command, argument))
         if command == "do_kill":
