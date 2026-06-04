@@ -11,6 +11,7 @@ from mud.models.constants import LEVEL_HERO
 from mud.models.races import PcRaceType, list_playable_races
 from mud.models.titles import default_title_text
 from mud.utils import rng_mm
+from mud.utils.messaging import send_to_char_buffered
 from mud.wiznet import WiznetFlag, wiznet
 
 BASE_XP_PER_LEVEL = 1000
@@ -142,7 +143,7 @@ def advance_level(char: Character) -> None:
 
         set_title(char, default_title_text(char.ch_class, char.level, getattr(char, "sex", 0)))
 
-    if hasattr(char, "send_to_char") and not getattr(char, "is_npc", False):
+    if not getattr(char, "is_npc", False):
         hit_suffix = "" if hp == 1 else "s"
         practice_suffix = "" if practice_gain == 1 else "s"
         message = (
@@ -150,7 +151,11 @@ def advance_level(char: Character) -> None:
             f"{hp} hit point{hit_suffix}, {mana} mana, {move} move, and "
             f"{practice_gain} practice{practice_suffix}.{ROM_NEWLINE}"
         )
-        char.send_to_char(message)
+        # mirroring ROM src/update.c:113 advance_level — `send_to_char(buf, ch)`
+        # straight to the descriptor. advance_level fires from gain_exp during a
+        # combat-tick kill; route through the async-aware helper so a leveling PC
+        # sees it immediately, not at the next command (mailbox-strand bug).
+        send_to_char_buffered(char, message)
 
 
 def _creation_exp_floor(char: Character, fallback: int) -> int:
@@ -215,8 +220,10 @@ def gain_exp(char: Character, amount: int) -> None:
 
     # Level up while total exp meets threshold for next level.
     while char.level < LEVEL_HERO and char.exp >= exp_per_level(char) * (char.level + 1):
-        if hasattr(char, "send_to_char"):
-            char.send_to_char("{GYou raise a level!!  {x")
+        # mirroring ROM src/update.c:131 gain_exp — `send_to_char(...)` straight
+        # to the descriptor during the combat tick; async-aware delivery so the
+        # ding shows at kill time, not at the player's next command.
+        send_to_char_buffered(char, "{GYou raise a level!!  {x")
         char.level += 1
         log_game_event(f"{getattr(char, 'name', 'Someone')} gained level {char.level}")
         wiznet(

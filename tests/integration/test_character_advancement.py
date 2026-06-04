@@ -285,17 +285,19 @@ def test_level_up_message_sent_to_character(test_character):
     char.level = 1
     char.exp = exp_per_level(char) * 1
 
-    messages = []
-
-    def mock_send(msg):
-        messages.append(msg)
-
-    char.send_to_char = mock_send
+    # gain_exp routes the level-up line through the canonical async-aware
+    # send_to_char_buffered (ROM src/update.c:131 writes straight to the
+    # descriptor). With no connection attached, that helper falls back to the
+    # char.messages mailbox — the disconnected-delivery path — so assert there
+    # rather than monkeypatching Character.send_to_char (which the helper no
+    # longer calls). See tests/integration/test_group_gain_tick_delivery.py for
+    # the connected-socket counterpart.
+    char.messages.clear()
 
     xp_needed = exp_per_level(char) * 2
     gain_exp(char, xp_needed)
 
-    assert any("raise a level" in msg for msg in messages), "Should send level-up message to character"
+    assert any("raise a level" in msg for msg in char.messages), "Should send level-up message to character"
 
 
 def test_practice_command_improves_skills(test_character):

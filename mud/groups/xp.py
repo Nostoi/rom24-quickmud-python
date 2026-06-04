@@ -9,6 +9,7 @@ from mud.math.c_compat import c_div, urange
 from mud.models.character import Character
 from mud.models.constants import ActFlag, ExtraFlag, WearLocation
 from mud.utils import rng_mm
+from mud.utils.messaging import send_to_char_buffered
 
 
 def _resolve_level(value: int | None) -> int:
@@ -77,8 +78,11 @@ def _drop_alignment_conflicts(ch: Character) -> None:
             continue
 
         item_name = getattr(obj, "short_descr", None) or getattr(obj, "name", None) or "it"
-        if hasattr(ch, "send_to_char"):
-            ch.send_to_char(f"You are zapped by {item_name}.")
+        # mirroring ROM src/handler.c group-gain zap path — written straight to
+        # the descriptor. Route through the async-aware single-delivery helper so
+        # a connected PC sees it at tick time, not at the next command (the
+        # mailbox-only Character.send_to_char stranded it until the next prompt).
+        send_to_char_buffered(ch, f"You are zapped by {item_name}.")
         room.broadcast(f"{getattr(ch, 'name', 'Someone')} is zapped by {item_name}.", exclude=ch)
 
         ch.remove_object(obj)
@@ -118,8 +122,12 @@ def group_gain(ch: Character, victim: Character) -> None:
         # mirroring ROM src/fight.c:1786-1789 — message + gain_exp are
         # unconditional.  When xp == 0 (level_range < -9 or outside the
         # base_exp table), ROM still prints "You receive 0 experience
-        # points." and calls gain_exp(gch, 0).
-        gch.send_to_char(f"You receive {xp} experience points.")
+        # points." and calls gain_exp(gch, 0).  ROM writes this straight to the
+        # descriptor (`send_to_char(buf, gch)`); group_gain runs during a combat
+        # tick, when nothing drains char.messages, so route through the
+        # async-aware helper or a connected PC sees the XP only at the next
+        # command (the reported "experience points after I left the room" bug).
+        send_to_char_buffered(gch, f"You receive {xp} experience points.")
         gain_exp(gch, xp)
         _drop_alignment_conflicts(ch)
 

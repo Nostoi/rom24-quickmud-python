@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-001 wrong-channel cousin — kill XP / level-up / alignment-zap messages
+  reached connected players a command late.** A monster dies during a combat
+  *tick* (`violence_update`), when nothing drains the `char.messages` mailbox, so
+  the tick-time death-chain lines that went through the mailbox-only
+  `Character.send_to_char` (`group_gain`'s "You receive N experience points.",
+  `advance_level`'s "You gain … hit points …", `gain_exp`'s "You raise a
+  level!!", and the alignment-conflict "You are zapped by …") surfaced only at
+  the player's *next* command — e.g. the reported "You receive 155 experience
+  points." printing after the player had already walked north. The auto-loot line
+  already used the async `push_message`, which is why it arrived on time. All four
+  sites now route through the canonical async-aware `send_to_char_buffered`,
+  matching ROM's immediate `send_to_char(buf, ch)` writes (`src/fight.c:1788`,
+  `src/update.c:113`/`:131`). Verified by
+  `tests/integration/test_group_gain_tick_delivery.py` (connected-socket delivery
+  at tick time, no mailbox drain).
 - **FINDING-026 — shop `value`/`sell` pricing and wording now match ROM for
   duplicate inventory stock.** The new deterministic `shop_sell_weapon`
   differential scenario surfaced that Python quoted `value staff` at 174 silver
