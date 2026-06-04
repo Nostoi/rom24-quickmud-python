@@ -1,50 +1,52 @@
-# Session Status — 2026-06-03 — FINDING-026 diff light/shop widening (2.13.9)
+# Session Status — 2026-06-04 — XP-DELIVERY-001 + FINDING-027 money/coin parity (2.13.11)
 
 ## Current State
 
 - **Active mode**: cross-file invariants / divergence-class sweep (per-file audit
   tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
+  - **XP-DELIVERY-001 — tick-time kill messages reached players a command late**
+    ✅ FIXED (2.13.10). A kill resolves during a combat tick, when nothing drains
+    the `char.messages` mailbox, so the death-chain lines using the mailbox-only
+    `Character.send_to_char` (XP award, level-up, "you gain N hit points",
+    alignment zap) surfaced only at the player's next command — the reported
+    "experience points after I left the room" bug. All four routed through the
+    async-aware `send_to_char_buffered`. Filed as an INV-001 wrong-channel cousin.
+  - **FINDING-027 — money/coin object vnum + `create_money` wording/cost** ✅
+    RESOLVED (2.13.11). The new `money_drop_get_give` diff scenario found (a)
+    `OBJ_VNUM_SILVER_SOME`/`GOLD_SOME` swapped vs ROM `merc.h`, and (b)
+    `create_money` hand-rolling proto wording/economics instead of mirroring
+    limbo.are #1-#5 ("one silver coin"→"a silver coin", "N silver and N gold
+    coins"→"N silver coins and N gold coins", gold cost `100*gold`→`gold`).
+    `create_money` now fabricates a per-call proto matching limbo.are exactly.
+  - **Diff-harness widening**: `silver` added to the snapshot pipeline + `__gold=`/
+    `__silver=` meta-commands; `pyreplay.__mload` now snapshots a spawned mob only
+    when declared in `watch.chars` (matches the C shim). New `money_drop_get_give`
+    scenario + golden; all 7 goldens regenerated.
   - **FINDING-026 — shop sell/value duplicate-stock pricing + wording** ✅
-    RESOLVED (2.13.9). The new `shop_sell_weapon` differential scenario found
-    Python quoting an oloaded wooden staff at 174 coins while ROM quoted 116
-    coins, plus ROM `act()` capitalization/punctuation differences. `_get_cost`
-    now reads `ITEM_INVENTORY` from the keeper's carried object flags, `do_value`
-    uses ROM act-style capitalization/punctuation, and `do_sell` emits ROM's
-    silver+gold wording.
-  - **Diff-harness Phase C widening**: added `light_hold` and
-    `shop_sell_weapon` deterministic scenarios with committed C goldens, plus
-    `__hour=<n>` meta-command support on both C and Python replay sides.
-  - **FINDING-025 — mob equip/disarm** ✅ RESOLVED (2.13.8).
-    `MobInstance.equip`'s inventory+`wear_loc` model was verified as
-    ROM-faithful; the real gap was shared consumers. `get_wielded_weapon` now
-    scans carried objects by `wear_loc`, `MobInstance.remove_object` clears
-    carrier/`wear_loc`, and `disarm` mirrors ROM's NODROP/INVENTORY carry-list
-    branch plus the NPC immediate visible-weapon reclaim branch.
-  - **FINDING-024 — save/load carry-list ordering** ✅ RESOLVED (2.13.7).
-    `ObjectSave` persists `Object._carry_seq`, `_deserialize_object` restores it,
-    and `from_orm` advances the runtime carry-sequence counter past restored
-    values.
-  - **FINDING-020 — equip→remove carry-list position** ✅ RESOLVED (PC path,
-    2.13.6).
+    RESOLVED (2.13.9).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-03_FINDING_026_DIFF_LIGHT_SHOP.md](SESSION_SUMMARY_2026-06-03_FINDING_026_DIFF_LIGHT_SHOP.md)
+  [SESSION_SUMMARY_2026-06-04_XP_DELIVERY_AND_FINDING_027_MONEY.md](SESSION_SUMMARY_2026-06-04_XP_DELIVERY_AND_FINDING_027_MONEY.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.9 |
-| Tests | Diff-harness slice `python3 -m pytest -n0 tests/test_differential_smoke.py tests/test_diff_harness_unit.py -q` → **19 passed**; shop slice `python3 -m pytest -n0 tests/test_shops.py -q` → **35 passed**; `python3 -m tools.diff_harness.capture --check` → all 6 scenarios ok; `ruff check .` clean; `ruff format --check mud/commands/shop.py tools/diff_harness/pyreplay.py tests/test_shops.py` clean |
+| Version | 2.13.11 |
+| Tests | Full suite `pytest` → **5425 passed, 4 skipped** (~289s); `ruff check .` clean |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Divergence class 13 | object-list ordering + equipment representation legs closed (INV-039 + FINDING-020 + FINDING-024 + FINDING-025); deterministic shop/light diff scenarios added |
-| Open engine findings | None currently called out in the latest session pointer |
+| Divergence class 13 | object-list ordering + equipment representation legs closed; money/coin object class (vnum + create_money wording/cost) now covered by FINDING-027 + deterministic `money_drop_get_give` diff scenario |
+| Open engine findings | FINDING-024/025 historical; FINDING-027 leaves one non-blocking follow-up (create_money invalid-input return-None vs ROM clamp) |
 
 ## Next Intended Task
 
-1. Continue Phase C deterministic diff-harness widening on adjacent no-RNG money
-   paths (`drop <amount> gold/silver`, `get coins`, `give coins`).
-2. Add RNG-locked combat scenarios only after seed alignment is proven.
+1. Continue Phase C deterministic diff-harness widening on adjacent no-RNG paths
+   (the money class — drop/get/give coins — is now covered).
+2. Optional FINDING-027 follow-up: ROM `create_money` clamps invalid input
+   (`gold = UMAX(1, gold)`) and never returns NULL; the Python port still returns
+   `None` and callers guard on it. Not exercised by any scenario; changing it
+   touches the `make_corpse`/`do_drop` caller contract.
+3. Add RNG-locked combat scenarios only after seed alignment is proven.
 
 ## Other open / deferred items
 
