@@ -1,0 +1,978 @@
+{
+  "scenario": "money_drop_get_give",
+  "c_commit": "470e427578937f8925b76dc0b5630d07b520c6e2",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__silver=200",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 200,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__gold=10",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 200,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 200,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "step": 4,
+      "command": "drop 50 silver",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 150,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            4
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rOK.",
+        ""
+      ]
+    },
+    {
+      "step": 5,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 150,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            4
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "step": 6,
+      "command": "drop 3 gold",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 7,
+          "silver": 150,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            5
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rOK.",
+        ""
+      ]
+    },
+    {
+      "step": 7,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 7,
+          "silver": 150,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            5
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "get coins",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 200,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou get 50 silver coins and 3 gold coins.",
+        ""
+      ]
+    },
+    {
+      "step": 9,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 200,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "step": 10,
+      "command": "drop 1 silver",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 199,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            1
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rOK.",
+        ""
+      ]
+    },
+    {
+      "step": 11,
+      "command": "get coins",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 199,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            1
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rI see no coins here.",
+        ""
+      ]
+    },
+    {
+      "step": 12,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 199,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            1
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "step": 13,
+      "command": "__mload=3000",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 199,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            1
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 14,
+      "command": "give 25 silver wizard",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 174,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            1
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou give the wizard 25 silver.",
+        ""
+      ]
+    },
+    {
+      "step": 15,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 10,
+          "silver": 174,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            1
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "step": 16,
+      "command": "give 2 gold wizard",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 8,
+          "silver": 174,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            1
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou give the wizard 2 gold.",
+        ""
+      ]
+    },
+    {
+      "step": 17,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 8,
+          "silver": 174,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            1
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    },
+    {
+      "step": 18,
+      "command": "drop 100 silver",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 8,
+          "silver": 74,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            4
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rOK.",
+        ""
+      ]
+    },
+    {
+      "step": 19,
+      "command": "get coins",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 8,
+          "silver": 175,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou get 101 silver coins.",
+        ""
+      ]
+    },
+    {
+      "step": 20,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 8,
+          "silver": 175,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     Nothing.",
+        ""
+      ]
+    }
+  ]
+}

@@ -31,6 +31,7 @@ def _sample_step() -> StepSnap:
                 level=5,
                 align=0,
                 gold=0,
+                silver=0,
                 fighting=None,
                 affects=["bless"],
                 affect_flags=["INFRARED"],
@@ -65,6 +66,7 @@ def test_normalize_sorts_unordered_lists_and_strips_ansi():
                 level=1,
                 align=0,
                 gold=0,
+                silver=0,
                 fighting=None,
                 affects=["bless", "armor"],
                 affect_flags=["B", "A"],
@@ -93,7 +95,7 @@ def test_diff_traces_reports_first_divergence():
         StepSnap(
             step=1,
             command="get sword",
-            chars=[CharSnap("T", 3001, "STANDING", 1, 1, 0, 0, 1, 0, 0, None, inventory=[3022])],
+            chars=[CharSnap("T", 3001, "STANDING", 1, 1, 0, 0, 1, 0, 0, 0, None, inventory=[3022])],
             rooms=[],
             output=[],
         )
@@ -102,7 +104,7 @@ def test_diff_traces_reports_first_divergence():
         StepSnap(
             step=1,
             command="get sword",
-            chars=[CharSnap("T", 3001, "STANDING", 1, 1, 0, 0, 1, 0, 0, None, inventory=[3010])],
+            chars=[CharSnap("T", 3001, "STANDING", 1, 1, 0, 0, 1, 0, 0, 0, None, inventory=[3010])],
             rooms=[],
             output=[],
         )
@@ -274,7 +276,7 @@ def test_drive_c_oracle_parses_live_trace_without_golden(tmp_path: Path):
         StepSnap(
             step=1,
             command="look",
-            chars=[CharSnap("Tester", 3001, "STANDING", 20, 20, 100, 100, 5, 0, 0, None)],
+            chars=[CharSnap("Tester", 3001, "STANDING", 20, 20, 100, 100, 5, 0, 0, 0, None)],
             rooms=[RoomSnap(vnum=3001, people=["Tester"], contents=[])],
             output=["A room."],
         )

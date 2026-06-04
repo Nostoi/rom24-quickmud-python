@@ -1,0 +1,29 @@
+{
+  "name": "money_drop_get_give",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__silver=200",
+    "__gold=10",
+    "inventory",
+    "drop 50 silver",
+    "inventory",
+    "drop 3 gold",
+    "inventory",
+    "get coins",
+    "inventory",
+    "drop 1 silver",
+    "get coins",
+    "inventory",
+    "__mload=3000",
+    "give 25 silver wizard",
+    "inventory",
+    "give 2 gold wizard",
+    "inventory",
+    "drop 100 silver",
+    "get coins",
+    "inventory"
+  ]
+}

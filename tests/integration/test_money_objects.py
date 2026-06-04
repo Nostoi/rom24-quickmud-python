@@ -68,8 +68,11 @@ def test_create_money_one_silver():
 
     assert money is not None, "Should create money object"
     assert money.prototype.vnum == OBJ_VNUM_SILVER_ONE
-    assert money.short_descr == "one silver coin"
-    assert money.cost == 1
+    # ROM uses OBJ_VNUM_SILVER_ONE untouched (limbo.are #1: short_descr
+    # "a silver coin", cost 0). The prior "one silver coin"/cost 1 was a port
+    # divergence, corrected in 2.13.11.
+    assert money.short_descr == "a silver coin"
+    assert money.cost == 0
 
 
 def test_create_money_one_gold():
@@ -84,8 +87,11 @@ def test_create_money_one_gold():
 
     assert money is not None, "Should create money object"
     assert money.prototype.vnum == OBJ_VNUM_GOLD_ONE
-    assert money.short_descr == "one gold coin"
-    assert money.cost == 100
+    # ROM uses OBJ_VNUM_GOLD_ONE untouched (limbo.are #2: short_descr "a gold
+    # coin", cost 0). The prior "one gold coin"/cost 100 was a port divergence,
+    # corrected in 2.13.11.
+    assert money.short_descr == "a gold coin"
+    assert money.cost == 0
 
 
 def test_create_money_some_silver():
@@ -123,7 +129,9 @@ def test_create_money_some_gold():
     assert money.prototype.vnum == OBJ_VNUM_GOLD_SOME
     assert money.short_descr == "25 gold coins"
     assert money.value[1] == 25
-    assert money.cost == 2500
+    # ROM src/handler.c:2454 — `obj->cost = gold` (NOT 100*gold). The prior
+    # cost=100*gold was a port divergence, corrected in 2.13.11.
+    assert money.cost == 25
 
 
 def test_create_money_mixed_coins():
@@ -141,7 +149,10 @@ def test_create_money_mixed_coins():
 
     assert money is not None, "Should create money object"
     assert money.prototype.vnum == OBJ_VNUM_COINS
-    assert money.short_descr == "50 silver and 10 gold coins"
+    # ROM limbo.are #5 short_descr format is "%d silver coins and %d gold coins"
+    # (note the first "coins"). The prior "%d silver and %d gold coins" was a port
+    # divergence, corrected in 2.13.11.
+    assert money.short_descr == "50 silver coins and 10 gold coins"
     assert money.value[0] == 50
     assert money.value[1] == 10
     assert money.cost == 1050  # 50 + 10*100

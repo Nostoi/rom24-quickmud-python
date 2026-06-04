@@ -1,54 +1,12 @@
 {
   "scenario": "spell_combat",
-  "c_commit": "ed15fc6d73c26dca403c51cab5d583d4b447e4ab",
+  "c_commit": "470e427578937f8925b76dc0b5630d07b520c6e2",
   "build_flags": "-DOLD_RAND",
   "seed": 12345,
   "trace": [
     {
-      "chars": [
-        {
-          "key": "Tester",
-          "room": 3008,
-          "position": "STANDING",
-          "hp": 20,
-          "max_hp": 20,
-          "mana": 100,
-          "move": 100,
-          "level": 5,
-          "align": 0,
-          "gold": 0,
-          "eff_hitroll": 0,
-          "eff_damroll": 0,
-          "eff_ac": [
-            100,
-            100,
-            100,
-            100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
-        }
-      ],
-      "rooms": [
-        {
-          "vnum": 3008,
-          "people": [
-            "Tester"
-          ],
-          "contents": [
-            3140,
-            3139
-          ]
-        }
-      ],
       "step": 1,
       "command": "__seed=777",
-      "output": []
-    },
-    {
       "chars": [
         {
           "key": "Tester",
@@ -61,6 +19,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -68,44 +32,13 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
-        },
-        {
-          "key": "drunk",
-          "room": 3008,
-          "position": "STANDING",
-          "hp": 31,
-          "max_hp": 31,
-          "mana": 100,
-          "move": 100,
-          "level": 2,
-          "align": 400,
-          "gold": 0,
-          "eff_hitroll": -1,
-          "eff_damroll": 0,
-          "eff_ac": [
-            80,
-            80,
-            80,
-            100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
         {
           "vnum": 3008,
           "people": [
-            "drunk",
             "Tester"
           ],
           "contents": [
@@ -114,11 +47,11 @@
           ]
         }
       ],
+      "output": []
+    },
+    {
       "step": 2,
       "command": "__mload=3064",
-      "output": []
-    },
-    {
       "chars": [
         {
           "key": "Tester",
@@ -131,6 +64,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -138,12 +77,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         },
         {
           "key": "drunk",
@@ -156,6 +90,12 @@
           "level": 2,
           "align": 400,
           "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": -1,
           "eff_damroll": 0,
           "eff_ac": [
@@ -163,12 +103,7 @@
             80,
             80,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -184,11 +119,11 @@
           ]
         }
       ],
+      "output": []
+    },
+    {
       "step": 3,
       "command": "__seed=777",
-      "output": []
-    },
-    {
       "chars": [
         {
           "key": "Tester",
@@ -201,6 +136,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -208,12 +149,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         },
         {
           "key": "drunk",
@@ -226,6 +162,12 @@
           "level": 2,
           "align": 400,
           "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": -1,
           "eff_damroll": 0,
           "eff_ac": [
@@ -233,12 +175,7 @@
             80,
             80,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -254,11 +191,83 @@
           ]
         }
       ],
-      "step": 4,
-      "command": "__learn=magic missile",
       "output": []
     },
     {
+      "step": 4,
+      "command": "__learn=magic missile",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "cast 'magic missile' drunk",
       "chars": [
         {
           "key": "Tester",
@@ -271,6 +280,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": "drunk",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -278,12 +293,7 @@
             100,
             100,
             100
-          ],
-          "fighting": "drunk",
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         },
         {
           "key": "drunk",
@@ -296,6 +306,12 @@
           "level": 2,
           "align": 400,
           "gold": 0,
+          "silver": 69,
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": -1,
           "eff_damroll": 0,
           "eff_ac": [
@@ -303,12 +319,7 @@
             80,
             80,
             100
-          ],
-          "fighting": "Tester",
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -324,8 +335,6 @@
           ]
         }
       ],
-      "step": 5,
-      "command": "cast 'magic missile' drunk",
       "output": [
         "",
         "\rYour magic missile maims the drunk.",
@@ -333,6 +342,8 @@
       ]
     },
     {
+      "step": 6,
+      "command": "cast 'magic missile' drunk",
       "chars": [
         {
           "key": "Tester",
@@ -345,6 +356,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": "drunk",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -352,12 +369,7 @@
             100,
             100,
             100
-          ],
-          "fighting": "drunk",
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         },
         {
           "key": "drunk",
@@ -370,6 +382,12 @@
           "level": 2,
           "align": 400,
           "gold": 0,
+          "silver": 69,
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": -1,
           "eff_damroll": 0,
           "eff_ac": [
@@ -377,12 +395,7 @@
             80,
             80,
             100
-          ],
-          "fighting": "Tester",
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -398,8 +411,6 @@
           ]
         }
       ],
-      "step": 6,
-      "command": "cast 'magic missile' drunk",
       "output": [
         "",
         "\rYour magic missile grazes the drunk.",
@@ -407,6 +418,8 @@
       ]
     },
     {
+      "step": 7,
+      "command": "__tick",
       "chars": [
         {
           "key": "Tester",
@@ -419,6 +432,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": "drunk",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -426,12 +445,7 @@
             100,
             100,
             100
-          ],
-          "fighting": "drunk",
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         },
         {
           "key": "drunk",
@@ -444,6 +458,12 @@
           "level": 2,
           "align": 400,
           "gold": 0,
+          "silver": 69,
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": -1,
           "eff_damroll": 0,
           "eff_ac": [
@@ -451,12 +471,7 @@
             80,
             80,
             100
-          ],
-          "fighting": "Tester",
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -472,8 +487,6 @@
           ]
         }
       ],
-      "step": 7,
-      "command": "__tick",
       "output": [
         "",
         "\rThe drunk's beating grazes you.",

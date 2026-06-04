@@ -880,70 +880,102 @@ def create_money(gold: int, silver: int) -> Object:
     from mud.models.obj import ObjIndex
     from mud.models.object import create_object
 
-    # ROM C handler.c:2432-2437 (validate input)
+    # ROM C handler.c:2432-2437 (validate input). NOTE: ROM bug()s then *clamps*
+    # (`gold = UMAX(1, gold)`) and continues — it never returns NULL. The Python
+    # port returns None here and callers guard on it; that return-None-vs-clamp
+    # divergence is filed separately (not exercised by any current scenario).
     if gold < 0 or silver < 0 or (gold == 0 and silver == 0):
         print(f"BUG: create_money: zero or negative money ({gold} gold, {silver} silver)")
         return None
 
-    # Determine which money type to create
+    # ROM money prototypes are real objects in limbo.are (#1-#5); ROM create_money
+    # (src/handler.c:2438-2480) does `create_object(get_obj_index(VNUM))` then uses
+    # the proto's short_descr as a printf format string. We fabricate an
+    # equivalent per-call ObjIndex: Python reads object weight from
+    # `obj.prototype.weight` (mud/commands/inventory.py:_get_obj_weight), so each
+    # money object needs its OWN prototype — the shared registry proto cannot
+    # carry a per-amount weight. The name keywords / short_descr formats /
+    # descriptions / base values below are byte-for-byte limbo.are #1-#5.
+    #
+    # 2.13.11 wording-parity fix: Python previously fabricated "one silver coin" /
+    # "N silver and N gold coins" with cost `100*gold`, diverging from ROM's
+    # "a silver coin" / "N silver coins and N gold coins" and `cost = gold`.
+    # Surfaced by the diff-harness money_drop_get_give scenario (C ground truth).
     vnum: int
+    name: str
     short_descr: str
+    description: str
     cost: int
     weight: int
     value_0: int  # silver
     value_1: int  # gold
 
     if gold == 0 and silver == 1:
+        # ROM uses OBJ_VNUM_SILVER_ONE untouched (proto: value[0]=1, cost 0, weight 10).
         vnum = OBJ_VNUM_SILVER_ONE
-        name = "coin silver"
-        short_descr = "one silver coin"
-        cost = 1
-        weight = 1
+        name = "coin silver gcash"
+        short_descr = "a silver coin"
+        description = "One miserable silver coin."
+        cost = 0
+        weight = 10
         value_0 = 1
         value_1 = 0
     elif gold == 1 and silver == 0:
+        # ROM uses OBJ_VNUM_GOLD_ONE untouched (proto: value[1]=1, cost 0, weight 10).
         vnum = OBJ_VNUM_GOLD_ONE
-        name = "coin gold"
-        short_descr = "one gold coin"
-        cost = 100
-        weight = 1
+        name = "coin gold gcash"
+        short_descr = "a gold coin"
+        description = "One valuable gold coin."
+        cost = 0
+        weight = 10
         value_0 = 0
         value_1 = 1
     elif silver == 0:
+        # ROM src/handler.c:2448-2456 — `obj->cost = gold` (NOT 100*gold).
         vnum = OBJ_VNUM_GOLD_SOME
-        name = "coins gold"
+        name = "coins gold gcash"
+        # ROM proto short_descr "%d gold coins" sprintf'd with gold.
         short_descr = f"{gold} gold coins"
-        cost = 100 * gold
-        # mirroring ROM src/handler.c:2455 — raw `gold / 5` (1-4 gold → weight 0)
-        weight = c_div(gold, 5)
+        description = "A pile of gold coins."
+        cost = gold
+        weight = c_div(gold, 5)  # raw `gold / 5` (1-4 gold → weight 0)
         value_0 = 0
         value_1 = gold
     elif gold == 0:
+        # ROM src/handler.c:2458-2466 — `obj->cost = silver`.
         vnum = OBJ_VNUM_SILVER_SOME
-        name = "coins silver"
+        name = "coins silver gcash"
+        # ROM proto short_descr "%d silver coins" sprintf'd with silver.
         short_descr = f"{silver} silver coins"
+        description = "A pile of silver coins."
         cost = silver
-        # mirroring ROM src/handler.c:2465 — raw `silver / 20` (1-19 silver → weight 0)
-        weight = c_div(silver, 20)
+        weight = c_div(silver, 20)  # raw `silver / 20` (1-19 silver → weight 0)
         value_0 = silver
         value_1 = 0
     else:
+        # ROM src/handler.c:2468-2479 — short_descr is "%d silver coins and %d
+        # gold coins" (note the first "coins"); cost = 100*gold + silver.
         vnum = OBJ_VNUM_COINS
-        name = "coins silver gold"
-        short_descr = f"{silver} silver and {gold} gold coins"
+        name = "coins silver gold gcash"
+        # ROM proto short_descr "%d silver coins and %d gold coins" (note the
+        # first "coins") sprintf'd with (silver, gold).
+        short_descr = f"{silver} silver coins and {gold} gold coins"
+        description = "A pile of coins."
         cost = 100 * gold + silver
-        # mirroring ROM src/handler.c:2477 — raw `gold / 5 + silver / 20`
-        weight = c_div(gold, 5) + c_div(silver, 20)
+        weight = c_div(gold, 5) + c_div(silver, 20)  # raw `gold / 5 + silver / 20`
         value_0 = silver
         value_1 = gold
 
+    # Per-call prototype so object weight (read from prototype.weight) is
+    # per-amount and never mutates a shared registry proto.
     proto = ObjIndex(
         vnum=vnum,
         name=name,
         short_descr=short_descr,
-        description=f"{short_descr.capitalize()} is lying here.",
+        description=description,
         item_type=int(ItemType.MONEY),
         wear_flags=int(WearFlag.TAKE),
+        value=[value_0, value_1, 0, 0, 0],
         weight=weight,
     )
     obj = create_object(proto)

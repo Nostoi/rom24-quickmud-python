@@ -8,6 +8,66 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-027 — money object vnum swap + `create_money` fabricated-proto wording/cost — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-04 (2.13.11). Surfaced by the new deterministic
+`money_drop_get_give` scenario (`__silver=200; __gold=10; drop 50 silver; drop 3
+gold; get coins; give 25 silver wizard; ...`), which diffs coin-object handling
+against the ROM C engine. Two independent engine divergences plus one harness
+inconsistency.
+
+**Root cause 1 — vnum constants swapped.** `mud/models/constants.py` defined
+`OBJ_VNUM_SILVER_SOME = 3` / `OBJ_VNUM_GOLD_SOME = 4`, but ROM `src/merc.h:1022-1023`
+is `OBJ_VNUM_GOLD_SOME 3` / `OBJ_VNUM_SILVER_SOME 4`. `drop 50 silver` therefore
+produced a coin object with vnum 3 where the C golden had vnum 4. All consumers
+(`create_money`, `do_drop`/`get coins` aggregation in `inventory.py`,
+`test_money_objects.py`) reference the symbolic constants, so flipping the two
+values is transparent and corrects the wire vnum.
+
+**Root cause 2 — `create_money` fabricated its own proto wording/cost.** ROM
+`src/handler.c:2438-2480 create_money` does `create_object(get_obj_index(VNUM))`
+and uses the limbo.are #1-#5 prototype's `short_descr` as a printf format
+(`sprintf(buf, obj->short_descr, ...)`). The Python port hand-rolled the strings
+and economics, diverging:
+- one-coin short_descr `"one silver coin"`/`"one gold coin"` vs ROM `"a silver
+  coin"`/`"a gold coin"` (limbo.are #1/#2), and cost 1/100 vs ROM proto cost 0;
+- mixed-coins `"N silver and N gold coins"` vs ROM `"N silver coins and N gold
+  coins"` (limbo.are #5, note the first "coins") — the actual step-8 `get coins`
+  diff;
+- gold-some `cost = 100 * gold` vs ROM `obj->cost = gold` (`handler.c:2454`).
+
+**Fix:** `mud/handler.py:create_money` now fabricates a per-call `ObjIndex`
+mirroring limbo.are #1-#5 (name keywords incl. `gcash`, ROM short_descr wording,
+description, value, weight) with ROM's per-branch value/cost/weight from
+`handler.c:2438-2480`. A per-call proto (not the shared registry proto) is
+required because Python reads object weight from `prototype.weight`
+(`inventory.py:_get_obj_weight`), so each coin object needs its own weight. The
+ONE branches keep the proto untouched (value[0]/[1]=1, cost 0, weight 10); only
+SOME/COINS override. `test_money_objects.py` assertions that encoded the old
+port behavior (`"one silver coin"`, cost 100/2500, `"N silver and N gold coins"`)
+were corrected to ROM with source citations.
+
+**Harness note (not an engine divergence):** the scenario also exposed that the
+Python replay's `__mload` auto-added every spawned mob to the snapshot set, while
+the C shim snapshots only `watch.chars` (`diffmain.c` resolves keys strictly from
+the declared watch set). `tools/diff_harness/pyreplay.py:__mload` now registers
+the mob only when its key is in `watch.chars`, matching C — `combat_melee_rounds`
+(which declares `drunk`) is unaffected; the undeclared give-target `wizard` is no
+longer snapshotted. Also added `silver` to the snapshot (`schema.py`/`pysnap.py`/
+`diffmain.c`) and `__gold=`/`__silver=` replay meta-commands.
+
+**Regression:** `tools/diff_harness/scenarios/money_drop_get_give.json` +
+`tests/data/golden/diff/money_drop_get_give.golden.json` lock the C/Python
+replay; `tests/integration/test_money_objects.py` (30 cases) covers
+`create_money` per branch.
+
+**Outstanding (separate, not exercised):** ROM `create_money` clamps invalid
+input (`gold = UMAX(1, gold)`) and never returns NULL; the Python port still
+returns `None` and callers guard on it. Left as-is (changing it touches the
+`make_corpse`/`do_drop` caller contract); noted here for a future gap.
+
+---
+
 ## FINDING-026 — shop sell/value duplicate-stock pricing + ROM act wording — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-03 (2.13.9). Surfaced by deterministic

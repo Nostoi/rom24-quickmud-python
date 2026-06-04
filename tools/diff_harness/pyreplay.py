@@ -35,7 +35,7 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
 
     py_trace: list[StepSnap] = []
     for i, command in enumerate(sc.steps, start=1):
-        response = _run_python_command(command, char, chars_by_name)
+        response = _run_python_command(command, char, chars_by_name, sc.watch_chars)
         drained = list(char.messages)
         char.messages.clear()
         lines: list[str] = []
@@ -53,7 +53,7 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     return py_trace
 
 
-def _run_python_command(command: str, char, chars_by_name: dict[str, object]) -> str:
+def _run_python_command(command: str, char, chars_by_name: dict[str, object], watch_chars: list[str]) -> str:
     if command.startswith("__seed="):
         rng_mm.seed_mm(int(command[len("__seed=") :]))
         return ""
@@ -61,6 +61,12 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object]) ->
         from mud.time import time_info
 
         time_info.hour = int(command[len("__hour=") :])
+        return ""
+    if command.startswith("__gold="):
+        char.gold = int(command[len("__gold=") :])
+        return ""
+    if command.startswith("__silver="):
+        char.silver = int(command[len("__silver=") :])
         return ""
     if command.startswith("__learn="):
         from mud.skills import skill_registry
@@ -78,7 +84,14 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object]) ->
         if mob is None:
             raise AssertionError(f"spawn_mob failed for {command!r}")
         char.room.add_character(mob)
-        chars_by_name[_person_key(mob)] = mob
+        # Only snapshot the spawned mob if the scenario declares it in
+        # watch.chars — mirroring the C shim, which resolves snapshot keys
+        # strictly from the declared watch set (diffmain.c:resolve_watched_char).
+        # Auto-adding every mload'd mob diverged from C for give/transfer targets
+        # that aren't being observed (e.g. the money_drop_get_give "wizard").
+        key = _person_key(mob)
+        if key in watch_chars:
+            chars_by_name[key] = mob
         return ""
     if command.startswith("__oload="):
         from mud.spawning.obj_spawner import spawn_object

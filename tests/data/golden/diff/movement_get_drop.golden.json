@@ -1,10 +1,12 @@
 {
   "scenario": "movement_get_drop",
-  "c_commit": "ed15fc6d73c26dca403c51cab5d583d4b447e4ab",
+  "c_commit": "470e427578937f8925b76dc0b5630d07b520c6e2",
   "build_flags": "-DOLD_RAND",
   "seed": 1234,
   "trace": [
     {
+      "step": 1,
+      "command": "look",
       "chars": [
         {
           "key": "Tester",
@@ -17,6 +19,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -24,12 +32,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -51,8 +54,6 @@
           ]
         }
       ],
-      "step": 1,
-      "command": "look",
       "output": [
         "",
         "\rThe Temple Of Mota",
@@ -69,6 +70,8 @@
       ]
     },
     {
+      "step": 2,
+      "command": "inventory",
       "chars": [
         {
           "key": "Tester",
@@ -81,6 +84,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -88,12 +97,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -115,8 +119,6 @@
           ]
         }
       ],
-      "step": 2,
-      "command": "inventory",
       "output": [
         "",
         "\rYou are carrying:",
@@ -125,68 +127,8 @@
       ]
     },
     {
-      "chars": [
-        {
-          "key": "Tester",
-          "room": 3054,
-          "position": "STANDING",
-          "hp": 20,
-          "max_hp": 20,
-          "mana": 100,
-          "move": 99,
-          "level": 5,
-          "align": 0,
-          "gold": 0,
-          "eff_hitroll": 0,
-          "eff_damroll": 0,
-          "eff_ac": [
-            100,
-            100,
-            100,
-            100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
-        }
-      ],
-      "rooms": [
-        {
-          "vnum": 3001,
-          "people": [
-            "Hassan"
-          ],
-          "contents": []
-        },
-        {
-          "vnum": 3054,
-          "people": [
-            "Tester",
-            "healer"
-          ],
-          "contents": [
-            3010
-          ]
-        }
-      ],
       "step": 3,
       "command": "north",
-      "output": [
-        "",
-        "\rBy the Temple Altar",
-        "\r  You are by the temple altar in the northern end of the Temple of Mota.",
-        "\rA huge altar made from white polished marble is standing in front of you and",
-        "\rbehind it is a ten foot tall sitting statue of Odin, the King of the Gods.",
-        "\rThe back of the altar opens into a a beautiful atrium, above which can be",
-        "\rseen a rainbow.",
-        "\r     A pit for sacrifices is in front of the altar.",
-        "\r(White Aura) A healer is here, selling spells.",
-        ""
-      ]
-    },
-    {
       "chars": [
         {
           "key": "Tester",
@@ -199,6 +141,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -206,12 +154,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -233,22 +176,22 @@
           ]
         }
       ],
+      "output": [
+        "",
+        "\rBy the Temple Altar",
+        "\r  You are by the temple altar in the northern end of the Temple of Mota.",
+        "\rA huge altar made from white polished marble is standing in front of you and",
+        "\rbehind it is a ten foot tall sitting statue of Odin, the King of the Gods.",
+        "\rThe back of the altar opens into a a beautiful atrium, above which can be",
+        "\rseen a rainbow.",
+        "\r     A pit for sacrifices is in front of the altar.",
+        "\r(White Aura) A healer is here, selling spells.",
+        ""
+      ]
+    },
+    {
       "step": 4,
       "command": "look",
-      "output": [
-        "",
-        "\rBy the Temple Altar",
-        "\r  You are by the temple altar in the northern end of the Temple of Mota.",
-        "\rA huge altar made from white polished marble is standing in front of you and",
-        "\rbehind it is a ten foot tall sitting statue of Odin, the King of the Gods.",
-        "\rThe back of the altar opens into a a beautiful atrium, above which can be",
-        "\rseen a rainbow.",
-        "\r     A pit for sacrifices is in front of the altar.",
-        "\r(White Aura) A healer is here, selling spells.",
-        ""
-      ]
-    },
-    {
       "chars": [
         {
           "key": "Tester",
@@ -261,6 +204,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -268,12 +217,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -295,8 +239,69 @@
           ]
         }
       ],
+      "output": [
+        "",
+        "\rBy the Temple Altar",
+        "\r  You are by the temple altar in the northern end of the Temple of Mota.",
+        "\rA huge altar made from white polished marble is standing in front of you and",
+        "\rbehind it is a ten foot tall sitting statue of Odin, the King of the Gods.",
+        "\rThe back of the altar opens into a a beautiful atrium, above which can be",
+        "\rseen a rainbow.",
+        "\r     A pit for sacrifices is in front of the altar.",
+        "\r(White Aura) A healer is here, selling spells.",
+        ""
+      ]
+    },
+    {
       "step": 5,
       "command": "get pit",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3054,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3054,
+          "people": [
+            "Tester",
+            "healer"
+          ],
+          "contents": [
+            3010
+          ]
+        }
+      ],
       "output": [
         "",
         "\rYou can't take that.",
@@ -304,6 +309,8 @@
       ]
     },
     {
+      "step": 6,
+      "command": "inventory",
       "chars": [
         {
           "key": "Tester",
@@ -316,6 +323,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -323,12 +336,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -350,8 +358,6 @@
           ]
         }
       ],
-      "step": 6,
-      "command": "inventory",
       "output": [
         "",
         "\rYou are carrying:",
@@ -360,6 +366,8 @@
       ]
     },
     {
+      "step": 7,
+      "command": "drop pit",
       "chars": [
         {
           "key": "Tester",
@@ -372,6 +380,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -379,12 +393,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -406,8 +415,6 @@
           ]
         }
       ],
-      "step": 7,
-      "command": "drop pit",
       "output": [
         "",
         "\rYou do not have that item.",
@@ -415,6 +422,8 @@
       ]
     },
     {
+      "step": 8,
+      "command": "inventory",
       "chars": [
         {
           "key": "Tester",
@@ -427,6 +436,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -434,12 +449,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -461,8 +471,6 @@
           ]
         }
       ],
-      "step": 8,
-      "command": "inventory",
       "output": [
         "",
         "\rYou are carrying:",
@@ -471,6 +479,8 @@
       ]
     },
     {
+      "step": 9,
+      "command": "south",
       "chars": [
         {
           "key": "Tester",
@@ -483,6 +493,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -490,12 +506,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -517,8 +528,6 @@
           ]
         }
       ],
-      "step": 9,
-      "command": "south",
       "output": [
         "",
         "\rThe Temple Of Mota",
@@ -535,6 +544,8 @@
       ]
     },
     {
+      "step": 10,
+      "command": "look",
       "chars": [
         {
           "key": "Tester",
@@ -547,6 +558,12 @@
           "level": 5,
           "align": 0,
           "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
           "eff_hitroll": 0,
           "eff_damroll": 0,
           "eff_ac": [
@@ -554,12 +571,7 @@
             100,
             100,
             100
-          ],
-          "fighting": null,
-          "affects": [],
-          "affect_flags": [],
-          "inventory": [],
-          "equipment": {}
+          ]
         }
       ],
       "rooms": [
@@ -581,8 +593,6 @@
           ]
         }
       ],
-      "step": 10,
-      "command": "look",
       "output": [
         "",
         "\rThe Temple Of Mota",

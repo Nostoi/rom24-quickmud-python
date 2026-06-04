@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FINDING-027 — money/coin object parity (vnum swap + `create_money` wording &
+  cost).** A new `money_drop_get_give` diff-harness scenario surfaced two ROM
+  divergences against the C engine: (1) `OBJ_VNUM_SILVER_SOME`/`OBJ_VNUM_GOLD_SOME`
+  were swapped (3/4) vs ROM `merc.h` (gold_some=3, silver_some=4), so dropping
+  >1 silver built the wrong coin vnum; (2) `create_money` hand-rolled proto
+  wording/economics instead of mirroring ROM's limbo.are #1-#5 prototypes —
+  `"one silver coin"`→`"a silver coin"`, `"N silver and N gold coins"`→`"N silver
+  coins and N gold coins"`, and gold-only `cost = 100*gold`→`gold` (ROM
+  `handler.c:2454`). Both fixed; `create_money` now fabricates a per-call proto
+  matching limbo.are exactly. Locked by the C-golden `money_drop_get_give` replay.
+- **Diff-harness: `silver` snapshot field + `__gold=`/`__silver=` meta-commands;
+  `__mload` watch-set parity.** The harness now tracks `silver` through the C
+  shim, Python snapshot, and schema (backward-compat default), and the Python
+  replay's `__mload` only snapshots a spawned mob when it's declared in
+  `watch.chars` — matching the C shim, which snapshots only the declared watch
+  set.
 - **INV-001 wrong-channel cousin — kill XP / level-up / alignment-zap messages
   reached connected players a command late.** A monster dies during a combat
   *tick* (`violence_update`), when nothing drains the `char.messages` mailbox, so

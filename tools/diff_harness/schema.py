@@ -28,6 +28,7 @@ class CharSnap:
     level: int
     align: int
     gold: int
+    silver: int
     fighting: str | None
     affects: list[str] = field(default_factory=list)
     affect_flags: list[str] = field(default_factory=list)
@@ -59,7 +60,7 @@ def step_to_dict(step: StepSnap) -> dict:
 
 
 def step_from_dict(data: dict) -> StepSnap:
-    chars = [CharSnap(**c) for c in data.get("chars", [])]
+    chars = [_char_snap_from_dict(c) for c in data.get("chars", [])]
     rooms = [RoomSnap(**r) for r in data.get("rooms", [])]
     return StepSnap(
         step=data["step"],
@@ -68,3 +69,8 @@ def step_from_dict(data: dict) -> StepSnap:
         rooms=rooms,
         output=list(data.get("output", [])),
     )
+
+
+def _char_snap_from_dict(c: dict) -> CharSnap:
+    c.setdefault("silver", 0)
+    return CharSnap(**c)

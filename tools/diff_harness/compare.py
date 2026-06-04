@@ -87,6 +87,7 @@ def _render_step_diff(c: StepSnap, py: StepSnap) -> str:
                 "level",
                 "align",
                 "gold",
+                "silver",
                 "fighting",
                 "eff_hitroll",
                 "eff_damroll",

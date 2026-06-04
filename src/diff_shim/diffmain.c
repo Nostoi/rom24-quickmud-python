@@ -225,8 +225,8 @@ static void emit_char_snapshot (CHAR_DATA *ch)
 
     printf (",\"hp\":%d,\"max_hp\":%d,\"mana\":%d,\"move\":%d",
             ch->hit, ch->max_hit, ch->mana, ch->move);
-    printf (",\"level\":%d,\"align\":%d,\"gold\":%ld",
-            ch->level, ch->alignment, ch->gold);
+    printf (",\"level\":%d,\"align\":%d,\"gold\":%ld,\"silver\":%ld",
+            ch->level, ch->alignment, ch->gold, ch->silver);
     printf (",\"eff_hitroll\":%d", GET_HITROLL (ch));
     printf (",\"eff_damroll\":%d", GET_DAMROLL (ch));
     printf (",\"eff_ac\":[%d,%d,%d,%d]",
@@ -587,6 +587,22 @@ int main (int argc, char **argv)
         if (strncmp (line, "__hour=", 7) == 0)
         {
             time_info.hour = atoi (line + 7);
+            continue;
+        }
+
+        /* __gold=<n>: set the PC's gold directly (no RNG). */
+        if (strncmp (line, "__gold=", 7) == 0)
+        {
+            if (ch != NULL)
+                ch->gold = atol (line + 7);
+            continue;
+        }
+
+        /* __silver=<n>: set the PC's silver directly (no RNG). */
+        if (strncmp (line, "__silver=", 9) == 0)
+        {
+            if (ch != NULL)
+                ch->silver = atol (line + 9);
             continue;
         }
 
