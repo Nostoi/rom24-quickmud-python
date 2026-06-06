@@ -363,6 +363,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`INV-001` wrong-channel cousin — pet-shop `add_follower` now delivers `"$n now follows you."` immediately to connected buyers.** ROM `add_follower` (`src/act_comm.c:1602-1605`) uses `act()` for both the master and follower lines. The pet-shop path called the shared `mud/characters/follow.py:add_follower`, which appended `"companion pet now follows you."` to the buyer mailbox only; connected PCs saw it late on the next mailbox drain instead of via the live descriptor. `add_follower` now uses `push_message` for both TO_VICT/TO_CHAR legs, preserving mailbox fallback for disconnected characters and tests. Regression: `tests/integration/test_pet_buy_single_delivery.py` now asserts the follow line reaches the connection before mailbox drain.
 - **`VISION-002` (dark-gate same-room divergence) — ✅ FIXED.** ROM `can_see` (`src/handler.c:2638`) checks `room_is_dark(ch->in_room)` unconditionally — no same-room guard. Python's dark gate had an extra `observer_room is target_room` conjunction that let a character in a dark room see targets in lit rooms (cross-room), diverging from ROM. Fixed by removing the same-room check so the dark gate fires on the observer's room alone. Test: `tests/integration/test_vision_002_dark_gate.py` (5).
 
+## [2.13.15] — 2026-06-06
+
+### Added
+
+- **Diff-harness Phase C widening — pour out + fill from fountain.** The
+  `DeterministicNoRngDiffMachine` now covers `pour <container> out` (empies a
+  drink container, clears poison flag) and `fill <container>` (fills from a
+  fountain to max capacity). Movement rules to room 3005 (The Sanctuary,
+  south of the temple) and a fountain spawn rule (`__oload=3135`) support
+  the fill path. `_ObjectState` gained `poured_out` tracking. Two new live
+  C-oracle tests lock the pour-out and fill-from-fountain pipelines.
+
+### Fixed
+
+- **`generated.py` duplicate object definitions removed (2nd pass).** The
+  earlier cleanup missed some silently-overwriting `_ObjectState` assignments;
+  fully cleaned now.
+
 ## [2.13.14] — 2026-06-06
 
 ### Added

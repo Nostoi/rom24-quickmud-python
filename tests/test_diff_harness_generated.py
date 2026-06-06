@@ -275,3 +275,59 @@ def test_generated_position_transitions_matches_live_c():
     )
 
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_pour_out_matches_live_c():
+    """``pour <container> out`` empties a drink container against the live C oracle.
+
+    Exercises the ``do_pour`` / ``do_empty`` path for the bottle beer (vnum 3001,
+    16 sips of beer). Pouring out sets value[1]=0 (emptied) and value[3]=0
+    (cleared poison flag). Both operations are deterministic."""
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_pour_out",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001, 3005],
+        steps=["__oload=3001", "get bottle", "pour bottle out"],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_fill_from_fountain_matches_live_c():
+    """``fill <container>`` from a fountain against the live C oracle.
+
+    Exercises the ``do_fill`` path: pour out the beer → move south to room 3005
+    (The Sanctuary, which has a fountain reset; exit D2 from 3001) → load
+    fountain vnum 3135 explicitly → fill the bottle with water. ROM fill always
+    fills to max (16 sips). The container must be empty first because ROM fill
+    refuses to mix different liquids."""
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_fill",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001, 3005],
+        steps=[
+            "__oload=3001",
+            "get bottle",
+            "pour bottle out",
+            "south",
+            "__oload=3135",
+            "fill bottle",
+            "north",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None

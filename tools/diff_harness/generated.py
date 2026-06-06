@@ -29,6 +29,7 @@ class _ObjectState:
     in_container: bool = False
     consumed: bool = False
     drank: bool = False
+    poured_out: bool = False
 
 
 @dataclass
@@ -51,6 +52,7 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.current_position = Position.STANDING
         self.player_gold = 10
         self.player_silver = 200
+        self._fountain_room: int | None = None
         self.small_sword = _ObjectState(
             vnum=3021,
             keyword="sword",
@@ -86,32 +88,6 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             keyword="bottle",
             load_command="__oload=3001",
             drink_command="drink bottle",
-        )
-        self.scale_jacket = _ObjectState(
-            vnum=3045,
-            keyword="jacket",
-            load_command="__oload=3045",
-            wear_command="wear jacket",
-        )
-        self.torch = _ObjectState(
-            vnum=3030,
-            keyword="torch",
-            load_command="__oload=3030",
-            hold_command="hold torch",
-        )
-        self.bread = _ObjectState(
-            vnum=3011,
-            keyword="bread",
-            load_command="__oload=3011",
-            eat_command="eat bread",
-        )
-        # An open container (ROM bag 3032: per-item weight cap 50*10, never
-        # closeable). The small sword (weight 30) fits; the jacket (160) does
-        # not, so only the sword is a legal put target.
-        self.bag = _ObjectState(
-            vnum=3032,
-            keyword="bag",
-            load_command="__oload=3032",
         )
 
     @rule()
@@ -320,6 +296,53 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("stand")
         self.current_position = Position.STANDING
 
+    # ── fill / pour rules ─────────────────────────────────────────
+
+    # Movement between temple (3001) and sanctuary (3005) — room 3005 has a
+    # fountain (vnum 3135) for fill/pour scenarios. The exit from 3001 to 3005
+    # is south (D2 in the area file), not down.
+    @precondition(lambda self: self.current_room == 3001 and self.current_position == Position.STANDING)
+    @rule()
+    def south_to_sanctuary(self) -> None:
+        self.steps.append("south")
+        self.current_room = 3005
+
+    @precondition(lambda self: self.current_room == 3005 and self.current_position == Position.STANDING)
+    @rule()
+    def north_to_temple(self) -> None:
+        self.steps.append("north")
+        self.current_room = 3001
+
+    # Pour out the bottle beer (empties container + clears poison flag).
+    @precondition(
+        lambda self: self.bottle_beer.inventory and not self.bottle_beer.poured_out and not self.bottle_beer.drank
+    )
+    @rule()
+    def pour_out_bottle(self) -> None:
+        self.steps.append("pour bottle out")
+        self.bottle_beer.poured_out = True
+
+    # Spawn a fountain (vnum 3135) in the current room so do_fill can find it.
+    @precondition(lambda self: self._fountain_room is None and self.current_room == 3005)
+    @rule()
+    def spawn_fountain(self) -> None:
+        self.steps.append("__oload=3135")
+        self._fountain_room = self.current_room
+
+    # Fill the bottle from the fountain. Container must be empty (poured out)
+    # because ROM fill refuses to mix different liquids.
+    @precondition(
+        lambda self: self.current_room == 3005
+        and self.bottle_beer.poured_out
+        and self.bottle_beer.inventory
+        and self._fountain_room == self.current_room
+    )
+    @rule()
+    def fill_bottle(self) -> None:
+        self.steps.append("fill bottle")
+        self.bottle_beer.poured_out = False
+        self.bottle_beer.drank = False
+
     # ── mob rules ────────────────────────────────────────────────
 
     @precondition(lambda self: self.drunk.room is None)
@@ -398,7 +421,7 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             char_name="Tester",
             char_level=5,
             watch_chars=watch_chars,
-            watch_rooms=[3001, 3054],
+            watch_rooms=[3001, 3005, 3054],
             steps=all_steps,
         )
         report = diff_traces(drive_c_oracle(sc, self.binary), drive_python_replay(sc))
