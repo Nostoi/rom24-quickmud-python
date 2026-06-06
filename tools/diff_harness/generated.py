@@ -7,6 +7,7 @@ from pathlib import Path
 
 from hypothesis.stateful import RuleBasedStateMachine, precondition, rule
 
+from mud.models.constants import Position
 from tools.diff_harness.compare import diff_traces
 from tools.diff_harness.oracle import drive_c_oracle
 from tools.diff_harness.pyreplay import drive_python_replay
@@ -19,10 +20,24 @@ class _ObjectState:
     keyword: str
     load_command: str
     wear_command: str | None = None
+    hold_command: str | None = None
+    eat_command: str | None = None
+    drink_command: str | None = None
     room: int | None = None
     inventory: bool = False
     equipped: bool = False
     in_container: bool = False
+    consumed: bool = False
+    drank: bool = False
+
+
+@dataclass
+class _MobState:
+    vnum: int
+    keyword: str
+    room: int | None = None
+    gold: int = 0
+    silver: int = 0
 
 
 class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
@@ -33,6 +48,9 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.binary = binary
         self.steps: list[str] = []
         self.current_room = 3001
+        self.current_position = Position.STANDING
+        self.player_gold = 10
+        self.player_silver = 200
         self.small_sword = _ObjectState(
             vnum=3021,
             keyword="sword",
@@ -44,6 +62,48 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             keyword="jacket",
             load_command="__oload=3045",
             wear_command="wear jacket",
+        )
+        self.torch = _ObjectState(
+            vnum=3030,
+            keyword="torch",
+            load_command="__oload=3030",
+            hold_command="hold torch",
+        )
+        self.bread = _ObjectState(
+            vnum=3011,
+            keyword="bread",
+            load_command="__oload=3011",
+            eat_command="eat bread",
+        )
+        self.bag = _ObjectState(
+            vnum=3032,
+            keyword="bag",
+            load_command="__oload=3032",
+        )
+        self.drunk = _MobState(vnum=3064, keyword="drunk")
+        self.bottle_beer = _ObjectState(
+            vnum=3001,
+            keyword="bottle",
+            load_command="__oload=3001",
+            drink_command="drink bottle",
+        )
+        self.scale_jacket = _ObjectState(
+            vnum=3045,
+            keyword="jacket",
+            load_command="__oload=3045",
+            wear_command="wear jacket",
+        )
+        self.torch = _ObjectState(
+            vnum=3030,
+            keyword="torch",
+            load_command="__oload=3030",
+            hold_command="hold torch",
+        )
+        self.bread = _ObjectState(
+            vnum=3011,
+            keyword="bread",
+            load_command="__oload=3011",
+            eat_command="eat bread",
         )
         # An open container (ROM bag 3032: per-item weight cap 50*10, never
         # closeable). The small sword (weight 30) fits; the jacket (160) does
@@ -165,9 +225,138 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.small_sword.in_container = False
         self.small_sword.inventory = True
 
+    @precondition(lambda self: not self._object_exists(self.torch))
+    @rule()
+    def load_torch(self) -> None:
+        self._load_object(self.torch)
+
+    @precondition(lambda self: self.torch.room == self.current_room)
+    @rule()
+    def get_torch(self) -> None:
+        self._get_object(self.torch)
+
+    @precondition(lambda self: self.torch.inventory and not self.torch.equipped)
+    @rule()
+    def hold_torch(self) -> None:
+        self.steps.append("hold torch")
+        self.torch.inventory = False
+        self.torch.equipped = True
+
+    @precondition(lambda self: self.torch.equipped)
+    @rule()
+    def remove_torch(self) -> None:
+        self.steps.append("remove torch")
+        self.torch.inventory = True
+        self.torch.equipped = False
+
+    @precondition(lambda self: self.torch.inventory and not self.torch.equipped)
+    @rule()
+    def drop_torch(self) -> None:
+        self._drop_object(self.torch)
+
+    @precondition(lambda self: not self._object_exists(self.bread))
+    @rule()
+    def load_bread(self) -> None:
+        self._load_object(self.bread)
+
+    @precondition(lambda self: self.bread.room == self.current_room)
+    @rule()
+    def get_bread(self) -> None:
+        self._get_object(self.bread)
+
+    @precondition(lambda self: self.bread.inventory and not self.bread.equipped and not self.bread.consumed)
+    @rule()
+    def eat_bread(self) -> None:
+        self.steps.append("eat bread")
+        self.bread.inventory = False
+        self.bread.consumed = True
+
+    # ── drink rules ────────────────────────────────────────────────
+
+    @precondition(lambda self: not self._object_exists(self.bottle_beer))
+    @rule()
+    def load_bottle_beer(self) -> None:
+        self._load_object(self.bottle_beer)
+
+    @precondition(lambda self: self.bottle_beer.room == self.current_room)
+    @rule()
+    def get_bottle_beer(self) -> None:
+        self._get_object(self.bottle_beer)
+
+    # do_drink blocks mortals if condition[FULL] > 45. The default test
+    # character starts at FULL=48, so drink exercises the fullness guard
+    # (both C and Python block with "You're too full to drink more.").
+    # Exercising the actual drinking logic would require a C-shim meta-command
+    # (e.g. __cond_full=0) or lower initial condition defaults in both drivers.
+    @precondition(lambda self: self.bottle_beer.inventory and not self.bottle_beer.drank)
+    @rule()
+    def drink_bottle_beer(self) -> None:
+        self.steps.append("drink bottle")
+        self.bottle_beer.drank = True
+
+    # ── position transition rules ──────────────────────────────────
+
+    @precondition(lambda self: self.current_position == Position.STANDING)
+    @rule()
+    def rest(self) -> None:
+        self.steps.append("rest")
+        self.current_position = Position.RESTING
+
+    @precondition(lambda self: self.current_position == Position.RESTING)
+    @rule()
+    def sleep(self) -> None:
+        self.steps.append("sleep")
+        self.current_position = Position.SLEEPING
+
+    @precondition(lambda self: self.current_position == Position.SLEEPING)
+    @rule()
+    def wake(self) -> None:
+        self.steps.append("wake")
+        self.current_position = Position.STANDING
+
+    @precondition(lambda self: self.current_position == Position.RESTING)
+    @rule()
+    def stand(self) -> None:
+        self.steps.append("stand")
+        self.current_position = Position.STANDING
+
+    # ── mob rules ────────────────────────────────────────────────
+
+    @precondition(lambda self: self.drunk.room is None)
+    @rule()
+    def load_drunk(self) -> None:
+        self.steps.append("__seed=1234")
+        self.steps.append("__mload=3064")
+        self.steps.append("__seed=1234")
+        self.drunk.room = self.current_room
+
+    @precondition(
+        lambda self: self.small_sword.inventory
+        and not self.small_sword.equipped
+        and self.drunk.room == self.current_room
+    )
+    @rule()
+    def give_sword_to_drunk(self) -> None:
+        self.steps.append("give sword drunk")
+        self.small_sword.inventory = False
+
+    @precondition(lambda self: self.player_gold >= 2 and self.drunk.room == self.current_room)
+    @rule()
+    def give_gold_to_drunk(self) -> None:
+        self.steps.append("give 2 gold drunk")
+        self.player_gold -= 2
+        self.drunk.gold += 2
+
+    @precondition(lambda self: self.player_silver >= 25 and self.drunk.room == self.current_room)
+    @rule()
+    def give_silver_to_drunk(self) -> None:
+        self.steps.append("give 25 silver drunk")
+        self.player_silver -= 25
+        self.drunk.silver += 25
+
     @staticmethod
     def _object_exists(obj: _ObjectState) -> bool:
-        return obj.room is not None or obj.inventory or obj.equipped or obj.in_container
+        return obj.room is not None or obj.inventory or obj.equipped or obj.in_container or obj.consumed
 
     def _load_object(self, obj: _ObjectState) -> None:
         self.steps.append(obj.load_command)
@@ -198,15 +387,19 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
     def teardown(self) -> None:
         if not self.steps:
             return
+        all_steps = ["__silver=200", "__gold=10", *self.steps]
+        watch_chars = ["Tester"]
+        if self.drunk.room is not None:
+            watch_chars.append("drunk")
         sc = Scenario(
             name="generated_no_rng",
             seed=1234,
             start_room=3001,
             char_name="Tester",
             char_level=5,
-            watch_chars=["Tester"],
+            watch_chars=watch_chars,
             watch_rooms=[3001, 3054],
-            steps=list(self.steps),
+            steps=all_steps,
         )
         report = diff_traces(drive_c_oracle(sc, self.binary), drive_python_replay(sc))
         assert report is None, f"generated sequence diverged: {self.steps!r}\n{report}"

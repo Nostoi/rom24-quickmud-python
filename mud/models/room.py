@@ -151,7 +151,8 @@ class Room:
     def add_character(self, char: Character) -> None:
         already_present = char in self.people
         if not already_present:
-            self.people.append(char)
+            # ROM src/handler.c:1497-1503 char_to_room head-inserts (LIFO).
+            self.people.insert(0, char)
         char.room = self
 
         # ROM C handler.c:1571-1573 - Increment room light if carrying lit light source

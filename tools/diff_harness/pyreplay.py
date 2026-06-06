@@ -27,6 +27,9 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     char.hitroll = 0
     char.damroll = 0
     char.armor = [100, 100, 100, 100]
+    # Mirror the C shim's make_test_char pcdata condition defaults
+    # (diffmain.c:456-458): COND_THIRST/COND_FULL/COND_HUNGER all start at 48.
+    char.condition = [0, 48, 48, 48]
 
     chars_by_name = {sc.char_name: char}
     rooms_by_vnum = {v: room_registry[v] for v in sc.watch_rooms}
@@ -67,6 +70,16 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         return ""
     if command.startswith("__silver="):
         char.silver = int(command[len("__silver=") :])
+        return ""
+    if command.startswith("__cond_full="):
+        from mud.models.constants import Condition
+
+        char.condition[int(Condition.FULL)] = int(command[len("__cond_full=") :])
+        return ""
+    if command.startswith("__cond_thirst="):
+        from mud.models.constants import Condition
+
+        char.condition[int(Condition.THIRST)] = int(command[len("__cond_thirst=") :])
         return ""
     if command.startswith("__learn="):
         from mud.skills import skill_registry

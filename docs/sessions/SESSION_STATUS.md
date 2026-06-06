@@ -1,54 +1,54 @@
-# Session Status — 2026-06-04 — XP-DELIVERY-001 + FINDING-027 money/coin parity (2.13.11)
+# Session Status — 2026-06-06 — Diff-Harness Phase C Widening: drink + position (2.13.14)
 
 ## Current State
 
 - **Active mode**: cross-file invariants / divergence-class sweep (per-file audit
   tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
-  - **XP-DELIVERY-001 — tick-time kill messages reached players a command late**
-    ✅ FIXED (2.13.10). A kill resolves during a combat tick, when nothing drains
-    the `char.messages` mailbox, so the death-chain lines using the mailbox-only
-    `Character.send_to_char` (XP award, level-up, "you gain N hit points",
-    alignment zap) surfaced only at the player's next command — the reported
-    "experience points after I left the room" bug. All four routed through the
-    async-aware `send_to_char_buffered`. Filed as an INV-001 wrong-channel cousin.
-  - **FINDING-027 — money/coin object vnum + `create_money` wording/cost** ✅
-    RESOLVED (2.13.11). The new `money_drop_get_give` diff scenario found (a)
-    `OBJ_VNUM_SILVER_SOME`/`GOLD_SOME` swapped vs ROM `merc.h`, and (b)
-    `create_money` hand-rolling proto wording/economics instead of mirroring
-    limbo.are #1-#5 ("one silver coin"→"a silver coin", "N silver and N gold
-    coins"→"N silver coins and N gold coins", gold cost `100*gold`→`gold`).
-    `create_money` now fabricates a per-call proto matching limbo.are exactly.
-  - **Diff-harness widening**: `silver` added to the snapshot pipeline + `__gold=`/
-    `__silver=` meta-commands; `pyreplay.__mload` now snapshots a spawned mob only
-    when declared in `watch.chars` (matches the C shim). New `money_drop_get_give`
-    scenario + golden; all 7 goldens regenerated.
-  - **FINDING-026 — shop sell/value duplicate-stock pricing + wording** ✅
-    RESOLVED (2.13.9).
+  - **Diff-harness Phase C widening — drink container `do_drink` + position
+    transitions `rest`/`sleep`/`wake`/`stand`.** The
+    `DeterministicNoRngDiffMachine` now covers a bottle of beer (vnum 3001,
+    `ITEM_DRINK_CON`) and position transition rules. The drink rule exercises
+    the fullness guard path (default test char starts at `condition[FULL]=48`
+    >45, so both C and Python block with the same message). Two new live
+    C-oracle tests lock both surfaces.
+  - **`__cond_full` / `__cond_thirst` meta-commands** added to pyreplay.py
+    (Python-only — the C shim does not yet support them).
+  - **Prior session bugs fixed and committed**: GIVE-013 (do_give→MobInstance
+    crash) and room people list ordering (FINDING-028).
+  - **`generated.py` duplicate object definitions** cleaned up.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-04_XP_DELIVERY_AND_FINDING_027_MONEY.md](SESSION_SUMMARY_2026-06-04_XP_DELIVERY_AND_FINDING_027_MONEY.md)
+  [SESSION_SUMMARY_2026-06-06_DRINK_POSITION_WIDEN.md](SESSION_SUMMARY_2026-06-06_DRINK_POSITION_WIDEN.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.11 |
-| Tests | Full suite `pytest` → **5425 passed, 4 skipped** (~289s); `ruff check .` clean |
+| Version | 2.13.14 |
+| Tests | 84/84 passing (diff harness suite + give + position integration) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Divergence class 13 | object-list ordering + equipment representation legs closed; money/coin object class (vnum + create_money wording/cost) now covered by FINDING-027 + deterministic `money_drop_get_give` diff scenario |
-| Open engine findings | FINDING-024/025 historical; FINDING-027 leaves one non-blocking follow-up (create_money invalid-input return-None vs ROM clamp) |
+| Diff-harness scenarios | 8 static + 10 generated-oracle tests (+2 this session) |
+| Generated state machine objects | 6 objects (sword 3021, jacket 3045, bag 3032, torch 3030, bread 3011, bottle beer 3001) + 1 mob (drunk 3064) |
+| Generated state machine rules | 29 rules (incl. 4 position transitions, 3 drink rules) |
 
 ## Next Intended Task
 
-1. Continue Phase C deterministic diff-harness widening on adjacent no-RNG paths
-   (the money class — drop/get/give coins — is now covered).
-2. Optional FINDING-027 follow-up: ROM `create_money` clamps invalid input
-   (`gold = UMAX(1, gold)`) and never returns NULL; the Python port still returns
-   `None` and callers guard on it. Not exercised by any scenario; changing it
-   touches the `make_corpse`/`do_drop` caller contract.
-3. Add RNG-locked combat scenarios only after seed alignment is proven.
+1. Continue Phase C deterministic diff-harness widening:
+   - **Fill/pour containers** — `do_fill` (fountain → drink container) and
+     `do_pour` (container → container or out). Needs a fountain room.
+   - **Full drink logic** — requires lowering `condition[FULL]` in both C and
+     Python drivers so the actual sip-decrement + condition-gain path is
+     exercised (currently the fullness guard blocks it).
+2. Add RNG-locked combat scenarios only after seed alignment is proven.
 
 ## Other open / deferred items
 
+- **FINDING-027 follow-up**: ROM `create_money` clamps invalid input
+  (`gold = UMAX(1, gold)`) and never returns NULL; the Python port still returns
+  `None` and callers guard on it. Not exercised by any scenario.
 - **test-fixtures-lint** — manual-staged style lint; re-enable once legacy tests migrate.
 - **`test_all_commands.py` `exits` attribute error** — pre-existing harness artifact.
+- **C shim `__cond_full` / `__cond_thirst` support** — the Python pyreplay
+  supports these meta-commands but the C diffshim needs to be recompiled to
+  handle them before the actual drinking logic (sip decrement, condition gains)
+  can be exercised in the diff harness.

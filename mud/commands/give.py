@@ -7,6 +7,7 @@ ROM Reference: src/act_obj.c do_give (lines 678-855)
 from __future__ import annotations
 
 from mud.commands.obj_manipulation import _can_drop_obj, _obj_from_char
+from mud.game_loop import _obj_to_char
 from mud.mobprog import disable_mobtrigger
 from mud.models.character import Character, _object_carry_number, _object_carry_weight
 from mud.models.constants import ActFlag
@@ -77,8 +78,7 @@ def do_give(char: Character, args: str) -> str:
         return f"{_victim_name(victim)} can't see it."
 
     _obj_from_char(char, obj)
-    victim.add_object(obj)
-    obj.carried_by = victim
+    _obj_to_char(obj, victim)
 
     victim_message = act_format("$n gives you $p.", recipient=victim, actor=char, arg1=obj, arg2=victim)
     char_message = act_format("You give $p to $N.", recipient=char, actor=char, arg1=obj, arg2=victim)

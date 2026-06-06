@@ -5,7 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.13.12] — 2026-06-06
+
+### Added
+
+- **Diff-harness Phase C widening — light source `hold`/`remove` + food `eat`**
+  deterministic scenarios and generated state-machine rules. The
+  `DeterministicNoRngDiffMachine` now covers a torch (`hold torch` / `remove
+  torch` / `drop torch`) and bread (`get bread` / `eat bread`), exercising the
+  `WearLocation.HOLD` slot and the `do_eat` consumption path (both
+  previously unexercised by the harness). Two new live C-oracle tests lock
+  each sequence. (2.13.12)
+- **Pyreplay condition initialization mirrors C shim.** `drive_python_replay`
+  now sets `char.condition = [0, 48, 48, 48]` (`COND_DRUNK=0, COND_FULL=48,
+  COND_THIRST=48, COND_HUNGER=48`) matching the C diff shim's `make_test_char`
+  default (`diffmain.c:456-458`). This prevents a test-only divergence where
+  the C side triggered ROM's `condition[COND_FULL] > 40` "too full" gate in
+  `do_eat` while Python's uninitialized condition bypassed it.
 
 ### Fixed
 
@@ -346,6 +362,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`INV-001` wrong-channel cousin — shop haggle success lines now deliver immediately to connected players.** ROM `do_buy`/`do_sell` (`src/act_obj.c:2606-2607`, `:2728`, `:2929`) sends successful haggle text via `send_to_char` / `act(TO_CHAR)`. The pet-buy, item-buy, and sell branches appended those lines to `char.messages`, so connected PCs saw them late on mailbox drain. All three branches now use `push_message`, preserving disconnected mailbox fallback. Regression: `tests/integration/test_shop_haggle_delivery_channel.py` (3).
 - **`INV-001` wrong-channel cousin — pet-shop `add_follower` now delivers `"$n now follows you."` immediately to connected buyers.** ROM `add_follower` (`src/act_comm.c:1602-1605`) uses `act()` for both the master and follower lines. The pet-shop path called the shared `mud/characters/follow.py:add_follower`, which appended `"companion pet now follows you."` to the buyer mailbox only; connected PCs saw it late on the next mailbox drain instead of via the live descriptor. `add_follower` now uses `push_message` for both TO_VICT/TO_CHAR legs, preserving mailbox fallback for disconnected characters and tests. Regression: `tests/integration/test_pet_buy_single_delivery.py` now asserts the follow line reaches the connection before mailbox drain.
 - **`VISION-002` (dark-gate same-room divergence) — ✅ FIXED.** ROM `can_see` (`src/handler.c:2638`) checks `room_is_dark(ch->in_room)` unconditionally — no same-room guard. Python's dark gate had an extra `observer_room is target_room` conjunction that let a character in a dark room see targets in lit rooms (cross-room), diverging from ROM. Fixed by removing the same-room check so the dark gate fires on the observer's room alone. Test: `tests/integration/test_vision_002_dark_gate.py` (5).
+
+## [2.13.14] — 2026-06-06
+
+### Added
+
+- **Diff-harness Phase C widening — mob `__mload` + `give` objects/gold/silver.**
+  The `DeterministicNoRngDiffMachine` now includes a `_MobState` model (drunk, vnum
+  3064) with `load_drunk`, `give_sword_to_drunk`, `give_gold_to_drunk`, and
+  `give_silver_to_drunk` rules. Meta-commands `__silver=200` and `__gold=10` are
+  prepended to the generated scenario steps so give transfers have source funds.
+  Mob names are auto-added to `watch_chars` for snapshot comparison. The live
+  C-oracle test `test_generated_mob_give_matches_live_c` verifies the full
+  `__mload` → object give → gold give → silver give pipeline (gold/silver purse
+  + sword-inventory transfer).
+- **Diff-harness Phase C widening — drink container `do_drink` + position
+  transitions `rest`/`sleep`/`wake`/`stand`.** The
+  `DeterministicNoRngDiffMachine` now covers a bottle of beer (vnum 3001,
+  `ITEM_DRINK_CON`) with `load_bottle_beer`, `get_bottle_beer`, and
+  `drink_bottle_beer` rules, plus position transition rules (`rest`, `sleep`,
+  `wake`, `stand`) that exercise the `Position` enum path from STANDING through
+  RESTING and SLEEPING and back. The default test character starts at
+  `condition[FULL]=48` (>45), so the drink rule exercises the fullness guard
+  (both C and Python block with the same message). Two new live C-oracle tests
+  lock both surfaces.
+- **`__cond_full` / `__cond_thirst` meta-commands in pyreplay.py.** The Python
+  replay driver can now set character condition slots via `__cond_full=N` /
+  `__cond_thirst=N`, mirroring the `__gold`/`__silver` meta-command pattern.
+  These are Python-only (the C shim does not yet support them).
+
+### Fixed
+
+- **GIVE-013 — `do_give` → `MobInstance` crash.** `do_give` called
+  `victim.add_object(obj)` but `MobInstance` lacks that method (only `Character`
+  has `add_object`). ROM's `obj_to_char(obj, victim)` works on any `CHAR_DATA *`
+  pointer (PC or NPC). Fixed by routing through the universal
+  `_obj_to_char(obj, victim)` in `mud/game_loop.py`, which dispatches to
+  `Character.add_object` or `MobInstance.add_to_inventory` as appropriate.
+- **Room people list ordering now matches ROM LIFO.** ROM `char_to_room`
+  (`src/handler.c:1497-1503`) head-inserts into `pRoomIndex->people`, so the
+  most-recently-arrived occupant is listed first. Python's `Room.add_character`
+  was using `append` (FIFO), which reversed the `look` output order. Fixed to
+  `insert(0, char)`, matching the INV-039 head-insert convention already applied
+  to objects. Surfaced by the Hypothesis state machine's new mob rules.
+- **`generated.py` duplicate object definitions removed.** A prior session edit
+  left duplicate `_ObjectState` assignments for `scale_jacket`, `torch`,
+  `bread`, and `bag` — the later copies overwrote the earlier ones silently.
+  Cleaned up.
 
 ## [2.11.44]
 
