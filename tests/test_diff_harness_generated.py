@@ -331,3 +331,69 @@ def test_generated_fill_from_fountain_matches_live_c():
     )
 
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_pour_between_containers_matches_live_c():
+    """``pour <source> <target>`` between two drink containers against the live C oracle.
+
+    Exercises the ``do_pour`` transfer path: pour beer from a bottle (vnum 3001,
+    16 sips of beer) into an empty coffee cup (vnum 3101, capacity 6, keywords
+    ``coffee cup``). The cup is poured out first (emptied), so the liquid-type
+    guard (ROM ``do_pour`` line 1113 ``in->value[2] != out->value[2]``) is
+    skipped (target is empty → ``in->value[1] == 0``). ROM transfers
+    min(source sips, target capacity - target current) = min(16, 6) = 6 sips
+    and copies the liquid type from source to target."""
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_pour_between",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3001",
+            "get bottle",
+            "__oload=3101",
+            "get cup",
+            "pour cup out",
+            "pour bottle cup",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_pour_into_held_container_matches_live_c():
+    """``pour <source> <character>`` into a mob's held drink container.
+
+    Exercises the vch branch of ROM ``do_pour`` (src/act_obj.c:1146-1157):
+    player pours beer from their bottle into a coffee cup the drunk mob holds.
+    ``__mob_hold=3101`` spawns an empty cup and equips it to the first NPC's
+    HOLD slot, so the do_pour liquid-type guard passes."""
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_pour_into_held",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester", "drunk"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3001",
+            "get bottle",
+            "__seed=1234",
+            "__mload=3064",
+            "__seed=1234",
+            "__mob_hold=3101",
+            "pour bottle drunk",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None

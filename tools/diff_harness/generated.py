@@ -83,11 +83,17 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             load_command="__oload=3032",
         )
         self.drunk = _MobState(vnum=3064, keyword="drunk")
+        self._drunk_has_empty_cup: bool = False
         self.bottle_beer = _ObjectState(
             vnum=3001,
             keyword="bottle",
             load_command="__oload=3001",
             drink_command="drink bottle",
+        )
+        self.coffee_cup = _ObjectState(
+            vnum=3101,
+            keyword="cup",
+            load_command="__oload=3101",
         )
 
     @rule()
@@ -259,14 +265,14 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
     def get_bottle_beer(self) -> None:
         self._get_object(self.bottle_beer)
 
-    # do_drink blocks mortals if condition[FULL] > 45. The default test
-    # character starts at FULL=48, so drink exercises the fullness guard
-    # (both C and Python block with "You're too full to drink more.").
-    # Exercising the actual drinking logic would require a C-shim meta-command
-    # (e.g. __cond_full=0) or lower initial condition defaults in both drivers.
+    # do_drink blocks mortals if condition[FULL] > 45. Lower FULL to 0 before
+    # the drink so the actual drinking logic is exercised (sip decrement,
+    # condition gains, liquid effects). Both C and Python drivers handle the
+    # __cond_full= meta-command.
     @precondition(lambda self: self.bottle_beer.inventory and not self.bottle_beer.drank)
     @rule()
     def drink_bottle_beer(self) -> None:
+        self.steps.append("__cond_full=0")
         self.steps.append("drink bottle")
         self.bottle_beer.drank = True
 
@@ -343,6 +349,36 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.bottle_beer.poured_out = False
         self.bottle_beer.drank = False
 
+    # ── pour-between-containers rules ──────────────────────────────
+
+    @precondition(lambda self: not self._object_exists(self.coffee_cup))
+    @rule()
+    def load_coffee_cup(self) -> None:
+        self._load_object(self.coffee_cup)
+
+    @precondition(lambda self: self.coffee_cup.room == self.current_room)
+    @rule()
+    def get_coffee_cup(self) -> None:
+        self._get_object(self.coffee_cup)
+
+    @precondition(lambda self: self.coffee_cup.inventory and not self.coffee_cup.poured_out)
+    @rule()
+    def pour_out_coffee_cup(self) -> None:
+        self.steps.append("pour cup out")
+        self.coffee_cup.poured_out = True
+
+    @precondition(
+        lambda self: self.bottle_beer.inventory
+        and not self.bottle_beer.poured_out
+        and not self.bottle_beer.drank
+        and self.coffee_cup.inventory
+        and self.coffee_cup.poured_out
+    )
+    @rule()
+    def pour_bottle_into_cup(self) -> None:
+        self.steps.append("pour bottle cup")
+        self.coffee_cup.poured_out = False
+
     # ── mob rules ────────────────────────────────────────────────
 
     @precondition(lambda self: self.drunk.room is None)
@@ -352,6 +388,23 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("__mload=3064")
         self.steps.append("__seed=1234")
         self.drunk.room = self.current_room
+
+    @precondition(lambda self: self.drunk.room == self.current_room and not self._drunk_has_empty_cup)
+    @rule()
+    def give_drunk_empty_cup(self) -> None:
+        self.steps.append("__mob_hold=3101")
+        self._drunk_has_empty_cup = True
+
+    @precondition(
+        lambda self: self.bottle_beer.inventory
+        and not self.bottle_beer.poured_out
+        and not self.bottle_beer.drank
+        and self._drunk_has_empty_cup
+    )
+    @rule()
+    def pour_bottle_into_drunk_held_cup(self) -> None:
+        self.steps.append("pour bottle drunk")
+        self._drunk_has_empty_cup = False
 
     @precondition(
         lambda self: self.small_sword.inventory

@@ -606,6 +606,22 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __cond_full=<n>: set the PC's condition[FULL] directly (no RNG). */
+        if (strncmp (line, "__cond_full=", 12) == 0)
+        {
+            if (ch != NULL && ch->pcdata != NULL)
+                ch->pcdata->condition[COND_FULL] = atoi (line + 12);
+            continue;
+        }
+
+        /* __cond_thirst=<n>: set the PC's condition[THIRST] directly (no RNG). */
+        if (strncmp (line, "__cond_thirst=", 14) == 0)
+        {
+            if (ch != NULL && ch->pcdata != NULL)
+                ch->pcdata->condition[COND_THIRST] = atoi (line + 14);
+            continue;
+        }
+
         /* __mload=<vnum>: spawn a fresh mob into the PC's current room
          * (ROM create_mobile + char_to_room). */
         if (strncmp (line, "__mload=", 8) == 0)
@@ -616,6 +632,34 @@ int main (int argc, char **argv)
             {
                 CHAR_DATA *mob = create_mobile (mi);
                 char_to_room (mob, ch->in_room);
+            }
+            continue;
+        }
+
+        /* __mob_hold=<vnum>: spawn a fresh, empty drink container and equip it
+         * to the first NPC in the PC's current room's HOLD slot. The container
+         * is emptied (value[1]=0) so the do_pour liquid-type guard passes for
+         * any source liquid. */
+        if (strncmp (line, "__mob_hold=", 11) == 0)
+        {
+            int vnum = atoi (line + 11);
+            OBJ_INDEX_DATA *oi = get_obj_index (vnum);
+            if (oi != NULL && ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people;
+                     mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        OBJ_DATA *obj = create_object (oi, 0);
+                        obj->value[1] = 0;
+                        obj_to_char (obj, mob);
+                        equip_char (mob, obj, WEAR_HOLD);
+                        break;
+                    }
+                }
             }
             continue;
         }

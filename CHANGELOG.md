@@ -363,6 +363,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`INV-001` wrong-channel cousin — pet-shop `add_follower` now delivers `"$n now follows you."` immediately to connected buyers.** ROM `add_follower` (`src/act_comm.c:1602-1605`) uses `act()` for both the master and follower lines. The pet-shop path called the shared `mud/characters/follow.py:add_follower`, which appended `"companion pet now follows you."` to the buyer mailbox only; connected PCs saw it late on the next mailbox drain instead of via the live descriptor. `add_follower` now uses `push_message` for both TO_VICT/TO_CHAR legs, preserving mailbox fallback for disconnected characters and tests. Regression: `tests/integration/test_pet_buy_single_delivery.py` now asserts the follow line reaches the connection before mailbox drain.
 - **`VISION-002` (dark-gate same-room divergence) — ✅ FIXED.** ROM `can_see` (`src/handler.c:2638`) checks `room_is_dark(ch->in_room)` unconditionally — no same-room guard. Python's dark gate had an extra `observer_room is target_room` conjunction that let a character in a dark room see targets in lit rooms (cross-room), diverging from ROM. Fixed by removing the same-room check so the dark gate fires on the observer's room alone. Test: `tests/integration/test_vision_002_dark_gate.py` (5).
 
+## [2.13.17] — 2026-06-07
+
+### Added
+
+- **Diff-harness Phase C widening — full drink logic + pour into held container.**
+  Added three new C-shim meta-commands: `__cond_full=<n>` (set PC fullness), `__cond_thirst=<n>` (set PC thirst), and `__mob_hold=<vnum>` (spawn empty drink container, equip to first NPC's HOLD slot). The `drink_bottle_beer` state-machine rule now injects `__cond_full=0` before the drink command so the actual drinking path (sip decrement, condition gains, liquid effects) is exercised against the C oracle instead of just the fullness guard. Added `give_drunk_empty_cup` and `pour_bottle_into_drunk_held_cup` rules exercising the vch branch of ROM `do_pour` (`src/act_obj.c:1146-1157`): player pours beer from their bottle into a coffee cup held by the drunk mob. One new live C-oracle test (`test_generated_pour_into_held_container_matches_live_c`).
+
+### Fixed
+
+- **Diff-harness snapshot inventory filter.** `pysnap._char_snap` now calls the new `_is_equipped` helper to exclude equipped items from the `inventory` list, matching the C shim's `obj->wear_loc != WEAR_NONE` gate (`src/diff_shim/diffmain.c:292-293`). Previously equipped items appeared in both `inventory` and `equipment`, diverging from the C snapshot and surfacing in the pour-into-held test.
+
+## [2.13.16] — 2026-06-06
+
+### Added
+
+- **Diff-harness Phase C widening — pour between containers.** The
+  `DeterministicNoRngDiffMachine` now covers `pour <source> <target>` (transfer
+  liquid between two drink containers). Added coffee cup object (vnum 3101,
+  keywords ``coffee cup``) with load/get/pour-out/pour-between rules. The live
+  C-oracle test pours beer from a bottle (vnum 3001, 16 sips) into an empty
+  coffee cup (capacity 6), exercising the full `do_pour` transfer path: liquid
+  type guard (skipped for empty target), amount transfer (min(16, 6) = 6 sips),
+  and liquid type copy from source to target. One new live C-oracle test
+  (`test_generated_pour_between_containers_matches_live_c`).
+
 ## [2.13.15] — 2026-06-06
 
 ### Added

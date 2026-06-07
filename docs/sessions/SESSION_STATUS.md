@@ -1,41 +1,45 @@
-# Session Status — 2026-06-06 — Diff-Harness Phase C Widening: fill + pour (2.13.15)
+# Session Status — 2026-06-06 — Diff-Harness Phase C Widening: Pour Between Containers (2.13.16)
 
 ## Current State
 
 - **Active mode**: cross-file invariants / divergence-class sweep (per-file audit
   tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
-  - **Diff-harness Phase C widening — pour out + fill from fountain.** The
-    `DeterministicNoRngDiffMachine` now covers `pour <container> out` (empties a
-    drink container) and `fill <container>` (fills from a fountain to max).
-    Movement rules to room 3005 (The Sanctuary, south from the temple) and a
-    fountain spawn rule (`__oload=3135`) support the fill path. Two new live
-    C-oracle tests lock both surfaces.
-  - **`generated.py` duplicate object definitions fully cleaned**.
+  - **Diff-harness Phase C widening — pour between containers.** The
+    `DeterministicNoRngDiffMachine` now covers `pour <source> <target>` (transfer
+    liquid between two drink containers). Added coffee cup object (vnum 3101,
+    capacity 6) with load/get/pour-out/pour-between rules. The live C-oracle
+    test exercises the full `do_pour` transfer path (ROM `act_obj.c:1100-1135`):
+    liquid type guard (skipped for empty target), amount transfer (min(16, 6) =
+    6 sips), and liquid type copy from source to target.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-06_FILL_POUR_WIDEN.md](SESSION_SUMMARY_2026-06-06_FILL_POUR_WIDEN.md)
+  [SESSION_SUMMARY_2026-06-06_POUR_BETWEEN_WIDEN.md](SESSION_SUMMARY_2026-06-06_POUR_BETWEEN_WIDEN.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.15 |
-| Tests | 32/32 diff harness suite passing |
+| Version | 2.13.16 |
+| Tests | 33/33 diff harness suite passing |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Diff-harness scenarios | 8 static + 12 generated-oracle tests (+2 this session) |
-| Generated state machine objects | 7 (6 objects + 1 mob) |
-| Generated state machine rules | 34 rules (+5 this session: south/north to 3005, pour out, spawn fountain, fill) |
+| Diff-harness scenarios | 8 static + 13 generated-oracle tests (+1 this session) |
+| Generated state machine objects | 8 (7 objects + 1 mob) |
+| Generated state machine rules | 38 rules (+4 this session: load/get/pour-out/pour-between coffee cup) |
 
 ## Next Intended Task
 
 1. Continue Phase C deterministic diff-harness widening:
-   - **Pour between containers** — `pour <source> <target>` (transfer liquid
-     between two drink containers). Needs two containers with same liquid type.
-   - **Full drink logic** — requires lowering `condition[FULL]` in both C and
-     Python drivers so the actual sip-decrement + condition-gain path is
-     exercised. Options: recompile C shim with `__cond_full` support, or change
-     `make_test_char` defaults in both drivers.
-2. Add RNG-locked combat scenarios only after seed alignment is proven.
+   - **Full drink logic** — requires adding `__cond_full=0` / `__cond_thirst=0`
+     meta-command handlers to the C shim (`src/diff_shim/diffmain.c`, ~5 lines
+     each after the `__silver=` handler), then rebuilding the binary. The Python
+     side (`tools/diff_harness/pyreplay.py`) already handles both. Once the C
+     shim is rebuilt, the `drink_bottle_beer` rule in `generated.py` can insert
+     `__cond_full=0` before `drink bottle` to exercise actual drinking logic
+     (sip decrement, condition gains, liquid effects).
+   - **Pour into held container** — `pour <source> <target_character>` where the
+     target character holds a drink container. Exercises the `vch` branch of
+     `do_pour` (ROM `act_obj.c:1146-1157`), which needs a mob in the room
+     already holding a drink container.
 
 ## Other open / deferred items
 
@@ -44,6 +48,3 @@
   `None` and callers guard on it. Not exercised by any scenario.
 - **test-fixtures-lint** — manual-staged style lint; re-enable once legacy tests migrate.
 - **`test_all_commands.py` `exits` attribute error** — pre-existing harness artifact.
-- **C shim `__cond_full` / `__cond_thirst` support** — the Python pyreplay
-  supports these meta-commands but the C diffshim needs to be recompiled to
-  handle them before the actual drinking logic can be exercised.

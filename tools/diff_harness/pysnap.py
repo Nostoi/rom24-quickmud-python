@@ -12,6 +12,19 @@ def _obj_vnum(obj: object) -> int | None:
     return getattr(proto, "vnum", None)
 
 
+def _is_equipped(obj: object, char: object) -> bool:
+    """Return True if obj is equipped (wear_loc != NONE), matching the C shim
+    inventory filter (diffmain.c:292-293 skips obj->wear_loc != WEAR_NONE)."""
+    from mud.models.constants import WearLocation
+
+    wear_loc = getattr(obj, "wear_loc", None)
+    if wear_loc is not None:
+        return int(wear_loc) != int(WearLocation.NONE)
+    # Fallback: check if the character's equipment dict contains this object
+    equipment = getattr(char, "equipment", {}) or {}
+    return obj in equipment.values()
+
+
 def _sn_to_skill_name(sn: int) -> str | None:
     """Map a ROM skill number to its skill_table name, matching the C shim.
 
@@ -62,7 +75,11 @@ def _char_snap(key: str, char: object) -> CharSnap:
     fighting = getattr(char, "fighting", None)
     pos = getattr(char, "position", None)
     pos_name = pos.name if isinstance(pos, Position) else str(Position(int(pos)).name)
-    inventory = [v for v in (_obj_vnum(o) for o in getattr(char, "inventory", []) or []) if v is not None]
+    inventory = [
+        v
+        for o in (getattr(char, "inventory", []) or [])
+        if (v := _obj_vnum(o)) is not None and not _is_equipped(o, char)
+    ]
     equipment = {
         str(int(slot)): v
         for slot, o in (getattr(char, "equipment", {}) or {}).items()

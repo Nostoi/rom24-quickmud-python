@@ -106,6 +106,28 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         if key in watch_chars:
             chars_by_name[key] = mob
         return ""
+    if command.startswith("__mob_hold="):
+        from mud.models.constants import WearLocation
+        from mud.spawning.obj_spawner import spawn_object
+        from mud.spawning.templates import MobInstance
+
+        obj = spawn_object(int(command[len("__mob_hold=") :]))
+        if obj is None:
+            raise AssertionError(f"spawn_object failed for {command!r}")
+        obj.value = list(obj.value)
+        obj.value[1] = 0
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is None:
+            raise AssertionError("no NPC in room for __mob_hold")
+        mob.add_to_inventory(obj)
+        obj.wear_loc = int(WearLocation.HOLD)
+        if not hasattr(mob, "equipment") or mob.equipment is None:
+            mob.equipment = {}
+        mob.equipment[int(WearLocation.HOLD)] = obj
+        key = _person_key(mob)
+        if key in watch_chars:
+            chars_by_name[key] = mob
+        return ""
     if command.startswith("__oload="):
         from mud.spawning.obj_spawner import spawn_object
 
