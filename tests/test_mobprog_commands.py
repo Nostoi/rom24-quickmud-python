@@ -166,7 +166,10 @@ def test_mpforce_numbered_target_selects_second_match(monkeypatch):
 
     mob_cmds.mob_interpret(enforcer, "force 2.guard say halt")
 
-    assert forced == [("Guard Two", "say halt")]
+    # Room.add_character head-inserts (ROM LIFO), so room.people order is
+    # Guard Two (added last), Guard One (added first). 1.guard → Guard Two,
+    # 2.guard → Guard One. This matches ROM's ch->in_room->people LIFO order.
+    assert forced == [("Guard One", "say halt")]
 
 
 def test_mpremember_sets_target():

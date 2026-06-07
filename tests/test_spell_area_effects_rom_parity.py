@@ -77,7 +77,10 @@ def test_mass_invis_applies_to_group_members_in_room() -> None:
     assert ally_effect.level == c_div(caster.level, 2)
 
     assert caster.messages[-1] == "Ok."
-    assert ally.messages[-1] == "You slowly fade out of existence."
+    # Room.add_character head-inserts (ROM LIFO), so caster is processed last.
+    # Caster's act_to_room lands after ally's TO_CHAR, making ally.messages[-1]
+    # the observer line.
+    assert "You slowly fade out of existence." in ally.messages
     assert any("slowly fades out of existence." in msg for msg in outsider.messages)
 
 
@@ -259,8 +262,12 @@ def test_holy_word_good_buffs_good_harms_evil_not_neutral(monkeypatch) -> None:
     assert ally_good.has_spell_effect("bless")
 
     # Good caster should also buff self (caster is included in room occupants).
+    # Room.add_character head-inserts (ROM LIFO), so the evil victim is
+    # processed before the caster. apply_damage sets the caster to
+    # Position.FIGHTING, and ROM spell_bless (src/magic.c:840) returns early
+    # for a FIGHTING target — the caster gets frenzy but not bless.
     assert caster.has_spell_effect("frenzy")
-    assert caster.has_spell_effect("bless")
+    assert not caster.has_spell_effect("bless")
 
     # Neutral occupants are unaffected by a good caster.
     assert not bystander_neutral.has_spell_effect("curse")

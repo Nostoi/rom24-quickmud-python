@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.18] — 2026-06-07
+
+### Fixed
+
+- **10 tests re-baselined for INV-039 LIFO room.people ordering.** The
+  INV-039 head-insert fix (2.13.1) changed `Room.add_character` and
+  `Character.add_object` from append to `insert(0)`, matching ROM's
+  `char_to_room`/`obj_to_char` LIFO semantics. 10 tests were written assuming
+  FIFO iteration order and needed updates to match the now-correct LIFO
+  behavior:
+  - `test_chain_lightning_bounces_with_level_decay`: bounce target order
+    reversed (v3 gets 6d6, v2 gets 2d6 in LIFO).
+  - `test_chain_lightning_arcs_room_targets`: second/third bounce targets
+    swapped for LIFO people list.
+  - `test_mass_invis_fades_group`: `ally.messages[-1]` → `in` check because
+    caster's act_to_room lands after ally's own TO_CHAR in LIFO processing.
+  - `test_mass_invis_applies_to_group_members_in_room`: same `[-1]` → `in`
+    message-order fix.
+  - `test_holy_word_good_buffs_good_harms_evil_not_neutral`: caster no longer
+    gets self-blessed because LIFO processes the evil victim (apply_damage →
+    set_fighting) before the caster. ROM `spell_bless` checks
+    `POS_FIGHTING` (src/magic.c:840) and returns early — the test now
+    asserts `not caster.has_spell_effect("bless")`.
+  - `test_spec_thief_fails_against_awake_player`: observer (added after
+    victim) is now the first non-NPC in LIFO iteration, receives the victim
+    message; victim receives the observer alert.
+  - `test_mpforce_numbered_target_selects_second_match`: `2.guard` resolves
+    to the first-added guard (LIFO scan, 1.guard = most-recently-added).
+  - `test_steal_other_not_blocked_by_own_name_substring`: victim added after
+    thief so `get_char_room("bob")` resolves to the victim, not the thief
+    "Bobby" (LIFO prefix match).
+  - `test_random_trigger_picks_visible_pc`: `_get_random_char` iterates LIFO,
+    so rolls are consumed in LIFO occupant order.
+  - `test_2name_selects_second_occupant_not_first`: numbered selectors count
+    in LIFO scan order; 1.guard = most-recently-added, 2.guard = first-added.
+
 ## [2.13.12] — 2026-06-06
 
 ### Added

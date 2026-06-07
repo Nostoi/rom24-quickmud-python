@@ -103,10 +103,11 @@ def test_steal_other_not_blocked_by_own_name_substring(test_room):
     # Regression for the harmful do_steal pre-check (`arg2_lower in own_name`):
     # a thief named "Bobby" stealing from "Bob" must NOT be rejected as self.
     # ROM has no such pre-check; it relies on get_char_room + the victim == ch
-    # guard (src/act_obj.c:2185-2189). Victim is added first so get_char_room's
-    # in-room scan resolves "bob" to Bob, not the thief.
-    victim = _make_char("Bob", test_room)
+    # guard (src/act_obj.c:2185-2189). Room.add_character head-inserts (ROM
+    # LIFO), so victim must be added AFTER thief to be at the head of the list —
+    # otherwise get_char_room("bob") matches "Bobby" first (prefix rule).
     thief = _make_char("Bobby", test_room)
+    victim = _make_char("Bob", test_room)
     try:
         result = do_steal(thief, "coin bob")
         # Before the fix the pre-check returned "That's pointless." here.

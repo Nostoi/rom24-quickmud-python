@@ -719,6 +719,9 @@ def test_mass_invis_fades_group() -> None:
     assert ally_effect is not None
     assert ally_effect.duration == 24
     assert ally_effect.level == c_div(caster.level, 2)
-    assert ally.messages[-1] == "You slowly fade out of existence."
+    # Room.add_character head-inserts (ROM obj_to_room LIFO), so caster is
+    # processed last. Caster's act_to_room broadcast lands after ally's own
+    # TO_CHAR message, so ally.messages[-1] is the observer line.
+    assert "You slowly fade out of existence." in ally.messages
     assert caster.messages[-1] == "Ok."
     assert any("slowly fades out of existence." in msg for msg in outsider.messages)

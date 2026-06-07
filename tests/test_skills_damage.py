@@ -325,8 +325,10 @@ def test_chain_lightning_arcs_room_targets(monkeypatch: pytest.MonkeyPatch) -> N
 
     assert result is True
     assert first.hit == 156
-    assert second.hit == 152
-    assert third.hit == 148
+    # Room.add_character head-inserts (ROM obj_to_room LIFO), so room.people order
+    # is third, second, first, caster. Bounce targets: third (18), second (12).
+    assert second.hit == 158
+    assert third.hit == 142
     assert any("lightning bolt leaps" in message.lower() for message in caster.messages)
     assert any("hits you" in message.lower() for message in first.messages)
     assert "The bolt hits you!" in second.messages

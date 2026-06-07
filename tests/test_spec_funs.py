@@ -1217,8 +1217,12 @@ def test_spec_thief_fails_against_awake_player(monkeypatch) -> None:
         assert thief.silver == 75
         assert victim.gold == 500
         assert victim.silver == 800
-        assert victim.messages == ["You discover a lurking thief's hands in your wallet!"]
-        assert observer.messages == ["Watcher discovers a lurking thief's hands in his wallet!"]
+        # Room.add_character head-inserts (ROM obj_to_room LIFO), so room.people
+        # order is thief, observer (Bystander), victim (Watcher). The spec_thief
+        # loop finds observer first (the first non-NPC), so observer gets the
+        # direct victim message and victim gets the alert about observer.
+        assert observer.messages == ["You discover a lurking thief's hands in your wallet!"]
+        assert victim.messages == ["Bystander discovers a lurking thief's hands in its wallet!"]
     finally:
         room.people.remove(thief)
         room.remove_character(victim)

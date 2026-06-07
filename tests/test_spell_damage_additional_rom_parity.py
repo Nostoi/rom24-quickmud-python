@@ -747,8 +747,10 @@ def test_chain_lightning_bounces_with_level_decay(monkeypatch):
 
     assert hit is True
     assert v1.hit == 200 - expected1
-    assert v2.hit == 200 - expected2
-    assert v3.hit == 200 - expected3
+    # Room.add_character head-inserts (ROM obj_to_room LIFO), so room.people order is v3, v2, v1, caster.
+    # Bounce targets reverse-iteration: v2 gets third bounce (expected3), v3 gets second (expected2).
+    assert v2.hit == 200 - expected3
+    assert v3.hit == 200 - expected2
 
     assert calls[0][1] == int(DamageType.LIGHTNING)
 

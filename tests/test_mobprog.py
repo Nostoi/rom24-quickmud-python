@@ -27,10 +27,14 @@ def test_random_trigger_picks_visible_pc(monkeypatch) -> None:
     for ch in (alpha, bravo, sneaky, bystander):
         room.add_character(ch)
 
+    # Room.add_character head-inserts (ROM LIFO), so room.people order is
+    # bystander, sneaky, bravo, alpha. _get_random_char iterates LIFO:
+    # bravo is the first visible PC, alpha is the second.
     rolls = iter([30, 80])
     monkeypatch.setattr("mud.utils.rng_mm.number_percent", lambda: next(rolls))
 
-    assert mobprog._get_random_char(mob) is bravo
+    # bravo gets roll 30, alpha gets roll 80 → alpha wins (highest roll).
+    assert mobprog._get_random_char(mob) is alpha
 
 
 def test_invisible_player_does_not_trigger_greet(monkeypatch) -> None:

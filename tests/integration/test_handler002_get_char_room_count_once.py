@@ -62,16 +62,17 @@ def _make_guard(room, tag: str) -> Character:
 
 def test_2name_selects_second_occupant_not_first(test_room):
     # mirrors ROM src/handler.c:2205-2211 — count advances once per occupant, so
-    # "2.guard" must return the SECOND guard. The pre-fix double-count returned
-    # the first (count reached 2 on occupant #1).
+    # "2.guard" must return the second guard in LIFO order.
+    # Room.add_character head-inserts (ROM LIFO), so g2 (added last) is first
+    # in the scan: 1.guard=g2, 2.guard=g1.
     g1 = _make_guard(test_room, "city")
     g2 = _make_guard(test_room, "temple")
     try:
-        assert get_char_room(g1, "2.guard") is g2
-        # "1.guard" still resolves to the first.
-        assert get_char_room(g1, "1.guard") is g1
-        # bare "guard" resolves to the first (number defaults to 1).
-        assert get_char_room(g1, "guard") is g1
+        assert get_char_room(g1, "2.guard") is g1
+        # "1.guard" resolves to the first in LIFO (g2).
+        assert get_char_room(g1, "1.guard") is g2
+        # bare "guard" resolves to the first in LIFO (g2), same as 1.guard.
+        assert get_char_room(g1, "guard") is g2
     finally:
         for c in (g1, g2):
             if c in test_room.people:
