@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.35] — 2026-06-08
+
+### Fixed
+
+- **Four `_message_room` callsites missing TRIG_ACT dispatch** (`mud/game_loop.py`):
+  four `char_update`/`_decay_worn_light` callsites used `_message_room`
+  (baked f-string, no trigger) for `act(TO_ROOM)` sites ROM never wraps in
+  `MOBtrigger = FALSE`:
+  - `"$n wanders on home."` (`src/update.c:693`) — NPC extracted from wrong area
+  - `"$n shivers and suffers."` (`src/update.c:857`) — poison tick
+  - `"$n disappears into the void."` (`src/update.c:745`) — linkdead idle-quit
+  - `"$p goes out."` (`src/update.c:727`) — worn light extinguish
+  All four replaced with `_act_to_room` (per-recipient formatting + TRIG_ACT).
+  INV-025 ad-hoc follow-up. 2 new tests: `test_wanders_home_dispatches_trig_act`,
+  `test_poison_shiver_dispatches_trig_act`.
+
 ## [2.13.34] — 2026-06-08
 
 ### Fixed

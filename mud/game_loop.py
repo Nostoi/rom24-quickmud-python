@@ -480,7 +480,8 @@ def _decay_worn_light(character: Character) -> None:
             # mirroring ROM src/update.c:726 — `--ch->in_room->light` raw, no floor
             # (ARITH-202; exposes desync as negative like ARITH-107 nplayer / INV-023)
             room.light = current_light - 1
-            _message_room(room, _render_obj_message(light, "$p goes out."), exclude=character)
+            # mirroring ROM src/update.c:727 — act("$p goes out.", ch, obj, NULL, TO_ROOM)
+            _act_to_room(room, "$p goes out.", character, arg1=light, exclude=character)
             _send_to_char(character, _render_obj_message(light, "$p flickers and goes out."))
         else:
             _send_to_char(character, _render_obj_message(light, "$p flickers and goes out."))
@@ -528,8 +529,8 @@ def _idle_to_limbo(character: Character) -> None:
         except Exception:  # pragma: no cover - defensive safeguard
             pass
 
-    name = getattr(character, "name", None) or "Someone"
-    _message_room(room, f"{name} disappears into the void.", exclude=character)
+    # mirroring ROM src/update.c:745 — act("$n disappears into the void.", ch, NULL, NULL, TO_ROOM)
+    _act_to_room(room, "$n disappears into the void.", character, exclude=character)
     _send_to_char(character, "You disappear into the void.")
     room.remove_character(character)
 
@@ -747,7 +748,8 @@ def _char_update_tick_effects(character: Character) -> bool:
         if poison_af is not None:
             room = getattr(character, "room", None)
             if room is not None:
-                _message_room(room, f"{getattr(character, 'name', 'Someone')} shivers and suffers.", exclude=character)
+                # mirroring ROM src/update.c:857 — act("$n shivers and suffers.", ch, NULL, NULL, TO_ROOM)
+                _act_to_room(room, "$n shivers and suffers.", character, exclude=character)
             _send_to_char(character, "You shiver and suffer.\r\n")
             af_level = int(getattr(poison_af, "level", 1) or 1)
             dam = af_level // 10 + 1
@@ -814,8 +816,8 @@ def char_update() -> None:
                 ):
                     from mud.mob_cmds import _extract_character
 
-                    room_name = getattr(character, "short_descr", None) or getattr(character, "name", None) or "Someone"
-                    _message_room(room, f"{room_name} wanders on home.")
+                    # mirroring ROM src/update.c:693 — act("$n wanders on home.", ch, NULL, NULL, TO_ROOM)
+                    _act_to_room(room, "$n wanders on home.", character)
                     _extract_character(character, fPull=True)
                     continue
 

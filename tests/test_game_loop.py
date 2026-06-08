@@ -800,6 +800,116 @@ def test_char_update_extracts_out_of_zone_mob(monkeypatch):
     assert "Rover wanders on home." in watcher.messages
 
 
+def test_wanders_home_dispatches_trig_act(monkeypatch):
+    """NPC wanders-home broadcast must dispatch TRIG_ACT — ROM src/update.c:693."""
+
+    area_home = Area(name="Town2")
+    area_foreign = Area(name="Dungeon2")
+    home_room = Room(vnum=405, area=area_home)
+    away_room = Room(vnum=406, area=area_foreign)
+    room_registry[home_room.vnum] = home_room
+    room_registry[away_room.vnum] = away_room
+
+    wanderer = Character(
+        name="Drifter",
+        short_descr="Drifter",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    wanderer.zone = area_home
+    away_room.add_character(wanderer)
+    character_registry.append(wanderer)
+
+    listener = Character(
+        name="listener",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    listener.messages = []
+    proto = MobIndex(vnum=9802, short_descr="a listener", level=5)
+    proto.mprogs = []
+    listener.prototype = proto
+    away_room.add_character(listener)
+    character_registry.append(listener)
+
+    fired: list[str] = []
+    original_trigger = mobprog.mp_act_trigger
+
+    def _probe(argument, recipient, *args, **kwargs):
+        if recipient is listener:
+            fired.append(str(argument))
+        return original_trigger(argument, recipient, *args, **kwargs)
+
+    monkeypatch.setattr(mobprog, "mp_act_trigger", _probe)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 0)
+
+    char_update()
+
+    assert any("wanders on home" in msg for msg in fired), (
+        "wanders-on-home must dispatch mp_act_trigger to NPC observers — ROM src/update.c:693"
+    )
+
+
+def test_poison_shiver_dispatches_trig_act(monkeypatch):
+    """Poison tick '$n shivers' broadcast must dispatch TRIG_ACT — ROM src/update.c:857."""
+    area = Area(name="Swamp")
+    room = Room(vnum=407, area=area)
+    room_registry[room.vnum] = room
+
+    victim = Character(
+        name="Vic",
+        is_npc=False,
+        position=int(Position.STANDING),
+        hit=50,
+        max_hit=50,
+        pcdata=PCData(condition=[48, 48, 48, 48]),
+    )
+    victim.add_affect(AffectFlag.POISON)
+    victim.affected.append(
+        AffectData(
+            type="poison",  # type: ignore[arg-type]
+            level=20,
+            duration=5,
+            location=0,
+            modifier=0,
+            bitvector=int(AffectFlag.POISON),
+        )
+    )
+    room.add_character(victim)
+    character_registry.append(victim)
+
+    listener = Character(
+        name="watcher",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    listener.messages = []
+    proto = MobIndex(vnum=9803, short_descr="a watcher", level=5)
+    proto.mprogs = []
+    listener.prototype = proto
+    room.add_character(listener)
+    character_registry.append(listener)
+
+    fired: list[str] = []
+    original_trigger = mobprog.mp_act_trigger
+
+    def _probe(argument, recipient, *args, **kwargs):
+        if recipient is listener:
+            fired.append(str(argument))
+        return original_trigger(argument, recipient, *args, **kwargs)
+
+    monkeypatch.setattr(mobprog, "mp_act_trigger", _probe)
+
+    char_update()
+
+    assert any("shivers" in msg for msg in fired), (
+        "poison '$n shivers and suffers.' must dispatch mp_act_trigger — ROM src/update.c:857"
+    )
+
+
 def test_obj_update_decays_corpse():
     area = Area(name="Battlefield")
     room = Room(vnum=200, area=area)
