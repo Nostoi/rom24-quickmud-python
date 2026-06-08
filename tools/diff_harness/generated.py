@@ -108,6 +108,10 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.char_update_count: int = 0
         # buy-side state: whether the keeper has a sword stocked via __mob_carry.
         self._keeper_has_sword: bool = False
+        # sell-broke state: whether the keeper's gold+silver have been zeroed out
+        # via __mob_gold=0 / __mob_silver=0.  Prevents sell_sword_to_weaponsmith
+        # (which models a successful sale) from firing while the keeper is broke.
+        self._keeper_is_broke: bool = False
         # bought_sword tracks a sword acquired from the keeper (distinct from
         # small_sword which the player looted/loaded themselves).
         self.bought_sword = _ObjectState(
@@ -447,6 +451,7 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         lambda self: self.small_sword.inventory
         and not self.small_sword.equipped
         and self.weaponsmith.room == self.current_room
+        and not self._keeper_is_broke
     )
     @rule()
     def sell_sword_to_weaponsmith(self) -> None:
@@ -483,6 +488,30 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self._keeper_has_sword = False
         self.player_silver -= 300
         self.bought_sword.inventory = True
+
+    @precondition(lambda self: self.weaponsmith.room is not None and not self._keeper_is_broke)
+    @rule()
+    def zero_keeper_wealth(self) -> None:
+        # Mirror the shop_sell_keeper_broke scenario setup: __mob_gold=0 +
+        # __mob_silver=0 zero out the keeper's treasury so the wealth-check
+        # early exit fires on the next sell attempt (src/act_obj.c:2916-2921).
+        self.steps.append("__mob_gold=0")
+        self.steps.append("__mob_silver=0")
+        self._keeper_is_broke = True
+
+    @precondition(
+        lambda self: self.small_sword.inventory
+        and not self.small_sword.equipped
+        and self.weaponsmith.room == self.current_room
+        and self._keeper_is_broke
+    )
+    @rule()
+    def sell_sword_to_broke_keeper(self) -> None:
+        # Keeper is broke; do_sell returns early at the wealth check before
+        # consuming any RNG (number_percent at src/act_obj.c:2925 is after the
+        # check at 2916-2921), so no __seed= brackets needed.
+        # Sword stays in player's inventory; wealth unchanged.
+        self.steps.append("sell sword")
 
     @precondition(lambda self: self.drunk.room == self.current_room and not self._drunk_has_empty_cup)
     @rule()

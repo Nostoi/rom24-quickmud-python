@@ -16,6 +16,7 @@ You are producing the end-of-session deliverables for a QuickMUD ROM-parity work
 
 - **`CHANGELOG.md`** — if any user-visible/dev-visible behavior changed (almost always for parity work).
 - **`pyproject.toml`** version bump — if anything is being pushed to a branch / PR / master (per AGENTS.md Repo Hygiene §3).
+- **`README.md`** — if badges, test counts, audit counts, or parity-status copy changed. Per the AGENTS.md three-surfaces rule: when README metrics change, also update AGENTS.md tracker pointers and `docs/sessions/SESSION_STATUS.md` **in the same commit** so the three surfaces never disagree.
 - **`docs/parity/<FILE>_C_AUDIT.md`** rows already flipped — verify, don't re-do.
 - **`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`** — flip the file's row if a whole file just hit 100%.
 
@@ -146,6 +147,7 @@ Confirm:
 - `SESSION_STATUS.md` "Last completed" matches the new summary.
 - `CHANGELOG.md` `[Unreleased]` lists every gap closed.
 - `pyproject.toml` version matches what's about to be pushed (if anything is).
+- `README.md` badges/metrics/parity-status reflect the current version, test count, and audit state (if any of those changed this session). Per AGENTS.md three-surfaces rule: README + AGENTS.md tracker pointers + SESSION_STATUS must agree.
 
 ## What goes WHERE (do not duplicate)
 

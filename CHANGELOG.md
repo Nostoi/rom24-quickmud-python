@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.33] — 2026-06-08
+
+### Added
+
+- **`zero_keeper_wealth` / `sell_sword_to_broke_keeper` Hypothesis rules**
+  (`tools/diff_harness/generated.py`): two new `@rule` methods in
+  `DeterministicNoRngDiffMachine` extend the fuzz surface to the keeper-broke
+  sell-error path. `zero_keeper_wealth` emits `__mob_gold=0` + `__mob_silver=0`
+  and gates on the keeper being loaded; `sell_sword_to_broke_keeper` fires when
+  the keeper is broke and sword is in inventory, emitting `sell sword` without
+  seed brackets (the wealth-check early exit at `src/act_obj.c:2916-2921`
+  precedes the `number_percent()` call at line 2925, so no RNG is consumed).
+  `sell_sword_to_weaponsmith` gains `not self._keeper_is_broke` precondition so
+  the two sell paths remain mutually exclusive in generated sequences.
+
 ## [2.13.32] — 2026-06-08
 
 ### Added
