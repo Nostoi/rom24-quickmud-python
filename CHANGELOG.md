@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.25] — 2026-06-08
+
+### Fixed
+
+- **FINDING-030: `bless` at `char_level ≤ 7` now emits 2 AffectData entries
+  (APPLY_HITROLL + APPLY_SAVES), matching ROM C.** `SpellEffect.hitroll_mod` /
+  `saving_throw_mod` defaults changed from `0` to `None` (`int | None`); guards
+  in `sync_spell_effect_to_affected` updated from falsy to `is not None` —
+  `bless` passes `hitroll_mod=0` explicitly so `0 is not None` → entry emitted.
+  Spells that never set these fields get `None` → guard suppresses spurious entries
+  (regression guard: `armor` still emits exactly 1 APPLY_AC entry). `_add_opt`
+  helper added for None-safe merge arithmetic in `Character.apply_spell_effect`
+  and `MobInstance.apply_spell_effect`. `PetSpellEffectSave` updated to
+  `int | None` with explicit None-preservation in `_serialize_pet`.
+  (ROM C: `src/magic.c:849–860`; Python: `mud/models/character.py:sync_spell_effect_to_affected`)
+
+### Tests
+
+- `tests/integration/test_finding030_bless_affect_count.py` — three cases:
+  `bless@level5` (2 entries, both modifier=0), `bless@level16` (2 entries,
+  modifiers ±2), `armor` (1 entry APPLY_AC, regression guard).
+
 ## [2.13.24] — 2026-06-08
 
 ### Added

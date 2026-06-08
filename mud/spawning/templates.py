@@ -651,13 +651,13 @@ class MobInstance:
             return None
         # GL-032: unwind APPLY_AC across all four armor classes (mirroring ROM
         # affect_modify, src/handler.c:1113-1116). armor is a tuple — rebuild it.
-        if getattr(effect, "ac_mod", 0):
+        if effect.ac_mod:
             self.armor = tuple(ac - effect.ac_mod for ac in self.armor)
-        if getattr(effect, "hitroll_mod", 0):
+        if effect.hitroll_mod:
             self.hitroll -= effect.hitroll_mod
-        if getattr(effect, "damroll_mod", 0):
+        if effect.damroll_mod:
             self.damroll -= effect.damroll_mod
-        if getattr(effect, "saving_throw_mod", 0):
+        if effect.saving_throw_mod:
             self.saving_throw -= effect.saving_throw_mod
         if getattr(effect, "affect_flag", None) is not None:
             try:
@@ -693,10 +693,12 @@ class MobInstance:
         if existing is not None:
             combined.level = c_div(combined.level + existing.level, 2)
             combined.duration += existing.duration
+            from mud.models.character import _add_opt
+
             combined.ac_mod += existing.ac_mod
-            combined.hitroll_mod += existing.hitroll_mod
+            combined.hitroll_mod = _add_opt(combined.hitroll_mod, existing.hitroll_mod)
             combined.damroll_mod += existing.damroll_mod
-            combined.saving_throw_mod += existing.saving_throw_mod
+            combined.saving_throw_mod = _add_opt(combined.saving_throw_mod, existing.saving_throw_mod)
             if combined.affect_flag is None:
                 combined.affect_flag = existing.affect_flag
             for stat, delta in getattr(existing, "stat_modifiers", {}).items():

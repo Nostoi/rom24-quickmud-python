@@ -254,9 +254,9 @@ class PetSpellEffectSave:
     duration: int = 0
     level: int = 0
     ac_mod: int = 0
-    hitroll_mod: int = 0
+    hitroll_mod: int | None = None
     damroll_mod: int = 0
-    saving_throw_mod: int = 0
+    saving_throw_mod: int | None = None
     affect_flag: int | None = None
     wear_off_message: str | None = None
     stat_modifiers: list[list[int]] = field(default_factory=list)
@@ -472,9 +472,9 @@ def _serialize_pet(pet: Any) -> PetSave | None:
                 duration=_safe_int(getattr(effect, "duration", 0)),
                 level=_safe_int(getattr(effect, "level", 0)),
                 ac_mod=_safe_int(getattr(effect, "ac_mod", 0)),
-                hitroll_mod=_safe_int(getattr(effect, "hitroll_mod", 0)),
+                hitroll_mod=getattr(effect, "hitroll_mod", None),
                 damroll_mod=_safe_int(getattr(effect, "damroll_mod", 0)),
-                saving_throw_mod=_safe_int(getattr(effect, "saving_throw_mod", 0)),
+                saving_throw_mod=getattr(effect, "saving_throw_mod", None),
                 affect_flag=int(affect_flag) if affect_flag is not None else None,
                 wear_off_message=getattr(effect, "wear_off_message", None),
                 stat_modifiers=[

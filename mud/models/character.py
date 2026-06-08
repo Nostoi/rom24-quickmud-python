@@ -256,9 +256,9 @@ class SpellEffect:
     duration: int
     level: int = 0
     ac_mod: int = 0
-    hitroll_mod: int = 0
+    hitroll_mod: int | None = None
     damroll_mod: int = 0
-    saving_throw_mod: int = 0
+    saving_throw_mod: int | None = None
     affect_flag: AffectFlag | None = None
     wear_off_message: str | None = None
     stat_modifiers: dict[Stat, int] = field(default_factory=dict)
@@ -294,6 +294,19 @@ class AffectData:
     bitvector: int  # AFF_BLIND, AFF_INVISIBLE, etc.
     where: int = 0  # TO_AFFECTS (0), TO_OBJECT (1), TO_IMMUNE (2), etc.
     valid: bool = True  # Validity flag
+
+
+def _add_opt(a: int | None, b: int | None) -> int | None:
+    """None-safe addition for optional SpellEffect modifiers.
+
+    None means "this spell does not use this modifier field"; 0 means
+    "explicitly zero" (e.g. bless at low level).  None+None stays None so
+    the sync guard (``is not None``) correctly suppresses APPLY_HITROLL
+    entries for spells that never set hitroll_mod.
+    """
+    if a is None and b is None:
+        return None
+    return (a or 0) + (b or 0)
 
 
 def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
@@ -343,7 +356,7 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
             )
         )
 
-    if effect.hitroll_mod:
+    if effect.hitroll_mod is not None:
         affected.append(
             AffectData(
                 type=spell_type,  # type: ignore
@@ -367,7 +380,7 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
             )
         )
 
-    if effect.saving_throw_mod:
+    if effect.saving_throw_mod is not None:
         affected.append(
             AffectData(
                 type=spell_type,  # type: ignore
@@ -867,9 +880,9 @@ class Character:
             combined.level = c_div(combined.level + existing.level, 2)
             combined.duration += existing.duration
             combined.ac_mod += existing.ac_mod
-            combined.hitroll_mod += existing.hitroll_mod
+            combined.hitroll_mod = _add_opt(combined.hitroll_mod, existing.hitroll_mod)
             combined.damroll_mod += existing.damroll_mod
-            combined.saving_throw_mod += existing.saving_throw_mod
+            combined.saving_throw_mod = _add_opt(combined.saving_throw_mod, existing.saving_throw_mod)
             if combined.affect_flag is None:
                 combined.affect_flag = existing.affect_flag
             if not combined.wear_off_message:

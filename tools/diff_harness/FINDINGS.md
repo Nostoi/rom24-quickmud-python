@@ -8,10 +8,16 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-030 — `bless` at low levels: Python emits 1 AffectData entry, ROM emits 2 — ⚠️ OPEN
+## FINDING-030 — `bless` at low levels: Python emits 1 AffectData entry, ROM emits 2 — ✅ RESOLVED
 
-**Status:** Open — real parity bug. Surfaced 2026-06-08 while authoring the
-`learn_and_cast_bless` Hypothesis rule in `DeterministicNoRngDiffMachine`.
+**Status:** ✅ RESOLVED 2026-06-08 (2.13.25). `SpellEffect.hitroll_mod` /
+`saving_throw_mod` defaults changed to `None` (`int | None`); guard updated to
+`is not None` in `sync_spell_effect_to_affected`. Serialization (`PetSpellEffectSave`)
+and merge arithmetic (`_add_opt` helper) updated to match. Three tests added in
+`tests/integration/test_finding030_bless_affect_count.py`.
+
+**Surfaced:** 2026-06-08 while authoring the `learn_and_cast_bless` Hypothesis rule
+in `DeterministicNoRngDiffMachine`.
 
 **Root cause:** `src/magic.c:spell_bless` (lines 849–860) always calls
 `affect_to_char` TWICE for the character case — once for `APPLY_HITROLL`
