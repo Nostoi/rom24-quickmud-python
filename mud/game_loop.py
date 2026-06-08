@@ -711,12 +711,12 @@ def _char_update_tick_effects(character: Character) -> bool:
                             modifier=-5,
                             bitvector=int(AffectFlag.PLAGUE),
                         )
-                        # mirroring ROM src/update.c:839-840 — plague spread adds a full
-                        # AFFECT_DATA record to the victim, not just the AFF_PLAGUE bit.
-                        if hasattr(vch, "affect_to_char"):
-                            vch.affect_to_char(new_af)
-                        else:  # pragma: no cover - defensive fallback for test doubles
-                            vch.add_affect(AffectFlag.PLAGUE)
+                        # mirroring ROM src/update.c:839-840 + src/handler.c:1464 —
+                        # plague re-infection merges via affect_join so a victim
+                        # already carrying plague gets one merged entry, not two.
+                        from mud.handler import affect_join
+
+                        affect_join(vch, new_af)
 
                 # Drain mana and move — ROM src/update.c:843-845
                 # ARITH-203/204: ROM does `ch->mana -= dam; ch->move -= dam;` raw —

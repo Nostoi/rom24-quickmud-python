@@ -98,7 +98,7 @@ Create tests for end-to-end handler workflows
 | `affect_remove_obj()` | ✅ `mud/handler.py:affect_remove_obj()` (lines 449-488) | ✅ **Implemented** | Remove affect from object (ROM ref: handler.c:1362-1412) - **IMPLEMENTED Jan 3, 2026** |
 | `affect_strip()` | ✅ `mud/models/character.py:strip_affect()` | ✅ **Audited** | Strip all affects of type (method) - **VERIFIED Jan 3, 2026** |
 | `is_affected()` | ✅ `mud/models/character.py:has_affect()` | ✅ **Audited** | Check if character has affect (method) - **VERIFIED Jan 3, 2026** |
-| `affect_join()` | ⚠️ Partial in `add_affect()`? | ⚠️ Needs Audit | May be internal logic in add_affect |
+| `affect_join()` | ✅ `mud/handler.py:affect_join()` | ✅ **Implemented** | Merge same-type affects (average level, sum duration+modifier, remove old, call affect_to_char) — **FIXED 2026-06-08** |
 
 ### Room Functions (2 functions)
 
@@ -422,7 +422,7 @@ stable IDs.
 **Phase 3 Complete**: ✅ **+20 functions implemented** (Jan 3, 2026) - **FULL HANDLER.C PARITY**
 
 **Key Achievements This Phase**:
-- ✅ **Affects system** 91% complete (10/11 functions, only affect_join partial)
+- ✅ **Affects system** 100% complete (11/11 functions — affect_join implemented 2026-06-08)
 - ✅ **Utility functions** 100% complete (14/14 handler.c functions)
 - ✅ **Character attributes** 100% complete (8/8 functions)
 - ✅ **Money system** 100% complete (2/2 functions)

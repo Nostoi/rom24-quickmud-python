@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.29] — 2026-06-08
+
+### Fixed
+
+- **HANDLER affect_join**: implemented `affect_join` in `mud/handler.py` mirroring
+  ROM `src/handler.c:1464-1483`. When a character already carries an affect of the
+  same type, the incoming paf is merged: level averaged `(new+old)//2`, duration
+  summed, modifier summed, old removed via `affect_remove`, then `affect_to_char`
+  called once. Plague re-infection path in `mud/game_loop.py` updated to call
+  `affect_join` instead of `affect_to_char` directly, so a victim who already has
+  plague receives one merged entry rather than two stacked entries.
+  4 new integration tests + 6 pre-existing `TestAffectJoin` unit tests now passing.
+  `HANDLER_C_AUDIT.md` affects system: 100% complete (11/11 functions).
+
 ## [2.13.28] — 2026-06-08
 
 ### Fixed

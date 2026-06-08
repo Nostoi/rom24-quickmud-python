@@ -506,6 +506,30 @@ def affect_remove(ch: Character, paf: Affect) -> None:
     affect_check(ch, where, vector)
 
 
+def affect_join(ch: Character, paf: Affect) -> None:
+    """Add or enhance an affect — ROM ``src/handler.c:1464-1483``.
+
+    Searches ``ch.affected`` for an existing entry with the same type.  When
+    found, the new paf absorbs it: level is averaged, duration and modifier
+    are summed, the old entry is removed via ``affect_remove``.  Then
+    ``affect_to_char`` is called unconditionally with the (possibly merged) paf.
+
+    # mirroring ROM src/handler.c:1464-1483 affect_join
+    """
+    affected = getattr(ch, "affected", None)
+    if isinstance(affected, list):
+        for paf_old in list(affected):
+            if getattr(paf_old, "type", None) == getattr(paf, "type", None):
+                # ROM: paf->level = (paf->level += paf_old->level) / 2
+                paf.level = (paf.level + paf_old.level) // 2
+                paf.duration += paf_old.duration
+                paf.modifier += paf_old.modifier
+                affect_remove(ch, paf_old)
+                break
+
+    ch.affect_to_char(paf)  # type: ignore[arg-type]  # AffectData duck-types Affect
+
+
 def affect_to_obj(obj: Object, paf: Affect) -> None:
     """
     Add an affect to an object.
