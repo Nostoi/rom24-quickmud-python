@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.31] — 2026-06-08
+
+### Changed
+
+- **Repo cleanup**: ~83 historical root-level and `docs/parity/` files archived to
+  `docs/archive/` via `git mv` — history preserved, working tree decluttered. Root
+  now contains only active files (AGENT*.md, AGENTS.md, CLAUDE.md, CHANGELOG.md,
+  README.md, requirements*.txt). `docs/validation/` directory removed (contents
+  archived).
+- **`ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`**: prominent scope-caveat block added at top
+  explaining per-file-only coverage; four-layer verification stack table with links
+  to cross-file invariants, divergence roster, and differential harness.
+- **`docs/ROM_PARITY_VERIFICATION_GUIDE.md`**: updated to v2.0; new "Full Verification
+  Stack" section added as entry point covering all four layers (per-file audit,
+  cross-file invariants, divergence class roster, differential harness); original
+  three-level model now scoped as "per-file only".
+- **README**: Verification Status section replaced with four-layer table; Developer
+  Documentation section expanded with integration-test coverage tracker link.
+- **AGENTS.md**: dead link to `FUNCTION_COMPLETION_AGENT.md` (already removed) fixed.
+- **`ROM_2.4B6_PARITY_CERTIFICATION.md`** and **`ROM_API_COMPLETION_REPORT.md`**
+  moved from root to `docs/`; README links updated.
+
 ## [2.13.30] — 2026-06-08
 
 ### Changed
