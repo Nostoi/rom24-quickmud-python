@@ -665,6 +665,32 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __mob_carry=<vnum>: spawn a fresh object and add it to the first
+         * NPC's carry list (obj_to_char only — NOT equipped).  Used to stock
+         * a shopkeeper's inventory so do_buy can find the item.  Mirrors the
+         * Python-side __mob_carry handler in pyreplay.py. */
+        if (strncmp (line, "__mob_carry=", 12) == 0)
+        {
+            int vnum = atoi (line + 12);
+            OBJ_INDEX_DATA *oi = get_obj_index (vnum);
+            if (oi != NULL && ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people;
+                     mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        OBJ_DATA *obj = create_object (oi, 0);
+                        obj_to_char (obj, mob);
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
         /* __oload=<vnum>: spawn a fresh object into the PC's current room
          * (ROM create_object + obj_to_room). */
         if (strncmp (line, "__oload=", 8) == 0)

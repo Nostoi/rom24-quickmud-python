@@ -406,6 +406,46 @@ def test_generated_shop_sell_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+def test_generated_shop_buy_matches_live_c():
+    """``buy`` a weapon from a shopkeeper against the live C oracle.
+
+    Exercises the ``do_buy`` path: load weaponsmith (vnum 3003, profit_buy=120),
+    stock keeper with sword (vnum 3021, cost=250) via ``__mob_carry=3021``,
+    buy sword for 300 silver (c_div(250*120,100)=300).  Verifies the player's
+    silver decreases by 300, the sword enters player inventory, the keeper's
+    gold increases by 3 (incremental credit: 300//100=3 gold, 300%100=0 silver).
+    ``__seed`` brackets isolate mob-creation RNG and do_buy's unconditional
+    number_percent() call (ROM src/act_obj.c:2724) so both sides enter from an
+    identical stream."""
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_shop_buy",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester", "weaponsmith"],
+        watch_rooms=[3001],
+        steps=[
+            "__silver=300",
+            "__gold=10",
+            "__hour=12",
+            "__seed=4321",
+            "__mload=3003",
+            "__seed=4321",
+            "__mob_carry=3021",
+            "__seed=5678",
+            "buy sword",
+            "__seed=5678",
+            "inventory",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_pour_into_held_container_matches_live_c():
     """``pour <source> <character>`` into a mob's held drink container.
 

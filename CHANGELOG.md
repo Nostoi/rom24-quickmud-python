@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.22] — 2026-06-08
+
+### Added
+
+- **`__mob_carry=<vnum>` diff-harness meta-command.** Spawns an object and adds
+  it to the first NPC's carry list (`obj_to_char` only, no `equip_char`) so a
+  shopkeeper can be stocked for `do_buy` testing. Implemented in both the C shim
+  (`src/diff_shim/diffmain.c`) and Python replay (`tools/diff_harness/pyreplay.py`).
+- **`shop_buy_weapon` diff-harness scenario.** Static oracle scenario: load
+  weaponsmith (vnum 3003) into room 3001, stock it with small sword (vnum 3021)
+  via `__mob_carry`, buy for 300 silver — verifies player silver decreases by 300,
+  sword enters inventory, keeper gold increases by 3 (incremental credit fix from
+  2.13.21). Golden captured from C engine; Python matches.
+- **`test_generated_shop_buy_matches_live_c` static test.** Inline scenario
+  exercising the full `do_buy` path against the live C oracle.
+- **`stock_keeper_sword` and `buy_sword_from_keeper` Hypothesis rules** in
+  `DeterministicNoRngDiffMachine`. Generates random buy sequences interleaved
+  with sell/movement/combat to catch buy-side parity regressions.
+
 ## [2.13.21] — 2026-06-08
 
 ### Fixed

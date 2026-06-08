@@ -102,6 +102,16 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         # cap __char_update calls well below ROM's idle-to-limbo threshold (12)
         # so the test char is never teleported out of the watch room.
         self.char_update_count: int = 0
+        # buy-side state: whether the keeper has a sword stocked via __mob_carry.
+        self._keeper_has_sword: bool = False
+        # bought_sword tracks a sword acquired from the keeper (distinct from
+        # small_sword which the player looted/loaded themselves).
+        self.bought_sword = _ObjectState(
+            vnum=3021,
+            keyword="sword",
+            load_command="__mob_carry=3021",
+            wear_command="wield sword",
+        )
 
     @rule()
     def look(self) -> None:
@@ -441,6 +451,34 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("__seed=5678")
         self.small_sword.inventory = False
         self.player_silver += 100
+
+    @precondition(lambda self: self.weaponsmith.room == self.current_room and not self._keeper_has_sword)
+    @rule()
+    def stock_keeper_sword(self) -> None:
+        # __mob_carry=3021: add small sword to the keeper's carry list (not
+        # equipped) so do_buy can find it.  Mirrors ROM obj_to_char without
+        # equip_char (src/act_obj.c:2706 obj_from_char / src/handler.c obj_to_char).
+        self.steps.append("__mob_carry=3021")
+        self._keeper_has_sword = True
+
+    @precondition(
+        lambda self: self._keeper_has_sword
+        and self.player_silver >= 300
+        and self.weaponsmith.room == self.current_room
+        and not self.bought_sword.inventory
+        and not self.bought_sword.equipped
+    )
+    @rule()
+    def buy_sword_from_keeper(self) -> None:
+        # __seed= brackets isolate do_buy's unconditional number_percent() call
+        # (ROM src/act_obj.c:2724) from the surrounding RNG stream — mirroring
+        # the same pattern used in sell_sword_to_weaponsmith.
+        self.steps.append("__seed=5678")
+        self.steps.append("buy sword")
+        self.steps.append("__seed=5678")
+        self._keeper_has_sword = False
+        self.player_silver -= 300
+        self.bought_sword.inventory = True
 
     @precondition(lambda self: self.drunk.room == self.current_room and not self._drunk_has_empty_cup)
     @rule()

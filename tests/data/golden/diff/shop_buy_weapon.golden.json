@@ -1,0 +1,723 @@
+{
+  "scenario": "shop_buy_weapon",
+  "c_commit": "ae397278e79b8e95f79f6333ce1ee8e18258de08",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__silver=300",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 300,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__hour=12",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 300,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "__seed=4321",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 300,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "__mload=3003",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 300,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "weaponsmith",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 246,
+          "silver": 11122,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 13,
+          "eff_damroll": 36,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "weaponsmith",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__seed=4321",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 300,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "weaponsmith",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 246,
+          "silver": 11122,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 13,
+          "eff_damroll": 36,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "weaponsmith",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "__mob_carry=3021",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 300,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "weaponsmith",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 246,
+          "silver": 11122,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3021
+          ],
+          "equipment": {},
+          "eff_hitroll": 13,
+          "eff_damroll": 36,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "weaponsmith",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 7,
+      "command": "list",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 300,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "weaponsmith",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 246,
+          "silver": 11122,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3021
+          ],
+          "equipment": {},
+          "eff_hitroll": 13,
+          "eff_damroll": 36,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "weaponsmith",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\r[Lv Price Qty] Item",
+        "\r[ 0   300  1 ] a small sword",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "__seed=5678",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 300,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "weaponsmith",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 246,
+          "silver": 11122,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3021
+          ],
+          "equipment": {},
+          "eff_hitroll": 13,
+          "eff_damroll": 36,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "weaponsmith",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 9,
+      "command": "buy sword",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3021
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "weaponsmith",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 249,
+          "silver": 11122,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 13,
+          "eff_damroll": 36,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "weaponsmith",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou buy a small sword for 300 silver.",
+        ""
+      ]
+    },
+    {
+      "step": 10,
+      "command": "__seed=5678",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3021
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "weaponsmith",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 249,
+          "silver": 11122,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 13,
+          "eff_damroll": 36,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "weaponsmith",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 11,
+      "command": "inventory",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3021
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "weaponsmith",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 249,
+          "silver": 11122,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 13,
+          "eff_damroll": 36,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "weaponsmith",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou are carrying:",
+        "\r     a small sword",
+        ""
+      ]
+    }
+  ]
+}
