@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.30] — 2026-06-08
+
+### Changed
+
+- **README**: reframed project stage as "parity beta" — feature-complete and playable,
+  parity fidelity systematically hardening. Replaced internal "trust rebuild" language
+  with player/contributor-facing clarity. Badge updated from "revalidation in progress"
+  to "parity beta".
+- **ROM_C_SUBSYSTEM_AUDIT_TRACKER.md**: `handler.c` row updated — `affect_join` was
+  the last partial gap; affects system now 100% (11/11 functions). Function count
+  corrected to 75 (74 + `affect_join`).
+
 ## [2.13.29] — 2026-06-08
 
 ### Fixed
