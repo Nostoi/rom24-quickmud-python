@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.28] — 2026-06-08
+
+### Fixed
+
+- **INV-040 AFFECT-TO-CHAR-FULL-APPLY**: `Character.affect_to_char` now calls
+  `affect_modify(True)` (mirroring ROM `src/handler.c:1278`), applying the AffectData's
+  stat modifier and all bitvector types. Previously it only OR-set `affected_by` directly,
+  silently dropping stat mods (e.g. plague spread's APPLY_STR -5).
+  `mud/game_loop.py` plague-spread AffectData also fixed: `location="str"` → `location=1`
+  (APPLY_STR integer, matching ROM `src/update.c:825`). Separate open finding: ROM uses
+  `affect_join` for plague-spread re-infection (merge); Python still calls `affect_to_char`
+  directly (stack) — tracked as ⚠️ Partial `affect_join` in HANDLER_C_AUDIT.md.
+
 ## [2.13.27] — 2026-06-08
 
 ### Fixed

@@ -972,22 +972,17 @@ class Character:
         return effect
 
     def affect_to_char(self, affect: AffectData) -> None:
+        """Add a ROM C AFFECT_DATA to the character's affected list.
+
+        Mirrors ROM src/handler.c:1266-1280 affect_to_char — calls
+        affect_modify(ch, paf, TRUE) to apply stat modifiers AND bitvectors,
+        then appends to ch.affected.  INV-040 enforcement point.
         """
-        Add a ROM C AFFECT_DATA to the character's affected list.
+        # ROM src/handler.c:1278 — affect_to_char calls affect_modify(ch, paf_new, TRUE)
+        # before linking into ch->affected.  Lazy import to avoid circular dependency.
+        from mud.handler import affect_modify
 
-        ROM Reference: src/handler.c affect_to_char (lines 2607-2623)
-
-        This is the proper ROM C way to add spell affects. The affect is added
-        to the ch.affected linked list and the bitvector is applied to ch.affected_by.
-
-        Args:
-            affect: AffectData structure with spell information
-        """
-        # Apply the bitvector to character's affected_by field
-        if affect.bitvector:
-            self.affected_by = getattr(self, "affected_by", 0) | affect.bitvector
-
-        # Add to affected list (ROM C linked list)
+        affect_modify(self, affect, True)  # type: ignore[arg-type]  # AffectData duck-types Affect
         self.affected.append(affect)
 
 

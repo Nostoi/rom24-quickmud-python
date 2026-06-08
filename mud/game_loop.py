@@ -707,7 +707,7 @@ def _char_update_tick_effects(character: Character) -> bool:
                             type="plague",
                             level=spread_level,
                             duration=rng_mm.number_range(1, 2 * spread_level),
-                            location="str",
+                            location=1,  # APPLY_STR — ROM src/update.c:825 `plague.location = APPLY_STR`
                             modifier=-5,
                             bitvector=int(AffectFlag.PLAGUE),
                         )
