@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.32] — 2026-06-08
+
+### Added
+
+- **Diff-harness `__mob_gold=N` / `__mob_silver=N` meta-commands** (`src/diff_shim/diffmain.c`,
+  `tools/diff_harness/pyreplay.py`): set the first NPC in the room's gold / silver directly,
+  mirroring the existing `__gold=` / `__silver=` commands for the PC. Required to control
+  shopkeeper treasury in sell-path scenarios.
+- **`shop_sell_keeper_broke` scenario** (`tools/diff_harness/scenarios/shop_sell_keeper_broke.json`):
+  exercises the ROM `do_sell` wealth-check early exit (`src/act_obj.c:2916-2921` —
+  `"I'm afraid I don't have enough wealth to buy $p."`).
+- **`test_generated_shop_sell_keeper_broke_matches_live_c`** (`tests/test_diff_harness_generated.py`):
+  live C-oracle differential test confirming C and Python agree on the keeper-broke
+  sell-error path (5452 passing, 5 skipped).
+
 ## [2.13.31] — 2026-06-08
 
 ### Changed

@@ -1,0 +1,20 @@
+{
+  "name": "shop_sell_keeper_broke",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester", "weaponsmith"], "rooms": [3001] },
+  "steps": [
+    "__silver=200",
+    "__gold=10",
+    "__hour=12",
+    "__oload=3021",
+    "get sword",
+    "__seed=4321",
+    "__mload=3003",
+    "__seed=4321",
+    "__mob_gold=0",
+    "__mob_silver=0",
+    "sell sword"
+  ]
+}

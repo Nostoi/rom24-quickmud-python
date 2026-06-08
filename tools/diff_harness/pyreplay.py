@@ -71,6 +71,22 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
     if command.startswith("__silver="):
         char.silver = int(command[len("__silver=") :])
         return ""
+    if command.startswith("__mob_gold="):
+        from mud.spawning.templates import MobInstance
+
+        val = int(command[len("__mob_gold=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is not None:
+            mob.gold = val
+        return ""
+    if command.startswith("__mob_silver="):
+        from mud.spawning.templates import MobInstance
+
+        val = int(command[len("__mob_silver=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is not None:
+            mob.silver = val
+        return ""
     if command.startswith("__cond_full="):
         from mud.models.constants import Condition
 

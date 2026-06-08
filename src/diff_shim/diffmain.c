@@ -607,6 +607,44 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __mob_gold=<n>: set the first NPC in the room's gold directly.
+         * Used to control keeper treasury for sell-path differential tests. */
+        if (strncmp (line, "__mob_gold=", 11) == 0)
+        {
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL; mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        mob->gold = atol (line + 11);
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
+        /* __mob_silver=<n>: set the first NPC in the room's silver directly.
+         * Companion to __mob_gold for zeroing out a shopkeeper's treasury. */
+        if (strncmp (line, "__mob_silver=", 13) == 0)
+        {
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL; mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        mob->silver = atol (line + 13);
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
         /* __cond_full=<n>: set the PC's condition[FULL] directly (no RNG). */
         if (strncmp (line, "__cond_full=", 12) == 0)
         {

@@ -476,3 +476,42 @@ def test_generated_pour_into_held_container_matches_live_c():
     )
 
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_shop_sell_keeper_broke_matches_live_c():
+    """``sell`` to a keeper with zero treasury — exercises the wealth-check early exit.
+
+    ROM ``do_sell`` (src/act_obj.c:2916-2921) returns early with keeper voice
+    ``"I'm afraid I don't have enough wealth to buy $p."`` when
+    ``price > (keeper->silver + 100 * keeper->gold)``.  ``__mob_gold=0`` and
+    ``__mob_silver=0`` zero the first NPC's treasury after spawning so the guard
+    fires regardless of the mob's rolled wealth.  No haggle ``number_percent()``
+    call occurs on this path, so no ``__seed`` bracket is needed around the sell
+    command itself."""
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_shop_sell_keeper_broke",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester", "weaponsmith"],
+        watch_rooms=[3001],
+        steps=[
+            "__silver=200",
+            "__gold=10",
+            "__hour=12",
+            "__oload=3021",
+            "get sword",
+            "__seed=4321",
+            "__mload=3003",
+            "__seed=4321",
+            "__mob_gold=0",
+            "__mob_silver=0",
+            "sell sword",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
