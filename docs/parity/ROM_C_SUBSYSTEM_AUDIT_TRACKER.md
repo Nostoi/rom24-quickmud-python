@@ -336,66 +336,34 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ## Priority 1: Core Features (IMPORTANT)
 
-### ✅ P1-1: handler.c (AUDITED - 73%)
+### ✅ P1-1: handler.c (COMPLETE - 100%)
 
-**Status**: ✅ **Audited January 2-3, 2026** - extract_char complete with full ROM C parity
+**Status**: ✅ **COMPLETE** — 75 functions fully implemented. Last gap closed 2026-06-08.
 
-**ROM Functions**: Object/character manipulation (79 functions total)
-**QuickMUD Modules**: `mud/world/`, `mud/game_loop.py`, `mud/commands/`, `mud/affects/`, `mud/handler.py`, `mud/mob_cmds.py`
+**ROM Functions**: Object/character manipulation (75 functions)
+**QuickMUD Modules**: `mud/handler.py`, `mud/world/`, `mud/game_loop.py`, `mud/commands/`, `mud/affects/`, `mud/models/`, `mud/mob_cmds.py`
 
 **Detailed Audit Document**: `docs/parity/HANDLER_C_AUDIT.md`
 
-**Audit Status** (35/79 fully implemented, 5 partial):
+> ⚠️ The function-by-function list below is a historical snapshot from January 2026
+> (35 of a then-79 estimate). All gaps have since been closed; the canonical
+> current status is in `HANDLER_C_AUDIT.md`. Key milestones:
+> - Jan 2-3, 2026: 35 core functions + 4 critical bug fixes
+> - Jan 4, 2026: remaining 39 functions closed (full phase completion)
+> - 2026-06-08: `affect_join` merge semantics added — affects system 100% (11/11)
 
-**✅ Fully Implemented (35 functions)**:
-- ✅ `get_char_world()` (100% - `mud/world/char_find.py`)
-- ✅ `get_char_room()` (100% - `mud/world/char_find.py`)
-- ✅ `is_name()` (100% - `mud/world/char_find.py`)
-- ✅ `get_obj_carry()` (100% - `mud/world/obj_find.py`)
-- ✅ `get_obj_world()` (100% - `mud/world/obj_find.py`)
-- ✅ `obj_to_char()` (100% - `mud/game_loop.py:_obj_to_char`)
-- ✅ `obj_from_char()` (100% - `mud/game_loop.py:_remove_from_character`)
-- ✅ `obj_to_obj()` (100% - `mud/game_loop.py:_obj_to_obj`) ✅ **FIXED Jan 2** - carrier weight update
-- ✅ `obj_from_obj()` (100% - `mud/game_loop.py:_obj_from_obj`) ✅ **FIXED Jan 2** - carrier weight decrement
-- ✅ `obj_to_room()` (100% - `mud/game_loop.py:_obj_to_room`)
-- ✅ `get_obj_weight()` (100% - `mud/game_loop.py:_get_obj_weight_recursive`) ✅ **FIXED Jan 2** - WEIGHT_MULT applied
-- ✅ `get_true_weight()` (100% - same as `_get_obj_weight_recursive`) ✅ **FIXED Jan 2**
-- ✅ `apply_ac()` (100% - `mud/handler.py:apply_ac`) ✅ **FIXED Jan 2** - 3x body multiplier, 13/13 tests passing
-- ✅ `get_eq_char()` (100% - `ch.equipment[slot]` dict) ✅ **AUDITED Jan 2** - Equivalent implementation
-- ✅ `equip_char()` (100% - `mud/handler.py` + `equipment.py:_can_wear_alignment`) ✅ **AUDITED Jan 2**
-- ✅ `unequip_char()` (100% - `mud/handler.py:unequip_char`) ✅ **FIXED Jan 2** - APPLY_SPELL_AFFECT removal
-- ✅ `count_obj_list()` (100% - `mud/spawning/reset_handler.py:_count_existing_objects`) ✅ **AUDITED Jan 2**
-- ✅ `extract_obj()` (95% - `mud/game_loop.py:_extract_obj`) ✅ **AUDITED Jan 2** - Missing prototype count only
-- ✅ `extract_char()` (100% - `mud/mob_cmds.py:_extract_character`) ✅ **FIXED Jan 3** - Full ROM C parity
-- ✅ `char_to_room()` (100% - `mud/models/room.py:char_to_room`) ✅ **Jan 2** - light tracking + temple fallback
-- ✅ `char_from_room()` (100% - `mud/models/room.py:Room.remove_character`) ✅ **Jan 2** - light tracking + furniture
-- ✅ `die_follower()` (100% - `mud/characters/follow.py`)
-- ✅ `affect_modify()` (100% - `mud/handler.py:affect_modify`)
-- ✅ `affect_to_char()` (100% - `mud/models/character.py:add_affect`)
-- ✅ `affect_remove()` (100% - `mud/models/character.py:remove_affect`)
-- ✅ `affect_strip()` (100% - `mud/models/character.py:strip_affect`)
-- ✅ `is_affected()` (100% - `mud/models/character.py:has_affect`)
-- ✅ `room_is_dark()` (100% - `mud/world/vision.py:room_is_dark`)
-- ✅ `can_see_room()` (100% - `mud/world/vision.py:can_see_room`)
-- ✅ `can_see()` (100% - `mud/world/vision.py:can_see_character`)
-- ✅ `can_see_obj()` (100% - `mud/world/vision.py:can_see_object`)
-- ✅ Plus 4 more utility functions
-
-**⚠️ Partial Implementation (5 functions)**:
-- ⚠️ `is_exact_name()` (Handled by `_is_name_match()` - no direct 1:1)
-- ⚠️ `get_obj_list()` (Internal logic in get_obj_carry - no standalone)
-- ⚠️ `obj_from_room()` (Partial in `_extract_obj` logic)
-- ⚠️ `extract_char_old()` (Old version exists but superseded)
-- ⚠️ `affect_join()` (May be in add_affect internal logic)
-
-**❌ Missing Functions (39 functions)**:
-- [ ] Object lookup: `get_obj_type`, `get_obj_wear`, `get_obj_here`, `get_obj_number` (4)
-- [ ] Affects: `affect_enchant`, `affect_find`, `affect_check`, `affect_to_obj`, `affect_remove_obj` (5)
-- [ ] Vision: 3 functions (can_drop_obj, is_room_owner, room_is_private)
-- [ ] Character attributes: 8 functions (get_skill, get_trust, etc.)
-- [ ] Utility/Lookup: 14 functions
-- [ ] Money: 2 functions
-- [ ] Encumbrance: 2 functions
+**✅ Affects system — 100% complete (11/11 functions)**:
+- ✅ `affect_modify()` — `mud/handler.py:affect_modify`
+- ✅ `affect_to_char()` — `mud/models/character.py:Character.affect_to_char` (INV-040, 2026-06-08)
+- ✅ `affect_join()` — `mud/handler.py:affect_join` (merge semantics, 2026-06-08)
+- ✅ `affect_remove()` — `mud/handler.py:affect_remove`
+- ✅ `affect_remove_obj()` — `mud/handler.py:affect_remove_obj`
+- ✅ `affect_to_obj()` — `mud/handler.py:affect_to_obj`
+- ✅ `affect_enchant()` — `mud/handler.py:affect_enchant`
+- ✅ `affect_find()` — `mud/handler.py:affect_find`
+- ✅ `affect_check()` — `mud/handler.py:affect_check`
+- ✅ `affect_strip()` — `mud/models/character.py:strip_affect`
+- ✅ `is_affected()` — `mud/models/character.py:has_affect`
 
 **🎉 Critical Bug Fixes** (January 2, 2026):
 
