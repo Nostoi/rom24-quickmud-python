@@ -100,18 +100,6 @@ def _find_character(name: str) -> Character | None:
     return None
 
 
-def _broadcast_room(room: Room, message: str, exclude: object | None = None) -> None:
-    if hasattr(room, "broadcast"):
-        room.broadcast(message, exclude=exclude)
-        return
-    for occupant in getattr(room, "people", []) or []:
-        if occupant is exclude:
-            continue
-        messages = getattr(occupant, "messages", None)
-        if isinstance(messages, list):
-            messages.append(message)
-
-
 def _can_loot(mob: Character, obj: Object) -> bool:
     if getattr(mob, "is_admin", False):
         return True
@@ -187,11 +175,13 @@ def _take_object(mob: Character, obj: Object) -> None:
             if isinstance(inventory, list) and obj not in inventory:
                 inventory.insert(0, obj)
 
+    # mirroring ROM src/update.c:491 — act("$n gets $p.", ch, obj_best, NULL, TO_ROOM)
+    # act_to_room handles per-recipient formatting + TRIG_ACT dispatch (src/comm.c:2384).
     room = getattr(mob, "room", None)
-    if room is not None and hasattr(room, "broadcast"):
-        mob_name = getattr(mob, "short_descr", None) or getattr(mob, "name", None) or "Someone"
-        obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", None) or "something"
-        room.broadcast(f"{mob_name} gets {obj_name}.", exclude=mob)
+    if room is not None:
+        from mud.utils.act import act_to_room
+
+        act_to_room(room, "$n gets $p.", mob, arg1=obj, exclude=mob)
 
 
 def _maybe_scavenge(mob: Character, room: Room) -> None:

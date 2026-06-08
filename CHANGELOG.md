@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.34] — 2026-06-08
+
+### Fixed
+
+- **Scavenger pickup missing TRIG_ACT dispatch** (`mud/ai/__init__.py`): `_take_object`
+  was broadcasting with a bare baked f-string instead of the canonical `act_to_room`
+  helper, silently skipping `mp_act_trigger` for NPC observers in the room. Mirrors
+  ROM `src/update.c:491` `act("$n gets $p.", ch, obj_best, NULL, TO_ROOM)` which has
+  no `MOBtrigger = FALSE` guard. Replaced with `act_to_room("$n gets $p.", mob, arg1=obj,
+  exclude=mob)`; also removed the dead `_broadcast_room` helper that had been shadowed
+  by this bug. INV-025 ad-hoc follow-up (scavenger-pickup path).
+
 ## [2.13.33] — 2026-06-08
 
 ### Added

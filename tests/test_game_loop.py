@@ -400,6 +400,75 @@ def test_mobile_update_scavenges_room_loot(monkeypatch):
     assert scavenger.carry_number == 1
 
 
+def test_scavenger_pickup_dispatches_trig_act(monkeypatch):
+    """Scavenger $n gets $p. broadcasts must dispatch TRIG_ACT — ROM src/update.c:491."""
+
+    area = Area(name="Dump")
+    room = Room(vnum=202, area=area)
+    room_registry[room.vnum] = room
+
+    scavenger = Character(
+        name="Picker",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+        act=int(ActFlag.SCAVENGER),
+        carry_number=0,
+        carry_weight=0,
+    )
+    room.add_character(scavenger)
+    character_registry.append(scavenger)
+
+    gem = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=0, item_type=int(ItemType.TRASH), short_descr="bright gem"),
+        wear_flags=int(WearFlag.TAKE),
+        cost=25,
+    )
+    room.add_object(gem)
+
+    # NPC listener with a TRIG_ACT program watching for "bright gem"
+    listener = Character(
+        name="watcher",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    listener.messages = []
+    proto = MobIndex(vnum=9801, short_descr="a watcher", level=5)
+    proto.mprogs = []
+    listener.prototype = proto
+    room.add_character(listener)
+    character_registry.append(listener)
+
+    fired: list[str] = []
+    original_trigger = mobprog.mp_act_trigger
+
+    def _probe(argument, recipient, *args, **kwargs):
+        if recipient is listener:
+            fired.append(str(argument))
+        return original_trigger(argument, recipient, *args, **kwargs)
+
+    monkeypatch.setattr(mobprog, "mp_act_trigger", _probe)
+
+    def fake_number_bits(width: int) -> int:
+        if width == 6:
+            return 0  # scavenge fires
+        if width == 3:
+            return 1  # no wander
+        if width == 5:
+            return 6  # no wander
+        return 0
+
+    monkeypatch.setattr(rng_mm, "number_bits", fake_number_bits)
+
+    mobile_update()
+
+    assert any("bright gem" in msg for msg in fired), (
+        "scavenger pickup must dispatch mp_act_trigger with '$n gets $p.' — ROM src/update.c:491"
+    )
+
+
 def test_mobile_update_refreshes_shopkeeper_wealth(monkeypatch):
     area = Area(name="Market")
     room = Room(vnum=305, area=area)
