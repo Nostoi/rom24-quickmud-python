@@ -84,6 +84,7 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         )
         self.drunk = _MobState(vnum=3064, keyword="drunk")
         self._drunk_has_empty_cup: bool = False
+        self.weaponsmith = _MobState(vnum=3003, keyword="weaponsmith")
         self.bottle_beer = _ObjectState(
             vnum=3001,
             keyword="bottle",
@@ -407,6 +408,40 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("__seed=1234")
         self.drunk.room = self.current_room
 
+    # ── shop rules ────────────────────────────────────────────────
+    # Midgaard weaponsmith (vnum 3003) accepts weapons; profit_sell=40.
+    # Sword 3021 (cost=250) → sell price = 250*40/100 = 100 silver.
+    # __seed= brackets isolate mob-creation and sell RNG from the rest of
+    # the stream (create_mobile rolls hp dice + wealth; do_sell calls
+    # number_percent unconditionally + number_range(50,100) for item timer).
+    # Source: src/act_obj.c:2531 do_buy, src/act_obj.c:2875 do_sell.
+
+    @precondition(lambda self: self.weaponsmith.room is None)
+    @rule()
+    def load_weaponsmith(self) -> None:
+        # __hour=12 is required — the diffshim never sets current_time, so
+        # time_info.hour = ((0 - 650336715) / 60) % 24 which is negative in C
+        # (≈ -17), tripping ROM's open_hour guard (time_info.hour < pShop->open_hour)
+        # even for shops with open_hour=0.  Any valid hour 0-23 fixes it.
+        self.steps.append("__hour=12")
+        self.steps.append("__seed=4321")
+        self.steps.append("__mload=3003")
+        self.steps.append("__seed=4321")
+        self.weaponsmith.room = self.current_room
+
+    @precondition(
+        lambda self: self.small_sword.inventory
+        and not self.small_sword.equipped
+        and self.weaponsmith.room == self.current_room
+    )
+    @rule()
+    def sell_sword_to_weaponsmith(self) -> None:
+        self.steps.append("__seed=5678")
+        self.steps.append("sell sword")
+        self.steps.append("__seed=5678")
+        self.small_sword.inventory = False
+        self.player_silver += 100
+
     @precondition(lambda self: self.drunk.room == self.current_room and not self._drunk_has_empty_cup)
     @rule()
     def give_drunk_empty_cup(self) -> None:
@@ -508,6 +543,8 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         watch_chars = ["Tester"]
         if self.drunk.room is not None:
             watch_chars.append("drunk")
+        if self.weaponsmith.room is not None:
+            watch_chars.append("weaponsmith")
         sc = Scenario(
             name="generated_no_rng",
             seed=1234,

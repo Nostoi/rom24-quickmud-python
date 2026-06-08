@@ -826,7 +826,10 @@ def do_buy(char: Character, args: str) -> str:
             act_to_room(room, "$n buys $p.", char, arg1=selected_obj)
 
     deduct_cost(char, total_cost)
-    _set_keeper_total_wealth(keeper, _keeper_total_wealth(keeper) + total_cost)
+    # mirroring ROM src/act_obj.c:2747-2748 — keeper gold/silver incremented
+    # independently, NOT via a total-wealth rebalance.
+    keeper.gold = int(getattr(keeper, "gold", 0)) + total_cost // 100
+    keeper.silver = int(getattr(keeper, "silver", 0)) + total_cost % 100
 
     purchased_items: list[Object] = []
     if infinite_stock:
@@ -912,21 +915,22 @@ def do_sell(char: Character, args: str) -> str:
         haggle_skill = int(skills.get("haggle", 0) or 0)
     except (TypeError, ValueError):
         haggle_skill = 0
-    if haggle_skill > 0 and not (flags & int(ITEM_SELL_EXTRACT)):
-        roll = rng_mm.number_percent()
-        if roll < haggle_skill:
-            proto = getattr(selected_obj, "prototype", None)
-            base_cost = int(getattr(proto, "cost", getattr(selected_obj, "cost", 0)) or 0)
-            bonus = (base_cost // 2) * roll // 100
-            price += bonus
-            buy_price = _get_cost(keeper, selected_obj, buy=True)
-            if buy_price > 0:
-                price = min(price, (95 * buy_price) // 100)
-            price = min(price, total_wealth)
-            # INV-001 wrong-channel cousin: ROM src/act_obj.c:2929 sends this
-            # directly to the descriptor.
-            push_message(char, "You haggle with the shopkeeper.")
-            check_improve(char, "haggle", True, 4)
+    # mirroring ROM src/act_obj.c:2925 — number_percent() is unconditional; skill gate
+    # only controls whether the bonus applies, not whether the RNG call happens.
+    roll = rng_mm.number_percent()
+    if haggle_skill > 0 and not (flags & int(ITEM_SELL_EXTRACT)) and roll < haggle_skill:
+        proto = getattr(selected_obj, "prototype", None)
+        base_cost = int(getattr(proto, "cost", getattr(selected_obj, "cost", 0)) or 0)
+        bonus = (base_cost // 2) * roll // 100
+        price += bonus
+        buy_price = _get_cost(keeper, selected_obj, buy=True)
+        if buy_price > 0:
+            price = min(price, (95 * buy_price) // 100)
+        price = min(price, total_wealth)
+        # INV-001 wrong-channel cousin: ROM src/act_obj.c:2929 sends this
+        # directly to the descriptor.
+        push_message(char, "You haggle with the shopkeeper.")
+        check_improve(char, "haggle", True, 4)
 
     # mirroring ROM src/act_obj.c:2923 — act("$n sells $p.", ch, obj, NULL, TO_ROOM).
     # INV-025/INV-027: act_to_room renders $n per recipient (invisible seller →
@@ -999,11 +1003,19 @@ def do_sell(char: Character, args: str) -> str:
                     if isinstance(inventory, list):
                         inventory.insert(0, selected_obj)
 
-    _set_character_total_wealth(char, _character_total_wealth(char) + price)
-    _set_keeper_total_wealth(keeper, total_wealth - price)
-
+    # mirroring ROM src/act_obj.c:2938-2939 — gold and silver are incremented
+    # independently, NOT via a total-wealth rebalance.  _set_character_total_wealth
+    # would fold existing silver into gold (e.g. 200 silver → 2 gold), diverging
+    # from ROM which leaves each bucket unchanged except for the sale proceeds.
     silver = price % 100
     gold = price // 100
+    char.gold = int(getattr(char, "gold", 0)) + gold
+    char.silver = int(getattr(char, "silver", 0)) + silver
+    # mirroring ROM src/act_obj.c:2940 — use deduct_cost which subtracts from
+    # silver first, then from gold, preserving the gold/silver split rather
+    # than rebalancing the full total (_set_keeper_total_wealth would fold all
+    # silver into gold, diverging when the keeper holds > 100 silver).
+    deduct_cost(keeper, price)
     descriptor = selected_obj.short_descr or selected_obj.name or "item"
     suffix = "" if price == 1 else "s"
     return f"You sell {descriptor} for {silver} silver and {gold} gold piece{suffix}."

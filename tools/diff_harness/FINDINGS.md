@@ -8,6 +8,66 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-029 — `do_sell` keeper wealth deducted via total-rebalance; ROM uses `deduct_cost` — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-08 (2.13.21). Surfaced by adding the weaponsmith
+to `watch_chars` in `test_generated_shop_sell_matches_live_c`, which exposed the
+keeper's post-sell gold diverging: `chars[weaponsmith].gold · C=246 py=356`.
+
+**Root cause:** `mud/commands/shop.py:do_sell` line 1011 called
+`_set_keeper_total_wealth(keeper, total_wealth - price)`, which rebalances the
+full total into whole-gold + remainder-silver (`c_div(total, 100)` /
+`c_mod(total, 100)`). ROM `src/act_obj.c:2940` calls `deduct_cost(keeper, cost)`
+which subtracts from silver first, then from gold in 100-silver units — leaving
+the gold/silver split intact whenever silver covers all or part of the cost.
+
+**Example (cost=100 silver, keeper starts with gold=246, silver=11100):**
+- ROM `deduct_cost`: silver = min(11100, 100) = 100; remaining = 0; gold unchanged → gold=246, silver=11000
+- Python `_set_keeper_total_wealth(35700 - 100 = 35600)` → gold=356, silver=0 (folded 11100 silver into gold)
+
+**Fix:** `do_sell` now calls `deduct_cost(keeper, price)` (already imported),
+matching ROM `src/act_obj.c:2940`.
+
+**Companion fix (same session, same class):** `do_buy` line 829 also called
+`_set_keeper_total_wealth(keeper, _keeper_total_wealth(keeper) + total_cost)`
+instead of incrementing gold/silver independently. ROM `src/act_obj.c:2747-2748`
+does `keeper->gold += cost/100; keeper->silver += cost - (cost/100)*100`. Fixed
+to direct incremental credit (matching FINDING-028's player-side pattern).
+
+**Regression:** `test_generated_shop_sell_matches_live_c` (weaponsmith now in
+`watch_chars`); the sell price still passes the player-side Tester assertions
+from the prior commit.
+
+---
+
+## FINDING-028 — `do_sell` player credit via total-rebalance; ROM increments gold/silver independently — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-08 (2.13.21). Surfaced by the initial
+`test_generated_shop_sell_matches_live_c` scenario: player gold diverged
+(`C=11 py=13`) after selling a sword for 100 silver (worth 1 gold).
+
+**Root cause:** `mud/commands/shop.py:do_sell` called
+`_set_character_total_wealth(char, _character_total_wealth(char) + price)`.
+With the test char holding gold=10 and silver=200, total=1200, adding 100 →
+total=1300 → Python set gold=13, silver=0 (absorbed the 200 existing silver into
+gold). ROM `src/act_obj.c:2938-2939` increments independently:
+`ch->gold += cost/100; ch->silver += cost - (cost/100)*100` → gold=11, silver=200.
+
+**Fix:** `do_sell` now does `char.gold += price // 100; char.silver += price % 100`,
+matching ROM `src/act_obj.c:2938-2939`.
+
+**Second bug (same session):** `mud/commands/shop.py:do_sell` gated the
+`number_percent()` RNG call behind `if haggle_skill > 0:` (Python never draws
+the random number for non-hagglers). ROM `src/act_obj.c:2925` calls
+`number_percent()` unconditionally — the draw fires even when `chance == 0`.
+Fixed by hoisting the call outside the guard. NOTE: the `__seed=5678` trailing
+bracket in the test scenario resets the RNG stream after `sell sword`, so the
+harness doesn't directly verify this fix — it was confirmed by source reading
+only. The unconditional draw is the same class as FIGHT-021/FIGHT-022 (ROM C
+always draws RNG even when the result is discarded).
+
+---
+
 ## FINDING-027 — money object vnum swap + `create_money` fabricated-proto wording/cost — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-04 (2.13.11). Surfaced by the new deterministic

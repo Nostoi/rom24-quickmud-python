@@ -45,10 +45,15 @@ def _normalize_room(r: RoomSnap) -> RoomSnap:
 
 
 def normalize_step(step: StepSnap) -> StepSnap:
+    # Sort chars by key and rooms by vnum so the list equality check in
+    # diff_traces is order-independent.  The C oracle and Python replay may
+    # emit their snapshot lists in different insertion orders (e.g. when two
+    # mobs are both in watch_chars); sorting makes the == comparison agree
+    # with _render_step_diff's dict-keyed per-field checks.
     return replace(
         step,
-        chars=[_normalize_char(c) for c in step.chars],
-        rooms=[_normalize_room(r) for r in step.rooms],
+        chars=sorted([_normalize_char(c) for c in step.chars], key=lambda c: c.key),
+        rooms=sorted([_normalize_room(r) for r in step.rooms], key=lambda r: r.vnum),
         output=_normalize_output(step.output),
     )
 

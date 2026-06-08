@@ -5,6 +5,51 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.21] — 2026-06-08
+
+### Fixed
+
+- **`do_sell` player credit — incremental gold/silver, not total-rebalance (FINDING-028).**
+  `do_sell` was calling `_set_character_total_wealth(char, total + price)`, which
+  rebalances the player's entire wealth into whole-gold + remainder-silver on every
+  sell (e.g. 200 silver + 100 silver proceeds → 3 gold 0 silver instead of 10 gold
+  200 silver). ROM `src/act_obj.c:2938-2939` increments independently:
+  `ch->gold += cost/100; ch->silver += cost - (cost/100)*100`. Fixed to direct
+  incremental credit matching ROM.
+- **`do_sell` unconditional `number_percent()` RNG draw (FINDING-028).**
+  Python gated the haggle `number_percent()` call behind `if haggle_skill > 0:`
+  while ROM `src/act_obj.c:2925` always calls it, even for non-hagglers. Fixed
+  by hoisting the call unconditionally (same class as FIGHT-021/022).
+- **`do_sell` keeper deduction via `deduct_cost`, not total-rebalance (FINDING-029).**
+  `do_sell` was calling `_set_keeper_total_wealth(keeper, total - price)`, which
+  rebalances the keeper's total into whole-gold + remainder-silver, collapsing
+  all silver into gold. ROM `src/act_obj.c:2940` calls `deduct_cost(keeper, cost)`
+  which subtracts from silver first. Fixed to `deduct_cost(keeper, price)`.
+- **`do_buy` keeper credit — incremental gold/silver, not total-rebalance (FINDING-029).**
+  Same class: `do_buy` was rebalancing the keeper's total after receiving payment.
+  ROM `src/act_obj.c:2747-2748` does `keeper->gold += cost/100; keeper->silver +=
+  cost%100`. Fixed to direct incremental credit.
+
+### Added
+
+- **Diff-harness: `test_generated_shop_sell_matches_live_c` (2.13.21).**
+  Deterministic scenario: load weaponsmith (vnum 3003, profit_sell=40), load sword
+  (3021, cost=250), sell for 100 silver. Watches both Tester and weaponsmith to
+  verify both sides of the transaction. Surfaced all four `do_sell`/`do_buy` parity
+  bugs above.
+- **Diff-harness: `load_weaponsmith` + `sell_sword_to_weaponsmith` Hypothesis rules.**
+  Shop sell rules added to `DeterministicNoRngDiffMachine`; weaponsmith added to
+  `teardown()` watch_chars. `__hour=12` fixture pre-empts the negative
+  `time_info.hour` boot issue in the C diffshim.
+- **Diff-harness: `normalize_step` sorts chars and rooms lists.**
+  `normalize_step` in `compare.py` now sorts the `chars` list by key and `rooms`
+  list by vnum before comparison. Previously the lists were order-sensitive,
+  producing "no field localized" false failures when C and Python emitted multiple
+  watch-chars in different insertion orders (triggered when both weaponsmith and
+  drunk appear in the same snapshot).
+- **FINDINGS.md: FINDING-028 and FINDING-029** filed for the four `do_sell`/`do_buy`
+  parity divergences discovered and fixed this session.
+
 ## [2.13.20] — 2026-06-07
 
 ### Added
