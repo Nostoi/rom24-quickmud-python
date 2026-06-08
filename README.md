@@ -227,7 +227,7 @@ The parity verification stack has four layers — consult all four, not just the
 | Differential harness | C engine vs Python port, identical scenarios, state diffed | [Diff harness findings](tools/diff_harness/FINDINGS.md) |
 
 - [ROM parity verification guide](docs/ROM_PARITY_VERIFICATION_GUIDE.md) — methodology, confidence tiers, when to use each layer
-- [ROM 2.4b6 Parity Certification](ROM_2.4B6_PARITY_CERTIFICATION.md) — historical document; predates cross-file invariants methodology
+- [ROM 2.4b6 Parity Certification](docs/ROM_2.4B6_PARITY_CERTIFICATION.md) — historical document; predates cross-file invariants methodology
 
 ### User Documentation
 - [User Guide](docs/USER_GUIDE.md) - Player and server operator documentation
@@ -237,7 +237,7 @@ The parity verification stack has four layers — consult all four, not just the
 ### Developer Documentation
 - [ROM Parity Feature Tracker](docs/parity/ROM_PARITY_FEATURE_TRACKER.md) - Feature-level parity backlog
 - [Integration Test Coverage Tracker](docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md) - Coverage by gameplay system
-- [ROM API Reference](ROM_API_COMPLETION_REPORT.md) - ROM C-compatible public API
+- [ROM API Reference](docs/ROM_API_COMPLETION_REPORT.md) - ROM C-compatible public API
 - [Installation Guide](docs/installation.md)
 - [Configuration](docs/configuration.md)
 - [World Building](docs/world-building.md)

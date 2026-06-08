@@ -534,7 +534,7 @@ Before pushing changes:
 |------|----------|
 | [`AGENT.md`](AGENT.md) | Architectural integration analysis (subsystem confidence < 0.92) |
 | [`AGENT.EXECUTOR.md`](AGENT.EXECUTOR.md) | Executing tasks already defined by AGENT.md |
-| [`FUNCTION_COMPLETION_AGENT.md`](FUNCTION_COMPLETION_AGENT.md) | Implementing the remaining ~57 unmapped helper functions (optional) |
+| ~~`FUNCTION_COMPLETION_AGENT.md`~~ | Removed — task subsumed by `/rom-gap-closer` workflow |
 
 ---
 
