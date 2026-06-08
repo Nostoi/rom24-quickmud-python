@@ -216,9 +216,18 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 ## 📚 Documentation
 
 ### Verification Status
-- [ROM C subsystem tracker](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md) - canonical audit surface
-- [ROM parity verification guide](docs/ROM_PARITY_VERIFICATION_GUIDE.md) - current verification standard
-- [ROM 2.4b6 Parity Certification](ROM_2.4B6_PARITY_CERTIFICATION.md) - historical certification document; claims are being revalidated
+
+The parity verification stack has four layers — consult all four, not just the first:
+
+| Layer | What it measures | Document |
+|-------|-----------------|----------|
+| Per-file audit | Every ROM C function has a Python equivalent | [ROM C subsystem tracker](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md) |
+| Cross-file invariants | Contracts spanning modules (message delivery, registry, RNG, identity, …) | [Cross-file invariants tracker](docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md) — 25 enforced |
+| Divergence class roster | Structural C↔Python gaps (async, int-math, pointer identity, …) | [Divergence class roster](docs/parity/DIVERGENCE_CLASS_ROSTER.md) |
+| Differential harness | C engine vs Python port, identical scenarios, state diffed | [Diff harness findings](tools/diff_harness/FINDINGS.md) |
+
+- [ROM parity verification guide](docs/ROM_PARITY_VERIFICATION_GUIDE.md) — methodology, confidence tiers, when to use each layer
+- [ROM 2.4b6 Parity Certification](ROM_2.4B6_PARITY_CERTIFICATION.md) — historical document; predates cross-file invariants methodology
 
 ### User Documentation
 - [User Guide](docs/USER_GUIDE.md) - Player and server operator documentation
@@ -226,7 +235,8 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 - [Builder Migration Guide](docs/BUILDER_MIGRATION_GUIDE.md) - For ROM builders transitioning to QuickMUD
 
 ### Developer Documentation
-- [ROM Parity Feature Tracker](docs/parity/ROM_PARITY_FEATURE_TRACKER.md) - Detailed parity status
+- [ROM Parity Feature Tracker](docs/parity/ROM_PARITY_FEATURE_TRACKER.md) - Feature-level parity backlog
+- [Integration Test Coverage Tracker](docs/parity/INTEGRATION_TEST_COVERAGE_TRACKER.md) - Coverage by gameplay system
 - [ROM API Reference](ROM_API_COMPLETION_REPORT.md) - ROM C-compatible public API
 - [Installation Guide](docs/installation.md)
 - [Configuration](docs/configuration.md)

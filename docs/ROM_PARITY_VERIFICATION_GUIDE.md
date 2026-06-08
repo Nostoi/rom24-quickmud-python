@@ -1,8 +1,13 @@
 # How to Verify ROM Parity - Developer Guide
 
-**Version**: 1.0  
-**Date**: December 30, 2025  
+**Version**: 2.0  
+**Date**: December 30, 2025 (updated June 2026)  
 **Purpose**: Systematic approach to ensuring QuickMUD maintains 100% behavioral parity with ROM 2.4b6
+
+> **June 2026 update**: Three verification layers were added after v1.0 — cross-file
+> invariants, divergence class roster, and differential harness. See
+> [§ The Full Verification Stack](#the-full-verification-stack) before using
+> the per-file audit tracker alone.
 
 ---
 
@@ -11,14 +16,15 @@
 1. [Introduction](#introduction)
 2. [What is ROM Parity?](#what-is-rom-parity)
 3. [Why ROM Parity Matters](#why-rom-parity-matters)
-4. [The Three Levels of Verification](#the-three-levels-of-verification)
-5. [Level 1: Code Structure Parity](#level-1-code-structure-parity)
-6. [Level 2: Behavioral Parity](#level-2-behavioral-parity)
-7. [Level 3: Integration Parity](#level-3-integration-parity)
-8. [Common Parity Pitfalls](#common-parity-pitfalls)
-9. [Verification Checklist](#verification-checklist)
-10. [Tools and Scripts](#tools-and-scripts)
-11. [Case Studies](#case-studies)
+4. [The Full Verification Stack](#the-full-verification-stack) ← **start here**
+5. [The Three Levels of Verification (per-file scope)](#the-three-levels-of-verification-per-file-scope)
+6. [Level 1: Code Structure Parity](#level-1-code-structure-parity)
+7. [Level 2: Behavioral Parity](#level-2-behavioral-parity)
+8. [Level 3: Integration Parity](#level-3-integration-parity)
+9. [Common Parity Pitfalls](#common-parity-pitfalls)
+10. [Verification Checklist](#verification-checklist)
+11. [Tools and Scripts](#tools-and-scripts)
+12. [Case Studies](#case-studies)
 
 ---
 
@@ -111,7 +117,36 @@ Parity violations often **fail silently**:
 
 ---
 
-## The Three Levels of Verification
+## The Full Verification Stack
+
+The original three-level model (structure → behavioral → integration) was necessary
+but not sufficient. Three production bugs in 2026 shipped against files marked
+≥95% audited because the root cause crossed module boundaries or fell into a
+structural gap between C and Python. The complete stack has four layers:
+
+| Layer | Question | Tracker |
+|-------|----------|---------|
+| **1. Per-file audit** | Does every ROM C function have a Python equivalent? | [`ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md) |
+| **2. Cross-file invariants** | Are contracts that span modules locked by tests? | [`CROSS_FILE_INVARIANTS_TRACKER.md`](parity/CROSS_FILE_INVARIANTS_TRACKER.md) |
+| **3. Divergence class roster** | Are all structural C↔Python gaps (async, int-math, identity, …) enumerated and guarded? | [`DIVERGENCE_CLASS_ROSTER.md`](parity/DIVERGENCE_CLASS_ROSTER.md) |
+| **4. Differential harness** | Does the Python engine produce identical observable state to the C engine on scripted scenarios? | [`tools/diff_harness/FINDINGS.md`](../tools/diff_harness/FINDINGS.md) |
+
+**Parity confidence requires all four layers.** A ✅ on the per-file tracker
+(Layer 1) tells you the surface was reviewed; it does not tell you anything about
+Layers 2–4. "All tests pass" and "43/43 audited" are Layer-1 signals only.
+
+### When to use which layer
+
+- **Closing a single gap** (`/rom-gap-closer`): Layer 1 + a Layer-2 test if the fix touches a cross-module contract.
+- **Claiming a file is complete**: Layer 1 required; check `CROSS_FILE_INVARIANTS_TRACKER.md` for any INV rows that touch the file.
+- **Claiming parity on a user-visible surface**: Layers 1–3 required + at least one diff-harness scenario covering that surface (Layer 4).
+- **"Is the project done?"**: Only the differential harness answers this — it's the only enumeration-independent check.
+
+---
+
+## The Three Levels of Verification (per-file scope)
+
+These three levels apply within a single file's audit (Layer 1 above).
 
 ### Level 1: Code Structure Parity
 **Question**: Does the code mirror ROM C structure?
@@ -122,7 +157,8 @@ Parity violations often **fail silently**:
 ### Level 3: Integration Parity
 **Question**: Does the system work correctly when integrated into the game loop?
 
-**All three levels required** - missing any level = parity violation risk.
+**All three levels required within a file** — but completing them for one file
+does not close the cross-file or divergence-class gaps.
 
 ## Verification Confidence Tiers
 
