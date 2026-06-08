@@ -8,6 +8,42 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-030 — `bless` at low levels: Python emits 1 AffectData entry, ROM emits 2 — ⚠️ OPEN
+
+**Status:** Open — real parity bug. Surfaced 2026-06-08 while authoring the
+`learn_and_cast_bless` Hypothesis rule in `DeterministicNoRngDiffMachine`.
+
+**Root cause:** `src/magic.c:spell_bless` (lines 849–860) always calls
+`affect_to_char` TWICE for the character case — once for `APPLY_HITROLL`
+(modifier = `level/8`) and once for `APPLY_SAVING_SPELL` (modifier = `-(level/8)`).
+Both calls are unconditional regardless of whether the modifier is zero.
+
+Python's `sync_spell_effect_to_affected` (`mud/models/character.py:346`) uses
+`if effect.hitroll_mod:` and `if effect.saving_throw_mod:` — falsy guards that
+silently skip entries when the modifier is zero. At `char_level=5`:
+`modifier = c_div(5, 8) = 0` → both guards fail → only the fallback `APPLY_NONE`
+entry is emitted (1 total).
+
+**Impact:** Each `AffectData` with `duration > 0` consumes one `number_range(0,4)`
+call in `tick_spell_effects` / `char_update` (`mud/affects/engine.py:42`).
+With bless active and `char_level <= 7` (where `level/8 == 0`), C consumes 2 RNG
+draws per tick while Python consumes 1 — producing RNG drift for any
+non-deterministic operation executed after a char_update tick.
+
+**Fix (not yet applied):** Change `SpellEffect.hitroll_mod` and
+`SpellEffect.saving_throw_mod` defaults from `0` to `None` (type `int | None`),
+and update `sync_spell_effect_to_affected` to check `is not None` instead of
+falsy. Bless passes `hitroll_mod=0` explicitly at low levels → `0 is not None` →
+entry emitted. Callers that omit the field (all other spells) get `None` →
+not emitted (behavior unchanged). Run `gitnexus_impact` on
+`sync_spell_effect_to_affected` before editing (shared by both `Character` and
+`MobInstance` affect paths).
+
+**Affected file:** `mud/models/character.py` (`SpellEffect` dataclass,
+`sync_spell_effect_to_affected`), `mud/skills/handlers.py` (`spell_bless`).
+
+---
+
 ## FINDING-029 — `do_sell` keeper wealth deducted via total-rebalance; ROM uses `deduct_cost` — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-08 (2.13.21). Surfaced by adding the weaponsmith

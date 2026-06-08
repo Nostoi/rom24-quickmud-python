@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.24] — 2026-06-08
+
+### Added
+
+- **`detect_evil`, `fly`, `bless` spell rules in `DeterministicNoRngDiffMachine`.**
+  Three new `@rule` methods (`learn_and_cast_detect_evil`, `learn_and_cast_fly`,
+  `learn_and_cast_bless`) added to the Hypothesis diff machine in
+  `tools/diff_harness/generated.py`. Each rule: sets skill to 100 via `__learn`,
+  seeds RNG, casts the spell, resets seed, sets duration to 2 for expiration
+  coverage. All four spell-casting rules now guard on
+  `self.current_position == Position.STANDING` — `do_cast` requires minimum
+  `POS_FIGHTING` in ROM C (`interp.c:79`), so any non-standing cast produces a
+  divergent error message (C: "Nah... You feel too relaxed...", Python: different
+  path). `test_generated_no_rng_sequences_match_live_c` passes.
+
+### Fixed
+
+- **Spell-cast precondition: all four `learn_and_cast_*` rules now require
+  `Position.STANDING`.** Previously `learn_and_cast_armor` (and the three new
+  rules) lacked a position guard, allowing Hypothesis to generate sequences where
+  the spell was cast from a resting/sitting position. C rejects with "Nah... You
+  feel too relaxed..." while Python returned a different error — a spurious
+  divergence unrelated to the spell's parity.
+
+### Filed
+
+- **FINDING-030** (`tools/diff_harness/FINDINGS.md`): `bless` at `char_level ≤ 7`
+  emits 1 Python AffectData entry (APPLY_NONE fallback) vs 2 C entries
+  (APPLY_HITROLL + APPLY_SAVING_SPELL), because `sync_spell_effect_to_affected`
+  skips modifier-0 entries via falsy guards. Causes 1-per-tick RNG drift after a
+  char_update when bless is active at low levels. Fix outlined (change `int` defaults
+  to `Optional[int]` in `SpellEffect`); not yet applied — separate gap.
+
 ## [2.13.23] — 2026-06-08
 
 ### Added

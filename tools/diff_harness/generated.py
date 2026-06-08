@@ -96,9 +96,13 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             keyword="cup",
             load_command="__oload=3101",
         )
-        # affect-expiration state: track whether armor has been cast so the
-        # rule fires at most once per run (armor is not re-castable while active).
+        # affect-expiration state: track whether each detection/buff spell has
+        # been cast so each rule fires at most once per run (spells are not
+        # re-castable while their affect is active).
         self.learned_armor: bool = False
+        self.learned_detect_evil: bool = False
+        self.learned_fly: bool = False
+        self.learned_bless: bool = False
         # cap __char_update calls well below ROM's idle-to-limbo threshold (12)
         # so the test char is never teleported out of the watch room.
         self.char_update_count: int = 0
@@ -528,7 +532,7 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
     # char_update ticks start from a deterministic stream.
     # Source: src/magic.c:spell_armor, src/update.c:char_update affect loop.
 
-    @precondition(lambda self: not self.learned_armor)
+    @precondition(lambda self: not self.learned_armor and self.current_position == Position.STANDING)
     @rule()
     def learn_and_cast_armor(self) -> None:
         self.steps.append("__learn=armor")
@@ -537,6 +541,36 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("__seed=5678")
         self.steps.append("__set_affect_duration=2")
         self.learned_armor = True
+
+    @precondition(lambda self: not self.learned_detect_evil and self.current_position == Position.STANDING)
+    @rule()
+    def learn_and_cast_detect_evil(self) -> None:
+        self.steps.append("__learn=detect evil")
+        self.steps.append("__seed=1234")
+        self.steps.append("cast 'detect evil'")
+        self.steps.append("__seed=5678")
+        self.steps.append("__set_affect_duration=2")
+        self.learned_detect_evil = True
+
+    @precondition(lambda self: not self.learned_fly and self.current_position == Position.STANDING)
+    @rule()
+    def learn_and_cast_fly(self) -> None:
+        self.steps.append("__learn=fly")
+        self.steps.append("__seed=1234")
+        self.steps.append("cast 'fly'")
+        self.steps.append("__seed=5678")
+        self.steps.append("__set_affect_duration=2")
+        self.learned_fly = True
+
+    @precondition(lambda self: not self.learned_bless and self.current_position == Position.STANDING)
+    @rule()
+    def learn_and_cast_bless(self) -> None:
+        self.steps.append("__learn=bless")
+        self.steps.append("__seed=1234")
+        self.steps.append("cast 'bless'")
+        self.steps.append("__seed=5678")
+        self.steps.append("__set_affect_duration=2")
+        self.learned_bless = True
 
     @precondition(lambda self: self.char_update_count < 8)
     @rule()
