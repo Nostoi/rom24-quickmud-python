@@ -1,42 +1,38 @@
-# Session Status — 2026-06-08 — BUY-006/SELL-002/SELL-003: shop error-exit parity (2.13.26)
+# Session Status — 2026-06-08 — BUY-007/ACT-CAP: keeper message capitalisation + quote order (2.13.27)
 
 ## Current State
 
 - **Active mode**: cross-file invariants / diff-harness expansion (per-file audit
   tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
-  - **BUY-006/SELL-002/SELL-003 closed (2.13.26).** Three shop error-exit divergences
-    fixed: `do_buy` afford-before-level reorder (ROM `src/act_obj.c:2688` vs `2702`);
-    `do_sell` can't-see and not-interested messages updated to use `_act_to_char`
-    `$n`/`$p` expansion instead of hardcoded "The shopkeeper…" strings. 3 integration
-    tests added.
+  - **BUY-007/ACT-CAP closed (2.13.27).** `_keeper_says` and `_act_to_char` now
+    apply `capitalize_act_line` (mirroring ROM `src/comm.c:2376-2379`) and use
+    ROM-exact suffix strings. 4 call sites updated with correct closing-quote
+    placement. 5 wrong test assertions fixed.
+  - **Diff-harness `shop_buy_insufficient_funds` added (2.13.27).** C golden
+    captured; Python replay passes. Locks the keeper-voiced "can't afford" error
+    exit end-to-end.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-08_BUY006_SELL002_SELL003_SHOP_ERROR_PATHS.md](SESSION_SUMMARY_2026-06-08_BUY006_SELL002_SELL003_SHOP_ERROR_PATHS.md)
+  [SESSION_SUMMARY_2026-06-08_BUY007_ACT_CAP_KEEPER_MESSAGE_FORMAT.md](SESSION_SUMMARY_2026-06-08_BUY007_ACT_CAP_KEEPER_MESSAGE_FORMAT.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.26 |
-| Tests | 5444+ passing (suite not re-run in full this session) |
+| Version | 2.13.27 |
+| Tests | 5445 passing, 4 skipped |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Diff-harness scenarios | 9 static + 16 generated-oracle tests |
-| Diff-harness shop rules | load_weaponsmith + sell_sword + stock_keeper_sword + buy_sword |
-| Shop integration tests | 15 passing (error-paths + broadcasts + haggle + pet + OLC) |
+| Diff-harness scenarios | 10 static + 16 generated-oracle tests |
+| Diff-harness shop scenarios | `shop_buy_weapon`, `shop_sell_weapon`, `shop_buy_insufficient_funds` |
+| Shop integration tests | 15 passing |
 
 ## Next Intended Task
 
-**Diff-harness error-path scenarios** — now that BUY-006/SELL-002/SELL-003 are
-fixed, the message output is ROM-correct. Author:
+**Cross-INV affect-tick ordering** — probe `src/update.c:char_update` affect-expiry
+loop vs `mud/world/update.py:char_update`. The loop traversal order (forward vs
+backward, in-place mutation) is a candidate cross-file invariant. Method: read the
+ROM C affect-expiry loop, read the Python equivalent, write one failing enforcement
+test, then either close as a gap or file as the next free INV-NNN.
 
-1. `shop_buy_insufficient_funds` scenario — `__silver=0 __gold=0`, weaponsmith
-   loaded (`__mload=3003`), stocked with long sword (`__mob_carry=3022`), then
-   `buy sword`. Watch: Tester messages. Expected: "can't afford to buy a long sword".
-   No new meta-commands needed.
-
-2. (Optional) `shop_sell_keeper_broke` scenario — needs `__mob_gold=0`/`__mob_silver=0`
-   meta-commands in `diffmain.c` + `pyreplay.py` to zero keeper wealth after
-   `__mload`, since weaponsmith `wealth=25000` → ~125-375 gold from RNG.
-
-3. **Cross-INV affect-tick ordering** — `char_update` affect traversal order vs
-   ROM C `src/update.c:char_update` — the longer-term next invariant target.
+Secondary target: **`shop_sell_keeper_broke` diff-harness scenario** — needs
+`__mob_gold=0`/`__mob_silver=0` meta-commands in `diffmain.c` + `pyreplay.py`.
