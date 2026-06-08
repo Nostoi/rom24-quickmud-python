@@ -277,14 +277,26 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.bottle_beer.drank = True
 
     # ── position transition rules ──────────────────────────────────
+    # Source: src/act_move.c do_sit/do_stand/do_rest/do_sleep/do_wake.
+    # do_sit:   SLEEPING→error; RESTING/STANDING→SITTING; SITTING→no-op
+    # do_rest:  SLEEPING→error; SITTING/STANDING→RESTING; RESTING→no-op
+    # do_sleep: SLEEPING→no-op; RESTING/SITTING/STANDING→SLEEPING
+    # do_stand: SLEEPING/RESTING/SITTING→STANDING
+    # do_wake:  calls do_stand → STANDING
 
-    @precondition(lambda self: self.current_position == Position.STANDING)
+    @precondition(lambda self: self.current_position in (Position.STANDING, Position.RESTING))
+    @rule()
+    def sit(self) -> None:
+        self.steps.append("sit")
+        self.current_position = Position.SITTING
+
+    @precondition(lambda self: self.current_position in (Position.STANDING, Position.SITTING))
     @rule()
     def rest(self) -> None:
         self.steps.append("rest")
         self.current_position = Position.RESTING
 
-    @precondition(lambda self: self.current_position == Position.RESTING)
+    @precondition(lambda self: self.current_position in (Position.RESTING, Position.SITTING, Position.STANDING))
     @rule()
     def sleep(self) -> None:
         self.steps.append("sleep")
@@ -296,7 +308,7 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("wake")
         self.current_position = Position.STANDING
 
-    @precondition(lambda self: self.current_position == Position.RESTING)
+    @precondition(lambda self: self.current_position in (Position.RESTING, Position.SITTING))
     @rule()
     def stand(self) -> None:
         self.steps.append("stand")
