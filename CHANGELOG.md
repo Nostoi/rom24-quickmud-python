@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.20] — 2026-06-07
+
+### Added
+
+- **Diff-harness: `sit` position transition and corrected ROM transition graph (2.13.19).**
+  Added `sit` rule to `DeterministicNoRngDiffMachine` (STANDING/RESTING → SITTING per
+  `src/act_move.c:do_sit`). Corrected `rest` precondition (STANDING/SITTING → RESTING),
+  `sleep` precondition (any non-sleeping position → SLEEPING), and `stand` precondition
+  (RESTING/SITTING → STANDING). The previous model only covered a linear
+  STANDING→RESTING→SLEEPING chain.
+- **Diff-harness: `__char_update` meta-command (2.13.20).** Calls real `char_update()` on
+  both C and Python sides, capturing output through the shim's `emit_output` path. Exercises
+  the affect-duration tick loop (ROM `src/update.c:char_update` lines 762–784), including the
+  `number_range(0,4)` level-decay RNG call documented as divergence risk GL-026.
+- **Diff-harness: `__set_affect_duration=N` fixture (2.13.20).** Harness-only command that
+  overrides the duration of all active affects on the test character. Enables affect-expiration
+  testing in 3 ticks rather than 25 (ROM armor spell hardcodes duration=24).
+- **Diff-harness: `learn_and_cast_armor` + `char_update_tick` Hypothesis rules (2.13.20).**
+  `learn_and_cast_armor` emits `__learn=armor` + seed brackets + `cast 'armor'` +
+  `__set_affect_duration=2` (fires once per run). `char_update_tick` emits `__char_update`
+  (capped at 8 per run to stay below ROM's idle-to-limbo threshold of 12).
+
 ## [2.13.18] — 2026-06-07
 
 ### Fixed
