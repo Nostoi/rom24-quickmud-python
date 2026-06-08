@@ -1,41 +1,41 @@
-# Session Status — 2026-06-08 — HANDLER affect_join implementation (2.13.29)
+# Session Status — 2026-06-08 — Diff-harness __mob_gold/__mob_silver meta-commands (2.13.32)
 
 ## Current State
 
 - **Active mode**: cross-file invariants / diff-harness expansion (per-file audit
   tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
-  - **HANDLER `affect_join` FIXED (2.13.29).** `affect_join` added to
-    `mud/handler.py` mirroring ROM `src/handler.c:1464-1483`. Plague re-infection
-    path in `mud/game_loop.py` updated to call `affect_join` (merge semantics)
-    instead of `affect_to_char` directly (stack semantics).
-    10 tests covering `affect_join` now pass (4 new + 6 pre-existing).
-    `HANDLER_C_AUDIT.md` affects system: 100% complete (11/11 functions).
+  - **`__mob_gold=N` / `__mob_silver=N` meta-commands + `shop_sell_keeper_broke`
+    scenario (2.13.32).** Two new diff-harness meta-commands (`src/diff_shim/diffmain.c`
+    + `tools/diff_harness/pyreplay.py`) that zero out a shopkeeper's treasury. Used
+    in the new `shop_sell_keeper_broke` scenario + live C-oracle differential test
+    covering the ROM `do_sell` wealth-check early exit
+    (`src/act_obj.c:2916-2921` — `"I'm afraid I don't have enough wealth to buy $p."`).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-08_HANDLER_AFFECT_JOIN.md](SESSION_SUMMARY_2026-06-08_HANDLER_AFFECT_JOIN.md)
+  [SESSION_SUMMARY_2026-06-08_HARNESS_MOB_GOLD_SILVER_META_CMDS.md](SESSION_SUMMARY_2026-06-08_HARNESS_MOB_GOLD_SILVER_META_CMDS.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.29 |
-| Tests | 5451 passing, 4 skipped |
+| Version | 2.13.32 |
+| Tests | 5452 passing, 5 skipped |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 25 enforced |
-| Diff-harness scenarios | 10 static + 16 generated-oracle tests |
-| Diff-harness shop scenarios | `shop_buy_weapon`, `shop_sell_weapon`, `shop_buy_insufficient_funds` |
+| Diff-harness scenarios | 10 static + 17 generated-oracle tests |
+| Diff-harness shop scenarios | `shop_buy_weapon`, `shop_sell_weapon`, `shop_buy_insufficient_funds`, `shop_sell_keeper_broke` |
 | Shop integration tests | 15 passing |
 
 ## Next Intended Task
 
-**`shop_sell_keeper_broke` diff-harness scenario** — add `__mob_gold=0` /
-`__mob_silver=0` meta-commands to `tools/diff_harness/diffmain.c` and
-`tools/diff_harness/pyreplay.py` so the harness can zero out a shopkeeper's
-treasury. Then author `tools/diff_harness/scenarios/shop_sell_keeper_broke.json`
-and capture the golden. This exercises the "keeper can't afford it" sell-error path
-end-to-end in both the C and Python engines.
+**Cross-file invariant candidates** — any of the following:
 
-Secondary: **cross-file invariant candidates** — position-transition guards
-(does `do_sit`/`do_rest`/`do_stand` correctly gate on current position?),
-`affect_strip` bitvector-clear contract, or additional diff-harness scenario
-coverage for areas not yet exercised (e.g. combat sub-paths, group commands).
+1. **Position-transition guards** (`do_sit`/`do_rest`/`do_stand` in `src/act_move.c`):
+   probe whether Python `mud/commands/movement.py` correctly gates each transition on
+   current position; write a failing test for the first missed guard; file as next free
+   INV-NNN if root cause spans modules.
+2. **`affect_strip` bitvector-clear contract**: verify Python `affect_strip` correctly
+   clears the bitvector flag when removing the last affect of a given type.
+3. **Hypothesis state machine extension**: add `sell_sword_to_broke_keeper` rule to
+   `DeterministicNoRngDiffMachine` in `tools/diff_harness/generated.py` to fuzz
+   the keeper-broke sell-error path alongside the existing sell/buy rules.
