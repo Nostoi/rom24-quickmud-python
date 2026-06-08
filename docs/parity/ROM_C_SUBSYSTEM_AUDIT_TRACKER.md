@@ -6,9 +6,39 @@
 
 ---
 
+> ## ⚠️ Scope of this tracker — read before interpreting any ✅
+>
+> This tracker measures **per-file function coverage only**: whether every function
+> in a given ROM C file has been reviewed and an implementation exists in Python.
+>
+> A ✅ COMPLETE / 100% row means *"we looked at every function and something
+> implements it."* It does **not** mean:
+> - Cross-module contracts involving that file are verified
+> - Observable behavior matches ROM under all inputs
+> - The function was tested against ROM ground truth (only that it passes its own tests)
+>
+> Three production bugs shipped in 2026 against files this tracker marked ≥95% audited.
+> In each case the root cause was a contract that crossed module boundaries — invisible
+> to a per-file review. The per-file audit pass is **necessary but not sufficient**.
+>
+> ### The full verification stack
+>
+> | Layer | What it checks | Tracker |
+> |-------|---------------|---------|
+> | Per-file audit (this doc) | Every ROM C function has a Python equivalent | You are here |
+> | Cross-file invariants | Contracts that span modules (message delivery, registry membership, RNG, identity, …) | [`CROSS_FILE_INVARIANTS_TRACKER.md`](CROSS_FILE_INVARIANTS_TRACKER.md) — 25 enforced |
+> | Divergence class roster | Structural gaps between C and Python (sync/async, pointer/GC, int math, …) | [`DIVERGENCE_CLASS_ROSTER.md`](DIVERGENCE_CLASS_ROSTER.md) |
+> | Differential harness | C engine vs Python port, identical scenarios, observable state diffed | [`tools/diff_harness/FINDINGS.md`](../../tools/diff_harness/FINDINGS.md) |
+>
+> **Parity confidence = all four layers, not just this one.**
+
+---
+
 ## Overview
 
-This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/*.c`) to ensure QuickMUD has equivalent implementations and integration tests.
+This document tracks the **per-file audit status** of all ROM 2.4b6 C source files
+(`src/*.c`) — whether every function in each file has been reviewed and an
+equivalent Python implementation identified or documented.
 
 **Critical Principle**: Every ROM C function should have either:
 1. A QuickMUD Python equivalent (verified)
@@ -17,7 +47,7 @@ This document tracks the **audit status** of all ROM 2.4b6 C source files (`src/
 
 ### Audit Status Legend
 
-- ✅ **Audited** - QuickMUD parity verified, integration tests exist
+- ✅ **Audited** - All functions reviewed, implementations exist (per-file scope only — see caveat above)
 - ⚠️ **Partial** - Some functions ported, gaps exist
 - ❌ **Not Audited** - No systematic audit performed
 - 🔄 **In Progress** - Currently being audited
