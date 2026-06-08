@@ -95,6 +95,12 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             keyword="cup",
             load_command="__oload=3101",
         )
+        # affect-expiration state: track whether armor has been cast so the
+        # rule fires at most once per run (armor is not re-castable while active).
+        self.learned_armor: bool = False
+        # cap __char_update calls well below ROM's idle-to-limbo threshold (12)
+        # so the test char is never teleported out of the watch room.
+        self.char_update_count: int = 0
 
     @rule()
     def look(self) -> None:
@@ -441,6 +447,29 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("give 25 silver drunk")
         self.player_silver -= 25
         self.drunk.silver += 25
+
+    # ── affect-expiration rules ───────────────────────────────────
+    # Cast armor (duration set to 2 via __set_affect_duration=2 after cast so
+    # the affect expires in 3 __char_update calls, keeping timer < 12 / limbo
+    # threshold).  __seed= brackets isolate the cast's RNG consumption so the
+    # char_update ticks start from a deterministic stream.
+    # Source: src/magic.c:spell_armor, src/update.c:char_update affect loop.
+
+    @precondition(lambda self: not self.learned_armor)
+    @rule()
+    def learn_and_cast_armor(self) -> None:
+        self.steps.append("__learn=armor")
+        self.steps.append("__seed=1234")
+        self.steps.append("cast 'armor'")
+        self.steps.append("__seed=5678")
+        self.steps.append("__set_affect_duration=2")
+        self.learned_armor = True
+
+    @precondition(lambda self: self.char_update_count < 8)
+    @rule()
+    def char_update_tick(self) -> None:
+        self.steps.append("__char_update")
+        self.char_update_count += 1
 
     @staticmethod
     def _object_exists(obj: _ObjectState) -> bool:

@@ -34,6 +34,7 @@ void boot_db (void);
 void init_mm (void);
 void reset_char (CHAR_DATA *ch);
 void violence_update (void);
+void char_update     (void);
 
 /* ---- synthetic descriptor: ROM's output funcs write here ------------------ */
 
@@ -705,6 +706,30 @@ int main (int argc, char **argv)
             shim_reset_output ();
             violence_update ();
             emit_output ();
+            continue;
+        }
+
+        /* __char_update: run one char_update() pulse (regen, conditions,
+         * affect ticks, idle timer) for all characters.  Mirrors the Python-
+         * side __char_update handler in pyreplay.py. */
+        if (strncmp (line, "__char_update", 13) == 0)
+        {
+            shim_reset_output ();
+            char_update ();
+            emit_output ();
+            continue;
+        }
+
+        /* __set_affect_duration=N: set duration of every active affect on the
+         * test character to N.  Harness fixture to shorten ROM's fixed-duration
+         * spells (e.g. armor=24) for expiration tests without 25+ ticks. */
+        if (strncmp (line, "__set_affect_duration=", 22) == 0)
+        {
+            int dur = atoi (line + 22);
+            AFFECT_DATA *paf;
+            if (ch != NULL)
+                for (paf = ch->affected; paf != NULL; paf = paf->next)
+                    paf->duration = dur;
             continue;
         }
 

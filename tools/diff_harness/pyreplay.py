@@ -141,6 +141,16 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
 
         violence_tick(do_combat=True)
         return ""
+    if command.startswith("__char_update"):
+        from mud.game_loop import char_update
+
+        char_update()
+        return ""
+    if command.startswith("__set_affect_duration="):
+        dur = int(command[len("__set_affect_duration=") :])
+        for aff in getattr(char, "affected", []) or []:
+            aff.duration = dur
+        return ""
 
     # Mirror the C shim's direct interpret() path, which bypasses comm.c's wait
     # gate. FINDING-014 documents the architectural divergence.
