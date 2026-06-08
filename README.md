@@ -4,11 +4,11 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-5451%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
-[![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-revalidation%20in%20progress-orange.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
+[![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-parity%20beta-blue.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![ROM C Audit](https://img.shields.io/badge/ROM%20C%20Audit-43%2F43%20audited-success.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![Integration Tests](https://img.shields.io/badge/integration%20tests-1000%2B-brightgreen.svg)](tests/integration/)
 
-**QuickMUD is a modern Python port of the legendary ROM 2.4b6 MUD engine**, derived from ROM 2.4b6, Merc 2.1 and DikuMUD. This is a complete rewrite that brings the classic text-based MMORPG experience to modern Python with async networking and JSON world data. The engine currently has a green suite and broad ROM audit coverage, but **parity trust rebuild / revalidation is in progress** after live bugs exposed gaps in observable-behavior verification.
+**QuickMUD is a modern Python port of the legendary ROM 2.4b6 MUD engine**, derived from ROM 2.4b6, Merc 2.1 and DikuMUD. This is a complete rewrite that brings the classic text-based MMORPG experience to modern Python with async networking and JSON world data. The engine is **feature-complete and playable** — all 255 ROM commands, combat, spells, and world systems are implemented and green. Parity fidelity is in a **beta hardening phase**: high confidence on audited + test-covered surfaces, with a systematic methodology (per-file audits → cross-file invariants → differential harness) closing the remaining behavioral tail.
 
 ## 🎮 What is a MUD?
 
@@ -16,7 +16,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 
 ## ✨ Key Features
 
-- **🎯 ROM parity trust rebuild in progress**: audit coverage is broad, but user-visible command/session surfaces are being revalidated against stricter ROM-exact tests
+- **🎯 Parity beta**: feature-complete and playable; all 255 ROM commands implemented; parity fidelity is systematically hardened surface-by-surface via per-file audits, cross-file invariant tests, and a live differential harness against the original C engine
 - **🚀 Modern Python Architecture**: Fully async/await networking with SQLAlchemy ORM
 - **📡 Multiple Connection Options**: Telnet, WebSocket, and SSH server support
 - **🗺️ JSON World Loading**: Easy-to-edit world data with 352+ room resets
@@ -24,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 5,329 passing tests across unit, integration, and command-registry suites
+- **📊 Comprehensive Testing**: 5,451 passing tests across unit, integration, and command-registry suites
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -163,42 +163,38 @@ python -m mud  # Start development server
 
 ## 🎯 Project Status
 
-**Honest one-line summary:** broad implementation and audit coverage of ROM 2.4b6
-is complete and the test suite is green, but the project is in a **verification
-trust-rebuild phase** — "audited" means a per-file audit document exists, not that
-behavior is proven bug-free, and a small number of parity gaps remain open.
+**Stage: parity beta** — feature-complete and playable; parity fidelity is being
+systematically hardened toward ROM-exact behavioral equivalence.
 
 - **Version**: 2.13.29
-- **ROM 2.4b Gameplay Parity**: ⚠️ **broadly implemented, verification hardening in
-  progress** — combat, skills, spells, movement, communication, world/db, save/load,
-  mob programs, and all 255 ROM commands are implemented and pass their tests. However,
-  some surfaces that were previously marked "verified" were only smoke-tested, and are
-  being rechecked with ROM-exact assertions. Treat the audit coverage below as
-  *process completeness*, not a guarantee of bit-for-bit correctness.
-- **ROM C Source Audit**: ✅ **100% audit-bound coverage** — 43 of 43 applicable ROM C
-  files have a completed audit document, with 3 additional ROM files intentionally N/A
-  (`recycle.c`, `mem.c`, `imc.c`). This tracks that every applicable file has been
-  *reviewed and documented*; it does not by itself certify behavioral parity (three
-  production bugs this year shipped against files marked ≥95% audited — see the
-  cross-file invariants tracker for why per-file audits are necessary but not
-  sufficient). See
+- **Playability**: ✅ All 255 ROM commands implemented. Combat, spells, skills,
+  movement, shops, mob programs, OLC building, and admin tools work and pass their
+  tests. You can run a server and play today.
+- **Parity confidence**: high on audited + test-covered surfaces; moderate on the
+  uncovered tail (surfaces not yet reached by the differential harness). "Parity beta"
+  means: the engine behaves like ROM on everything we've checked; there may be
+  edge-case divergences we haven't checked yet. The standard stages (alpha/beta/GA)
+  measure feature completeness — for a port the meaningful axis is *parity confidence*,
+  not whether features exist.
+- **ROM C Source Audit**: ✅ **43 / 43 files audited** — every applicable ROM C file
+  has a completed audit document (3 intentional N/A: `recycle.c`, `mem.c`, `imc.c`).
+  Per-file audits confirm *what was reviewed*; they don't by themselves certify
+  bit-for-bit behavioral parity. See
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
-  Notable: `handler.c` affects system is now **100% complete** (11/11 functions,
-  including `affect_join` merge semantics — 2026-06-08).
-- **Cross-file Invariants**: ✅ **25/25 enforced** — message delivery, prompt clamping,
-  registry membership, same-room combat, death/connection behavior, RNG determinism,
-  persistence coherence, and room-flag survival (`.are`→JSON→runtime) are locked by
-  dedicated regression tests. This layer exists specifically to catch the contract
-  violations that per-file audits miss.
-- **Open parity gaps**: a small backlog of identified divergences is tracked and being
-  closed one failing-test-first commit at a time. Open gaps are logged in the per-file
-  `docs/parity/*_C_AUDIT.md` documents.
-- **Test Suite**: ✅ **5451 passed, 4 skipped** (full `pytest` run, ~150s parallel).
-  Three layers — unit (`tests/test_*.py`), integration (`tests/integration/`), and
-  command-registry (`test_all_commands.py`).
-- **Active focus**: trust rebuild — replacing weak smoke assertions with ROM-exact
-  output, boundary, and runtime-path tests on the highest-risk user-visible surfaces,
-  and closing the remaining documented parity gaps.
+- **Cross-file Invariants**: ✅ **25 / 25 enforced** — contracts that span modules
+  (message delivery, prompt clamping, registry membership, same-room combat,
+  death/reconnect ordering, RNG determinism, persistence coherence, room-flag survival)
+  are each locked by a dedicated regression test. This layer catches the class of bug
+  that per-file audits structurally miss.
+- **Differential harness**: ✅ live — the original ROM 2.4b6 C engine and the Python
+  port are run through identical scripted scenarios and their observable state is
+  diffed. Any behavioral divergence surfaces mechanically rather than requiring a
+  hand-written assertion. Coverage is growing; uncovered surfaces are the remaining
+  parity-confidence gap.
+- **Test Suite**: ✅ **5,451 passed, 4 skipped** (full `pytest` run, ~150s parallel).
+  Unit, integration, command-registry, and differential-harness layers.
+- **Active focus**: expanding differential harness scenario coverage and closing the
+  identified gap backlog (tracked in `docs/parity/*_C_AUDIT.md`).
 - **Compatibility**: Python 3.10+, cross-platform
 
 ## 🏛️ Architecture
