@@ -53,6 +53,20 @@ def _keeper_says(keeper, ch, message: str, *, obj=None) -> str:
     return f"{keeper_name} tells you '{message}'"
 
 
+def _act_to_char(keeper, message: str, *, obj=None) -> str:
+    """Render a ROM act(message, keeper, obj, ch, TO_VICT) string.
+
+    Expands $n to the keeper's short_descr and $p to the object's short_descr.
+    Mirrors ROM src/act_obj.c act(...) calls that are NOT "tells you" format.
+    """
+    keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", "The shopkeeper")
+    result = message.replace("$n", keeper_name)
+    if obj is not None:
+        obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it") or "it"
+        result = result.replace("$p", obj_name)
+    return result
+
+
 def _obj_to_keeper(obj: object, keeper) -> bool:
     """Mirror ROM src/act_obj.c:obj_to_keeper dedup logic.
 
@@ -756,10 +770,18 @@ def do_buy(char: Character, args: str) -> str:
             # ROM line 2681-2685: keeper voice for insufficient stock
             return _keeper_says(keeper, char, "I don't have that many in stock.")
 
+    total_cost = unit_price * quantity
+    # BUY-003: can't afford uses keeper voice (ROM src/act_obj.c:2688-2698)
+    # mirroring ROM src/act_obj.c:2688 — afford check precedes level check (BUY-006)
+    if _character_total_wealth(char) < total_cost:
+        if quantity > 1:
+            return _keeper_says(keeper, char, "You can't afford to buy that many.")
+        return _keeper_says(keeper, char, "You can't afford to buy $p.", obj=selected_obj)
+
     item_level = getattr(proto, "level", getattr(selected_obj, "level", 0))
     char_level = getattr(char, "level", 0)
     if int(char_level) < int(item_level or 0):
-        # BUY-003b: level check uses keeper voice (ROM line 2702-2706)
+        # BUY-003b: level check uses keeper voice (ROM src/act_obj.c:2702-2706)
         if hasattr(char, "reply"):
             char.reply = keeper
         return _keeper_says(keeper, char, "You can't use $p yet.", obj=selected_obj)
@@ -779,13 +801,6 @@ def do_buy(char: Character, args: str) -> str:
             total_weight += int(getattr(item, "weight", None) or getattr(item_proto, "weight", 0) or 0)
     if current_weight + total_weight > can_carry_w(char):
         return "You can't carry that much weight."
-
-    total_cost = unit_price * quantity
-    # BUY-003: can't afford uses keeper voice (ROM line 2688-2698)
-    if _character_total_wealth(char) < total_cost:
-        if quantity > 1:
-            return _keeper_says(keeper, char, "You can't afford to buy that many.")
-        return _keeper_says(keeper, char, "You can't afford to buy $p.", obj=selected_obj)
 
     # BUY-005: haggle on buy (ROM src/act_obj.c:2722-2730)
     skills = getattr(char, "skills", {}) or {}
@@ -899,11 +914,13 @@ def do_sell(char: Character, args: str) -> str:
         return "You can't let go of it."
 
     if not _keeper_can_see_object(keeper, selected_obj):
-        return "The shopkeeper doesn't see what you are offering."
+        # SELL-002: mirroring ROM src/act_obj.c:2905-2908 — act("$n doesn't see what you are offering.", keeper, NULL, ch, TO_VICT)
+        return _act_to_char(keeper, "$n doesn't see what you are offering.")
 
     price = _get_cost(keeper, selected_obj, buy=False)
     if price <= 0:
-        return "The shopkeeper doesn't buy that."
+        # SELL-003: mirroring ROM src/act_obj.c:2911-2914 — act("$n looks uninterested in $p.", keeper, obj, ch, TO_VICT)
+        return _act_to_char(keeper, "$n looks uninterested in $p.", obj=selected_obj)
     total_wealth = _keeper_total_wealth(keeper)
     if price > total_wealth:
         # SELL-004: keeper voice with $p substitution (ROM line 2917-2921)

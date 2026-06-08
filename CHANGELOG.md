@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.26] — 2026-06-08
+
+### Fixed
+
+- **BUY-006**: `do_buy` check ordering — afford check (ROM `src/act_obj.c:2688`) now runs
+  before level check (line 2702), matching ROM C. Previously a broke player buying a
+  level-gated item got "can't use yet" instead of "can't afford".
+  (Python: `mud/commands/shop.py:do_buy`; test: `test_buy_afford_checked_before_level`)
+- **SELL-002**: `do_sell` keeper-can't-see message now expands `$n` to the keeper's
+  short description. ROM C: `act("$n doesn't see what you are offering.", keeper, ...)`.
+  Previously returned hardcoded "The shopkeeper doesn't see what you are offering."
+  (ROM `src/act_obj.c:2905-2908`; test: `test_sell_cant_see_uses_keeper_name`)
+- **SELL-003**: `do_sell` item-not-bought message now uses keeper name + item name via
+  `$n`/`$p` expansion. ROM C: `act("$n looks uninterested in $p.", keeper, obj, ...)`.
+  Previously returned hardcoded "The shopkeeper doesn't buy that."
+  (ROM `src/act_obj.c:2911-2914`; test: `test_sell_uninterested_uses_keeper_name`)
+
+### Added
+
+- `_act_to_char(keeper, message, obj)` helper in `mud/commands/shop.py` for rendering
+  ROM `act(…, TO_VICT)` messages that use `$n`/`$p` substitution (non-"tells you" format).
+
+---
+
 ## [2.13.25] — 2026-06-08
 
 ### Fixed

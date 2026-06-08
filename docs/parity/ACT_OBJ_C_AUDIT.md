@@ -1428,6 +1428,18 @@ from 🔄 IN PROGRESS / ~60% to ✅ COMPLETE / 100% as part of this refresh.
 
 ---
 
+## Post-Audit Gap Discovery (2026-06-08)
+
+Three divergences found while probing shop error-exit paths via diff-harness planning.
+
+| Gap ID | Function | ROM C Lines | Description | Status |
+|--------|----------|-------------|-------------|--------|
+| **BUY-006** | `do_buy()` | 2688 vs 2702 | Check ordering: Python runs level check (ROM line 2702) before afford check (ROM line 2688); ROM C runs afford first | ✅ **FIXED** — `shop.py` reordered; `test_buy_afford_checked_before_level` |
+| **SELL-002** | `do_sell()` | 2905-2908 | `!can_see_obj(keeper, obj)` branch emits hardcoded `"The shopkeeper doesn't see what you are offering."` — ROM C uses `act("$n doesn't see what you are offering.", keeper, NULL, ch, TO_VICT)` which expands `$n` to the keeper's name | ✅ **FIXED** — `_act_to_char` helper; `test_sell_cant_see_uses_keeper_name` |
+| **SELL-003** | `do_sell()` | 2911-2914 | `get_cost <= 0` branch emits `"The shopkeeper doesn't buy that."` — ROM C uses `act("$n looks uninterested in $p.", keeper, obj, ch, TO_VICT)` (keeper name + item name) | ✅ **FIXED** — `_act_to_char` helper; `test_sell_uninterested_uses_keeper_name` |
+
+---
+
 **Document Status**: 🔄 Active  
 **Maintained By**: QuickMUD ROM Parity Team  
 **Related Documents**:
