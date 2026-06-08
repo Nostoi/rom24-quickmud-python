@@ -35,7 +35,7 @@ def _normalize_char(c: CharSnap) -> CharSnap:
     return replace(
         c,
         affects=sorted(c.affects),
-        affect_flags=sorted(c.affect_flags),
+        affect_flags=sorted(f.lower() for f in c.affect_flags),
         inventory=list(c.inventory),  # order preserved
     )
 

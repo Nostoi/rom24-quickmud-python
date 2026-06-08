@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.23] — 2026-06-08
+
+### Added
+
+- **`__mob_prog=<trig>:<phrase>:<code>` diff-harness meta-command.** Injects a
+  mob program into the first NPC's program list at runtime — no area-file edits
+  needed. Implemented in both the C shim (`src/diff_shim/diffmain.c`, uses
+  `alloc_perm`/`SET_BIT(mprog_flags, trigger)`) and Python replay
+  (`tools/diff_harness/pyreplay.py`, appends `MobProgram` to `mob.mob_programs`).
+- **`mob_speech_trigger` diff-harness scenario.** Loads the Midgaard wizard (vnum
+  3000), injects a SPEECH trigger (`say Hello adventurer!` on keyword "hello"),
+  issues `say hello` — verifies both C and Python fire `mp_speech_trigger` and
+  produce identical mob response output. Golden captured from C oracle; 9/9 smoke
+  tests pass.
+- **`affect_flags` case-fold in diff-harness normalizer.** `_normalize_char` now
+  lowercases `affect_flags` before sorting — C oracle stores them lowercase
+  (`detect_invis`), Python emits uppercase enum names (`DETECT_INVIS`). Fixes
+  comparison for any scenario where a watched NPC has active affect flags.
+
+### Fixed
+
+- **`test_normalize_sorts_unordered_lists_and_strips_ansi`** updated to expect
+  lowercase `affect_flags` after the normalization fix.
+
 ## [2.13.22] — 2026-06-08
 
 ### Added

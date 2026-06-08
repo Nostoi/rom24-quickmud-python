@@ -143,6 +143,24 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         if key in watch_chars:
             chars_by_name[key] = mob
         return ""
+    if command.startswith("__mob_prog="):
+        from mud.mobprog import Trigger
+        from mud.models.mob import MobProgram
+        from mud.spawning.templates import MobInstance
+
+        rest = command[len("__mob_prog=") :]
+        trig_name, trig_phrase, code = rest.split(":", 2)
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is None:
+            raise AssertionError("no NPC in room for __mob_prog")
+        trig_type = getattr(Trigger, trig_name.upper(), None)
+        if trig_type is None:
+            raise AssertionError(f"unknown trigger type {trig_name!r} in __mob_prog")
+        prog = MobProgram(trig_type=int(trig_type), trig_phrase=trig_phrase, code=code)
+        if not isinstance(getattr(mob, "mob_programs", None), list):
+            mob.mob_programs = []
+        mob.mob_programs.append(prog)
+        return ""
     if command.startswith("__oload="):
         from mud.spawning.obj_spawner import spawn_object
 

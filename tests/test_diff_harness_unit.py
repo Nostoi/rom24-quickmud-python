@@ -82,7 +82,7 @@ def test_normalize_sorts_unordered_lists_and_strips_ansi():
     )
     norm = normalize_step(step)
     assert norm.chars[0].affects == ["armor", "bless"]  # sorted
-    assert norm.chars[0].affect_flags == ["A", "B"]  # sorted
+    assert norm.chars[0].affect_flags == ["a", "b"]  # sorted, lowercased
     assert norm.chars[0].inventory == [3010, 3022]  # order preserved
     assert norm.rooms[0].people == ["abe", "zeke"]  # sorted
     assert norm.rooms[0].contents == [3001, 3010]  # sorted

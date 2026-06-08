@@ -691,6 +691,50 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __mob_prog=<trig_name>:<trig_phrase>:<code>: inject a mob program
+         * into the first NPC's mprogs list at runtime.  trig_name must match
+         * an mprog_flags entry (e.g. "speech").  trig_phrase is the keyword
+         * or percent string.  code is the raw interpreter text.  Mirrors the
+         * Python-side __mob_prog handler in pyreplay.py. */
+        if (strncmp (line, "__mob_prog=", 11) == 0)
+        {
+            char *rest = line + 11;
+            char *colon1, *colon2;
+            int trigger;
+            CHAR_DATA *mob;
+            MPROG_LIST *prog;
+
+            colon1 = strchr (rest, ':');
+            if (colon1 == NULL) { continue; }
+            colon2 = strchr (colon1 + 1, ':');
+            if (colon2 == NULL) { continue; }
+
+            /* isolate trig_name, look up flag value */
+            *colon1 = '\0';
+            trigger = flag_lookup (rest, mprog_flags);
+            *colon1 = ':';
+            if (trigger == NO_FLAG) { continue; }
+
+            if (ch == NULL || ch->in_room == NULL) { continue; }
+            for (mob = ch->in_room->people; mob != NULL;
+                 mob = mob->next_in_room)
+                if (IS_NPC (mob)) break;
+            if (mob == NULL) { continue; }
+
+            prog = alloc_perm (sizeof (*prog));
+            prog->trig_type = trigger;
+            /* trig_phrase: from colon1+1 up to (not including) colon2 */
+            *colon2 = '\0';
+            prog->trig_phrase = str_dup (colon1 + 1);
+            *colon2 = ':';
+            prog->vnum = 0;
+            prog->code = str_dup (colon2 + 1);
+            prog->next = mob->pIndexData->mprogs;
+            mob->pIndexData->mprogs = prog;
+            SET_BIT (mob->pIndexData->mprog_flags, trigger);
+            continue;
+        }
+
         /* __oload=<vnum>: spawn a fresh object into the PC's current room
          * (ROM create_object + obj_to_room). */
         if (strncmp (line, "__oload=", 8) == 0)

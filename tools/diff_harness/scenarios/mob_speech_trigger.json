@@ -1,0 +1,14 @@
+{
+  "name": "mob_speech_trigger",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester", "wizard"], "rooms": [3001] },
+  "steps": [
+    "__seed=4321",
+    "__mload=3000",
+    "__mob_prog=speech:hello:say Hello adventurer!",
+    "say hello",
+    "inventory"
+  ]
+}
