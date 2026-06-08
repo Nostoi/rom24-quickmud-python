@@ -24,6 +24,7 @@ from mud.spawning.obj_spawner import spawn_object
 from mud.spawning.templates import MobInstance
 from mud.time import time_info
 from mud.utils import rng_mm
+from mud.utils.act import capitalize_act_line
 from mud.world import create_test_character, initialize_world
 from mud.world.movement import can_carry_n, can_carry_w
 
@@ -139,7 +140,7 @@ def test_buy_rejects_items_above_level():
         # BUY-003b: keeper-voiced with $p substitution (ROM line 2702-2706)
         keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
         weapon_name = getattr(weapon, "short_descr", None) or getattr(weapon, "name", None) or "it"
-        assert response == f"{keeper_name} tells you 'You can't use {weapon_name} yet.'"
+        assert response == capitalize_act_line(f"{keeper_name} tells you 'You can't use {weapon_name} yet'.")
         assert char.gold == before_gold
         assert not any("greatsword" in (obj.short_descr or "").lower() for obj in char.inventory)
         assert any("greatsword" in (obj.short_descr or "").lower() for obj in keeper.inventory)
@@ -717,7 +718,8 @@ def test_sell_respects_drop_and_visibility_gates():
             invis_obj.value[2] = 0
         char.add_object(invis_obj)
         response = process_command(char, "sell lantern")
-        assert response == "The shopkeeper doesn't see what you are offering."
+        keeper_name_act = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
+        assert response == capitalize_act_line(f"{keeper_name_act} doesn't see what you are offering.")
         assert _total_wealth(char) == 0
     finally:
         time_info.hour = previous_hour
@@ -750,7 +752,7 @@ def test_sell_sets_reply_after_missing_item():
         response = process_command(char, "sell lantern")
         # SELL-001: keeper-voiced refusal (ROM: "$n tells you 'You don't have that item'.")
         keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
-        assert f"{keeper_name} tells you 'You don't have that item.'" == response
+        assert capitalize_act_line(f"{keeper_name} tells you 'You don't have that item'.") == response
         assert char.reply is keeper
     finally:
         time_info.hour = previous_hour
@@ -1289,7 +1291,9 @@ def test_shop_respects_keeper_wealth():
         # SELL-004: keeper-voiced with $p substitution (ROM: "$n tells you 'I'm afraid...$p'.")
         keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
         canoe_name = getattr(canoe, "short_descr", None) or getattr(canoe, "name", None) or "it"
-        assert denied == f"{keeper_name} tells you 'I'm afraid I don't have enough wealth to buy {canoe_name}.'"
+        assert denied == capitalize_act_line(
+            f"{keeper_name} tells you 'I'm afraid I don't have enough wealth to buy {canoe_name}."
+        )
         assert char.gold == 0
         assert canoe in char.inventory
         assert canoe not in keeper.inventory
@@ -1627,7 +1631,7 @@ def test_buy_cant_afford_uses_keeper_voice():
 
         response = process_command(char, "buy lantern")
         keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
-        assert f"{keeper_name} tells you '" in response
+        assert capitalize_act_line(f"{keeper_name} tells you '") in response
         assert "You can't afford" in response
     finally:
         time_info.hour = previous_hour

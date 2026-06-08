@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.27] — 2026-06-08
+
+### Fixed
+
+- **BUY-007 / ACT-CAP**: `_keeper_says` and `_act_to_char` now apply ROM's first-character
+  capitalisation (`src/comm.c:2376-2379`) and match the ROM-exact quote/period placement
+  per message. Previously all keeper-told messages were lowercase and the closing `'` always
+  preceded the period regardless of the ROM C format string.
+  (Python: `mud/commands/shop.py`; tests: `test_buy_rejects_items_above_level`,
+  `test_sell_sets_reply_after_missing_item`, `test_shop_respects_keeper_wealth`,
+  `test_sell_respects_drop_and_visibility_gates`)
+
+### Added
+
+- **Diff-harness `shop_buy_insufficient_funds` scenario**: exercises the BUY-007 error path
+  (`__silver=0`, weaponsmith stocked with long sword, `buy sword` → keeper-voiced refusal).
+  C golden captured; Python replay now passes end-to-end.
+
 ## [2.13.26] — 2026-06-08
 
 ### Fixed

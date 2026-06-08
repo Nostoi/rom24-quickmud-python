@@ -40,31 +40,33 @@ _CANT_SEE = "I don't trade with folks I can't see."
 def _keeper_says(keeper, ch, message: str, *, obj=None) -> str:
     """Emit a keeper-spoken message and set ch.reply.
 
-    ROM uses act() with TO_VICT for these — for the dispatcher we still
-    return the formatted line so it appears in ch's prompt.
-    Mirrors ROM src/act_obj.c act("$n tells you '...'", keeper, ..., ch, TO_VICT).
+    ROM uses act() with TO_VICT — mirrors the $n expansion + first-char
+    capitalization from src/comm.c:2376-2379.  The message arg is the literal
+    suffix after "$n tells you '" (caller supplies ROM-exact punctuation,
+    including whether the closing ' precedes or follows the period).
     """
     keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", "The shopkeeper")
     if hasattr(ch, "reply"):
         ch.reply = keeper
     if obj is not None:
         obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it") or "it"
-        return f"{keeper_name} tells you '{message.replace('$p', obj_name)}'"
-    return f"{keeper_name} tells you '{message}'"
+        message = message.replace("$p", obj_name)
+    # mirroring ROM src/comm.c:2376-2379 — first char of act() output is capitalised
+    return capitalize_act_line(f"{keeper_name} tells you '{message}")
 
 
 def _act_to_char(keeper, message: str, *, obj=None) -> str:
     """Render a ROM act(message, keeper, obj, ch, TO_VICT) string.
 
-    Expands $n to the keeper's short_descr and $p to the object's short_descr.
-    Mirrors ROM src/act_obj.c act(...) calls that are NOT "tells you" format.
+    Expands $n to the keeper's short_descr and $p to the object's short_descr,
+    then capitalises the first character (src/comm.c:2376-2379).
     """
     keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", "The shopkeeper")
     result = message.replace("$n", keeper_name)
     if obj is not None:
         obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it") or "it"
         result = result.replace("$p", obj_name)
-    return result
+    return capitalize_act_line(result)
 
 
 def _obj_to_keeper(obj: object, keeper) -> bool:
@@ -752,7 +754,7 @@ def do_buy(char: Character, args: str) -> str:
 
     # BUY-002: "don't sell that" uses keeper voice (ROM line 2661-2665)
     if selected_obj is None or (unit_price <= 0 and not (proto is None and _is_inventory_item(selected_obj))):
-        return _keeper_says(keeper, char, "I don't sell that -- try 'list'.")
+        return _keeper_says(keeper, char, "I don't sell that -- try 'list''.")
 
     if unit_price <= 0 and proto is None and _is_inventory_item(selected_obj):
         unit_price = 0
@@ -776,7 +778,7 @@ def do_buy(char: Character, args: str) -> str:
     if _character_total_wealth(char) < total_cost:
         if quantity > 1:
             return _keeper_says(keeper, char, "You can't afford to buy that many.")
-        return _keeper_says(keeper, char, "You can't afford to buy $p.", obj=selected_obj)
+        return _keeper_says(keeper, char, "You can't afford to buy $p'.", obj=selected_obj)
 
     item_level = getattr(proto, "level", getattr(selected_obj, "level", 0))
     char_level = getattr(char, "level", 0)
@@ -784,7 +786,7 @@ def do_buy(char: Character, args: str) -> str:
         # BUY-003b: level check uses keeper voice (ROM src/act_obj.c:2702-2706)
         if hasattr(char, "reply"):
             char.reply = keeper
-        return _keeper_says(keeper, char, "You can't use $p yet.", obj=selected_obj)
+        return _keeper_says(keeper, char, "You can't use $p yet'.", obj=selected_obj)
 
     current_number = int(getattr(char, "carry_number", 0) or 0)
     if current_number + quantity > can_carry_n(char):
@@ -908,7 +910,7 @@ def do_sell(char: Character, args: str) -> str:
 
     if selected_obj is None:
         # SELL-001: keeper voice for missing item (ROM line 2892-2896)
-        return _keeper_says(keeper, char, "You don't have that item.")
+        return _keeper_says(keeper, char, "You don't have that item'.")
 
     if not _can_drop_object(char, selected_obj):
         return "You can't let go of it."
@@ -1066,7 +1068,7 @@ def do_value(char: Character, args: str) -> str:
 
     if selected_obj is None:
         # ROM line 2986-2990: keeper voice for missing item
-        return _keeper_says(keeper, char, "You don't have that item.")
+        return _keeper_says(keeper, char, "You don't have that item'.")
 
     if not _keeper_can_see_object(keeper, selected_obj):
         return "The shopkeeper doesn't see what you are offering."
