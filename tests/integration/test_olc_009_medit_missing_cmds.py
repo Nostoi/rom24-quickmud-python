@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from mud import mobprog
 from mud.commands.build import _interpret_medit
+from mud.commands.communication import do_say
 from mud.models.character import character_registry
 from mud.models.constants import (
     LEVEL_HERO,
@@ -518,6 +519,57 @@ def test_addmprog_created_greet_trigger_fires_for_entering_pc(monkeypatch):
         mob_registry.pop(proto.vnum, None)
 
     assert calls == [(spawned, traveler, mobprog.Trigger.GREET)]
+
+
+def test_addmprog_created_speech_trigger_fires_when_pc_says_phrase(monkeypatch):
+    """MEdit-created ``TRIG_SPEECH`` survives spawn and fires from ``do_say``.
+
+    Mirrors ROM src/olc_act.c:4900-4904 and src/act_comm.c:779-787.
+    """
+    _, session, proto = _builder_in_medit(vnum=61014)
+    mprog_code = MobIndex(vnum=61015, player_name="mprog source")
+    mprog_code.mprog_code = "mob echo OLC_SPEECH_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(
+        vnum,
+        code,
+        context,
+        mob,
+        actor,
+        arg1,
+        arg2,
+        text,
+    ):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+
+    spawned = None
+    speaker = create_test_character("Speaker", 61030)
+    room = Room(vnum=61030, name="Speech Room")
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61015 speech secret")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        room.add_character(speaker)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        room.add_character(spawned)
+
+        do_say(speaker, "this is a secret phrase")
+    finally:
+        for char in (spawned, speaker):
+            if char is not None and char in character_registry:
+                character_registry.remove(char)
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(61015, "mob echo OLC_SPEECH_FIRED", spawned, speaker, None, None)]
 
 
 # ── delmprog ──────────────────────────────────────────────────────────────────

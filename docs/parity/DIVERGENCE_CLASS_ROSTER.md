@@ -195,7 +195,11 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    (2.13.44):** an OLC-created `greet` mobprog now has end-to-end coverage
    through `_interpret_medit` → `spawn_mob` → PC directional `move_character`,
    proving the builder-set `TRIG_GREET` bit and `MobProgram` row survive into
-   runtime `mp_greet_trigger` selection. Next is more
+   runtime `mp_greet_trigger` selection. **MEdit speech mobprog runtime probe
+   (2.13.45):** an OLC-created `speech` mobprog now has end-to-end coverage
+   through `_interpret_medit` → `spawn_mob` → player-facing `do_say`, proving
+   the builder-set `TRIG_SPEECH` bit and `MobProgram` row survive into runtime
+   speech-trigger selection with the raw spoken phrase. Next is more
    deterministic command/watch-set widening; add RNG-locked combat only after
    seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
