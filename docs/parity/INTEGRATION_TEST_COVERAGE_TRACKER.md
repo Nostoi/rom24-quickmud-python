@@ -145,7 +145,7 @@ This document tracks **integration test coverage** for all QuickMUD gameplay sys
 | Time System | P2 | ✅ Complete | `test_weather_time.py` | 100% | Integrated with weather tests ✨ |
 | **NPC Systems** | | | | | |
 | Mob AI (mobile_update) | P2 | ✅ Complete | `test_mob_ai.py` | 100% | 15/15 tests passing ✅ |
-| Mob Programs | P2 | ✅ Complete | `test_mobprog_scenarios.py` | 85% | Quest/combat/triggers tested |
+| Mob Programs | P2 | ✅ Complete | `test_mobprog_scenarios.py` + `test_olc_009_medit_missing_cmds.py` | 95% | All deterministic OLC trigger types (entry/greet/speech/act/bribe/give/fight/hpcnt/surr/kill/death/exit/exall/grall) covered end-to-end via MEdit→spawn→runtime probe (2.13.52) |
 | Aggressive Mobs | P2 | ✅ Complete | `test_mob_ai.py` | 100% | Attack/safe rooms/levels tested |
 | **Social/Communication** | | | | | |
 | Channels System | P3 | ✅ Complete | `test_channels.py` | 100% | 17 tests: channel toggling, filtering ✅ |

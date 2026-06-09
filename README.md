@@ -166,7 +166,7 @@ python -m mud  # Start development server
 **Stage: parity beta** — feature-complete and playable; parity fidelity is being
 systematically hardened toward ROM-exact behavioral equivalence.
 
-- **Version**: 2.13.31
+- **Version**: 2.13.52
 - **Playability**: ✅ All 255 ROM commands implemented. Combat, spells, skills,
   movement, shops, mob programs, OLC building, and admin tools work and pass their
   tests. You can run a server and play today.
@@ -191,10 +191,13 @@ systematically hardened toward ROM-exact behavioral equivalence.
   diffed. Any behavioral divergence surfaces mechanically rather than requiring a
   hand-written assertion. Coverage is growing; uncovered surfaces are the remaining
   parity-confidence gap.
-- **Test Suite**: ✅ **5,451 passed, 4 skipped** (full `pytest` run, ~150s parallel).
+- **Test Suite**: ✅ **5,474 passed, 5 skipped** (full `pytest` run, ~150s parallel).
   Unit, integration, command-registry, and differential-harness layers.
-- **Active focus**: expanding differential harness scenario coverage and closing the
-  identified gap backlog (tracked in `docs/parity/*_C_AUDIT.md`).
+- **Active focus**: Class 11 dynamic differential widening — all deterministic
+  OLC-created mobprog trigger types (`entry`, `greet`, `speech`, `act`, `bribe`,
+  `give`, `fight`/`hpcnt`, `surr`, `kill`/`death`, `exit`, `exall`, `grall`) are
+  now covered end-to-end through the MEdit → `spawn_mob` → runtime dispatch path.
+  RNG-locked triggers (`random`, `delay`) are deferred pending seed-alignment work.
 - **Compatibility**: Python 3.10+, cross-platform
 
 ## 🏛️ Architecture
@@ -344,14 +347,14 @@ being hardened gap-by-gap (see **Project Status** above).
 - **World System**: Area loading, room resets, mob/object spawning, and JSON world data
 - **Shop Economy**: Buy/sell with pricing formulas, shop restocking, and inventory management  
 - **Communication**: Say, tell, shout, channels, and 100+ social interactions
-- **Mob Programs**: Complete trigger system with conditional logic and ROM API
+- **Mob Programs**: Complete trigger system with conditional logic and ROM API; all deterministic OLC-created trigger types verified end-to-end
 - **OLC Building**: Area/room/mob/object/help editors with save/load functionality
 - **Admin Tools**: Teleport, spawn, ban management, wiznet, and debug commands
 - **Networking**: Async telnet, WebSocket, and SSH servers with game tick integration
 
 ### 📈 Quality Metrics
 
-- **Test Suite**: 5,451 passing, 4 skipped on the latest full run.
+- **Test Suite**: 5,474 passing, 5 skipped on the latest full run.
 - **Audit Coverage**: every ROM 2.4b6 gameplay subsystem has a completed audit
   document (combat, skills, spells, movement, communication, world/db, save/load,
   mob programs, 255/255 commands). Audit completion means *reviewed and documented*,
