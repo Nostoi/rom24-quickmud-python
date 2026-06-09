@@ -1,0 +1,21 @@
+{
+    "name": "mob_movement_triggers",
+    "seed": 1234,
+    "start_room": 3001,
+    "char": { "name": "Tester", "level": 5 },
+    "watch": { "chars": ["Tester", "wizard"], "rooms": [3001, 3005] },
+    "steps": [
+        "__seed=4321",
+        "__mload=3000",
+        "__mob_gold=0",
+        "__mob_silver=0",
+        "__mob_prog=exit:0:say Farewell northward traveler!",
+        "__mob_prog=grall:100:say Welcome back adventurer!",
+        "look",
+        "north",
+        "look",
+        "south",
+        "north",
+        "look"
+    ]
+}
