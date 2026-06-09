@@ -853,6 +853,32 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __mob_position=<pos>: set the first NPC in the room's position to
+         * <pos> (integer, e.g. 5=resting, 8=standing).  Used to place a mob
+         * in a non-default position so that TRIG_EXIT and TRIG_GREET are
+         * gated out (they check mob->position == pIndexData->default_pos)
+         * while TRIG_EXALL and TRIG_GRALL still fire.  Never touches
+         * pIndexData->default_pos so the gate remains meaningful.  Mirrors
+         * the Python-side __mob_position handler in pyreplay.py. */
+        if (strncmp (line, "__mob_position=", 15) == 0)
+        {
+            int new_pos = atoi (line + 15);
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        mob->position = new_pos;
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
         /* __set_affect_duration=N: set duration of every active affect on the
          * test character to N.  Harness fixture to shorten ROM's fixed-duration
          * spells (e.g. armor=24) for expiration tests without 25+ ticks. */

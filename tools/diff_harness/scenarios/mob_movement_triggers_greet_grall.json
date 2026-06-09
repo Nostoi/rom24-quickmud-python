@@ -1,0 +1,23 @@
+{
+    "name": "mob_movement_triggers_greet_grall",
+    "seed": 1234,
+    "start_room": 3001,
+    "char": { "name": "Tester", "level": 5 },
+    "watch": { "chars": ["Tester", "wizard"], "rooms": [3001, 3005] },
+    "steps": [
+        "__seed=4321",
+        "__mload=3000",
+        "__mob_gold=0",
+        "__mob_silver=0",
+        "__mob_prog=greet:100:say GREET fires - mob was at default position!",
+        "__mob_prog=grall:100:say GRALL fires - mob was not at default position!",
+        "look",
+        "__mob_position=5",
+        "south",
+        "north",
+        "__mob_position=8",
+        "south",
+        "north",
+        "look"
+    ]
+}

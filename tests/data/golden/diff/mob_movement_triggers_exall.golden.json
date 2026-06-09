@@ -1,0 +1,1127 @@
+{
+  "scenario": "mob_movement_triggers_exall",
+  "c_commit": "882334337d46c9f73e712ad5b368a80e3b8f614e",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=4321",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__mload=3000",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 144,
+          "silver": 6513,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "__mob_gold=0",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 6513,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "__mob_silver=0",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__mob_prog=exall:0:say EXALL fires regardless of position!",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "__mob_prog=exit:0:say EXIT fires only when standing!",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 7,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rA wizard walks around behind the counter, talking to himself.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "north",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe wizard says 'EXIT fires only when standing!'",
+        ""
+      ]
+    },
+    {
+      "step": 9,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rA wizard walks around behind the counter, talking to himself.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    },
+    {
+      "step": 10,
+      "command": "__mob_position=5",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "RESTING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 11,
+      "command": "north",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "RESTING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe wizard says 'EXALL fires regardless of position!'",
+        ""
+      ]
+    },
+    {
+      "step": 12,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "RESTING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rThe wizard is resting here.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    },
+    {
+      "step": 13,
+      "command": "__mob_position=8",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 14,
+      "command": "north",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe wizard says 'EXIT fires only when standing!'",
+        ""
+      ]
+    },
+    {
+      "step": 15,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rA wizard walks around behind the counter, talking to himself.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1163 @@
+{
+  "scenario": "mob_movement_triggers_greet_grall",
+  "c_commit": "882334337d46c9f73e712ad5b368a80e3b8f614e",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=4321",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__mload=3000",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 144,
+          "silver": 6513,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "__mob_gold=0",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 6513,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "__mob_silver=0",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__mob_prog=greet:100:say GREET fires - mob was at default position!",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "__mob_prog=grall:100:say GRALL fires - mob was not at default position!",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 7,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rA wizard walks around behind the counter, talking to himself.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "__mob_position=5",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "RESTING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 9,
+      "command": "south",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3005,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "RESTING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Square",
+        "\r  You are standing on the temple square.  Huge marble steps lead up to the",
+        "\rtemple gate.  The entrance to the Clerics Guild is to the west, and the old",
+        "\rGrunting Boar Inn, is to the east.  Just south of here you see the market",
+        "\rsquare, the center of Midgaard.",
+        "\r     A small white fountain gushes forth here.",
+        ""
+      ]
+    },
+    {
+      "step": 10,
+      "command": "north",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 98,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "RESTING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "wizard",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rThe wizard is resting here.",
+        "\rHassan is here, waiting to dispense some justice.",
+        "\rThe wizard says 'GRALL fires - mob was not at default position!'",
+        ""
+      ]
+    },
+    {
+      "step": 11,
+      "command": "__mob_position=8",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 98,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "wizard",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 12,
+      "command": "south",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3005,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 97,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "wizard",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Square",
+        "\r  You are standing on the temple square.  Huge marble steps lead up to the",
+        "\rtemple gate.  The entrance to the Clerics Guild is to the west, and the old",
+        "\rGrunting Boar Inn, is to the east.  Just south of here you see the market",
+        "\rsquare, the center of Midgaard.",
+        "\r     A small white fountain gushes forth here.",
+        ""
+      ]
+    },
+    {
+      "step": 13,
+      "command": "north",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 96,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "wizard",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rA wizard walks around behind the counter, talking to himself.",
+        "\rHassan is here, waiting to dispense some justice.",
+        "\rThe wizard says 'GREET fires - mob was at default position!'",
+        ""
+      ]
+    },
+    {
+      "step": 14,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 96,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "wizard",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 1000,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_invis"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 34,
+          "eff_ac": [
+            -165,
+            -165,
+            -165,
+            -165
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "wizard",
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3005,
+          "people": [],
+          "contents": [
+            3135
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rA wizard walks around behind the counter, talking to himself.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    }
+  ]
+}

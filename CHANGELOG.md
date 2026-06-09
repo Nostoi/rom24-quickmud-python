@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.54] — 2026-06-09
+
+### Added
+
+- **`__mob_position=<pos>` meta-command** (`src/diff_shim/diffmain.c`,
+  `tools/diff_harness/pyreplay.py`): sets the first NPC in the PC's current room
+  to position `<pos>` (e.g. 5=RESTING, 8=STANDING). Enables diff-harness scenarios
+  that gate `TRIG_EXIT`/`TRIG_GREET` (position-conditional) vs `TRIG_EXALL`/`TRIG_GRALL`
+  (unconditional).
+- **TRIG_EXALL C-oracle scenario** (`tools/diff_harness/scenarios/mob_movement_triggers_exall.json`,
+  `tests/data/golden/diff/mob_movement_triggers_exall.golden.json`): confirms ROM
+  `mp_exit_trigger` fires EXALL unconditionally regardless of mob position while EXIT
+  is gated on `mob->position == default_pos && can_see(mob, ch)` (`src/mob_prog.c:1262-1276`).
+- **TRIG_GREET/GRALL C-oracle scenario** (`tools/diff_harness/scenarios/mob_movement_triggers_greet_grall.json`,
+  `tests/data/golden/diff/mob_movement_triggers_greet_grall.golden.json`): confirms
+  `mp_greet_trigger` GREET/GRALL dispatch — GREET fires when mob is at `default_pos`,
+  GRALL fires as the else-if fallback (`src/mob_prog.c:1325-1345`).
+
+### Fixed
+
+- **`_room_occupant_line` position suffix** (`mud/world/look.py`): mobs at non-default
+  positions now render with ROM-correct suffix (e.g. `" is resting here."`,
+  `" is here."`) and initial-cap, matching `show_char_to_char_0`
+  (`src/act_info.c:247-424`). Previously all mobs fell back to bare `describe_character`
+  with no suffix. Dark-room path also updated to use `_room_occupant_line` (was
+  calling `describe_character` directly).
+- **`__mob_prog` LIFO ordering** (`tools/diff_harness/pyreplay.py`): `__mob_prog`
+  meta-command now prepends programs (`insert(0, prog)`) to match ROM C's
+  `prog->next = mob->pIndexData->mprogs` prepend semantics. Previously appended
+  (FIFO), diverging from C when EXIT and EXALL were both present.
+
 ## [2.13.53] — 2026-06-09
 
 ### Added

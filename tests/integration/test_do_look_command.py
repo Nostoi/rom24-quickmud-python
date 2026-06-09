@@ -125,7 +125,7 @@ def test_look_room_people_are_not_prefixed_with_characters_label():
 
     output = do_look(char, "")
 
-    assert output == "Midgaard Temple\nYou are in the temple.\nSneaky"
+    assert output == "Midgaard Temple\nYou are in the temple.\nSneaky is here."
 
 
 def test_look_dark_room_shows_raw_visible_character_lines_without_label():
@@ -150,7 +150,7 @@ def test_look_dark_room_shows_raw_visible_character_lines_without_label():
 
     output = do_look(char, "")
 
-    assert output == "It is pitch black ...\nSneaky"
+    assert output == "It is pitch black ...\nSneaky is here."
 
 
 def test_look_in_drink_container_uses_rom_liquid_color_wording():

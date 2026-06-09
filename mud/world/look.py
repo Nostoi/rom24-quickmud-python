@@ -4,30 +4,56 @@ from mud.models.character import Character
 from mud.models.constants import AffectFlag, Direction, Position
 from mud.world.vision import can_see_character, describe_character
 
+# mirroring ROM src/act_info.c show_char_to_char_0 — buf[0] = UPPER(buf[0]) and
+# position suffixes appended when a mob is not at its start/default position.
+# victim->on == NULL path only; the furniture-object branch is not yet ported.
+_POSITION_SUFFIX: dict[Position, str] = {
+    Position.DEAD: " is DEAD!!",
+    Position.MORTAL: " is mortally wounded.",
+    Position.INCAP: " is incapacitated.",
+    Position.STUNNED: " is lying here stunned.",
+    Position.SLEEPING: " is sleeping here.",
+    Position.RESTING: " is resting here.",
+    Position.SITTING: " is sitting here.",
+    Position.STANDING: " is here.",
+    # FIGHTING: handled separately (target-aware)
+}
+
 
 def _room_occupant_line(observer: Character, victim) -> str:
     """Render a room-list occupant — ROM src/act_info.c show_char_to_char_0.
 
-    An NPC whose position equals its start position and which has a non-empty
-    long_descr is listed by that long_descr (with affect auras prefixed),
-    e.g. "Hassan is here, waiting to dispense some justice." Otherwise fall back
-    to the PERS rendering (short name + auras).
+    An NPC whose position equals its start/default position and which has a
+    non-empty long_descr is listed by that long_descr (with affect auras
+    prefixed), e.g. "Hassan is here, waiting to dispense some justice."
+    Otherwise show PERS(victim) + a position suffix ("is resting here.", etc.).
     """
+    prefixes = []
+    if hasattr(victim, "has_affect"):
+        if victim.has_affect(AffectFlag.SANCTUARY):
+            prefixes.append("(White Aura)")
+        if victim.has_affect(AffectFlag.FAERIE_FIRE):
+            prefixes.append("(Pink Aura)")
+    prefix = (" ".join(prefixes) + " ") if prefixes else ""
+
     long_descr = getattr(victim, "long_descr", None)
-    if (
-        getattr(victim, "is_npc", False)
-        and long_descr
-        and getattr(victim, "position", None) == getattr(victim, "start_pos", None)
-    ):
-        prefixes = []
-        if hasattr(victim, "has_affect"):
-            if victim.has_affect(AffectFlag.SANCTUARY):
-                prefixes.append("(White Aura)")
-            if victim.has_affect(AffectFlag.FAERIE_FIRE):
-                prefixes.append("(Pink Aura)")
-        prefix = (" ".join(prefixes) + " ") if prefixes else ""
+    # ROM uses start_pos for the long_descr gate; Python stores default_pos (same
+    # value for normally-spawned mobs).  Fall back to start_pos if present.
+    ref_pos = getattr(victim, "start_pos", getattr(victim, "default_pos", None))
+    if getattr(victim, "is_npc", False) and long_descr and getattr(victim, "position", None) == ref_pos:
         return prefix + str(long_descr).rstrip("\r\n")
-    return describe_character(observer, victim)
+
+    pers = describe_character(observer, victim)
+    position = getattr(victim, "position", None)
+    fighting = getattr(victim, "fighting", None)
+    if position == Position.FIGHTING and fighting is not None:
+        target_name = describe_character(observer, fighting)
+        line = prefix + pers + " is here, fighting " + target_name
+    else:
+        suffix = _POSITION_SUFFIX.get(position, "") if position is not None else ""
+        line = prefix + pers + suffix
+    # mirroring ROM src/act_info.c:421 buf[0] = UPPER(buf[0])
+    return line[0].upper() + line[1:] if line else line
 
 
 def _ed_fields(ed) -> tuple[str | None, str | None]:
@@ -95,7 +121,10 @@ def look(char: Character, args: str = "") -> str:
                 continue
             if not can_see_character(char, occupant):
                 continue
-            lines.append(describe_character(char, occupant))
+            # mirroring ROM src/act_info.c show_char_to_char: when can_see is
+            # True even in a dark room, show_char_to_char_0 is called (same as
+            # the lit-room path) — not just the PERS name.
+            lines.append(_room_occupant_line(char, occupant))
         return "\n".join(lines)
 
     # Parse arguments

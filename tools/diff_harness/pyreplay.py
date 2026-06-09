@@ -184,7 +184,8 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         prog = MobProgram(trig_type=int(trig_type), trig_phrase=trig_phrase, code=code)
         if not isinstance(getattr(mob, "mob_programs", None), list):
             mob.mob_programs = []
-        mob.mob_programs.append(prog)
+        # mirroring ROM C: prog->next = mob->pIndexData->mprogs (prepend = LIFO)
+        mob.mob_programs.insert(0, prog)
         return ""
     if command.startswith("__oload="):
         from mud.spawning.obj_spawner import spawn_object
@@ -208,6 +209,16 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         dur = int(command[len("__set_affect_duration=") :])
         for aff in getattr(char, "affected", []) or []:
             aff.duration = dur
+        return ""
+    if command.startswith("__mob_position="):
+        from mud.models.constants import Position
+        from mud.spawning.templates import MobInstance
+
+        new_pos = int(command[len("__mob_position=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is None:
+            raise AssertionError("no NPC in room for __mob_position")
+        mob.position = Position(new_pos)
         return ""
 
     # Mirror the C shim's direct interpret() path, which bypasses comm.c's wait
