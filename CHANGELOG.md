@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.36] — 2026-06-08
+
+### Fixed
+
+- **Object decay / object-affect wear-off missing TRIG_ACT dispatch**
+  (`mud/game_loop.py`): `obj_update` decay and object `msg_obj` wear-off
+  messages now dispatch INV-025 `TRIG_ACT` to NPC recipients, mirroring ROM
+  `src/update.c:944-951` and `src/update.c:1014-1022` object `act()` calls.
+  Carried object `msg_obj` wear-off now stays TO_CHAR-only and object act lines
+  are capitalized before TO_CHAR delivery. 3 new regressions:
+  `test_obj_update_decay_dispatches_trig_act`,
+  `test_object_affect_wear_off_dispatches_trig_act`, and
+  `test_carried_object_affect_wear_off_is_to_char_only`.
+
 ## [2.13.35] — 2026-06-08
 
 ### Fixed

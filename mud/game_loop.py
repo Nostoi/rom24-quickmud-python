@@ -369,6 +369,49 @@ def _act_to_room(
     _shared_act_to_room(room, format_str, actor, arg1=arg1, arg2=arg2, exclude=exclude)
 
 
+def _first_room_person(room: object | None) -> object | None:
+    if room is None:
+        return None
+    for occupant in getattr(room, "people", []) or []:
+        return occupant
+    return None
+
+
+def _dispatch_obj_act_trigger(
+    message: str,
+    recipient: object | None,
+    actor: object | None,
+    obj: Object,
+) -> None:
+    if recipient is None or not getattr(recipient, "is_npc", False):
+        return
+
+    import mud.mobprog as mobprog
+
+    if not getattr(mobprog, "MOBtrigger", True):
+        return
+
+    # INV-025: ROM src/comm.c:2384 dispatches TRIG_ACT from act() after the
+    # object message is rendered. obj_update supplies rch as ch and obj as arg1.
+    mobprog.mp_act_trigger(message, recipient, actor, obj, None, mobprog.Trigger.ACT)
+
+
+def _dispatch_obj_room_act_triggers(
+    message: str,
+    room: object | None,
+    actor: object | None,
+    obj: Object,
+    *,
+    exclude: object | None = None,
+) -> None:
+    if room is None:
+        return
+    for occupant in list(getattr(room, "people", []) or []):
+        if occupant is exclude:
+            continue
+        _dispatch_obj_act_trigger(message, occupant, actor, obj)
+
+
 def _find_equipped_light(character: Character) -> tuple[object | None, object | None]:
     """Locate the descriptor slot and object for a worn light."""
 
@@ -1203,6 +1246,7 @@ def _object_decay_message(obj: Object) -> str:
 
 
 def _broadcast_decay(obj: Object, message: str) -> None:
+    message = capitalize_act_line(message)
     carrier = getattr(obj, "carried_by", None)
     if carrier is not None:
         if (
@@ -1212,8 +1256,11 @@ def _broadcast_decay(obj: Object, message: str) -> None:
             carrier.silver = int(getattr(carrier, "silver", 0)) + int(getattr(obj, "cost", 0)) // 5
         else:
             _send_to_char(carrier, message)
+            _dispatch_obj_act_trigger(message, carrier, carrier, obj)
             if int(getattr(obj, "wear_loc", -1)) == int(WearLocation.FLOAT):
-                _message_room(getattr(carrier, "room", None), message, exclude=carrier)
+                room = getattr(carrier, "room", None)
+                _message_room(room, message, exclude=carrier)
+                _dispatch_obj_room_act_triggers(message, room, carrier, obj, exclude=carrier)
         return
 
     room = getattr(obj, "in_room", None)
@@ -1228,6 +1275,10 @@ def _broadcast_decay(obj: Object, message: str) -> None:
             if in_vnum == 3010 and not (in_wear & int(WearFlag.TAKE)):
                 return
         _message_room(room, message)
+        # ROM src/update.c:1014-1022: rch = room->people; act(..., TO_ROOM)
+        # plus act(..., TO_CHAR), so every NPC in the room can receive TRIG_ACT
+        # with rch as the actor.
+        _dispatch_obj_room_act_triggers(message, room, _first_room_person(room), obj)
 
 
 def _spill_contents(obj: Object) -> None:
@@ -1289,16 +1340,21 @@ def _broadcast_object_wear_off(obj: Object, affect) -> None:
     if not message:
         return
 
-    rendered = _render_obj_message(obj, message)
+    rendered = capitalize_act_line(_render_obj_message(obj, message))
 
     carrier = getattr(obj, "carried_by", None)
     if carrier is not None:
+        # ROM src/update.c:940-944: carried object msg_obj is TO_CHAR only.
         _send_to_char(carrier, rendered)
-        _message_room(getattr(carrier, "room", None), rendered, exclude=carrier)
+        _dispatch_obj_act_trigger(rendered, carrier, carrier, obj)
         return
 
     room = _resolve_object_room(obj)
     _message_room(room, rendered)
+    # ROM src/update.c:944-951: object affect msg_obj uses room->people as rch
+    # for act(..., TO_ALL), so every NPC recipient receives TRIG_ACT with rch
+    # as the actor.
+    _dispatch_obj_room_act_triggers(rendered, room, _first_room_person(room), obj)
 
 
 def _tick_object_affects(obj: Object) -> None:

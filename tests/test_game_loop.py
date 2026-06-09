@@ -932,6 +932,163 @@ def test_obj_update_decays_corpse():
     assert "Orc corpse decays into dust." in observer.messages
 
 
+def test_obj_update_decay_dispatches_trig_act(monkeypatch):
+    """Object decay room act() must dispatch TRIG_ACT — ROM src/update.c:1017-1022."""
+
+    area = Area(name="Ruins")
+    room = Room(vnum=207, area=area)
+    room_registry[room.vnum] = room
+
+    witness = Character(name="First", is_npc=False, pcdata=PCData(condition=[48, 48, 48, 48]))
+    room.add_character(witness)
+    character_registry.append(witness)
+
+    listener = Character(
+        name="watcher",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    listener.messages = []
+    proto = MobIndex(vnum=9804, short_descr="a watcher", level=5)
+    proto.mprogs = []
+    listener.prototype = proto
+    room.add_character(listener)
+    character_registry.append(listener)
+
+    corpse = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=2, short_descr="kobold corpse", item_type=int(ItemType.CORPSE_NPC)),
+        timer=1,
+    )
+    room.add_object(corpse)
+    object_registry.append(corpse)
+
+    fired: list[tuple[str, object | None]] = []
+    original_trigger = mobprog.mp_act_trigger
+
+    def _probe(argument, recipient, actor=None, *args, **kwargs):
+        if recipient is listener:
+            fired.append((str(argument), actor))
+        return original_trigger(argument, recipient, actor, *args, **kwargs)
+
+    monkeypatch.setattr(mobprog, "mp_act_trigger", _probe)
+
+    obj_update()
+
+    assert any("Kobold corpse decays into dust" in msg for msg, _ in fired), (
+        "object decay act(message, rch, obj, TO_ROOM) must dispatch mp_act_trigger — ROM src/update.c:1017"
+    )
+    assert any(actor is room.people[0] for _, actor in fired), (
+        "object decay TRIG_ACT actor must be room->people rch — ROM src/update.c:1014-1022"
+    )
+
+
+def test_object_affect_wear_off_dispatches_trig_act(monkeypatch):
+    """Object affect wear-off room act() must dispatch TRIG_ACT — ROM src/update.c:937-959."""
+
+    area = Area(name="Vault")
+    room = Room(vnum=208, area=area)
+    room_registry[room.vnum] = room
+
+    witness = Character(name="First", is_npc=False, pcdata=PCData(condition=[48, 48, 48, 48]))
+    room.add_character(witness)
+    character_registry.append(witness)
+
+    listener = Character(
+        name="watcher",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    listener.messages = []
+    proto = MobIndex(vnum=9805, short_descr="a watcher", level=5)
+    proto.mprogs = []
+    listener.prototype = proto
+    room.add_character(listener)
+    character_registry.append(listener)
+
+    amulet = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=3, short_descr="silver amulet", item_type=int(ItemType.TREASURE)),
+        timer=0,
+    )
+    room.add_object(amulet)
+    affect = AffectData(type="bless", level=10, duration=0, location=0, modifier=0, bitvector=0)
+    affect.wear_off_message = "$p stops glowing."
+    amulet.affected = [affect]
+
+    fired: list[tuple[str, object | None]] = []
+    original_trigger = mobprog.mp_act_trigger
+
+    def _probe(argument, recipient, actor=None, *args, **kwargs):
+        if recipient is listener:
+            fired.append((str(argument), actor))
+        return original_trigger(argument, recipient, actor, *args, **kwargs)
+
+    monkeypatch.setattr(mobprog, "mp_act_trigger", _probe)
+
+    gl._tick_object_affects(amulet)
+
+    assert any("Silver amulet stops glowing" in msg for msg, _ in fired), (
+        "object affect wear-off must dispatch mp_act_trigger for its room act() — ROM src/update.c:944-959"
+    )
+    assert any(actor is room.people[0] for _, actor in fired), (
+        "object affect wear-off TRIG_ACT actor must be room->people rch — ROM src/update.c:944-959"
+    )
+
+
+def test_carried_object_affect_wear_off_is_to_char_only(monkeypatch):
+    """Carried object affect wear-off is TO_CHAR only — ROM src/update.c:940-944."""
+
+    area = Area(name="Vault")
+    room = Room(vnum=209, area=area)
+    room_registry[room.vnum] = room
+
+    carrier = Character(name="Carrier", is_npc=False, pcdata=PCData(condition=[48, 48, 48, 48]))
+    room.add_character(carrier)
+    character_registry.append(carrier)
+
+    listener = Character(
+        name="watcher",
+        is_npc=True,
+        position=int(Position.STANDING),
+        default_pos=int(Position.STANDING),
+    )
+    listener.messages = []
+    proto = MobIndex(vnum=9806, short_descr="a watcher", level=5)
+    proto.mprogs = []
+    listener.prototype = proto
+    room.add_character(listener)
+    character_registry.append(listener)
+
+    amulet = Object(
+        instance_id=None,
+        prototype=ObjIndex(vnum=4, short_descr="silver amulet", item_type=int(ItemType.TREASURE)),
+        timer=0,
+    )
+    carrier.add_object(amulet)
+    affect = AffectData(type="bless", level=10, duration=0, location=0, modifier=0, bitvector=0)
+    affect.wear_off_message = "$p stops glowing."
+    amulet.affected = [affect]
+
+    fired: list[str] = []
+    original_trigger = mobprog.mp_act_trigger
+
+    def _probe(argument, recipient, *args, **kwargs):
+        if recipient is listener:
+            fired.append(str(argument))
+        return original_trigger(argument, recipient, *args, **kwargs)
+
+    monkeypatch.setattr(mobprog, "mp_act_trigger", _probe)
+
+    gl._tick_object_affects(amulet)
+
+    assert "Silver amulet stops glowing." in carrier.messages
+    assert listener.messages == []
+    assert fired == []
+
+
 def test_obj_update_spills_floating_container():
     area = Area(name="Treasure")
     room = Room(vnum=300, area=area)
