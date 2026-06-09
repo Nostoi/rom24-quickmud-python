@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.51] — 2026-06-09
+
+### Added
+
+- **Class 11 MEdit kill/death mobprog runtime coverage**
+  (`tests/integration/test_olc_009_medit_missing_cmds.py`): added a runtime
+  probe showing OLC-created `kill` and `death` mobprogs survive `spawn_mob`
+  and are selected from ROM's `damage()` trigger dispatch path when an NPC
+  victim first enters combat and then dies.
+
 ## [2.13.50] — 2026-06-09
 
 ### Added

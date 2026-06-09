@@ -221,8 +221,13 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    through `_interpret_medit` → `spawn_mob` → player-facing `do_surrender`,
    proving the builder-set `TRIG_SURR` bit and `MobProgram` row survive into
    ROM's surrender-trigger dispatch path before the NPC ignore/retaliation
-   fallback. Next is more deterministic command/watch-set
-   widening; add RNG-locked combat only after seed alignment is proven.
+   fallback. **MEdit kill/death mobprog runtime probe (2.13.51):**
+   OLC-created `kill` and `death` mobprogs now have end-to-end coverage through
+   `_interpret_medit` → `spawn_mob` → `apply_damage`, proving the builder-set
+   `TRIG_KILL` and `TRIG_DEATH` bits and `MobProgram` rows survive into ROM's
+   `damage()` trigger dispatch path when an NPC victim first enters combat and
+   then dies. Next is more deterministic command/watch-set widening; add
+   RNG-locked combat only after seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

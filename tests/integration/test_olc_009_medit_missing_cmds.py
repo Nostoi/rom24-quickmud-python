@@ -22,6 +22,7 @@ ROM reference (src/olc_act.c):
 from __future__ import annotations
 
 from mud import mobprog
+from mud.combat.engine import apply_damage
 from mud.commands.build import _interpret_medit
 from mud.commands.combat import do_surrender
 from mud.commands.communication import do_say
@@ -871,6 +872,77 @@ def test_addmprog_created_surr_trigger_fires_when_pc_surrenders(monkeypatch):
         mob_registry.pop(proto.vnum, None)
 
     assert calls == [(61028, "mob echo OLC_SURR_FIRED", spawned, player, None, None)]
+
+
+def test_addmprog_created_kill_and_death_triggers_fire_during_damage(monkeypatch):
+    """MEdit-created kill/death mobprogs survive spawn and fire from ``damage``.
+
+    Mirrors ROM src/olc_act.c:4900-4904 plus src/fight.c:740-741 and
+    src/fight.c:918-921.
+    """
+    _, session, proto = _builder_in_medit(vnum=61029)
+    kill_code = MobIndex(vnum=61030, player_name="kill mprog source")
+    kill_code.mprog_code = "mob echo OLC_KILL_FIRED"
+    death_code = MobIndex(vnum=61031, player_name="death mprog source")
+    death_code.mprog_code = "mob echo OLC_DEATH_FIRED"
+    mob_registry[kill_code.vnum] = kill_code
+    mob_registry[death_code.vnum] = death_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(
+        vnum,
+        code,
+        context,
+        mob,
+        actor,
+        arg1,
+        arg2,
+        text,
+    ):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+    monkeypatch.setattr("mud.combat.engine.group_gain", lambda attacker, victim: None)
+    monkeypatch.setattr("mud.combat.engine.raw_kill", lambda victim: None)
+    monkeypatch.setattr("mud.combat.engine._handle_auto_actions", lambda attacker, corpse: None)
+    monkeypatch.setattr("mud.combat.engine._send_wiznet_death", lambda attacker, victim: None)
+
+    original_registry = list(character_registry)
+    character_registry.clear()
+    spawned = None
+    attacker = create_test_character("Killer", 61036)
+    attacker.hit = 100
+    attacker.max_hit = 100
+    attacker.position = Position.STANDING
+    room = Room(vnum=61036, name="Death MProg Room")
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61030 kill 100")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+        result = _interpret_medit(session, session.character, "addmprog 61031 death 100")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        room.add_character(attacker)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        room.add_character(spawned)
+        spawned.hit = 10
+        spawned.max_hit = 10
+        spawned.position = Position.STANDING
+
+        apply_damage(attacker, spawned, 20, show=False)
+    finally:
+        character_registry[:] = original_registry
+        mob_registry.pop(kill_code.vnum, None)
+        mob_registry.pop(death_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [
+        (61030, "mob echo OLC_KILL_FIRED", spawned, attacker, None, None),
+        (61031, "mob echo OLC_DEATH_FIRED", spawned, attacker, None, None),
+    ]
 
 
 # ── delmprog ──────────────────────────────────────────────────────────────────
