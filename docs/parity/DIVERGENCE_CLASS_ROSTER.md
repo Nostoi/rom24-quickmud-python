@@ -203,7 +203,15 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    runtime probe (2.13.46):** an OLC-created `act` mobprog now has end-to-end
    coverage through `_interpret_medit` → `spawn_mob` → player-facing
    `do_stand`, proving the builder-set `TRIG_ACT` bit and `MobProgram` row
-   survive into the ROM `act()` / `mp_act_trigger` dispatch path. Next is more
+   survive into the ROM `act()` / `mp_act_trigger` dispatch path. **MEdit bribe
+   mobprog runtime probe (2.13.47):** an OLC-created `bribe` mobprog now has
+   end-to-end coverage through `_interpret_medit` → `spawn_mob` → player-facing
+   money `do_give`, proving the builder-set `TRIG_BRIBE` bit and `MobProgram`
+   row survive into ROM's `mp_bribe_trigger` threshold path. **MEdit give
+   mobprog runtime probe (2.13.48):** an OLC-created `give` mobprog now has
+   end-to-end coverage through `_interpret_medit` → `spawn_mob` → player-facing
+   object `do_give`, proving the builder-set `TRIG_GIVE` bit and `MobProgram`
+   row survive into ROM's `mp_give_trigger` object-dispatch path. Next is more
    deterministic command/watch-set widening; add RNG-locked combat only after
    seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**

@@ -24,6 +24,7 @@ from __future__ import annotations
 from mud import mobprog
 from mud.commands.build import _interpret_medit
 from mud.commands.communication import do_say
+from mud.commands.give import do_give
 from mud.commands.position import do_stand
 from mud.models.character import character_registry
 from mud.models.constants import (
@@ -625,6 +626,113 @@ def test_addmprog_created_act_trigger_fires_when_pc_stands(monkeypatch):
         mob_registry.pop(proto.vnum, None)
 
     assert calls == [(61017, "mob echo OLC_ACT_FIRED", spawned, actor, None, None)]
+
+
+def test_addmprog_created_bribe_trigger_fires_when_pc_gives_coins(monkeypatch):
+    """MEdit-created ``TRIG_BRIBE`` survives spawn and fires from money ``do_give``.
+
+    Mirrors ROM src/olc_act.c:4900-4904, src/act_obj.c:734-735, and
+    src/mob_prog.c:1224-1242.
+    """
+    _, session, proto = _builder_in_medit(vnum=61018)
+    mprog_code = MobIndex(vnum=61019, player_name="mprog source")
+    mprog_code.mprog_code = "mob echo OLC_BRIBE_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(
+        vnum,
+        code,
+        context,
+        mob,
+        actor,
+        arg1,
+        arg2,
+        text,
+    ):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+
+    spawned = None
+    donor = create_test_character("Donor", 61032)
+    donor.silver = 50
+    room = Room(vnum=61032, name="Bribe Room")
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61019 bribe 20")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        room.add_character(donor)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        room.add_character(spawned)
+
+        assert do_give(donor, "20 silver test") == "You give test mob 20 silver."
+    finally:
+        for char in (spawned, donor):
+            if char is not None and char in character_registry:
+                character_registry.remove(char)
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(61019, "mob echo OLC_BRIBE_FIRED", spawned, donor, None, None)]
+
+
+def test_addmprog_created_give_trigger_fires_when_pc_gives_object(monkeypatch, object_factory):
+    """MEdit-created ``TRIG_GIVE`` survives spawn and fires from object ``do_give``.
+
+    Mirrors ROM src/olc_act.c:4900-4904, src/act_obj.c:849-850, and
+    src/mob_prog.c:1283-1323.
+    """
+    _, session, proto = _builder_in_medit(vnum=61022)
+    mprog_code = MobIndex(vnum=61023, player_name="mprog source")
+    mprog_code.mprog_code = "mob echo OLC_GIVE_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(
+        vnum,
+        code,
+        context,
+        mob,
+        actor,
+        arg1,
+        arg2,
+        text,
+    ):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+
+    spawned = None
+    donor = create_test_character("Donor", 61033)
+    relic = object_factory({"vnum": 61024, "name": "relic glass", "short_descr": "a glass relic"})
+    donor.add_object(relic)
+    room = Room(vnum=61033, name="Give Room")
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61023 give relic")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        room.add_character(donor)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        room.add_character(spawned)
+
+        assert do_give(donor, "relic test") == "You give a glass relic to test mob."
+    finally:
+        for char in (spawned, donor):
+            if char is not None and char in character_registry:
+                character_registry.remove(char)
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(61023, "mob echo OLC_GIVE_FIRED", spawned, donor, relic, None)]
 
 
 # ── delmprog ──────────────────────────────────────────────────────────────────

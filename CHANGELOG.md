@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.48] — 2026-06-09
+
+### Added
+
+- **Class 11 MEdit give mobprog runtime coverage**
+  (`tests/integration/test_olc_009_medit_missing_cmds.py`): added a runtime
+  probe showing an OLC-created `give` mobprog survives `spawn_mob` and is
+  selected by the player-facing object `do_give` path with the given object as
+  the ROM `arg1`.
+
+## [2.13.47] — 2026-06-09
+
+### Added
+
+- **Class 11 MEdit bribe mobprog runtime coverage**
+  (`tests/integration/test_olc_009_medit_missing_cmds.py`): added a runtime
+  probe showing an OLC-created `bribe` mobprog survives `spawn_mob` and is
+  selected by the player-facing money `do_give` path at the ROM bribe
+  threshold.
+
 ## [2.13.46] — 2026-06-09
 
 ### Added
