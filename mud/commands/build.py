@@ -6,6 +6,7 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+from mud.mobprog import Trigger
 from mud.models.area import Area
 from mud.models.character import Character
 from mud.models.clans import get_clan, lookup_clan_id
@@ -3176,32 +3177,24 @@ def _medit_position(mob_proto, arg: str) -> str:
     return "Syntax:  position [start/default] [position]\nType '? position' for a list of positions."
 
 
-# MobProg trigger name table — mirrors ROM mprog_flags[] in src/tables.c.
+# MobProg trigger name table — mirrors ROM mprog_flags[] in src/tables.c:298-314.
 _MPROG_TRIG_TABLE: dict[str, int] = {
-    "act": 1 << 0,
-    "speech": 1 << 1,
-    "rand": 1 << 2,
-    "fight": 1 << 3,
-    "death": 1 << 4,
-    "hitprcnt": 1 << 5,
-    "entry": 1 << 6,
-    "greet": 1 << 7,
-    "grall": 1 << 8,
-    "give": 1 << 9,
-    "bribe": 1 << 10,
-    "hour": 1 << 11,
-    "time": 1 << 12,
-    "wear": 1 << 13,
-    "door": 1 << 14,
-    "discard": 1 << 15,
-    "look": 1 << 16,
-    "examine": 1 << 17,
-    "zap": 1 << 18,
-    "get": 1 << 19,
-    "drop": 1 << 20,
-    "damage": 1 << 21,
-    "repair": 1 << 22,
-    "greet_all": 1 << 23,
+    "act": int(Trigger.ACT),
+    "bribe": int(Trigger.BRIBE),
+    "death": int(Trigger.DEATH),
+    "entry": int(Trigger.ENTRY),
+    "fight": int(Trigger.FIGHT),
+    "give": int(Trigger.GIVE),
+    "greet": int(Trigger.GREET),
+    "grall": int(Trigger.GRALL),
+    "kill": int(Trigger.KILL),
+    "hpcnt": int(Trigger.HPCNT),
+    "random": int(Trigger.RANDOM),
+    "speech": int(Trigger.SPEECH),
+    "exit": int(Trigger.EXIT),
+    "exall": int(Trigger.EXALL),
+    "delay": int(Trigger.DELAY),
+    "surr": int(Trigger.SURR),
 }
 
 
@@ -3231,7 +3224,7 @@ def _medit_addmprog(mob_proto, arg: str) -> str:
         return "Syntax:   addmprog [vnum] [trigger] [phrase]"
     trig_val = _mprog_trig_value(trig_name)
     if trig_val is None:
-        return "Valid flags are:\n(use 'act', 'speech', 'rand', 'fight', 'death', 'hitprcnt', 'entry', 'greet', 'give', 'bribe', etc.)"
+        return "Valid flags are:\n(use 'act', 'bribe', 'death', 'entry', 'fight', 'give', 'greet', 'grall', etc.)"
     vnum = int(vnum_str)
     # mirroring ROM src/olc_act.c:4893-4896 — get_mprog_index; Python uses mob_registry for vnum lookup
     mob_index = mob_registry.get(vnum)

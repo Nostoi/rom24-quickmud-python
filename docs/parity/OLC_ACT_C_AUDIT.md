@@ -161,7 +161,7 @@
 | `medit_gold` | 4691–4708 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_hitroll` | 4709–4726 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_group` | 4779–4840 | — | C | 🔄 NEEDS DEEP AUDIT |
-| `medit_addmprog` | 4864–4910 | — | C | 🔄 NEEDS DEEP AUDIT |
+| `medit_addmprog` | 4864–4910 | `_medit_addmprog` / `_MPROG_TRIG_TABLE` (build.py) | C | 🔄 NEEDS DEEP AUDIT — trigger value parity fixed by TABLES-004 (2.13.42); broader Tier C function audit still deferred |
 | `medit_delmprog` | 4911–4971 | — | C | 🔄 NEEDS DEEP AUDIT |
 
 ---

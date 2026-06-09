@@ -21,6 +21,7 @@ ROM reference (src/olc_act.c):
 
 from __future__ import annotations
 
+from mud import mobprog
 from mud.commands.build import _interpret_medit
 from mud.models.constants import (
     LEVEL_HERO,
@@ -36,6 +37,7 @@ from mud.models.constants import (
 )
 from mud.models.mob import MobIndex, MobProgram
 from mud.net.session import Session
+from mud.registry import mob_registry
 from mud.world import create_test_character, initialize_world
 
 
@@ -394,6 +396,23 @@ def test_addmprog_invalid_vnum_returns_error():
     assert "no such" in result.lower() or "valid flags" in result.lower() or "syntax" in result.lower(), (
         f"Got: {result!r}"
     )
+
+
+def test_addmprog_sets_rom_trigger_flag_value():
+    """``addmprog ... entry`` uses ROM mprog_flags bit values from src/tables.c:298-314."""
+    char, session, proto = _builder_in_medit()
+    mprog_index = MobIndex(vnum=61001, player_name="mprog source")
+    mprog_index.mprog_code = "say triggered"
+    mob_registry[mprog_index.vnum] = mprog_index
+
+    try:
+        result = _interpret_medit(session, char, "addmprog 61001 entry 100")
+    finally:
+        mob_registry.pop(mprog_index.vnum, None)
+
+    assert "mprog added" in result.lower(), f"Got: {result!r}"
+    assert proto.mprogs[0].trig_type == int(mobprog.Trigger.ENTRY)
+    assert proto.mprog_flags & int(mobprog.Trigger.ENTRY)
 
 
 # ── delmprog ──────────────────────────────────────────────────────────────────

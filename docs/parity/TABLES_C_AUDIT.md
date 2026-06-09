@@ -27,7 +27,7 @@ This file does not contain functions. The audit therefore deviates from the stan
 | `form_flags` (215) | `FormFlag` | ⚠️ to verify. |
 | `part_flags` (245) | `PartFlag` | ⚠️ to verify. |
 | `comm_flags` (271) | `CommFlag` | ✓ values match; names match (lowercase). |
-| `mprog_flags` (298) | `MProgTrigger` (or none) | ⚠️ to verify. |
+| `mprog_flags` (298) | `mud.mobprog.Trigger` + `mud.commands.build._MPROG_TRIG_TABLE` | ✓ values match after TABLES-004. |
 | `area_flags` (318) | `AreaFlag` | ✓ values match. |
 | `sex_flags` (328) | (overlap with `Sex`) | ⚠️ to verify. |
 | `exit_flags` (339) | `ExitFlag` / `Direction` | ⚠️ to verify. |
@@ -115,11 +115,13 @@ The remaining 30+ tables marked `⚠️ to verify` need a follow-up pass. Spot-c
 | `TABLES-001` | CRITICAL | `src/merc.h:953-982` + `src/tables.c:130-160` | `AffectFlag` bit positions in `mud/models/constants.py:548-580` diverged from ROM `merc.h` `AFF_*` defines for bits 6..29. Letter-form area data was mis-decoded by `convert_flags_from_letters`. Closed by renumbering `AffectFlag` to match ROM exactly + adding `pfile_version` schema field with on-load translation of legacy persisted `affected_by`/`Affect.bitvector`. | ✅ FIXED — Apr 29, 2026: `AffectFlag` renumbered to ROM bits; `mud/persistence.py:translate_legacy_affect_bits` + `_upgrade_legacy_save` migrate legacy pfiles (`pfile_version=0` → `1`); reproducer `test_affect_flag_letters_match_rom_merc_h` xpasses; `test_merc_h_letter_macros_match_python_intflag_values` now also covers `AFF_*`; 4 new migration tests in `tests/integration/test_tables_001_affect_migration.py`. |
 | `TABLES-002` | IMPORTANT | `src/tables.c` (multiple) | ROM table names like `npc`/`healer`/`changer`/`can_loot`/`dirt_kick`/`noclangossip` do not prefix-match Python IntFlag member names (`IS_NPC`/`IS_HEALER`/`IS_CHANGER`/`CANLOOT`/`KICK_DIRT`/`NOAUCTION`). Breaks ROM-style abbreviations in `do_flag` and OLC. | ✅ FIXED — `mud/utils/prefix_lookup.py:rom_flag_aliases` adds ROM table-name → IntFlag-member alias maps for `ActFlag` / `PlayerFlag` / `OffFlag` / `CommFlag`; consulted before the member-name prefix scan. Tests: `tests/integration/test_flag_command_parity.py::test_flag_rom_name_alias_*`. |
 | `TABLES-003` | IMPORTANT | `src/merc.h` letter-macros (all prefixes) | Per-table value equivalence verification for the remaining ~30 tables. Programmatic check landed: every `#define <PREFIX>_<NAME> (letter)` macro in `src/merc.h` cross-checked against the matching Python `IntFlag` member's bit value. | ✅ FIXED — `tests/integration/test_tables_parity.py::test_merc_h_letter_macros_match_python_intflag_values` parses merc.h, resolves letter→bit, looks up `IntFlag.<NAME>` (handling `IS_*`/`KICK_DIRT`/`EARS`/`EYES` overrides), and asserts equality. ~210 macros checked across `ACT/PLR/OFF/IMM/RES/VULN/FORM/PART/COMM/ROOM/GATE/FURN/WEAPON`. All pass. `AFF_*` excluded (covered by TABLES-001 strict xfail). |
+| `TABLES-004` | IMPORTANT | `src/tables.c:298-314` + `src/merc.h:1971-1986` | OLC MEdit's local `_MPROG_TRIG_TABLE` used shifted/non-ROM values (`entry` = `1<<6` instead of ROM `TRIG_ENTRY` = `D` = `1<<3`, `speech` = `1<<1` instead of `1<<11`, etc.) and accepted non-ROM trigger names from object-program surfaces. Builder-created mobprogs could set `mprog_flags` bits the runtime `HAS_TRIGGER` checks would not recognize. | ✅ FIXED — Jun 9, 2026: `_MPROG_TRIG_TABLE` now derives all 16 ROM `mprog_flags[]` entries from `mud.mobprog.Trigger` and uses ROM table names (`hpcnt`, `random`, etc.). Regression: `tests/integration/test_olc_009_medit_missing_cmds.py::test_addmprog_sets_rom_trigger_flag_value`. |
 
 ## Phase 4 — Closures
 
 - **Apr 28, 2026** — TABLES-002 (ROM table-name aliases for `flag_lookup`) and TABLES-003 (programmatic merc.h letter-macro verification) closed.
 - **Apr 29, 2026** — TABLES-001 (`AffectFlag` bit-position migration to ROM `merc.h:953-982`) closed via enum renumber + `pfile_version` schema field + on-load translation of legacy `affected_by` and nested `Affect.bitvector` ints. See `TABLES_001_CLOSURE_PLAN.md`.
+- **Jun 9, 2026** — TABLES-004 (`mprog_flags` value parity for MEdit `addmprog`) closed by deriving OLC trigger values from `mud.mobprog.Trigger`.
 
 ## Phase 5 — Tracker status
 
