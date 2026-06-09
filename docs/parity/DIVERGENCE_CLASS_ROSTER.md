@@ -226,8 +226,17 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    `_interpret_medit` → `spawn_mob` → `apply_damage`, proving the builder-set
    `TRIG_KILL` and `TRIG_DEATH` bits and `MobProgram` rows survive into ROM's
    `damage()` trigger dispatch path when an NPC victim first enters combat and
-   then dies. Next is more deterministic command/watch-set widening; add
-   RNG-locked combat only after seed alignment is proven.
+   then dies. **MEdit exit/exall/grall mobprog runtime probe (2.13.52):**
+   OLC-created `exit`, `exall`, and `grall` mobprogs now have end-to-end
+   coverage through `_interpret_medit` → `spawn_mob` → `move_character`,
+   confirming the builder-set trigger bits and `MobProgram` rows reach the
+   correct ROM dispatch branches — EXIT gated on mob position + visibility
+   (`src/mob_prog.c:1262-1269`), EXALL unconditional
+   (`src/mob_prog.c:1271-1276`), GRALL as the fallback branch in
+   `mp_greet_trigger` when the mob is not at `default_pos`
+   (`src/mob_prog.c:1333-1345`). All deterministic MEdit trigger types now
+   covered; next step is RNG-locked paths (only after seed alignment is proven)
+   or a diff-harness scenario for movement-based triggers.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

@@ -945,6 +945,167 @@ def test_addmprog_created_kill_and_death_triggers_fire_during_damage(monkeypatch
     ]
 
 
+def test_addmprog_created_exit_trigger_fires_when_pc_leaves_room(monkeypatch):
+    """MEdit-created ``TRIG_EXIT`` survives spawn and fires when a PC exits the room.
+
+    EXIT fires only when the mob is at its default_pos AND can see the PC —
+    mirrors ROM src/olc_act.c:4900-4904, src/act_move.c:81, and
+    src/mob_prog.c:1262-1269.
+    """
+    _, session, proto = _builder_in_medit(vnum=61040)
+    mprog_code = MobIndex(vnum=61041, player_name="mprog source")
+    mprog_code.mprog_code = "mob echo OLC_EXIT_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(vnum, code, context, mob, actor, arg1, arg2, text):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+
+    spawned = None
+    traveler = create_test_character("Traveler", 61040)
+    traveler.move = 100
+    traveler.max_move = 100
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61041 exit 0")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        start = Room(vnum=61048, name="Exit Start")
+        target = Room(vnum=61049, name="Exit Target")
+        start.exits[Direction.NORTH.value] = Exit(to_room=target, keyword="door")
+
+        start.add_character(traveler)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        # Mob at default_pos (standing) so EXIT condition is satisfied.
+        spawned.position = Position.STANDING
+        start.add_character(spawned)
+
+        move_character(traveler, "north")
+    finally:
+        for char in (spawned, traveler):
+            if char is not None and char in character_registry:
+                character_registry.remove(char)
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(61041, "mob echo OLC_EXIT_FIRED", spawned, traveler, None, None)]
+
+
+def test_addmprog_created_exall_trigger_fires_regardless_of_mob_position(monkeypatch):
+    """MEdit-created ``TRIG_EXALL`` fires even when mob is not at default_pos.
+
+    EXALL has no position or visibility guard — mirrors ROM src/act_move.c:81
+    and src/mob_prog.c:1271-1276. Using a sleeping mob here proves the
+    discriminator: EXIT would skip it, EXALL does not.
+    """
+    _, session, proto = _builder_in_medit(vnum=61042)
+    mprog_code = MobIndex(vnum=61043, player_name="mprog source")
+    mprog_code.mprog_code = "mob echo OLC_EXALL_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(vnum, code, context, mob, actor, arg1, arg2, text):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+
+    spawned = None
+    traveler = create_test_character("Traveler", 61042)
+    traveler.move = 100
+    traveler.max_move = 100
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61043 exall 0")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        start = Room(vnum=61050, name="Exall Start")
+        target = Room(vnum=61051, name="Exall Target")
+        start.exits[Direction.NORTH.value] = Exit(to_room=target, keyword="door")
+
+        start.add_character(traveler)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        # Mob sleeping — EXIT would skip this, EXALL must still fire.
+        spawned.position = Position.SLEEPING
+        start.add_character(spawned)
+
+        move_character(traveler, "north")
+    finally:
+        for char in (spawned, traveler):
+            if char is not None and char in character_registry:
+                character_registry.remove(char)
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(61043, "mob echo OLC_EXALL_FIRED", spawned, traveler, None, None)]
+
+
+def test_addmprog_created_grall_trigger_fires_when_mob_not_at_default_pos(monkeypatch):
+    """MEdit-created ``TRIG_GRALL`` fires when a PC enters and the GREET condition fails.
+
+    GRALL is the fallback branch inside mp_greet_trigger: when the mob is NOT
+    at default_pos (or can't see the PC) it fires GRALL instead of GREET —
+    mirrors ROM src/act_move.c:243 and src/mob_prog.c:1325-1345.  Giving the
+    mob both GREET and GRALL mprogs confirms the correct branch is taken.
+    """
+    _, session, proto = _builder_in_medit(vnum=61044)
+    greet_code = MobIndex(vnum=61045, player_name="greet mprog source")
+    greet_code.mprog_code = "mob echo OLC_GREET_FIRED"
+    grall_code = MobIndex(vnum=61046, player_name="grall mprog source")
+    grall_code.mprog_code = "mob echo OLC_GRALL_FIRED"
+    mob_registry[greet_code.vnum] = greet_code
+    mob_registry[grall_code.vnum] = grall_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[object, object | None, mobprog.Trigger]] = []
+
+    def fake_percent_trigger(mob, actor=None, arg1=None, arg2=None, trigger=mobprog.Trigger.RANDOM):
+        calls.append((mob, actor, trigger))
+        return True
+
+    monkeypatch.setattr(mobprog, "mp_percent_trigger", fake_percent_trigger)
+
+    spawned = None
+    traveler = create_test_character("Traveler", 61044)
+    traveler.move = 100
+    traveler.max_move = 100
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61045 greet 100")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+        result = _interpret_medit(session, session.character, "addmprog 61046 grall 100")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        start = Room(vnum=61052, name="Grall Start")
+        target = Room(vnum=61053, name="Grall Target")
+        start.exits[Direction.NORTH.value] = Exit(to_room=target, keyword="door")
+
+        start.add_character(traveler)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        # Mob sleeping in destination room — GREET would require default_pos,
+        # so the sleeping mob falls through to GRALL (src/mob_prog.c:1333-1345).
+        spawned.position = Position.SLEEPING
+        target.add_character(spawned)
+
+        move_character(traveler, "north")
+    finally:
+        for char in (spawned, traveler):
+            if char is not None and char in character_registry:
+                character_registry.remove(char)
+        mob_registry.pop(greet_code.vnum, None)
+        mob_registry.pop(grall_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(spawned, traveler, mobprog.Trigger.GRALL)]
+
+
 # ── delmprog ──────────────────────────────────────────────────────────────────
 
 
