@@ -10,8 +10,8 @@
 | ROM C dispatcher | `mud/commands/dispatcher.py:261` — registered as `enter`, `min_position=Position.STANDING`; `mud/commands/remaining_rom.py:400` — `go` aliases to `do_enter` |
 | Audit date | 2026-04-27 |
 | Auditor | Claude Sonnet 4.6 |
-| **Status** | ✅ **100% AUDITED — all 16 gaps closed (2026-06-01)** |
-| Integration tests | `tests/integration/test_act_enter_gaps.py` — 26 tests, all passing |
+| **Status** | ✅ **100% AUDITED — all tracked gaps closed (latest: ENTER-020, 2026-06-09)** |
+| Integration tests | `tests/integration/test_act_enter_gaps.py` + `tests/test_movement_mobprog.py` portal trigger guard coverage |
 
 ### File Purpose
 
@@ -431,6 +431,30 @@ if (fch->master == ch && fch->position == POS_STANDING) {
 ```
 
 Python reused one `_move_followers` helper for both paths, so portal followers inherited the directional `can_see_room` pre-check and were silently skipped when they could not see the destination. ROM still lets the follower attempt the recursive `do_enter`; the follower may then fail inside `do_enter`'s own destination check (`act_enter.c:119`) and receive the portal "doesn't seem to go anywhere" line. The fix adds an explicit `require_destination_visibility` switch at the two call sites so both ROM contracts remain separate.
+
+---
+
+### ENTER-020 — Portal NPC entry trigger ignored `HAS_TRIGGER` precondition ✅ FIXED
+
+| Field | Detail |
+|---|---|
+| Gap ID | ENTER-020 |
+| ROM C reference | `src/act_enter.c:219-220` |
+| Severity | IMPORTANT |
+| **Closure** | Fixed in `mud/world/movement.py:move_character_through_portal` (2026-06-09). NPC portal movement now dispatches `mp_percent_trigger(..., TRIG_ENTRY)` only when `char.mprog_flags & Trigger.ENTRY`, matching ROM `HAS_TRIGGER(ch, TRIG_ENTRY)`. Regression: `tests/test_movement_mobprog.py::test_npc_without_entry_trigger_flag_does_not_dispatch_entry_after_portal`. |
+
+ROM C gates the portal entry trigger exactly like directional movement:
+
+```c
+if (IS_NPC (ch) && HAS_TRIGGER (ch, TRIG_ENTRY))
+    mp_percent_trigger (ch, NULL, NULL, NULL, TRIG_ENTRY);
+if (!IS_NPC (ch))
+    mp_greet_trigger (ch);
+```
+
+Python previously called `mp_percent_trigger(..., TRIG_ENTRY)` for every NPC that
+successfully traversed a portal. The fixed branch keeps NPCs without `TRIG_ENTRY`
+silent and preserves the PC-only `mp_greet_trigger` path.
 
 ---
 

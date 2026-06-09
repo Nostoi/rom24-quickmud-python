@@ -221,6 +221,7 @@ def test_event_hooks_fire_rom_triggers(monkeypatch) -> None:
 
     guard = Character(name="Guard", is_npc=True, position=Position.STANDING)
     guard.default_pos = Position.STANDING
+    guard.mprog_flags = int(mobprog.Trigger.ENTRY)
     greeter = Character(name="Greeter", is_npc=True, position=Position.STANDING)
     greeter.default_pos = Position.STANDING
     player = Character(name="Hero", is_npc=False, position=Position.STANDING)

@@ -182,7 +182,12 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    live C oracle. **Portal follower probe (2.13.40):** re-reading `act_enter.c`
    versus `act_move.c` exposed ENTER-019: portal followers must not be
    pre-skipped by destination visibility, even though directional followers are;
-   `_move_followers` now separates those two ROM contracts. Next is more
+   `_move_followers` now separates those two ROM contracts. **Mob-entry trigger
+   precondition probe (2.13.41):** re-reading the same post-move trigger block
+   exposed MOVE-007 / ENTER-020: NPC `TRIG_ENTRY` dispatch must be gated by
+   `HAS_TRIGGER(ch, TRIG_ENTRY)` (`mprog_flags & Trigger.ENTRY`) for both
+   directional and portal movement; NPCs without the bit now stay silent instead
+   of calling `mp_percent_trigger`. Next is more
    deterministic command/watch-set widening; add RNG-locked combat only after
    seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**

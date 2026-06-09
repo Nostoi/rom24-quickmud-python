@@ -498,7 +498,9 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
     )
 
     if char.is_npc:
-        mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
+        if int(getattr(char, "mprog_flags", 0) or 0) & int(mobprog.Trigger.ENTRY):
+            # ROM src/act_move.c:240 — HAS_TRIGGER(ch, TRIG_ENTRY) gates dispatch.
+            mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
     else:
         mobprog.mp_greet_trigger(char)
 
@@ -643,7 +645,9 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
 
     # Mob-prog triggers (act_enter.c:219-222)
     if char.is_npc:
-        mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
+        if int(getattr(char, "mprog_flags", 0) or 0) & int(mobprog.Trigger.ENTRY):
+            # ROM src/act_enter.c:219 — HAS_TRIGGER(ch, TRIG_ENTRY) gates dispatch.
+            mobprog.mp_percent_trigger(char, trigger=mobprog.Trigger.ENTRY)
     else:
         mobprog.mp_greet_trigger(char)
 

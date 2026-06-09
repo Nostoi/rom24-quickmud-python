@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.41] — 2026-06-09
+
+### Fixed
+
+- **`MOVE-007` / `ENTER-020` NPC entry-trigger precondition**
+  (`mud/world/movement.py`): directional and portal movement now dispatch NPC
+  `TRIG_ENTRY` mobprogs only when `mprog_flags` includes `Trigger.ENTRY`,
+  matching ROM `HAS_TRIGGER(ch, TRIG_ENTRY)` in `src/act_move.c:240` and
+  `src/act_enter.c:219`.
+
 ## [2.13.40] — 2026-06-09
 
 ### Fixed
