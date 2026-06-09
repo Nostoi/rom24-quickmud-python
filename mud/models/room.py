@@ -198,7 +198,8 @@ class Room:
 
     def add_mob(self, mob: MobInstance) -> None:
         if mob not in self.people:
-            self.people.append(mob)
+            # ROM src/handler.c:1557-1559 char_to_room head-inserts mobs too.
+            self.people.insert(0, mob)
         mob.room = self
 
     def broadcast(self, message: str, exclude: Character | None = None) -> None:

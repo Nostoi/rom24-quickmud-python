@@ -588,6 +588,28 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("open west")
         self._hq_west_closed = False
 
+    @precondition(
+        lambda self: self.current_room == 3110
+        and not self._hq_west_closed
+        and self.current_position == Position.STANDING
+    )
+    @rule()
+    def west_to_captains_office(self) -> None:
+        self.steps.append("west")
+        self.current_room = 3142
+        self._at_cityguard_hq = False
+
+    @precondition(
+        lambda self: self.current_room == 3142
+        and not self._hq_west_closed
+        and self.current_position == Position.STANDING
+    )
+    @rule()
+    def east_to_cityguard_hq(self) -> None:
+        self.steps.append("east")
+        self.current_room = 3110
+        self._at_cityguard_hq = True
+
     @precondition(lambda self: self.drunk.room == self.current_room and not self._drunk_has_empty_cup)
     @rule()
     def give_drunk_empty_cup(self) -> None:

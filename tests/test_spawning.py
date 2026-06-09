@@ -371,6 +371,38 @@ def test_reset_spawn_adjacent_to_pet_shop_sets_act_pet():
     assert mob.has_act_flag(ActFlag.PET) is True
 
 
+def test_m_reset_room_people_order_matches_rom_char_to_room():
+    room_registry.clear()
+    area_registry.clear()
+    mob_registry.clear()
+    obj_registry.clear()
+    character_registry.clear()
+
+    area = Area(vnum=9300, name="Reset Order Area", min_vnum=9300, max_vnum=9301)
+    room = Room(vnum=9301, name="Order Chamber", area=area)
+    area_registry[area.vnum] = area
+    room_registry[room.vnum] = room
+
+    captain_proto = MobIndex(vnum=9302, short_descr="the captain")
+    guard_proto = MobIndex(vnum=9303, short_descr="the cityguard")
+    mob_registry[captain_proto.vnum] = captain_proto
+    mob_registry[guard_proto.vnum] = guard_proto
+
+    area.resets = [
+        ResetJson(command="M", arg1=captain_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+        ResetJson(command="M", arg1=guard_proto.vnum, arg2=1, arg3=room.vnum, arg4=1),
+    ]
+
+    reset_handler.apply_resets(area)
+
+    # ROM reset_room M branch calls char_to_room (src/db.c:1747), and
+    # char_to_room head-inserts into room->people (src/handler.c:1557-1559).
+    assert [mob.prototype.vnum for mob in room.people if isinstance(mob, MobInstance)] == [
+        guard_proto.vnum,
+        captain_proto.vnum,
+    ]
+
+
 def test_reset_area_preserves_existing_room_state():
     room_registry.clear()
     area_registry.clear()

@@ -8,9 +8,9 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-026 — room occupant look order differs after entering Captain's Office — 🔄 OPEN
+## FINDING-026 — room occupant look order differs after entering Captain's Office — ✅ RESOLVED
 
-**Status:** 🔄 OPEN (surfaced 2026-06-09). The keyed-door traversal probe
+**Status:** ✅ RESOLVED 2026-06-09 (2.13.39). The keyed-door traversal probe
 (`__goto=3110; ...; open west; west`) reached Midgaard room `3142` and exposed
 room-occupant output ordering drift:
 
@@ -25,21 +25,21 @@ opening the door.
 `C=[..., "A cityguard stands here..." x4, "The captain ..."]` vs
 `Python=[..., "The captain ...", "A cityguard stands here..." x4]`.
 
-**Likely root cause:** reset / `char_to_room` insertion order for room occupants.
-ROM's `char_to_room` prepends to `room->people` (linked-list head insert), and
-room look walks `room->people` in that order. Python's reset/mob placement path
-appears to produce a different room.people order for this room. This is the
-character-list analogue of the object head-insert class, but it needs a scoped
-source read before fixing because room occupant order also interacts with
-special procs, combat scanning, and trigger recipient order.
+**Root cause:** reset `M` records in Python route through
+`mud.models.room.Room.add_mob`, which appended to `room.people`. ROM
+`reset_room` calls `char_to_room` for `M` records (`src/db.c:1747`), and
+`char_to_room` head-inserts into `room->people` (`src/handler.c:1557-1559`).
+Because Midgaard's Captain's Office reset file places the captain first and four
+cityguards afterward (`area/midgaard.are:6353-6363`), ROM renders cityguards
+first while Python rendered the captain first.
 
-**Tracking note:** not added to `KNOWN_DIVERGENCES` because no committed static
-golden scenario currently exercises this traversal. The traversal rules were
-not landed in `DeterministicNoRngDiffMachine`; the harness widening was narrowed
-to door `open` state coverage until this finding is fixed.
+**Fix:** `Room.add_mob` now head-inserts, matching `Room.add_character` and ROM
+`char_to_room` semantics for NPC room placement.
 
-**Affected surfaces:** `mud/spawning/reset_handler.py`, `mud/models/room.py`
-(`Room.add_character` / `char_to_room`), `mud/world/look.py`.
+**Regression:** `tests/test_spawning.py::test_m_reset_room_people_order_matches_rom_char_to_room`
+locks reset-order LIFO placement. The focused keyed-door differential replay now
+includes `west`/`east` traversal and matches the live C oracle:
+`tests/test_diff_harness_generated.py::test_generated_keyed_door_cycle_matches_live_c`.
 
 ---
 

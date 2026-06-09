@@ -176,10 +176,11 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    (2026-06-09 follow-up):** added `open west` to the same generated keyed-door
    cycle. A traversal probe (`west` into room 3142) surfaced **FINDING-026**
    (room occupant look-order drift: ROM cityguards before captain; Python captain
-   before cityguards), so movement through that door remains unlanded until the
-   reset/`char_to_room` occupant-order question is scoped. Next is more
-   deterministic command/watch-set widening; add RNG-locked combat only after
-   seed alignment is proven.
+   before cityguards). **FINDING-026 resolved in 2.13.39:** `Room.add_mob` now
+   head-inserts like ROM `char_to_room`, and the generated keyed-door cycle now
+   lands `west` into Captain's Office and `east` back to Cityguard HQ against the
+   live C oracle. Next is more deterministic command/watch-set widening; add
+   RNG-locked combat only after seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

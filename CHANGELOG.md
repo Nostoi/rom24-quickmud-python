@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.39] — 2026-06-09
+
+### Fixed
+
+- **`FINDING-026` room occupant look-order drift** (`mud/models/room.py`):
+  `Room.add_mob` now head-inserts into `room.people`, matching ROM
+  `char_to_room` (`src/handler.c:1557-1559`) as called by reset `M` records
+  (`src/db.c:1747`). Midgaard Captain's Office reset order now renders the four
+  cityguards before the captain, matching the live C oracle.
+
+### Added
+
+- **Diff-harness keyed-door traversal coverage** (`tools/diff_harness/generated.py`):
+  `DeterministicNoRngDiffMachine` now walks west into Captain's Office and east
+  back to Cityguard HQ after the keyed-door `open west` sequence.
+
 ## [2.13.38] — 2026-06-09
 
 ### Added
