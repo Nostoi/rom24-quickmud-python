@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.44] — 2026-06-09
+
+### Added
+
+- **Class 11 MEdit greet mobprog runtime coverage**
+  (`tests/integration/test_olc_009_medit_missing_cmds.py`): added a runtime
+  probe showing an OLC-created `greet` mobprog survives `spawn_mob` and is
+  selected when a PC enters the spawned mob's room through ROM's
+  `mp_greet_trigger` movement path.
+
 ## [2.13.43] — 2026-06-09
 
 ### Added

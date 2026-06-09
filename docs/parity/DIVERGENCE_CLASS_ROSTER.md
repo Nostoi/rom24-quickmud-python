@@ -191,7 +191,11 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    an OLC-created `entry` mobprog now has end-to-end coverage through
    `_interpret_medit` → `spawn_mob` → directional `move_character`, proving the
    builder-set ROM trigger bit and `MobProgram` row survive into runtime
-   `mp_percent_trigger` selection. Next is more
+   `mp_percent_trigger` selection. **MEdit greet mobprog runtime probe
+   (2.13.44):** an OLC-created `greet` mobprog now has end-to-end coverage
+   through `_interpret_medit` → `spawn_mob` → PC directional `move_character`,
+   proving the builder-set `TRIG_GREET` bit and `MobProgram` row survive into
+   runtime `mp_greet_trigger` selection. Next is more
    deterministic command/watch-set widening; add RNG-locked combat only after
    seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**

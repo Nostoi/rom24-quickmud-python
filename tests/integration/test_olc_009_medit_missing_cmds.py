@@ -475,6 +475,51 @@ def test_addmprog_created_entry_trigger_fires_after_spawn(monkeypatch):
     assert fired == [(61011, "mob echo OLC_ENTRY_FIRED")]
 
 
+def test_addmprog_created_greet_trigger_fires_for_entering_pc(monkeypatch):
+    """MEdit-created ``TRIG_GREET`` survives spawn and fires when a PC enters.
+
+    Mirrors ROM src/olc_act.c:4900-4904, src/act_move.c:243, and
+    src/mob_prog.c:1325-1345.
+    """
+    _, session, proto = _builder_in_medit(vnum=61012)
+    mprog_code = MobIndex(vnum=61013, player_name="mprog source")
+    mprog_code.mprog_code = "mob echo OLC_GREET_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[object, object | None, mobprog.Trigger]] = []
+
+    def fake_percent_trigger(mob, actor=None, arg1=None, arg2=None, trigger=mobprog.Trigger.RANDOM):
+        calls.append((mob, actor, trigger))
+        return True
+
+    monkeypatch.setattr(mobprog, "mp_percent_trigger", fake_percent_trigger)
+
+    spawned = None
+    traveler = create_test_character("Traveler", 61020)
+    traveler.move = 100
+    traveler.max_move = 100
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61013 greet 100")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        start, target = _build_linked_test_rooms()
+        start.add_character(traveler)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        target.add_character(spawned)
+
+        move_character(traveler, "north")
+    finally:
+        for char in (spawned, traveler):
+            if char is not None and char in character_registry:
+                character_registry.remove(char)
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(spawned, traveler, mobprog.Trigger.GREET)]
+
+
 # ── delmprog ──────────────────────────────────────────────────────────────────
 
 
