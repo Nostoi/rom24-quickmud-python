@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.43] — 2026-06-09
+
+### Added
+
+- **Class 11 MEdit mobprog runtime coverage**
+  (`tests/integration/test_olc_009_medit_missing_cmds.py`): added a runtime
+  probe showing an OLC-created `entry` mobprog survives `spawn_mob` and fires
+  through directional movement's ROM `TRIG_ENTRY` path.
+
 ## [2.13.42] — 2026-06-09
 
 ### Fixed

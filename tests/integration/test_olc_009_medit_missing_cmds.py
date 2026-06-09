@@ -23,10 +23,12 @@ from __future__ import annotations
 
 from mud import mobprog
 from mud.commands.build import _interpret_medit
+from mud.models.character import character_registry
 from mud.models.constants import (
     LEVEL_HERO,
     ActFlag,
     AffectFlag,
+    Direction,
     FormFlag,
     ImmFlag,
     OffFlag,
@@ -36,9 +38,12 @@ from mud.models.constants import (
     VulnFlag,
 )
 from mud.models.mob import MobIndex, MobProgram
+from mud.models.room import Exit, Room
 from mud.net.session import Session
 from mud.registry import mob_registry
+from mud.spawning.mob_spawner import spawn_mob
 from mud.world import create_test_character, initialize_world
+from mud.world.movement import move_character
 
 
 def setup_module(module):
@@ -81,6 +86,13 @@ def _builder_in_medit(vnum: int = 60001):
     proto = _make_mob_proto(vnum)
     session.editor_state = {"mob_proto": proto}
     return char, session, proto
+
+
+def _build_linked_test_rooms() -> tuple[Room, Room]:
+    start = Room(vnum=61020, name="Start")
+    target = Room(vnum=61021, name="Target")
+    start.exits[Direction.NORTH.value] = Exit(to_room=target, keyword="archway")
+    return start, target
 
 
 # ── act ──────────────────────────────────────────────────────────────────────
@@ -413,6 +425,54 @@ def test_addmprog_sets_rom_trigger_flag_value():
     assert "mprog added" in result.lower(), f"Got: {result!r}"
     assert proto.mprogs[0].trig_type == int(mobprog.Trigger.ENTRY)
     assert proto.mprog_flags & int(mobprog.Trigger.ENTRY)
+
+
+def test_addmprog_created_entry_trigger_fires_after_spawn(monkeypatch):
+    """MEdit-created ``TRIG_ENTRY`` survives spawn and fires on movement.
+
+    Mirrors ROM src/olc_act.c:4900-4904 plus src/act_move.c:240-241.
+    """
+    _, session, proto = _builder_in_medit(vnum=61010)
+    mprog_code = MobIndex(vnum=61011, player_name="mprog source")
+    mprog_code.mprog_code = "mob echo OLC_ENTRY_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    fired: list[tuple[int, str | None]] = []
+
+    def fake_program_flow(
+        vnum,
+        code,
+        context,
+        mob,
+        actor,
+        arg1,
+        arg2,
+        text,
+    ):
+        fired.append((vnum, code))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+
+    spawned = None
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61011 entry 100")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        start, target = _build_linked_test_rooms()
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        start.add_character(spawned)
+
+        move_character(spawned, "north")
+    finally:
+        if spawned is not None and spawned in character_registry:
+            character_registry.remove(spawned)
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert fired == [(61011, "mob echo OLC_ENTRY_FIRED")]
 
 
 # ── delmprog ──────────────────────────────────────────────────────────────────

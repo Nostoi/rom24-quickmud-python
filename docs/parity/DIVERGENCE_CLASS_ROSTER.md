@@ -187,7 +187,11 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    exposed MOVE-007 / ENTER-020: NPC `TRIG_ENTRY` dispatch must be gated by
    `HAS_TRIGGER(ch, TRIG_ENTRY)` (`mprog_flags & Trigger.ENTRY`) for both
    directional and portal movement; NPCs without the bit now stay silent instead
-   of calling `mp_percent_trigger`. Next is more
+   of calling `mp_percent_trigger`. **MEdit mobprog runtime probe (2.13.43):**
+   an OLC-created `entry` mobprog now has end-to-end coverage through
+   `_interpret_medit` → `spawn_mob` → directional `move_character`, proving the
+   builder-set ROM trigger bit and `MobProgram` row survive into runtime
+   `mp_percent_trigger` selection. Next is more
    deterministic command/watch-set widening; add RNG-locked combat only after
    seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
