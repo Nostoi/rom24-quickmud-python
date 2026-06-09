@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.49] — 2026-06-09
+
+### Added
+
+- **Class 11 MEdit fight/hpcnt mobprog runtime coverage**
+  (`tests/integration/test_olc_009_medit_missing_cmds.py`): added a runtime
+  probe showing OLC-created `fight` and `hpcnt` mobprogs survive `spawn_mob`
+  and are selected from ROM's `violence_update` trigger dispatch path after
+  `multi_hit` / `check_assist`.
+
 ## [2.13.48] — 2026-06-09
 
 ### Added

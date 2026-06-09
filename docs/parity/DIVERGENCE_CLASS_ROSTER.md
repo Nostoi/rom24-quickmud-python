@@ -211,9 +211,13 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    mobprog runtime probe (2.13.48):** an OLC-created `give` mobprog now has
    end-to-end coverage through `_interpret_medit` → `spawn_mob` → player-facing
    object `do_give`, proving the builder-set `TRIG_GIVE` bit and `MobProgram`
-   row survive into ROM's `mp_give_trigger` object-dispatch path. Next is more
-   deterministic command/watch-set widening; add RNG-locked combat only after
-   seed alignment is proven.
+   row survive into ROM's `mp_give_trigger` object-dispatch path. **MEdit combat
+   mobprog runtime probe (2.13.49):** OLC-created `fight` and `hpcnt` mobprogs
+   now have end-to-end coverage through `_interpret_medit` → `spawn_mob` →
+   `violence_tick`, with `multi_hit` / `check_assist` stubbed so the probe pins
+   ROM's deterministic post-round `TRIG_FIGHT` then `TRIG_HPCNT` dispatch site
+   without depending on combat RNG. Next is more deterministic command/watch-set
+   widening; add RNG-locked combat only after seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

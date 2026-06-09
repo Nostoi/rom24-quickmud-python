@@ -735,6 +735,81 @@ def test_addmprog_created_give_trigger_fires_when_pc_gives_object(monkeypatch, o
     assert calls == [(61023, "mob echo OLC_GIVE_FIRED", spawned, donor, relic, None)]
 
 
+def test_addmprog_created_fight_and_hpcnt_triggers_fire_during_violence_tick(monkeypatch):
+    """MEdit-created combat mobprogs survive spawn and fire from ``violence_tick``.
+
+    Mirrors ROM src/olc_act.c:4900-4904, src/fight.c:84-98, and
+    src/mob_prog.c:1355-1367.
+    """
+    from mud import game_loop
+    from mud.utils import rng_mm
+
+    _, session, proto = _builder_in_medit(vnum=61024)
+    fight_code = MobIndex(vnum=61025, player_name="fight mprog source")
+    fight_code.mprog_code = "mob echo OLC_FIGHT_FIRED"
+    hpcnt_code = MobIndex(vnum=61026, player_name="hpcnt mprog source")
+    hpcnt_code.mprog_code = "mob echo OLC_HPCNT_FIRED"
+    mob_registry[fight_code.vnum] = fight_code
+    mob_registry[hpcnt_code.vnum] = hpcnt_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(
+        vnum,
+        code,
+        context,
+        mob,
+        actor,
+        arg1,
+        arg2,
+        text,
+    ):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+    monkeypatch.setattr("mud.combat.engine.multi_hit", lambda ch, victim, dt=None: None)
+    monkeypatch.setattr("mud.combat.assist.check_assist", lambda ch, victim: None)
+
+    original_registry = list(character_registry)
+    character_registry.clear()
+    spawned = None
+    target = create_test_character("Target", 61034)
+    target.hit = 100
+    target.max_hit = 100
+    target.position = Position.STANDING
+    room = Room(vnum=61034, name="Combat MProg Room")
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61025 fight 100")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+        result = _interpret_medit(session, session.character, "addmprog 61026 hpcnt 50")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        room.add_character(target)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        room.add_character(spawned)
+        spawned.hit = 40
+        spawned.max_hit = 100
+        spawned.position = Position.STANDING
+        spawned.fighting = target
+        target.fighting = spawned
+
+        game_loop.violence_tick(do_combat=True)
+    finally:
+        character_registry[:] = original_registry
+        mob_registry.pop(fight_code.vnum, None)
+        mob_registry.pop(hpcnt_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [
+        (61025, "mob echo OLC_FIGHT_FIRED", spawned, target, None, None),
+        (61026, "mob echo OLC_HPCNT_FIRED", spawned, target, None, None),
+    ]
+
+
 # ── delmprog ──────────────────────────────────────────────────────────────────
 
 
