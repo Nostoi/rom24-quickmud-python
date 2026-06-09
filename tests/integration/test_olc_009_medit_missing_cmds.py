@@ -24,6 +24,7 @@ from __future__ import annotations
 from mud import mobprog
 from mud.commands.build import _interpret_medit
 from mud.commands.communication import do_say
+from mud.commands.position import do_stand
 from mud.models.character import character_registry
 from mud.models.constants import (
     LEVEL_HERO,
@@ -34,6 +35,7 @@ from mud.models.constants import (
     ImmFlag,
     OffFlag,
     PartFlag,
+    Position,
     ResFlag,
     Size,
     VulnFlag,
@@ -570,6 +572,59 @@ def test_addmprog_created_speech_trigger_fires_when_pc_says_phrase(monkeypatch):
         mob_registry.pop(proto.vnum, None)
 
     assert calls == [(61015, "mob echo OLC_SPEECH_FIRED", spawned, speaker, None, None)]
+
+
+def test_addmprog_created_act_trigger_fires_when_pc_stands(monkeypatch):
+    """MEdit-created ``TRIG_ACT`` survives spawn and fires from an act() line.
+
+    Mirrors ROM src/olc_act.c:4900-4904, src/act_move.c:1062, and
+    src/comm.c:2384-2385.
+    """
+    _, session, proto = _builder_in_medit(vnum=61016)
+    mprog_code = MobIndex(vnum=61017, player_name="mprog source")
+    mprog_code.mprog_code = "mob echo OLC_ACT_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(
+        vnum,
+        code,
+        context,
+        mob,
+        actor,
+        arg1,
+        arg2,
+        text,
+    ):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+
+    spawned = None
+    actor = create_test_character("Actor", 61031)
+    actor.position = Position.RESTING
+    room = Room(vnum=61031, name="Act Room")
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61017 act stands up")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        room.add_character(actor)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        room.add_character(spawned)
+
+        assert do_stand(actor, "") == "You stand up.\r\n"
+    finally:
+        for char in (spawned, actor):
+            if char is not None and char in character_registry:
+                character_registry.remove(char)
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(61017, "mob echo OLC_ACT_FIRED", spawned, actor, None, None)]
 
 
 # ── delmprog ──────────────────────────────────────────────────────────────────
