@@ -1,38 +1,36 @@
-# Session Status — 2026-06-08 — INV-025 object update act triggers (2.13.36)
+# Session Status — 2026-06-09 — harness keyed-door rules (2.13.37)
 
 ## Current State
 
-- **Active mode**: cross-file invariants / INV-025 ad-hoc follow-up sweep
+- **Active mode**: divergence Class 11 / dynamic differential widening
   (per-file audit tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
-  - **Object decay / object-affect wear-off TRIG_ACT follow-up closed.**
-    `mud/game_loop.py` now dispatches `mp_act_trigger` for object decay
-    `act(message, rch, obj, TO_ROOM/TO_CHAR)` and object-affect `msg_obj`
-    `act(..., TO_ALL)` paths, mirroring ROM `src/update.c:937-951` and
-    `src/update.c:1014-1022`.
-  - Carried object-affect `msg_obj` wear-off now mirrors ROM's TO_CHAR-only
-    branch (no non-ROM room broadcast / room TRIG_ACT), and object-update
-    TO_CHAR act lines are capitalized before delivery.
+  - **Hypothesis keyed-door widening added.**
+    `DeterministicNoRngDiffMachine` now exercises Midgaard Cityguard HQ's stock
+    keyed west door (`close`, `lock`, `unlock`, `pick`) against the live ROM C
+    oracle.
+  - Diff-harness `__goto=<vnum>` and `__level=<n>` meta-commands added to both
+    `src/diff_shim/diffmain.c` and `tools/diff_harness/pyreplay.py`.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-08_INV025_OBJECT_UPDATE_ACT_TRIGGERS.md](SESSION_SUMMARY_2026-06-08_INV025_OBJECT_UPDATE_ACT_TRIGGERS.md)
+  [SESSION_SUMMARY_2026-06-09_HARNESS_KEYED_DOOR_RULES.md](SESSION_SUMMARY_2026-06-09_HARNESS_KEYED_DOOR_RULES.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.36 |
-| Tests | 5458 passing, 5 skipped (5463 collected) |
+| Version | 2.13.37 |
+| Tests | 5461 passed, 5 skipped |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 25 enforced |
-| Diff-harness scenarios | 10 static + 17 generated-oracle tests |
-| INV-025 object-update follow-up | Closed (3 new regressions) |
+| Diff-harness scenarios | 10 static + 18 generated-oracle tests |
+| Class 11 dynamic widening | Keyed-door rules added |
 
 ## Next Intended Task
 
 **Remaining cross-file invariant candidates:**
 
 1. **Hypothesis state machine widening** (Class 11 Phase C, ongoing): add
-   `give` / `lock` / `unlock` / `pick` command rules to
+   another deterministic command/watch-set surface to
    `DeterministicNoRngDiffMachine` in `tools/diff_harness/generated.py`.
 2. **`nuke_pets` lifecycle**: probe whether Python correctly extracts charmed
    followers on their master's death/extract (`src/handler.c:nuke_pets`).

@@ -169,8 +169,12 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    head-insert): FINDING-017/018/019 (`obj_to_{char,room,obj}` appended instead
    of head-inserting → INV-039, three chokepoints fixed), plus the open siblings
    FINDING-020 (`remove` re-append position) and FINDING-021 (`look in` header
-   cap). Next is more deterministic command/watch-set widening; add RNG-locked
-   combat only after seed alignment is proven.
+   cap). **Phase C continued (2026-06-09):** added keyed-door command widening:
+   harness meta-commands `__goto=<vnum>` / `__level=<n>` plus generated rules for
+   Midgaard Cityguard HQ's stock west door (`close`, `lock`, `unlock`, `pick`)
+   using iron key 3120 and a learned `pick lock` skill. Next is more deterministic
+   command/watch-set widening; add RNG-locked combat only after seed alignment is
+   proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

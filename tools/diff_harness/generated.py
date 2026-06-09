@@ -120,6 +120,17 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             load_command="__mob_carry=3021",
             wear_command="wield sword",
         )
+        # Door fixture: Midgaard cityguard HQ (3110) west door to Captain's
+        # Office (3142), keyed by iron key 3120.  The stock door starts open
+        # (EX_ISDOOR only); generated rules close it before lock/unlock/pick.
+        self.iron_key = _ObjectState(
+            vnum=3120,
+            keyword="key",
+            load_command="__oload=3120",
+        )
+        self._at_cityguard_hq: bool = False
+        self._hq_west_closed: bool = False
+        self._hq_west_locked: bool = False
 
     @rule()
     def look(self) -> None:
@@ -513,6 +524,64 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         # Sword stays in player's inventory; wealth unchanged.
         self.steps.append("sell sword")
 
+    # ── keyed door rules ──────────────────────────────────────────
+    # Source: src/act_move.c:571-705 do_lock, :706-840 do_unlock,
+    # :841-994 do_pick.  The replay is positioned at a stock keyed door through
+    # a harness-only meta-command so the machine can exercise the door state
+    # transitions without depending on a long unrelated route from room 3001.
+
+    @precondition(lambda self: not self._at_cityguard_hq and self.current_position == Position.STANDING)
+    @rule()
+    def goto_cityguard_hq(self) -> None:
+        self.steps.append("__goto=3110")
+        self.current_room = 3110
+        self._at_cityguard_hq = True
+
+    @precondition(lambda self: self._at_cityguard_hq and not self._object_exists(self.iron_key))
+    @rule()
+    def load_iron_key(self) -> None:
+        self._load_object(self.iron_key)
+
+    @precondition(lambda self: self._at_cityguard_hq and self.iron_key.room == self.current_room)
+    @rule()
+    def get_iron_key(self) -> None:
+        self._get_object(self.iron_key)
+
+    @precondition(lambda self: self._at_cityguard_hq and not self._hq_west_closed)
+    @rule()
+    def close_hq_west_door(self) -> None:
+        self.steps.append("close west")
+        self._hq_west_closed = True
+
+    @precondition(
+        lambda self: self._at_cityguard_hq
+        and self._hq_west_closed
+        and not self._hq_west_locked
+        and self.iron_key.inventory
+    )
+    @rule()
+    def lock_hq_west_door(self) -> None:
+        self.steps.append("lock west")
+        self._hq_west_locked = True
+
+    @precondition(
+        lambda self: self._at_cityguard_hq and self._hq_west_closed and self._hq_west_locked and self.iron_key.inventory
+    )
+    @rule()
+    def unlock_hq_west_door(self) -> None:
+        self.steps.append("unlock west")
+        self._hq_west_locked = False
+
+    @precondition(lambda self: self._at_cityguard_hq and self._hq_west_closed and self._hq_west_locked)
+    @rule()
+    def pick_hq_west_door(self) -> None:
+        self.steps.append("__level=30")
+        self.steps.append("__learn=pick lock")
+        self.steps.append("__seed=1234")
+        self.steps.append("pick west")
+        self.steps.append("__seed=5678")
+        self._hq_west_locked = False
+
     @precondition(lambda self: self.drunk.room == self.current_room and not self._drunk_has_empty_cup)
     @rule()
     def give_drunk_empty_cup(self) -> None:
@@ -653,7 +722,7 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
             char_name="Tester",
             char_level=5,
             watch_chars=watch_chars,
-            watch_rooms=[3001, 3005, 3054],
+            watch_rooms=[3001, 3005, 3054, 3110, 3142],
             steps=all_steps,
         )
         report = diff_traces(drive_c_oracle(sc, self.binary), drive_python_replay(sc))

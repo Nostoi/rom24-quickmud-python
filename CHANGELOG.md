@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.37] — 2026-06-09
+
+### Added
+
+- **Diff-harness keyed-door generated coverage** (`tools/diff_harness/generated.py`):
+  `DeterministicNoRngDiffMachine` now exercises stock keyed door transitions
+  (`close west`, `lock west`, `unlock west`, `pick west`) against ROM's live C
+  oracle using Midgaard's Cityguard HQ west door and iron key. Added harness
+  meta-commands `__goto=<vnum>` and `__level=<n>` to both the C shim and Python
+  replay so generated scenarios can reach fixture rooms and satisfy ROM
+  class-level skill gates without unrelated setup routes.
+
 ## [2.13.36] — 2026-06-08
 
 ### Fixed

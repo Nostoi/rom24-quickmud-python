@@ -324,6 +324,43 @@ def test_drive_python_replay_accepts_in_memory_scenario():
     assert trace[0].chars[0].move == 100
 
 
+def test_drive_python_replay_goto_moves_character_between_watched_rooms():
+    sc = Scenario(
+        name="generated_goto",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001, 3110],
+        steps=["__goto=3110"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert trace[0].chars[0].room == 3110
+    rooms = {room.vnum: room for room in trace[0].rooms}
+    assert "Tester" not in rooms[3001].people
+    assert "Tester" in rooms[3110].people
+
+
+def test_drive_python_replay_level_meta_updates_character_level():
+    sc = Scenario(
+        name="generated_level",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__level=30"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert trace[0].chars[0].level == 30
+
+
 def test_drive_python_replay_oload_exercises_get_wield_remove_drop():
     sc = Scenario(
         name="generated_oload",

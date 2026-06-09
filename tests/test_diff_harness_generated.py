@@ -226,6 +226,45 @@ def test_generated_mob_give_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+def test_generated_keyed_door_cycle_matches_live_c():
+    """``close`` / ``lock`` / ``unlock`` / ``pick`` a keyed door.
+
+    Exercises the deterministic door command widening added to
+    ``DeterministicNoRngDiffMachine``.  The stock Cityguard HQ west door starts
+    open and uses the iron key (3120), so the sequence closes it, locks and
+    unlocks it with the key, then locks it again and picks it with a learned
+    100% skill.
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_keyed_door",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001, 3110, 3142],
+        steps=[
+            "__goto=3110",
+            "__oload=3120",
+            "get key",
+            "close west",
+            "lock west",
+            "unlock west",
+            "lock west",
+            "__level=30",
+            "__learn=pick lock",
+            "__seed=1234",
+            "pick west",
+            "__seed=5678",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_drink_container_matches_live_c():
     """``drink`` a drink container (bottle beer 3001) against the live C oracle.
 

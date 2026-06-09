@@ -71,6 +71,15 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
     if command.startswith("__silver="):
         char.silver = int(command[len("__silver=") :])
         return ""
+    if command.startswith("__level="):
+        char.level = int(command[len("__level=") :])
+        return ""
+    if command.startswith("__goto="):
+        destination = room_registry[int(command[len("__goto=") :])]
+        if getattr(char, "room", None) is not None:
+            char.room.remove_character(char)
+        destination.add_character(char)
+        return ""
     if command.startswith("__mob_gold="):
         from mud.spawning.templates import MobInstance
 

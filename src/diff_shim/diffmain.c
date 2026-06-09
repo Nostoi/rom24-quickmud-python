@@ -607,6 +607,31 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __level=<n>: set the PC's level directly (no RNG).  Used by
+         * generated skill-command scenarios where ROM get_skill gates learned
+         * skills by class level. */
+        if (strncmp (line, "__level=", 8) == 0)
+        {
+            if (ch != NULL)
+                ch->level = atoi (line + 8);
+            continue;
+        }
+
+        /* __goto=<vnum>: move the PC to a room without command output.
+         * Harness-only positioning primitive for generated scenarios that need
+         * a specific stock fixture (e.g. a keyed door) without replaying a long
+         * unrelated walking route. */
+        if (strncmp (line, "__goto=", 7) == 0)
+        {
+            ROOM_INDEX_DATA *room = get_room_index (atoi (line + 7));
+            if (ch != NULL && room != NULL)
+            {
+                char_from_room (ch);
+                char_to_room (ch, room);
+            }
+            continue;
+        }
+
         /* __mob_gold=<n>: set the first NPC in the room's gold directly.
          * Used to control keeper treasury for sell-path differential tests. */
         if (strncmp (line, "__mob_gold=", 11) == 0)
