@@ -15,6 +15,7 @@ from mud.models.constants import (
     ItemType,
     PortalFlag,
     Position,
+    RoomFlag,
 )
 from mud.models.room import Room
 
@@ -507,6 +508,35 @@ class TestEnter012FollowerMessages:
 
         room_registry.pop(8952, None)
         room_registry.pop(8953, None)
+
+    def test_follower_attempts_portal_before_destination_visibility_gate(self):
+        """ROM src/act_enter.c:177-198 portal followers do not call can_see_room."""
+        from mud.registry import room_registry
+
+        room_a = _make_room(8954)
+        room_b = _make_room(8955, room_flags=int(RoomFlag.ROOM_DARK))
+        room_registry[8954] = room_a
+        room_registry[8955] = room_b
+
+        leader = _make_char("Leader", room_a)
+        leader.affected_by = int(AffectFlag.INFRARED)
+        follower = _make_char("Follower", room_a)
+        follower.master = leader
+
+        _make_portal(room_a, to_vnum=8955, charges=2)
+
+        do_enter(leader, "portal")
+
+        assert follower.room is room_a
+        assert any("doesn't seem to go anywhere" in message for message in follower.messages), (
+            "Portal followers must attempt do_enter before the follower's own destination "
+            "visibility gate rejects the dark room. ROM src/act_enter.c:177-198 has no "
+            "pre-follower can_see_room gate; the later can_see_room check is inside the "
+            "recursive do_enter call at src/act_enter.c:119."
+        )
+
+        room_registry.pop(8954, None)
+        room_registry.pop(8955, None)
 
 
 # ---------------------------------------------------------------------------

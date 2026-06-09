@@ -407,6 +407,33 @@ All three use `act(TO_ROOM)`, which renders `$n` through `PERS(ch, to)` → `can
 
 ---
 
+### ENTER-019 — Portal followers were pre-skipped by destination visibility ✅ FIXED
+
+| Field | Detail |
+|---|---|
+| Gap ID | ENTER-019 |
+| ROM C reference | `src/act_enter.c:177-198`, compared with `src/act_move.c:218` |
+| Severity | IMPORTANT |
+| **Closure** | Fixed in `mud/world/movement.py:_move_followers` / `move_character_through_portal` (2026-06-09). Directional movement still requires follower `can_see_room` per `act_move.c:218`, but portal follower recursion no longer applies that pre-gate because ROM `act_enter.c:177-198` calls `do_enter` for each standing follower without a `can_see_room` check. Regression: `tests/integration/test_act_enter_gaps.py::TestEnter012FollowerMessages::test_follower_attempts_portal_before_destination_visibility_gate`. |
+
+**ROM C distinction:**
+```c
+/* act_move.c:216-219 */
+if (fch->master == ch && fch->position == POS_STANDING
+    && can_see_room (fch, to_room))
+    move_char (fch, door, TRUE);
+
+/* act_enter.c:190-196 */
+if (fch->master == ch && fch->position == POS_STANDING) {
+    act ("You follow $N.", fch, NULL, ch, TO_CHAR);
+    do_function (fch, &do_enter, argument);
+}
+```
+
+Python reused one `_move_followers` helper for both paths, so portal followers inherited the directional `can_see_room` pre-check and were silently skipped when they could not see the destination. ROM still lets the follower attempt the recursive `do_enter`; the follower may then fail inside `do_enter`'s own destination check (`act_enter.c:119`) and receive the portal "doesn't seem to go anywhere" line. The fix adds an explicit `require_destination_visibility` switch at the two call sites so both ROM contracts remain separate.
+
+---
+
 ### ENTER-013 — `_get_random_room` bounded-loop can return `None` ✅ AUDITED
 
 | Field | Detail |

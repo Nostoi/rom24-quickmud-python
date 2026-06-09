@@ -79,6 +79,8 @@ def _move_followers(
     target_room: Room,
     target_room_flags: int,
     mover: Callable[[Character], None],
+    *,
+    require_destination_visibility: bool,
 ) -> None:
     for follower in _collect_followers(current_room, leader):
         if follower.room is not current_room:
@@ -87,7 +89,7 @@ def _move_followers(
             _stand_charmed_follower(follower)
         if follower.position < Position.STANDING:
             continue
-        if not can_see_room(follower, target_room):
+        if require_destination_visibility and not can_see_room(follower, target_room):
             continue
         if (
             target_room_flags & int(RoomFlag.ROOM_LAW)
@@ -491,6 +493,8 @@ def move_character(char: Character, direction: str, *, _is_follow: bool = False)
         target_room,
         target_room_flags,
         lambda follower: move_character(follower, direction, _is_follow=True),
+        # ROM src/act_move.c:218 gates directional followers with can_see_room.
+        require_destination_visibility=True,
     )
 
     if char.is_npc:
@@ -628,6 +632,8 @@ def move_character_through_portal(char: Character, portal: object, *, _is_follow
             destination,
             target_flags,
             lambda follower: move_character_through_portal(follower, portal, _is_follow=False),
+            # ROM src/act_enter.c:177-198 portal followers have no can_see_room gate.
+            require_destination_visibility=False,
         )
 
     # ROM src/act_enter.c:200-222 fades/extracts an expired portal before
