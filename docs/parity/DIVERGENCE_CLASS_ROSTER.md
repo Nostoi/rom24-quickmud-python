@@ -172,9 +172,14 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    cap). **Phase C continued (2026-06-09):** added keyed-door command widening:
    harness meta-commands `__goto=<vnum>` / `__level=<n>` plus generated rules for
    Midgaard Cityguard HQ's stock west door (`close`, `lock`, `unlock`, `pick`)
-   using iron key 3120 and a learned `pick lock` skill. Next is more deterministic
-   command/watch-set widening; add RNG-locked combat only after seed alignment is
-   proven.
+   using iron key 3120 and a learned `pick lock` skill. **Phase C continued
+   (2026-06-09 follow-up):** added `open west` to the same generated keyed-door
+   cycle. A traversal probe (`west` into room 3142) surfaced **FINDING-026**
+   (room occupant look-order drift: ROM cityguards before captain; Python captain
+   before cityguards), so movement through that door remains unlanded until the
+   reset/`char_to_room` occupant-order question is scoped. Next is more
+   deterministic command/watch-set widening; add RNG-locked combat only after
+   seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

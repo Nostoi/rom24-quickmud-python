@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.38] — 2026-06-09
+
+### Added
+
+- **Diff-harness keyed-door open coverage** (`tools/diff_harness/generated.py`):
+  `DeterministicNoRngDiffMachine` now includes `open west` after the keyed-door
+  lock/unlock/pick cycle. A traversal probe surfaced `FINDING-026` (room
+  occupant look-order drift in Captain's Office), so movement through that door
+  is documented as an open finding instead of being landed as generated coverage.
+
 ## [2.13.37] — 2026-06-09
 
 ### Added

@@ -8,6 +8,41 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-026 — room occupant look order differs after entering Captain's Office — 🔄 OPEN
+
+**Status:** 🔄 OPEN (surfaced 2026-06-09). The keyed-door traversal probe
+(`__goto=3110; ...; open west; west`) reached Midgaard room `3142` and exposed
+room-occupant output ordering drift:
+
+- ROM C room look after `west`: four cityguards, then the captain.
+- Python room look after `west`: the captain, then four cityguards.
+
+**Scenario:** generated keyed-door widening against Cityguard Head Quarters
+(`3110`) west door to Captain's Office (`3142`), after unlocking/picking and
+opening the door.
+
+**Observed output diff:** `command='west'` room render:
+`C=[..., "A cityguard stands here..." x4, "The captain ..."]` vs
+`Python=[..., "The captain ...", "A cityguard stands here..." x4]`.
+
+**Likely root cause:** reset / `char_to_room` insertion order for room occupants.
+ROM's `char_to_room` prepends to `room->people` (linked-list head insert), and
+room look walks `room->people` in that order. Python's reset/mob placement path
+appears to produce a different room.people order for this room. This is the
+character-list analogue of the object head-insert class, but it needs a scoped
+source read before fixing because room occupant order also interacts with
+special procs, combat scanning, and trigger recipient order.
+
+**Tracking note:** not added to `KNOWN_DIVERGENCES` because no committed static
+golden scenario currently exercises this traversal. The traversal rules were
+not landed in `DeterministicNoRngDiffMachine`; the harness widening was narrowed
+to door `open` state coverage until this finding is fixed.
+
+**Affected surfaces:** `mud/spawning/reset_handler.py`, `mud/models/room.py`
+(`Room.add_character` / `char_to_room`), `mud/world/look.py`.
+
+---
+
 ## FINDING-030 — `bless` at low levels: Python emits 1 AffectData entry, ROM emits 2 — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-08 (2.13.25). `SpellEffect.hitroll_mod` /

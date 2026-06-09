@@ -227,13 +227,13 @@ def test_generated_mob_give_matches_live_c():
 
 
 def test_generated_keyed_door_cycle_matches_live_c():
-    """``close`` / ``lock`` / ``unlock`` / ``pick`` a keyed door.
+    """``close`` / ``lock`` / ``unlock`` / ``pick`` / ``open`` a keyed door.
 
     Exercises the deterministic door command widening added to
     ``DeterministicNoRngDiffMachine``.  The stock Cityguard HQ west door starts
     open and uses the iron key (3120), so the sequence closes it, locks and
-    unlocks it with the key, then locks it again and picks it with a learned
-    100% skill.
+    unlocks it with the key, then locks it again, picks it with a learned 100%
+    skill, and opens it.
     """
     if not DIFFSHIM.exists():
         pytest.skip("src/diffshim is required for live generated differential tests")
@@ -259,6 +259,7 @@ def test_generated_keyed_door_cycle_matches_live_c():
             "__seed=1234",
             "pick west",
             "__seed=5678",
+            "open west",
         ],
     )
 

@@ -582,6 +582,12 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("__seed=5678")
         self._hq_west_locked = False
 
+    @precondition(lambda self: self.current_room == 3110 and self._hq_west_closed and not self._hq_west_locked)
+    @rule()
+    def open_hq_west_door(self) -> None:
+        self.steps.append("open west")
+        self._hq_west_closed = False
+
     @precondition(lambda self: self.drunk.room == self.current_room and not self._drunk_has_empty_cup)
     @rule()
     def give_drunk_empty_cup(self) -> None:
