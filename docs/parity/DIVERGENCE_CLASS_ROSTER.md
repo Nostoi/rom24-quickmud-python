@@ -216,7 +216,12 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    now have end-to-end coverage through `_interpret_medit` → `spawn_mob` →
    `violence_tick`, with `multi_hit` / `check_assist` stubbed so the probe pins
    ROM's deterministic post-round `TRIG_FIGHT` then `TRIG_HPCNT` dispatch site
-   without depending on combat RNG. Next is more deterministic command/watch-set
+   without depending on combat RNG. **MEdit surrender mobprog runtime probe
+   (2.13.50):** an OLC-created `surr` mobprog now has end-to-end coverage
+   through `_interpret_medit` → `spawn_mob` → player-facing `do_surrender`,
+   proving the builder-set `TRIG_SURR` bit and `MobProgram` row survive into
+   ROM's surrender-trigger dispatch path before the NPC ignore/retaliation
+   fallback. Next is more deterministic command/watch-set
    widening; add RNG-locked combat only after seed alignment is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints

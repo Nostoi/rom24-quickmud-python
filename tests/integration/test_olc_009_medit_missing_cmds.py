@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from mud import mobprog
 from mud.commands.build import _interpret_medit
+from mud.commands.combat import do_surrender
 from mud.commands.communication import do_say
 from mud.commands.give import do_give
 from mud.commands.position import do_stand
@@ -808,6 +809,68 @@ def test_addmprog_created_fight_and_hpcnt_triggers_fire_during_violence_tick(mon
         (61025, "mob echo OLC_FIGHT_FIRED", spawned, target, None, None),
         (61026, "mob echo OLC_HPCNT_FIRED", spawned, target, None, None),
     ]
+
+
+def test_addmprog_created_surr_trigger_fires_when_pc_surrenders(monkeypatch):
+    """MEdit-created ``TRIG_SURR`` survives spawn and fires from ``do_surrender``.
+
+    Mirrors ROM src/olc_act.c:4900-4904 and src/fight.c:3235-3237.
+    """
+    from mud.utils import rng_mm
+
+    _, session, proto = _builder_in_medit(vnum=61027)
+    mprog_code = MobIndex(vnum=61028, player_name="surr mprog source")
+    mprog_code.mprog_code = "mob echo OLC_SURR_FIRED"
+    mob_registry[mprog_code.vnum] = mprog_code
+    mob_registry[proto.vnum] = proto
+
+    calls: list[tuple[int, str | None, object, object | None, object | None, object | None]] = []
+
+    def fake_program_flow(
+        vnum,
+        code,
+        context,
+        mob,
+        actor,
+        arg1,
+        arg2,
+        text,
+    ):
+        calls.append((vnum, code, mob, actor, arg1, arg2))
+        return None
+
+    monkeypatch.setattr(mobprog, "_program_flow", fake_program_flow)
+    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+    original_registry = list(character_registry)
+    character_registry.clear()
+    spawned = None
+    player = create_test_character("Surrenderer", 61035)
+    player.hit = 100
+    player.max_hit = 100
+    player.position = Position.FIGHTING
+    room = Room(vnum=61035, name="Surrender MProg Room")
+    try:
+        result = _interpret_medit(session, session.character, "addmprog 61028 surr 100")
+        assert "mprog added" in result.lower(), f"Got: {result!r}"
+
+        room.add_character(player)
+        spawned = spawn_mob(proto.vnum)
+        assert spawned is not None
+        room.add_character(spawned)
+        spawned.hit = 100
+        spawned.max_hit = 100
+        spawned.position = Position.FIGHTING
+        player.fighting = spawned
+        spawned.fighting = player
+
+        assert do_surrender(player, "") == "You surrender to test mob!"
+    finally:
+        character_registry[:] = original_registry
+        mob_registry.pop(mprog_code.vnum, None)
+        mob_registry.pop(proto.vnum, None)
+
+    assert calls == [(61028, "mob echo OLC_SURR_FIRED", spawned, player, None, None)]
 
 
 # ── delmprog ──────────────────────────────────────────────────────────────────
