@@ -403,8 +403,11 @@ def cold_effect(target: Any, level: int, damage: int, target_type: int | SpellTa
             if hasattr(victim, "messages") and isinstance(victim.messages, list):
                 _push_message(victim, "You feel a chill sink deep into your bones.")
 
-        # ROM L234-235: Hunger increase (warmth sucked out)
-        # TODO: Implement gain_condition(victim, COND_HUNGER, dam/20)
+        # ROM L234-235: Hunger increase (warmth sucked out) — src/effects.c:235
+        from mud.characters.conditions import gain_condition
+        from mud.models.constants import Condition
+
+        gain_condition(victim, Condition.HUNGER, c_div(damage, 20))
 
         # ROM L238-242: Process inventory
         inventory = list(getattr(victim, "inventory", []))
@@ -510,8 +513,11 @@ def fire_effect(target: Any, level: int, damage: int, target_type: int | SpellTa
                 if hasattr(victim, "messages") and isinstance(victim.messages, list):
                     _push_message(victim, "You are blinded by smoke!")
 
-        # ROM L340-341: Thirst increase (heat dehydration)
-        # TODO: Implement gain_condition(victim, COND_THIRST, dam/20)
+        # ROM L340-341: Thirst increase (heat dehydration) — src/effects.c:341
+        from mud.characters.conditions import gain_condition
+        from mud.models.constants import Condition
+
+        gain_condition(victim, Condition.THIRST, c_div(damage, 20))
 
         # ROM L344-349: Process inventory
         inventory = list(getattr(victim, "inventory", []))

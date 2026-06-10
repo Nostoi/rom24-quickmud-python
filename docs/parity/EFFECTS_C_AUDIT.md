@@ -4,7 +4,7 @@
 **Created**: January 3, 2026  
 **Completed**: January 5, 2026  
 **Priority**: ✅ **P0 - COMPLETE** (100% ROM C parity achieved)  
-**Status**: ✅ **100% COMPLETE - ALL FUNCTIONS IMPLEMENTED**
+**Status**: ✅ **100% COMPLETE — ALL GAPS RESOLVED** (EFFECTS-001, EFFECTS-002 closed in v2.13.67)
 
 ---
 
@@ -41,8 +41,8 @@ These functions are called by spell handlers to apply damage-over-time effects l
 | ROM C Function | ROM C Lines | QuickMUD Location | Status | Integration Tests |
 |----------------|-------------|-------------------|--------|-------------------|
 | `acid_effect()` | 39-193 | ✅ `mud/magic/effects.py:166-357` | ✅ **COMPLETE** | 4 tests |
-| `cold_effect()` | 195-297 | ✅ `mud/magic/effects.py:359-449` | ✅ **COMPLETE** | 3 tests |
-| `fire_effect()` | 299-439 | ✅ `mud/magic/effects.py:451-567` | ✅ **COMPLETE** | 3 tests |
+| `cold_effect()` | 195-297 | ✅ `mud/magic/effects.py:359-449` | ✅ **COMPLETE** | 4 tests |
+| `fire_effect()` | 299-439 | ✅ `mud/magic/effects.py:451-567` | ✅ **COMPLETE** | 4 tests |
 | `poison_effect()` | 441-528 | ✅ `mud/magic/effects.py:569-658` | ✅ **COMPLETE** | 5 tests |
 | `shock_effect()` | 530-615 | ✅ `mud/magic/effects.py:660-769` | ✅ **COMPLETE** | 4 tests |
 | **Probability Formula** | N/A | ✅ `mud/magic/effects.py:93-134` | ✅ **COMPLETE** | 4 tests |
@@ -94,7 +94,7 @@ void acid_effect (void *vo, int level, int dam, int target)
 
 ---
 
-### 2. `cold_effect()` - Cold Damage (ROM lines 195-297) ✅ COMPLETE
+### 2. `cold_effect()` - Cold Damage (ROM lines 195-297) ✅ COMPLETE (EFFECTS-001 closed)
 
 **ROM C Signature**:
 ```c
@@ -108,7 +108,7 @@ void cold_effect (void *vo, int level, int dam, int target)
 - ✅ **TARGET_CHAR**: 
   - ✅ Chill touch affect: saves_spell(level/4 + dam/20, victim, DAM_COLD)
   - ✅ If failed: Apply "chill touch" affect (-1 STR, duration 6)
-  - ✅ Hunger increase: `gain_condition(victim, COND_HUNGER, dam/20)`
+  - ✅ Hunger increase: `gain_condition(victim, COND_HUNGER, dam/20)` — positive fill (EFFECTS-001 closed)
   - ✅ Process inventory recursively
 - ✅ **TARGET_OBJ**:
   - ✅ POTION: +25 to chance, "freezes and shatters!" + destroy
@@ -124,7 +124,7 @@ void cold_effect (void *vo, int level, int dam, int target)
 
 ---
 
-### 3. `fire_effect()` - Fire Damage (ROM lines 299-439) ✅ COMPLETE
+### 3. `fire_effect()` - Fire Damage (ROM lines 299-439) ✅ COMPLETE (EFFECTS-002 closed)
 
 **ROM C Signature**:
 ```c
@@ -139,7 +139,7 @@ void fire_effect (void *vo, int level, int dam, int target)
   - ✅ Check if already blind: `IS_AFFECTED(victim, AFF_BLIND)`
   - ✅ Blindness affect: saves_spell(level/4 + dam/20, victim, DAM_FIRE)
   - ✅ If failed: Apply "fire breath" affect (AFF_BLIND, -4 hitroll, duration 0 to level/10)
-  - ✅ Thirst increase: `gain_condition(victim, COND_THIRST, dam/20)`
+  - ✅ Thirst increase: `gain_condition(victim, COND_THIRST, dam/20)` — positive fill (EFFECTS-002 closed)
   - ✅ Process inventory recursively
 - ✅ **TARGET_OBJ**:
   - ✅ CONTAINER: Dump contents with recursive fire_effect, destroy
@@ -270,6 +270,15 @@ def _calculate_chance(level: int, damage: int, obj: Object, item_type_modifier: 
 2. ✅ `test_higher_damage_increases_chance` - Damage scaling
 3. ✅ `test_blessed_reduces_chance` - BLESS modifier with clamping
 4. ✅ `test_clamped_to_5_95_range` - Min/max clamping
+
+---
+
+## Open Gaps
+
+| ID | Function | ROM C Line | Description | Status |
+|----|----------|-----------|-------------|--------|
+| EFFECTS-001 | `cold_effect()` | 235 | `gain_condition(victim, COND_HUNGER, dam/20)` missing in TARGET_CHAR | ✅ FIXED v2.13.67 |
+| EFFECTS-002 | `fire_effect()` | 341 | `gain_condition(victim, COND_THIRST, dam/20)` missing in TARGET_CHAR | ✅ FIXED v2.13.67 |
 
 ---
 

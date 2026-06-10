@@ -19,11 +19,24 @@ from mud.magic.effects import (
     shock_effect,
 )
 from mud.models.character import Character
-from mud.models.constants import ITEM_BLESS, ITEM_BURN_PROOF, ITEM_NOPURGE, ItemType
+from mud.models.constants import ITEM_BLESS, ITEM_BURN_PROOF, ITEM_NOPURGE, Condition, ItemType
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room
 from mud.utils import rng_mm
+
+
+class _PCData:
+    """Minimal pcdata stub: condition = [DRUNK, FULL, THIRST, HUNGER] (indices 0-3)."""
+
+    def __init__(self, hunger: int = 48, thirst: int = 48) -> None:
+        self.condition = [0, 48, thirst, hunger]  # [drunk=0, full=1, thirst=2, hunger=3]
+
+
+def _make_pc_char(name: str, hunger: int = 48, thirst: int = 48) -> Character:
+    pc = Character(name=name, is_npc=False, level=10, saving_throw=0, messages=[])
+    pc.pcdata = _PCData(hunger=hunger, thirst=thirst)  # type: ignore[assignment]
+    return pc
 
 
 @pytest.fixture
@@ -157,6 +170,20 @@ class TestColdEffect:
 
         assert original_id in extracted_objects
 
+    def test_cold_fills_hunger(self, monkeypatch):
+        """EFFECTS-001: cold_effect TARGET_CHAR must call gain_condition(victim, COND_HUNGER, dam/20).
+
+        ROM C src/effects.c:235 — gain_condition (victim, COND_HUNGER, dam / 20);
+        Positive delta fills hunger (URANGE(0, hunger+delta, 48)).
+        Starting at hunger=10, dam=100 → gain=+5 → hunger should be 15.
+        """
+        monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 1)
+
+        victim = _make_pc_char("Victim", hunger=10)
+        cold_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+
+        assert victim.pcdata.condition[int(Condition.HUNGER)] == 15  # 10 + (100//20)
+
     def test_cold_burn_proof_immune(self, monkeypatch):
         from mud.game_loop import _extract_obj
 
@@ -224,6 +251,20 @@ class TestFireEffect:
         fire_effect(food, level=40, damage=100, target_type=SpellTarget.TARGET_OBJ)
 
         assert original_id in extracted_objects
+
+    def test_fire_fills_thirst(self, monkeypatch):
+        """EFFECTS-002: fire_effect TARGET_CHAR must call gain_condition(victim, COND_THIRST, dam/20).
+
+        ROM C src/effects.c:341 — gain_condition (victim, COND_THIRST, dam / 20);
+        Positive delta fills thirst (URANGE(0, thirst+delta, 48)).
+        Starting at thirst=10, dam=100 → gain=+5 → thirst should be 15.
+        """
+        monkeypatch.setattr(rng_mm, "number_range", lambda a, b: 1)
+
+        victim = _make_pc_char("Victim", thirst=10)
+        fire_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+
+        assert victim.pcdata.condition[int(Condition.THIRST)] == 15  # 10 + (100//20)
 
     def test_fire_burn_proof_immune(self, monkeypatch):
         from mud.game_loop import _extract_obj

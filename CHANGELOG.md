@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.67] — 2026-06-10
+
+### Fixed
+
+- **EFFECTS-001: `cold_effect` hunger fill missing** — `cold_effect` TARGET_CHAR
+  was silently skipping `gain_condition(victim, COND_HUNGER, dam/20)` (ROM
+  `src/effects.c:235`). The `# TODO` comment is now wired: `gain_condition` is
+  called with a positive delta (ROM C uses positive fill, not a drain) when a
+  player is hit by cold magic.
+- **EFFECTS-002: `fire_effect` thirst fill missing** — `fire_effect` TARGET_CHAR
+  was silently skipping `gain_condition(victim, COND_THIRST, dam/20)` (ROM
+  `src/effects.c:341`). Wired in the same pass. Both gaps were marked ✅ COMPLETE
+  in the audit doc despite the `# TODO` in code — stale ✅ corrected in
+  `docs/parity/EFFECTS_C_AUDIT.md`.
+
 ## [2.13.66] — 2026-06-10
 
 ### Added
