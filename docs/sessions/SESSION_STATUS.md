@@ -1,48 +1,46 @@
-# Session Status — 2026-06-10 — affect shadow LIFO + DEX/INT/WIS APPLY_ mapping (2.13.63)
+# Session Status — 2026-06-10 — charm lifecycle scenario + CharSnap master field (2.13.64)
 
 ## Current State
 
 - **Active mode**: cross-file invariants pass + diff-harness coverage expansion
 - **Last completed**:
-  - **Three affect parity bugs fixed via C-oracle** — the `affect_expiry_lifecycle`
-    diff-harness scenario was goldenated against the C binary, revealing and closing:
-    1. Affect shadow list was FIFO (`append`) instead of LIFO (`insert(0)`) in both
-       `sync_spell_effect_to_affected` and `Character.affect_to_char`.
-    2. DEX/INT/WIS stat → APPLY_ location mapping used wrong `stat_int + 1` formula
-       (Stat.DEX=3 → location=4=APPLY_WIS instead of APPLY_DEX=2). Affected haste+slow.
-    3. Sanctuary SpellEffect missing `wear_off_message` (ROM const.c:1438 msg_off).
-    Secondary fix: `handler.py:reset_char` stat-matching blocks used the same wrong formula.
-  - Two new enforcement tests committed; `affect_expiry_lifecycle` scenario now passes (was skipping).
+  - **`shop_sell_keeper_broke`** C-oracle golden captured — diff harness is now
+    0 skipped / 42 passing.
+  - **`charm_person_lifecycle`** diff-harness scenario authored and live — exercises
+    AFF_CHARM expiry confirming `master` survives `affect_remove` (ROM invariant:
+    `affect_remove` does NOT call `stop_follower`).
+  - **`__charm_mob=<duration>`** meta-command added to diffmain.c and pyreplay.py.
+  - **`CharSnap.master`** field added (schema.py, pysnap.py, diffmain.c) —
+    backward-compatible.
+  - **FINDING-033 documented** — ROM `show_list_to_char` groups identical room objects
+    with `( N)` prefix; Python lists each individually. Hypothesis state-machine test
+    found the reproducer; marked xfail(strict=False) pending fix.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_AFFECT_SHADOW_LIFO_APPLY_MAPPING.md](SESSION_SUMMARY_2026-06-10_AFFECT_SHADOW_LIFO_APPLY_MAPPING.md)
+  [SESSION_SUMMARY_2026-06-10_CHARM_PERSON_LIFECYCLE_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHARM_PERSON_LIFECYCLE_SCENARIO.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.63 |
-| Tests | 5504 passed, 5 skipped (full suite) |
+| Version | 2.13.64 |
+| Tests | 5505 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 26 enforced |
-| Diff-harness scenarios | 25 scenarios, 40 passing (1 skipped — shop_sell_keeper_broke) |
-| FINDINGS.md highest ID | FINDING-032 |
+| Diff-harness scenarios | 26 scenarios, 42 passing, 0 skipped |
+| FINDINGS.md highest ID | FINDING-033 (⚠️ OPEN) |
 
 ## Next Intended Task
 
-Cross-file invariants remains the active pass. The diff-harness now has 25 scenarios / 40
-C-oracle tests passing. Concrete candidates for the next session:
+Cross-file invariants remains the active pass. The diff-harness now has 26 scenarios /
+42 C-oracle tests passing. Concrete candidates for the next session:
 
-1. **Author charm/follower wear-off lifecycle scenario** — exercises `AFF_CHARM` expiry,
-   follower detach, `pet` pointer cleanup (`INV-037`). Tests the `stop_follower` path
-   through the C oracle.
+1. **FINDING-033 fix** — implement `( N) ...` object grouping in Python `do_look` /
+   `show_list_to_char` (ROM `src/act_info.c show_list_to_char`). Now the only barrier
+   to a fully-green Hypothesis state-machine run. LOW severity but well-bounded fix.
 
-2. **Author `drink`/`eat`/`food` consumption scenario** — condition decay, THIRST/FULL/HUNGER
-   bitvectors. Another diff-harness surface with no current coverage; requires `__set_condition=`
-   or `__thirst=` meta-command additions to pyreplay + diffmain.
+2. **Author `drink`/`eat`/`food` consumption scenario** — condition decay,
+   THIRST/FULL/HUNGER bitvectors. pyreplay.py already has `__cond_full=` and
+   `__cond_thirst=` meta-commands; diffmain.c needs them added for a C golden capture.
 
-3. **`shop_sell_keeper_broke` golden** — capture the C golden for the one remaining skipped
-   scenario. The keeper-broke selling edge case is already authored; just needs the C binary
-   run (`python3 -m tools.diff_harness.capture --scenario shop_sell_keeper_broke`).
-
-4. **MATH-002/003/004** — ⚠️ OPEN hygiene items in `docs/parity/audits/MATH_AND_RNG.md`
+3. **MATH-002/003/004** — ⚠️ OPEN hygiene items in `docs/parity/audits/MATH_AND_RNG.md`
    (LOW severity, no observable gap). Held for a future PARITY008 lint rule.
