@@ -174,9 +174,9 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    Midgaard Cityguard HQ's stock west door (`close`, `lock`, `unlock`, `pick`)
    using iron key 3120 and a learned `pick lock` skill. **Phase C continued
    (2026-06-09 follow-up):** added `open west` to the same generated keyed-door
-   cycle. A traversal probe (`west` into room 3142) surfaced **FINDING-026**
+   cycle. A traversal probe (`west` into room 3142) surfaced **FINDING-031**
    (room occupant look-order drift: ROM cityguards before captain; Python captain
-   before cityguards). **FINDING-026 resolved in 2.13.39:** `Room.add_mob` now
+   before cityguards). **FINDING-031 resolved in 2.13.39:** `Room.add_mob` now
    head-inserts like ROM `char_to_room`, and the generated keyed-door cycle now
    lands `west` into Captain's Office and `east` back to Cityguard HQ against the
    live C oracle. **Portal follower probe (2.13.40):** re-reading `act_enter.c`

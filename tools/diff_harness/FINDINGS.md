@@ -8,7 +8,7 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-026 — room occupant look order differs after entering Captain's Office — ✅ RESOLVED
+## FINDING-031 — room occupant look order differs after entering Captain's Office — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-09 (2.13.39). The keyed-door traversal probe
 (`__goto=3110; ...; open west; west`) reached Midgaard room `3142` and exposed
@@ -518,7 +518,7 @@ burn-drop (line ~5229), weapon burn-drop (line ~5273), weapon-in-inventory
 burn-drop (line ~5300). Regression: `test_spell_heat_metal_rom_parity.py` now
 uses `room.contents` (the correct attribute).
 
-## FINDING-024 — class-13 bypass sweep: 15 runtime-placement `.append` sites bypass the INV-039 head-insert chokepoints — ✅ RESOLVED
+## FINDING-032 — class-13 bypass sweep: 15 runtime-placement `.append` sites bypass the INV-039 head-insert chokepoints — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-03 (v2.13.3). Systematic sweep of all production `append`
 sites placing objects into `inventory`/`contents`/`contained_items`. 15 sites that
@@ -556,22 +556,7 @@ has no `objects` attribute):**
 - `spec_funs._drop_object_into_room` fallback
 - `game_loop._obj_to_room` fallback
 
-**Separate finding (filed during sweep):** FINDING-023 (`room.objects` in fire_effect).
-
-**Status:** ⚠️ OPEN 2026-06-03. Surfaced while reading `show_list_to_char`
-(`src/act_info.c:130-243`) to fix FINDING-021. For a non-NPC char **without**
-`COMM_COMBINE`, ROM adds **no** leading indent to each listed object — the indent
-block (`     ` 5-space pad, or `(%2d) ` count) is gated on `IS_NPC (ch) ||
-IS_SET (ch->comm, COMM_COMBINE)` (`act_info.c:210-221`). The Python `_look_in`
-CONTAINER branch prepends a fixed 2-space indent (`f"  {item_name}"`), which
-matches neither the no-indent PC path nor the 5-space COMBINE path.
-
-Not yet confirmed against the live C oracle (the generated machine still avoids
-`look in` for the contents lines — only the header was hand-observed). Left out of
-the FINDING-021 fix to keep that commit atomic; the documented FINDING-021 note
-said contents "match", so this needs an oracle run before fixing. A faithful fix
-also implies porting `show_list_to_char`'s combine/count semantics for PCs with
-`COMM_COMBINE`, so scope it deliberately. Filed for follow-up.
+**Separate finding (filed during sweep):** FINDING-023 (`room.objects` in fire_effect). The `show_list_to_char` indent divergence surfaced during this sweep was formalized and resolved as **FINDING-022** (✅ RESOLVED 2026-06-03).
 
 ---
 
