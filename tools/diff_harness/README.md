@@ -79,6 +79,43 @@ A `__snapshot` over the watch-set is auto-inserted after every step. v1 is a
 **deterministic smoke slice** (no-RNG commands: look, movement, get/drop,
 inventory, wear/remove). Combat/casting/shops/prompt/RNG are later slices.
 
+Steps can also be **meta-commands** — harness-internal directives that
+manipulate engine state without producing output. They are handled identically
+by `diffmain.c` (C side) and `pyreplay.py` (Python side):
+
+| Meta-command | Effect |
+|---|---|
+| `__seed=N` | Reseed the Mitchell-Moore RNG mid-scenario |
+| `__hour=N` | Set `time_info.hour` (daylight/night transitions) |
+| `__level=N` | Set the PC's level |
+| `__hp=N` | Set PC `hit` (and `max_hit` if lower) |
+| `__mana=N` | Set PC `mana` (and `max_mana` if lower) |
+| `__move=N` | Set PC `move` (and `max_move` if lower) |
+| `__gold=N` | Set PC gold |
+| `__silver=N` | Set PC silver |
+| `__goto=VNUM` | Teleport PC to room (no movement output) |
+| `__cond_hunger=N` | Set `COND_HUNGER` (0=starving, 48=full) |
+| `__cond_thirst=N` | Set `COND_THIRST` |
+| `__cond_full=N` | Set `COND_FULL` |
+| `__cond_drunk=N` | Set `COND_DRUNK` |
+| `__learn=NAME` | Teach the PC skill/spell `NAME` at 100% |
+| `__mload=VNUM` | Spawn mob into the PC's room |
+| `__oload=VNUM` | Spawn object into the PC's room |
+| `__mob_gold=N` | Set first NPC in room's gold |
+| `__mob_silver=N` | Set first NPC in room's silver |
+| `__mob_hp=N` | Set first NPC in room's hit points |
+| `__mob_hold=VNUM` | Spawn object and place it in first NPC's HOLD slot |
+| `__mob_carry=VNUM` | Spawn object into first NPC's inventory |
+| `__mob_position=N` | Set first NPC's position (ROM `Position` integer) |
+| `__mob_delay=N` | Set first NPC's `mprog_delay` countdown |
+| `__mob_prog=TYPE:PHRASE:CODE` | Prepend a mobprog to the first NPC |
+| `__charm_mob=DUR` | Charm first NPC with given duration (bypasses spell path) |
+| `__set_affect_duration=N` | Set all PC affects' duration to N |
+| `__tick` | Run one violence tick (combat round) |
+| `__char_update` | Run one `char_update` pulse (regen, condition decay, affect expiry) |
+| `__mobile_update` | Run one `mobile_update` pulse (TRIG_RANDOM, TRIG_DELAY) |
+| `__instant_kill` | Deal a killing blow to the first NPC in the room |
+
 ## Normalization rules (both sides, identical)
 
 - Identity by stable key: character name; object vnum (never pointers/ids).
