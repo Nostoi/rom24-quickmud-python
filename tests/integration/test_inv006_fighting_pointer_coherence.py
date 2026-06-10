@@ -102,3 +102,69 @@ def test_stop_fighting_both_false_only_clears_self() -> None:
         assert victim.fighting is a1, "both=False should not touch victim's pointer"
     finally:
         room_registry.pop(91002, None)
+
+
+def test_stop_fighting_npc_with_negative_hp_ends_at_dead_not_default_pos() -> None:
+    """Position-ordering sub-contract: ROM src/fight.c:1448-1451.
+
+    stop_fighting sets ``fch->position = IS_NPC ? default_pos : POS_STANDING``
+    *then* calls ``update_pos(fch)``.  update_pos overrides the reset for
+    negative-HP characters.  If the two steps were swapped (update_pos first,
+    then position reset), a mortally-wounded NPC would end at ``default_pos``
+    (STANDING) instead of DEAD — the reset would stomp the HP-driven value.
+
+    Discriminating case: NPC with hit=0 (< 1 threshold) in combat.
+    default_pos is STANDING; update_pos forces DEAD.  The ordering is correct
+    iff the final position is DEAD, not STANDING.
+    """
+    room = _mk_room(91003)
+    try:
+        victim = _mk_char("DyingMob", room, is_npc=True)
+        attacker = _mk_char("Attacker", room, is_npc=False)
+
+        victim.hit = 0  # NPC: hit < 1 → DEAD in update_pos
+        victim.position = Position.FIGHTING
+        victim.fighting = attacker
+        attacker.fighting = victim
+
+        stop_fighting(victim, both=True)
+
+        assert victim.position == Position.DEAD, (
+            "NPC with hit=0 must be DEAD after stop_fighting "
+            "(ROM src/fight.c:1448: update_pos runs AFTER position reset, "
+            "so the HP-driven position wins over the default_pos reset)"
+        )
+    finally:
+        room_registry.pop(91003, None)
+
+
+def test_stop_fighting_pc_with_negative_hp_ends_at_incap_not_standing() -> None:
+    """Position-ordering sub-contract — PC side (src/fight.c:1448-1451).
+
+    For a PC, stop_fighting resets to POS_STANDING then calls update_pos.
+    update_pos at hit=-5 returns POS_INCAP.  If the order were reversed,
+    the STANDING reset would overwrite the INCAP value, leaving the PC
+    apparently healthy after a losing fight.
+
+    Discriminating case: PC with hit=-5 (-6 < hit <= -3 → INCAP).
+    """
+    room = _mk_room(91004)
+    try:
+        pc = _mk_char("PC", room, is_npc=False)
+        mob = _mk_char("Mob", room, is_npc=True)
+
+        pc.hit = -5  # PC: -6 < hit <= -3 → INCAP in update_pos
+        pc.position = Position.FIGHTING
+        pc.fighting = mob
+        mob.fighting = pc
+
+        stop_fighting(pc, both=True)
+
+        assert pc.position == Position.INCAP, (
+            "PC with hit=-5 must be INCAP after stop_fighting "
+            "(ROM src/fight.c:1448: update_pos runs AFTER position reset, "
+            "so update_pos's INCAP overrides the initial POS_STANDING reset)"
+        )
+    finally:
+        room_registry.pop(91003, None)
+        room_registry.pop(91004, None)

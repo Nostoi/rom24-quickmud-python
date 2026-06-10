@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.83] — 2026-06-10
+
+### Fixed
+
+- **INV-006 position-ordering sub-contract (cross-file)** — locked the
+  `stop_fighting` position-reset-then-`update_pos` ordering contract with two
+  new enforcement tests in `tests/integration/test_inv006_fighting_pointer_coherence.py`.
+  ROM `src/fight.c:1448-1451` sets `fch->position` to `default_pos`/`POS_STANDING`
+  *then* calls `update_pos(fch)`, so negative-HP characters end at their
+  HP-driven position (DEAD/INCAP/etc.) rather than the reset value.
+  Mutation-verified (swapping the two lines causes both new tests to go RED).
+  Updated INV-006 tracker row with sub-contract description and cross-ref to
+  INV-019 (the upward direction of the same edge).
+
 ## [2.13.82] — 2026-06-10
 
 ### Fixed
