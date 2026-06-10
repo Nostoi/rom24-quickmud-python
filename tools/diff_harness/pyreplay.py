@@ -370,6 +370,42 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
             room.mana_rate = val
         return ""
 
+    if command.startswith("__set_on="):
+        # Load a furniture object (by vnum) into the room and set char.on to it.
+        # Mirrors diffmain.c __set_on handler (create_object + obj_to_room + ch->on).
+        # AGENTS.md: spawn_object does not auto-sync value from prototype — we must
+        # copy it explicitly so __set_on_val3/4 overrides match the C baseline.
+        # ROM src/update.c:217-218 (hit_gain), :299-300 (mana_gain), :350-351 (move_gain).
+        from mud.spawning.obj_spawner import spawn_object
+
+        vnum = int(command[len("__set_on=") :])
+        obj = spawn_object(vnum)
+        if obj is None:
+            raise AssertionError(f"spawn_object failed for {command!r}")
+        proto_val = list(getattr(obj.prototype, "value", []) or [])
+        while len(proto_val) < 5:
+            proto_val.append(0)
+        obj.value = proto_val
+        char.room.add_object(obj)
+        char.on = obj
+        return ""
+
+    if command.startswith("__set_on_val3="):
+        # Set char.on.value[3] — furniture HP/move bonus percent (ROM value[3]).
+        # Mirrors diffmain.c __set_on_val3 handler.
+        val = int(command[len("__set_on_val3=") :])
+        if char.on is not None:
+            char.on.value[3] = val
+        return ""
+
+    if command.startswith("__set_on_val4="):
+        # Set char.on.value[4] — furniture mana bonus percent (ROM value[4]).
+        # Mirrors diffmain.c __set_on_val4 handler.
+        val = int(command[len("__set_on_val4=") :])
+        if char.on is not None:
+            char.on.value[4] = val
+        return ""
+
     # Mirror the C shim's direct interpret() path, which bypasses comm.c's wait
     # gate. FINDING-014 documents the architectural divergence.
     char.wait = 0

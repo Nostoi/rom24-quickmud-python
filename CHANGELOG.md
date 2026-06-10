@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.81] — 2026-06-10
+
+### Added
+
+- **`__set_on=<vnum>`, `__set_on_val3=<n>`, `__set_on_val4=<n>` meta-commands** —
+  new diff-harness primitives in both `src/diff_shim/diffmain.c` and
+  `tools/diff_harness/pyreplay.py`. `__set_on=<vnum>` spawns a furniture object
+  and sets `ch->on` / `char.on`; `__set_on_val3/4` override `value[3]`/`value[4]`
+  (HP+move and mana bonus percents). Python side copies prototype value array to
+  length-5 before override — mirrors C `create_object`'s clean copy to prevent
+  the value-fallback mismatch documented in AGENTS.md.
+- **`char_update_regen_furniture` diff-harness scenario and golden** — SLEEPING L5
+  PC on bench (vnum 3134) with `value[3]=150`, `value[4]=200`. C oracle confirms
+  ROM src/update.c:217-218/299-300/350-351: HP+15 (`* 150/100`), mana+34
+  (`* 200/100`), move+42 (`* 150/100`) per pulse. Asymmetric multipliers make a
+  value-index swap immediately detectable. 40 smoke tests pass.
+- **`test_drive_python_replay_furniture_bonus_scales_regen`** — unit test locking
+  the three furniture-bonus branches; traces against C-oracle values.
+
 ## [2.13.80] — 2026-06-10
 
 ### Added

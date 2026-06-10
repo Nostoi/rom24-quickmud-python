@@ -696,3 +696,44 @@ def test_drive_python_replay_slow_affect_halves_regen_by_two():
     assert after.hp == 6  # 1 + 5  (sleeping base 10 // 2 = 5)
     assert after.mana == 13  # 5 + 8  (sleeping base 17 // 2 = 8)
     assert after.move == 19  # 5 + 14 (sleeping base 28 // 2 = 14)
+
+
+def test_drive_python_replay_furniture_bonus_scales_regen():
+    # Furniture sitting bonus: ROM src/update.c:217-218 (hit_gain), :299-300
+    # (mana_gain), :350-351 (move_gain).
+    # value[3] = 150 → HP and move both scale by * 150 / 100.
+    # value[4] = 200 → mana scales by * 200 / 100.
+    # Distinct multipliers (150 ≠ 200) make a value-index swap detectable:
+    # if move used value[4] or mana used value[3] the numbers would differ.
+    # C oracle (seed 12345, SLEEPING L5, bench vnum 3134):
+    #   HP  +15 per pulse (base 10 * 150/100 = 15).
+    #   mana +34 per pulse (base 17 * 200/100 = 34).
+    #   move +42 per pulse (base 28 * 150/100 = 42).
+    sc = Scenario(
+        name="generated_furniture",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__char_position=4",
+            "__hp=1",
+            "__mana=5",
+            "__move=5",
+            "__set_on=3134",
+            "__set_on_val3=150",
+            "__set_on_val4=200",
+            "__seed=12345",
+            "__char_update",
+        ],
+    )
+
+    trace = drive_python_replay(sc)
+
+    after = trace[8].chars[0]  # step 9 = after __char_update
+    assert after.position == "SLEEPING"
+    assert after.hp == 16  # 1 + 15  (base 10 * 150/100 = 15)
+    assert after.mana == 39  # 5 + 34  (base 17 * 200/100 = 34)
+    assert after.move == 47  # 5 + 42  (base 28 * 150/100 = 42)

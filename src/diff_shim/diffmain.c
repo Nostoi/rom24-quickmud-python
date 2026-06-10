@@ -1097,6 +1097,44 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __set_on=<vnum>: create a furniture object with the given vnum, place
+         * it in the PC's room, and set ch->on to it.  Mirrors the Python-side
+         * __set_on handler in pyreplay.py.
+         * ROM src/update.c:217-218 (hit_gain), :299-300 (mana_gain),
+         * :350-351 (move_gain). */
+        if (strncmp (line, "__set_on=", 9) == 0)
+        {
+            int vnum = atoi (line + 9);
+            OBJ_INDEX_DATA *oi = get_obj_index (vnum);
+            if (oi != NULL && ch != NULL && ch->in_room != NULL)
+            {
+                OBJ_DATA *obj = create_object (oi, 0);
+                obj_to_room (obj, ch->in_room);
+                ch->on = obj;
+            }
+            continue;
+        }
+
+        /* __set_on_val3=<n>: set ch->on->value[3] (furniture HP/move bonus %).
+         * Mirrors the Python-side __set_on_val3 handler in pyreplay.py. */
+        if (strncmp (line, "__set_on_val3=", 14) == 0)
+        {
+            int val = atoi (line + 14);
+            if (ch != NULL && ch->on != NULL)
+                ch->on->value[3] = val;
+            continue;
+        }
+
+        /* __set_on_val4=<n>: set ch->on->value[4] (furniture mana bonus %).
+         * Mirrors the Python-side __set_on_val4 handler in pyreplay.py. */
+        if (strncmp (line, "__set_on_val4=", 14) == 0)
+        {
+            int val = atoi (line + 14);
+            if (ch != NULL && ch->on != NULL)
+                ch->on->value[4] = val;
+            continue;
+        }
+
         /* __charm_mob=<duration>: charm the first NPC in the room — applies
          * add_follower(mob, ch) and an AFF_CHARM affect with the given duration.
          * Bypasses the spell's cast path and immunity checks so any mob can be

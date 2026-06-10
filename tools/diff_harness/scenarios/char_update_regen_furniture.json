@@ -1,0 +1,20 @@
+{
+  "name": "char_update_regen_furniture",
+  "seed": 12345,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__char_position=4",
+    "__hp=1",
+    "__mana=5",
+    "__move=5",
+    "__set_on=3134",
+    "__set_on_val3=150",
+    "__set_on_val4=200",
+    "__seed=12345",
+    "__char_update",
+    "__char_update",
+    "__char_update"
+  ]
+}
