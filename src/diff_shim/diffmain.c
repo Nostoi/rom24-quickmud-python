@@ -687,6 +687,17 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __char_position=<n>: set the PC's position directly (e.g.
+         * 4=sleeping, 5=resting, 8=standing).  Used by regen scenarios that
+         * exercise position-specific hit_gain/mana_gain/move_gain branches.
+         * Mirrors the Python-side __char_position handler in pyreplay.py. */
+        if (strncmp (line, "__char_position=", 16) == 0)
+        {
+            if (ch != NULL)
+                ch->position = atoi (line + 16);
+            continue;
+        }
+
         /* __goto=<vnum>: move the PC to a room without command output.
          * Harness-only positioning primitive for generated scenarios that need
          * a specific stock fixture (e.g. a keyed door) without replaying a long

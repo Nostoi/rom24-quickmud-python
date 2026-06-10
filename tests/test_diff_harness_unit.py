@@ -399,6 +399,29 @@ def test_drive_python_replay_char_class_meta_affects_hit_gain():
     assert trace[2].chars[0].hp == 5
 
 
+def test_drive_python_replay_char_position_meta_affects_hit_gain():
+    # Sleeping (position=4) gives full hit_gain; standing (default) gives gain//4.
+    # Mage, CON=13, level=5: base gain = max(3, 13-3+2) + (8-10) = 10.
+    # Sleeping: 10 (no division). Standing: 10//4 = 2.
+    # Mana and move start at max so only hit_gain is called.
+    sc = Scenario(
+        name="generated_char_position",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__hp=1", "__char_position=4", "__char_update"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    # After __char_update (step 2), sleeping mage adds 10 HP: 1 + 10 = 11.
+    assert trace[2].chars[0].hp == 11
+    assert trace[1].chars[0].position == "SLEEPING"
+
+
 def test_drive_python_replay_oload_exercises_get_wield_remove_drop():
     sc = Scenario(
         name="generated_oload",

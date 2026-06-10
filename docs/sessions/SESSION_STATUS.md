@@ -1,29 +1,31 @@
-# Session Status — 2026-06-10 — char_update_regen_fast_healing scenario + __char_class meta-cmd (2.13.74)
+# Session Status — 2026-06-10 — char_update_regen_sleeping scenario + __char_position meta-cmd (2.13.75)
 
 ## Current State
 
 - **Active mode**: cross-file invariants pass
 - **Last completed**:
-  - **`__char_class=<n>` meta-command** — new harness primitive for both pyreplay.py
-    and diffmain.c; sets PC class index (0=mage … 3=warrior) mid-scenario without
-    side effects. Required to exercise warrior-specific `hit_gain` in the fast_healing
-    scenario.
-  - **`char_update_regen_fast_healing` scenario** — warrior (class 3, level 6),
-    `fast healing` at 100%, HP=5/max=20, three `__char_update` pulses with `__seed=12345`.
-    C oracle confirms HP progression 5→10→18→20 (rolls 24/97/90 from seed 12345).
-    31 scenarios, 49 C-oracle tests passing.
+  - **`__char_position=<n>` meta-command** — new harness primitive for both pyreplay.py
+    and diffmain.c; sets PC position (4=sleeping, 5=resting, 8=standing) mid-scenario.
+    Mirrors the existing `__mob_position=` for NPCs. Required to exercise position-specific
+    branches in `hit_gain`/`mana_gain`/`move_gain`.
+  - **`char_update_regen_sleeping` scenario** — mage (class 0, level 5), sleeping
+    (position=4), HP=5/mana=30/move=20, three `__char_update` pulses with `__seed=12345`.
+    C oracle confirms sleeping regen: HP 5→15→20→20 (+10/pulse), mana 30→47→64→81
+    (+17/pulse), move 20→48→76→100 (+28/pulse). First scenario to exercise all three
+    position branches (sleeping arm) across hit_gain/mana_gain/move_gain simultaneously.
+  - **1 unit test** for `__char_position=` (`test_drive_python_replay_char_position_meta_affects_hit_gain`).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_FAST_HEALING_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_FAST_HEALING_SCENARIO.md)
+  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_SLEEPING_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_SLEEPING_SCENARIO.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.74 |
-| Tests | 5528 passed, 4 skipped (full suite) |
+| Version | 2.13.75 |
+| Tests | 5530 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 26 enforced |
-| Diff-harness scenarios | 31 scenarios, 49 C-oracle tests passing, 0 skipped, 0 xfailed |
+| Diff-harness scenarios | 32 scenarios, 51 C-oracle tests passing, 0 skipped, 0 xfailed |
 | FINDINGS.md highest ID | FINDING-033 (✅ RESOLVED — all findings resolved) |
 | Effects integration tests | 37 / 37 passing |
 
@@ -41,6 +43,6 @@ Cross-file invariants remains the active pass. Concrete candidates:
    write one failing test), then either close as a gap-closer commit or file as the
    next free INV-NNN in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
 
-3. **More diff-harness skill scenarios** — the fast_healing + meditation pair validates
-   the bonus-roll branch of `hit_gain`/`mana_gain`. Remaining candidates: sleeping/resting
-   position variant (exercises the position switch arms), or a `move_gain` scenario.
+3. **More diff-harness regen scenarios** — remaining position variants: `char_update_regen_resting`
+   (exercises the gain//2 resting arms across hit/mana/move_gain), or a `move_gain`
+   scenario that explicitly exercises the DEX stat contribution in isolation.

@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.75] — 2026-06-10
+
+### Added
+
+- **`char_update_regen_sleeping` diff-harness scenario** — new C-oracle scenario
+  exercising the `POS_SLEEPING` position branch in `hit_gain`, `mana_gain`, and
+  `move_gain`. Mage (class 0) at level 5, sleeping, HP=5/mana=30/move=20 — three
+  `__char_update` pulses confirm sleeping regen (HP+10/pulse, mana+17/pulse,
+  move+28/pulse) vs standing (HP+2, mana+4, move+15). First scenario to exercise
+  the position switch arms across all three gain functions simultaneously.
+- **`__char_position=<n>` meta-command** — new harness meta-command setting the
+  PC's position (4=sleeping, 5=resting, 8=standing) in both `pyreplay.py` and
+  `src/diff_shim/diffmain.c`. Mirrors the existing `__mob_position=` for NPCs.
+  Unit-tested via `test_drive_python_replay_char_position_meta_affects_hit_gain`.
+
 ## [2.13.74] — 2026-06-10
 
 ### Added

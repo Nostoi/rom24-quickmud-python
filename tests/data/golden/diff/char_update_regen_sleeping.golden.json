@@ -1,0 +1,360 @@
+{
+  "scenario": "char_update_regen_sleeping",
+  "c_commit": "4c1dc97396b17d1f8522e3027f029509ffcbaa10",
+  "build_flags": "-DOLD_RAND",
+  "seed": 12345,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__hp=5",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 5,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__mana=30",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 5,
+          "max_hp": 20,
+          "mana": 30,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "__move=20",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 5,
+          "max_hp": 20,
+          "mana": 30,
+          "move": 20,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "__char_position=4",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "SLEEPING",
+          "hp": 5,
+          "max_hp": 20,
+          "mana": 30,
+          "move": 20,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__seed=12345",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "SLEEPING",
+          "hp": 5,
+          "max_hp": 20,
+          "mana": 30,
+          "move": 20,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "__char_update",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "SLEEPING",
+          "hp": 15,
+          "max_hp": 20,
+          "mana": 47,
+          "move": 48,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 7,
+      "command": "__char_update",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "SLEEPING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 64,
+          "move": 76,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 8,
+      "command": "__char_update",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "SLEEPING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 81,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    }
+  ]
+}
