@@ -34,6 +34,7 @@ from mud.affects.engine import tick_spell_effects
 from mud.handler import affect_modify
 from mud.models.character import AffectData, Character
 from mud.models.constants import AffectFlag, Stat
+from mud.utils import rng_mm
 
 APPLY_STR = 1
 TO_AFFECTS = 0
@@ -138,3 +139,73 @@ def test_affect_check_preserves_bit_if_another_affect_provides_it() -> None:
     assert ch.mod_stat[int(Stat.STR)] == baseline_str_with_long_only, (
         "only short's +2 must unwind; long's +3 must remain"
     )
+
+
+def test_rng_slot_consumed_per_duration_positive_affect() -> None:
+    """ROM src/update.c:768 — number_range(0,4) is called unconditionally
+    for every duration>0 affect, BEFORE the level>0 check (GL-026).
+
+    C ``&&`` is left-to-right: ``if (number_range(0,4) == 0 && paf->level > 0)``
+    always advances the MM state, even when level == 0 makes the whole condition
+    False.  If the Python operands were swapped (``level > 0 and
+    number_range(0,4)``), level=0 affects would skip the roll, silently
+    desyncing the global RNG stream for all downstream callers in the same tick.
+
+    Verify: two duration>0 affects (one at level=10, one at level=0) must
+    together consume exactly TWO RNG slots.
+    """
+    rng_mm.seed_mm(7777)
+    rng_mm.number_range(0, 4)  # slot consumed by affect_high_level tick
+    rng_mm.number_range(0, 4)  # slot consumed by affect_zero_level tick
+    expected_v3 = rng_mm.number_range(0, 4)  # first post-tick value
+
+    rng_mm.seed_mm(7777)
+    ch = _build_char()
+
+    affect_high_level = AffectData(type=1, level=10, duration=2, location=0, modifier=0, bitvector=0)
+    affect_zero_level = AffectData(type=2, level=0, duration=2, location=0, modifier=0, bitvector=0)
+    ch.affected.append(affect_high_level)
+    ch.affected.append(affect_zero_level)
+
+    tick_spell_effects(ch)  # must consume exactly 2 RNG slots
+
+    # GL-026 regression guard: if operands were swapped, only 1 slot consumed
+    # and the next call would return expected_v2 (not expected_v3).
+    next_val = rng_mm.number_range(0, 4)
+    assert next_val == expected_v3, (
+        "Each duration>0 affect must consume one unconditional RNG slot "
+        "(ROM src/update.c:768 C && left-to-right; GL-026); "
+        f"expected {expected_v3}, got {next_val}"
+    )
+
+
+def test_msg_off_dedup_suppresses_all_but_last_same_type_affect() -> None:
+    """ROM src/update.c:774-775 dedup predicate — only the last consecutive
+    same-type affect expiring in a tick emits msg_off.
+
+    ``if (paf_next == NULL || paf_next->type != paf->type || paf_next->duration > 0)``
+    means: skip the message if the NEXT affect is the same type AND also expiring
+    (duration == 0).  Only the final consecutive same-type expiry fires.
+
+    Two duration=0 affects of the same type must produce exactly ONE wear-off
+    message (from the last one), not two.
+    """
+    ch = _build_char()
+
+    first_paf = AffectData(type=99, level=5, duration=0, location=0, modifier=0, bitvector=0)
+    second_paf = AffectData(type=99, level=5, duration=0, location=0, modifier=0, bitvector=0)
+    # _lookup_raw_affect_wear_off checks for a 'wear_off_message' attribute first.
+    first_paf.wear_off_message = "A sanctuary fades."  # type: ignore[attr-defined]
+    second_paf.wear_off_message = "A sanctuary fades."  # type: ignore[attr-defined]
+    ch.affected.extend([first_paf, second_paf])
+
+    messages = tick_spell_effects(ch)
+
+    wear_off_count = sum(1 for m in messages if "sanctuary fades" in m)
+    assert wear_off_count == 1, (
+        f"ROM dedup (src/update.c:774-775) must emit msg_off only for the last "
+        f"consecutive same-type expiry; expected 1 message, got {wear_off_count} "
+        f"in {messages!r}"
+    )
+    assert first_paf not in ch.affected, "first same-type affect must be removed"
+    assert second_paf not in ch.affected, "second same-type affect must be removed"

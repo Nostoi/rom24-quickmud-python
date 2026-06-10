@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.61] — 2026-06-10
+
+### Added
+
+- **INV-015 affect-tick sub-contract enforcement** (`tests/integration/test_inv015_affect_tick_lifecycle.py`):
+  probe of `src/update.c:762-786` confirmed both contracts are correctly implemented;
+  two new enforcement tests lock them permanently:
+  - `test_rng_slot_consumed_per_duration_positive_affect` — GL-026 regression guard:
+    `number_range(0,4)` is called unconditionally for every `duration>0` affect before
+    the `level>0` check (ROM C `&&` left-to-right; swapping operands would desync the
+    global RNG stream for level=0 affects across the entire tick).
+  - `test_msg_off_dedup_suppresses_all_but_last_same_type_affect` — dedup guard
+    (`src/update.c:774-775`): only the last consecutive same-type expiring affect emits
+    `msg_off`; prior same-type entries are silently removed.
+
 ## [2.13.60] — 2026-06-10
 
 ### Fixed
