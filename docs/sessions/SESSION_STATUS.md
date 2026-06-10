@@ -1,44 +1,50 @@
-# Session Status — 2026-06-10 — Diff-harness C-oracle for TRIG_RANDOM and TRIG_DELAY (2.13.59)
+# Session Status — 2026-06-10 — INV-041 Shopkeeper pShop Coherence (2.13.60)
 
 ## Current State
 
-- **Active mode**: divergence Class 11 / dynamic differential widening — **COMPLETE**
-  (per-file audit tracker has no ⚠️ Partial / ❌ Not Audited rows; all 15 Class 11
-  mobprog dispatch paths now have C-oracle diff-harness ground truth).
+- **Active mode**: cross-file invariants pass — **INV-041 closed this session**
 - **Last completed**:
-  - **`__mobile_update` meta-command** added to C shim (`diffmain.c`) and Python replay
-    (`pyreplay.py`). Calls `mobile_update()` to tick TRIG_RANDOM and TRIG_DELAY paths.
-  - **`__mob_delay=N` meta-command** added to prime `mprog_delay` before a `mobile_update`
-    tick, enabling deterministic TRIG_DELAY testing.
-  - **TRIG_RANDOM C-oracle ground truth.** `mob_random_trigger.json` — fires unconditionally
-    each `mobile_update` when `position == default_pos` and `trig_phrase=101`. Python and
-    C agree on first try.
-  - **TRIG_DELAY C-oracle ground truth.** `mob_delay_trigger.json` — fires when
-    `mprog_delay` reaches 0 on a `mobile_update` tick. Python and C agree on first try.
-  - Stale golden `mob_death_test.golden.json` removed (leftover from pre-commit c49ccff1).
-  - Version 2.13.59.
+  - **INV-041 SHOPKEEPER-PSOP-COHERENCE** — ROM `src/fight.c:1040 is_safe` checks
+    `victim->pIndexData->pShop != NULL`. Python had two bugs: (1) `world_state.py`
+    and `shop_loader.py` never wrote `MobIndex.pShop` from `shop_registry`; (2)
+    `safety.py` checked `hasattr(victim, "pShop")` which always returns `False` on
+    `MobInstance`. Fixed both loaders (write-back to `MobIndex.pShop`) and widened
+    `is_safe` to walk the prototype chain. Enforcement test:
+    `tests/integration/test_inv041_shopkeeper_psop_coherence.py` (3 tests).
+  - **Class 7 signed-math divergence sweep (CLEAN)**: `compute_thac0`,
+    `xp_compute`, dying penalty, AC clamping, alignment adjustments all correctly
+    use `c_div` or have provably non-negative operands. No new gaps.
+  - **Wizard-shop false alarm resolved**: `do_buy`/`do_sell` look up
+    `shop_registry` directly (correctly populated from `data/shops.json`). The
+    "latent parity gap" from the prior session was limited to the `is_safe` path.
+  - Version 2.13.60.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_DIFF_HARNESS_RANDOM_DELAY_ORACLES.md](SESSION_SUMMARY_2026-06-10_DIFF_HARNESS_RANDOM_DELAY_ORACLES.md)
+  [SESSION_SUMMARY_2026-06-10_INV041_SHOPKEEPER_PSOP_COHERENCE.md](SESSION_SUMMARY_2026-06-10_INV041_SHOPKEEPER_PSOP_COHERENCE.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.59 |
-| Tests | ~5,493 passed, 5 skipped (last full run at 2.13.58; +2 new diff-harness tests at 2.13.59) |
+| Version | 2.13.60 |
+| Tests | 5498 passed, 5 skipped (full suite — 2.13.60) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Cross-INV rows | 25 enforced |
-| Diff-harness scenarios | 22 scenarios (added RANDOM + DELAY this session) |
+| Cross-INV rows | 26 enforced |
+| Diff-harness scenarios | 22 scenarios (Class 11 complete) |
 | Class 11 dynamic widening | **COMPLETE** — all 15 mobprog dispatch paths have C-oracle ground truth |
 
 ## Next Intended Task
 
-Class 11 is complete. Next divergence class candidates (from `docs/parity/DIVERGENCE_CLASS_ROSTER.md`):
+Cross-file invariants remains the active pass. Three candidates:
 
-1. **Next divergence class** — consult `docs/parity/DIVERGENCE_CLASS_ROSTER.md` for the
-   next unverified surface outside Class 11. Candidates: async message delivery ordering,
-   affect-tick edge contracts, position-transition invariants.
-2. **Latent parity gap: wizard shop status** — Python's `_has_shop` returns False for mob
-   3000 (wizard) because the midgaard JSON area file has no `shops` section. C's
-   midgaard.are defines wizard as a shopkeeper. Should be reviewed against shop scenario
-   coverage before claiming shop parity complete.
+1. **Affect-tick edge contracts** — ROM `src/update.c:char_update` affect-expiry
+   loop: `duration > 0` ticks unconditionally consume RNG; `duration == 0` fires
+   wear-off and removes. Python's `mud/affects/engine.py:tick_spell_effects`
+   implements this but the `msg_off` deduplication (only last affect of a type
+   emits wear-off) is complex and warrants a targeted probe-then-scope pass. No
+   INV row covers this surface yet.
+2. **Position-transition invariants** — ROM position changes
+   (STANDING→FIGHTING, DEAD→SLEEPING via `update_pos`) must trigger correct
+   broadcasts and affect applications. No INV row covers this surface yet.
+3. **Next divergence class** — consult `docs/parity/DIVERGENCE_CLASS_ROSTER.md`
+   for any unverified surface. Class 11 is complete; Classes 7 (signed math) and
+   4 (async delivery) remain ongoing Layer B/C work.
