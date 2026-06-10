@@ -246,6 +246,28 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         apply_damage(char, mob, mob.hit + 1, int(DamageType.BASH), dt=1000)  # type: ignore[arg-type]
         return ""
 
+    if command.startswith("__mobile_update"):
+        # Run one mobile_update() pulse — triggers TRIG_RANDOM and TRIG_DELAY.
+        # Mirrors the C shim __mobile_update handler in diffmain.c.
+        # ROM src/update.c:408 mobile_update().
+        from mud.ai import mobile_update
+
+        mobile_update()
+        return ""
+
+    if command.startswith("__mob_delay="):
+        # Set the first NPC in the room's mprog_delay countdown to N.
+        # Mirrors the C shim __mob_delay handler in diffmain.c.
+        # ROM src/mob_prog.c:mp_delay_trigger.
+        from mud.spawning.templates import MobInstance
+
+        val = int(command[len("__mob_delay=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is None:
+            raise AssertionError("no NPC in room for __mob_delay")
+        mob.mprog_delay = val
+        return ""
+
     # Mirror the C shim's direct interpret() path, which bypasses comm.c's wait
     # gate. FINDING-014 documents the architectural divergence.
     char.wait = 0

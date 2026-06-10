@@ -1,0 +1,17 @@
+{
+    "name": "mob_delay_trigger",
+    "seed": 1234,
+    "start_room": 3008,
+    "char": { "name": "Tester", "level": 5 },
+    "watch": { "chars": ["Tester", "drunk"], "rooms": [3008] },
+    "steps": [
+        "__seed=777",
+        "__mload=3064",
+        "__mob_prog=delay:101:say DELAY trigger fired!",
+        "__mob_delay=1",
+        "__seed=777",
+        "look",
+        "__mobile_update",
+        "look"
+    ]
+}

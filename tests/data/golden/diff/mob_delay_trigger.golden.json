@@ -1,0 +1,579 @@
+{
+  "scenario": "mob_delay_trigger",
+  "c_commit": "51c2fc56f395b7e577f0c219a97fbe8171715450",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=777",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__mload=3064",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "__mob_prog=delay:101:say DELAY trigger fired!",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "__mob_delay=1",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__seed=777",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Defunct Reception",
+        "\r  You are standing in a dusty, defunct reception.  The staircase leads",
+        "\rdown to the entrance hall.",
+        "\r     The bank's notice of liquidation is taped to the wall.",
+        "\r     The receptionist's letter of resignation is taped to the wall.",
+        "\rA singing, happy drunk wanders around, singing about Moria.",
+        ""
+      ]
+    },
+    {
+      "step": 7,
+      "command": "__mobile_update",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe drunk says 'DELAY trigger fired!'",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 31,
+          "max_hp": 31,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 69,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Defunct Reception",
+        "\r  You are standing in a dusty, defunct reception.  The staircase leads",
+        "\rdown to the entrance hall.",
+        "\r     The bank's notice of liquidation is taped to the wall.",
+        "\r     The receptionist's letter of resignation is taped to the wall.",
+        "\rA singing, happy drunk wanders around, singing about Moria.",
+        ""
+      ]
+    }
+  ]
+}

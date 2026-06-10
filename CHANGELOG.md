@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.59] — 2026-06-10
+
+### Added
+
+- **`__mobile_update` meta-command** (`src/diff_shim/diffmain.c`,
+  `tools/diff_harness/pyreplay.py`): runs one `mobile_update()` pulse (NPC AI,
+  TRIG_RANDOM, TRIG_DELAY) in both the C shim and Python replay. ROM
+  `src/update.c:408`.
+- **`__mob_delay=N` meta-command** (`src/diff_shim/diffmain.c`,
+  `tools/diff_harness/pyreplay.py`): sets `mob->mprog_delay` on the first NPC in
+  the room, priming the TRIG_DELAY countdown before `__mobile_update`.
+- **C-oracle diff-harness scenario `mob_random_trigger`** — verifies TRIG_RANDOM
+  fires unconditionally each `mobile_update` tick when `position == default_pos`
+  and `trig_phrase=101`. Golden captured, Python parity confirmed on first try.
+- **C-oracle diff-harness scenario `mob_delay_trigger`** — verifies TRIG_DELAY
+  fires when `mprog_delay` reaches 0 on a `mobile_update` tick, matching ROM
+  `src/mob_prog.c:mp_delay_trigger`. Golden captured, Python parity confirmed.
+- Removed stale dev-run golden `tests/data/golden/diff/mob_death_test.golden.json`
+  (leftover from pre-commit c49ccff1; superseded by `mob_death_trigger.golden.json`).
+
 ## [2.13.58] — 2026-06-09
 
 ### Added

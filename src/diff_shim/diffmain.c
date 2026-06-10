@@ -35,6 +35,7 @@ void init_mm (void);
 void reset_char (CHAR_DATA *ch);
 void violence_update (void);
 void char_update     (void);
+void mobile_update   (void);
 
 /* ---- synthetic descriptor: ROM's output funcs write here ------------------ */
 
@@ -922,6 +923,40 @@ int main (int argc, char **argv)
                         damage (ch, mob, mob->hit + 1, TYPE_HIT, DAM_BASH,
                                 TRUE);
                         emit_output ();
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
+        /* __mobile_update: run one mobile_update() pulse (NPC AI, mprog
+         * TRIG_RANDOM, TRIG_DELAY).  Mirrors the Python-side __mobile_update
+         * handler in pyreplay.py.  ROM src/update.c:408. */
+        if (strncmp (line, "__mobile_update", 15) == 0)
+        {
+            shim_reset_output ();
+            mobile_update ();
+            emit_output ();
+            continue;
+        }
+
+        /* __mob_delay=N: set the first NPC in the room's mprog_delay to N.
+         * Used to prime the TRIG_DELAY countdown before calling
+         * __mobile_update.  Mirrors the Python-side __mob_delay handler in
+         * pyreplay.py.  ROM src/mob_prog.c:mp_delay_trigger. */
+        if (strncmp (line, "__mob_delay=", 12) == 0)
+        {
+            int new_delay = atoi (line + 12);
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        mob->mprog_delay = new_delay;
                         break;
                     }
                 }
