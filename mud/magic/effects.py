@@ -395,13 +395,27 @@ def cold_effect(target: Any, level: int, damage: int, target_type: int | SpellTa
 
         victim = target
 
-        # ROM L216-231: Chill touch affect
+        # ROM L216-231: Chill touch affect — affect_join; mirroring src/effects.c:215-231
         save_level = c_div(level, 4) + c_div(damage, 20)
         if not saves_spell(save_level, victim, int(DamageType.COLD)):
-            # Apply chill touch affect (-1 STR, duration 6)
-            # TODO: Implement full affect_to_char with skill_lookup("chill touch")
-            if hasattr(victim, "messages") and isinstance(victim.messages, list):
-                _push_message(victim, "You feel a chill sink deep into your bones.")
+            from mud.models.character import SpellEffect
+            from mud.models.constants import Stat
+
+            victim.apply_spell_effect(
+                SpellEffect(
+                    name="chill touch",
+                    duration=6,
+                    level=level,
+                    stat_modifiers={Stat.STR: -1},
+                    wear_off_message="You feel less cold.",
+                )
+            )
+            _push_message(victim, "A chill sinks deep into your bones.")
+            room = getattr(victim, "room", None)
+            if room is not None:
+                from mud.utils.act import act_to_room
+
+                act_to_room(room, "$n turns blue and shivers.", victim)
 
         # ROM L234-235: Hunger increase (warmth sucked out) — src/effects.c:235
         from mud.characters.conditions import gain_condition

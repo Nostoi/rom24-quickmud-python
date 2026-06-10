@@ -4,7 +4,7 @@
 **Created**: January 3, 2026  
 **Completed**: January 5, 2026  
 **Priority**: ✅ **P0 - COMPLETE** (100% ROM C parity achieved)  
-**Status**: ✅ **100% COMPLETE — ALL GAPS RESOLVED** (EFFECTS-001, EFFECTS-002 closed in v2.13.67)
+**Status**: ⚠️ **PARTIAL — EFFECTS-004/005 open** (EFFECTS-001/002/003 closed; fire breath and poison affect TODOs remain)
 
 ---
 
@@ -94,7 +94,7 @@ void acid_effect (void *vo, int level, int dam, int target)
 
 ---
 
-### 2. `cold_effect()` - Cold Damage (ROM lines 195-297) ✅ COMPLETE (EFFECTS-001 closed)
+### 2. `cold_effect()` - Cold Damage (ROM lines 195-297) ✅ COMPLETE (EFFECTS-001/003 closed)
 
 **ROM C Signature**:
 ```c
@@ -107,7 +107,7 @@ void cold_effect (void *vo, int level, int dam, int target)
 - ✅ **TARGET_ROOM**: Recursively apply cold_effect to all objects in room
 - ✅ **TARGET_CHAR**: 
   - ✅ Chill touch affect: saves_spell(level/4 + dam/20, victim, DAM_COLD)
-  - ✅ If failed: Apply "chill touch" affect (-1 STR, duration 6)
+  - ✅ If failed: Apply "chill touch" affect (-1 STR, duration 6) — (EFFECTS-003 closed v2.13.68)
   - ✅ Hunger increase: `gain_condition(victim, COND_HUNGER, dam/20)` — positive fill (EFFECTS-001 closed)
   - ✅ Process inventory recursively
 - ✅ **TARGET_OBJ**:
@@ -279,6 +279,9 @@ def _calculate_chance(level: int, damage: int, obj: Object, item_type_modifier: 
 |----|----------|-----------|-------------|--------|
 | EFFECTS-001 | `cold_effect()` | 235 | `gain_condition(victim, COND_HUNGER, dam/20)` missing in TARGET_CHAR | ✅ FIXED v2.13.67 |
 | EFFECTS-002 | `fire_effect()` | 341 | `gain_condition(victim, COND_THIRST, dam/20)` missing in TARGET_CHAR | ✅ FIXED v2.13.67 |
+| EFFECTS-003 | `cold_effect()` | 224-230 | chill touch affect_join (-1 STR, dur=6) missing — stale ✅ in prior audit | ✅ FIXED v2.13.68 |
+| EFFECTS-004 | `fire_effect()` | 329-336 | fire breath affect_to_char (AFF_BLIND, -4 hitroll, dur=0..level/10) missing — stale ✅ | ⚠️ OPEN |
+| EFFECTS-005 | `poison_effect()` | 471-477 | poison affect_join (AFF_POISON, -1 STR, dur=level/2) missing — stale ✅ in prior audit | ⚠️ OPEN |
 
 ---
 

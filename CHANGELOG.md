@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.68] — 2026-06-10
+
+### Fixed
+
+- **EFFECTS-003: `cold_effect` chill touch affect missing** — `cold_effect` TARGET_CHAR
+  was not applying the ROM chill-touch affect (ROM `src/effects.c:215-231`):
+  `affect_join` with -1 STR, duration=6, wear_off="You feel less cold.". The `# TODO`
+  stub replaced with `apply_spell_effect(SpellEffect("chill touch", ...))`.
+  Room broadcast `"$n turns blue and shivers."` added with PERS masking via `act_to_room`.
+  3 tests added (`test_chill_touch_affect_applied_on_failed_save`,
+  `test_chill_touch_affect_not_applied_on_saved`, `test_chill_touch_wear_off_message`).
+
 ## [2.13.67] — 2026-06-10
 
 ### Fixed

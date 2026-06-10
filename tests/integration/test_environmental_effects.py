@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import pytest
 
+import mud.magic.effects as _effects_mod
 from mud.magic.effects import (
     SpellTarget,
     acid_effect,
@@ -19,7 +20,7 @@ from mud.magic.effects import (
     shock_effect,
 )
 from mud.models.character import Character
-from mud.models.constants import ITEM_BLESS, ITEM_BURN_PROOF, ITEM_NOPURGE, Condition, ItemType
+from mud.models.constants import ITEM_BLESS, ITEM_BURN_PROOF, ITEM_NOPURGE, Condition, ItemType, Stat
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room
@@ -506,3 +507,45 @@ class TestProbabilityFormula:
         high_obj = create_test_object(ItemType.SCROLL, level=1)
         high_chance = _calculate_chance(level=100, damage=1000, obj=high_obj)
         assert high_chance <= 95
+
+
+# ---------------------------------------------------------------------------
+# EFFECTS-003: cold_effect chill touch affect_join — ROM src/effects.c:224-230
+# ---------------------------------------------------------------------------
+
+
+class TestColdEffectChillTouch:
+    """EFFECTS-003: cold_effect TARGET_CHAR applies chill touch SpellEffect on failed save.
+
+    ROM C: src/effects.c:215-231 — affect_join with type=skill_lookup("chill touch"),
+    level=level, duration=6, location=APPLY_STR, modifier=-1, bitvector=0.
+    """
+
+    def _make_char(self) -> Character:
+        return Character(name="Vic", level=20, is_npc=False, saving_throw=0, messages=[])
+
+    def test_chill_touch_affect_applied_on_failed_save(self, monkeypatch):
+        # EFFECTS-003: failed save → SpellEffect "chill touch" (-1 STR, duration 6)
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        victim = self._make_char()
+        cold_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        assert victim.has_spell_effect("chill touch"), "chill touch affect not applied"
+        effect = victim.spell_effects["chill touch"]
+        assert effect.duration == 6
+        assert effect.stat_modifiers.get(Stat.STR) == -1
+
+    def test_chill_touch_affect_not_applied_on_saved(self, monkeypatch):
+        # EFFECTS-003: passed save → no chill touch affect
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: True)
+        victim = self._make_char()
+        cold_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        assert not victim.has_spell_effect("chill touch")
+
+    def test_chill_touch_wear_off_message(self, monkeypatch):
+        # ROM const.c:1042 — msg_off for "chill touch" is "You feel less cold."
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        victim = self._make_char()
+        cold_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        effect = victim.spell_effects.get("chill touch")
+        assert effect is not None
+        assert effect.wear_off_message == "You feel less cold."
