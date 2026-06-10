@@ -337,6 +337,17 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
     APPLY_DAMROLL = 19
     APPLY_SAVES = 20
 
+    # ROM C APPLY_* stat locations (src/merc.h:1205-1210).
+    # Stat enum order (STR=0,INT=1,WIS=2,DEX=3,CON=4) differs from APPLY_ order
+    # (STR=1,DEX=2,INT=3,WIS=4,CON=5) — stat_int+1 is wrong for DEX/INT/WIS.
+    _STAT_TO_APPLY: dict[object, int] = {
+        Stat.STR: 1,
+        Stat.DEX: 2,
+        Stat.INT: 3,
+        Stat.WIS: 4,
+        Stat.CON: 5,
+    }
+
     bitvector = int(effect.affect_flag) if effect.affect_flag else 0
     # Use spell name as type (temporary until proper skill_table SN mapping available)
     spell_type = effect.name
@@ -344,8 +355,14 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
     affected = target.affected  # type: ignore[attr-defined]
     before = len(affected)
 
+    # ROM src/handler.c:1271 — affect_to_char head-inserts each AFFECT_DATA:
+    #   paf_new->next = ch->affected; ch->affected = paf_new;
+    # Mirror that with insert(0, ...) so the list stays LIFO (newest first),
+    # matching C's do_affects display order and affect expiry ordering.
+
     if effect.ac_mod:
-        affected.append(
+        affected.insert(
+            0,
             AffectData(
                 type=spell_type,  # type: ignore - temporarily using string instead of int SN
                 level=effect.level,
@@ -353,11 +370,12 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
                 location=APPLY_AC,
                 modifier=effect.ac_mod,
                 bitvector=bitvector,
-            )
+            ),
         )
 
     if effect.hitroll_mod is not None:
-        affected.append(
+        affected.insert(
+            0,
             AffectData(
                 type=spell_type,  # type: ignore
                 level=effect.level,
@@ -365,11 +383,12 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
                 location=APPLY_HITROLL,
                 modifier=effect.hitroll_mod,
                 bitvector=bitvector,
-            )
+            ),
         )
 
     if effect.damroll_mod:
-        affected.append(
+        affected.insert(
+            0,
             AffectData(
                 type=spell_type,  # type: ignore
                 level=effect.level,
@@ -377,11 +396,12 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
                 location=APPLY_DAMROLL,
                 modifier=effect.damroll_mod,
                 bitvector=bitvector,
-            )
+            ),
         )
 
     if effect.saving_throw_mod is not None:
-        affected.append(
+        affected.insert(
+            0,
             AffectData(
                 type=spell_type,  # type: ignore
                 level=effect.level,
@@ -389,23 +409,23 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
                 location=APPLY_SAVES,
                 modifier=effect.saving_throw_mod,
                 bitvector=bitvector,
-            )
+            ),
         )
 
-    # Stat modifiers (APPLY_STR=1, APPLY_DEX=2, APPLY_INT=3, APPLY_WIS=4, APPLY_CON=5)
     if effect.stat_modifiers:
         for stat, modifier in effect.stat_modifiers.items():
-            stat_int = int(stat)  # Stat enum to int
-            if 0 <= stat_int <= 5:  # STR through CON
-                affected.append(
+            apply_loc = _STAT_TO_APPLY.get(stat, 0)
+            if apply_loc:
+                affected.insert(
+                    0,
                     AffectData(
                         type=spell_type,  # type: ignore
                         level=effect.level,
                         duration=effect.duration,
-                        location=stat_int + 1,  # APPLY_STR=1, APPLY_DEX=2, etc.
+                        location=apply_loc,
                         modifier=modifier,
                         bitvector=bitvector,
-                    )
+                    ),
                 )
 
     # Flag-only / modifier-less effect (e.g. sanctuary, sleep, fly, invis): no
@@ -417,7 +437,8 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
     # (GL-027 orphan regression). Emitting it also lets the dict-only fallback
     # retire: every active spell_effect now mirrors >=1 AffectData.
     if len(affected) == before:
-        affected.append(
+        affected.insert(
+            0,
             AffectData(
                 type=spell_type,  # type: ignore
                 level=effect.level,
@@ -425,7 +446,7 @@ def sync_spell_effect_to_affected(target: object, effect: SpellEffect) -> None:
                 location=APPLY_NONE,
                 modifier=0,
                 bitvector=bitvector,
-            )
+            ),
         )
 
 
@@ -983,7 +1004,8 @@ class Character:
         from mud.handler import affect_modify
 
         affect_modify(self, affect, True)  # type: ignore[arg-type]  # AffectData duck-types Affect
-        self.affected.append(affect)
+        # ROM src/handler.c:1271 — head-insert: paf_new->next = ch->affected; ch->affected = paf_new
+        self.affected.insert(0, affect)
 
 
 # END affects_saves

@@ -1050,6 +1050,11 @@ def reset_char(ch: Character) -> None:
     if is_npc:
         return
 
+    APPLY_STR = 1
+    APPLY_DEX = 2
+    APPLY_INT = 3
+    APPLY_WIS = 4
+    APPLY_CON = 5
     APPLY_SEX = 6
     APPLY_MANA = 12
     APPLY_HIT = 13
@@ -1169,15 +1174,15 @@ def reset_char(ch: Character) -> None:
                     location = affect.get("location", 0)
                     modifier = affect.get("modifier", 0)
 
-                    if location == int(Stat.STR) + 1:  # APPLY_STR = 1
+                    if location == APPLY_STR:
                         ch.mod_stat[int(Stat.STR)] += modifier
-                    elif location == int(Stat.DEX) + 1:  # APPLY_DEX = 2
+                    elif location == APPLY_DEX:
                         ch.mod_stat[int(Stat.DEX)] += modifier
-                    elif location == int(Stat.INT) + 1:  # APPLY_INT = 3
+                    elif location == APPLY_INT:
                         ch.mod_stat[int(Stat.INT)] += modifier
-                    elif location == int(Stat.WIS) + 1:  # APPLY_WIS = 4
+                    elif location == APPLY_WIS:
                         ch.mod_stat[int(Stat.WIS)] += modifier
-                    elif location == int(Stat.CON) + 1:  # APPLY_CON = 5
+                    elif location == APPLY_CON:
                         ch.mod_stat[int(Stat.CON)] += modifier
                     elif location == APPLY_SEX:
                         ch.sex += modifier
@@ -1209,15 +1214,15 @@ def reset_char(ch: Character) -> None:
                 if hasattr(affect, "location") and hasattr(affect, "modifier"):
                     modifier = affect.modifier
 
-                    if affect.location == int(Stat.STR) + 1:
+                    if affect.location == APPLY_STR:
                         ch.mod_stat[int(Stat.STR)] += modifier
-                    elif affect.location == int(Stat.DEX) + 1:
+                    elif affect.location == APPLY_DEX:
                         ch.mod_stat[int(Stat.DEX)] += modifier
-                    elif affect.location == int(Stat.INT) + 1:
+                    elif affect.location == APPLY_INT:
                         ch.mod_stat[int(Stat.INT)] += modifier
-                    elif affect.location == int(Stat.WIS) + 1:
+                    elif affect.location == APPLY_WIS:
                         ch.mod_stat[int(Stat.WIS)] += modifier
-                    elif affect.location == int(Stat.CON) + 1:
+                    elif affect.location == APPLY_CON:
                         ch.mod_stat[int(Stat.CON)] += modifier
                     elif affect.location == APPLY_SEX:
                         ch.sex += modifier

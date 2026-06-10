@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.63] — 2026-06-10
+
+### Fixed
+
+- **`affect_expiry_lifecycle` C-oracle golden captured** — diff-harness scenario is now
+  live (was skipping; the C binary was not built). Building the diffshim and running capture
+  revealed two parity bugs immediately:
+  - **Affect shadow location wrong for DEX/INT/WIS spells** (`mud/models/character.py`
+    `sync_spell_effect_to_affected`): `Stat.DEX=3` so `stat_int + 1 = 4 = APPLY_WIS`;
+    fixed by a proper `_STAT_TO_APPLY` dict (STR→1, DEX→2, INT→3, WIS→4, CON→5).
+    Affected spells: `haste`, `slow`. Display now correctly shows "dexterity" not "wisdom".
+  - **Affect list was FIFO instead of LIFO** (`sync_spell_effect_to_affected` and
+    `Character.affect_to_char`): ROM C `affect_to_char` head-inserts (`paf_new->next =
+    ch->affected`); Python was using `append`. Fixed by `insert(0, ...)`. Newest spell
+    now appears first in `do_affects` output matching C. Regression: none (27-caller suite
+    clean, 5504 pass).
+  - **Sanctuary missing wear-off message** (`mud/skills/handlers.py`): `SpellEffect` had
+    no `wear_off_message`; ROM C `const.c:1438` has `msg_off = "The white aura around
+    your body fades."`. Added.
+- **`handler.py:reset_char` stat location matching corrected**: secondary stat-apply blocks
+  used `int(Stat.DEX) + 1 = 4` to match equipment APPLY_DEX locations (ROM C stores 2);
+  replaced with explicit `APPLY_STR/DEX/INT/WIS/CON` constants.
+- Two new enforcement tests: `test_dex_stat_modifier_shadow_uses_apply_dex` and
+  `test_affected_list_lifo_order` (both in `tests/test_handler_affects_rom_parity.py`).
+
 ## [2.13.62] — 2026-06-10
 
 ### Added

@@ -7309,6 +7309,7 @@ def sanctuary(caster, target=None):
         duration=c_div(level, 6),
         level=level,
         affect_flag=AffectFlag.SANCTUARY,
+        wear_off_message="The white aura around your body fades.",  # ROM src/const.c:1438 msg_off
     )
     applied = target.apply_spell_effect(effect)
     if not applied:

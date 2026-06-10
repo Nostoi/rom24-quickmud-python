@@ -571,3 +571,51 @@ class TestAffectIntegration:
 
         test_char.remove_spell_effect("stone_skin")
         assert test_char.get_curr_stat(Stat.STR) == 13  # base
+
+    def test_dex_stat_modifier_shadow_uses_apply_dex(self, test_char):
+        """affect shadow entry must store location=APPLY_DEX=2, not APPLY_WIS=4.
+
+        ROM src/magic.c:3098 — haste uses af.location = APPLY_DEX (=2).
+        The shadow AffectData in ch->affected must carry location=2 so that
+        do_affects shows 'dexterity' and reset_char re-applies correctly.
+        Regression: stat_int + 1 for Stat.DEX=3 produced location=4 (APPLY_WIS).
+        """
+        from mud.models.character import SpellEffect
+
+        effect = SpellEffect(name="haste", duration=20, level=40, stat_modifiers={Stat.DEX: 4})
+        test_char.apply_spell_effect(effect)
+
+        # Shadow AffectData must carry location=2 (APPLY_DEX), not 4 (APPLY_WIS).
+        APPLY_DEX = 2
+        dex_shadow = next(
+            (paf for paf in test_char.affected if getattr(paf, "type", None) == "haste"),
+            None,
+        )
+        assert dex_shadow is not None, "haste shadow must appear in ch.affected"
+        assert dex_shadow.location == APPLY_DEX, (
+            f"haste shadow location={dex_shadow.location} expected APPLY_DEX=2; "
+            "stat_int+1 for Stat.DEX=3 gives 4 (APPLY_WIS)"
+        )
+
+    def test_affected_list_lifo_order(self, test_char):
+        """ch.affected must be LIFO (head-insert) to match ROM affect_to_char.
+
+        ROM src/handler.c:1271 — affect_to_char head-inserts:
+            paf_new->next = ch->affected; ch->affected = paf_new;
+        The most recently applied spell must appear first in the list,
+        so do_affects and affect expiry match C output ordering.
+        """
+        from mud.models.character import SpellEffect
+
+        effect1 = SpellEffect(name="sanctuary", duration=6, level=40, affect_flag=AffectFlag.SANCTUARY)
+        effect2 = SpellEffect(name="haste", duration=20, level=40, stat_modifiers={Stat.DEX: 4})
+
+        test_char.apply_spell_effect(effect1)
+        test_char.apply_spell_effect(effect2)
+
+        # Haste (cast last) must be at the head (index 0).
+        assert test_char.affected, "affected list must not be empty"
+        assert test_char.affected[0].type == "haste", (
+            f"expected 'haste' at head, got '{test_char.affected[0].type}'; "
+            "ROM affect_to_char head-inserts so newest spell is first"
+        )
