@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.79] — 2026-06-10
+
+### Fixed
+
+- **GL-038: plague tick gate used bitmask instead of spell-affect list** —
+  `_char_update_tick_effects` (`mud/game_loop.py`) gated the plague tick on
+  `has_affect(AffectFlag.PLAGUE)` (bitmask check) instead of ROM's
+  `is_affected(ch, gsn_plague)` (spell affect list check). A character with
+  innate `AFF_PLAGUE` in `affected_by` but no spell-affect entry — common for
+  area-file mobs — would: in C, keep the bitmask forever and regen at ÷8 every
+  pulse with no tick messages; in Python, print writhe messages and *clear the
+  bitmask* after pulse 1, losing the ÷8 penalty. Fixed by gating on the spell
+  list and removing the orphan-bit clearing branch. Regen divisors in
+  `hit_gain`/`mana_gain`/`move_gain` correctly keep the bitmask check (matching
+  ROM's `IS_AFFECTED`). Diff-harness scenario `char_update_regen_plague`
+  (GL-038 C oracle) + `test_drive_python_replay_plague_affect_divides_regen_by_eight`.
+
+### Added
+
+- **`char_update_regen_plague` diff-harness scenario** — SLEEPING mage with
+  orphan AFF_PLAGUE bit (8388608 = 1<<23) set via `__add_affect`. Three
+  `__char_update` pulses confirm PLAGUE ÷8 divisor and flag persistence:
+  HP+1/pulse, mana+2/pulse, move+3/pulse. C oracle: flag never cleared (no
+  spell entry), tick never fires.
+- **`char_update_regen_slow` diff-harness scenario** — SLEEPING mage with
+  AFF_SLOW bit (536870912 = 1<<29) set via `__add_affect`. Three
+  `__char_update` pulses confirm SLOW ÷2 divisor (same branch as HASTE):
+  HP+5/pulse, mana+8/pulse, move+14/pulse. No tick side-effects for SLOW.
+- **`test_drive_python_replay_plague_affect_divides_regen_by_eight`** and
+  **`test_drive_python_replay_slow_affect_halves_regen_by_two`** unit tests.
+
 ## [2.13.78] — 2026-06-10
 
 ### Added

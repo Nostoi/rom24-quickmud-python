@@ -727,8 +727,21 @@ def _char_update_tick_effects(character: Character) -> bool:
     from mud.combat.engine import apply_damage as _damage
     from mud.models.constants import DamageType
 
-    # Plague tick — ROM src/update.c:794-846
-    if character.has_affect(AffectFlag.PLAGUE):
+    # Plague tick — ROM src/update.c:793-846
+    # ROM gates on is_affected(ch, gsn_plague) which scans the SPELL AFFECT LIST,
+    # NOT the AFF_PLAGUE bitmask (IS_AFFECTED). A mob or PC with innate AFF_PLAGUE
+    # but no spell-affect entry (e.g. area-file affected_by) skips this block in C
+    # and keeps the bitmask indefinitely — the regen ÷8 divisor fires every tick via
+    # the bitmask, but the tick damage/spread/message loop never runs (GL-038).
+    affects = getattr(character, "affected", None) or []
+    plague_af = None
+    for af in affects:
+        spell_name = getattr(af, "type", None) or getattr(af, "spell_name", None)
+        if spell_name == "plague":
+            plague_af = af
+            break
+
+    if plague_af is not None:
         room = getattr(character, "room", None)
         if room is None:
             return False
@@ -736,74 +749,60 @@ def _char_update_tick_effects(character: Character) -> bool:
         _act_to_room(room, "$n writhes in agony as plague sores erupt from $s skin.", character)
         _send_to_char(character, "You writhe in agony from the plague.\r\n")
 
-        # Find the plague affect to get its level
-        affects = getattr(character, "affected", None) or []
-        plague_af = None
-        for af in affects:
-            spell_name = getattr(af, "type", None) or getattr(af, "spell_name", None)
-            if spell_name == "plague":
-                plague_af = af
-                break
+        af_level = int(getattr(plague_af, "level", 1) or 1)
+        if af_level > 1:
+            # Spread to room occupants — ROM src/update.c:828-841
+            spread_level = af_level - 1
+            for vch in list(getattr(room, "people", [])):
+                if vch is character:
+                    continue
+                if vch.has_affect(AffectFlag.PLAGUE):
+                    continue
+                if int(getattr(vch, "level", 0) or 0) >= LEVEL_IMMORTAL:
+                    continue
+                if rng_mm.number_bits(4) != 0:
+                    continue
+                # saves_spell check — simplified: use level check
+                from mud.affects.saves import saves_spell
+                from mud.models.constants import DamageType
 
-        if plague_af is None:
-            # Bit set but no affect entry — clear the flag
-            affected_by = int(getattr(character, "affected_by", 0) or 0)
-            character.affected_by = affected_by & ~int(AffectFlag.PLAGUE)
-        else:
-            af_level = int(getattr(plague_af, "level", 1) or 1)
-            if af_level > 1:
-                # Spread to room occupants — ROM src/update.c:828-841
-                spread_level = af_level - 1
-                for vch in list(getattr(room, "people", [])):
-                    if vch is character:
-                        continue
-                    if vch.has_affect(AffectFlag.PLAGUE):
-                        continue
-                    if int(getattr(vch, "level", 0) or 0) >= LEVEL_IMMORTAL:
-                        continue
-                    if rng_mm.number_bits(4) != 0:
-                        continue
-                    # saves_spell check — simplified: use level check
-                    from mud.affects.saves import saves_spell
-                    from mud.models.constants import DamageType
+                if saves_spell(spread_level - 2, vch, int(DamageType.DISEASE)):
+                    continue
+                _send_to_char(vch, "You feel hot and feverish.\r\n")
+                _act_to_room(room, "$n shivers and looks very ill.", vch)
+                if hasattr(vch, "add_affect"):
+                    from mud.models.character import AffectData
 
-                    if saves_spell(spread_level - 2, vch, int(DamageType.DISEASE)):
-                        continue
-                    _send_to_char(vch, "You feel hot and feverish.\r\n")
-                    _act_to_room(room, "$n shivers and looks very ill.", vch)
-                    if hasattr(vch, "add_affect"):
-                        from mud.models.character import AffectData
+                    new_af = AffectData(
+                        type="plague",
+                        level=spread_level,
+                        duration=rng_mm.number_range(1, 2 * spread_level),
+                        location=1,  # APPLY_STR — ROM src/update.c:825 `plague.location = APPLY_STR`
+                        modifier=-5,
+                        bitvector=int(AffectFlag.PLAGUE),
+                    )
+                    # mirroring ROM src/update.c:839-840 + src/handler.c:1464 —
+                    # plague re-infection merges via affect_join so a victim
+                    # already carrying plague gets one merged entry, not two.
+                    from mud.handler import affect_join
 
-                        new_af = AffectData(
-                            type="plague",
-                            level=spread_level,
-                            duration=rng_mm.number_range(1, 2 * spread_level),
-                            location=1,  # APPLY_STR — ROM src/update.c:825 `plague.location = APPLY_STR`
-                            modifier=-5,
-                            bitvector=int(AffectFlag.PLAGUE),
-                        )
-                        # mirroring ROM src/update.c:839-840 + src/handler.c:1464 —
-                        # plague re-infection merges via affect_join so a victim
-                        # already carrying plague gets one merged entry, not two.
-                        from mud.handler import affect_join
+                    affect_join(vch, new_af)
 
-                        affect_join(vch, new_af)
-
-                # Drain mana and move — ROM src/update.c:843-845
-                # ARITH-203/204: ROM does `ch->mana -= dam; ch->move -= dam;` raw —
-                # no floor.  When current mana/move is below dam the pools go
-                # negative and regenerate back toward zero next tick.
-                # GL-024: this block lives under `af_level > 1` because ROM
-                # `src/update.c:818-819` does `if (af->level == 1) continue;` —
-                # a level-1 plague prints the writhe messages above, then skips
-                # spread + drain + damage entirely (dormant that tick).
-                dam = min(int(getattr(character, "level", 1) or 1), af_level // 5 + 1)
-                character.mana = int(getattr(character, "mana", 0) or 0) - dam
-                character.move = int(getattr(character, "move", 0) or 0) - dam
-                try:
-                    _damage(character, character, dam, int(DamageType.DISEASE))
-                except Exception:
-                    pass
+            # Drain mana and move — ROM src/update.c:843-845
+            # ARITH-203/204: ROM does `ch->mana -= dam; ch->move -= dam;` raw —
+            # no floor.  When current mana/move is below dam the pools go
+            # negative and regenerate back toward zero next tick.
+            # GL-024: this block lives under `af_level > 1` because ROM
+            # `src/update.c:818-819` does `if (af->level == 1) continue;` —
+            # a level-1 plague prints the writhe messages above, then skips
+            # spread + drain + damage entirely (dormant that tick).
+            dam = min(int(getattr(character, "level", 1) or 1), af_level // 5 + 1)
+            character.mana = int(getattr(character, "mana", 0) or 0) - dam
+            character.move = int(getattr(character, "move", 0) or 0) - dam
+            try:
+                _damage(character, character, dam, int(DamageType.DISEASE))
+            except Exception:
+                pass
         return False
 
     # Poison tick — ROM src/update.c:848-862

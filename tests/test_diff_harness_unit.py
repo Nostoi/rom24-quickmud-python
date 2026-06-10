@@ -591,3 +591,71 @@ def test_drive_python_replay_haste_affect_halves_regen_by_two():
     assert after.hp == 6  # 1 + 5  (sleeping base 10 // 2 = 5)
     assert after.mana == 13  # 5 + 8  (sleeping base 17 // 2 = 8)
     assert after.move == 19  # 5 + 14 (sleeping base 28 // 2 = 14)
+
+
+def test_drive_python_replay_plague_affect_divides_regen_by_eight():
+    # AFF_PLAGUE (bit 8388608, ROM AFF_PLAGUE = 1<<23) causes hit_gain/mana_gain/
+    # move_gain to divide by 8 (ROM src/update.c:277-279).  Applied in SLEEPING.
+    # C oracle (seed 12345): HP +1, mana +2, move +3 per pulse.
+    # GL-038: __add_affect=8388608 sets only the bitmask (no spell-affect entry).
+    # C's plague tick gate is is_affected(ch, gsn_plague) — spell LIST check — so
+    # the tick never fires and the bitmask persists across all pulses.  After fix,
+    # Python matches: plague flag stays set, ÷8 divisor applies every pulse.
+    sc = Scenario(
+        name="generated_plague",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__char_position=4",
+            "__hp=1",
+            "__mana=5",
+            "__move=5",
+            "__add_affect=8388608",
+            "__char_update",
+        ],
+    )
+
+    trace = drive_python_replay(sc)
+
+    after = trace[5].chars[0]  # step 6 = after __char_update
+    assert after.position == "SLEEPING"
+    assert after.hp == 2  # 1 + 1  (sleeping base 10 // 8 = 1)
+    assert after.mana == 7  # 5 + 2  (sleeping base 17 // 8 = 2)
+    assert after.move == 8  # 5 + 3  (sleeping base 28 // 8 = 3)
+    assert any(f.lower() == "plague" for f in after.affect_flags)  # bit persists — no spell entry, tick never fires
+
+
+def test_drive_python_replay_slow_affect_halves_regen_by_two():
+    # AFF_SLOW (bit 536870912, ROM AFF_SLOW = 1<<29) causes hit_gain/mana_gain/
+    # move_gain to divide by 2, same branch as HASTE (ROM src/update.c:280-282).
+    # C oracle (seed 12345): HP +5, mana +8, move +14 per pulse.
+    # No tick side-effects for SLOW — only the regen divisor branch.
+    sc = Scenario(
+        name="generated_slow",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__char_position=4",
+            "__hp=1",
+            "__mana=5",
+            "__move=5",
+            "__add_affect=536870912",
+            "__char_update",
+        ],
+    )
+
+    trace = drive_python_replay(sc)
+
+    after = trace[5].chars[0]  # step 6 = after __char_update
+    assert after.position == "SLEEPING"
+    assert after.hp == 6  # 1 + 5  (sleeping base 10 // 2 = 5)
+    assert after.mana == 13  # 5 + 8  (sleeping base 17 // 2 = 8)
+    assert after.move == 19  # 5 + 14 (sleeping base 28 // 2 = 14)
