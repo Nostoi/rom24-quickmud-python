@@ -20,7 +20,7 @@ from mud.magic.effects import (
     shock_effect,
 )
 from mud.models.character import Character
-from mud.models.constants import ITEM_BLESS, ITEM_BURN_PROOF, ITEM_NOPURGE, Condition, ItemType, Stat
+from mud.models.constants import ITEM_BLESS, ITEM_BURN_PROOF, ITEM_NOPURGE, AffectFlag, Condition, ItemType, Stat
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room
@@ -549,3 +549,69 @@ class TestColdEffectChillTouch:
         effect = victim.spell_effects.get("chill touch")
         assert effect is not None
         assert effect.wear_off_message == "You feel less cold."
+
+
+# ---------------------------------------------------------------------------
+# EFFECTS-004: fire_effect fire breath blindness — ROM src/effects.c:328-336
+# ---------------------------------------------------------------------------
+
+
+class TestFireEffectBlindness:
+    """EFFECTS-004: fire_effect TARGET_CHAR applies fire breath blindness on failed save.
+
+    ROM C: src/effects.c:319-336 — affect_to_char with type=skill_lookup("fire breath"),
+    level=level, duration=number_range(0, level/10), location=APPLY_HITROLL, modifier=-4,
+    bitvector=AFF_BLIND.  Guarded by !IS_AFFECTED(victim, AFF_BLIND).
+    """
+
+    def _make_char(self, level: int = 20, blind: bool = False) -> Character:
+        ch = Character(name="Vic", level=level, is_npc=False, saving_throw=0, messages=[])
+        if blind:
+            ch.affected_by |= int(AffectFlag.BLIND)
+        return ch
+
+    def test_fire_breath_blind_applied_on_failed_save(self, monkeypatch):
+        # EFFECTS-004: failed save → AFF_BLIND set and SpellEffect "fire breath"
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        monkeypatch.setattr(_effects_mod.rng_mm, "number_range", lambda a, b: 2)
+        victim = self._make_char(level=20)
+        fire_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        assert victim.affected_by & int(AffectFlag.BLIND), "AFF_BLIND not set"
+        assert victim.has_spell_effect("fire breath"), "fire breath affect not applied"
+        effect = victim.spell_effects["fire breath"]
+        assert effect.hitroll_mod == -4
+        assert effect.duration == 2  # number_range forced to 2
+
+    def test_fire_breath_duration_bounded(self, monkeypatch):
+        # duration = number_range(0, level/10) — ensure bounds respected
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        monkeypatch.setattr(_effects_mod.rng_mm, "number_range", lambda a, b: b)
+        victim = self._make_char(level=30)
+        fire_effect(victim, level=30, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        effect = victim.spell_effects.get("fire breath")
+        assert effect is not None
+        assert effect.duration <= 30 // 10  # level/10 = 3
+
+    def test_fire_breath_skipped_when_already_blind(self, monkeypatch):
+        # ROM L320: !IS_AFFECTED(victim, AFF_BLIND) guard — already blind → skip
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        victim = self._make_char(blind=True)
+        fire_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        assert not victim.has_spell_effect("fire breath"), "should not re-apply when already blind"
+
+    def test_fire_breath_not_applied_on_saved(self, monkeypatch):
+        # EFFECTS-004: passed save → no blindness
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: True)
+        victim = self._make_char()
+        fire_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        assert not (victim.affected_by & int(AffectFlag.BLIND))
+
+    def test_fire_breath_wear_off_message(self, monkeypatch):
+        # ROM const.c:1515 — msg_off for "fire breath" is "The smoke leaves your eyes."
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        monkeypatch.setattr(_effects_mod.rng_mm, "number_range", lambda a, b: 1)
+        victim = self._make_char()
+        fire_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        effect = victim.spell_effects.get("fire breath")
+        assert effect is not None
+        assert effect.wear_off_message == "The smoke leaves your eyes."

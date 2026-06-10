@@ -518,14 +518,29 @@ def fire_effect(target: Any, level: int, damage: int, target_type: int | SpellTa
 
         victim = target
 
-        # ROM L320-337: Blindness affect
+        # ROM L320-337: Blindness affect — affect_to_char; mirroring src/effects.c:319-336
+        # AFF_BLIND guard ensures no duplicate; apply_spell_effect safe here (GL-027)
         if not (victim.affected_by & AffectFlag.BLIND):  # Not already blind
             save_level = c_div(level, 4) + c_div(damage, 20)
             if not saves_spell(save_level, victim, int(DamageType.FIRE)):
-                # Apply fire breath blindness (-4 hitroll, duration 0 to level/10)
-                # TODO: Implement full affect_to_char with skill_lookup("fire breath")
-                if hasattr(victim, "messages") and isinstance(victim.messages, list):
-                    _push_message(victim, "You are blinded by smoke!")
+                from mud.models.character import SpellEffect
+
+                victim.apply_spell_effect(
+                    SpellEffect(
+                        name="fire breath",
+                        duration=rng_mm.number_range(0, c_div(level, 10)),
+                        level=level,
+                        hitroll_mod=-4,
+                        affect_flag=AffectFlag.BLIND,
+                        wear_off_message="The smoke leaves your eyes.",
+                    )
+                )
+                _push_message(victim, "Your eyes tear up from smoke...you can't see a thing!")
+                room = getattr(victim, "room", None)
+                if room is not None:
+                    from mud.utils.act import act_to_room
+
+                    act_to_room(room, "$n is blinded by smoke!", victim)
 
         # ROM L340-341: Thirst increase (heat dehydration) — src/effects.c:341
         from mud.characters.conditions import gain_condition

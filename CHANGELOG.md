@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.69] — 2026-06-10
+
+### Fixed
+
+- **EFFECTS-004: `fire_effect` fire breath blindness missing** — `fire_effect` TARGET_CHAR
+  was not applying the ROM fire-breath blind affect (ROM `src/effects.c:319-336`):
+  `affect_to_char` with AFF_BLIND, -4 hitroll, duration=number_range(0, level/10),
+  wear_off="The smoke leaves your eyes.". The `!IS_AFFECTED(victim, AFF_BLIND)` guard
+  was present but the affect itself was a TODO stub. Replaced with
+  `apply_spell_effect(SpellEffect("fire breath", ...))`. Room broadcast
+  `"$n is blinded by smoke!"` added with PERS masking via `act_to_room`.
+  5 tests added (`test_fire_breath_blind_applied_on_failed_save`,
+  `test_fire_breath_duration_bounded`, `test_fire_breath_skipped_when_already_blind`,
+  `test_fire_breath_not_applied_on_saved`, `test_fire_breath_wear_off_message`).
+
 ## [2.13.68] — 2026-06-10
 
 ### Fixed
