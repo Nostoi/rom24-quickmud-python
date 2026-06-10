@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.62] — 2026-06-10
+
+### Added
+
+- **diff-harness scenario `affect_expiry_lifecycle`** — new scenario exercising spell affect
+  bitvector set/clear across the full expiry lifecycle (sanctuary + haste at level 40 mage):
+  `cast sanctuary` → `cast haste` (both AFF_SANCTUARY and AFF_HASTE set) →
+  `__set_affect_duration=0` + `__char_update` (both cleared on expiry). Skips until a C
+  golden is captured; provides the first harness coverage of affect bitvector lifecycle.
+- **`__mana=N` meta-command** in diff-harness pyreplay and C shim (`diffmain.c`):
+  sets the PC's mana (and raises `max_mana` if lower) directly, enabling multi-spell
+  scenarios where the harness default of 100 mana is insufficient.
+- Unit test `test_drive_python_replay_mana_meta_sets_mana_and_max_mana` verifying the
+  new meta-command.
+
 ## [2.13.61] — 2026-06-10
 
 ### Added

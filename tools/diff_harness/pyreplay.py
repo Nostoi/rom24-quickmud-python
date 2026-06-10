@@ -71,6 +71,11 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
     if command.startswith("__silver="):
         char.silver = int(command[len("__silver=") :])
         return ""
+    if command.startswith("__mana="):
+        val = int(command[len("__mana=") :])
+        char.mana = val
+        char.max_mana = max(int(getattr(char, "max_mana", 0) or 0), val)
+        return ""
     if command.startswith("__level="):
         char.level = int(command[len("__level=") :])
         return ""

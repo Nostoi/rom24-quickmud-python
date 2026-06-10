@@ -361,6 +361,23 @@ def test_drive_python_replay_level_meta_updates_character_level():
     assert trace[0].chars[0].level == 30
 
 
+def test_drive_python_replay_mana_meta_sets_mana_and_max_mana():
+    sc = Scenario(
+        name="generated_mana",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__mana=500"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert trace[0].chars[0].mana == 500
+
+
 def test_drive_python_replay_oload_exercises_get_wield_remove_drop():
     sc = Scenario(
         name="generated_oload",

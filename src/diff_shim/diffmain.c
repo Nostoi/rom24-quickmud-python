@@ -608,6 +608,21 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __mana=<n>: set the PC's mana (and max_mana if lower) directly.
+         * Needed for multi-spell scenarios where the harness default 100 mana
+         * is insufficient (e.g. sanctuary + haste at high level). */
+        if (strncmp (line, "__mana=", 7) == 0)
+        {
+            if (ch != NULL)
+            {
+                int val = atoi (line + 7);
+                ch->mana = val;
+                if (ch->max_mana < val)
+                    ch->max_mana = val;
+            }
+            continue;
+        }
+
         /* __level=<n>: set the PC's level directly (no RNG).  Used by
          * generated skill-command scenarios where ROM get_skill gates learned
          * skills by class level. */
