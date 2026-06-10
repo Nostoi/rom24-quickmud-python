@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.74] — 2026-06-10
+
+### Added
+
+- **`char_update_regen_fast_healing` diff-harness scenario** — new C-oracle scenario
+  exercising the roll-dependent HP-gain path with `fast healing` active. Warrior
+  (class 3, `hp_max=15`, level-6 req satisfied), HP=5/max=20, three `__char_update`
+  pulses with `__seed=12345`. C oracle confirms HP progression 5→10→18→20 (rolls 24,
+  97, 90 from seed 12345). Symmetric follow-on to the `char_update_regen_meditation`
+  scenario; confirms `_get_skill_percent` level gating is correct on the HP side.
+- **`__char_class=<n>` meta-command** — new harness meta-command setting the PC's
+  class index (0=mage, 1=cleric, 2=thief, 3=warrior) in both `pyreplay.py` and
+  `src/diff_shim/diffmain.c`. Required to exercise class-specific `hit_gain`/
+  `mana_gain` paths. Unit-tested via `test_drive_python_replay_char_class_meta_affects_hit_gain`.
+
 ## [2.13.73] — 2026-06-10
 
 ### Fixed

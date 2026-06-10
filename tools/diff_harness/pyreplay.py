@@ -98,6 +98,9 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
     if command.startswith("__level="):
         char.level = int(command[len("__level=") :])
         return ""
+    if command.startswith("__char_class="):
+        char.ch_class = int(command[len("__char_class=") :])
+        return ""
     if command.startswith("__goto="):
         destination = room_registry[int(command[len("__goto=") :])]
         if getattr(char, "room", None) is not None:

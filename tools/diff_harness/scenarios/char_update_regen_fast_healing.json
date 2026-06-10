@@ -1,0 +1,17 @@
+{
+  "name": "char_update_regen_fast_healing",
+  "seed": 12345,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__hp=5",
+    "__char_class=3",
+    "__level=6",
+    "__learn=fast healing",
+    "__seed=12345",
+    "__char_update",
+    "__char_update",
+    "__char_update"
+  ]
+}

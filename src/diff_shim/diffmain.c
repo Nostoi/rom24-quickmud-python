@@ -677,6 +677,16 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __char_class=<n>: set the PC's class index directly (0=mage,
+         * 1=cleric, 2=thief, 3=warrior).  Used by regen scenarios that
+         * exercise class-specific hit_gain/mana_gain paths. */
+        if (strncmp (line, "__char_class=", 13) == 0)
+        {
+            if (ch != NULL)
+                ch->class = atoi (line + 13);
+            continue;
+        }
+
         /* __goto=<vnum>: move the PC to a room without command output.
          * Harness-only positioning primitive for generated scenarios that need
          * a specific stock fixture (e.g. a keyed door) without replaying a long

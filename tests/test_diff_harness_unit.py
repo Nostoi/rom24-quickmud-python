@@ -378,6 +378,27 @@ def test_drive_python_replay_mana_meta_sets_mana_and_max_mana():
     assert trace[0].chars[0].mana == 500
 
 
+def test_drive_python_replay_char_class_meta_affects_hit_gain():
+    # Warrior (class 3, hp_max=15) vs default mage (class 0, hp_max=8).
+    # With CON=13, level=5, standing, no skills: warrior gain=17//4=4, mage=10//4=2.
+    # Mana and move start at max so only hit_gain is called (no other RNG draw).
+    sc = Scenario(
+        name="generated_char_class",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__hp=1", "__char_class=3", "__char_update"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    # After __char_update (step 3), warrior adds 4 HP: 1 + 4 = 5.
+    assert trace[2].chars[0].hp == 5
+
+
 def test_drive_python_replay_oload_exercises_get_wield_remove_drop():
     sc = Scenario(
         name="generated_oload",
