@@ -422,6 +422,30 @@ def test_drive_python_replay_char_position_meta_affects_hit_gain():
     assert trace[1].chars[0].position == "SLEEPING"
 
 
+def test_drive_python_replay_char_position_resting_halves_all_gain():
+    # Resting (position=5) halves HP and mana gain vs sleeping; move uses DEX/2.
+    # Mage, level 5: hit base=10, resting=10//2=5; mana base=17, resting=17//2=8;
+    # move base=UMAX(15,5)+DEX//2=15+6=21.  HP starts at 5/20, mana 30/100, move 20/100.
+    sc = Scenario(
+        name="generated_resting",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__hp=5", "__mana=30", "__move=20", "__char_position=5", "__seed=12345", "__char_update"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    after = trace[5].chars[0]  # step 6 = after __char_update
+    assert after.position == "RESTING"
+    assert after.hp == 10  # 5 + 5
+    assert after.mana == 38  # 30 + 8
+    assert after.move == 41  # 20 + 21
+
+
 def test_drive_python_replay_oload_exercises_get_wield_remove_drop():
     sc = Scenario(
         name="generated_oload",

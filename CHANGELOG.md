@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.76] — 2026-06-10
+
+### Added
+
+- **`char_update_regen_resting` diff-harness scenario** — new C-oracle scenario
+  exercising the `POS_RESTING` position branch in `hit_gain`, `mana_gain`, and
+  `move_gain`. Mage (class 0) at level 5, resting, HP=5/mana=30/move=20 — three
+  `__char_update` pulses confirm resting regen (HP+5/pulse, mana+8/pulse,
+  move+21/pulse). Resting rates are exactly half sleeping (`gain//2` for HP/mana;
+  `DEX//2` vs `DEX` for move). Completes the sleeping/resting/standing regen
+  position-branch coverage across all three gain functions.
+- **`test_drive_python_replay_char_position_resting_halves_all_gain`** unit test —
+  verifies all three resting gain values against C-oracle ground truth in a single
+  `__char_update` pulse.
+
 ## [2.13.75] — 2026-06-10
 
 ### Added
