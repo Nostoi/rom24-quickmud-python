@@ -17,7 +17,7 @@ This audit doc was opened to track the combat-path regressions surfaced during t
 |--------------|-----------|--------------------|--------|-------|
 | `multi_hit` | `src/fight.c:187-247` | `mud/combat/engine.py:312` | ✅ AUDITED | `do_kill()` now enters combat through `multi_hit()` as ROM does. |
 | `damage` | `src/fight.c:688-1016` | `mud/combat/engine.py:498` | ✅ AUDITED | `apply_damage()` now re-runs `is_safe()` at entry, matching ROM `damage()`. |
-| `is_safe` | `src/fight.c:1018-1124` | `mud/combat/safety.py:14` | ✅ AUDITED | Port exists and the combat damage path now consistently uses it at the ROM-critical entry point. |
+| `is_safe` | `src/fight.c:1018-1124` | `mud/combat/safety.py:14` | ✅ AUDITED | Port exists and the combat damage path now consistently uses it at the ROM-critical entry point. **Sub-bug fixed 2.13.60 (INV-041):** `fight.c:1040` checks `victim->pIndexData->pShop` but Python only checked `victim.pShop` (absent on `MobInstance`) and loaders never set `MobIndex.pShop`. Fixed in `world_state.py`, `shop_loader.py`, and `safety.py`. |
 | `is_safe_spell` | `src/fight.c:1126-1221` | `mud/combat/safety.py:75` | ✅ AUDITED | Present; separate from the open melee-damage gap. |
 | `do_kill` | `src/fight.c:2758-2819` | `mud/commands/combat.py:94` | ✅ AUDITED | Command now routes through `multi_hit()` instead of a single `attack_round()`. |
 

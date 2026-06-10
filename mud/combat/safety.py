@@ -59,8 +59,15 @@ def is_safe(char: Character, victim: Character) -> bool:
         if victim_act & ActFlag.GAIN:
             return True
 
-    # Check shop - if mob has a shop, it's a shopkeeper
-    if hasattr(victim, "pShop") and getattr(victim, "pShop", None):
+    # Check shop - if mob has a shop, it's a shopkeeper.
+    # mirroring ROM src/fight.c:1040 — victim->pIndexData->pShop != NULL.
+    # Python MobInstances carry no pShop directly; the field lives on the
+    # MobIndex prototype.  Check both to handle any edge case where pShop
+    # was set directly on the instance.
+    if getattr(victim, "pShop", None) is not None:
+        return True
+    proto = getattr(victim, "prototype", None) or getattr(victim, "pIndexData", None)
+    if proto is not None and getattr(proto, "pShop", None) is not None:
         return True
 
     # NPC attacking much lower level player

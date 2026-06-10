@@ -33,7 +33,7 @@ def load_shops(tokenizer: BaseTokenizer, area) -> None:
         profit_sell = int(parts[7]) if len(parts) > 7 else 100
         open_hour = int(parts[8]) if len(parts) > 8 else 0
         close_hour = int(parts[9]) if len(parts) > 9 else 23
-        shop_registry[keeper] = Shop(
+        shop = Shop(
             keeper=keeper,
             buy_types=buy_types,
             profit_buy=profit_buy,
@@ -41,3 +41,12 @@ def load_shops(tokenizer: BaseTokenizer, area) -> None:
             open_hour=open_hour,
             close_hour=close_hour,
         )
+        shop_registry[keeper] = shop
+        # mirroring ROM src/db.c load_shops — pShop is written onto the
+        # MOB_INDEX_DATA prototype so fight.c:1040 is_safe finds it via
+        # victim->pIndexData->pShop.  Python equivalent: MobIndex.pShop.
+        from mud.registry import mob_registry
+
+        mob_proto = mob_registry.get(keeper)
+        if mob_proto is not None:
+            mob_proto.pShop = shop

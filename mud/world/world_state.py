@@ -208,7 +208,7 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
                     else:
                         buy_types.append(bt)
 
-                shop_registry[shop_data["keeper"]] = Shop(
+                shop = Shop(
                     keeper=shop_data["keeper"],
                     buy_types=buy_types,
                     profit_buy=shop_data.get("profit_buy", 100),
@@ -216,6 +216,15 @@ def initialize_world(area_list_path: str | None = "area/area.lst", use_json: boo
                     open_hour=shop_data.get("open_hour", 0),
                     close_hour=shop_data.get("close_hour", 23),
                 )
+                shop_registry[shop_data["keeper"]] = shop
+                # mirroring ROM src/db.c load_shops — pShop is set on the
+                # MOB_INDEX_DATA prototype so fight.c:1040 is_safe can find it
+                # via victim->pIndexData->pShop.  Python equivalents: MobIndex.pShop.
+                from mud.registry import mob_registry as _mob_reg
+
+                _mob_proto = _mob_reg.get(shop_data["keeper"])
+                if _mob_proto is not None:
+                    _mob_proto.pShop = shop
             print(f"✅ Loaded {len(shop_registry)} shops from {shops_path}")
         except Exception as e:
             print(f"Warning: Failed to load shops from {shops_path}: {e}")

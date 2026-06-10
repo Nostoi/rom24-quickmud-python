@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.60] — 2026-06-10
+
+### Fixed
+
+- **INV-041 — Shopkeeper pShop coherence** (`mud/combat/safety.py`,
+  `mud/world/world_state.py`, `mud/loaders/shop_loader.py`): ROM
+  `src/fight.c:1040 is_safe` blocks attacks on any mob whose
+  `pIndexData->pShop != NULL`. Python had two independent bugs:
+  (1) `world_state.py` and `shop_loader.py` populated `shop_registry` but never
+  wrote back `MobIndex.pShop` on the prototype, so every production shopkeeper
+  had `pShop = None`; (2) `safety.py` only checked `victim.pShop` (absent on
+  `MobInstance`) — the field lives on the prototype. Fixed by writing
+  `mob_registry[keeper].pShop = shop` in both loaders after registering the shop,
+  and widening `is_safe` to check `victim.prototype.pShop`. Enforcement test:
+  `tests/integration/test_inv041_shopkeeper_psop_coherence.py`.
+
 ## [2.13.59] — 2026-06-10
 
 ### Added
