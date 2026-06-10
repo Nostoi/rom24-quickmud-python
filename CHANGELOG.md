@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.77] — 2026-06-10
+
+### Added
+
+- **`char_update_regen_hungry_thirsty` diff-harness scenario** — new C-oracle
+  scenario exercising the `COND_HUNGER == 0` and `COND_THIRST == 0` halving
+  branches in `hit_gain`, `mana_gain`, and `move_gain`. Mage (class 0) at level 5,
+  sleeping, HP=1/mana=5/move=5 with both conditions zeroed. Three `__char_update`
+  pulses confirm dual-halving: HP+2/pulse, mana+4/pulse, move+7/pulse vs the
+  sleeping baseline of HP+10/mana+17/move+28 (each effectively ÷4 via two
+  sequential C integer divisions). SLEEPING position chosen to keep per-pulse gains
+  nonzero (STANDING ÷4 floors to 0, masking the halving).
+- **`test_drive_python_replay_hunger_thirst_zero_halves_regen_twice`** unit test —
+  verifies all three gains against C-oracle ground truth in a single pulse.
+
 ## [2.13.76] — 2026-06-10
 
 ### Added

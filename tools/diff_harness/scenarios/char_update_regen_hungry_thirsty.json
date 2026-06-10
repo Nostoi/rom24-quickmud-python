@@ -1,0 +1,18 @@
+{
+  "name": "char_update_regen_hungry_thirsty",
+  "seed": 12345,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__char_position=4",
+    "__hp=1",
+    "__mana=5",
+    "__move=5",
+    "__cond_hunger=0",
+    "__cond_thirst=0",
+    "__char_update",
+    "__char_update",
+    "__char_update"
+  ]
+}

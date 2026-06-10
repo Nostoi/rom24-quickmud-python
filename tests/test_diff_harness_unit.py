@@ -469,6 +469,39 @@ def test_drive_python_replay_oload_exercises_get_wield_remove_drop():
     assert room_snaps[4].contents == [3021]
 
 
+def test_drive_python_replay_hunger_thirst_zero_halves_regen_twice():
+    # hunger=0 halves gain; thirst=0 halves it again.  Applied in SLEEPING (no
+    # position penalty) so gains remain nonzero and visibly distinct from the
+    # baseline.  C oracle (seed 12345): HP +2, mana +4, move +7 per pulse.
+    # Compare: sleeping WITHOUT conditions → HP +10, mana +17, move +28/pulse.
+    sc = Scenario(
+        name="generated_hungry_thirsty",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__char_position=4",
+            "__hp=1",
+            "__mana=5",
+            "__move=5",
+            "__cond_hunger=0",
+            "__cond_thirst=0",
+            "__char_update",
+        ],
+    )
+
+    trace = drive_python_replay(sc)
+
+    after = trace[6].chars[0]  # step 6 = after __char_update
+    assert after.position == "SLEEPING"
+    assert after.hp == 3  # 1 + 2 (sleeping base //2 hunger //2 thirst)
+    assert after.mana == 9  # 5 + 4
+    assert after.move == 12  # 5 + 7
+
+
 def test_drive_python_replay_comm_combine_groups_identical_room_objects():
     """drive_python_replay sets COMM_COMBINE on the test char, mirroring
     C shim make_test_char (diffmain.c:462: ch->comm = COMM_COMBINE|COMM_PROMPT).
