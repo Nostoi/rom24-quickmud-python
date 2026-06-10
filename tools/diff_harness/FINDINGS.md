@@ -8,6 +8,36 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-033 — `look` output: identical objects grouped with `( N)` prefix in C, listed individually in Python — ⚠️ OPEN
+
+**Status:** ⚠️ OPEN — surfaced by Hypothesis 2026-06-10 (v2.13.64)
+
+**Scenario:** `test_generated_no_rng_sequences_match_live_c` generated sequence
+`['south', '__char_update', '__oload=3135', 'look']` — the `south` step enters
+a room that already has a fountain reset (vnum 3135), and `__oload=3135` spawns a
+second fountain in the same room.
+
+**Divergence (step `look` · output):**
+- **C:** `( 2) A small white fountain gushes forth here.`
+- **Python:** `A small white fountain gushes forth here.\nA small white fountain gushes forth here.`
+
+**Root cause:** ROM `do_look` (src/act_info.c) groups identical room objects with
+a count prefix `( N)` when multiple objects share the same `pIndexData` (same
+vnum). Python's room display lists each object on its own line without grouping.
+ROM C reference: `src/act_info.c` `show_list_to_char`.
+
+**Blast radius:** Any `look` invocation when ≥ 2 identical objects share a room
+(same vnum). Does not affect CharSnap fields — only the `output` lines of the
+diff step.
+
+**Severity:** LOW — cosmetic display divergence; gameplay mechanics (pick up,
+combat, affect system) are unaffected.
+
+**Next step:** Implement `( N) ...` grouping in Python's `do_look` / room object
+display path. File as a single-gap parity fix when prioritized.
+
+---
+
 ## FINDING-031 — room occupant look order differs after entering Captain's Office — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-09 (2.13.39). The keyed-door traversal probe

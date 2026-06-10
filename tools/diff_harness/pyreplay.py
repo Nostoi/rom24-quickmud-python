@@ -215,6 +215,33 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         for aff in getattr(char, "affected", []) or []:
             aff.duration = dur
         return ""
+    if command.startswith("__charm_mob="):
+        # Charm the first NPC in the room with a fixed duration, bypassing the
+        # spell cast path and immunity checks.  Mirrors the C-shim __charm_mob
+        # handler in diffmain.c (ROM src/magic.c:1347-1390 spell_charm_person).
+        from mud.characters.follow import add_follower
+        from mud.models.character import SpellEffect
+        from mud.models.constants import AffectFlag
+        from mud.spawning.templates import MobInstance
+
+        dur = int(command[len("__charm_mob=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is None:
+            raise AssertionError("no NPC in room for __charm_mob")
+        add_follower(mob, char)
+        mob.leader = char  # mirroring ROM src/magic.c:1381 victim->leader = ch
+        effect = SpellEffect(
+            name="charm person",
+            duration=dur,
+            level=char.level,
+            affect_flag=AffectFlag.CHARM,
+            wear_off_message="You feel more self-confident.",
+        )
+        mob.apply_spell_effect(effect)
+        key = _person_key(mob)
+        if key in watch_chars:
+            chars_by_name[key] = mob
+        return ""
     if command.startswith("__mob_position="):
         from mud.models.constants import Position
         from mud.spawning.templates import MobInstance

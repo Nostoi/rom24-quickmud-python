@@ -319,6 +319,22 @@ static void emit_char_snapshot (CHAR_DATA *ch)
     }
     putchar ('}');
 
+    /* master: first-word key of ch->master, or null.
+     * ROM src/act_comm.c:1591 add_follower sets ch->master = master.
+     * Emitted so charm-lifecycle scenarios can verify master survives
+     * affect expiry (affect_remove does NOT call stop_follower). */
+    if (ch->master != NULL)
+    {
+        char mkey[MAX_INPUT_LENGTH];
+        char_key (ch->master, mkey, sizeof (mkey));
+        fputs (",\"master\":", stdout);
+        json_str (mkey);
+    }
+    else
+    {
+        fputs (",\"master\":null", stdout);
+    }
+
     putchar ('}');
 }
 
@@ -972,6 +988,40 @@ int main (int argc, char **argv)
                     if (IS_NPC (mob))
                     {
                         mob->mprog_delay = new_delay;
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
+        /* __charm_mob=<duration>: charm the first NPC in the room — applies
+         * add_follower(mob, ch) and an AFF_CHARM affect with the given duration.
+         * Bypasses the spell's cast path and immunity checks so any mob can be
+         * used.  Mirrors the Python-side __charm_mob handler in pyreplay.py.
+         * ROM src/magic.c:1347-1390 spell_charm_person. */
+        if (strncmp (line, "__charm_mob=", 12) == 0)
+        {
+            int dur = atoi (line + 12);
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        AFFECT_DATA af;
+                        add_follower (mob, ch);
+                        mob->leader = ch;
+                        af.where    = TO_AFFECTS;
+                        af.type     = gsn_charm_person;
+                        af.level    = ch->level;
+                        af.duration = dur;
+                        af.location = APPLY_NONE;
+                        af.modifier = 0;
+                        af.bitvector = AFF_CHARM;
+                        affect_to_char (mob, &af);
                         break;
                     }
                 }

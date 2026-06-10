@@ -85,6 +85,7 @@ def _char_snap(key: str, char: object) -> CharSnap:
         for slot, o in (getattr(char, "equipment", {}) or {}).items()
         if o is not None and (v := _obj_vnum(o)) is not None
     }
+    master_char = getattr(char, "master", None)
     return CharSnap(
         key=key,
         room=getattr(room, "vnum", None),
@@ -109,6 +110,7 @@ def _char_snap(key: str, char: object) -> CharSnap:
         affect_flags=_affect_flag_names(char),
         inventory=inventory,
         equipment=equipment,
+        master=_person_key(master_char) if master_char is not None else None,
     )
 
 

@@ -37,6 +37,7 @@ class CharSnap:
     eff_hitroll: int = 0
     eff_damroll: int = 0
     eff_ac: list[int] = field(default_factory=list)
+    master: str | None = None
 
 
 @dataclass
@@ -73,4 +74,5 @@ def step_from_dict(data: dict) -> StepSnap:
 
 def _char_snap_from_dict(c: dict) -> CharSnap:
     c.setdefault("silver", 0)
+    c.setdefault("master", None)
     return CharSnap(**c)

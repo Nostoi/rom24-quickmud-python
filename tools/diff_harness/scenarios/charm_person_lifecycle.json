@@ -1,0 +1,15 @@
+{
+  "name": "charm_person_lifecycle",
+  "seed": 12345,
+  "start_room": 3008,
+  "char": { "name": "Tester", "level": 10 },
+  "watch": { "chars": ["Tester", "thief"], "rooms": [3008] },
+  "steps": [
+    "__seed=777",
+    "__mload=3005",
+    "__charm_mob=1",
+    "look",
+    "__char_update",
+    "__char_update"
+  ]
+}

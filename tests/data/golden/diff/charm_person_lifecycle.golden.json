@@ -1,0 +1,456 @@
+{
+  "scenario": "charm_person_lifecycle",
+  "c_commit": "81aa3a1a7119c470de3929e1efe6c1ae14e62067",
+  "build_flags": "-DOLD_RAND",
+  "seed": 12345,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=777",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__mload=3005",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "thief",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 113,
+          "max_hp": 113,
+          "mana": 100,
+          "move": 100,
+          "level": 8,
+          "align": -100,
+          "gold": 0,
+          "silver": 87,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "sneak",
+            "hide"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 1,
+          "eff_ac": [
+            5,
+            25,
+            15,
+            55
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "thief",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "__charm_mob=1",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "thief",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 113,
+          "max_hp": 113,
+          "mana": 100,
+          "move": 100,
+          "level": 8,
+          "align": -100,
+          "gold": 0,
+          "silver": 87,
+          "fighting": null,
+          "affects": [
+            "charm person"
+          ],
+          "affect_flags": [
+            "sneak",
+            "hide",
+            "charm"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 1,
+          "eff_ac": [
+            5,
+            25,
+            15,
+            55
+          ],
+          "master": "Tester"
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "thief",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "thief",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 113,
+          "max_hp": 113,
+          "mana": 100,
+          "move": 100,
+          "level": 8,
+          "align": -100,
+          "gold": 0,
+          "silver": 87,
+          "fighting": null,
+          "affects": [
+            "charm person"
+          ],
+          "affect_flags": [
+            "sneak",
+            "hide",
+            "charm"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 1,
+          "eff_ac": [
+            5,
+            25,
+            15,
+            55
+          ],
+          "master": "Tester"
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "thief",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Defunct Reception",
+        "\r  You are standing in a dusty, defunct reception.  The staircase leads",
+        "\rdown to the entrance hall.",
+        "\r     The bank's notice of liquidation is taped to the wall.",
+        "\r     The receptionist's letter of resignation is taped to the wall.",
+        ""
+      ]
+    },
+    {
+      "step": 5,
+      "command": "__char_update",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "thief",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 113,
+          "max_hp": 113,
+          "mana": 100,
+          "move": 100,
+          "level": 8,
+          "align": -100,
+          "gold": 0,
+          "silver": 87,
+          "fighting": null,
+          "affects": [
+            "charm person"
+          ],
+          "affect_flags": [
+            "sneak",
+            "hide",
+            "charm"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 1,
+          "eff_ac": [
+            5,
+            25,
+            15,
+            55
+          ],
+          "master": "Tester"
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "thief",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "__char_update",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "thief",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 113,
+          "max_hp": 113,
+          "mana": 100,
+          "move": 100,
+          "level": 8,
+          "align": -100,
+          "gold": 0,
+          "silver": 87,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "sneak",
+            "hide"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 1,
+          "eff_damroll": 1,
+          "eff_ac": [
+            5,
+            25,
+            15,
+            55
+          ],
+          "master": "Tester"
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "thief",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    }
+  ]
+}

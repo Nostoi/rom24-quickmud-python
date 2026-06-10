@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.64] — 2026-06-10
+
+### Added
+
+- **`shop_sell_keeper_broke` C-oracle golden captured** — the one remaining
+  skipped diff-harness scenario now has a C golden and passes (was skipping;
+  diff harness is now 0 skipped).
+- **`charm_person_lifecycle` diff-harness scenario** — new C-oracle guard
+  exercising the full charm/follower lifecycle: `__mload=3005` → `__charm_mob=1`
+  (bypasses immunity, sets `add_follower` + AFF_CHARM + `master`) →
+  2× `__char_update` (charm expires via `affect_remove`, NOT `stop_follower`) →
+  golden confirms `master` remains set on the mob after AFF_CHARM clears
+  (ROM invariant: affect expiry does not detach followers).
+- **`__charm_mob=<duration>` meta-command** added to both `diffmain.c` and
+  `pyreplay.py` — directly charms the first NPC in the room with a given duration,
+  bypassing spell cast / immunity checks. Used by the charm lifecycle scenario.
+- **`master` field added to `CharSnap`** (`tools/diff_harness/schema.py`,
+  `pysnap.py`, `diffmain.c`) — snapshots now record the mob's `ch->master`
+  pointer (as a char key). Backward-compatible: old goldens default to `null`.
+- **`FINDING-033` documented** — Hypothesis `test_generated_no_rng_sequences_match_live_c`
+  found that Python `do_look` lists identical room objects individually while ROM C
+  groups them with `( N) ...` prefix (`show_list_to_char`). Test marked
+  `xfail(strict=False)` pending fix.
+
 ## [2.13.63] — 2026-06-10
 
 ### Fixed
