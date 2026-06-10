@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.72] — 2026-06-10
+
+### Fixed
+
+- **`_apply_regeneration` RNG gating parity** — `_apply_regeneration` was calling
+  `hit_gain`/`mana_gain` unconditionally, consuming one `number_percent()` RNG
+  roll each per tick even when the character was already at max HP/mana. ROM C
+  `src/update.c:698-712` gates the gain functions inside
+  `if (ch->hit < ch->max_hit)` etc. — those branches are never entered at max,
+  so no RNG is consumed. Python now mirrors this gating; characters at full HP
+  or mana no longer advance the RNG state. Enforced by
+  `TestApplyRegenerationRNGGating::test_rng_not_consumed_when_hit_at_max`.
+
+### Added
+
+- **`char_update_regen` diff-harness scenario** — new C-oracle scenario exercising
+  HP/mana/move regeneration via three `__char_update` pulses on a level-5
+  character starting at HP=5, mana=30, move=20. Confirms the regen gain
+  formulas (`hit_gain`/`mana_gain`/`move_gain`) and the RNG-gating fix are
+  parity-correct against ROM C. 29 scenarios, 46 C-oracle tests passing.
+- **`__hp=N` meta-command** — added to `src/diff_shim/diffmain.c` and
+  `tools/diff_harness/pyreplay.py`. Sets `ch->hit` (and `ch->max_hit` if lower)
+  directly, mirroring `__mana=N`. Used to place a character below max HP for
+  regen scenarios.
+- **`__move=N` meta-command** — added to `src/diff_shim/diffmain.c` and
+  `tools/diff_harness/pyreplay.py`. Sets `ch->move` (and `ch->max_move` if
+  lower) directly, completing the resource-setter trio with `__mana=` and `__hp=`.
+
 ## [2.13.71] — 2026-06-10
 
 ### Added

@@ -24,7 +24,7 @@ from __future__ import annotations
 import pytest
 from helpers_player import set_conditions
 
-from mud.game_loop import hit_gain, mana_gain, move_gain
+from mud.game_loop import _apply_regeneration, hit_gain, mana_gain, move_gain
 from mud.models.character import PCData
 from mud.models.constants import (
     AffectFlag,
@@ -727,3 +727,55 @@ class TestCharUpdateEdgeCases:
         gain = hit_gain(player)
 
         assert gain == 0
+
+
+class TestApplyRegenerationRNGGating:
+    """ROM C src/update.c:698-712 — only call hit_gain/mana_gain when resource < max.
+
+    If a character is already at max HP/mana, ROM C never invokes hit_gain/mana_gain,
+    so no number_percent() RNG rolls are consumed. Python must mirror this gating to
+    keep RNG sequences aligned with C across multi-tick scenarios that involve skills
+    (fast_healing, meditation) where the roll value affects the gain.
+    """
+
+    @pytest.mark.p0
+    def test_rng_not_consumed_when_hit_at_max(self):
+        """hit_gain must not be called (no RNG roll) when ch->hit == ch->max_hit.
+
+        Failure mode: _apply_regeneration called hit_gain unconditionally, burning one
+        number_percent() per tick even at full HP, diverging from ROM C call-count.
+        ROM C: if (ch->hit < ch->max_hit) ch->hit += hit_gain(ch);  (update.c:698)
+        """
+        from mud.utils import rng_mm
+
+        player = create_test_character("TestPlayer", 3001)
+        player.is_npc = False
+        player.level = 5
+        player.pcdata = PCData()
+        player.perm_stat = [13, 16, 13, 13, 13]
+        player.mod_stat = [0, 0, 0, 0, 0]
+        player.ch_class = 0
+        # At max HP and mana — these gating calls must be skipped by _apply_regeneration.
+        player.hit = 20
+        player.max_hit = 20
+        player.mana = 100
+        player.max_mana = 100
+        player.move = 100
+        player.max_move = 100
+        player.position = int(Position.STANDING)
+        set_conditions(player, hunger=48, thirst=48)
+
+        # Seed and record the first roll value.
+        rng_mm.seed_mm(42)
+        expected_first_roll = rng_mm.number_percent()
+
+        # Reset; _apply_regeneration on a fully-healed character must NOT advance RNG.
+        rng_mm.seed_mm(42)
+        _apply_regeneration(player)
+        actual_first_roll = rng_mm.number_percent()
+
+        assert actual_first_roll == expected_first_roll, (
+            "RNG was advanced by _apply_regeneration even though hit==max_hit and "
+            "mana==max_mana. hit_gain/mana_gain must not be called when resource==max "
+            "(mirroring ROM C src/update.c:698-712)."
+        )

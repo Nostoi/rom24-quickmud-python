@@ -639,6 +639,34 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __hp=<n>: set the PC's hit (and max_hit if lower) directly.
+         * Used by regen scenarios that need a character at below-max HP. */
+        if (strncmp (line, "__hp=", 5) == 0)
+        {
+            if (ch != NULL)
+            {
+                int val = atoi (line + 5);
+                ch->hit = val;
+                if (ch->max_hit < val)
+                    ch->max_hit = val;
+            }
+            continue;
+        }
+
+        /* __move=<n>: set the PC's move (and max_move if lower) directly.
+         * Mirrors __hp= and __mana= for the movement resource. */
+        if (strncmp (line, "__move=", 7) == 0)
+        {
+            if (ch != NULL)
+            {
+                int val = atoi (line + 7);
+                ch->move = val;
+                if (ch->max_move < val)
+                    ch->max_move = val;
+            }
+            continue;
+        }
+
         /* __level=<n>: set the PC's level directly (no RNG).  Used by
          * generated skill-command scenarios where ROM get_skill gates learned
          * skills by class level. */

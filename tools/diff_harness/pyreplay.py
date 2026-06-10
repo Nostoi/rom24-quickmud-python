@@ -85,6 +85,16 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         char.mana = val
         char.max_mana = max(int(getattr(char, "max_mana", 0) or 0), val)
         return ""
+    if command.startswith("__hp="):
+        val = int(command[len("__hp=") :])
+        char.hit = val
+        char.max_hit = max(int(getattr(char, "max_hit", 0) or 0), val)
+        return ""
+    if command.startswith("__move="):
+        val = int(command[len("__move=") :])
+        char.move = val
+        char.max_move = max(int(getattr(char, "max_move", 0) or 0), val)
+        return ""
     if command.startswith("__level="):
         char.level = int(command[len("__level=") :])
         return ""

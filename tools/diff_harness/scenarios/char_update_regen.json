@@ -1,0 +1,15 @@
+{
+  "name": "char_update_regen",
+  "seed": 12345,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__hp=5",
+    "__mana=30",
+    "__move=20",
+    "__char_update",
+    "__char_update",
+    "__char_update"
+  ]
+}

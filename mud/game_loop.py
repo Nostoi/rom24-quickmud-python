@@ -534,17 +534,29 @@ def _decay_worn_light(character: Character) -> None:
 
 
 def _apply_regeneration(character: Character) -> None:
-    hit = hit_gain(character)
-    if hit:
-        character.hit = min(int(getattr(character, "max_hit", 0)), int(getattr(character, "hit", 0)) + hit)
+    # Mirror ROM C src/update.c:698-712 — gate each gain call on resource < max.
+    # hit_gain/mana_gain each call number_percent() once; calling them at full
+    # resources would consume phantom RNG rolls and diverge from C's call-count.
+    cur_hit = int(getattr(character, "hit", 0))
+    max_hit = int(getattr(character, "max_hit", 0))
+    if cur_hit < max_hit:
+        character.hit = min(max_hit, cur_hit + hit_gain(character))
+    else:
+        character.hit = max_hit
 
-    mana = mana_gain(character)
-    if mana:
-        character.mana = min(int(getattr(character, "max_mana", 0)), int(getattr(character, "mana", 0)) + mana)
+    cur_mana = int(getattr(character, "mana", 0))
+    max_mana = int(getattr(character, "max_mana", 0))
+    if cur_mana < max_mana:
+        character.mana = min(max_mana, cur_mana + mana_gain(character))
+    else:
+        character.mana = max_mana
 
-    move = move_gain(character)
-    if move:
-        character.move = min(int(getattr(character, "max_move", 0)), int(getattr(character, "move", 0)) + move)
+    cur_move = int(getattr(character, "move", 0))
+    max_move = int(getattr(character, "max_move", 0))
+    if cur_move < max_move:
+        character.move = min(max_move, cur_move + move_gain(character))
+    else:
+        character.move = max_move
 
     skill_registry.tick(character)
 
