@@ -1,39 +1,38 @@
-# Session Status — 2026-06-10 — char_update regen affect-penalty scenarios (2.13.78)
+# Session Status — 2026-06-10 — GL-038 PLAGUE Fix + Regen Scenarios (PLAGUE/SLOW/Room Rates) (2.13.80)
 
 ## Current State
 
 - **Active mode**: cross-file invariants pass
 - **Last completed**:
-  - **`__add_affect=<bit>` meta-command** — new diff-harness primitive in both
-    `src/diff_shim/diffmain.c` and `tools/diff_harness/pyreplay.py`. ORs an AFF_*
-    bitmask into `ch->affected_by` without a spell AFFECT_DATA entry, letting scenarios
-    exercise IS_AFFECTED regen divisor branches independently of tick-handler logic.
-  - **`char_update_regen_poison` scenario** — mage (class 0, level 5), sleeping
-    (position=4), HP=1/mana=5/move=5, `__add_affect=4096` (AFF_POISON). Three
-    `__char_update` pulses. C oracle confirms POISON ÷4 divisor:
-    HP 1→3→5→7 (+2/pulse), mana 5→9→13→17 (+4/pulse), move 5→12→19→26 (+7/pulse).
-  - **`char_update_regen_haste` scenario** — same setup, `__add_affect=2097152`
-    (AFF_HASTE). C oracle confirms HASTE ÷2 divisor:
-    HP 1→6→11→16 (+5/pulse), mana 5→13→21→29 (+8/pulse), move 5→19→33→47 (+14/pulse).
-  - **2 unit tests** (`test_drive_python_replay_poison_affect_halves_regen_by_four`,
-    `test_drive_python_replay_haste_affect_halves_regen_by_two`) — verify gains after
-    one pulse against C-oracle ground truth.
-  - **AFF_PLAGUE deferred**: Python `_char_update_tick_effects` clears orphan PLAGUE bit
-    (no spell-affect entry); C does not. Fix Python first, then author scenario.
+  - **GL-038 fix** — `_char_update_tick_effects` plague tick gate changed from bitmask
+    (`has_affect(AffectFlag.PLAGUE)`) to spell-affect list scan, matching ROM's
+    `is_affected(ch, gsn_plague)`. Removed orphan-bit clearing. Mobs with innate
+    AFF_PLAGUE (no spell entry) now correctly keep the bitmask and regen at ÷8
+    every pulse without triggering the tick loop.
+  - **`char_update_regen_plague` scenario** — C oracle confirms orphan PLAGUE bit
+    persists across all pulses; ÷8 divisor applies every pulse.
+    HP: 1→2→3→4 (+1), mana: 5→7→9→11 (+2), move: 5→8→11→14 (+3).
+  - **`char_update_regen_slow` scenario** — AFF_SLOW ÷2 divisor (same branch as HASTE);
+    HP+5/mana+8/move+14 per pulse.
+  - **`__set_heal_rate=N` and `__set_mana_rate=N` meta-commands** — added to both
+    `diffmain.c` and `pyreplay.py`; allow direct room-rate manipulation in scenarios.
+  - **`char_update_regen_room_rates` scenario** — confirms `heal_rate` scales HP+move,
+    `mana_rate` scales only mana (independent multipliers). Python already correct.
+  - **3 unit tests** added to `tests/test_diff_harness_unit.py` (plague/slow/room_rates).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_AFFECT_PENALTY_SCENARIOS.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_AFFECT_PENALTY_SCENARIOS.md)
+  [SESSION_SUMMARY_2026-06-10_GL038_PLAGUE_FIX_AND_REGEN_SCENARIOS.md](SESSION_SUMMARY_2026-06-10_GL038_PLAGUE_FIX_AND_REGEN_SCENARIOS.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.78 |
-| Tests | 5538 passed, 4 skipped (full suite) |
+| Version | 2.13.80 |
+| Tests | 5544 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 26 enforced |
-| Diff-harness scenarios | 36 scenarios, 59 C-oracle tests passing, 0 skipped, 0 xfailed |
+| Diff-harness scenarios | 39 scenarios, 65 C-oracle tests passing, 0 skipped, 0 xfailed |
 | FINDINGS.md highest ID | FINDING-033 (✅ RESOLVED — all findings resolved) |
-| Effects integration tests | 37 / 37 passing |
+| GL-038 | ✅ FIXED (plague tick gate bitmask vs spell-list) |
 
 ## Next Intended Task
 
@@ -42,19 +41,13 @@ Cross-file invariants remains the active pass. Concrete candidates:
 1. **MATH-002/003/004** — ⚠️ OPEN hygiene items in `docs/parity/audits/MATH_AND_RNG.md`
    (LOW severity, no observable gap). Held for a future PARITY008 lint rule.
 
-2. **Next cross-INV candidate** — probe affect-tick contracts or position-transition
-   edges for divergences not yet covered by an INV row. Pick a candidate area not
-   yet covered (affect-tick timing, position-transition sequencing, group/follower
-   chain), run the 5-minute probe (read ROM C contract → read Python equivalent →
-   write one failing test), then either close as a gap-closer commit or file as the
-   next free INV-NNN in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
+2. **Furniture bonus scenario**: SLEEPING PC on furniture with nonzero `value[3]`/`value[4]`
+   — no existing furniture objects with non-100 values in game data; requires a `__oload` +
+   `__set_on=` meta-command to set `char.on` to a furniture object. Design `__set_on` for
+   both pyreplay.py and diffmain.c.
 
-3. **Remaining diff-harness candidates** — affect-penalty (POISON, HASTE) now covered.
-   Next expansions:
-   - **AFF_PLAGUE fix + scenario**: fix Python orphan-bit clearing in
-     `_char_update_tick_effects`, then author C-oracle scenario.
-   - **AFF_SLOW scenario**: check orphan-bit status, then author scenario (÷2 like HASTE).
-   - **Furniture bonus scenario**: SLEEPING PC on furniture with nonzero `value[3]`/
-     `value[4]` — C-oracle verifying `gain * value[3] / 100` and `gain * value[4] / 100`
-     multipliers in `hit_gain`/`mana_gain`/`move_gain`.
-   - **`heal_rate` / `mana_rate` room multiplier scenario** (rooms with non-100 rates).
+3. **Next cross-INV candidate** — probe affect-tick contracts or position-transition edges for
+   divergences not yet covered by an INV row. Candidates: affect-tick timing, position-transition
+   sequencing, group/follower chain. Method: pick a candidate, run 5-minute probe (ROM C
+   contract → Python equivalent → one failing test), then either gap-closer commit or file
+   as the next free INV-NNN in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
