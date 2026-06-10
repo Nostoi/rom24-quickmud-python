@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.70] — 2026-06-10
+
+### Fixed
+
+- **EFFECTS-005: `poison_effect` poison affect missing** — `poison_effect` TARGET_CHAR
+  was not applying the ROM poison affect (ROM `src/effects.c:461-477`):
+  `affect_join` with AFF_POISON, -1 STR, duration=level/2,
+  wear_off="You feel less sick.". The `# TODO` stub replaced with
+  `apply_spell_effect(SpellEffect("poison", ...))`. Room broadcast
+  `"$n looks very ill."` added with PERS masking via `act_to_room`.
+  Completes the EFFECTS_C_AUDIT (003/004/005 all closed; audit now 100%).
+  4 tests added (`test_poison_affect_applied_on_failed_save`,
+  `test_poison_affect_not_applied_on_saved`, `test_poison_wear_off_message`,
+  `test_poison_duration_scales_with_level`).
+
 ## [2.13.69] — 2026-06-10
 
 ### Fixed

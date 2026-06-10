@@ -4,7 +4,7 @@
 **Created**: January 3, 2026  
 **Completed**: January 5, 2026  
 **Priority**: ✅ **P0 - COMPLETE** (100% ROM C parity achieved)  
-**Status**: ⚠️ **PARTIAL — EFFECTS-005 open** (EFFECTS-001/002/003/004 closed; poison affect TODO remains)
+**Status**: ✅ **100% COMPLETE** (EFFECTS-001/002/003/004/005 all closed)
 
 ---
 
@@ -19,7 +19,7 @@ These functions are called by spell handlers to apply damage-over-time effects l
 
 **ROM C Location**: `src/effects.c`  
 **QuickMUD Location**: `mud/magic/effects.py`  
-**Integration Tests**: `tests/integration/test_environmental_effects.py` (23/23 passing)
+**Integration Tests**: `tests/integration/test_environmental_effects.py` (37/37 passing)
 
 ---
 
@@ -28,11 +28,11 @@ These functions are called by spell handlers to apply damage-over-time effects l
 ✅ **Phase 1: Function Inventory** - COMPLETE (5/5 functions identified)  
 ✅ **Phase 2: QuickMUD Mapping** - COMPLETE (all functions mapped)  
 ✅ **Phase 3: Implementation** - COMPLETE (740 LOC with full ROM C behavior)  
-✅ **Phase 4: Integration Tests** - COMPLETE (23/23 tests passing)
+✅ **Phase 4: Integration Tests** - COMPLETE (37/37 tests passing)
 
 **Total Implementation**: 740 lines of Python (replacing 87 lines of stubs)  
-**Test Coverage**: 23 integration tests verifying ROM C behavioral parity  
-**Completion Date**: January 5, 2026
+**Test Coverage**: 37 integration tests verifying ROM C behavioral parity  
+**Completion Date**: January 5, 2026; EFFECTS-003/004/005 closed 2026-06-10
 
 ---
 
@@ -281,7 +281,7 @@ def _calculate_chance(level: int, damage: int, obj: Object, item_type_modifier: 
 | EFFECTS-002 | `fire_effect()` | 341 | `gain_condition(victim, COND_THIRST, dam/20)` missing in TARGET_CHAR | ✅ FIXED v2.13.67 |
 | EFFECTS-003 | `cold_effect()` | 224-230 | chill touch affect_join (-1 STR, dur=6) missing — stale ✅ in prior audit | ✅ FIXED v2.13.68 |
 | EFFECTS-004 | `fire_effect()` | 329-336 | fire breath affect_to_char (AFF_BLIND, -4 hitroll, dur=0..level/10) missing — stale ✅ | ✅ FIXED v2.13.69 |
-| EFFECTS-005 | `poison_effect()` | 471-477 | poison affect_join (AFF_POISON, -1 STR, dur=level/2) missing — stale ✅ in prior audit | ⚠️ OPEN |
+| EFFECTS-005 | `poison_effect()` | 471-477 | poison affect_join (AFF_POISON, -1 STR, dur=level/2) missing — stale ✅ in prior audit | ✅ FIXED v2.13.70 |
 
 ---
 

@@ -615,3 +615,52 @@ class TestFireEffectBlindness:
         effect = victim.spell_effects.get("fire breath")
         assert effect is not None
         assert effect.wear_off_message == "The smoke leaves your eyes."
+
+
+class TestPoisonEffectCharAffect:
+    """EFFECTS-005: poison_effect TARGET_CHAR applies poison affect on failed save.
+
+    ROM C: src/effects.c:461-477 — affect_join with type=gsn_poison,
+    level=level, duration=level/2, location=APPLY_STR, modifier=-1,
+    bitvector=AFF_POISON.
+    """
+
+    def _make_char(self, level: int = 20) -> Character:
+        return Character(name="Vic", level=level, is_npc=False, saving_throw=0, messages=[])
+
+    def test_poison_affect_applied_on_failed_save(self, monkeypatch):
+        # EFFECTS-005: failed save → AFF_POISON set and SpellEffect "poison"
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        victim = self._make_char(level=20)
+        poison_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        assert victim.affected_by & int(AffectFlag.POISON), "AFF_POISON not set"
+        assert victim.has_spell_effect("poison"), "poison affect not applied"
+        effect = victim.spell_effects["poison"]
+        assert effect.duration == 20 // 2  # level/2
+        assert effect.stat_modifiers.get(Stat.STR) == -1
+
+    def test_poison_affect_not_applied_on_saved(self, monkeypatch):
+        # EFFECTS-005: passed save → no poison affect
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: True)
+        victim = self._make_char()
+        poison_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        assert not (victim.affected_by & int(AffectFlag.POISON))
+        assert not victim.has_spell_effect("poison")
+
+    def test_poison_wear_off_message(self, monkeypatch):
+        # ROM const.c:1389 — msg_off for "poison" is "You feel less sick."
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        victim = self._make_char(level=20)
+        poison_effect(victim, level=20, damage=100, target_type=SpellTarget.TARGET_CHAR)
+        effect = victim.spell_effects.get("poison")
+        assert effect is not None
+        assert effect.wear_off_message == "You feel less sick."
+
+    def test_poison_duration_scales_with_level(self, monkeypatch):
+        # ROM src/effects.c:473 — af.duration = level/2
+        monkeypatch.setattr(_effects_mod, "saves_spell", lambda *_: False)
+        victim = self._make_char(level=30)
+        poison_effect(victim, level=30, damage=50, target_type=SpellTarget.TARGET_CHAR)
+        effect = victim.spell_effects.get("poison")
+        assert effect is not None
+        assert effect.duration == 15  # 30/2

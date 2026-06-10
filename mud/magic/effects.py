@@ -654,13 +654,28 @@ def poison_effect(target: Any, level: int, damage: int, target_type: int | Spell
 
         victim = target
 
-        # ROM L462-478: Poison affect application
+        # ROM L462-478: Poison affect — affect_join; mirroring src/effects.c:461-477
         save_level = c_div(level, 4) + c_div(damage, 20)
         if not saves_spell(save_level, victim, int(DamageType.POISON)):
-            # Apply poison affect (gsn_poison: AFF_POISON, -1 STR, duration level/2)
-            # TODO: Implement full affect_to_char with skill_lookup("poison")
-            if hasattr(victim, "messages") and isinstance(victim.messages, list):
-                _push_message(victim, "You feel poison coursing through your veins.")
+            from mud.models.character import SpellEffect
+            from mud.models.constants import Stat
+
+            victim.apply_spell_effect(
+                SpellEffect(
+                    name="poison",
+                    duration=c_div(level, 2),
+                    level=level,
+                    stat_modifiers={Stat.STR: -1},
+                    affect_flag=AffectFlag.POISON,
+                    wear_off_message="You feel less sick.",
+                )
+            )
+            _push_message(victim, "You feel poison coursing through your veins.")
+            room = getattr(victim, "room", None)
+            if room is not None:
+                from mud.utils.act import act_to_room
+
+                act_to_room(room, "$n looks very ill.", victim)
 
         # ROM L481-485: Process inventory
         inventory = list(getattr(victim, "inventory", []))
