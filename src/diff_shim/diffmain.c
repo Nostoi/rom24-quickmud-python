@@ -727,6 +727,15 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __cond_drunk=<n>: set the PC's condition[DRUNK] directly (no RNG).
+         * Mirrors the Python-side __cond_drunk handler in pyreplay.py. */
+        if (strncmp (line, "__cond_drunk=", 13) == 0)
+        {
+            if (ch != NULL && ch->pcdata != NULL)
+                ch->pcdata->condition[COND_DRUNK] = atoi (line + 13);
+            continue;
+        }
+
         /* __mload=<vnum>: spawn a fresh mob into the PC's current room
          * (ROM create_mobile + char_to_room). */
         if (strncmp (line, "__mload=", 8) == 0)

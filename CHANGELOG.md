@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.71] — 2026-06-10
+
+### Added
+
+- **`char_update_condition_decay` diff-harness scenario** — new C-oracle scenario
+  exercising tick-based hunger/thirst/drunk drain via `__char_update`. Sets
+  COND_HUNGER=2, COND_THIRST=2, COND_DRUNK=2, runs two `char_update` pulses;
+  the second tick drains all three to 0, producing "You are hungry.",
+  "You are thirsty.", "You are sober." in ROM's DRUNK→FULL→THIRST→HUNGER
+  dispatch order (`src/update.c:755-759`). Confirms `gain_condition` parity
+  for the negative-delta drain path.
+- **`__cond_drunk=N` meta-command** — added to both `tools/diff_harness/pyreplay.py`
+  and `src/diff_shim/diffmain.c` (`COND_DRUNK` index 0) so scenarios can
+  set the drunk condition directly. Mirrors the existing `__cond_hunger`,
+  `__cond_thirst`, `__cond_full` meta-commands.
+  28 scenarios now, 47 C-oracle tests passing.
+
 ## [2.13.70] — 2026-06-10
 
 ### Fixed

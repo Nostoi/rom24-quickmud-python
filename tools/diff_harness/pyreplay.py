@@ -128,6 +128,12 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         if char.pcdata is not None:
             char.pcdata.condition[int(Condition.HUNGER)] = int(command[len("__cond_hunger=") :])
         return ""
+    if command.startswith("__cond_drunk="):
+        from mud.models.constants import Condition
+
+        if char.pcdata is not None:
+            char.pcdata.condition[int(Condition.DRUNK)] = int(command[len("__cond_drunk=") :])
+        return ""
     if command.startswith("__learn="):
         from mud.skills import skill_registry
 
