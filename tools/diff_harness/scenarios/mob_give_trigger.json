@@ -1,0 +1,19 @@
+{
+    "name": "mob_give_trigger",
+    "seed": 1234,
+    "start_room": 3001,
+    "char": { "name": "Tester", "level": 5 },
+    "watch": { "chars": ["Tester", "sailor"], "rooms": [3001] },
+    "steps": [
+        "__seed=4321",
+        "__mload=3007",
+        "__mob_gold=0",
+        "__mob_silver=0",
+        "__mob_prog=give:3028:say GIVE trigger fired!",
+        "__oload=3028",
+        "look",
+        "get staff",
+        "give staff sailor",
+        "look"
+    ]
+}

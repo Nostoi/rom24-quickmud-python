@@ -235,8 +235,16 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    (`src/mob_prog.c:1271-1276`), GRALL as the fallback branch in
    `mp_greet_trigger` when the mob is not at `default_pos`
    (`src/mob_prog.c:1333-1345`). All deterministic MEdit trigger types now
-   covered; next step is RNG-locked paths (only after seed alignment is proven)
-   or a diff-harness scenario for movement-based triggers.
+   covered. **Diff-harness C-oracle for ACT/BRIBE/GIVE (2.13.55):**
+   `mob_act_trigger.json`, `mob_bribe_trigger.json`, and `mob_give_trigger.json`
+   scenarios capture C-oracle ground truth for the three remaining deterministic
+   dispatch paths. ACT fires via `act("$n stands up.",...)→mp_act_trigger`
+   (`src/comm.c:2385`); BRIBE fires when `amount >= atoi(trig_phrase)` in silver
+   (`src/act_obj.c:735`); GIVE fires on object-give by vnum match
+   (`src/mob_prog.c:1195-1242`). Python and C agree on all three (5,484 tests
+   pass). All deterministic Class 11 mobprog trigger dispatch paths now have
+   C-oracle ground truth. RNG-locked paths (TRIG_RANDOM, TRIG_DELAY) deferred
+   until a reproducible seed sequence is proven.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

@@ -1,0 +1,729 @@
+{
+  "scenario": "mob_give_trigger",
+  "c_commit": "77e4da27f10c70606ce99789509c0799989a74a3",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=4321",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__mload=3007",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "__mob_gold=0",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "__mob_silver=0",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__mob_prog=give:3028:say GIVE trigger fired!",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "__oload=3028",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            3028
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 7,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": [
+            3028
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\r     A stout wooden staff lies on the floor.",
+        "\rA sailor stands here, waiting to train you.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "get staff",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3028
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou get a wooden staff.",
+        ""
+      ]
+    },
+    {
+      "step": 9,
+      "command": "give staff sailor",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3028
+          ],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou give a wooden staff to the sailor.",
+        "\rThe sailor says 'GIVE trigger fired!'",
+        ""
+      ]
+    },
+    {
+      "step": 10,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ]
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3028
+          ],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ]
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rA sailor stands here, waiting to train you.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    }
+  ]
+}
