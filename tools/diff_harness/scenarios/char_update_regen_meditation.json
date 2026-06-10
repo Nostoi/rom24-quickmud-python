@@ -1,0 +1,18 @@
+{
+  "name": "char_update_regen_meditation",
+  "seed": 12345,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__hp=100",
+    "__mana=20",
+    "__move=20",
+    "__level=6",
+    "__learn=meditation",
+    "__seed=12345",
+    "__char_update",
+    "__char_update",
+    "__char_update"
+  ]
+}

@@ -139,9 +139,24 @@ def _get_skill_percent(character: Character, skill_name: str) -> int:
     if direct is None:
         direct = skills.get(skill_name.lower())
     try:
-        return int(direct or 0)
+        value = int(direct or 0)
     except (TypeError, ValueError):
         return 0
+    if value <= 0:
+        return 0
+    # ROM src/handler.c get_skill: return 0 if ch->level < skill_table[sn].skill_level[ch->class]
+    skill_obj = skill_registry.skills.get(skill_name) or skill_registry.skills.get(skill_name.lower())
+    if skill_obj is not None:
+        levels = getattr(skill_obj, "levels", None)
+        if isinstance(levels, list | tuple) and len(levels) > 0:
+            class_index = int(getattr(character, "ch_class", 0) or 0)
+            try:
+                req = int(levels[class_index])
+            except (IndexError, TypeError, ValueError):
+                req = 0
+            if req > 0 and int(getattr(character, "level", 0) or 0) < req:
+                return 0
+    return value
 
 
 def hit_gain(character: Character) -> int:

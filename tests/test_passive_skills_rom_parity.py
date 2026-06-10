@@ -83,7 +83,7 @@ class TestMeditation:
         char.level = 10
         char.perm_stat = [15, 15, 15, 15, 15]
         char.mod_stat = [0, 0, 0, 0, 0]
-        char.ch_class = 2
+        char.ch_class = 1  # cleric: meditation requires level 6
         char.skills["meditation"] = 75
         char.mana = 50
         char.max_mana = 100
@@ -100,7 +100,7 @@ class TestMeditation:
         char.level = 10
         char.perm_stat = [15, 15, 15, 15, 15]
         char.mod_stat = [0, 0, 0, 0, 0]
-        char.ch_class = 2
+        char.ch_class = 1  # cleric: meditation requires level 6
         char.skills["meditation"] = 30
         char.mana = 50
         char.max_mana = 100
