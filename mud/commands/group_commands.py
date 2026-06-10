@@ -6,6 +6,7 @@ ROM Reference: src/act_comm.c (follow, group, order, gtell, split)
 
 from __future__ import annotations
 
+from mud.characters.follow import add_follower, stop_follower
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, PlayerFlag
 from mud.world.char_find import get_char_room
@@ -51,72 +52,6 @@ def _display_name(character: Character | None) -> str:
     if isinstance(short_descr, str) and short_descr:
         return short_descr
     return "Someone"
-
-
-def add_follower(char: Character, master: Character) -> None:
-    """
-    Add char as a follower of master.
-
-    ROM Reference: src/act_comm.c add_follower (lines 1591-1607)
-    """
-    if char.master is not None:
-        return  # Already following someone
-
-    char.master = master
-    char.leader = None
-
-    # Add to master's follower list if exists
-    if hasattr(master, "followers"):
-        if char not in master.followers:
-            master.followers.append(char)
-
-    # ROM lines 1602-1605: act("$n now follows you.", ch, NULL, master, TO_VICT)
-    # gated on can_see(master, ch); act("You now follow $N.", ch, NULL, master, TO_CHAR).
-    from mud.world.vision import can_see_character
-
-    if can_see_character(master, char):
-        # INV-001: single-channel delivery (XOR) — see _send_to_char_sync.
-        _send_to_char_sync(master, f"{_display_name(char)} now follows you.")
-
-    _send_to_char_sync(char, f"You now follow {_display_name(master)}.")
-
-
-def stop_follower(char: Character) -> None:
-    """
-    Stop following the current master.
-
-    ROM Reference: src/act_comm.c stop_follower (lines 1630-1660)
-    """
-    master = char.master
-    if master is None:
-        return
-
-    # Remove charm affect if present
-    affected_by = getattr(char, "affected_by", 0)
-    if affected_by & AffectFlag.CHARM:
-        char.affected_by = affected_by & ~AffectFlag.CHARM
-
-    # Remove from master's follower list
-    if hasattr(master, "followers") and char in master.followers:
-        master.followers.remove(char)
-
-    # ROM lines 1626-1630: act("$n stops following you.", ch, NULL, ch->master, TO_VICT);
-    # act("You stop following $N.", ch, NULL, ch->master, TO_CHAR); gated on
-    # can_see(ch->master, ch) && ch->in_room != NULL.
-    from mud.world.vision import can_see_character
-
-    if can_see_character(master, char) and getattr(char, "room", None) is not None:
-        # INV-001: single-channel delivery (XOR) — see _send_to_char_sync.
-        _send_to_char_sync(master, f"{_display_name(char)} stops following you.")
-        _send_to_char_sync(char, f"You stop following {_display_name(master)}.")
-
-    # ROM src/act_comm.c:1631-1632 — stop_follower always clears
-    # ch->master->pet when it points at ch, independent of current charm state.
-    if getattr(master, "pet", None) is char:
-        master.pet = None
-
-    char.master = None
-    char.leader = None
 
 
 def is_same_group(ach: Character, bch: Character) -> bool:

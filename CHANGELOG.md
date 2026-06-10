@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.82] — 2026-06-10
+
+### Fixed
+
+- **`group_commands.py` stale `add_follower`/`stop_follower` dedup** — deleted
+  local duplicate implementations from `mud/commands/group_commands.py`; both
+  functions now imported from the canonical `mud.characters.follow` module.
+  The local `stop_follower` only bit-cleared `affected_by` and never called
+  `remove_spell_effect("charm person")` (diverging from ROM `affect_strip`),
+  and the local `add_follower` silently returned early on any non-None master
+  instead of stopping the prior follow first. Charm-strip path was unreachable
+  via `do_follow` (charmed chars are blocked before `stop_follower` is called),
+  but the duplication was a maintenance hazard.
+- **Layer-A guard test** — `tests/test_follow_canonical.py` bans local
+  redefinitions of `add_follower`/`stop_follower` in `group_commands.py` and
+  asserts both are imported from `mud.characters.follow`.
+
 ## [2.13.81] — 2026-06-10
 
 ### Added
