@@ -1,29 +1,29 @@
-# Session Status — 2026-06-10 — char_update regen scenario + RNG gating fix (2.13.72)
+# Session Status — 2026-06-10 — char_update regen meditation scenario + level-gating fix (2.13.73)
 
 ## Current State
 
 - **Active mode**: cross-file invariants pass
 - **Last completed**:
-  - **`_apply_regeneration` RNG gating fix** — `hit_gain`/`mana_gain` were called
-    unconditionally, consuming phantom `number_percent()` rolls at max HP/mana.
-    Fixed to gate on `resource < max`, mirroring ROM C `src/update.c:698-712`.
-    Enforcement test added: `TestApplyRegenerationRNGGating::test_rng_not_consumed_when_hit_at_max`.
-  - **`__hp=N` and `__move=N` meta-commands** — added to both `diffmain.c` and
-    `pyreplay.py` (symmetric with `__mana=N`). C binary rebuilt.
-  - **`char_update_regen` scenario** — level-5 mage, HP=5/mana=30/move=20, three
-    `__char_update` pulses. 29 scenarios, 46 C-oracle tests passing.
+  - **`_get_skill_percent` level-gating fix** — Python's `_get_skill_percent` returned the raw
+    skill value without checking ROM C's class-specific level requirement. ROM C
+    `src/handler.c get_skill()` returns 0 when `ch->level < skill_table[sn].skill_level[ch->class]`.
+    Python now checks `skill_registry` metadata and returns 0 if the requirement is not met.
+  - **`char_update_regen_meditation` scenario** — level-6 mage learns meditation, mana=20/max=100,
+    three `__char_update` pulses with `__seed=12345` to resync RNG before the first roll-dependent
+    step. C oracle confirms mana progression 20→25→33→41 (rolls 24, 97, 90 from seed 12345).
+    30 scenarios, 48 C-oracle tests passing.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_SCENARIO.md)
+  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_MEDITATION_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_MEDITATION_SCENARIO.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.72 |
-| Tests | 5525 passed, 4 skipped (full suite) |
+| Version | 2.13.73 |
+| Tests | 5526 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 26 enforced |
-| Diff-harness scenarios | 29 scenarios, 46 C-oracle tests passing, 0 skipped, 0 xfailed |
+| Diff-harness scenarios | 30 scenarios, 48 C-oracle tests passing, 0 skipped, 0 xfailed |
 | FINDINGS.md highest ID | FINDING-033 (✅ RESOLVED — all findings resolved) |
 | Effects integration tests | 37 / 37 passing |
 
@@ -41,6 +41,7 @@ Cross-file invariants remains the active pass. Concrete candidates:
    write one failing test), then either close as a gap-closer commit or file as the
    next free INV-NNN in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
 
-3. **`char_update_regen` skill variant** — follow-on scenario with `__learn=meditation`
-   + below-max mana to exercise the roll-dependent mana gain path as a regression guard
-   for the RNG gating fix under skill activation.
+3. **`fast_healing` diff-harness scenario** — symmetric follow-on to the meditation
+   scenario: `__learn=fast_healing` with a warrior (class 3, req level 6) at
+   below-max HP to exercise the HP-side roll-dependent bonus path and confirm
+   `_get_skill_percent` level gating is correct for `hit_gain`.

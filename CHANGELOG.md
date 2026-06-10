@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.73] — 2026-06-10
+
+### Fixed
+
+- **`_get_skill_percent` level-gating parity** — Python's `_get_skill_percent`
+  returned the raw skill value regardless of whether the character met the
+  class-specific level requirement. ROM C `src/handler.c get_skill()` returns 0
+  when `ch->level < skill_table[sn].skill_level[ch->class]`. Python now checks
+  `skill_registry` metadata (populated from `ROM_SKILL_METADATA` `"levels"` key)
+  and returns 0 if the level requirement is not met. Affects `hit_gain`
+  (fast_healing) and `mana_gain` (meditation) in `game_loop.py`.
+
+### Added
+
+- **`char_update_regen_meditation` diff-harness scenario** — new C-oracle scenario
+  exercising the roll-dependent mana-gain path with `meditation` active. Level-6
+  mage, mana=20/max=100, three `__char_update` pulses with `__seed=12345`
+  injected before the first pulse to resync RNG state against C. Confirms skill
+  bonus application and the `_get_skill_percent` level-gating fix are parity-
+  correct against ROM C. 30 scenarios, 48 C-oracle tests passing.
+
 ## [2.13.72] — 2026-06-10
 
 ### Fixed
