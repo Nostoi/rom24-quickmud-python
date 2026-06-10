@@ -220,6 +220,15 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
             raise AssertionError("no NPC in room for __mob_position")
         mob.position = Position(new_pos)
         return ""
+    if command.startswith("__mob_hp="):
+        from mud.spawning.templates import MobInstance
+
+        val = int(command[len("__mob_hp=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is None:
+            raise AssertionError("no NPC in room for __mob_hp")
+        mob.hit = val
+        return ""
 
     # Mirror the C shim's direct interpret() path, which bypasses comm.c's wait
     # gate. FINDING-014 documents the architectural divergence.

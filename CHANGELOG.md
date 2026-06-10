@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.56] — 2026-06-09
+
+### Added
+
+- **`__mob_hp=<n>` meta-command** (`src/diff_shim/diffmain.c`,
+  `tools/diff_harness/pyreplay.py`): sets the first NPC's current hit points to
+  `<n>` without touching `max_hit`. Enables HPCNT-threshold staging without
+  combat-RNG dependency.
+- **TRIG_SURR C-oracle scenario** (`tools/diff_harness/scenarios/mob_surr_trigger.json`,
+  `tests/data/golden/diff/mob_surr_trigger.golden.json`): confirms `mp_surr_trigger`
+  fires when a PC surrenders to a mob with `TRIG_SURR` set. The mob acknowledges
+  the surrender (no retaliation) instead of retaliating with `multi_hit`
+  (`src/fight.c:3235-3241`). Python and C agree.
+- **TRIG_FIGHT C-oracle scenario** (`tools/diff_harness/scenarios/mob_fight_trigger.json`,
+  `tests/data/golden/diff/mob_fight_trigger.golden.json`): confirms `mp_fight_trigger`
+  fires each `violence_update` round after the NPC's `multi_hit`, dispatched from
+  `src/fight.c:92-98` (INV-026 dispatch site). Python and C agree.
+- **TRIG_HPCNT C-oracle scenario** (`tools/diff_harness/scenarios/mob_hpcnt_trigger.json`,
+  `tests/data/golden/diff/mob_hpcnt_trigger.golden.json`): confirms `mp_hprct_trigger`
+  fires when mob HP falls below the percent threshold (`100*mob->hit/mob->max_hit
+  < atoi(trig_phrase)`, `src/mob_prog.c:1357`). Uses `__mob_hp=10` to stage mob
+  below the 50% threshold. Python and C agree.
+
+### Fixed
+
+- **`_room_occupant_line` fighting-target string** (`mud/world/look.py`): the
+  `FIGHTING` position branch now correctly outputs `"YOU!"` when the mob is
+  targeting the observer (mirroring `src/act_info.c:408`), appends `"."` for a
+  same-room non-observer target (`:411-413`), and falls back to `"thin air??"` or
+  `"someone who left??"` for the two edge cases. Previously only called
+  `describe_character(observer, fighting)` which returned `"You"` instead of
+  `"YOU!"`.
+
 ## [2.13.55] — 2026-06-09
 
 ### Added

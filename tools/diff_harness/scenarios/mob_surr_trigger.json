@@ -1,0 +1,17 @@
+{
+    "name": "mob_surr_trigger",
+    "seed": 1234,
+    "start_room": 3008,
+    "char": { "name": "Tester", "level": 5 },
+    "watch": { "chars": ["Tester", "drunk"], "rooms": [3008] },
+    "steps": [
+        "__seed=777",
+        "__mload=3064",
+        "__mob_prog=surr:100:say SURR trigger fired!",
+        "__seed=777",
+        "look",
+        "kill drunk",
+        "surrender",
+        "look"
+    ]
+}

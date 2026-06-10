@@ -244,7 +244,22 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    (`src/mob_prog.c:1195-1242`). Python and C agree on all three (5,484 tests
    pass). All deterministic Class 11 mobprog trigger dispatch paths now have
    C-oracle ground truth. RNG-locked paths (TRIG_RANDOM, TRIG_DELAY) deferred
-   until a reproducible seed sequence is proven.
+   until a reproducible seed sequence is proven. **Diff-harness C-oracle for
+   SURR/FIGHT/HPCNT (2.13.56):** `mob_surr_trigger.json`,
+   `mob_fight_trigger.json`, and `mob_hpcnt_trigger.json` extend C-oracle coverage
+   to combat-path triggers. SURR fires when the PC surrenders to an NPC that has
+   `TRIG_SURR` and `mp_percent_trigger` succeeds (`src/fight.c:3235-3241`). FIGHT
+   fires once per `violence_update` round via `mp_fight_trigger` after the NPC's
+   `multi_hit` completes (`src/fight.c:92-98`). HPCNT fires when mob HP percent
+   falls below the threshold (`100*mob->hit/mob->max_hit < atoi(trig_phrase)`,
+   `src/mob_prog.c:1357`). New `__mob_hp=<n>` meta-command stages the mob below
+   threshold without combat-RNG dependency (added to both diffmain.c and
+   pyreplay.py). **Parity fix (2.13.56):** `_room_occupant_line` `FIGHTING`
+   branch in `mud/world/look.py` now correctly outputs `"YOU!"` when the mob's
+   target is the observer and appends `"."` for same-room non-observer targets,
+   matching `src/act_info.c:404-416`. Python and C agree on all three new
+   scenarios (5,487 tests pass). RNG-locked paths (TRIG_RANDOM, TRIG_DELAY) and
+   outcome-dependent paths (TRIG_KILL, TRIG_DEATH) remain deferred.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

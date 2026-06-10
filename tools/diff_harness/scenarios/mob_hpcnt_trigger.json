@@ -1,0 +1,18 @@
+{
+    "name": "mob_hpcnt_trigger",
+    "seed": 1234,
+    "start_room": 3008,
+    "char": { "name": "Tester", "level": 5 },
+    "watch": { "chars": ["Tester", "drunk"], "rooms": [3008] },
+    "steps": [
+        "__seed=777",
+        "__mload=3064",
+        "__mob_prog=hpcnt:50:say HPCNT trigger fired!",
+        "__mob_hp=10",
+        "__seed=777",
+        "look",
+        "kill drunk",
+        "__tick",
+        "look"
+    ]
+}

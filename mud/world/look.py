@@ -46,9 +46,17 @@ def _room_occupant_line(observer: Character, victim) -> str:
     pers = describe_character(observer, victim)
     position = getattr(victim, "position", None)
     fighting = getattr(victim, "fighting", None)
-    if position == Position.FIGHTING and fighting is not None:
-        target_name = describe_character(observer, fighting)
-        line = prefix + pers + " is here, fighting " + target_name
+    if position == Position.FIGHTING:
+        # mirroring ROM src/act_info.c:404-417 show_char_to_char_0 POS_FIGHTING
+        if fighting is None:
+            fight_str = "thin air??"
+        elif fighting is observer:
+            fight_str = "YOU!"
+        elif getattr(victim, "room", None) is getattr(fighting, "room", object()):
+            fight_str = describe_character(observer, fighting) + "."
+        else:
+            fight_str = "someone who left??"
+        line = prefix + pers + " is here, fighting " + fight_str
     else:
         suffix = _POSITION_SUFFIX.get(position, "") if position is not None else ""
         line = prefix + pers + suffix

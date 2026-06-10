@@ -879,6 +879,30 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __mob_hp=<n>: set the first NPC in the room's current hit points to
+         * <n>.  Used to stage a mob below an HPCNT threshold without relying
+         * on combat RNG to whittle it down.  Only touches ch->hit — max_hit
+         * is unchanged so the percent formula still has a meaningful denominator.
+         * Mirrors the Python-side __mob_hp handler in pyreplay.py. */
+        if (strncmp (line, "__mob_hp=", 9) == 0)
+        {
+            int new_hp = atoi (line + 9);
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        mob->hit = new_hp;
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
         /* __set_affect_duration=N: set duration of every active affect on the
          * test character to N.  Harness fixture to shorten ROM's fixed-duration
          * spells (e.g. armor=24) for expiration tests without 25+ ticks. */
