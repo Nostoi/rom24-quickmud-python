@@ -350,6 +350,26 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         char.affected_by = int(getattr(char, "affected_by", 0) or 0) | val
         return ""
 
+    if command.startswith("__set_heal_rate="):
+        # Set the room's heal_rate multiplier (ROM: room->heal_rate, default 100).
+        # Affects hit_gain and move_gain: gain * heal_rate / 100.
+        # Mirrors diffmain.c __set_heal_rate handler.
+        val = int(command[len("__set_heal_rate=") :])
+        room = getattr(char, "room", None)
+        if room is not None:
+            room.heal_rate = val
+        return ""
+
+    if command.startswith("__set_mana_rate="):
+        # Set the room's mana_rate multiplier (ROM: room->mana_rate, default 100).
+        # Affects mana_gain only: gain * mana_rate / 100.
+        # Mirrors diffmain.c __set_mana_rate handler.
+        val = int(command[len("__set_mana_rate=") :])
+        room = getattr(char, "room", None)
+        if room is not None:
+            room.mana_rate = val
+        return ""
+
     # Mirror the C shim's direct interpret() path, which bypasses comm.c's wait
     # gate. FINDING-014 documents the architectural divergence.
     char.wait = 0

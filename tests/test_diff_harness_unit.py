@@ -629,6 +629,43 @@ def test_drive_python_replay_plague_affect_divides_regen_by_eight():
     assert any(f.lower() == "plague" for f in after.affect_flags)  # bit persists — no spell entry, tick never fires
 
 
+def test_drive_python_replay_room_rates_heal_and_mana_independent():
+    # heal_rate multiplies hit_gain and move_gain (ROM src/update.c:215,326:
+    #   gain = gain * ch->in_room->heal_rate / 100).
+    # mana_rate multiplies mana_gain ONLY (ROM src/update.c:297:
+    #   gain = gain * ch->in_room->mana_rate / 100).
+    # heal_rate=50 → HP ÷2 (+5) and move ÷2 (+14).
+    # mana_rate=200 → mana ×2 (+34).
+    # C oracle (seed 12345, SLEEPING L5 mage): HP +5/pulse, mana +34/pulse,
+    # move +14/pulse.
+    sc = Scenario(
+        name="generated_room_rates",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__char_position=4",
+            "__hp=1",
+            "__mana=5",
+            "__move=5",
+            "__set_heal_rate=50",
+            "__set_mana_rate=200",
+            "__char_update",
+        ],
+    )
+
+    trace = drive_python_replay(sc)
+
+    after = trace[6].chars[0]  # step 7 = after __char_update
+    assert after.position == "SLEEPING"
+    assert after.hp == 6  # 1 + 5   (base 10 * 50/100 = 5)
+    assert after.mana == 39  # 5 + 34  (base 17 * 200/100 = 34)
+    assert after.move == 19  # 5 + 14  (base 28 * 50/100 = 14)
+
+
 def test_drive_python_replay_slow_affect_halves_regen_by_two():
     # AFF_SLOW (bit 536870912, ROM AFF_SLOW = 1<<29) causes hit_gain/mana_gain/
     # move_gain to divide by 2, same branch as HASTE (ROM src/update.c:280-282).

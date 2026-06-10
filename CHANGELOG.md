@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.80] — 2026-06-10
+
+### Added
+
+- **`__set_heal_rate=N` and `__set_mana_rate=N` meta-commands** — new diff-harness
+  primitives in both `src/diff_shim/diffmain.c` and `tools/diff_harness/pyreplay.py`.
+  Set `room->heal_rate` / `room->mana_rate` multipliers on the test room directly,
+  exercising the `gain * rate / 100` regen branches in `hit_gain`/`move_gain` and
+  `mana_gain` respectively.
+- **`char_update_regen_room_rates` diff-harness scenario** — SLEEPING mage,
+  `heal_rate=50` and `mana_rate=200`. C oracle confirms the asymmetry:
+  `heal_rate` scales HP (+5/pulse) and move (+14/pulse); `mana_rate` scales
+  only mana (+34/pulse, capped at max_mana on pulse 3). Python already correct.
+- **`test_drive_python_replay_room_rates_heal_and_mana_independent`** unit test.
+
 ## [2.13.79] — 2026-06-10
 
 ### Fixed

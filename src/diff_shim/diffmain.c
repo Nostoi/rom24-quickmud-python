@@ -1075,6 +1075,28 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __set_heal_rate=N: set the room's heal_rate multiplier (default 100).
+         * hit_gain and move_gain use: gain * in_room->heal_rate / 100.
+         * Mirrors the Python-side __set_heal_rate handler in pyreplay.py. */
+        if (strncmp (line, "__set_heal_rate=", 16) == 0)
+        {
+            int rate = atoi (line + 16);
+            if (ch != NULL && ch->in_room != NULL)
+                ch->in_room->heal_rate = (sh_int) rate;
+            continue;
+        }
+
+        /* __set_mana_rate=N: set the room's mana_rate multiplier (default 100).
+         * mana_gain uses: gain * in_room->mana_rate / 100.
+         * Mirrors the Python-side __set_mana_rate handler in pyreplay.py. */
+        if (strncmp (line, "__set_mana_rate=", 16) == 0)
+        {
+            int rate = atoi (line + 16);
+            if (ch != NULL && ch->in_room != NULL)
+                ch->in_room->mana_rate = (sh_int) rate;
+            continue;
+        }
+
         /* __charm_mob=<duration>: charm the first NPC in the room — applies
          * add_follower(mob, ch) and an AFF_CHARM affect with the given duration.
          * Bypasses the spell's cast path and immunity checks so any mob can be
