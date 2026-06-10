@@ -1,47 +1,46 @@
-# Session Status — 2026-06-10 — INV-015 Affect-Tick Sub-Contract Enforcement (2.13.61)
+# Session Status — 2026-06-10 — FINDINGS.md numbering cleanup (2.13.61)
 
 ## Current State
 
 - **Active mode**: cross-file invariants pass
 - **Last completed**:
-  - **INV-015 AFFECT-EXPIRY-LIFECYCLE sub-contracts locked (2.13.61)** — probe of
-    `src/update.c:762-786` confirmed `tick_spell_effects` is faithful. Two
-    previously unguarded sub-contracts are now enforcement-tested:
-    - **GL-026 RNG guard**: `number_range(0,4)` is consumed unconditionally per
-      `duration>0` affect before `level>0` check — locked by
-      `test_rng_slot_consumed_per_duration_positive_affect`.
-    - **Dedup guard**: `src/update.c:774-775` — only the last consecutive same-type
-      expiry emits `msg_off` — locked by
-      `test_msg_off_dedup_suppresses_all_but_last_same_type_affect`.
-  - **INV-041 SHOPKEEPER-PSOP-COHERENCE** (prior session, v2.13.60): `is_safe`
-    now checks `victim.prototype.pShop`; both loaders write `MobIndex.pShop`.
+  - **FINDINGS.md documentation cleanup** — reconciled three accumulated numbering
+    errors in `tools/diff_harness/FINDINGS.md`:
+    - FINDING-026 (room-occupant look-order, 2026-06-09) → renamed to **FINDING-031**
+      (was filed after FINDING-030 was the max; collided with existing FINDING-026)
+    - FINDING-024 (class-13 bypass sweep) → renamed to **FINDING-032** (collided
+      with FINDING-024 save/load carry-seq)
+    - Stale ⚠️ OPEN block (orphaned FINDING-022 pre-resolution text) removed from
+      FINDING-032's entry
+  - **INV-015 AFFECT-EXPIRY-LIFECYCLE sub-contracts locked (2.13.61)** — prior
+    session: two enforcement tests added for RNG-slot ordering (GL-026) and
+    msg_off dedup.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_INV015_AFFECT_TICK_SUBCONTRACTS.md](SESSION_SUMMARY_2026-06-10_INV015_AFFECT_TICK_SUBCONTRACTS.md)
+  [SESSION_SUMMARY_2026-06-10_FINDINGS_MD_NUMBERING_CLEANUP.md](SESSION_SUMMARY_2026-06-10_FINDINGS_MD_NUMBERING_CLEANUP.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
 | Version | 2.13.61 |
-| Tests | 5500 passed, 5 skipped (full suite — 2.13.61) |
+| Tests | 5500 passed, 5 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 26 enforced |
-| Diff-harness scenarios | 22 scenarios (Class 11 complete) |
+| Diff-harness scenarios | 22 scenarios, 38 passing |
+| FINDINGS.md highest ID | FINDING-032 |
 
 ## Next Intended Task
 
-Cross-file invariants remains the active pass. Two concrete candidates:
+Cross-file invariants remains the active pass. Both candidates from the prior
+SESSION_STATUS.md were confirmed already resolved. Two concrete next steps:
 
-1. **Affect-join contract** — the most actionable open gap: ROM `src/handler.c:affect_join`
-   is used for plague-spread (`src/update.c:828-840`), averaging levels and summing
-   durations+modifiers when the victim already has plague before calling
-   `affect_to_char`. Python calls `affect_to_char` directly, so re-infection stacks
-   a second plague entry instead of merging. Filed as ⚠️ Partial in
-   `docs/parity/HANDLER_C_AUDIT.md:affect_join`. This is a concrete single-function
-   gap — appropriate for `/rom-gap-closer` once a gap ID is assigned.
+1. **New diff-harness scenario** — author a scenario for an untested surface:
+   charm/follower wear-off lifecycle, sanctuary+haste affect bitvectors with tick
+   expiry, or drink/eat/food consumption. Drop a `tools/diff_harness/scenarios/<name>.json`
+   and the smoke test auto-skips until a golden is captured. This is the most
+   enumeration-independent way to surface new parity gaps.
 
-2. **Position-transition affect-application** — ROM `src/update.c:update_pos`
-   (also `src/handler.c:update_pos`) strips `AFF_SLEEP` and handles position-gated
-   affects. INV-016 covers the broadcast side; the affect-application side (e.g.
-   sanctuary dropping below a position threshold) has no INV row yet. A
-   probe-then-scope pass on `update_pos` would determine if a gap exists.
+2. **MATH-002/003/004** — documented ⚠️ OPEN hygiene items (LOW severity) in
+   `docs/parity/audits/MATH_AND_RNG.md`. No observable behavioral gap; held for a
+   future PARITY008 lint rule. Close only if a new session wants clean-slate
+   hygiene.
