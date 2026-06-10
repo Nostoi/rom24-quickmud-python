@@ -341,6 +341,15 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         mob.mprog_delay = val
         return ""
 
+    if command.startswith("__add_affect="):
+        # OR the given AFF_* bitmask into char.affected_by without adding a
+        # spell AFFECT_DATA entry.  Exercises the IS_AFFECTED regen divisor
+        # branch (POISON÷4, PLAGUE÷8, HASTE/SLOW÷2) independently of the
+        # tick-handler spell-affect linked list.  Mirrors diffmain.c.
+        val = int(command[len("__add_affect=") :])
+        char.affected_by = int(getattr(char, "affected_by", 0) or 0) | val
+        return ""
+
     # Mirror the C shim's direct interpret() path, which bypasses comm.c's wait
     # gate. FINDING-014 documents the architectural divergence.
     char.wait = 0

@@ -525,3 +525,69 @@ def test_drive_python_replay_comm_combine_groups_identical_room_objects():
     # Without COMM_COMBINE: two identical lines (FINDING-033 symptom)
     assert len(output_lines) == 1, f"Expected 1 grouped fountain line, got {len(output_lines)}: {output_lines}"
     assert output_lines[0].startswith("( 2)"), f"Expected '( 2) ...' prefix, got: {output_lines[0]!r}"
+
+
+def test_drive_python_replay_poison_affect_halves_regen_by_four():
+    # AFF_POISON (bit 4096, ROM AFF_POISON = 1<<12) causes hit_gain/mana_gain/
+    # move_gain to divide by 4 (ROM src/update.c:276-278).  Applied in SLEEPING
+    # (no position penalty) so gains remain clearly nonzero.
+    # C oracle (seed 12345): HP +2, mana +4, move +7 per pulse.
+    # __add_affect=4096 sets only the bitmask without a spell-affect entry,
+    # exercising the IS_AFFECTED branch without tick-side interference.
+    sc = Scenario(
+        name="generated_poison",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__char_position=4",
+            "__hp=1",
+            "__mana=5",
+            "__move=5",
+            "__add_affect=4096",
+            "__char_update",
+        ],
+    )
+
+    trace = drive_python_replay(sc)
+
+    after = trace[5].chars[0]  # step 6 = after __char_update
+    assert after.position == "SLEEPING"
+    assert after.hp == 3  # 1 + 2  (sleeping base 10 // 4 = 2)
+    assert after.mana == 9  # 5 + 4  (sleeping base 17 // 4 = 4)
+    assert after.move == 12  # 5 + 7  (sleeping base 28 // 4 = 7)
+
+
+def test_drive_python_replay_haste_affect_halves_regen_by_two():
+    # AFF_HASTE (bit 2097152, ROM AFF_HASTE = 1<<21) causes hit_gain/mana_gain/
+    # move_gain to divide by 2 (ROM src/update.c:280-282).  Applied in SLEEPING.
+    # C oracle (seed 12345): HP +5, mana +8, move +14 per pulse.
+    # __add_affect=2097152 sets only the bitmask without a spell-affect entry.
+    sc = Scenario(
+        name="generated_haste",
+        seed=12345,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__char_position=4",
+            "__hp=1",
+            "__mana=5",
+            "__move=5",
+            "__add_affect=2097152",
+            "__char_update",
+        ],
+    )
+
+    trace = drive_python_replay(sc)
+
+    after = trace[5].chars[0]  # step 6 = after __char_update
+    assert after.position == "SLEEPING"
+    assert after.hp == 6  # 1 + 5  (sleeping base 10 // 2 = 5)
+    assert after.mana == 13  # 5 + 8  (sleeping base 17 // 2 = 8)
+    assert after.move == 19  # 5 + 14 (sleeping base 28 // 2 = 14)

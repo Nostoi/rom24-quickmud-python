@@ -1062,6 +1062,19 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __add_affect=<bit>: OR the given bitmask into ch->affected_by.
+         * Used to set a single AFF_* bit without a full spell AFFECT_DATA
+         * entry, so the regen divisor branch fires without triggering the
+         * spell-affect tick loop.  Mirrors the Python-side __add_affect
+         * handler in pyreplay.py. */
+        if (strncmp (line, "__add_affect=", 13) == 0)
+        {
+            long bit = atol (line + 13);
+            if (ch != NULL)
+                SET_BIT (ch->affected_by, (int) bit);
+            continue;
+        }
+
         /* __charm_mob=<duration>: charm the first NPC in the room — applies
          * add_follower(mob, ch) and an AFF_CHARM affect with the given duration.
          * Bypasses the spell's cast path and immunity checks so any mob can be

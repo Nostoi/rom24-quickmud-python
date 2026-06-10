@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.78] — 2026-06-10
+
+### Added
+
+- **`__add_affect=<bit>` meta-command** — new diff-harness primitive in both
+  `src/diff_shim/diffmain.c` and `tools/diff_harness/pyreplay.py`. ORs the
+  given AFF_* bitmask into `ch->affected_by` / `char.affected_by` without
+  creating a spell AFFECT_DATA entry. Lets scenarios exercise the `IS_AFFECTED`
+  regen divisor branches (POISON÷4, PLAGUE÷8, HASTE/SLOW÷2) independently of
+  the tick-handler spell-affect linked list.
+- **`char_update_regen_poison` diff-harness scenario** — SLEEPING mage with
+  AFF_POISON bit (4096) set via `__add_affect=4096`. Three `__char_update`
+  pulses confirm POISON ÷4 divisor: HP+2/pulse, mana+4/pulse, move+7/pulse.
+- **`char_update_regen_haste` diff-harness scenario** — SLEEPING mage with
+  AFF_HASTE bit (2097152) set via `__add_affect=2097152`. Three `__char_update`
+  pulses confirm HASTE ÷2 divisor: HP+5/pulse, mana+8/pulse, move+14/pulse.
+- **`test_drive_python_replay_poison_affect_halves_regen_by_four`** and
+  **`test_drive_python_replay_haste_affect_halves_regen_by_two`** unit tests —
+  each verifies HP/mana/move gain in one pulse against C-oracle ground truth.
+
 ## [2.13.77] — 2026-06-10
 
 ### Added
