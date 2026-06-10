@@ -1,43 +1,47 @@
-# Session Status — 2026-06-10 — EFFECTS-003/004/005: affect stubs closed (2.13.70)
+# Session Status — 2026-06-10 — char_update condition decay diff-harness scenario (2.13.71)
 
 ## Current State
 
 - **Active mode**: cross-file invariants pass
 - **Last completed**:
-  - **EFFECTS-003** — `cold_effect` TARGET_CHAR: chill touch `affect_join` (-1 STR, duration=6)
-    wired via `apply_spell_effect`. ROM `src/effects.c:215-231`. v2.13.68.
-  - **EFFECTS-004** — `fire_effect` TARGET_CHAR: fire breath blindness `affect_to_char`
-    (AFF_BLIND, -4 hitroll, duration=0..level/10) wired. ROM `src/effects.c:319-336`. v2.13.69.
-  - **EFFECTS-005** — `poison_effect` TARGET_CHAR: poison `affect_join`
-    (AFF_POISON, -1 STR, duration=level/2) wired. ROM `src/effects.c:461-477`. v2.13.70.
-  - **EFFECTS_C_AUDIT.md** — all 5 stale-✅ gaps closed; status → ✅ 100% COMPLETE.
-  - 5522 tests pass, 4 skipped.
+  - **`char_update_condition_decay` scenario** — new C-oracle diff-harness scenario
+    exercising tick-based hunger/thirst/drunk drain via `__char_update`. Sets each
+    condition to 2 and runs two `char_update` pulses; second tick drains all three
+    to 0, producing "You are sober." / "You are thirsty." / "You are hungry." in
+    ROM's DRUNK→FULL→THIRST→HUNGER order (`src/update.c:755-759`). 28 scenarios,
+    47 C-oracle tests passing.
+  - **`__cond_drunk=N` meta-command** — added to both `diffmain.c` and `pyreplay.py`
+    (symmetric with `__cond_hunger`/`__cond_thirst`/`__cond_full`). C binary rebuilt.
+  - 5523 tests pass, 4 skipped.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_EFFECTS_AFFECT_GAPS_003_004_005.md](SESSION_SUMMARY_2026-06-10_EFFECTS_AFFECT_GAPS_003_004_005.md)
+  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_CONDITION_DECAY_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_CONDITION_DECAY_SCENARIO.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.70 |
-| Tests | 5522 passed, 4 skipped (full suite) |
+| Version | 2.13.71 |
+| Tests | 5523 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 26 enforced |
-| Diff-harness scenarios | 27 scenarios, 46 C-oracle tests passing, 0 skipped, 0 xfailed |
+| Diff-harness scenarios | 28 scenarios, 47 C-oracle tests passing, 0 skipped, 0 xfailed |
 | FINDINGS.md highest ID | FINDING-033 (✅ RESOLVED — all findings resolved) |
 | Effects integration tests | 37 / 37 passing |
 
 ## Next Intended Task
 
-`EFFECTS_C_AUDIT.md` is now genuinely 100% complete (all 5 stale-✅ gaps closed this session and
-the prior one). Cross-file invariants remains the active pass. Concrete candidates:
+Cross-file invariants remains the active pass. Concrete candidates:
 
-1. **`char_update` condition decay diff-harness scenario** — tick-based hunger/thirst/drunk drain
-   via `__char_update` meta-command; exercises the negative-delta `gain_condition` path across
-   multiple ticks. Natural follow-on to `drink_eat_condition_lifecycle`.
-
-2. **MATH-002/003/004** — ⚠️ OPEN hygiene items in `docs/parity/audits/MATH_AND_RNG.md`
+1. **MATH-002/003/004** — ⚠️ OPEN hygiene items in `docs/parity/audits/MATH_AND_RNG.md`
    (LOW severity, no observable gap). Held for a future PARITY008 lint rule.
 
-3. **Next cross-INV candidate** — probe affect-tick contracts or position-transition edges for
-   divergences not yet covered by an INV row.
+2. **Next cross-INV candidate** — probe affect-tick contracts or position-transition
+   edges for divergences not yet covered by an INV row. Pick a candidate area not
+   yet covered (affect-tick timing, position-transition sequencing, group/follower
+   chain), run the 5-minute probe (read ROM C contract → read Python equivalent →
+   write one failing test), then either close as a gap-closer commit or file as the
+   next free INV-NNN in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
+
+3. **`char_update_regen` diff-harness scenario** — HP/mana/move regeneration path
+   (hit_gain/mana_gain/move_gain) with damaged character recovering across multiple
+   `__char_update` pulses. Natural follow-on to `char_update_condition_decay`.
