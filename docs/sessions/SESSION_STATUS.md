@@ -1,53 +1,54 @@
-# Session Status — 2026-06-09 — Diff-harness C-oracle for TRIG_ACT, TRIG_BRIBE, TRIG_GIVE (2.13.55)
+# Session Status — 2026-06-09 — Diff-harness C-oracle for TRIG_SURR, TRIG_FIGHT, TRIG_HPCNT (2.13.57)
 
 ## Current State
 
 - **Active mode**: divergence Class 11 / dynamic differential widening
   (per-file audit tracker has no ⚠️ Partial / ❌ Not Audited rows).
 - **Last completed**:
-  - **TRIG_ACT C-oracle ground truth.** `mob_act_trigger.json` confirms `mp_act_trigger`
-    fires when the formatted `act()` buffer matches `trig_phrase` via substring search
-    (`src/comm.c:2385`, `src/mob_prog.c:1183-1197`). Python and C agree.
-  - **TRIG_BRIBE C-oracle ground truth.** `mob_bribe_trigger.json` confirms `mp_bribe_trigger`
-    fires when silver given meets threshold (`amount >= atoi(trig_phrase)`, `src/act_obj.c:735`).
+  - **TRIG_SURR C-oracle ground truth.** `mob_surr_trigger.json` confirms `mp_surr_trigger`
+    fires when a PC surrenders to a mob with `TRIG_SURR` set. The mob does NOT retaliate
+    after the trigger fires (`src/fight.c:3222-3241`). Python and C agree.
+  - **TRIG_FIGHT C-oracle ground truth.** `mob_fight_trigger.json` confirms `mp_fight_trigger`
+    fires each `violence_update` round after the NPC's `multi_hit` (INV-026 dispatch site,
+    `src/fight.c:92-98`). Python and C agree.
+  - **TRIG_HPCNT C-oracle ground truth.** `mob_hpcnt_trigger.json` confirms `mp_hitpnt_trigger`
+    fires when mob HP falls below the percent threshold (`src/mob_prog.c:1354-1362`).
+    Uses new `__mob_hp=` meta-command to stage mob below 50% without combat-RNG dependency.
     Python and C agree.
-  - **TRIG_GIVE C-oracle ground truth.** `mob_give_trigger.json` confirms `mp_give_trigger`
-    fires on object give by vnum match (`src/mob_prog.c:1207-1242`). Python and C agree.
-    Note: wizard (3000) was replaced by sailor (3007) as recipient — wizard is a shop keeper
-    in the C area file and rejects item gives before mp_give_trigger can fire.
-  - All three new scenarios pass Python/C parity immediately (no engine code changes needed).
-  - Version 2.13.55; 5,484 tests pass.
+  - **`__mob_hp=<n>` meta-command** added to both C diffshim and Python pyreplay.
+  - **`_room_occupant_line` look.py parity fix**: FIGHTING branch now correctly outputs
+    `"YOU!"` / `"Name."` / `"thin air??"` / `"someone who left??"` mirroring
+    `src/act_info.c:404-416`. All four branches covered by direct unit tests.
+  - Version 2.13.57; 5,491 tests pass.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-09_DIFF_HARNESS_ACT_BRIBE_GIVE_CORACLES.md](SESSION_SUMMARY_2026-06-09_DIFF_HARNESS_ACT_BRIBE_GIVE_CORACLES.md)
+  [SESSION_SUMMARY_2026-06-09_DIFF_HARNESS_SURR_FIGHT_HPCNT_CORACLES.md](SESSION_SUMMARY_2026-06-09_DIFF_HARNESS_SURR_FIGHT_HPCNT_CORACLES.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.55 |
-| Tests | 5,484 passed, 5 skipped (last full run) |
+| Version | 2.13.57 |
+| Tests | 5,491 passed, 5 skipped (last full run) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 25 enforced |
-| Diff-harness scenarios | 15 static scenarios; 21+ golden tests; all findings resolved |
-| Class 11 dynamic widening | EXIT + EXALL + GREET + GRALL + SPEECH + ACT + BRIBE + GIVE deterministic paths all have C-oracle ground truth |
+| Diff-harness scenarios | 18 scenarios (added SURR + FIGHT + HPCNT this session) |
+| Class 11 dynamic widening | EXIT + EXALL + GREET + GRALL + SPEECH + ACT + BRIBE + GIVE + SURR + FIGHT + HPCNT all have C-oracle ground truth |
 
 ## Next Intended Task
 
 Class 11 remaining work (in priority order):
 
-1. **RNG-locked paths** (`TRIG_RANDOM`, `TRIG_DELAY`) — requires seed alignment grounded
-   probe before a meaningful C-oracle scenario can be authored. Defer until there is a
-   reproducible seed sequence for those paths.
-2. **Combat-path C-oracle scenarios** (`TRIG_FIGHT`, `TRIG_HPCNT`, `TRIG_KILL`, `TRIG_DEATH`,
-   `TRIG_SURR`) — these have OLC MEdit runtime probes but no diff-harness C-oracle scenarios.
-   Combat triggers require controlled damage mechanics (fixed weapon + armor + level) to
-   produce deterministic C output. Authoring deterministic variants (no-RNG-gate) is the
-   next concrete step if Class 11 C-oracle completeness is the goal.
+1. **TRIG_KILL and TRIG_DEATH C-oracle scenarios** — the `__mob_hp=` infrastructure added this
+   session makes KILL scenarios tractable: set mob HP to 1, then one `__tick` should produce a
+   killing blow (RNG-dependent — may need a `__instant_kill` or `__mob_hp=0` meta-command for
+   deterministic death). Author scenarios and capture C-oracle goldens.
+2. **RNG-locked paths** (`TRIG_RANDOM`, `TRIG_DELAY`) — requires seed alignment grounded probe
+   before a meaningful C-oracle scenario can be authored. Defer until there is a reproducible
+   seed sequence for those paths.
 3. **Next divergence class** — consult `docs/parity/DIVERGENCE_CLASS_ROSTER.md` for the next
    unverified surface outside Class 11. Candidates include async message delivery ordering,
    affect-tick edge contracts, and position-transition invariants.
 4. **Latent parity gap: wizard shop status** — Python's `_has_shop` returns False for mob 3000
    (wizard) because the midgaard JSON area file has no `shops` section. C's midgaard.are defines
-   wizard as a shop keeper. The shop scenarios (`shop_buy_weapon`, `shop_sell_weapon`) pass,
-   so this likely affects only `do_give` item-give rejection. Should be reviewed against shop
-   scenario coverage before claiming shop parity is clean.
+   wizard as a shop keeper. Should be reviewed against shop scenario coverage before claiming
+   shop parity is clean.

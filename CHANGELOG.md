@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.57] — 2026-06-09
+
+### Added
+
+- **`_room_occupant_line` FIGHTING branch unit tests** (`tests/integration/test_do_look_command.py`):
+  all four ROM `src/act_info.c:404-416` POS_FIGHTING discriminant branches now have
+  direct unit coverage — `thin air??` (fighting==NULL), `YOU!` (fighting==observer),
+  `Name.` (same room), and `someone who left??` (different room). The `YOU!` path
+  was previously exercised only by C-oracle golden replay.
+
 ## [2.13.56] — 2026-06-09
 
 ### Added
