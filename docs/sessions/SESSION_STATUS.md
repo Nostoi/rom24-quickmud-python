@@ -1,31 +1,30 @@
-# Session Status — 2026-06-10 — char_update_regen_sleeping scenario + __char_position meta-cmd (2.13.75)
+# Session Status — 2026-06-10 — char_update_regen_resting scenario (2.13.76)
 
 ## Current State
 
 - **Active mode**: cross-file invariants pass
 - **Last completed**:
-  - **`__char_position=<n>` meta-command** — new harness primitive for both pyreplay.py
-    and diffmain.c; sets PC position (4=sleeping, 5=resting, 8=standing) mid-scenario.
-    Mirrors the existing `__mob_position=` for NPCs. Required to exercise position-specific
-    branches in `hit_gain`/`mana_gain`/`move_gain`.
-  - **`char_update_regen_sleeping` scenario** — mage (class 0, level 5), sleeping
-    (position=4), HP=5/mana=30/move=20, three `__char_update` pulses with `__seed=12345`.
-    C oracle confirms sleeping regen: HP 5→15→20→20 (+10/pulse), mana 30→47→64→81
-    (+17/pulse), move 20→48→76→100 (+28/pulse). First scenario to exercise all three
-    position branches (sleeping arm) across hit_gain/mana_gain/move_gain simultaneously.
-  - **1 unit test** for `__char_position=` (`test_drive_python_replay_char_position_meta_affects_hit_gain`).
+  - **`char_update_regen_resting` scenario** — mage (class 0, level 5), resting
+    (position=5), HP=5/mana=30/move=20, three `__char_update` pulses with `__seed=12345`.
+    C oracle confirms resting regen: HP 5→10→15→20 (+5/pulse), mana 30→38→46→54 (+8/pulse),
+    move 20→41→62→83 (+21/pulse). Resting rates are exactly half sleeping for HP/mana;
+    move uses `DEX//2` instead of full DEX (not a post-switch halving).
+  - **1 unit test** (`test_drive_python_replay_char_position_resting_halves_all_gain`) —
+    verifies all three resting gain values in one pulse against C-oracle ground truth.
+  - **Position coverage complete**: all three position branches (sleeping/resting/standing)
+    now have C-oracle scenarios across `hit_gain`, `mana_gain`, and `move_gain`.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_SLEEPING_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_SLEEPING_SCENARIO.md)
+  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_RESTING_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_RESTING_SCENARIO.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.75 |
-| Tests | 5530 passed, 4 skipped (full suite) |
+| Version | 2.13.76 |
+| Tests | 5532 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 26 enforced |
-| Diff-harness scenarios | 32 scenarios, 51 C-oracle tests passing, 0 skipped, 0 xfailed |
+| Diff-harness scenarios | 33 scenarios, 53 C-oracle tests passing, 0 skipped, 0 xfailed |
 | FINDINGS.md highest ID | FINDING-033 (✅ RESOLVED — all findings resolved) |
 | Effects integration tests | 37 / 37 passing |
 
@@ -43,6 +42,8 @@ Cross-file invariants remains the active pass. Concrete candidates:
    write one failing test), then either close as a gap-closer commit or file as the
    next free INV-NNN in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
 
-3. **More diff-harness regen scenarios** — remaining position variants: `char_update_regen_resting`
-   (exercises the gain//2 resting arms across hit/mana/move_gain), or a `move_gain`
-   scenario that explicitly exercises the DEX stat contribution in isolation.
+3. **Remaining diff-harness candidates** — regen position matrix is fully covered.
+   Next expansions:
+   - Standing scenario exercising the `÷4` HP/mana default branches.
+   - Hunger/thirst=0 scenario C-oracle verifying the `gain //= 2` condition halving
+     in `hit_gain`/`mana_gain`.
