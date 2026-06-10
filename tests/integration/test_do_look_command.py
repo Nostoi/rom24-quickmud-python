@@ -9,6 +9,7 @@ from mud.commands.inspection import do_look
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, ContainerFlag, Direction, ItemType, PlayerFlag, Position, RoomFlag, Sector
 from mud.models.room import Exit, Room
+from mud.world.look import _room_occupant_line
 
 
 def _basic_room() -> Room:
@@ -210,3 +211,94 @@ def test_look_blind_character_gets_rom_blind_message():
     output = do_look(char, "")
 
     assert output == "You can't see a thing!"
+
+
+# ---------------------------------------------------------------------------
+# _room_occupant_line FIGHTING branches — ROM src/act_info.c:404-416
+# ---------------------------------------------------------------------------
+
+
+def _fighting_victim(room, *, name: str = "Goblin") -> Character:
+    """A minimal PC in FIGHTING position."""
+    victim = Character()
+    victim.name = name
+    victim.level = 1
+    victim.trust = 0
+    victim.is_npc = False
+    victim.position = int(Position.FIGHTING)
+    victim.room = room
+    victim.fighting = None
+    return victim
+
+
+def test_room_occupant_line_fighting_no_target_shows_thin_air():
+    """ROM branch 1: victim.fighting is None → 'fighting thin air??'."""
+    room = _basic_room()
+    observer = _basic_char()
+    observer.room = room
+
+    victim = _fighting_victim(room)
+    victim.fighting = None
+
+    line = _room_occupant_line(observer, victim)
+
+    assert line == "Goblin is here, fighting thin air??"
+
+
+def test_room_occupant_line_fighting_observer_shows_YOU():
+    """ROM branch 2: victim.fighting is observer → 'fighting YOU!'."""
+    room = _basic_room()
+    observer = _basic_char()
+    observer.room = room
+
+    victim = _fighting_victim(room)
+    victim.fighting = observer
+
+    line = _room_occupant_line(observer, victim)
+
+    assert line == "Goblin is here, fighting YOU!"
+
+
+def test_room_occupant_line_fighting_same_room_shows_name_with_period():
+    """ROM branch 3: victim.fighting in same room → 'fighting Name.'."""
+    room = _basic_room()
+    observer = _basic_char()
+    observer.room = room
+
+    third = Character()
+    third.name = "Orc"
+    third.level = 1
+    third.trust = 0
+    third.is_npc = False
+    third.room = room
+
+    victim = _fighting_victim(room)
+    victim.fighting = third
+
+    line = _room_occupant_line(observer, victim)
+
+    assert line == "Goblin is here, fighting Orc."
+
+
+def test_room_occupant_line_fighting_left_room_shows_someone_who_left():
+    """ROM branch 4: victim.fighting in different room → 'fighting someone who left??'."""
+    room = _basic_room()
+    other_room = _basic_room()
+    other_room.vnum = 9999
+
+    observer = _basic_char()
+    observer.room = room
+
+    third = Character()
+    third.name = "Orc"
+    third.level = 1
+    third.trust = 0
+    third.is_npc = False
+    third.room = other_room  # left the room
+
+    victim = _fighting_victim(room)
+    victim.fighting = third
+
+    line = _room_occupant_line(observer, victim)
+
+    assert line == "Goblin is here, fighting someone who left??"
