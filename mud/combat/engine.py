@@ -754,13 +754,6 @@ def apply_damage(
 
     # Handle death
     if victim.position == Position.DEAD:
-        if getattr(victim, "is_npc", False):
-            old_pos = victim.position
-            victim.position = Position.STANDING
-            try:
-                mobprog.mp_death_trigger(victim, attacker)
-            finally:
-                victim.position = old_pos
         message = _handle_death(attacker, victim)
         return message
 
@@ -1364,6 +1357,13 @@ def _handle_death(attacker: Character, victim: Character) -> str:
         if _coerce_int(getattr(victim, "exp", 0)) > floor:
             gain_exp(victim, c_div(2 * (floor - victim.exp), 3) + 50)
     _send_wiznet_death(attacker, victim)
+
+    # mirroring ROM src/fight.c:918-922 — TRIG_DEATH fires AFTER group_gain/XP
+    # but BEFORE raw_kill, only when HAS_TRIGGER(victim, TRIG_DEATH), with
+    # position temporarily set to STANDING so the mob can act during the trigger.
+    if getattr(victim, "is_npc", False) and mobprog.mob_has_trigger(victim, mobprog.Trigger.DEATH):
+        victim.position = Position.STANDING
+        mobprog.mp_death_trigger(victim, attacker)
 
     corpse = raw_kill(victim)
 

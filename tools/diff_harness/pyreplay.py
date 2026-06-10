@@ -230,6 +230,22 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         mob.hit = val
         return ""
 
+    if command.startswith("__instant_kill"):
+        # Deliver a killing blow through the full Python death path (apply_damage at
+        # dam = mob.hit + 1) so TRIG_DEATH, XP, corpse, and raw_kill all fire.
+        # dt=1000 (TYPE_HIT) mirrors the C shim which calls damage(..., TYPE_HIT, DAM_BASH, TRUE),
+        # ensuring parry/dodge/shield checks run in the same order as C's damage().
+        # Mirrors the C-shim __instant_kill handler in diffmain.c.
+        from mud.combat.engine import apply_damage
+        from mud.models.constants import DamageType
+        from mud.spawning.templates import MobInstance
+
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is None:
+            raise AssertionError("no NPC in room for __instant_kill")
+        apply_damage(char, mob, mob.hit + 1, int(DamageType.BASH), dt=1000)  # type: ignore[arg-type]
+        return ""
+
     # Mirror the C shim's direct interpret() path, which bypasses comm.c's wait
     # gate. FINDING-014 documents the architectural divergence.
     char.wait = 0

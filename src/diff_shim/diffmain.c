@@ -903,6 +903,32 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __instant_kill: deliver a killing blow to the first NPC in the room
+         * through ROM's damage() at dam = mob->hit + 1.  This ensures the full
+         * ROM death path fires (TRIG_DEATH, group_gain, raw_kill, corpse) even
+         * when the PC's attack-roll would miss.  Mirrors the Python-side
+         * __instant_kill handler in pyreplay.py. */
+        if (strncmp (line, "__instant_kill", 14) == 0)
+        {
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        shim_reset_output ();
+                        damage (ch, mob, mob->hit + 1, TYPE_HIT, DAM_BASH,
+                                TRUE);
+                        emit_output ();
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
         /* __set_affect_duration=N: set duration of every active affect on the
          * test character to N.  Harness fixture to shorten ROM's fixed-duration
          * spells (e.g. armor=24) for expiration tests without 25+ ticks. */

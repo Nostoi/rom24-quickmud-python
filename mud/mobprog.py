@@ -1787,6 +1787,15 @@ def mp_fight_trigger(mob: Character, ch: object | None) -> bool:
     return mp_percent_trigger(mob, ch, trigger=Trigger.FIGHT)
 
 
+def mob_has_trigger(mob: object, trigger: Trigger) -> bool:
+    """Return True if *mob* has at least one program matching *trigger*.
+
+    Mirrors ROM's HAS_TRIGGER macro (src/mob_prog.h).
+    """
+    flag = int(trigger)
+    return any(int(getattr(p, "trig_type", 0)) & flag for p in _get_programs(mob))
+
+
 def mp_death_trigger(mob: Character, ch: object | None) -> bool:
     return mp_percent_trigger(mob, ch, trigger=Trigger.DEATH)
 

@@ -247,6 +247,8 @@ def test_event_hooks_fire_rom_triggers(monkeypatch) -> None:
 
     victim = Character(name="Target", is_npc=True, position=Position.STANDING, hit=5, max_hit=5)
     victim.default_pos = Position.STANDING
+    # Must have a TRIG_DEATH program so HAS_TRIGGER fires (mirroring ROM C fight.c:918).
+    victim.mob_programs = [MobProgram(trig_type=int(mobprog.Trigger.DEATH), trig_phrase="101", code="")]
     target.add_character(victim)
     character_registry.append(victim)
 

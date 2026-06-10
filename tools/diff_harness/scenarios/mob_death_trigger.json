@@ -1,0 +1,17 @@
+{
+    "name": "mob_death_trigger",
+    "seed": 1234,
+    "start_room": 3008,
+    "char": { "name": "Tester", "level": 5 },
+    "watch": { "chars": ["Tester", "drunk"], "rooms": [3008] },
+    "steps": [
+        "__seed=777",
+        "__mload=3064",
+        "__mob_prog=death:101:say DEATH trigger fired!",
+        "__seed=777",
+        "look",
+        "__seed=777",
+        "__instant_kill",
+        "look"
+    ]
+}

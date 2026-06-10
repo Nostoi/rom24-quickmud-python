@@ -245,91 +245,85 @@ def death_cry(victim: Character) -> None:
     if room is None:
         return
 
-    message_template = "$n hits the ground ... DEAD."
+    # mirroring ROM src/fight.c:1583 — default msg initialised to "death cry",
+    # NOT case 0's text; rolls 8-15 (and cases 2-7 where part is absent) keep it.
+    message_template = "You hear $n's death cry."
     gore_spec: tuple[int, str, str, ItemType] | None = None
 
     roll = rng_mm.number_bits(4)
 
-    while True:
-        if roll == 0:
-            break
-        if roll == 1:
-            if not getattr(victim, "material", None):
-                message_template = "$n splatters blood on your armor."
-                break
-            roll = 2
-            continue
-        if roll == 2:
-            if _parts_has(victim, PartFlag.GUTS):
-                message_template = "$n spills $s guts all over the floor."
-                gore_spec = (
-                    OBJ_VNUM_GUTS,
-                    "the guts of %s",
-                    "A steaming pile of %s's entrails is lying here.",
-                    ItemType.FOOD,
-                )
-                break
-            roll = 3
-            continue
-        if roll == 3:
-            if _parts_has(victim, PartFlag.HEAD):
-                message_template = "$n's severed head plops on the ground."
-                gore_spec = (
-                    OBJ_VNUM_SEVERED_HEAD,
-                    "the head of %s",
-                    "The severed head of %s is lying here.",
-                    ItemType.TRASH,
-                )
-                break
-            roll = 4
-            continue
-        if roll == 4:
-            if _parts_has(victim, PartFlag.HEART):
-                message_template = "$n's heart is torn from $s chest."
-                gore_spec = (
-                    OBJ_VNUM_TORN_HEART,
-                    "the heart of %s",
-                    "The torn-out heart of %s is lying here.",
-                    ItemType.FOOD,
-                )
-                break
-            roll = 5
-            continue
-        if roll == 5:
-            if _parts_has(victim, PartFlag.ARMS):
-                message_template = "$n's arm is sliced from $s dead body."
-                gore_spec = (
-                    OBJ_VNUM_SLICED_ARM,
-                    "the arm of %s",
-                    "The sliced-off arm of %s is lying here.",
-                    ItemType.FOOD,
-                )
-                break
-            roll = 6
-            continue
-        if roll == 6:
-            if _parts_has(victim, PartFlag.LEGS):
-                message_template = "$n's leg is sliced from $s dead body."
-                gore_spec = (
-                    OBJ_VNUM_SLICED_LEG,
-                    "the leg of %s",
-                    "The sliced-off leg of %s is lying here.",
-                    ItemType.FOOD,
-                )
-                break
-            roll = 7
-            continue
-        if roll == 7:
-            if _parts_has(victim, PartFlag.BRAINS):
-                message_template = "$n's head is shattered, and $s brains splash all over you."
-                gore_spec = (
-                    OBJ_VNUM_BRAINS,
-                    "the brains of %s",
-                    "The splattered brains of %s are lying here.",
-                    ItemType.FOOD,
-                )
-                break
-        break
+    if roll == 0:
+        # mirroring ROM src/fight.c:1587 case 0
+        message_template = "$n hits the ground ... DEAD."
+    elif roll == 1:
+        # mirroring ROM src/fight.c:1589-1597 case 1 — falls through to case 2
+        # only when material != 0 (i.e. non-flesh mobs).
+        if not getattr(victim, "material", None):
+            message_template = "$n splatters blood on your armor."
+        elif _parts_has(victim, PartFlag.GUTS):
+            message_template = "$n spills $s guts all over the floor."
+            gore_spec = (
+                OBJ_VNUM_GUTS,
+                "the guts of %s",
+                "A steaming pile of %s's entrails is lying here.",
+                ItemType.FOOD,
+            )
+    elif roll == 2:
+        # mirroring ROM src/fight.c:1598-1603 case 2 — break is unconditional.
+        if _parts_has(victim, PartFlag.GUTS):
+            message_template = "$n spills $s guts all over the floor."
+            gore_spec = (
+                OBJ_VNUM_GUTS,
+                "the guts of %s",
+                "A steaming pile of %s's entrails is lying here.",
+                ItemType.FOOD,
+            )
+    elif roll == 3:
+        if _parts_has(victim, PartFlag.HEAD):
+            message_template = "$n's severed head plops on the ground."
+            gore_spec = (
+                OBJ_VNUM_SEVERED_HEAD,
+                "the head of %s",
+                "The severed head of %s is lying here.",
+                ItemType.TRASH,
+            )
+    elif roll == 4:
+        if _parts_has(victim, PartFlag.HEART):
+            message_template = "$n's heart is torn from $s chest."
+            gore_spec = (
+                OBJ_VNUM_TORN_HEART,
+                "the heart of %s",
+                "The torn-out heart of %s is lying here.",
+                ItemType.FOOD,
+            )
+    elif roll == 5:
+        if _parts_has(victim, PartFlag.ARMS):
+            message_template = "$n's arm is sliced from $s dead body."
+            gore_spec = (
+                OBJ_VNUM_SLICED_ARM,
+                "the arm of %s",
+                "The sliced-off arm of %s is lying here.",
+                ItemType.FOOD,
+            )
+    elif roll == 6:
+        if _parts_has(victim, PartFlag.LEGS):
+            message_template = "$n's leg is sliced from $s dead body."
+            gore_spec = (
+                OBJ_VNUM_SLICED_LEG,
+                "the leg of %s",
+                "The sliced-off leg of %s is lying here.",
+                ItemType.FOOD,
+            )
+    elif roll == 7:
+        if _parts_has(victim, PartFlag.BRAINS):
+            message_template = "$n's head is shattered, and $s brains splash all over you."
+            gore_spec = (
+                OBJ_VNUM_BRAINS,
+                "the brains of %s",
+                "The splattered brains of %s are lying here.",
+                ItemType.FOOD,
+            )
+    # rolls 8-15: no matching case → message_template stays as "You hear $n's death cry."
 
     # mirroring ROM src/fight.c:1640 — act(msg, ch, NULL, NULL, TO_ROOM) renders
     # $n through PERS(ch, to) per recipient, so an invisible corpse-to-be masks
@@ -578,8 +572,8 @@ def raw_kill(victim: Character) -> Object | None:
     from mud.characters.follow import die_follower
     from mud.combat.engine import stop_fighting as _stop_fighting
 
-    # Trigger death mobprog handled in apply_damage before raw_kill
-    # ROM Reference: src/fight.c:1136-1180 (mp_death_trigger called before raw_kill)
+    # TRIG_DEATH fired in _handle_death (engine.py) after group_gain, before raw_kill.
+    # ROM Reference: src/fight.c:918-924 (mp_percent_trigger then raw_kill)
 
     _nuke_pets(victim, room=getattr(victim, "room", None))
 

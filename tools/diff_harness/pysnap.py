@@ -141,7 +141,7 @@ def snapshot_python(
     return StepSnap(
         step=step,
         command=command,
-        chars=[_char_snap(k, c) for k, c in chars_by_name.items()],
+        chars=[_char_snap(k, c) for k, c in chars_by_name.items() if getattr(c, "room", None) is not None],
         rooms=[_room_snap(r) for r in rooms_by_vnum.values()],
         output=list(output),
     )

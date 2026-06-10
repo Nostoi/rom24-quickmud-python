@@ -254,7 +254,7 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
     played_seconds = int(getattr(gch, "played", 0) or 0)
     logon_time = getattr(gch, "logon", None)
     try:
-        logon_ts = float(logon_time) if logon_time is not None else time.time()
+        logon_ts = float(logon_time) if logon_time else time.time()
     except (TypeError, ValueError):
         logon_ts = time.time()
     elapsed = max(0, int(time.time() - logon_ts))

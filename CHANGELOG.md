@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.58] — 2026-06-09
+
+### Added
+
+- **`__instant_kill` meta-command** (`src/diff_shim/diffmain.c`,
+  `tools/diff_harness/pyreplay.py`): delivers a killing blow to the first NPC in the
+  room via `damage(ch, mob, mob->hit+1, TYPE_HIT, DAM_BASH, TRUE)` / `apply_damage(…
+  mob.hit+1, DamageType.BASH, dt=1000)`, exercising the full death path (TRIG_DEATH,
+  group_gain, corpse, raw_kill) in a single deterministic step.
+- **C-oracle diff-harness scenario `mob_kill_trigger`** — verifies TRIG_KILL fires on
+  the first combat hit even when `dam=0` (miss), matching ROM `src/fight.c` dispatch
+  via `kill` command. Golden captured and Python parity confirmed.
+- **C-oracle diff-harness scenario `mob_death_trigger`** — verifies TRIG_DEATH fires
+  after `group_gain`/XP but before `raw_kill`, with mob position temporarily
+  STANDING, matching ROM `src/fight.c:918-922`. Golden captured and Python parity
+  confirmed.
+- **`mob_has_trigger(mob, trigger)`** (`mud/mobprog.py`): public helper mirroring
+  ROM's `HAS_TRIGGER` macro; used to guard the TRIG_DEATH position-reset in
+  `_handle_death`.
+
+### Fixed
+
+- **TRIG_DEATH ordering** (`mud/combat/engine.py`): trigger was firing in
+  `apply_damage` before `group_gain`/XP, inverting the RNG sequence vs ROM C.
+  Moved into `_handle_death` after `group_gain`, guarded by `mob_has_trigger`.
+- **`death_cry` default message** (`mud/combat/death.py`): `message_template` was
+  initialized to case-0's `"$n hits the ground … DEAD."` instead of ROM's pre-switch
+  default `"You hear $n's death cry."` — `number_bits(4)` rolls 8–15 and cases 2–7
+  where the body part is absent now correctly produce the death-cry message. Cases
+  2–7 also converted from chained fallthrough to unconditional per-case handling,
+  matching ROM's `break` after each `if (part) { … }` block.
+- **`xp_compute` logon=0 bug** (`mud/groups/xp.py`): `logon=0` (uninitialized)
+  was treated as Unix epoch, making `elapsed` ~1.75 billion seconds and clamping
+  `time_per_level` to 12 instead of ROM's 10 for a fresh level-5 character. Changed
+  check from `is not None` to truthiness, consistent with `advancement.py` and
+  `handler.py`.
+- **Snapshot filtering of dead chars** (`tools/diff_harness/pysnap.py`): chars with
+  `room=None` (extracted by `raw_kill`) are now omitted from the snapshot, matching
+  the C shim which only records chars still in the game world.
+
 ## [2.13.57] — 2026-06-09
 
 ### Added
