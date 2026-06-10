@@ -1,30 +1,31 @@
-# Session Status — 2026-06-10 — char_update_regen_resting scenario (2.13.76)
+# Session Status — 2026-06-10 — char_update_regen_hungry_thirsty scenario (2.13.77)
 
 ## Current State
 
 - **Active mode**: cross-file invariants pass
 - **Last completed**:
-  - **`char_update_regen_resting` scenario** — mage (class 0, level 5), resting
-    (position=5), HP=5/mana=30/move=20, three `__char_update` pulses with `__seed=12345`.
-    C oracle confirms resting regen: HP 5→10→15→20 (+5/pulse), mana 30→38→46→54 (+8/pulse),
-    move 20→41→62→83 (+21/pulse). Resting rates are exactly half sleeping for HP/mana;
-    move uses `DEX//2` instead of full DEX (not a post-switch halving).
-  - **1 unit test** (`test_drive_python_replay_char_position_resting_halves_all_gain`) —
-    verifies all three resting gain values in one pulse against C-oracle ground truth.
-  - **Position coverage complete**: all three position branches (sleeping/resting/standing)
-    now have C-oracle scenarios across `hit_gain`, `mana_gain`, and `move_gain`.
+  - **`char_update_regen_hungry_thirsty` scenario** — mage (class 0, level 5), sleeping
+    (position=4), HP=1/mana=5/move=5, with `COND_HUNGER=0` and `COND_THIRST=0`, three
+    `__char_update` pulses with seed 12345.
+    C oracle confirms dual condition halving: HP 1→3→5→7 (+2/pulse), mana 5→9→13→17 (+4/pulse),
+    move 5→12→19→26 (+7/pulse). Two sequential `//2` halvings: sleeping base +10/+17/+28 reduced
+    to +2/+4/+7 per pulse. SLEEPING position chosen to keep gains nonzero (STANDING floors to 0).
+  - **1 unit test** (`test_drive_python_replay_hunger_thirst_zero_halves_regen_twice`) —
+    verifies all three condition-halved gain values in one pulse against C-oracle ground truth.
+  - **Condition halving coverage complete**: both COND_HUNGER==0 and COND_THIRST==0 branches
+    now have C-oracle scenarios in all three gain functions.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_RESTING_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_RESTING_SCENARIO.md)
+  [SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_HUNGRY_THIRSTY_SCENARIO.md](SESSION_SUMMARY_2026-06-10_CHAR_UPDATE_REGEN_HUNGRY_THIRSTY_SCENARIO.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.76 |
-| Tests | 5532 passed, 4 skipped (full suite) |
+| Version | 2.13.77 |
+| Tests | 5534 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
 | Cross-INV rows | 26 enforced |
-| Diff-harness scenarios | 33 scenarios, 53 C-oracle tests passing, 0 skipped, 0 xfailed |
+| Diff-harness scenarios | 34 scenarios, 55 C-oracle tests passing, 0 skipped, 0 xfailed |
 | FINDINGS.md highest ID | FINDING-033 (✅ RESOLVED — all findings resolved) |
 | Effects integration tests | 37 / 37 passing |
 
@@ -42,8 +43,10 @@ Cross-file invariants remains the active pass. Concrete candidates:
    write one failing test), then either close as a gap-closer commit or file as the
    next free INV-NNN in `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
 
-3. **Remaining diff-harness candidates** — regen position matrix is fully covered.
-   Next expansions:
-   - Standing scenario exercising the `÷4` HP/mana default branches.
-   - Hunger/thirst=0 scenario C-oracle verifying the `gain //= 2` condition halving
-     in `hit_gain`/`mana_gain`.
+3. **Remaining diff-harness candidates** — regen position matrix and condition-halving
+   are fully covered. Next expansions:
+   - Furniture bonus scenario: SLEEPING PC on furniture with nonzero `value[3]`/`value[4]`
+     — C-oracle verifying `gain * value[3] / 100` and `gain * value[4] / 100` multipliers.
+   - Affect penalty scenarios: `AFFECT_POISON` (÷4), `AFFECT_PLAGUE` (÷8), `AFFECT_HASTE`/
+     `AFFECT_SLOW` (÷2) regen divisors in `hit_gain`/`mana_gain`/`move_gain`.
+   - `heal_rate` / `mana_rate` room multiplier scenario (rooms with non-100 rates).
