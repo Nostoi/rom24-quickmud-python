@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.66] — 2026-06-10
+
+### Added
+
+- **`drink_eat_condition_lifecycle` diff-harness scenario** — 8-step scenario
+  exercising `do_drink` (fountain) and `do_eat` (bread) with condition threshold
+  messages: "Your thirst is quenched." (COND_THIRST > 40 after drinking) and
+  "You are no longer hungry." (COND_HUNGER 0→positive edge on eating, ROM
+  `src/act_obj.c:1331`). C golden captured; 27 scenarios, 46 C-oracle tests.
+- **`__cond_hunger=<n>` meta-command** added to `diffmain.c` and `pyreplay.py`,
+  completing the THIRST/FULL/HUNGER injection trio for diff-harness scenarios.
+
+### Fixed
+
+- **`do_eat` condition read path** — `consumption.py` was reading condition from
+  `getattr(ch, "condition", None)` (a shadow attribute) while `do_drink` correctly
+  read from `ch.pcdata.condition`. Fixed `do_eat` to use `ch.pcdata.condition`
+  consistently with `do_drink`, matching ROM `ch->pcdata->condition` access pattern.
+- **`pyreplay.py` condition meta-commands** — `__cond_full=`, `__cond_thirst=`,
+  `__cond_hunger=` now write to `char.pcdata.condition` instead of a shadow
+  `char.condition` attribute that `do_drink`/`do_eat` never read. The meta-commands
+  were previously silent no-ops for drink behavior.
+
 ## [2.13.65] — 2026-06-10
 
 ### Fixed
