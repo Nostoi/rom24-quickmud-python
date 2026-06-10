@@ -258,8 +258,24 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    branch in `mud/world/look.py` now correctly outputs `"YOU!"` when the mob's
    target is the observer and appends `"."` for same-room non-observer targets,
    matching `src/act_info.c:404-416`. Python and C agree on all three new
-   scenarios (5,487 tests pass). RNG-locked paths (TRIG_RANDOM, TRIG_DELAY) and
-   outcome-dependent paths (TRIG_KILL, TRIG_DEATH) remain deferred.
+   scenarios (5,487 tests pass). **Diff-harness C-oracle for KILL/DEATH
+   (2.13.58):** `mob_kill_trigger.json` and `mob_death_trigger.json` added.
+   `__instant_kill` meta-command exercises the full `damage()` → `raw_kill` →
+   `mp_death_trigger` death path deterministically. Four parity bugs fixed:
+   TRIG_DEATH ordering (must fire after `group_gain`), `death_cry` default
+   message, `xp_compute` logon=0 elapsed, snapshot dead-char filter. `TRIG_KILL`
+   fires on the first hit when victim not yet fighting
+   (`src/mob_prog.c:mp_kill_trigger`); `TRIG_DEATH` fires after XP with mob
+   temporarily at STANDING (`src/mob_prog.c:mp_death_trigger`). Python and C agree
+   (5,493 tests pass). **Diff-harness C-oracle for RANDOM/DELAY (2.13.59):**
+   `mob_random_trigger.json` and `mob_delay_trigger.json` added. `__mobile_update`
+   meta-command runs one `mobile_update()` tick; `__mob_delay=N` primes
+   `mprog_delay`. `TRIG_RANDOM` fires unconditionally each tick when
+   `position == default_pos` and `trig_phrase=101` (`src/mob_prog.c:mp_random_trigger`);
+   `TRIG_DELAY` fires when `mprog_delay` reaches 0
+   (`src/mob_prog.c:mp_delay_trigger`). Python and C agree on first try.
+   **Class 11 is now COMPLETE** — all 15 mobprog dispatch paths have
+   diff-harness C-oracle ground truth (2.13.59).
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,
