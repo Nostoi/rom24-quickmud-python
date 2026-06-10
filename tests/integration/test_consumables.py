@@ -41,6 +41,9 @@ def test_character() -> Character:
     char = create_test_character("Tester", room_vnum=3001)
     char.level = 20
     char.is_npc = False
+    # Reset all conditions to 0 so tests can eat/drink freely.
+    # Tests that need specific values (e.g. test_eat_full_character_blocked) set them explicitly.
+    char.pcdata.condition = [0, 0, 0, 0]
     return char
 
 
@@ -112,11 +115,8 @@ def test_eat_full_character_blocked(test_character, object_factory):
         object_factory, item_type=ItemType.FOOD, name="bread", short_descr="a loaf of bread", value=[8, 5, 0, 0, 0]
     )
     test_character.add_object(bread)
-    # condition is list[int]: [DRUNK=0, FULL=1, THIRST=2, HUNGER=3]
-    # Set COND_FULL (index 1) above the ROM threshold of 40
-    if not hasattr(test_character, "condition") or test_character.condition is None:
-        test_character.condition = [0, 0, 48, 48]
-    test_character.condition[1] = 45  # COND_FULL index = 1
+    # condition lives on pcdata (mirroring ROM ch->pcdata->condition)
+    test_character.pcdata.condition[1] = 45  # COND_FULL index = 1
     result = do_eat(test_character, "bread")
     assert "too full" in result.lower(), f"Expected 'too full' message, got: {result!r}"
 

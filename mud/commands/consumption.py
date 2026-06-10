@@ -52,10 +52,11 @@ def do_eat(ch: Character, args: str) -> str:
         if item_type_int != int(ItemType.FOOD) and item_type_int != int(ItemType.PILL):
             return "That's not edible."
 
-        # EAT-003: fullness pre-check for mortal PCs (list-based condition)
-        # ROM src/act_obj.c:1310-1314  COND_FULL index = 1
+        # EAT-003: fullness pre-check for mortal PCs
+        # ROM src/act_obj.c:1310-1314  condition lives on pcdata (mirroring do_drink)
         if not getattr(ch, "is_npc", True):
-            condition = getattr(ch, "condition", None)
+            _pcdata = getattr(ch, "pcdata", None)
+            condition = getattr(_pcdata, "condition", None) if _pcdata else None
             if isinstance(condition, list) and len(condition) > _COND_FULL:
                 if condition[_COND_FULL] > 40:
                     return "You are too full to eat more."
@@ -87,9 +88,10 @@ def do_eat(ch: Character, args: str) -> str:
     # FOOD path (and immortal eating non-food falls through to extract below)
     if item_type_int == int(ItemType.FOOD):
         # Restore full/hunger conditions for non-NPC PCs
-        # ROM src/act_obj.c:1324-1334  (gain_condition uses list indices)
+        # ROM src/act_obj.c:1324-1334  condition lives on pcdata (mirroring do_drink)
         if not getattr(ch, "is_npc", True):
-            condition = getattr(ch, "condition", None)
+            _pcdata = getattr(ch, "pcdata", None)
+            condition = getattr(_pcdata, "condition", None) if _pcdata else None
             if isinstance(condition, list) and len(condition) > _COND_HUNGER:
                 food_value = getattr(obj, "value", [0, 0, 0, 0, 0])
                 old_hunger = condition[_COND_HUNGER]

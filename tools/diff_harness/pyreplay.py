@@ -29,7 +29,9 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     char.armor = [100, 100, 100, 100]
     # Mirror the C shim's make_test_char pcdata condition defaults
     # (diffmain.c:456-458): COND_THIRST/COND_FULL/COND_HUNGER all start at 48.
-    char.condition = [0, 48, 48, 48]
+    # Must set on pcdata — that's where do_drink/do_eat read condition from.
+    if char.pcdata is not None:
+        char.pcdata.condition = [0, 48, 48, 48]
 
     # Mirror C shim make_test_char default (diffmain.c:462):
     # ch->comm = COMM_COMBINE | COMM_PROMPT
@@ -111,12 +113,20 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
     if command.startswith("__cond_full="):
         from mud.models.constants import Condition
 
-        char.condition[int(Condition.FULL)] = int(command[len("__cond_full=") :])
+        if char.pcdata is not None:
+            char.pcdata.condition[int(Condition.FULL)] = int(command[len("__cond_full=") :])
         return ""
     if command.startswith("__cond_thirst="):
         from mud.models.constants import Condition
 
-        char.condition[int(Condition.THIRST)] = int(command[len("__cond_thirst=") :])
+        if char.pcdata is not None:
+            char.pcdata.condition[int(Condition.THIRST)] = int(command[len("__cond_thirst=") :])
+        return ""
+    if command.startswith("__cond_hunger="):
+        from mud.models.constants import Condition
+
+        if char.pcdata is not None:
+            char.pcdata.condition[int(Condition.HUNGER)] = int(command[len("__cond_hunger=") :])
         return ""
     if command.startswith("__learn="):
         from mud.skills import skill_registry
