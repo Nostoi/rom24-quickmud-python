@@ -8,9 +8,9 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-033 — `look` output: identical objects grouped with `( N)` prefix in C, listed individually in Python — ⚠️ OPEN
+## FINDING-033 — `look` output: identical objects grouped with `( N)` prefix in C, listed individually in Python — ✅ RESOLVED
 
-**Status:** ⚠️ OPEN — surfaced by Hypothesis 2026-06-10 (v2.13.64)
+**Status:** ✅ RESOLVED 2026-06-10 (v2.13.65)
 
 **Scenario:** `test_generated_no_rng_sequences_match_live_c` generated sequence
 `['south', '__char_update', '__oload=3135', 'look']` — the `south` step enters
@@ -33,8 +33,14 @@ diff step.
 **Severity:** LOW — cosmetic display divergence; gameplay mechanics (pick up,
 combat, affect system) are unaffected.
 
-**Next step:** Implement `( N) ...` grouping in Python's `do_look` / room object
-display path. File as a single-gap parity fix when prioritized.
+**Root cause (corrected):** `drive_python_replay` never set `char.comm`, so
+`COMM_COMBINE` was absent and `show_list_to_char` took the non-combining branch.
+The game-engine Python `show_list_to_char` already had correct `( N)` grouping —
+only the harness setup was wrong. Fix: added `char.comm = int(CommFlag.COMBINE) |
+int(CommFlag.PROMPT)` to `drive_python_replay`, mirroring `diffmain.c:462`.
+Regression test: `test_drive_python_replay_comm_combine_groups_identical_room_objects`
+in `tests/test_diff_harness_unit.py`. `test_generated_no_rng_sequences_match_live_c`
+xfail decorator removed; test now passes.
 
 ---
 

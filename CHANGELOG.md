@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.65] — 2026-06-10
+
+### Fixed
+
+- **FINDING-033: `( N)` object grouping in `look` output** — `drive_python_replay`
+  never set `char.comm`, so `COMM_COMBINE` was absent and `show_list_to_char` listed
+  each object individually instead of grouping identical objects with `( N) ...`
+  prefix (ROM `src/act_info.c:130-243 show_list_to_char`). Root cause: harness-setup
+  divergence, not a game-engine bug — Python `show_list_to_char` already had correct
+  combine logic. Fix: `char.comm = CommFlag.COMBINE | CommFlag.PROMPT` in
+  `drive_python_replay`, mirroring `diffmain.c:462 ch->comm = COMM_COMBINE|COMM_PROMPT`.
+  `test_generated_no_rng_sequences_match_live_c` xfail removed; Hypothesis state-machine
+  test is now fully green.
+- New enforcement test: `test_drive_python_replay_comm_combine_groups_identical_room_objects`
+  in `tests/test_diff_harness_unit.py`.
+
 ## [2.13.64] — 2026-06-10
 
 ### Added

@@ -399,3 +399,28 @@ def test_drive_python_replay_oload_exercises_get_wield_remove_drop():
     assert char_snaps[2].equipment == {"16": 3021}
     assert char_snaps[3].inventory == [3021]
     assert room_snaps[4].contents == [3021]
+
+
+def test_drive_python_replay_comm_combine_groups_identical_room_objects():
+    """drive_python_replay sets COMM_COMBINE on the test char, mirroring
+    C shim make_test_char (diffmain.c:462: ch->comm = COMM_COMBINE|COMM_PROMPT).
+    Two identical objects in a room must produce a single '( 2) ...' line
+    in the look output, not two separate lines (FINDING-033)."""
+    sc = Scenario(
+        name="combine_test",
+        seed=777,
+        start_room=3008,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3008],
+        steps=["__oload=3135", "__oload=3135", "look"],
+    )
+
+    trace = drive_python_replay(sc)
+    look_step = trace[2]  # step index 2 = "look"
+    output_lines = [line for line in look_step.output if "fountain" in line.lower()]
+    # With COMM_COMBINE: one grouped line '( 2) A small white fountain...'
+    # Without COMM_COMBINE: two identical lines (FINDING-033 symptom)
+    assert len(output_lines) == 1, f"Expected 1 grouped fountain line, got {len(output_lines)}: {output_lines}"
+    assert output_lines[0].startswith("( 2)"), f"Expected '( 2) ...' prefix, got: {output_lines[0]!r}"

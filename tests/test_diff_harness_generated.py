@@ -16,15 +16,6 @@ REPO = Path(__file__).resolve().parents[1]
 DIFFSHIM = REPO / "src" / "diffshim"
 
 
-# FINDING-033: ROM groups identical room objects with "( N) ..." prefix;
-# Python lists each object individually.  Hypothesis found ['south',
-# '__char_update', '__oload=3135', 'look'] (double fountain) as a
-# reproducer.  Mark xfail(strict=False) so the replayed Hypothesis
-# example is XFAIL until the grouping is implemented.
-@pytest.mark.xfail(
-    reason="FINDING-033: room object ( N) grouping not yet implemented in Python do_look",
-    strict=False,
-)
 def test_generated_no_rng_sequences_match_live_c():
     if not DIFFSHIM.exists():
         pytest.skip("src/diffshim is required for live generated differential tests")

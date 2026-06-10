@@ -31,6 +31,13 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     # (diffmain.c:456-458): COND_THIRST/COND_FULL/COND_HUNGER all start at 48.
     char.condition = [0, 48, 48, 48]
 
+    # Mirror C shim make_test_char default (diffmain.c:462):
+    # ch->comm = COMM_COMBINE | COMM_PROMPT
+    # so show_list_to_char groups identical room objects with "( N) ..." prefix.
+    from mud.models.constants import CommFlag
+
+    char.comm = int(CommFlag.COMBINE) | int(CommFlag.PROMPT)
+
     chars_by_name = {sc.char_name: char}
     rooms_by_vnum = {v: room_registry[v] for v in sc.watch_rooms}
     if char.messages:
