@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.84] — 2026-06-10
+
+### Fixed
+
+- **INV-042 KILL-DEATH-XP-TRIGGER-ORDERING (cross-file)** — filed and locked
+  the three-step call-order contract in `mud/combat/engine.py:_handle_death`:
+  `group_gain` → `mp_death_trigger` → `raw_kill`. ROM `src/fight.c:883-924`
+  mandates this sequence (XP while victim stats are intact, mob prog before
+  extraction, raw_kill always last). Two mutation-verified call-order spy tests
+  in `tests/integration/test_inv042_kill_death_xp_trigger_ordering.py` lock the
+  ordering for both the TRIG_DEATH and no-trigger cases. Added INV-042 row to
+  cross-file invariants tracker (27 enforced, next free ID: INV-043).
+
 ## [2.13.83] — 2026-06-10
 
 ### Fixed
