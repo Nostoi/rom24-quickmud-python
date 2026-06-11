@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.96] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-050 `is_safe` missing three NPC-guard branches** — `mud/combat/safety.py:is_safe`
+  was missing three ROM C guards from `src/fight.c:1040-1094`. (1) PC attacking a pet NPC
+  (`ACT_PET` flag on victim) was not blocked — ROM line 1059 returns TRUE with "But $N looks
+  so cute and cuddly...". (2) PC attacking a charmed NPC they don't own was not blocked — ROM
+  line 1067 checks `AFF_CHARM && ch != victim->master`. (3) Charmed NPC attacking a PC whose
+  master is not fighting that PC was not blocked — ROM lines 1087-1093 check
+  `AFF_CHARM && master != NULL && master->fighting != victim` → "Players are your friends!".
+  All three guards are now present in `is_safe`, bringing every call path (spells, backstab,
+  kick, assist, mob specials) into parity alongside `do_kill`'s `_kill_safety_message` which
+  already had them.
+
 ## [2.13.95] — 2026-06-10
 
 ### Fixed
