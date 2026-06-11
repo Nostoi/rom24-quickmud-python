@@ -1,38 +1,39 @@
-# Session Status — 2026-06-11 — FIGHT-054 do_flee mechanism closed
+# Session Status — 2026-06-11 — FIGHT-055 xp_compute alignment gaps closed
 
 ## Current State
 
 - **Active audit**: Cross-file invariants pass (all per-file P0/P1/P2 rows at 100%)
-- **Last completed**: FIGHT-054 (`mud/commands/combat.py:do_flee` — replaced fake dex-chance
-  `number_percent()` roll with ROM's 6-attempt `number_door()` loop; added EX_CLOSED (bit 1),
-  daze check `number_range(0, ch->daze)`, NPC `ROOM_NO_MOB` guard, and `POS_STANDING` reset
-  to match ROM `src/fight.c:2970-3003`)
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-06-11_FIGHT054_DO_FLEE_MECHANISM.md](SESSION_SUMMARY_2026-06-11_FIGHT054_DO_FLEE_MECHANISM.md)
+- **Last completed**: FIGHT-055 (`mud/groups/xp.py:xp_compute` — (A) removed early return
+  `if base_exp <= 0: return 0` so alignment always mutates, including the UMAX(1,change)
+  minimum-1 shift for zero-base-exp kills; (B) replaced pre-mutation `gch_alignment` snapshot
+  with `post_alignment = gch.alignment` in the XP multiplier, matching ROM `fight.c:1916+`
+  which reads the field post-mutation)
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-06-11_FIGHT055_XP_COMPUTE_ALIGNMENT.md](SESSION_SUMMARY_2026-06-11_FIGHT055_XP_COMPUTE_ALIGNMENT.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.0 |
-| Tests | 2927/2930 passing, 3 skipped (full suite run 2026-06-11) |
+| Version | 2.14.1 |
+| Tests | 5597/5601 passing, 4 skipped (full suite run 2026-06-11) |
 | ROM C files audited | All P0/P1/P2 at 100% |
 | Active focus | Cross-file invariants (next free ID: INV-044) |
 
 ## Next Intended Task
 
-INV-044 slot is free. Three previous STATUS probes are now closed (group-leader death — no gap;
-affect_update expiry dedup — no gap; do_flee — FIGHT-054 closed). Suggested next probes:
+INV-044 slot is free. The three probes from the previous STATUS are now closed
+(check_assist ordering — no gap; do_rescue stop-fighting args — no gap; violence_update
+position guard — no gap). FIGHT-055 filed and closed. Suggested next probes:
 
-1. **`do_rescue` stop-fighting argument** — ROM `src/fight.c:3094-3095` calls
-   `stop_fighting(ch, FALSE)` and `stop_fighting(victim, FALSE)` (the `FALSE` means the
-   victim's opponents are NOT also stopped, unlike `do_flee`'s `TRUE`). Python `do_rescue`
-   (`mud/commands/combat.py`) — verify both calls use the correct `FALSE` argument.
+1. **`group_gain` NPC-level-contribution floor** — ROM `src/fight.c:1751`
+   `total_levels += gch->level / 2` for NPCs (integer division; a level-1 NPC contributes 0).
+   Python `mud/groups/xp.py:group_gain` uses `level // 2` which matches for non-negative, but
+   confirm the `total_levels <= 0` fallback and the NPC-in-group edge case.
 
-2. **`violence_update` position guard** — ROM `src/fight.c:2645-2651` skips characters
-   where `position != POS_FIGHTING` AND `position != POS_RESTING`. Verify Python
-   `violence_tick` (mud/game_loop.py) has an equivalent guard so sleeping/stunned characters
-   don't participate in combat rounds.
+2. **`apply_damage` death-message broadcast** — ROM `src/fight.c:505-560` logs kills differently
+   for NPC vs PC, and broadcasts "is DEAD!!" to room. Verify Python `mud/combat/engine.py:apply_damage`
+   death-message broadcast matches ROM.
 
-3. **`check_assist` ASSIST_ALL vs group-assist ordering** — ROM uses a single
-   `if (flag || group || ...)` expression; Python uses `if/elif` then a separate
-   `if ch_group...` block. Verify no behavioral difference when BOTH a flag AND group match.
+3. **`damage` zero-dam WEAPON_NONE path** — ROM `src/fight.c:375` — when `dam_type == WEAPON_NONE`
+   and `dam == 0`, ROM still calls `update_pos`. Verify Python `apply_damage` handles the
+   zero-damage weapon-hit edge case identically.
