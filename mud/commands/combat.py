@@ -200,6 +200,7 @@ def do_kick(char: Character, args: str) -> str:
     if skill is not None:
         skill_registry._check_improve(char, skill, "kick", success)
 
+    check_killer(char, opponent)  # mirroring ROM src/fight.c:3138
     return message
 
 
