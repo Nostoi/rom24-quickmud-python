@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.86] — 2026-06-10
+
+### Fixed
+
+- **MATH-002/003/004 hygiene (c_div parity)** — replaced `//` with `c_div` at 11 sites in
+  `mud/combat/engine.py` (vampiric heal `dam // 2` → `c_div(dam, 2)`; weapon-flag effect
+  dispatch `weapon_level // {2,4,5,6}` → `c_div(weapon_level, N)`) and
+  `mud/skills/handlers.py` (`enchant_armor`/`enchant_weapon` fizzle thresholds
+  `fail // {5,3,2}` → `c_div(fail, N)`). Operands are non-negative by construction; no
+  observable behavioral change. Closes all open rows in `docs/parity/audits/MATH_AND_RNG.md`.
+
 ## [2.13.85] — 2026-06-10
 
 ### Fixed

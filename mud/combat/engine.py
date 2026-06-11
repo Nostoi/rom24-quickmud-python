@@ -1840,7 +1840,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
 
     # WEAPON_VAMPIRIC - ROM src/fight.c L640-649
     if weapon_flags & WEAPON_VAMPIRIC:
-        dam = rng_mm.number_range(1, weapon_level // 5 + 1)
+        dam = rng_mm.number_range(1, c_div(weapon_level, 5) + 1)
         _push_message(victim, f"You feel {weapon_name} drawing your life away.")
         if room is not None:
             # mirroring ROM src/fight.c:643 — `act("$p draws life
@@ -1856,7 +1856,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
         apply_damage(attacker, victim, dam, DamageType.NEGATIVE, show=False)
 
         # Heal attacker by half the damage
-        attacker.hit += dam // 2
+        attacker.hit += c_div(dam, 2)
         if hasattr(attacker, "max_hit") and getattr(attacker, "max_hit", 0):
             attacker.hit = min(attacker.hit, attacker.max_hit)
 
@@ -1868,7 +1868,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
 
     # WEAPON_FLAMING - ROM src/fight.c L651-659
     if weapon_flags & WEAPON_FLAMING:
-        dam = rng_mm.number_range(1, weapon_level // 4 + 1)
+        dam = rng_mm.number_range(1, c_div(weapon_level, 4) + 1)
         # ROM src/fight.c:655 act("$p sears your flesh.", victim, wield, NULL,
         # TO_CHAR) — the weapon ($p) leads, so ROM act_new caps the first char
         # (src/comm.c:2376, FIGHT-031).
@@ -1882,13 +1882,13 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
                 "{name} is burned by {weapon}.",
                 weapon=weapon_name,
             )
-        fire_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+        fire_effect(victim, c_div(weapon_level, 2), dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.FIRE, show=False)
         messages.append(capitalize_act_line(f"{weapon_name} sears your flesh."))
 
     # WEAPON_FROST - ROM src/fight.c L661-670
     if weapon_flags & WEAPON_FROST:
-        dam = rng_mm.number_range(1, weapon_level // 6 + 2)
+        dam = rng_mm.number_range(1, c_div(weapon_level, 6) + 2)
         # ROM src/fight.c:664 act("The cold touch of $p surrounds you with ice.",
         # victim, wield, NULL, TO_CHAR) — $p is the weapon name. FIGHT-033.
         _push_message(victim, capitalize_act_line(f"The cold touch of {weapon_name} surrounds you with ice."))
@@ -1904,13 +1904,13 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
                 "{weapon} freezes {name}.",
                 weapon=weapon_name,
             )
-        cold_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+        cold_effect(victim, c_div(weapon_level, 2), dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.COLD, show=False)
         messages.append(capitalize_act_line(f"The cold touch of {weapon_name} surrounds you with ice."))
 
     # WEAPON_SHOCKING - ROM src/fight.c L672-681
     if weapon_flags & WEAPON_SHOCKING:
-        dam = rng_mm.number_range(1, weapon_level // 5 + 2)
+        dam = rng_mm.number_range(1, c_div(weapon_level, 5) + 2)
         # ROM src/fight.c:675 act("You are shocked by $p.", victim, wield, NULL,
         # TO_CHAR) — $p is the weapon name. FIGHT-033.
         _push_message(victim, capitalize_act_line(f"You are shocked by {weapon_name}."))
@@ -1923,7 +1923,7 @@ def process_weapon_special_attacks(attacker: Character, victim: Character) -> li
                 "{name} is struck by lightning from {weapon}.",
                 weapon=weapon_name,
             )
-        shock_effect(victim, weapon_level // 2, dam, SpellTarget.CHAR)
+        shock_effect(victim, c_div(weapon_level, 2), dam, SpellTarget.CHAR)
         apply_damage(attacker, victim, dam, DamageType.LIGHTNING, show=False)
         messages.append(capitalize_act_line(f"You are shocked by {weapon_name}."))
 

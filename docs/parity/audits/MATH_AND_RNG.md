@@ -53,9 +53,9 @@ below.
 | ID | Python site | ROM C reference | Severity | Status | Notes |
 |----|-------------|-----------------|----------|--------|-------|
 | MATH-001 | `mud/combat/engine.py:1290` — now `dam += c_div(get_damroll(attacker) * min(100, skill_total), 100)` | `src/fight.c` one_hit damroll bonus: `dam += GET_DAMROLL(ch) * UMIN(100,skill) / 100;` | HIGH | ✅ FIXED (2.9.53) | Closed by `c_div` substitution. Regression pinned by `tests/integration/test_weapon_damage_damroll_c_div.py::test_damroll_uses_c_truncation_not_python_floor` — damroll=-1, skill=99 → product -99 → c_div = 0 (ROM), Python // gave -1. |
-| MATH-002 | `mud/combat/engine.py:1596` — `attacker.hit += dam // 2` (vampiric weapon flag) | `src/fight.c` weapon_flag VAMPIRIC: heal half of damage | LOW | ⚠️ OPEN | `dam` is the vampiric negative-damage roll, computed `>= 1` immediately above (line 1580 `rng_mm.number_range(1, weapon_level//5 + 1)`). Non-negative in practice, but the `//` reads as a parity smell next to MATH-001 in the same file. Recommend mechanical swap to `c_div(dam, 2)` for hygiene; no observable bug today. |
-| MATH-003 | `mud/combat/engine.py:1561,1580,1608,1619,1625,1639,1645,1656` — `weapon_level // {2,4,5,6}` in weapon-flag effect dispatch | `src/fight.c` weapon flag handlers (POISON / FLAMING / FROST / SHOCKING) | LOW | ⚠️ OPEN | `weapon_level` is `obj.level` (always `>= 0` for spawned objects). Non-negative by construction. Same hygiene argument as MATH-002 — replace with `c_div` to make the intent explicit and to satisfy a future PARITY008 lint rule without per-site noqa annotations. No observable bug. |
-| MATH-004 | `mud/skills/handlers.py:3371, 3390, 3518, 3537` — `result < fail // 5`, `fail // 3`, `fail // 2` (scroll/staff/wand quirks) | `src/magic.c` do_recite / do_brandish / do_zap fizzle branches | LOW | ⚠️ OPEN | `fail` is a percentage chance in `[0, 100]`, non-negative. Recommend `c_div` for hygiene; no observable bug. |
+| MATH-002 | `mud/combat/engine.py` — `attacker.hit += c_div(dam, 2)` (vampiric weapon flag) | `src/fight.c` weapon_flag VAMPIRIC: heal half of damage | LOW | ✅ FIXED (2.13.86) | `dam` is non-negative (`rng_mm.number_range(1, ...)` lower bound 1). Swapped `dam // 2` → `c_div(dam, 2)` for hygiene and future PARITY008 lint compatibility. |
+| MATH-003 | `mud/combat/engine.py` — `c_div(weapon_level, {2,4,5,6})` in weapon-flag effect dispatch | `src/fight.c` weapon flag handlers (VAMPIRIC / FLAMING / FROST / SHOCKING) | LOW | ✅ FIXED (2.13.86) | `weapon_level` is `obj.level` (`>= 0` by construction). All 7 `weapon_level //` sites swapped to `c_div` — vampiric×1, flaming×2, frost×2, shocking×2. No observable bug; hygiene parity with PARITY008 intent. |
+| MATH-004 | `mud/skills/handlers.py` — `c_div(fail, {5,3,2})` in enchant_armor / enchant_weapon fizzle branches | `src/magic.c` enchant_armor / enchant_weapon fizzle thresholds | LOW | ✅ FIXED (2.13.86) | `fail` is a percentage in `[0, 100]`, non-negative. All 4 `fail //` sites swapped to `c_div`. No observable bug; hygiene. |
 | MATH-005 | `mud/skills/handlers.py:1985` — `new_sex = (current_sex + 1) % 3` | `src/magic.c` change_sex spell | NONE | ✅ MATCH | `current_sex` is `int(Sex)` in `[0, 2]`. `%` on non-negative operands matches C exactly. No action. |
 | MATH-006 | `mud/combat/engine.py:260` — `(40 + (5 * level)) // 2` (second-hit base chance) | `src/fight.c` second_attack | NONE | ✅ MATCH | `level >= 1`, so the numerator is `> 0`. Non-negative; `//` matches C `/`. No action. |
 | MATH-007 | `mud/combat/engine.py:334, 350` — `second_attack_skill // 2`, `third_attack_skill // 4` | `src/fight.c` second/third attack | NONE | ✅ MATCH | Skill values in `[0, 100]`. Non-negative. No action. |
@@ -92,19 +92,18 @@ these paths so the audit focuses on combat/skills/magic/affects.
 |--------|-------|
 | RNG channel candidates scanned | 0 (clean) |
 | Integer math channel candidates scanned (parity-sensitive subtrees) | 32 |
-| ❌ HIGH | 1 (MATH-001) |
-| ⚠️ LOW | 3 (MATH-002, MATH-003, MATH-004) |
-| ✅ MATCH / FALSE POSITIVE | 8 (MATH-005 … MATH-012) |
+| ❌ HIGH | 0 (MATH-001 closed 2.9.53) |
+| ⚠️ LOW | 0 (MATH-002/003/004 closed 2.13.86) |
+| ✅ MATCH / FALSE POSITIVE / FIXED | 11 (MATH-001 … MATH-012) |
 | Acceptable use (out-of-subtree) | ~118 |
 
-The single ❌ HIGH is MATH-001: `get_damroll() * min(100, skill_total) // 100`
-in `mud/combat/engine.py:1290`. Negative damroll (cursed gear, low-Str
-penalty) produces a 1-point-per-swing damage divergence vs ROM C on
-every melee hit. Fix: wrap in `c_div`.
-
-The three ⚠️ LOW rows are hygiene-only swaps (operands are
-non-negative by construction). They are listed so the PARITY008 lint
-rule can flip them mechanically without per-site analysis.
+All findings are now closed. MATH-001 (HIGH — negative damroll truncation) was
+fixed in 2.9.53. MATH-002/003/004 (LOW — hygiene swaps) were fixed in 2.13.86
+by replacing `//` with `c_div` in `process_weapon_special_attacks` (weapon flag
+damage/heal divisors) and `enchant_armor`/`enchant_weapon` (fizzle thresholds).
+Operands were non-negative by construction in all three cases; the swaps make
+the intent explicit and remove the only `//` smells the PARITY008 lint rule
+would flag in parity-sensitive subtrees.
 
 ## Suggested ruff rule sketch
 

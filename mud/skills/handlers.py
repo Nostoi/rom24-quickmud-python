@@ -3657,7 +3657,7 @@ def enchant_armor(caster: Character, target: Object | None = None) -> bool:
         if room is not None:
             act_to_room(room, fmt, caster, arg1=obj, exclude=caster)
 
-    if result < fail // 5:
+    if result < c_div(fail, 5):
         _send_to_char(caster, f"{short_descr} flares blindingly... and evaporates!")
         _notify_room("$p flares blindingly... and evaporates!")
         inventory = getattr(caster, "inventory", None)
@@ -3676,7 +3676,7 @@ def enchant_armor(caster: Character, target: Object | None = None) -> bool:
         _extract_runtime_object(obj)
         return False
 
-    if result < fail // 3:
+    if result < c_div(fail, 3):
         _send_to_char(caster, f"{short_descr} glows brightly, then fades...oops.")
         _notify_room("$p glows brightly, then fades.")
         obj.enchanted = True
@@ -3807,7 +3807,7 @@ def enchant_weapon(caster: Character, target: Object | None = None) -> bool:
         if room is not None:
             act_to_room(room, fmt, caster, arg1=obj, exclude=caster)
 
-    if result < fail // 5:
+    if result < c_div(fail, 5):
         _send_to_char(caster, f"{short_descr} shivers violently and explodes!")
         # ROM src/magic.c:2557 — the TO_ROOM leg carries the "explodeds!" typo
         # (the TO_CHAR leg at :2556 reads "explodes!"); preserve byte-for-byte.
@@ -3828,7 +3828,7 @@ def enchant_weapon(caster: Character, target: Object | None = None) -> bool:
         _extract_runtime_object(obj)
         return False
 
-    if result < fail // 2:
+    if result < c_div(fail, 2):
         _send_to_char(caster, f"{short_descr} glows brightly, then fades...oops.")
         _notify_room("$p glows brightly, then fades.")
         obj.enchanted = True
