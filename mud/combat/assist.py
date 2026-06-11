@@ -137,12 +137,15 @@ def check_assist(ch: Character, victim: Character) -> None:
                 target = None
                 number = 0
 
-                # Use reservoir sampling to pick random group member
+                # ROM src/fight.c:159-170 — number++ is INSIDE the selection block;
+                # it only increments when a new target is chosen, not on every
+                # visible group member. This matches ROM's biased selection distribution
+                # and, critically, keeps the shared MM RNG stream in sync.
                 for vch in list(people_in_room):
                     if can_see_character(rch, vch) and is_same_group(vch, victim):
                         if rng_mm.number_range(0, number) == 0:
                             target = vch
-                        number += 1
+                            number += 1  # mirroring ROM src/fight.c:165
 
                 # ROM lines 172-176: Attack the selected target
                 if target is not None:

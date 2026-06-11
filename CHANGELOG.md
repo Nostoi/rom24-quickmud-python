@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.99] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-053 `check_assist` target-selection RNG increment** —
+  `mud/combat/assist.py:check_assist` incremented `number` unconditionally after each visible
+  group member, but ROM `src/fight.c:165` only increments inside the selection block (when the
+  candidate becomes the new target). With 3+ group members and the 2nd skipped, Python made the
+  3rd call with `number_range(0, 2)` where ROM uses `number_range(0, 1)` — desyncing the shared
+  MM RNG stream for all subsequent combat events. Moved `number += 1` inside the selection
+  if-block to match ROM.
+
 ## [2.13.98] — 2026-06-10
 
 ### Fixed
