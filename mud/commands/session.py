@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.constants import Position
+from mud.skills.registry import check_improve
 from mud.utils.act import act_to_room
 
 if TYPE_CHECKING:
@@ -382,7 +383,7 @@ def do_recall(ch: Character, args: str) -> str:
 
         # 80% skill check (ROM C line 1599)
         if number_percent() < 80 * skill // 100:
-            # TODO: check_improve(ch, gsn_recall, FALSE, 6) - ROM C line 1601
+            check_improve(ch, "recall", False, 6)  # mirroring ROM src/act_move.c:1601
             ch.wait = max(ch.wait, 4)  # WAIT_STATE(ch, 4) - ROM C line 1602
             return "You failed!."  # ROM C line 1603 (note the period after !)
 
@@ -392,7 +393,7 @@ def do_recall(ch: Character, args: str) -> str:
         from mud.advancement import gain_exp
 
         gain_exp(ch, -lose)
-        # TODO: check_improve(ch, gsn_recall, TRUE, 4) - ROM C line 1610
+        check_improve(ch, "recall", True, 4)  # mirroring ROM src/act_move.c:1610
         stop_fighting(ch, True)
 
         recall_msg = f"You recall from combat!  You lose {lose} exps."

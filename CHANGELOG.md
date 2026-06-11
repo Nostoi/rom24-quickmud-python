@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.94] — 2026-06-10
+
+### Fixed
+
+- **RECALL-002 `do_recall` skill improvement not called** — `mud/commands/session.py:do_recall`
+  had `# TODO: check_improve(...)` stubs that never fired. ROM `src/act_move.c:1601` calls
+  `check_improve(ch, gsn_recall, FALSE, 6)` on recall failure and line 1610 calls
+  `check_improve(ch, gsn_recall, TRUE, 4)` on success. The recall skill now improves from use.
+
 ## [2.13.93] — 2026-06-10
 
 ### Fixed
