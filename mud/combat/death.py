@@ -551,6 +551,16 @@ def _nuke_pets(victim: Character, room) -> None:
         if hasattr(equipped, "location") and getattr(equipped, "location", None) is pet:
             equipped.location = None
 
+    # mirroring ROM src/handler.c:2121 — extract_char calls stop_fighting(pet, TRUE)
+    # before removing the pet from char_list, clearing fighting pointers on all
+    # characters that were fighting the pet (and the pet's own pointer).
+    # Without this, enemies fighting the charmed pet get ghost pointers after
+    # nuke_pets; must run while pet is still in character_registry.
+    # INV-043 enforcement point.
+    from mud.combat.engine import stop_fighting as _stop_fighting
+
+    _stop_fighting(pet, both=True)
+
     try:
         character_registry.remove(pet)
     except ValueError:

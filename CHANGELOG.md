@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.85] — 2026-06-10
+
+### Fixed
+
+- **INV-043 NUKE-PETS-STOP-FIGHTING (cross-file)** — `mud/combat/death.py:_nuke_pets`
+  now calls `stop_fighting(pet, both=True)` before removing the pet from
+  `character_registry`. ROM `src/act_comm.c:nuke_pets` → `extract_char(pet, TRUE)`
+  → `src/handler.c:stop_fighting(pet, TRUE)` clears all `fighting` pointers that
+  targeted the pet; Python's manual extraction path was missing this sweep, leaving
+  any character in combat with the charmed pet with a ghost `fighting` pointer after
+  the pet was extracted. Two mutation-verified tests in
+  `tests/integration/test_inv043_nuke_pets_stop_fighting.py` lock the contract (28
+  enforced INVs, next free ID: INV-044).
+
 ## [2.13.84] — 2026-06-10
 
 ### Fixed
