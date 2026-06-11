@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.95] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-049 `_murder_safety_check` missing PC-vs-PC clan/level guards** — `mud/commands/murder.py:_murder_safety_check`
+  had no PC-vs-PC branch. ROM `src/fight.c:1096-1121` blocks attacks when: (1) attacker is not
+  clan-member ("Join a clan if you want to kill players."); (2) victim has KILLER/THIEF flag
+  (attack allowed, bypass remaining checks); (3) victim is not clan-member ("They aren't in a
+  clan, leave them alone."); (4) attacker level > victim level + 8 ("Pick on someone your own
+  size."). Added the full PC-vs-PC waterfall guarded by `not char.is_npc and not victim.is_npc`.
+  FIGHT-050 filed for remaining `mud/combat/safety.py:is_safe` gaps (ACT_PET, charm-ownership,
+  NPC-charmed-PC-attack) deferred due to CRITICAL blast radius.
+
 ## [2.13.94] — 2026-06-10
 
 ### Fixed

@@ -11,7 +11,7 @@ Differences from kill:
 
 from __future__ import annotations
 
-from mud.characters import is_same_group
+from mud.characters import is_clan_member, is_same_group
 from mud.combat import multi_hit
 from mud.combat.engine import _push_message, check_killer
 from mud.commands.communication import do_yell
@@ -20,6 +20,7 @@ from mud.models.character import Character
 from mud.models.constants import (
     ActFlag,
     AffectFlag,
+    PlayerFlag,
     Position,
     RoomFlag,
 )
@@ -127,5 +128,22 @@ def _murder_safety_check(char: Character, victim: Character) -> str | None:
     master = getattr(char, "master", None)
     if affected_by & AffectFlag.CHARM and master is victim:
         return f"{getattr(victim, 'name', 'They')} is your beloved master."
+
+    # PC-vs-PC clan/level guards — mirroring ROM src/fight.c:1096-1121
+    char_is_npc = getattr(char, "is_npc", True)
+    if not char_is_npc and not victim_is_npc:
+        if not is_clan_member(char):
+            return "Join a clan if you want to kill players."
+
+        victim_act = getattr(victim, "act", 0)
+        # KILLER or THIEF flag on victim — allow the attack
+        if victim_act & PlayerFlag.KILLER or victim_act & PlayerFlag.THIEF:
+            return None
+
+        if not is_clan_member(victim):
+            return "They aren't in a clan, leave them alone."
+
+        if char.level > victim.level + 8:  # mirroring ROM src/fight.c:1116
+            return "Pick on someone your own size."
 
     return None
