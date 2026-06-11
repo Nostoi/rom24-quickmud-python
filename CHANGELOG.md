@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.90] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-046 `do_backstab` missing `check_killer`** — `mud/commands/combat.py:do_backstab`
+  never called `check_killer(ch, victim)`. ROM `src/fight.c:2951` calls it before
+  `WAIT_STATE` and the skill roll. Because `do_backstab` requires `char.fighting is None`,
+  the check_killer fighting-guard does not fire — this was a real behavioral gap where a
+  clan PC backstabbing another clan PC escaped the KILLER flag.
+
 ## [2.13.89] — 2026-06-10
 
 ### Fixed

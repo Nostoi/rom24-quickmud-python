@@ -363,6 +363,8 @@ def do_backstab(char: Character, args: str) -> str:
         # double-deliver (the connection loop sends the return AND drains char.messages).
         return "You are still recovering."
 
+    check_killer(char, victim)  # mirroring ROM src/fight.c:2951 — before WAIT_STATE/roll
+
     roll = rng_mm.number_percent()
     auto_success = learned >= 2 and hasattr(victim, "is_awake") and not victim.is_awake()
     success = learned > roll or auto_success
