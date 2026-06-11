@@ -34,14 +34,11 @@ def _restore_world_registries():
 
     The flee test calls ``initialize_world()`` (which clears and reloads
     ``room_registry`` / ``area_registry`` from disk) and then mutates a *real*
-    registered room's ``exits`` into a dict to exercise do_flee's dict-format
-    branch. Both the populated registries and the dict-shaped exits used to leak
-    across xdist worker boundaries: a later sibling test running ``game_tick()``
-    would reset the leaked area and crash in ``_restore_exit_states`` when
-    ``enumerate({"north": ...})`` yielded the string key and tried
-    ``"north".exit_info = ...``. Snapshot before / restore after discards this
-    test's corrupted Room objects and returns the registries to their pre-test
-    state (AGENTS.md "Parallel test execution & isolation").
+    registered room's ``exits`` to wire in a one-way exit to a destination room.
+    Both the populated registries and the mutated exits used to leak across xdist
+    worker boundaries. Snapshot before / restore after discards this test's
+    mutated Room objects and returns the registries to their pre-test state
+    (AGENTS.md "Parallel test execution & isolation").
     """
 
     rooms_before = dict(room_registry)
@@ -79,10 +76,13 @@ def test_flee_moves_character_to_new_room(monkeypatch: pytest.MonkeyPatch) -> No
             break
     assert dst_room is not None and dst_vnum is not None, "registry must have at least 2 rooms"
 
-    # Wire a one-way exit from src to dst. Use the dict-style format that
-    # do_flee's `isinstance(exit_data, dict)` branch accepts; `to_room` is
-    # the destination vnum (do_flee looks it up via room_registry.get).
-    src_room.exits = {"north": {"to_room": dst_vnum, "closed": False}}
+    # Wire a one-way exit from src to dst using the canonical list-of-6 format
+    # (ROM: EXIT_DATA *exit[6]) with an Exit object at index 0 (north).
+    from mud.models.room import Exit
+
+    exits_list = [None] * 6
+    exits_list[0] = Exit(to_room=dst_room, exit_info=0, keyword="north", key=0)
+    src_room.exits = exits_list
 
     # Configure char for a successful flee.
     src_char.position = Position.FIGHTING
@@ -92,10 +92,9 @@ def test_flee_moves_character_to_new_room(monkeypatch: pytest.MonkeyPatch) -> No
     src_char.max_move = 100
     src_char.fighting = opponent
 
-    # Force flee success deterministically: percent roll <= chance, and pick
-    # the first (only) valid exit.
-    monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
-    monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: lo)
+    # Force flee success deterministically: number_door() returns 0 so the
+    # first attempt picks the north exit (index 0).
+    monkeypatch.setattr(rng_mm, "number_door", lambda: 0)
 
     do_flee(src_char, "")
 

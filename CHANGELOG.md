@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.0] — 2026-06-11
+
+### Fixed
+
+- **FIGHT-054 `do_flee` movement mechanism** —
+  `mud/commands/combat.py:do_flee` used a fake dexterity-based `number_percent()` success roll
+  (`50 + (dex - 13) * 5`) not present in ROM. ROM `src/fight.c:2986-3003` uses a 6-attempt
+  `number_door()` loop: each attempt draws a random door (0–5), checks `EX_CLOSED` (bit 1, not bit 0),
+  checks `number_range(0, ch->daze) != 0` to block on daze, and for NPCs checks `ROOM_NO_MOB`.
+  Python also omitted the `POS_STANDING` reset when not fighting (ROM `:2979-2980`), and was
+  checking `exit_info & 1` (EX_ISDOOR) instead of `& 2` (EX_CLOSED). Replaced entire exit-selection
+  path with the ROM 6-attempt `number_door()` loop; added daze check, ROOM_NO_MOB guard, and
+  position reset. Also updated `test_fight043_flee_xp_loss.py` and `test_flee_moves_character.py`
+  to use canonical list-of-6 exits and `number_door` patches.
+
 ## [2.13.99] — 2026-06-10
 
 ### Fixed

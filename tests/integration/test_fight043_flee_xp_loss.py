@@ -45,10 +45,10 @@ def _mk_room(vnum: int, with_exit_to: Room | None = None) -> Room:
     room = Room(vnum=vnum, name=f"Room {vnum}", description="", room_flags=0, sector_type=0)
     room.people = []
     room.contents = []
+    # Use the canonical list-of-6 format (ROM: EXIT_DATA *exit[6])
+    room.exits = [None] * 6
     if with_exit_to is not None:
-        room.exits = {0: Exit(to_room=with_exit_to, exit_info=0, keyword="", key=0)}
-    else:
-        room.exits = {}
+        room.exits[0] = Exit(to_room=with_exit_to, exit_info=0, keyword="", key=0)
     room_registry[vnum] = room
     return room
 
@@ -89,7 +89,7 @@ def flee_rooms(request):
     dst = Room(vnum=vnum_dst, name="Dest", description="", room_flags=0, sector_type=0)
     dst.people = []
     dst.contents = []
-    dst.exits = {}
+    dst.exits = [None] * 6
     src = _mk_room(vnum_src, with_exit_to=dst)
     room_registry[vnum_dst] = dst
     yield src, dst
@@ -105,10 +105,7 @@ def test_non_thief_flee_loses_10_exp(flee_rooms):
     pc = _mk_fighter("hero", src, ch_class=3, exp=5000)  # warrior, ch_class=3; above floor (1000)
     pc.fighting = npc
 
-    with (
-        patch("mud.commands.combat.rng_mm.number_percent", return_value=1),  # flee succeeds
-        patch("mud.commands.combat.rng_mm.number_range", return_value=0),  # pick first exit
-    ):
+    with patch("mud.commands.combat.rng_mm.number_door", return_value=0):  # pick door 0 (valid exit)
         result = do_flee(pc, "")
 
     assert pc.exp == 4990, f"Expected 4990 exp after flee penalty, got {pc.exp}"
@@ -122,10 +119,7 @@ def test_non_thief_flee_emits_flee_message(flee_rooms):
     pc = _mk_fighter("hero", src, ch_class=0, exp=500)  # mage, ch_class=0
     pc.fighting = npc
 
-    with (
-        patch("mud.commands.combat.rng_mm.number_percent", return_value=1),
-        patch("mud.commands.combat.rng_mm.number_range", return_value=0),
-    ):
+    with patch("mud.commands.combat.rng_mm.number_door", return_value=0):  # pick door 0 (valid exit)
         result = do_flee(pc, "")
 
     assert "You flee from combat!" in result
@@ -139,19 +133,9 @@ def test_thief_sneak_no_xp_loss(flee_rooms):
     pc = _mk_fighter("rogue", src, ch_class=2, exp=5000)  # thief, ch_class=2; above floor (1000)
     pc.fighting = npc
 
-    # number_percent is called twice:
-    #   1. flee success check (return 1 — succeeds)
-    #   2. thief sneak check (return 1 — 1 < 3*(10//2)=15 → sneak succeeds)
-    call_count = 0
-
-    def _fake_percent():
-        nonlocal call_count
-        call_count += 1
-        return 1  # always low: flee succeeds AND sneak succeeds
-
     with (
-        patch("mud.commands.combat.rng_mm.number_percent", side_effect=_fake_percent),
-        patch("mud.commands.combat.rng_mm.number_range", return_value=0),
+        patch("mud.commands.combat.rng_mm.number_door", return_value=0),  # pick door 0 (valid exit)
+        patch("mud.commands.combat.rng_mm.number_percent", return_value=1),  # sneak check: 1 < 15 → succeeds
     ):
         result = do_flee(pc, "")
 
@@ -167,11 +151,9 @@ def test_thief_sneak_fail_loses_xp(flee_rooms):
     pc = _mk_fighter("rogue", src, ch_class=2, exp=5000)  # above floor (1000) so deduction lands
     pc.fighting = npc
 
-    # flee succeeds (roll=1), sneak fails (roll=99 >= 15)
-    calls = iter([1, 99])
     with (
-        patch("mud.commands.combat.rng_mm.number_percent", side_effect=calls),
-        patch("mud.commands.combat.rng_mm.number_range", return_value=0),
+        patch("mud.commands.combat.rng_mm.number_door", return_value=0),  # pick door 0 (valid exit)
+        patch("mud.commands.combat.rng_mm.number_percent", return_value=99),  # sneak check: 99 >= 15 → fails
     ):
         result = do_flee(pc, "")
 
@@ -187,10 +169,7 @@ def test_npc_flee_no_xp_loss(flee_rooms):
     mob.fighting = pc
     mob.exp = 500  # NPCs shouldn't have exp modified
 
-    with (
-        patch("mud.commands.combat.rng_mm.number_percent", return_value=1),
-        patch("mud.commands.combat.rng_mm.number_range", return_value=0),
-    ):
+    with patch("mud.commands.combat.rng_mm.number_door", return_value=0):  # pick door 0 (valid exit)
         do_flee(mob, "")
 
     assert mob.exp == 500, "NPC flee must not deduct XP"

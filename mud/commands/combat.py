@@ -10,6 +10,7 @@ from mud.math.c_compat import c_div
 from mud.models.character import Character
 from mud.models.constants import (
     AC_BASH,
+    EX_CLOSED,
     LEVEL_IMMORTAL,
     ActFlag,
     AffectFlag,
@@ -661,91 +662,96 @@ def do_surrender(char: Character, args: str) -> str:
 def do_flee(char: Character, args: str) -> str:
     """
     Flee from combat.
-
-    ROM Reference: src/fight.c lines 800-900 (do_flee)
+    ROM Reference: src/fight.c:2970-3030 (do_flee)
     """
     opponent = getattr(char, "fighting", None)
     if opponent is None:
+        # mirrors ROM src/fight.c:2978-2982
+        if char.position == Position.FIGHTING:
+            char.position = Position.STANDING
         return "You aren't fighting anyone."
 
-    # Can't flee if position too low
-    if char.position < Position.FIGHTING:
-        return "You can't flee in your current state."
-
-    # Check wait state
+    # Check wait state (Python architecture: commands are wait-gated)
     if int(getattr(char, "wait", 0) or 0) > 0:
-        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
-        # double-deliver (the connection loop sends the return AND drains char.messages).
         return "You are still recovering."
 
-    # Set wait state for flee attempt
     skill_registry._apply_wait_state(char, get_pulse_violence())
 
-    # Success chance based on dexterity
-    if hasattr(char, "get_curr_stat"):
-        dex = char.get_curr_stat(Stat.DEX)
-    else:
-        dex = 13  # Default dex
-
-    if dex is None:
-        dex = 13
-
-    chance = 50 + (dex - 13) * 5  # Base 50%, +/- 5% per dex point
-
-    # Reduce chance if badly hurt
-    # ARITH-012: ROM src/act_move.c do_flee divides `100 * ch->hit /
-    # ch->max_hit` raw (SIGFPE if max_hit == 0). Reachable in Python via
-    # NPC mob protos with degenerate hit_dice. See
-    # docs/divergences/UB_DIVISORS.md.
-    hp_percent = c_div(int(getattr(char, "hit", 0) or 0) * 100, max(1, int(getattr(char, "max_hit", 1) or 1)))
-    if hp_percent < 30:
-        chance -= 25
-
-    roll = rng_mm.number_percent()
-    if roll > chance:
+    was_in = getattr(char, "room", None)
+    if not was_in:
         return "PANIC! You couldn't escape!"
 
-    # Find a random exit
-    room = getattr(char, "room", None)
-    if not room:
-        return "PANIC! You couldn't escape!"
+    # 6-attempt random-door loop — mirroring ROM src/fight.c:2986-3003
+    now_in = None
+    for _attempt in range(6):
+        door = rng_mm.number_door()  # mirroring ROM src/fight.c:2989: door = number_door()
+        exits = getattr(was_in, "exits", [])
+        if isinstance(exits, list):
+            pexit = exits[door] if door < len(exits) else None
+        else:
+            pexit = exits.get(door)
 
-    exits = getattr(room, "exits", {})
-    valid_exits = []
-
-    for direction, exit_data in exits.items():
-        if exit_data:
-            # Handle both dict-style and Exit object style
-            if hasattr(exit_data, "exit_info"):
-                # Exit object
-                closed = bool(getattr(exit_data, "exit_info", 0) & 1)  # EX_ISDOOR and closed
-                to_room = getattr(exit_data, "to_room", None)
-            elif isinstance(exit_data, dict):
-                # Dict style
-                closed = exit_data.get("closed", False)
-                to_room = exit_data.get("to_room")
-            else:
+        if pexit is None:
+            continue
+        to_room = getattr(pexit, "to_room", None)
+        if to_room is None:
+            continue
+        # mirroring ROM src/fight.c:2992: IS_SET(pexit->exit_info, EX_CLOSED)
+        if int(getattr(pexit, "exit_info", 0) or 0) & EX_CLOSED:
+            continue
+        # mirroring ROM src/fight.c:2994: number_range(0, ch->daze) != 0
+        daze = int(getattr(char, "daze", 0) or 0)
+        if daze != 0 and rng_mm.number_range(0, daze) != 0:
+            continue
+        # mirroring ROM src/fight.c:2996-2998: IS_NPC && ROOM_NO_MOB → skip
+        if getattr(char, "is_npc", False):
+            dest_flags = int(getattr(to_room, "room_flags", 0) or 0)
+            if dest_flags & RoomFlag.ROOM_NO_MOB:
                 continue
 
-            if not closed and to_room:
-                valid_exits.append((direction, to_room))
+        # Resolve room reference and attempt the transition
+        # mirrors ROM src/fight.c:3001: move_char(ch, door, FALSE)
+        from mud.models.room import Room
+        from mud.registry import room_registry
 
-    if not valid_exits:
+        if isinstance(to_room, Room):
+            new_room = to_room
+        elif isinstance(to_room, int):
+            new_room = room_registry.get(to_room)
+        else:
+            new_room = None
+
+        if new_room is None or new_room is was_in:
+            continue
+
+        was_in.remove_character(char)
+        new_room.add_character(char)
+        now_in = new_room
+        break
+
+    if now_in is None or now_in is was_in:
         return "PANIC! You couldn't escape!"
 
-    # Pick random exit
-    direction, to_room = valid_exits[rng_mm.number_range(0, len(valid_exits) - 1)]
+    # Success path — mirrors ROM src/fight.c:3004-3021
 
-    # Move character
-    messages = []
-    messages.append("You flee from combat!")
+    # Broadcast "$n has fled!" from was_in — mirrors ROM src/fight.c:3005-3007
+    # (ROM temporarily sets ch->in_room = was_in for the act() call)
+    for other in list(getattr(was_in, "people", [])):
+        if other is not char:
+            try:
+                desc = getattr(other, "desc", None)
+                if desc and hasattr(desc, "send"):
+                    desc.send(f"{char.name} has fled!")
+            except Exception:
+                pass
 
-    # ROM src/fight.c:3010-3019 — XP penalty block (PC only, not NPC).
-    # Thief class (ch_class == 2, ROM class_table index) gets a sneak
-    # check: number_percent() < 3 * (level / 2). C `&&` is left-to-right
-    # short-circuit, so the roll is only drawn for class-2 characters.
+    messages: list[str] = []
     if not getattr(char, "is_npc", False):
-        if getattr(char, "ch_class", -1) == 2:  # thief — sneak-away check
+        # mirrors ROM src/fight.c:3010-3019
+        messages.append("You flee from combat!")
+        # Thief class (ch_class == 2) gets sneak-away check
+        # C && is left-to-right short-circuit; roll only drawn for class-2
+        if getattr(char, "ch_class", -1) == 2:
             if rng_mm.number_percent() < 3 * c_div(char.level, 2):
                 messages.append("You snuck away safely.")
             else:
@@ -755,47 +761,18 @@ def do_flee(char: Character, args: str) -> str:
             messages.append("You lost 10 exp.")
             gain_exp(char, -10)
 
-    # Notify others in room
-    # PARALLEL-010: iterate the canonical `room.people` set, not the
-    # nonexistent `room.characters` attribute.
-    for other in getattr(room, "people", []):
-        if other != char:
-            try:
-                desc = getattr(other, "desc", None)
-                if desc and hasattr(desc, "send"):
-                    desc.send(f"{char.name} has fled!")
-            except Exception:
-                pass
-
-    # Stop fighting
+    # mirrors ROM src/fight.c:3021: stop_fighting(ch, TRUE)
     stop_fighting(char, True)
 
-    # Move to new room via the canonical Room helpers — they update
-    # `room.people` (the only occupant set Python tracks).
-    # PARALLEL-010: pre-fix used `room.characters` which doesn't exist.
-    from mud.models.room import Room
-    from mud.registry import room_registry
-
-    if isinstance(to_room, Room):
-        new_room = to_room
-    elif isinstance(to_room, int):
-        new_room = room_registry.get(to_room)
-    else:
-        new_room = None
-
-    if new_room is not None:
-        if room is not None:
-            room.remove_character(char)
-        new_room.add_character(char)
-
-        # Show new room
-        from mud.commands.inspection import do_look
-
-        room_desc = do_look(char, "")
-        messages.append(room_desc)
-
-    # Lose some movement
+    # ROM's move_char deducts movement; mirror that deduction here
     char.move = max(0, char.move - c_div(char.max_move, 10))
+
+    # Show new room
+    from mud.commands.inspection import do_look
+
+    room_desc = do_look(char, "")
+    if room_desc:
+        messages.append(room_desc)
 
     return "\n".join(messages)
 
