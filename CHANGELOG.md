@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.3] — 2026-06-11
+
+### Fixed
+
+- **FIGHT-057 double-RIV application in weapon attacks** —
+  ROM `src/fight.c:804-816` calls `check_immune` exactly once inside `damage()`.
+  Python split the combat pipeline across `attack_round` + `apply_damage`, with RIV applied
+  in both halves: `attack_round` pre-applied resistance/vulnerability (former lines 615-623),
+  then `apply_damage` applied it again. An IS_RESISTANT victim took `(1-1/3)^2 ≈ 44%` of
+  raw damage instead of ROM's `1-1/3 ≈ 67%`. Removed the duplicate RIV block from
+  `attack_round`; `apply_damage` now applies RIV exactly once for all callers.
+
 ## [2.14.2] — 2026-06-11
 
 ### Fixed

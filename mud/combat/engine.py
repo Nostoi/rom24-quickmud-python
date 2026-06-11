@@ -612,24 +612,15 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
     # Apply damage reduction modifiers (sanctuary, protection, drunk) following C src/fight.c:damage logic
     damage = apply_damage_reduction(attacker, victim, damage)
 
-    # Apply RIV (IMMUNE/RESIST/VULN) scaling before any side-effects.
-    riv = _riv_check(victim, dam_type)
-    immune = riv == 1
-    if immune:  # IS_IMMUNE
-        damage = 0
-    elif riv == 2:  # IS_RESISTANT: dam -= dam/3 (ROM)
-        damage = damage - c_div(damage, 3)
-    elif riv == 3:  # IS_VULNERABLE: dam += dam/2 (ROM)
-        damage = damage + c_div(damage, 2)
-
     # Invoke any on-hit effects with scaled damage (can be monkeypatched in tests).
     on_hit_effects(attacker, victim, damage)
 
     # Process weapon special attacks following C src/fight.c:one_hit L600-680
     weapon_special_messages = process_weapon_special_attacks(attacker, victim)
 
-    # Apply damage and update fighting state (defenses checked inside apply_damage)
-    main_message = apply_damage(attacker, victim, damage, dam_type, dt=attack_dt, immune=immune)
+    # Apply damage and update fighting state (defenses + RIV checked inside apply_damage)
+    # mirroring ROM src/fight.c:damage — RIV (check_immune) runs once inside damage(), not before.
+    main_message = apply_damage(attacker, victim, damage, dam_type, dt=attack_dt)
 
     # Combine main attack message with weapon special messages
     if weapon_special_messages:
