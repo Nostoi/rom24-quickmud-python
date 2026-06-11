@@ -68,12 +68,14 @@ def _kill_safety_message(attacker: Character, victim: Character) -> str | None:
                 return "You don't own that monster."
     else:
         if getattr(attacker, "is_npc", False):
+            # safe room checked FIRST — mirroring ROM src/fight.c:1083 order
+            if skill_handlers._get_room_flags(victim_room) & int(RoomFlag.ROOM_SAFE):
+                return "Not in this room."
+            # charmed-mob guard SECOND — mirroring ROM src/fight.c:1087
             if skill_handlers._is_charmed(attacker):
                 master = getattr(attacker, "master", None)
                 if master is not None and getattr(master, "fighting", None) is not victim:
                     return "Players are your friends!"
-            if skill_handlers._get_room_flags(victim_room) & int(RoomFlag.ROOM_SAFE):
-                return "Not in this room."
         else:
             if not is_clan_member(attacker):
                 return "Join a clan if you want to kill players."

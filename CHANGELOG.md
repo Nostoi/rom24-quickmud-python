@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.98] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-052 `_kill_safety_message` NPC-attacker-vs-PC guard ordering** —
+  `mud/commands/combat.py:_kill_safety_message` checked the charmed-mob guard before the
+  safe-room check in the NPC-attacker branch. ROM `src/fight.c:1080-1093` checks safe-room
+  (`:1083`) before the charmed-mob guard (`:1087`). Corner case affected: a charmed NPC in a
+  safe room attacking a PC whose master is not fighting that PC — ROM returns "Not in this room."
+  (safe-room wins); Python previously returned "Players are your friends!" (wrong message).
+  Swapped the two checks to restore ROM ordering.
+
 ## [2.13.97] — 2026-06-10
 
 ### Fixed
