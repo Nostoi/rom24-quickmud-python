@@ -1,5 +1,6 @@
 import mud.skills.handlers as skill_handlers
 from mud import mobprog
+from mud.advancement import gain_exp
 from mud.characters import is_clan_member, is_same_group
 from mud.combat import multi_hit
 from mud.combat.engine import apply_damage, check_killer, get_wielded_weapon, stop_fighting
@@ -732,6 +733,21 @@ def do_flee(char: Character, args: str) -> str:
     # Move character
     messages = []
     messages.append("You flee from combat!")
+
+    # ROM src/fight.c:3010-3019 — XP penalty block (PC only, not NPC).
+    # Thief class (ch_class == 2, ROM class_table index) gets a sneak
+    # check: number_percent() < 3 * (level / 2). C `&&` is left-to-right
+    # short-circuit, so the roll is only drawn for class-2 characters.
+    if not getattr(char, "is_npc", False):
+        if getattr(char, "ch_class", -1) == 2:  # thief — sneak-away check
+            if rng_mm.number_percent() < 3 * c_div(char.level, 2):
+                messages.append("You snuck away safely.")
+            else:
+                messages.append("You lost 10 exp.")
+                gain_exp(char, -10)
+        else:
+            messages.append("You lost 10 exp.")
+            gain_exp(char, -10)
 
     # Notify others in room
     # PARALLEL-010: iterate the canonical `room.people` set, not the

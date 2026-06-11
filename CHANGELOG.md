@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.87] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-043 `do_flee` missing XP penalty** — `mud/commands/combat.py:do_flee` was
+  missing the entire ROM XP-loss block (`src/fight.c:3010-3019`). On a successful flee
+  by a PC, ROM emits "You fled from combat!" then: for thieves (`ch_class == 2`) runs a
+  sneak check (`number_percent() < 3 * (level / 2)`) and emits "You snuck away safely."
+  with no XP loss; otherwise emits "You lost 10 exp." and calls `gain_exp(ch, -10)`.
+  Python emitted the flee message but skipped the entire penalty block. Five
+  mutation-verified tests in `tests/integration/test_fight043_flee_xp_loss.py` lock all
+  branches (warrior XP loss, thief sneak success, thief sneak fail, NPC unaffected).
+
 ## [2.13.86] — 2026-06-10
 
 ### Fixed
