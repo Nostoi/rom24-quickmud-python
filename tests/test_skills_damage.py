@@ -136,8 +136,8 @@ def test_ray_of_truth_respects_good_and_evil_alignment(monkeypatch: pytest.Monke
 
     recoil = skill_handlers.ray_of_truth(evil_caster, victim)
 
-    assert recoil == 82
-    assert evil_caster.hit == 128
+    assert recoil == 58  # cap(82) = 58 (FIGHT-056 soft-cap applied inside apply_damage)
+    assert evil_caster.hit == 152  # 210 - cap(82) = 210 - 58 = 152
     assert victim.hit == 190
     assert evil_caster.has_affect(AffectFlag.BLIND)
     assert "explodes inside you" in evil_caster.messages[0]
@@ -388,8 +388,8 @@ def test_general_purpose_wand_damage_respects_override_level(
 
     damage = skill_handlers.general_purpose(caster, victim, override_level=wand_level)
 
-    assert damage == 88
-    assert victim.hit == 72
+    assert damage == 61  # cap(88) = 61 (FIGHT-056 soft-cap applied inside apply_damage)
+    assert victim.hit == 99  # 160 - cap(88) = 160 - 61 = 99
     assert range_calls == [(25, 100)]
     assert saves_calls == [(wand_level, victim, DamageType.PIERCE)]
     assert any("general purpose ammo" in message for message in caster.messages)
@@ -428,9 +428,9 @@ def test_high_explosive_wand_damage_respects_override_level(
 
     damage = skill_handlers.high_explosive(caster, victim, override_level=wand_level)
 
-    expected = c_div(117, 2)
+    expected = 46  # cap(c_div(117, 2)) = cap(58) = 46 (FIGHT-056 soft-cap)
     assert damage == expected
-    assert victim.hit == 170 - expected
+    assert victim.hit == 170 - expected  # 124
     assert range_calls == [(30, 120)]
     assert saves_calls == [(wand_level, victim, DamageType.PIERCE)]
     assert any("high explosive ammo" in message for message in caster.messages)
@@ -517,8 +517,8 @@ def test_fireball_uses_rom_damage_table(monkeypatch: pytest.MonkeyPatch) -> None
 
     damage = skill_handlers.fireball(caster, victim)
 
-    assert damage == 260
-    assert victim.hit == 140
+    assert damage == 113  # cap(260) = 113 (FIGHT-056: both soft-cap tiers applied)
+    assert victim.hit == 287  # 400 - cap(260) = 400 - 113 = 287
 
 
 def test_fireball_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -533,8 +533,8 @@ def test_fireball_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> None:
 
     damage = skill_handlers.fireball(caster, victim)
 
-    assert damage == c_div(180, 2)
-    assert victim.hit == 320 - c_div(180, 2)
+    assert damage == 62  # cap(c_div(180, 2)) = cap(90) = 62 (FIGHT-056 soft-cap)
+    assert victim.hit == 258  # 320 - cap(90) = 320 - 62 = 258
 
 
 def test_magic_missile_rolls_rom_damage_table(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -609,8 +609,8 @@ def test_lightning_bolt_rolls_rom_damage_table(monkeypatch: pytest.MonkeyPatch) 
 
     assert observed == [(c_div(54, 2), 108)]
     assert save_args == [(35, victim, DamageType.LIGHTNING)]
-    assert damage == 107
-    assert victim.hit == 260 - 107
+    assert damage == 71  # cap(107) = 71 (FIGHT-056 soft-cap applied inside apply_damage)
+    assert victim.hit == 189  # 260 - cap(107) = 260 - 71 = 189
 
 
 def test_lightning_bolt_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -625,8 +625,8 @@ def test_lightning_bolt_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> N
 
     damage = skill_handlers.lightning_bolt(caster, victim)
 
-    assert damage == c_div(80, 2)
-    assert victim.hit == 220 - c_div(80, 2)
+    assert damage == 37  # cap(c_div(80, 2)) = cap(40) = 37 (FIGHT-056 soft-cap)
+    assert victim.hit == 183  # 220 - cap(40) = 220 - 37 = 183
 
 
 def test_energy_drain_siphons_resources(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -659,8 +659,8 @@ def test_energy_drain_siphons_resources(monkeypatch: pytest.MonkeyPatch) -> None
 
     damage = skill_handlers.energy_drain(caster, victim)
 
-    assert damage == 58
-    assert victim.hit == 102
+    assert damage == 46  # cap(58) = 46 (FIGHT-056 soft-cap applied inside apply_damage)
+    assert victim.hit == 114  # 160 - cap(58) = 160 - 46 = 114
     assert caster.hit == 178
     assert victim.mana == c_div(initial_mana, 2)
     assert victim.move == c_div(initial_move, 2)
@@ -725,9 +725,9 @@ def test_flamestrike_rolls_rom_dice(monkeypatch: pytest.MonkeyPatch) -> None:
 
     damage = skill_handlers.flamestrike(caster, victim)
 
-    expected = (6 + c_div(28, 2)) * 8
+    expected = 88  # cap((6 + c_div(28, 2)) * 8) = cap(160) = 88 (FIGHT-056 soft-cap)
     assert damage == expected
-    assert victim.hit == 500 - expected
+    assert victim.hit == 500 - expected  # 412
 
 
 def test_flamestrike_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -742,5 +742,5 @@ def test_flamestrike_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> None
 
     damage = skill_handlers.flamestrike(caster, victim)
 
-    assert damage == c_div(96, 2)
-    assert victim.hit == 260 - c_div(96, 2)
+    assert damage == 41  # cap(c_div(96, 2)) = cap(48) = 41 (FIGHT-056 soft-cap)
+    assert victim.hit == 219  # 260 - cap(48) = 260 - 41 = 219

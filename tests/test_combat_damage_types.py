@@ -240,4 +240,4 @@ def test_position_change_on_damage(attacker, victim):
 
     # Victim should be fighting
     assert victim.position == Position.FIGHTING
-    assert victim.hit == 10  # 100 - 90 = 10
+    assert victim.hit == 38  # 100 - cap(90) = 100 - 62 = 38 (FIGHT-056 soft-cap)

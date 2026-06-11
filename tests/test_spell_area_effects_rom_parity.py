@@ -19,6 +19,15 @@ from mud.skills.handlers import holy_word, invis, mass_invis
 from mud.utils import rng_mm
 
 
+def _soft_cap(damage: int) -> int:
+    """ROM src/fight.c:717-720 damage soft-cap applied inside apply_damage (FIGHT-056)."""
+    if damage > 35:
+        damage = c_div(damage - 35, 2) + 35
+    if damage > 80:
+        damage = c_div(damage - 80, 2) + 80
+    return damage
+
+
 def make_character(**overrides) -> Character:
     """Helper to create test characters with common defaults."""
 
@@ -254,7 +263,7 @@ def test_holy_word_good_buffs_good_harms_evil_not_neutral(monkeypatch) -> None:
 
     assert holy_word(caster) is True
 
-    assert victim_evil.hit == start_hit - expected_damage
+    assert victim_evil.hit == start_hit - _soft_cap(expected_damage)  # cap applied inside apply_damage
     assert victim_evil.has_spell_effect("curse")
     assert "You are struck down!" in victim_evil.messages
 
@@ -351,7 +360,7 @@ def test_holy_word_neutral_caster_harms_non_neutral_with_half_level_curse(monkey
 
     assert holy_word(caster) is True
 
-    assert victim_good.hit == start_hit - expected_damage
+    assert victim_good.hit == start_hit - _soft_cap(expected_damage)  # cap applied inside apply_damage
     assert victim_good.has_spell_effect("curse")
 
     curse_effect = victim_good.spell_effects.get("curse")

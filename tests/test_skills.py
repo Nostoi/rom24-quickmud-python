@@ -762,7 +762,7 @@ def test_backstab_uses_position_and_weapon(monkeypatch: pytest.MonkeyPatch) -> N
     assert attacker.cooldowns.get("backstab", None) == 0
     assert attacker.fighting is victim
     assert victim.fighting is attacker
-    assert victim.hit == 84  # 120 - (base 9 * dagger multiplier 4)
+    assert victim.hit == 85  # 120 - cap(36) = 120 - 35 = 85 (FIGHT-056 soft-cap; raw 9*4=36)
 
 
 def test_bash_applies_wait_state(monkeypatch: pytest.MonkeyPatch) -> None:

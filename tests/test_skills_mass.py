@@ -156,7 +156,7 @@ def test_holy_word_buffs_allies_and_curses_enemies(monkeypatch) -> None:
 
     assert enemy.has_spell_effect("curse")
     assert enemy.has_affect(AffectFlag.CURSE)
-    assert enemy.hit == enemy_start_hit - (caster.level * 6)
+    assert enemy.hit == enemy_start_hit - 108  # cap(40*6) = cap(240) = 108 (FIGHT-056)
     assert "You are struck down!" in enemy.messages
 
     assert not trainer.has_affect(AffectFlag.CURSE)

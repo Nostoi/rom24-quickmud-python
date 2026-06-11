@@ -730,27 +730,28 @@ def test_riv_scaling_applies_before_side_effects(monkeypatch):
     # The exact damage will depend on RNG, but it should be RIV-scaled
     assert_attack_message(out)
 
-    # More importantly, check that on_hit_effects received the scaled damage
+    # on_hit_effects fires BEFORE RIV (FIGHT-057: RIV now runs once inside apply_damage).
+    # The raw damage (post-apply_damage_reduction, pre-RIV) is 5.
     assert len(captured) == 1
     assert captured[0] > 0  # Should have some damage after RIV scaling
-    # ROM calculation: base 5, resistance: 5 - 5//3 = 5 - 1 = 4
-    assert captured[-1] == 4
+    # on_hit_effects receives pre-RIV damage; actual hit damage = 5 - 5//3 = 4
+    assert captured[-1] == 5
 
-    # Vulnerable: dam += dam/2 → 5 + 2 = 7
+    # Vulnerable: actual hit damage = 5 + 5//2 = 7; on_hit_effects sees pre-RIV = 5
     victim.hit = 50
     victim.res_flags = 0
     victim.vuln_flags = int(VulnFlag.BASH)
     out = combat_engine.attack_round(attacker, victim)
     assert_attack_message(out)
-    assert captured[-1] == 7
+    assert captured[-1] == 5
 
-    # Immune: dam = 0
+    # Immune: apply_damage returns early, but on_hit_effects fires before apply_damage
     victim.hit = 50
     victim.vuln_flags = 0
     victim.imm_flags = int(ImmFlag.BASH)
     out = combat_engine.attack_round(attacker, victim)
     assert out == "{2Victim is unaffected by your attack!{x"
-    assert captured[-1] == 0
+    assert captured[-1] == 5
 
 
 def test_one_hit_uses_equipped_weapon(monkeypatch: pytest.MonkeyPatch) -> None:

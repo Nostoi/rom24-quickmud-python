@@ -163,7 +163,7 @@ def test_general_purpose_damage_range():
 
     damage = general_purpose(caster, victim)
 
-    assert damage == 47, f"Expected 47 damage, got {damage}"
+    assert damage == 41, f"Expected 41 damage, got {damage}"  # cap(47) = 41 (FIGHT-056)
 
 
 def test_general_purpose_save_halves():
@@ -187,7 +187,7 @@ def test_high_explosive_damage_range():
 
     damage = high_explosive(caster, victim)
 
-    assert damage == 52, f"Expected 52 damage, got {damage}"
+    assert damage == 43, f"Expected 43 damage, got {damage}"  # cap(52) = 43 (FIGHT-056)
 
 
 def test_high_explosive_save_halves():

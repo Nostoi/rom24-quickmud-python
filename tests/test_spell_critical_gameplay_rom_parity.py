@@ -104,6 +104,12 @@ def _rom_fireball(level: int, victim: Character) -> int:
     if saves_spell(level, victim, DamageType.FIRE):
         damage = c_div(damage, 2)
 
+    # mirroring ROM src/fight.c:717-720 — apply_damage soft-cap (FIGHT-056)
+    if damage > 35:
+        damage = c_div(damage - 35, 2) + 35
+    if damage > 80:
+        damage = c_div(damage - 80, 2) + 80
+
     return damage
 
 
