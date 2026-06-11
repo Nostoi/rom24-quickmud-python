@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.2] — 2026-06-11
+
+### Fixed
+
+- **FIGHT-056 `damage` soft-cap missing** —
+  ROM `src/fight.c:717-720` applies two sequential soft-caps inside `damage()` before any
+  other modifier: `if (dam > 35) dam = (dam-35)/2+35; if (dam > 80) dam = (dam-80)/2+80;`.
+  Python's `apply_damage` had neither cap, so raw damage spikes above 35 landed unreduced —
+  a 200-damage hit dealt 200 instead of ROM's capped 98, a 50-damage hit dealt 50 instead
+  of 42. Caps added at the top of `apply_damage` (before `is_safe`), affecting all callers:
+  weapon attacks, spells, kicks, mob-program damage.
+
 ## [2.14.1] — 2026-06-11
 
 ### Fixed

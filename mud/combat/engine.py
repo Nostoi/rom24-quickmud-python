@@ -672,6 +672,13 @@ def apply_damage(
     if victim.position == Position.DEAD:
         return "Already dead."
 
+    # mirroring ROM src/fight.c:717-720 — damage soft-cap applied before all other
+    # modifiers; reduces raw spikes to prevent instant-kill from single high-damage hits.
+    if damage > 35:
+        damage = c_div(damage - 35, 2) + 35
+    if damage > 80:
+        damage = c_div(damage - 80, 2) + 80
+
     if attacker != victim:
         from mud.combat.safety import is_safe
 
