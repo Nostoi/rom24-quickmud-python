@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.92] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-048 `do_murder` victim yell never delivered** — `mud/commands/murder.py:do_murder`
+  built the victim's help yell as a string and returned it to the attacker as the command
+  response, instead of calling `do_yell(victim, ...)` area-wide. ROM `src/fight.c:2888`
+  calls `do_function(victim, &do_yell, buf)` — the victim yells; all area characters hear
+  "$n yells 'Help! I am being attacked by X!'". Also removed the extra "You attack $n!"
+  message that ROM never sends to the attacker. Fix: replaced return-string approach with
+  `do_yell(victim, yell_msg)` + `_push_message(victim, ...)` before `check_killer`.
+
 ## [2.13.91] — 2026-06-10
 
 ### Fixed

@@ -13,7 +13,8 @@ from __future__ import annotations
 
 from mud.characters import is_same_group
 from mud.combat import multi_hit
-from mud.combat.engine import check_killer
+from mud.combat.engine import _push_message, check_killer
+from mud.commands.communication import do_yell
 from mud.config import get_pulse_violence
 from mud.models.character import Character
 from mud.models.constants import (
@@ -78,10 +79,17 @@ def do_murder(char: Character, args: str) -> str:
     # Apply wait state
     skill_registry._apply_wait_state(char, get_pulse_violence())
 
-    # Victim yells for help (ROM behavior)
-    victim_name = getattr(victim, "short_descr", None) or getattr(victim, "name", "someone")
-    attacker_name = getattr(char, "short_descr", None) or getattr(char, "name", "someone")
+    # Victim yells for help — mirroring ROM src/fight.c:2885-2888
+    # ROM: NPC attacker uses short_descr; PC attacker uses name.
+    # do_function(victim, &do_yell, buf) makes the VICTIM yell area-wide.
+    is_npc = getattr(char, "is_npc", False)
+    attacker_name = getattr(char, "short_descr", None) if is_npc else getattr(char, "name", "someone")
+    attacker_name = attacker_name or "someone"
     yell_msg = f"Help! I am being attacked by {attacker_name}!"
+    # mirroring ROM src/fight.c:2888 — do_function(victim, &do_yell, buf)
+    to_char_yell = do_yell(victim, yell_msg)
+    if to_char_yell:
+        _push_message(victim, to_char_yell)
 
     # Check killer (this sets KILLER flag if attacking peaceful)
     check_killer(char, victim)
@@ -89,7 +97,7 @@ def do_murder(char: Character, args: str) -> str:
     # Start combat
     multi_hit(char, victim, -1)  # TYPE_UNDEFINED = -1
 
-    return f"You attack {victim_name}!\n{yell_msg}"
+    return ""
 
 
 def _murder_safety_check(char: Character, victim: Character) -> str | None:
