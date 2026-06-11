@@ -34,13 +34,14 @@ def _make_combatants():
     attacker = create_test_character("Basher", 3001)
     victim = create_test_character("Target", 3001)
 
-    attacker.clan = 1  # is_clan_member gate in check_killer
+    attacker.clan = 1  # is_clan_member gate in check_killer + _kill_safety_message
     attacker.desc = object()  # simulates a connected player
     attacker.skills["bash"] = 100
     attacker.wait = 0
     attacker.hit = 500
     attacker.max_hit = 500
 
+    victim.clan = 1  # _kill_safety_message line 85: victim must also be clan
     victim.hit = 500
     victim.max_hit = 500
     victim.position = int(Position.STANDING)

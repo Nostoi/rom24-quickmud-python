@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.89] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-045 `do_trip` check_killer only on success** — `mud/commands/combat.py:do_trip`
+  called `check_killer(ch, victim)` only inside the success branch. ROM `src/fight.c:2753`
+  calls it unconditionally after both branches. Refactored to collect the message in a
+  variable and call `check_killer` after the if/else block.
+
 ## [2.13.88] — 2026-06-10
 
 ### Fixed

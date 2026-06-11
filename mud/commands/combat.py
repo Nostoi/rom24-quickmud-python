@@ -1136,11 +1136,13 @@ def do_trip(char: Character, args: str) -> str:
         damage_amt = rng_mm.number_range(2, 2 + 2 * victim_size + skill_level // 20)
         apply_damage(char, victim, damage_amt, DamageType.BASH)
 
-        check_killer(char, victim)
-        return f"You trip {getattr(victim, 'name', 'them')} and they go down!"
+        message = f"You trip {getattr(victim, 'name', 'them')} and they go down!"
     else:
         skill_registry._apply_wait_state(char, get_pulse_violence())
-        return "You try to trip them but miss."
+        message = "You try to trip them but miss."
+
+    check_killer(char, victim)  # mirroring ROM src/fight.c:2753 — unconditional
+    return message
 
 
 def do_disarm(char: Character, args: str) -> str:
