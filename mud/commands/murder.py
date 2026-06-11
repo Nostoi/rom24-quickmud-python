@@ -123,6 +123,21 @@ def _murder_safety_check(char: Character, victim: Character) -> str | None:
         if not is_same_group(char, victim_fighting):
             return "Kill stealing is not permitted."
 
+    # Victim-NPC guards — mirroring ROM src/fight.c:2861 is_safe call → :1056-1071
+    # do_murder calls is_safe(ch, victim) in ROM, which runs these checks; Python
+    # bypasses is_safe so _murder_safety_check must replicate them.
+    if victim_is_npc and not getattr(char, "is_npc", False):
+        victim_act = getattr(victim, "act", 0)
+        # no attacking pets — mirroring ROM src/fight.c:1059
+        if victim_act & ActFlag.PET:
+            victim_name = getattr(victim, "name", "they") or "they"
+            return f"But {victim_name} looks so cute and cuddly..."
+        # no attacking charmed creatures unless owner — mirroring ROM src/fight.c:1067
+        victim_affected = getattr(victim, "affected_by", 0)
+        if victim_affected & AffectFlag.CHARM:
+            if getattr(victim, "master", None) is not char:
+                return "You don't own that monster."
+
     # Can't murder your master
     affected_by = getattr(char, "affected_by", 0)
     master = getattr(char, "master", None)

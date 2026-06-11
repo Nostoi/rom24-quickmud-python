@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.97] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-051 `_murder_safety_check` missing victim-NPC ACT_PET and AFF_CHARM non-owner guards** —
+  `mud/commands/murder.py:_murder_safety_check` lacked the same two victim-NPC guards added to
+  `is_safe` in FIGHT-050. ROM `do_murder` (line 2861) calls `is_safe(ch, victim)` first, which
+  blocks murder of a pet NPC (ROM `:1059`: "But $N looks so cute and cuddly...") and murder of
+  a charmed NPC by a non-owner (ROM `:1067`: "You don't own that monster."). Python bypasses
+  `is_safe` and calls `_murder_safety_check` directly, so neither guard was reached for the
+  murder path. Added a victim-NPC sub-block after the kill-stealing check with both guards.
+
 ## [2.13.96] — 2026-06-10
 
 ### Fixed
