@@ -511,6 +511,7 @@ def do_bash(char: Character, args: str) -> str:
     if skill is not None:
         skill_registry._check_improve(char, skill, "bash", success)
 
+    check_killer(char, victim)  # mirroring ROM src/fight.c:2486
     return message
 
 

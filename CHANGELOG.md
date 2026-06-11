@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.88] — 2026-06-10
+
+### Fixed
+
+- **FIGHT-044 `do_bash` missing unconditional `check_killer`** — `mud/commands/combat.py:do_bash`
+  was missing the `check_killer(ch, victim)` call at `src/fight.c:2486`. ROM calls it
+  unconditionally after both the success and failure branches. Added after `check_improve`.
+  (Note: `apply_damage` sets `attacker.fighting` before check_killer runs, so the KILLER flag
+  is never actually set in practice — same in ROM C — but the structural parity is restored.)
+
 ## [2.13.87] — 2026-06-10
 
 ### Fixed
