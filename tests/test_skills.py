@@ -148,7 +148,7 @@ def test_skill_use_advances_learned_percent(monkeypatch: pytest.MonkeyPatch) -> 
 
     # Rolls needed: skill check (30 = success), check_improve gate (1 = pass), improvement chance (1 = improve)
     percent_rolls = iter([30, 1, 1])
-    range_rolls = iter([10, 1])  # Fireball damage, check_improve gate
+    range_rolls = iter([10, 0, 1])  # Fireball damage; xp_compute nr(0,0) for killed level-0 target; check_improve gate
 
     monkeypatch.setattr(rng_mm, "number_percent", lambda: next(percent_rolls))
     monkeypatch.setattr(rng_mm, "number_range", lambda a, b: next(range_rolls))

@@ -166,9 +166,6 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
     else:
         base_exp = 0
 
-    if base_exp <= 0:
-        return 0
-
     victim_alignment = _resolve_level(getattr(victim, "alignment", 0))
     gch_alignment = _resolve_level(getattr(gch, "alignment", 0))
     align_delta = victim_alignment - gch_alignment
@@ -192,9 +189,11 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
             change = c_div(c_div(gch_alignment * base_exp, 500) * gch_level, max(1, total_levels))
             gch.alignment -= change
 
+    # mirroring ROM src/fight.c:1916 — gch->alignment here is post-mutation
+    post_alignment = gch.alignment
     if _act_has_flag(victim, ActFlag.NOALIGN):
         xp = base_exp
-    elif gch_alignment > 500:
+    elif post_alignment > 500:
         if victim_alignment < -750:
             xp = c_div(base_exp * 4, 3)
         elif victim_alignment < -500:
@@ -207,7 +206,7 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
             xp = c_div(base_exp * 3, 4)
         else:
             xp = base_exp
-    elif gch_alignment < -500:
+    elif post_alignment < -500:
         if victim_alignment > 750:
             xp = c_div(base_exp * 5, 4)
         elif victim_alignment > 500:
@@ -220,7 +219,7 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
             xp = c_div(base_exp * 9, 10)
         else:
             xp = base_exp
-    elif gch_alignment > 200:
+    elif post_alignment > 200:
         if victim_alignment < -500:
             xp = c_div(base_exp * 6, 5)
         elif victim_alignment > 750:
@@ -229,7 +228,7 @@ def xp_compute(gch: Character, victim: Character, total_levels: int) -> int:
             xp = c_div(base_exp * 3, 4)
         else:
             xp = base_exp
-    elif gch_alignment < -200:
+    elif post_alignment < -200:
         if victim_alignment > 500:
             xp = c_div(base_exp * 6, 5)
         elif victim_alignment < -750:

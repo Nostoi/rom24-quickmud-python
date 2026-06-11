@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.1] — 2026-06-11
+
+### Fixed
+
+- **FIGHT-055 `xp_compute` alignment mutation + multiplier snapshot** —
+  `mud/groups/xp.py:xp_compute` had two divergences from ROM `src/fight.c:1878-1914`.
+  (A) An early `if base_exp <= 0: return 0` skipped the alignment mutation entirely for kills where
+  the victim is 10+ levels weaker (level_range < -9, base_exp == 0). ROM has no such early return —
+  `UMAX(1, change)` forces alignment to shift by 1 even when base_exp is 0 and the raw change
+  computes to 0, as long as `align_delta > 500` or `align_delta < -500`.
+  (B) Python captured `gch_alignment` as a pre-mutation snapshot and used it in the XP multiplier
+  branch conditions (`> 500`, `< -500`, `> 200`, `< -200`). ROM `src/fight.c:1916` reads
+  `gch->alignment` post-mutation, so a character whose alignment crosses a threshold during the
+  kill (e.g. 510→426 crossing the 500 boundary) gets a different XP rate in ROM vs Python.
+  Fixed by removing the early return (alignment always runs; XP naturally computes to 0 when
+  base_exp==0) and replacing the snapshot references in the multiplier with `post_alignment = gch.alignment`
+  read after the alignment block.
+
 ## [2.14.0] — 2026-06-11
 
 ### Fixed
