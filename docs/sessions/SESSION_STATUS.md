@@ -1,55 +1,39 @@
-# Session Status — 2026-06-10 — INV-043 Nuke-Pets Stop-Fighting (2.13.85)
+# Session Status — 2026-06-10 — FIGHT-043 do_flee XP loss + MATH-002/003/004 c_div hygiene
 
 ## Current State
 
-- **Active mode**: cross-file invariants pass
-- **Last completed**:
-  - **INV-043 NUKE-PETS-STOP-FIGHTING** — found and fixed a real ghost-fighting-pointer bug.
-    `mud/combat/death.py:_nuke_pets` now calls `stop_fighting(pet, both=True)` before
-    `character_registry.remove(pet)`. ROM `src/act_comm.c:nuke_pets` → `extract_char(pet, TRUE)`
-    → `src/handler.c:stop_fighting(pet, TRUE)` clears all fighters targeting the extracted pet;
-    Python's manual extraction path was missing this sweep. Two mutation-verified tests in
-    `tests/integration/test_inv043_nuke_pets_stop_fighting.py`. Cross-file tracker: 28 enforced
-    INVs; next free ID: **INV-044**.
-  - **Group XP penalty signed-math probe** — confirmed clean. `mud/combat/engine.py:1358`
-    correctly uses `c_div(2 * (floor - victim.exp), 3) + 50`. No gap.
-  - **`char_update` autosave slot coherence probe** — confirmed clean. `Session.descriptor_id`
-    is `count(1)` (sequential, equivalent to ROM socket fds); rotation math identical; `desc is
-    not None` gate matches ROM. `id()` fallback on game_loop.py:945 is dead code in production.
-  - Previous session's INV-042 kill-death-XP-trigger ordering (2.13.84).
-- **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-10_INV043_NUKE_PETS_STOP_FIGHTING.md](SESSION_SUMMARY_2026-06-10_INV043_NUKE_PETS_STOP_FIGHTING.md)
+- **Active audit**: Cross-file invariants pass (all per-file audits complete at 100% P0/P1/P2)
+- **Last completed**: MATH-002/003/004 (c_div hygiene, 2.13.86), FIGHT-043 (do_flee XP block, 2.13.87)
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-06-10_MATH002_004_FIGHT043_FLEE_XP.md](SESSION_SUMMARY_2026-06-10_MATH002_004_FIGHT043_FLEE_XP.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.13.85 |
-| Tests | 5554 passed, 4 skipped (full suite) |
-| ROM C files audited | 43 / 43 (per-file complete; cross-file invariants active) |
-| Cross-INV rows | 28 enforced (next free ID: INV-044) |
-| Diff-harness scenarios | 40 scenarios, 67 C-oracle tests passing, 0 skipped, 0 xfailed |
-| FINDINGS.md highest ID | FINDING-033 (✅ RESOLVED — all findings resolved) |
+| Version | 2.13.87 |
+| Tests | 2892 integration passed, 3 skipped |
+| ROM C files audited | 43 / 43 (all P0/P1/P2 at 100%; P3 at 75% + 3 N/A) |
+| Cross-file INVs enforced | 28 (next free: INV-044) |
+| Active focus | Cross-file invariants — `do_flee`/`do_recall` area closed; next: `stop_fighting` caller survey |
 
 ## Next Intended Task
 
-Cross-file invariants remains the active pass.
+Cross-file invariants remains the active pass. Three probe candidates resolved this session
+(INV-015 affect-expiry clean, do_flee/do_recall ordering clean, MATH-002/003/004 fixed).
+FIGHT-043 (`do_flee` missing XP block) is now closed.
 
-1. **Affect expiry → `affect_remove` → `affect_check` ordering** — when a raw `AffectData`
-   with `duration == 0` expires, `tick_spell_effects` calls `affect_remove` which calls
-   `affect_modify(FALSE)` then `affect_check`. ROM `src/handler.c:1317-1348 affect_remove`
-   clears the bitvector then re-sets it only if another affect still provides it. The
-   cross-file chain `affects/engine.py → handler.py:affect_remove → handler.py:affect_check`
-   is the probe area. INV-015 covers the entry point; whether `affect_check` correctly
-   re-sets bitvectors from remaining affects is unverified under the cross-INV lens.
-   Probe method: read `src/handler.c:1317-1348` → `mud/handler.py:affect_remove` →
-   `mud/handler.py:affect_check` → write one failing test if a gap is found.
+Suggested next probes:
 
-2. **`do_flee` / `do_recall` position-transition coherence** — ROM `src/fight.c:3022-3095`
-   calls `stop_fighting(ch, TRUE)` on both the fleeing character and the victim before
-   moving the character. Python's flee path needs a probe to verify the same ordering
-   (stop fighting before char_from_room). Probe method: read ROM C → grep Python flee →
-   confirm ordering with a test if needed.
+1. **`stop_fighting` caller survey** — grep all call sites in `mud/` not yet guarded by an INV
+   row (spell-interrupt paths, skill-abort paths, logout paths). Compare against ROM
+   `src/handler.c:stop_fighting` callers. Any call where `both=False` is passed but ROM
+   passes `TRUE`, or where `stop_fighting` is absent, is a candidate INV.
 
-3. **MATH-002/003/004** — ⚠️ OPEN hygiene items in `docs/parity/audits/MATH_AND_RNG.md`
-   (LOW severity, no observable gap). Held for a future PARITY008 lint rule.
+2. **`do_flee` / `do_recall` position reset after move** — ROM `src/act_move.c:do_recall`
+   sets `ch->position = POS_STANDING` explicitly after relocating the character. Confirm
+   Python `do_flee` and `do_recall` reset `char.position` to `Position.STANDING` post-move.
+   A quick read of combat.py + session.py do_recall suffices.
+
+3. **`check_killer` call-site completeness** — FIGHT-030 closed the `do_rescue` gap.
+   Verify `do_murder` and `do_kill` paths have equivalent `check_killer` calls. Low-risk
+   but easy 5-minute probe.
