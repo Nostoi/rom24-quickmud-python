@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.13.93] — 2026-06-10
+
+### Fixed
+
+- **RECALL-001 `do_recall` XP floor bypass** — `mud/commands/session.py:do_recall` used
+  `ch.exp -= lose` directly when recalling from combat, bypassing the XP floor.
+  ROM `src/act_move.c:1609` calls `gain_exp(ch, 0 - lose)` which applies
+  `UMAX(exp_per_level(ch), ch->exp + gain)` — XP can never drop below the level floor.
+  A PC within 25-50 XP of their level floor would go below floor in Python but be
+  clamped in ROM. Fixed by replacing direct subtraction with `gain_exp(ch, -lose)`.
+
 ## [2.13.92] — 2026-06-10
 
 ### Fixed

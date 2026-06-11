@@ -388,9 +388,11 @@ def do_recall(ch: Character, args: str) -> str:
 
         # Calculate exp loss (ROM C line 1608)
         lose = 25 if ch.desc is not None else 50
-        ch.exp -= lose
+        # mirroring ROM src/act_move.c:1609 — gain_exp floors at UMAX(exp_per_level, exp+gain)
+        from mud.advancement import gain_exp
+
+        gain_exp(ch, -lose)
         # TODO: check_improve(ch, gsn_recall, TRUE, 4) - ROM C line 1610
-        # TODO: stop_fighting(ch, TRUE) - ROM C line 1613
         stop_fighting(ch, True)
 
         recall_msg = f"You recall from combat!  You lose {lose} exps."
