@@ -637,3 +637,45 @@ class TestIndoorOutdoorRestrictions:
         mobile_update()
 
         assert int(getattr(indoor_mob.room, "room_flags", 0)) & int(RoomFlag.ROOM_INDOORS)
+
+
+class TestMobileUpdateIterationOrder:
+    """GL-042: mobile_update must walk characters newest-first (INV-045).
+
+    ROM src/update.c:416 walks char_list, which src/db.c:2256-2257
+    (create_mobile) head-inserts — the most-recently-created mob is visited
+    first, so it consumes the shared Mitchell-Moore RNG stream first.
+    """
+
+    def test_shop_wealth_rolls_drawn_newest_mob_first(self, test_room):
+        """mirrors ROM src/update.c:433-440 — the shopkeeper wealth
+        replenishment rolls number_range(1,20) for gold then silver per
+        shopkeeper, in char_list (newest-first) visit order."""
+        saved = list(character_registry)
+        character_registry.clear()
+        try:
+            # SENTINEL so the wander block never draws number_bits and the
+            # only RNG consumed per mob is the gold+silver roll pair.
+            old_mob = create_test_mob(3001, name="old shopkeeper", act=int(ActFlag.SENTINEL))
+            new_mob = create_test_mob(3001, name="new shopkeeper", act=int(ActFlag.SENTINEL))
+            for mob in (old_mob, new_mob):
+                mob.pShop = object()
+                mob.wealth = 5_000_000
+                mob.gold = 0
+                mob.silver = 0
+
+            # seed 12345 -> number_range(1,20) draws [1, 19, 13, 12]:
+            # first-visited mob gets gold +1 / silver +1900, second-visited
+            # gets gold +13 / silver +1200 (wealth*roll//5_000_000 and
+            # wealth*roll//50_000 with wealth=5_000_000).
+            rng_mm.seed_mm(12345)
+            mobile_update()
+
+            assert (new_mob.gold, new_mob.silver) == (1, 1900), (
+                "newest mob must be visited first (ROM char_list is head-inserted); "
+                f"got new=({new_mob.gold},{new_mob.silver}) old=({old_mob.gold},{old_mob.silver})"
+            )
+            assert (old_mob.gold, old_mob.silver) == (13, 1200)
+        finally:
+            character_registry.clear()
+            character_registry.extend(saved)

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.12] — 2026-06-12
+
+### Fixed
+
+- **GL-042 — `mobile_update` iterated `character_registry` oldest-first; ROM walks `char_list`
+  newest-first** — third site of INV-045 (CHAR-LIST-WALK-ORDER). The shop-wealth replenishment
+  `number_range(1,20)` pairs, scavenger 1/64 roll, and wander door rolls consumed the shared
+  Mitchell-Moore stream in reversed mob order vs C whenever ≥2 NPCs were live. Fixed by iterating
+  `list(reversed(character_registry))` with a mid-tick extraction skip, mirroring GL-040/GL-041.
+  ROM C: `src/update.c:416` + `src/db.c:2256-2257`. Python: `mud/ai/__init__.py:mobile_update`.
+  Test: `tests/integration/test_mob_ai.py::TestMobileUpdateIterationOrder`.
+
 ## [2.14.11] — 2026-06-12
 
 ### Fixed

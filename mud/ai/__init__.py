@@ -265,7 +265,16 @@ def _maybe_wander(mob: Character, room: Room) -> None:
 def mobile_update() -> None:
     """Mirror ROM ``mobile_update`` scavenging, wandering, and mobprog triggers."""
 
-    for mob in list(character_registry):
+    # mirroring ROM src/update.c:416 — mobile_update walks ``char_list``, which
+    # src/db.c:2256-2257 (create_mobile) head-inserts, so ROM visits the NEWEST
+    # mob first. ``character_registry`` is append-order, so iterate it reversed
+    # — load-bearing for the shared RNG draw order (shop-wealth rolls, scavenger
+    # 1/64, wander door rolls), like violence_tick/char_update/obj_update. GL-042.
+    for mob in list(reversed(character_registry)):
+        # mirroring ROM extract_char re-linking — a char removed from char_list
+        # mid-tick is never revisited in ROM's walk; skip extracted mobs. GL-042.
+        if mob not in character_registry:
+            continue
         if not getattr(mob, "is_npc", False):
             continue
         room = getattr(mob, "room", None)
