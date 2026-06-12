@@ -510,3 +510,45 @@ class TestObjUpdateIterationOrder:
             "extracted content must not be ticked from the stale loop snapshot "
             f"(ROM never revisits a removed object); got timer={food.timer}"
         )
+
+
+# ---------------------------------------------------------------------------
+# GL-041: char_update iteration order — ROM src/update.c:661-786 walks char_list
+# newest-first (src/db.c:2256-2257 / src/nanny.c:757-758 head-insert)
+# ---------------------------------------------------------------------------
+
+
+class TestCharUpdateIterationOrder:
+    def test_affect_fade_rolls_drawn_newest_character_first(self):
+        """mirrors ROM src/update.c:661-786 + src/db.c:2256-2257 — char_list is
+        head-inserted, so char_update visits the most-recently-created character
+        first; the per-affect number_range(0,4) fade roll (src/update.c:768) is
+        therefore drawn for the NEWEST character's affect first."""
+        from mud.game_loop import char_update
+        from mud.models.character import AffectData
+
+        # Isolate the registry so leaked characters from sibling test modules
+        # on the same xdist worker cannot perturb the RNG draw order.
+        saved = list(character_registry)
+        character_registry.clear()
+        try:
+            room = _make_room(9050)
+            ch_old = _make_player(room)
+            ch_new = _make_player(room)
+
+            for ch in (ch_old, ch_new):
+                ch.affected = [AffectData(type="armor", level=10, duration=5, location=17, modifier=-20, bitvector=0)]
+
+            # seed 20 -> number_range(0,4) draws 0 then 1: the FIRST character
+            # visited fades (level 10 -> 9), the second does not.
+            rng_mm.seed_mm(20)
+            char_update()
+
+            assert ch_new.affected[0].level == 9, (
+                "newest character must be visited first (ROM char_list is head-inserted); "
+                f"got new={ch_new.affected[0].level} old={ch_old.affected[0].level}"
+            )
+            assert ch_old.affected[0].level == 10
+        finally:
+            character_registry.clear()
+            character_registry.extend(saved)

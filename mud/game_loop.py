@@ -861,12 +861,24 @@ def char_update() -> None:
     # tick. ROM PREPENDS new chars to ``char_list`` (src/nanny.c:757-758,
     # src/db.c:2256-2257 — ``ch->next = char_list; char_list = ch``), so the list
     # runs newest→oldest and walking head→tail leaves ``ch_quit`` on the LAST
-    # (tail) idle char — i.e. the OLDEST. ``character_registry`` is the reverse
-    # (``append`` → oldest→newest), so the oldest idle char is the FIRST match:
-    # take the first candidate (first-wins) and never overwrite, not a list.
+    # (tail) idle char — i.e. the OLDEST. GL-041 reversed this walk to match
+    # ROM (newest→oldest), so the selection is plain overwrite (last-wins)
+    # exactly like ROM's ``ch_quit = ch`` — the final match is the oldest.
     autoquit_candidate: Character | None = None
 
-    for character in list(character_registry):
+    # mirroring ROM src/update.c:669 — char_update walks ``char_list``, which
+    # is head-inserted (newest-first). ``character_registry`` is append-order,
+    # so iterate it reversed — load-bearing for the shared RNG draw order
+    # (wander-home number_percent, per-affect fade rolls in tick_spell_effects,
+    # plague/poison damage rolls), like violence_tick and obj_update. GL-041.
+    for character in list(reversed(character_registry)):
+        # mirroring ROM extract_char re-linking — a char removed from
+        # char_list mid-tick (e.g. a same-tick extraction) is never revisited
+        # in ROM's walk; skip it here so the stale snapshot doesn't tick
+        # extracted characters. GL-041.
+        if character not in character_registry:
+            continue
+
         position = Position(int(getattr(character, "position", Position.STANDING)))
         if position >= Position.STUNNED:
             # GL-009: NPC wanders home — mirroring ROM src/update.c:687-694.
@@ -927,8 +939,10 @@ def char_update() -> None:
                 # teardown itself. A connected idler still disappears into the
                 # void at ``>= 12`` (below) before it ever reaches the > 30
                 # autoquit threshold.
-                if prev_timer > 30 and autoquit_candidate is None:
-                    autoquit_candidate = character  # GL-034: first-wins = oldest
+                if prev_timer > 30:
+                    # GL-034/GL-041: plain overwrite mirrors ROM's ``ch_quit = ch``;
+                    # the reversed (newest→oldest) walk leaves the OLDEST idler.
+                    autoquit_candidate = character
                 character.timer = prev_timer + 1
                 if (
                     character.timer >= 12

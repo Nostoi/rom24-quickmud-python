@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.11] — 2026-06-12
+
+### Fixed
+
+- **GL-041 — `char_update` main walk iterated `character_registry` oldest-first; ROM walks
+  `char_list` newest-first** — ROM head-inserts every new character (`src/db.c:2256-2257`,
+  `src/nanny.c:757-758`), so `char_update` (`src/update.c:661-786`) visits the newest character
+  first. Python's forward walk reversed the shared Mitchell-Moore RNG draw order (wander-home
+  `number_percent`, per-affect `number_range(0,4)` fade rolls, plague/poison damage rolls)
+  whenever ≥2 characters were live. Fixed by iterating `list(reversed(character_registry))` with
+  a mid-tick extraction skip; the GL-034 autoquit selection flipped from first-wins (forward-walk
+  compensation) to plain overwrite — last-wins on the newest→oldest walk lands on the oldest
+  idler, exactly ROM's `ch_quit = ch`. Part of INV-045 (CHAR-LIST-WALK-ORDER).
+  ROM C: `src/update.c:661-786` + `src/db.c:2256-2257`. Python: `mud/game_loop.py:char_update`.
+  Test: `tests/integration/test_update_c_parity.py::TestCharUpdateIterationOrder`.
+
+### Added
+
+- **INV-045 — CHAR-LIST-WALK-ORDER cross-file invariant filed** — documents the registry-order
+  divergence class (ROM head-inserted `char_list`/`object_list` vs Python append-order
+  registries) with a full site inventory: conforming (`violence_tick`, `obj_update`,
+  `char_update`), open offenders (`mobile_update` → GL-042, `aggr` walk, `get_char_world`
+  first-match in `mud/world/char_find.py`).
+
 ## [2.14.10] — 2026-06-12
 
 ### Fixed
