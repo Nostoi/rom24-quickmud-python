@@ -100,7 +100,12 @@ def get_char_world(char: Character, name: str) -> Character | None:
         except ValueError:
             pass
 
-    for ch in character_registry:
+    # mirroring ROM src/handler.c:2234 — the world scan walks ``char_list``,
+    # which is head-inserted (src/db.c:2256-2257 create_mobile,
+    # src/nanny.c:757-758 PC login), so the first is_name match is the NEWEST
+    # matching char and `2.name` counts newest→oldest. ``character_registry``
+    # is append-order, so iterate it reversed (INV-045 class (b)). HANDLER-006.
+    for ch in reversed(character_registry):
         from mud.world.vision import can_see_character
 
         # mirroring ROM src/handler.c:2236 — `if (wch->in_room == NULL || ...)

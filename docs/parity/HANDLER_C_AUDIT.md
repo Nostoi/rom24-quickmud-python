@@ -304,6 +304,25 @@ added `if getattr(ch, "room", None) is None: continue` as the first loop gate,
 mirroring `src/handler.c:2236`. Test:
 `tests/integration/test_handler005_get_char_world_skips_roomless.py`.
 
+#### HANDLER-006 — `get_char_world` world scan returns the OLDEST name match; ROM returns the NEWEST
+
+| Field | Value |
+|-------|-------|
+| Severity | MAJOR (first-match selection diverges whenever ≥2 same-named chars are live) |
+| ROM C | `src/handler.c:2234-2240` — the world scan walks `char_list`, which is head-inserted (`src/db.c:2256-2257` create_mobile, `src/nanny.c:757-758` PC login), so the FIRST `is_name` match is the NEWEST matching char. |
+| Python | `mud/world/char_find.py:103` — `for ch in character_registry:` iterated append-order = oldest-first, so the first match was the OLDEST. `2.name` etc. inverted the same way. |
+| Status | ✅ FIXED (2.14.16) — world scan now iterates `reversed(character_registry)`. |
+
+INV-045 (CHAR-LIST-WALK-ORDER) consequence class (b): first-match selection.
+With two same-named mobs in different rooms (e.g. two `guard` spawns),
+`cast 'magic missile' guard`-style world lookups, `tell guard`, and every other
+`get_char_world` caller resolved the opposite instance from ROM. Fix is the
+INV-045 reversed-walk pattern: iterate `reversed(character_registry)` (snapshot
+not needed — the scan does not extract). Filed and fixed 2026-06-12 from the
+INV-045 offender inventory. Test:
+`tests/integration/test_handler006_get_char_world_newest_match.py` (two
+same-named mobs: unnumbered lookup resolves the newest, `2.name` the older).
+
 #### HANDLER-DEAD-001 — dead `is_friend()` duplicate with wrong assist-bit values (removed)
 
 | Field | Value |

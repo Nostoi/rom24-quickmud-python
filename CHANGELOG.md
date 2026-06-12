@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.16] — 2026-06-12
+
+### Fixed
+
+- **HANDLER-006 — `get_char_world` returned the OLDEST name match; ROM returns the NEWEST** —
+  INV-045 (CHAR-LIST-WALK-ORDER) consequence class (b): ROM's world scan
+  (`src/handler.c:2234-2240`) walks the head-inserted `char_list`, so the first `is_name`
+  match is the most recently created char and `2.name` counts newest→oldest; the port's
+  forward `character_registry` scan inverted both whenever ≥2 same-named chars were live
+  (`tell guard`, `cast ... guard`, every `get_char_world` caller). Now iterates reversed.
+  Python: `mud/world/char_find.py:get_char_world`.
+  Test: `tests/integration/test_handler006_get_char_world_newest_match.py`.
+
 ## [2.14.15] — 2026-06-12
 
 ### Fixed
