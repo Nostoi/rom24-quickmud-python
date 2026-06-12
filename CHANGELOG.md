@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.6] — 2026-06-11
+
+### Fixed
+
+- **FIGHT-059 — injury-feedback messages missing from `apply_damage`** —
+  ROM `src/fight.c:864-869` has a `default:` case in the `switch(victim->position)` block
+  inside `damage()` that fires when the victim's position stays normal (not MORTAL/INCAP/
+  STUNNED/DEAD). It delivers two optional messages to the victim: "That really did HURT!"
+  when the hit exceeded `max_hit/4`, and "You sure are BLEEDING!" when current HP drops
+  below `max_hit/4`. Python had no equivalent — the victim received no injury feedback for
+  non-critical hits. Added both checks inside `apply_damage` after `apply_position_change`,
+  guarded by `victim.position > Position.STUNNED` (the exact `default:` case condition).
+  Enforced by `tests/test_combat.py::test_apply_damage_hurt_and_bleeding_messages` (4 cases).
+
 ## [2.14.5] — 2026-06-11
 
 ### Fixed

@@ -752,6 +752,15 @@ def apply_damage(
     # Handle position change messages
     apply_position_change(victim, old_pos)
 
+    # mirroring ROM src/fight.c:864-869 — 'default' case of switch(victim->position):
+    # when position stays in a non-critical state (SLEEPING/RESTING/STANDING/FIGHTING),
+    # deliver optional injury-feedback messages to the victim.
+    if victim.position > Position.STUNNED:
+        if damage > victim.max_hit // 4:
+            _push_message(victim, "{RThat really did HURT!{x")
+        if victim.hit < victim.max_hit // 4:
+            _push_message(victim, "{RYou sure are BLEEDING!{x")
+
     # Stop fighting if unconscious
     if not is_awake(victim):
         stop_fighting(victim, False)

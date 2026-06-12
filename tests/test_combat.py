@@ -211,6 +211,64 @@ def test_kill_blocks_charmed_player_attacking_master() -> None:
     assert master.fighting is None
 
 
+def test_apply_damage_hurt_and_bleeding_messages() -> None:
+    """ROM fight.c:864-869 — HURT/BLEEDING injury-feedback messages for non-critical positions."""
+    from unittest.mock import patch
+
+    from mud.combat.engine import apply_damage
+
+    initialize_world("area/area.lst")
+
+    def _make_pc(name: str, hit: int) -> Character:
+        ch = create_test_character(name, 3001)
+        ch.is_npc = False
+        ch.max_hit = 100
+        ch.hit = hit
+        ch.position = Position.FIGHTING
+        return ch
+
+    attacker = create_test_character("Attacker", 3001)
+    attacker.hit = 200
+    attacker.max_hit = 200
+
+    def _apply(victim: Character, damage: int) -> None:
+        victim.messages.clear()
+        with (
+            patch("mud.combat.engine.check_parry", return_value=False),
+            patch("mud.combat.engine.check_dodge", return_value=False),
+            patch("mud.combat.engine.check_shield_block", return_value=False),
+        ):
+            apply_damage(attacker, victim, damage, int(DamageType.BASH))
+
+    # Case 1: big hit (>max_hit/4=25) leaving victim healthy → HURT only
+    # mirrors ROM src/fight.c:864-865 — dam > victim->max_hit/4
+    v1 = _make_pc("V1", 200)  # 200-30=170, still > max_hit/4
+    _apply(v1, 30)
+    assert any("{RThat really did HURT!{x" in m for m in v1.messages), "big-hit HURT message missing"
+    assert not any("BLEEDING" in m for m in v1.messages), "no BLEEDING when HP still high"
+
+    # Case 2: small hit leaving victim with low HP → BLEEDING only
+    # mirrors ROM src/fight.c:866-869 — victim->hit < victim->max_hit/4
+    v2 = _make_pc("V2", 20)  # 20-5=15, < max_hit/4
+    _apply(v2, 5)
+    assert not any("HURT" in m for m in v2.messages), "no HURT for small-damage hit"
+    assert any("{RYou sure are BLEEDING!{x" in m for m in v2.messages), "low-HP BLEEDING message missing"
+
+    # Case 3: big hit also leaving low HP → both messages
+    v3 = _make_pc("V3", 40)  # 40-30=10, < max_hit/4; 30 > max_hit/4
+    _apply(v3, 30)
+    assert any("{RThat really did HURT!{x" in m for m in v3.messages), "HURT missing when big-and-low"
+    assert any("{RYou sure are BLEEDING!{x" in m for m in v3.messages), "BLEEDING missing when big-and-low"
+
+    # Case 4 (negative guard): hit that knocks victim to STUNNED must NOT emit HURT/BLEEDING
+    # mirrors ROM fight.c:852-857 — switch falls into case POS_STUNNED, not default
+    v4 = _make_pc("V4", 30)  # 30-30=0 → STUNNED; damage=30 > 25 but position guard prevents HURT
+    _apply(v4, 30)
+    assert v4.position == Position.STUNNED, "expected STUNNED after hitting to 0 HP"
+    assert not any("HURT" in m for m in v4.messages), "HURT must not fire when knocked to STUNNED"
+    assert not any("BLEEDING" in m for m in v4.messages), "BLEEDING must not fire when knocked to STUNNED"
+
+
 def test_apply_damage_charm_master_breaks_follow() -> None:
     """ROM fight.c:756-757 — attacking your own charmed follower calls stop_follower(victim)."""
     from unittest.mock import patch
@@ -261,7 +319,11 @@ def test_attack_damages_but_not_kill(monkeypatch: pytest.MonkeyPatch) -> None:
     # ROM unarmed damage for level 1: base 5 + damroll 3 = 8 total
     # Damage tier should match ROM's *** DEVASTATE *** verb (80% of max HP)
     assert out == "{2You *** DEVASTATE *** Victim!{x"
-    assert victim.messages[-1] == "{4Attacker *** DEVASTATES *** you!{x"
+    # ROM fight.c:864-869 fires HURT/BLEEDING after the dam_message verb, so the
+    # hit-verb is not necessarily the final message — assert presence, not position.
+    assert any("{4Attacker *** DEVASTATES *** you!{x" == m for m in victim.messages), (
+        "DEVASTATES hit-verb must appear in victim.messages"
+    )
     assert victim.hit == 2  # 10 - 8 = 2
     assert attacker.position == Position.FIGHTING
     assert victim.position == Position.FIGHTING
