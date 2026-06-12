@@ -1429,15 +1429,15 @@ def obj_update() -> None:
         message = _render_obj_message(obj, _object_decay_message(obj))
         _broadcast_decay(obj, message)
 
+        # mirroring ROM src/update.c:1025-1026 — spill gate checks RUNTIME state
+        # (wear_loc), not prototype capability (CAN_WEAR/ITEM_WEAR_FLOAT).
+        # A floating-capable container that is NOT currently floating has its
+        # contents destroyed recursively by _extract_obj, not spilled.
         should_spill = False
         if getattr(obj, "contains", []):
             if getattr(obj, "item_type", None) == ItemType.CORPSE_PC:
                 should_spill = True
             elif int(getattr(obj, "wear_loc", -1)) == int(WearLocation.FLOAT):
-                should_spill = True
-            elif getattr(obj, "item_type", None) == ItemType.CONTAINER and int(
-                getattr(obj, "wear_flags", 0) or 0
-            ) & int(WearFlag.WEAR_FLOAT):
                 should_spill = True
 
         if should_spill:

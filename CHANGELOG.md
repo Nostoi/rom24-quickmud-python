@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.9] — 2026-06-12
+
+### Fixed
+
+- **GL-039 — `obj_update` spill gate uses prototype `wear_flags` instead of runtime `wear_loc`** —
+  ROM `src/update.c:1025-1026` uses `obj->wear_loc == WEAR_FLOAT` (runtime state) to decide
+  whether to spill a floating container's contents on decay. Python had an extra branch checking
+  the prototype `wear_flags & WEAR_FLOAT`, causing a non-floating disc in a room to dump its
+  contents into the room rather than destroying them alongside the container via `extract_obj`.
+  Fixed by removing the extra `elif` branch; the spill now fires only for `ITEM_CORPSE_PC` or
+  `wear_loc == WEAR_FLOAT`, matching ROM exactly.
+  ROM C: `src/update.c:1025-1026`. Python: `mud/game_loop.py:obj_update`.
+  Test: `tests/integration/test_gl039_obj_update_spill_gate.py`.
+
 ## [2.14.8] — 2026-06-12
 
 ### Fixed

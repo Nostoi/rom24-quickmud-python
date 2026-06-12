@@ -1090,6 +1090,12 @@ def test_carried_object_affect_wear_off_is_to_char_only(monkeypatch):
 
 
 def test_obj_update_spills_floating_container():
+    """
+    ROM update.c:1025-1026 — the spill gate checks wear_loc, not wear_flags.
+
+    A CONTAINER with WEAR_FLOAT in wear_flags that IS currently floating
+    (wear_loc == FLOAT) must spill its contents on decay.
+    """
     area = Area(name="Treasure")
     room = Room(vnum=300, area=area)
     room_registry[room.vnum] = room
@@ -1102,6 +1108,7 @@ def test_obj_update_spills_floating_container():
         instance_id=None,
         prototype=ObjIndex(vnum=0, item_type=int(ItemType.CONTAINER), short_descr="drifting chest"),
         wear_flags=int(WearFlag.WEAR_FLOAT),
+        wear_loc=int(WearLocation.FLOAT),  # actively floating — ROM spill fires
         timer=1,
     )
     gem = Object(
@@ -1120,6 +1127,7 @@ def test_obj_update_spills_floating_container():
 
     assert chest not in object_registry
     assert chest not in room.contents
+    # wear_loc == FLOAT → ROM spill fires → gem lands in room
     assert gem in room.contents
     assert gem.in_room is room
     assert "Drifting chest flickers and vanishes, spilling its contents on the floor." in observer.messages
