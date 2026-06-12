@@ -95,19 +95,25 @@ def check_assist(ch: Character, victim: Character) -> None:
             rch_off_flags = getattr(rch, "off_flags", 0)
             should_assist = False
 
+            # mirroring ROM src/fight.c:141-150 — all five assist conditions are a
+            # flat || OR chain; C evaluates each until one is true.  Python's
+            # `elif` would enter the ASSIST_RACE branch (flag set) and skip
+            # ASSIST_ALIGN/ASSIST_VNUM even when the inner race predicate fails.
+            # Independent `if` checks restore the ROM || semantics.
+
             # ASSIST_ALL: Assist any mob
             if rch_off_flags & OffFlag.ASSIST_ALL:
                 should_assist = True
 
-            # ASSIST_RACE: Assist same race
-            elif rch_off_flags & OffFlag.ASSIST_RACE:
+            # ASSIST_RACE: Assist same race (ROM src/fight.c:143-144)
+            if rch_off_flags & OffFlag.ASSIST_RACE:
                 ch_race = getattr(ch, "race", None)
                 rch_race = getattr(rch, "race", None)
                 if ch_race and rch_race and ch_race == rch_race:
                     should_assist = True
 
-            # ASSIST_ALIGN: Assist same alignment
-            elif rch_off_flags & OffFlag.ASSIST_ALIGN:
+            # ASSIST_ALIGN: Assist same alignment (ROM src/fight.c:145-148)
+            if rch_off_flags & OffFlag.ASSIST_ALIGN:
                 if (
                     (is_good(rch) and is_good(ch))
                     or (is_evil(rch) and is_evil(ch))
@@ -115,8 +121,8 @@ def check_assist(ch: Character, victim: Character) -> None:
                 ):
                     should_assist = True
 
-            # ASSIST_VNUM: Assist same vnum (same mob prototype)
-            elif rch_off_flags & OffFlag.ASSIST_VNUM:
+            # ASSIST_VNUM: Assist same vnum/mob prototype (ROM src/fight.c:149-150)
+            if rch_off_flags & OffFlag.ASSIST_VNUM:
                 ch_vnum = getattr(ch, "vnum", None)
                 rch_vnum = getattr(rch, "vnum", None)
                 if ch_vnum is not None and rch_vnum is not None and ch_vnum == rch_vnum:

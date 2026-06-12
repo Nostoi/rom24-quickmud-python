@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.7] — 2026-06-12
+
+### Fixed
+
+- **FIGHT-060 — `check_assist` NPC elif chain skips ASSIST_ALIGN/ASSIST_VNUM when ASSIST_RACE
+  flag set but race doesn't match** —
+  ROM `src/fight.c:139-150` evaluates the five NPC assist conditions as a flat `||` OR chain.
+  Python used `elif` for the ASSIST_RACE / ASSIST_ALIGN / ASSIST_VNUM checks; when the
+  ASSIST_RACE flag was set but the inner race predicate failed, the `elif` branch was entered
+  (flag is truthy) and subsequent `elif` branches were silently skipped. A mob with both
+  ASSIST_RACE and ASSIST_ALIGN (different race, same alignment as attacker) would fail to
+  assist in Python, but would assist in ROM. The missed assist is also an MM RNG desync: the
+  `number_bits(1)` skip draw and target-selection `number_range` loop are gated on
+  `should_assist`. Fixed by converting the three `elif` checks to independent `if` checks,
+  restoring ROM's flat OR semantics. Enforced by
+  `tests/integration/test_fight060_check_assist_elif_chain.py` (2 cases: ASSIST_ALIGN fires
+  despite ASSIST_RACE flag+mismatch; ASSIST_VNUM fires despite ASSIST_RACE flag+mismatch).
+
 ## [2.14.6] — 2026-06-11
 
 ### Fixed
