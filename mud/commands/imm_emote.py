@@ -206,17 +206,13 @@ def do_pmote(char: Character, args: str) -> str:
 
 
 def do_gecho(char: Character, args: str) -> str:
-    if not args or not args.strip():
-        return "Global echo what?\n\r"
+    # mirroring ROM src/interp.c:331 — {"gecho", do_echo, ...}: gecho IS the
+    # global do_echo (src/act_wiz.c:674-696, descriptor_list walk over
+    # CON_PLAYING with the trust-gated "global> " prefix). INV-046: the old
+    # body walked the phantom registry.players, reaching nobody in production.
+    from mud.commands.imm_display import do_echo
 
-    message = args.strip()
-
-    from mud import registry
-
-    for player in getattr(registry, "players", {}).values():
-        _send_to_char(player, f"{message}\n\r")
-
-    return ""
+    return do_echo(char, args)
 
 
 # DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.

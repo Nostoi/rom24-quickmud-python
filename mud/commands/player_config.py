@@ -7,7 +7,7 @@ ROM Reference: src/act_info.c, src/act_comm.c
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import AffectFlag, DefenseBit, PlayerFlag
+from mud.models.constants import DefenseBit, PlayerFlag
 
 # Player act flags (PLR_*) — derive from the canonical IntFlag enum, never a
 # hardcoded hex bit (AGENTS.md ROM Parity Rules; guarded by
@@ -177,47 +177,13 @@ def do_delet(char: Character, args: str) -> str:
 
 
 def _die_follower(char: Character) -> None:
+    """Stop all followers from following this character.
+
+    Delegates to the canonical ``mud.characters.follow.die_follower``
+    (mirroring ROM src/act_comm.c:1658-1680, a char_list walk). INV-046: the
+    old duplicate walked the phantom ``registry.char_list`` plus the same
+    room only, leaving cross-room followers attached.
     """
-    Stop all followers from following this character.
+    from mud.characters.follow import die_follower
 
-    ROM Reference: src/handler.c die_follower
-    """
-    # Stop anyone following this character
-    from mud import registry
-
-    # Check all characters
-    for ch in getattr(registry, "char_list", []):
-        master = getattr(ch, "master", None)
-        if master is char:
-            _stop_follower(ch)
-
-    # Also check room
-    room = getattr(char, "room", None)
-    if room:
-        for ch in getattr(room, "people", []):
-            master = getattr(ch, "master", None)
-            if master is char:
-                _stop_follower(ch)
-
-
-def _stop_follower(char: Character) -> None:
-    """
-    Stop a character from following their master.
-
-    ROM Reference: src/handler.c stop_follower
-    """
-    master = getattr(char, "master", None)
-    if master is None:
-        return
-
-    # Remove charm affect
-    affected_by = getattr(char, "affected_by", 0)
-    if affected_by & AffectFlag.CHARM:
-        char.affected_by = affected_by & ~AffectFlag.CHARM
-
-    # Clear master/leader
-    char.master = None
-    char.leader = None
-
-    getattr(master, "name", "someone")
-    # Would send message but we don't have session context here
+    die_follower(char)

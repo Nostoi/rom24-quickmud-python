@@ -193,14 +193,27 @@ def do_transfer(char: Character, args: str) -> str:
 
     # Handle "transfer all"
     if target_name.lower() == "all":
+        # mirroring ROM src/act_wiz.c:816-831 — "transfer all" walks
+        # descriptor_list (CON_PLAYING, not self, in_room set, can_see) and
+        # recurses per victim, preserving the optional location argument
+        # (sprintf(buf, "%s %s", d->character->name, arg2)). INV-046: the old
+        # code walked the phantom registry.players, transferring nobody.
         from mud import registry
+        from mud.net.connection import CON_PLAYING
+        from mud.world.vision import can_see_character
 
-        count = 0
-        for player in list(getattr(registry, "players", {}).values()):
-            if player is not char:
-                do_transfer(char, getattr(player, "name", ""))
-                count += 1
-        return f"Transferred {count} players." if count > 0 else "No one to transfer."
+        results = []
+        for desc in list(getattr(registry, "descriptor_list", [])):
+            vch = getattr(desc, "character", None)
+            if vch is None or getattr(desc, "connected", 0) != CON_PLAYING:
+                continue
+            if vch is char or getattr(vch, "room", None) is None:
+                continue
+            if not can_see_character(char, vch):
+                continue
+            suffix = f" {location_arg}" if location_arg else ""
+            results.append(do_transfer(char, f"{getattr(vch, 'name', '')}{suffix}"))
+        return "\n\r".join(results)
 
     # Find destination
     if location_arg:
@@ -305,12 +318,16 @@ def do_force(char: Character, args: str) -> str:
             return "Not at your level!\n\r"
 
         from mud import registry
+        from mud.net.connection import CON_PLAYING
 
         for desc in getattr(registry, "descriptor_list", []):
             vch = getattr(desc, "character", None)
             if vch is None:
                 continue
-            if getattr(desc, "connected", 0) != 0:
+            # mirroring ROM src/act_wiz.c:4225 — desc->connected == CON_PLAYING
+            # (the port's CON_PLAYING is 1, mud/net/connection.py:81; the old
+            # `!= 0` check skipped every real playing connection).
+            if getattr(desc, "connected", 0) != CON_PLAYING:
                 continue
             if get_trust(vch) < get_trust(char):
                 # INV-029: ROM act_new caps buf[0] (src/comm.c:2376-2379).
@@ -326,9 +343,11 @@ def do_force(char: Character, args: str) -> str:
         if get_trust(char) < MAX_LEVEL - 2:
             return "Not at your level!\n\r"
 
-        from mud import registry
+        # ROM walks the head-inserted char_list newest-first (INV-045);
+        # INV-046: the old code walked the phantom registry.char_list.
+        from mud.models.character import character_registry
 
-        for vch in list(getattr(registry, "char_list", [])):
+        for vch in list(reversed(character_registry)):
             if (
                 not getattr(vch, "is_npc", False)
                 and get_trust(vch) < get_trust(char)
@@ -347,9 +366,11 @@ def do_force(char: Character, args: str) -> str:
         if get_trust(char) < MAX_LEVEL - 2:
             return "Not at your level!\n\r"
 
-        from mud import registry
+        # ROM walks the head-inserted char_list newest-first (INV-045);
+        # INV-046: the old code walked the phantom registry.char_list.
+        from mud.models.character import character_registry
 
-        for vch in list(getattr(registry, "char_list", [])):
+        for vch in list(reversed(character_registry)):
             if (
                 not getattr(vch, "is_npc", False)
                 and get_trust(vch) < get_trust(char)

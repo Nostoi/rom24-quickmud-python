@@ -38,19 +38,23 @@ def do_reboot(char: Character, args: str) -> str:
     char_name = getattr(char, "name", "Someone")
     invis_level = getattr(char, "invis_level", 0)
 
-    # Announce if visible
+    # mirroring ROM src/act_wiz.c:2034-2038 — announce through do_echo (the
+    # global-echo descriptor_list walk). INV-046: the old code broadcast to the
+    # phantom registry.players, so no live player ever saw the announce.
     if invis_level < LEVEL_HERO:
-        # Broadcast to all players
-        for player in getattr(registry, "players", {}).values():
-            _send_to_char(player, f"Reboot by {char_name}.")
+        from mud.commands.imm_display import do_echo
 
-    # Save all characters
-    for _player in getattr(registry, "players", {}).values():
-        # In real implementation: save_char_obj(_player)
-        pass
+        do_echo(char, f"Reboot by {char_name}.")
 
-    # Set shutdown flag
+    # mirroring ROM src/act_wiz.c:2040-2048 — merc_down, then walk
+    # descriptor_list saving d->original ? d->original : d->character.
     registry.merc_down = True
+    for desc in list(getattr(registry, "descriptor_list", [])):
+        vch = getattr(desc, "original", None) or getattr(desc, "character", None)
+        if vch is not None and not getattr(vch, "is_npc", False):
+            from mud.account.account_manager import save_character
+
+            save_character(vch)
 
     return "Rebooting..."
 
@@ -70,21 +74,26 @@ def do_shutdown(char: Character, args: str) -> str:
     char_name = getattr(char, "name", "Someone")
     invis_level = getattr(char, "invis_level", 0)
 
-    # Announce if visible
+    # mirroring ROM src/act_wiz.c:2066-2073 — announce through do_echo (the
+    # global-echo descriptor_list walk). INV-046: the old code broadcast to the
+    # phantom registry.players, so no live player ever saw the announce.
     if invis_level < LEVEL_HERO:
-        for player in getattr(registry, "players", {}).values():
-            _send_to_char(player, f"Shutdown by {char_name}.")
+        from mud.commands.imm_display import do_echo
+
+        do_echo(char, f"Shutdown by {char_name}.")
 
     # Log the shutdown
     # In real implementation: append_file(ch, SHUTDOWN_FILE, buf)
 
-    # Save all characters
-    for _player in getattr(registry, "players", {}).values():
-        # In real implementation: save_char_obj(_player)
-        pass
-
-    # Set shutdown flag
+    # mirroring ROM src/act_wiz.c:2074-2082 — merc_down, then walk
+    # descriptor_list saving d->original ? d->original : d->character.
     registry.merc_down = True
+    for desc in list(getattr(registry, "descriptor_list", [])):
+        vch = getattr(desc, "original", None) or getattr(desc, "character", None)
+        if vch is not None and not getattr(vch, "is_npc", False):
+            from mud.account.account_manager import save_character
+
+            save_character(vch)
 
     return "Shutting down..."
 
@@ -234,8 +243,13 @@ def do_dump(char: Character, args: str) -> str:
     num_rooms = len(getattr(registry, "rooms", {}))
     num_mobs = len(getattr(registry, "mob_prototypes", {}))
     num_objs = len(getattr(registry, "obj_prototypes", {}))
-    num_chars = len(getattr(registry, "char_list", []))
-    num_players = len(getattr(registry, "players", {}))
+    # mirroring ROM src/db.c:3358-3367 — do_dump walks char_list counting all
+    # live chars plus those with pcdata (PCs). INV-046: the old code measured
+    # the phantom registry.char_list/players, printing 0 in production.
+    from mud.models.character import character_registry
+
+    num_chars = len(character_registry)
+    num_players = sum(1 for fch in character_registry if getattr(fch, "pcdata", None) is not None)
 
     lines.append(f"Areas:   {num_areas}")
     lines.append(f"Rooms:   {num_rooms}")

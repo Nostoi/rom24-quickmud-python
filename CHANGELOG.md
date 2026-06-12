@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.18] — 2026-06-12
+
+### Fixed
+
+- **INV-046 family 2 — every remaining phantom `registry.char_list`/`registry.players` walk
+  rewritten against the real structures** — `transfer all` now walks `descriptor_list`
+  (`src/act_wiz.c:816-831`, preserving the optional location argument), `force players`/`force
+  gods` walk `character_registry` newest-first (`:4233-4278`, INV-045 order), `force all` now
+  accepts the port's `CON_PLAYING=1` (the old `!= 0` check skipped every live connection),
+  reboot/shutdown announce through the real `do_echo` descriptor walk and save via
+  `descriptor_list` (`:2027-2084`), `mwhere` walks descriptors (no-arg, with can_see/can_see_room
+  and switched-body display) and `character_registry` with whole-word `is_name` (named branch,
+  `:1950-2015`), `do_memory`/`do_dump` counts derive from `character_registry`
+  (`src/db.c:3307,3358-3367`), `gecho` delegates to `do_echo` (`src/interp.c:331`), restore-all's
+  dead phantom fallback is deleted, and `player_config._die_follower` delegates to the canonical
+  `mud.characters.follow.die_follower` (`src/act_comm.c:1658-1680` — cross-room followers now
+  released). Filed **INV-046 family 3**: phantom stat-table aliases remain
+  (`registry.mob_prototypes`/`obj_prototypes` direct reads crash `mfind`/`ofind` in production;
+  ~14 more getattr-with-default sites print zero/empty). Tests (9 new, production-shape):
+  `tests/integration/test_inv046_phantom_registry.py`.
+
 ## [2.14.17] — 2026-06-12
 
 ### Fixed

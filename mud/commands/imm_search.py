@@ -251,53 +251,78 @@ def do_mwhere(char: Character, args: str) -> str:
     from mud import registry
 
     if not args or not args.strip():
-        # Show all connected players
+        # mirroring ROM src/act_wiz.c:1958-1988 — no-arg mwhere walks
+        # descriptor_list (CON_PLAYING + in_room + can_see + can_see_room),
+        # showing the original body when switched. INV-046: the old code
+        # walked the phantom registry.players.
+        from mud.net.connection import CON_PLAYING
+        from mud.world.vision import can_see_character, can_see_room
+
         lines = []
         count = 0
 
-        for player in getattr(registry, "players", {}).values():
-            room = getattr(player, "room", None)
-            if room:
-                count += 1
-                player_name = getattr(player, "name", "someone")
-                room_name = getattr(room, "name", "somewhere")
-                room_vnum = getattr(room, "vnum", 0)
-                lines.append(f"{count:3d}) {player_name} is in {room_name} [{room_vnum}]")
+        for desc in getattr(registry, "descriptor_list", []):
+            victim = getattr(desc, "character", None)
+            if victim is None or getattr(desc, "connected", 0) != CON_PLAYING:
+                continue
+            room = getattr(victim, "room", None)
+            if room is None or not can_see_character(char, victim) or not can_see_room(char, room):
+                continue
+            count += 1
+            room_name = getattr(room, "name", "somewhere")
+            room_vnum = getattr(room, "vnum", 0)
+            original = getattr(desc, "original", None)
+            if original is not None:
+                # ROM src/act_wiz.c:1973-1977 — switched imm shows original name
+                # plus the possessed body's short description.
+                body = getattr(victim, "short_descr", "") or getattr(victim, "name", "someone")
+                lines.append(
+                    f"{count:3d}) {getattr(original, 'name', 'someone')} (in the body of {body}) is in {room_name} [{room_vnum}]"
+                )
+            else:
+                lines.append(f"{count:3d}) {getattr(victim, 'name', 'someone')} is in {room_name} [{room_vnum}]")
 
         if not lines:
             return "No players found."
 
         return "\n".join(lines)
 
-    # Search by name
-    search_name = args.strip().lower()
+    # mirroring ROM src/act_wiz.c:1993-2005 — named mwhere walks char_list
+    # (newest-first, INV-045) gated on in_room + is_name (whole-word prefix).
+    # INV-046: the old code walked the phantom registry.char_list with
+    # substring matching.
+    from mud.models.character import character_registry
+    from mud.world.char_find import is_name
+
+    search_name = args.strip()
     lines = []
     count = 0
 
-    for ch in getattr(registry, "char_list", []):
-        ch_name = (getattr(ch, "name", None) or "").lower()
+    for ch in reversed(character_registry):
         room = getattr(ch, "room", None)
+        if room is None or not is_name(search_name, getattr(ch, "name", "") or ""):
+            continue
+        count += 1
+        is_npc = getattr(ch, "is_npc", False)
 
-        if search_name in ch_name and room:
-            count += 1
-            is_npc = getattr(ch, "is_npc", False)
-
-            if is_npc:
-                proto = getattr(ch, "prototype", None)
-                vnum = getattr(proto, "vnum", 0) if proto else 0
-            else:
-                vnum = 0
-
+        if is_npc:
+            proto = getattr(ch, "prototype", None)
+            vnum = getattr(proto, "vnum", 0) if proto else 0
+            # ROM src/act_wiz.c:2000-2001 — NPCs display short_descr, PCs name.
+            ch_display = getattr(ch, "short_descr", "") or getattr(ch, "name", "someone")
+        else:
+            vnum = 0
             ch_display = getattr(ch, "name", "someone")
-            room_name = getattr(room, "name", "somewhere")
-            room_vnum = getattr(room, "vnum", 0)
 
-            lines.append(f"{count:3d}) [{vnum:5d}] {ch_display:<28s} [{room_vnum:5d}] {room_name}")
+        room_name = getattr(room, "name", "somewhere")
+        room_vnum = getattr(room, "vnum", 0)
+
+        lines.append(f"{count:3d}) [{vnum:5d}] {ch_display:<28s} [{room_vnum:5d}] {room_name}")
 
     if not lines:
         return "Nothing like that in heaven or earth."
 
-    return "\n".join(lines[:100])  # Limit output
+    return "\n".join(lines)
 
 
 def do_sockets(char: Character, args: str) -> str:
@@ -360,7 +385,12 @@ def do_memory(char: Character, args: str) -> str:
     num_objs = len(getattr(registry, "obj_prototypes", {}))
     num_helps = len(getattr(registry, "helps", {}))
     num_socials = len(getattr(registry, "social_registry", {}).socials if hasattr(registry, "social_registry") else {})
-    num_chars = len(getattr(registry, "char_list", []))
+    # mirroring ROM src/db.c:3307 — "(in use)" prints mobile_count, the number
+    # of live NPC mobiles. INV-046: the old code measured the phantom
+    # registry.char_list, printing 0 in production.
+    from mud.models.character import character_registry
+
+    num_chars = sum(1 for fch in character_registry if getattr(fch, "is_npc", False))
 
     lines.append(f"Areas   {num_areas:5d}")
     lines.append(f"Rooms   {num_rooms:5d}")

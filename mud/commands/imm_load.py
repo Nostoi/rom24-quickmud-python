@@ -337,19 +337,15 @@ def do_restore(char: Character, args: str) -> str:
 
         # mirrors ROM src/act_wiz.c:2842 — act("$n has restored you.", ch, NULL,
         # victim, TO_VICT). INV-025/INV-027: PERS-mask the restorer per victim sight.
-        descriptor_list = getattr(registry, "descriptor_list", [])
-        if descriptor_list:
-            for desc in descriptor_list:
-                victim = getattr(desc, "character", None)
-                if victim is None or getattr(victim, "is_npc", False):
-                    continue
-                _restore_char(victim)
-                _send_to_char(victim, f"{act_format('$n has restored you.', recipient=victim, actor=char)}\n\r")
-        else:
-            for player in getattr(registry, "players", {}).values():
-                if not getattr(player, "is_npc", False):
-                    _restore_char(player)
-                    _send_to_char(player, f"{act_format('$n has restored you.', recipient=player, actor=char)}\n\r")
+        # INV-046: descriptor_list is the ONLY structure ROM walks here
+        # (src/act_wiz.c:2825-2844); the old phantom registry.players fallback
+        # could never fire in production and is gone.
+        for desc in getattr(registry, "descriptor_list", []):
+            victim = getattr(desc, "character", None)
+            if victim is None or getattr(victim, "is_npc", False):
+                continue
+            _restore_char(victim)
+            _send_to_char(victim, f"{act_format('$n has restored you.', recipient=victim, actor=char)}\n\r")
 
         return "All active players restored.\n\r"
 
