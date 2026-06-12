@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.8] — 2026-06-12
+
+### Fixed
+
+- **FIGHT-061 — `do_flee` sector-based move cost, PC guard, and exhaustion check** —
+  ROM `src/fight.c:3001-3002` calls `move_char(ch, door, FALSE)`, which in
+  `src/act_move.c:115-193` deducts movement only for PCs using the sector-average
+  formula `(movement_loss[in]+movement_loss[out])/2`, and returns early without moving
+  if `ch->move < cost` (causing that flee attempt to fail). Python used a flat
+  `max(0, char.move - c_div(char.max_move, 10))` applied to all characters after a
+  successful flee. Three bugs: wrong formula (FIELD→FIELD = 2, not max_move/10 = 10
+  for a level-10 PC); no PC guard (NPCs had move deducted); no exhaustion check
+  (a PC with move=0 could always flee). Fixed by integrating the sector-based cost
+  check inside the 6-attempt loop with a `continue` path mirroring `move_char`'s
+  exhaustion early-return. Enforced by
+  `tests/integration/test_fight061_flee_move_cost.py` (3 cases).
+
 ## [2.14.7] — 2026-06-12
 
 ### Fixed

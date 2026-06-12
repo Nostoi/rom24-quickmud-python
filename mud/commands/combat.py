@@ -19,12 +19,28 @@ from mud.models.constants import (
     PlayerFlag,
     Position,
     RoomFlag,
+    Sector,
     Stat,
     convert_flags_from_letters,
 )
 from mud.skills import skill_registry
 from mud.utils import rng_mm
 from mud.world.vision import can_see_character
+
+# mirroring ROM src/act_move.c:50-52 — movement_loss[SECT_MAX]
+_FLEE_MOVEMENT_LOSS: dict[Sector, int] = {
+    Sector.INSIDE: 1,
+    Sector.CITY: 2,
+    Sector.FIELD: 2,
+    Sector.FOREST: 3,
+    Sector.HILLS: 4,
+    Sector.MOUNTAIN: 6,
+    Sector.WATER_SWIM: 4,
+    Sector.WATER_NOSWIM: 1,
+    Sector.UNUSED: 6,
+    Sector.AIR: 10,
+    Sector.DESERT: 6,
+}
 
 
 def _kill_safety_message(attacker: Character, victim: Character) -> str | None:
@@ -683,6 +699,7 @@ def do_flee(char: Character, args: str) -> str:
 
     # 6-attempt random-door loop — mirroring ROM src/fight.c:2986-3003
     now_in = None
+    flee_move_cost = 0  # sector-based cost for the successful attempt (PCs only)
     for _attempt in range(6):
         door = rng_mm.number_door()  # mirroring ROM src/fight.c:2989: door = number_door()
         exits = getattr(was_in, "exits", [])
@@ -724,6 +741,29 @@ def do_flee(char: Character, args: str) -> str:
         if new_room is None or new_room is was_in:
             continue
 
+        # mirroring ROM src/act_move.c:115-193 — move_char deducts movement
+        # only for PCs (!IS_NPC), using sector average of from/to rooms.
+        # When ch->move < cost, move_char returns without moving (now_in==was_in
+        # → loop continues to next attempt).
+        if not getattr(char, "is_npc", False):
+            try:
+                from_sector = Sector(int(getattr(was_in, "sector_type", 0) or 0))
+            except (ValueError, KeyError):
+                from_sector = Sector.MOUNTAIN
+            try:
+                to_sector = Sector(int(getattr(new_room, "sector_type", 0) or 0))
+            except (ValueError, KeyError):
+                to_sector = Sector.MOUNTAIN
+            cost = (_FLEE_MOVEMENT_LOSS.get(from_sector, 2) + _FLEE_MOVEMENT_LOSS.get(to_sector, 2)) // 2
+            affected = getattr(char, "affected_by", 0)
+            if affected & AffectFlag.FLYING or affected & AffectFlag.HASTE:
+                cost = max(0, cost // 2)
+            if affected & AffectFlag.SLOW:
+                cost *= 2
+            if char.move < cost:
+                continue  # too exhausted — mirrors move_char returning without moving
+            flee_move_cost = cost
+
         was_in.remove_character(char)
         new_room.add_character(char)
         now_in = new_room
@@ -764,8 +804,9 @@ def do_flee(char: Character, args: str) -> str:
     # mirrors ROM src/fight.c:3021: stop_fighting(ch, TRUE)
     stop_fighting(char, True)
 
-    # ROM's move_char deducts movement; mirror that deduction here
-    char.move = max(0, char.move - c_div(char.max_move, 10))
+    # mirroring ROM src/act_move.c:193: ch->move -= move (PC-only, sector-based cost)
+    if flee_move_cost > 0:
+        char.move -= flee_move_cost
 
     # Show new room
     from mud.commands.inspection import do_look
