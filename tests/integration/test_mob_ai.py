@@ -679,3 +679,64 @@ class TestMobileUpdateIterationOrder:
         finally:
             character_registry.clear()
             character_registry.extend(saved)
+
+
+class TestAggressiveUpdateIterationOrder:
+    """GL-043: aggressive_update must walk PC watchers newest-first (INV-045).
+
+    ROM src/update.c:1087-1092 walks char_list for the PC watcher ``wch``;
+    char_list is head-inserted (src/db.c:2256-2257 create_mobile,
+    src/nanny.c:757-758 PC login), so the most-recently-added character is
+    visited first and its room's aggressors draw the number_bits(1)
+    aggression coin (src/update.c:1107) first.
+    """
+
+    def test_aggression_coin_drawn_for_newest_watcher_first(self, monkeypatch):
+        """mirrors ROM src/update.c:1087-1107 — the FIRST aggression coin
+        belongs to the NEWEST watcher's aggressor; scripting coins [1, 0]
+        must make the newest player's mob attack and the older one's skip."""
+        import mud.ai.aggressive as aggressive_module
+
+        saved = list(character_registry)
+        character_registry.clear()
+        room_old = Room(vnum=999201, name="Old Watcher Room")
+        room_new = Room(vnum=999202, name="New Watcher Room")
+        room_registry[room_old.vnum] = room_old
+        room_registry[room_new.vnum] = room_new
+        try:
+            old_player = create_test_player("OldWatcher", room_old.vnum, level=10)
+            new_player = create_test_player("NewWatcher", room_new.vnum, level=10)
+            old_mob = create_test_mob(room_old.vnum, name="old orc", act=int(ActFlag.AGGRESSIVE))
+            new_mob = create_test_mob(room_new.vnum, name="new orc", act=int(ActFlag.AGGRESSIVE))
+            assert old_mob is not None and old_player is not None
+
+            # Coin script: the first (watcher, mob) aggression check attacks,
+            # every later draw (second watcher's check, check_assist coins)
+            # skips. Which mob lands the scripted 1 reveals the walk order.
+            coins = [1, 0]
+            monkeypatch.setattr(
+                aggressive_module.rng_mm,
+                "number_bits",
+                lambda width: coins.pop(0) if coins else 0,
+            )
+            attacks: list[tuple[Character, Character]] = []
+            monkeypatch.setattr(
+                aggressive_module,
+                "multi_hit",
+                lambda attacker, victim: attacks.append((attacker, victim)),
+            )
+
+            aggressive_update()
+
+            assert attacks, "the scripted coin must trigger exactly one attack"
+            attacker, victim = attacks[0]
+            assert attacker is new_mob and victim is new_player, (
+                "newest watcher must be visited first (ROM char_list is head-inserted); "
+                f"first attack was {attacker.name} -> {victim.name}"
+            )
+            assert len(attacks) == 1
+        finally:
+            character_registry.clear()
+            character_registry.extend(saved)
+            room_registry.pop(room_old.vnum, None)
+            room_registry.pop(room_new.vnum, None)

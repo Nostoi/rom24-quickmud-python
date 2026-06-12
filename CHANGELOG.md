@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.15] — 2026-06-12
+
+### Fixed
+
+- **GL-043 — `aggressive_update` iterated `character_registry` oldest-first; ROM walks
+  `char_list` newest-first** — last RNG-bearing site of INV-045 (CHAR-LIST-WALK-ORDER). ROM
+  `aggr_update` (`src/update.c:1087-1092`) walks the head-inserted `char_list` for the PC
+  watcher, so the `number_bits(1)` aggression coin and `number_range(0, count)` victim
+  reservoir rolls are drawn newest-watcher-first; the port drew them oldest-first, desyncing
+  the shared Mitchell-Moore stream whenever ≥2 PCs were live. Now walks reversed with the
+  extracted-skip guard (a watcher killed mid-tick is never revisited), mirroring the
+  GL-040/041/042 pattern. Python: `mud/ai/aggressive.py:aggressive_update`.
+  Test: `tests/integration/test_mob_ai.py::TestAggressiveUpdateIterationOrder`.
+
 ## [2.14.14] — 2026-06-12
 
 ### Fixed

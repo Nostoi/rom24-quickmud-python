@@ -54,7 +54,17 @@ def _eligible_victims(ch: Character, occupants: Iterable[Character]) -> Iterable
 def aggressive_update() -> None:
     """Wake aggressive NPCs and initiate combat when players enter their rooms."""
 
-    for watcher in list(character_registry):
+    # mirroring ROM src/update.c:1087 — aggr_update walks ``char_list`` for the
+    # PC watcher ``wch``; src/db.c:2256-2257 / src/nanny.c:757-758 head-insert,
+    # so ROM visits the NEWEST character first. ``character_registry`` is
+    # append-order, so iterate it reversed — load-bearing for the shared RNG
+    # draw order (number_bits(1) aggression coin, number_range victim
+    # reservoir), like violence_tick/char_update/mobile_update. GL-043.
+    for watcher in reversed(list(character_registry)):
+        # mirroring ROM's saved ``wch_next`` pointer — a char extracted
+        # mid-tick (multi_hit kill) is never revisited in ROM's walk. GL-043.
+        if watcher not in character_registry:
+            continue
         if getattr(watcher, "is_npc", False):
             continue
         if watcher.is_immortal():
