@@ -444,3 +444,69 @@ class TestPitDecaySuppression:
             gl._message_room = original
 
         assert len(captured) == 1, "Decay message should be sent when item is inside a takeable container"
+
+
+# ---------------------------------------------------------------------------
+# GL-040: obj_update iteration order — ROM src/update.c:919 walks object_list
+# newest-first (src/db.c:2482-2483 create_object head-inserts)
+# ---------------------------------------------------------------------------
+
+
+class TestObjUpdateIterationOrder:
+    def test_same_tick_decay_messages_broadcast_newest_first(self):
+        """mirrors ROM src/update.c:919 + src/db.c:2482-2483 — object_list is
+        head-inserted, so obj_update visits the most-recently-created object
+        first; two objects decaying on the same tick message newest-first."""
+        from mud.game_loop import obj_update
+
+        room = _make_room(9040)
+        watcher = _make_player(room)
+        watcher.messages = []
+
+        old_proto = ObjIndex(vnum=1001, short_descr="an ancient relic")
+        old_obj = Object(instance_id=None, prototype=old_proto, timer=1, in_room=room)
+        object_registry.append(old_obj)
+
+        new_proto = ObjIndex(vnum=1002, short_descr="a fresh trinket")
+        new_obj = Object(instance_id=None, prototype=new_proto, timer=1, in_room=room)
+        object_registry.append(new_obj)
+
+        obj_update()
+
+        relic_msgs = [i for i, m in enumerate(watcher.messages) if "ancient relic" in m]
+        trinket_msgs = [i for i, m in enumerate(watcher.messages) if "fresh trinket" in m]
+        assert relic_msgs and trinket_msgs, "both objects should decay this tick"
+        assert trinket_msgs[0] < relic_msgs[0], (
+            f"newest object must decay first (ROM object_list is head-inserted; got messages {watcher.messages})"
+        )
+
+    def test_contents_extracted_by_container_decay_are_not_ticked(self):
+        """mirrors ROM src/update.c:919-924 + src/handler.c extract_obj — an
+        object removed from object_list mid-loop (content destroyed by its
+        container's decay) is never visited afterwards, so its timer must not
+        be decremented on the tick its container decays."""
+        from mud.game_loop import obj_update
+
+        room = _make_room(9041)
+        room.people = [_make_player(room)]
+
+        food_proto = ObjIndex(vnum=1003, short_descr="a stale loaf")
+        food = Object(instance_id=None, prototype=food_proto, timer=2)
+        object_registry.append(food)
+
+        sack_proto = ObjIndex(vnum=1004, short_descr="a rotting sack")
+        sack = Object(instance_id=None, prototype=sack_proto, timer=1, in_room=room)
+        object_registry.append(sack)
+
+        # older food placed inside the newer sack
+        sack.contained_items.append(food)
+        food.in_obj = sack
+
+        obj_update()
+
+        assert sack not in object_registry, "sack should decay this tick"
+        assert food not in object_registry, "contents destroyed with the container (not PC corpse/floating)"
+        assert food.timer == 2, (
+            "extracted content must not be ticked from the stale loop snapshot "
+            f"(ROM never revisits a removed object); got timer={food.timer}"
+        )

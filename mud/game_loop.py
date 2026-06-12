@@ -1415,7 +1415,20 @@ def _tick_object_affects(obj: Object) -> None:
 def obj_update() -> None:
     """Port ROM obj_update timers, decay messaging, and spills."""
 
-    for obj in list(object_registry):
+    # mirroring ROM src/update.c:919 — obj_update walks `object_list`, which
+    # src/db.c:2482-2483 (create_object) head-inserts, so ROM visits the
+    # NEWEST object first. `object_registry` is append-order, so iterate it
+    # reversed — load-bearing for the shared RNG draw order (the per-affect
+    # number_range(0,4) fade roll below) and same-tick message order, exactly
+    # like the violence_tick char_list reversal (FINDING-009 facet 3). GL-040.
+    for obj in list(reversed(object_registry)):
+        # mirroring ROM extract_obj re-linking — an object removed from
+        # object_list mid-loop (e.g. contents destroyed by a decaying
+        # container) is never visited later in ROM's walk; skip it here so
+        # the stale snapshot doesn't tick extracted objects. GL-040.
+        if obj not in object_registry:
+            continue
+
         _tick_object_affects(obj)
 
         timer = int(getattr(obj, "timer", 0) or 0)

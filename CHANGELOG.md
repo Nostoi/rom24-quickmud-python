@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.10] — 2026-06-12
+
+### Fixed
+
+- **GL-040 — `obj_update` iterated `object_registry` oldest-first; ROM walks `object_list`
+  newest-first** — ROM `src/db.c:2482-2483` (`create_object`) head-inserts every new object, so
+  `src/update.c:919` (`obj_update`) visits the most-recently-created object first. Python iterated
+  in append (creation) order — the reverse — diverging the shared Mitchell-Moore RNG draw order
+  (per-affect `number_range(0,4)` level-fade rolls), same-tick decay message order, and ticking
+  already-extracted container contents from the stale loop snapshot. Fixed by iterating
+  `list(reversed(object_registry))` and skipping objects no longer in the registry (mirrors ROM's
+  `extract_obj` list re-linking — a removed object is never revisited). Object-side twin of the
+  `violence_tick` char-order fix (FINDING-009 facet 3).
+  ROM C: `src/update.c:919` + `src/db.c:2482-2483`. Python: `mud/game_loop.py:obj_update`.
+  Tests: `tests/integration/test_update_c_parity.py::TestObjUpdateIterationOrder`.
+
 ## [2.14.9] — 2026-06-12
 
 ### Fixed
