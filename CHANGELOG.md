@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.20] — 2026-06-12
+
+### Fixed
+
+- **INV-046 family 3a — `do_mfind`/`do_ofind` crashed in production** — both commands read
+  `registry.mob_prototypes` / `registry.obj_prototypes` directly, which do not exist on
+  `mud/registry.py` (real names: `mob_registry` / `obj_registry`), raising `AttributeError` for
+  every immortal `mfind`/`ofind` call. Additionally the match logic used substring search on a
+  nonexistent `name` field; corrected to ROM `is_name()` whole-word prefix match on
+  `player_name`/`name` (`src/act_wiz.c:1100-1140, 1180-1220`). `do_memory` (`imm_search.py`) and
+  `do_dump` (`imm_server.py`) also used `getattr(registry, "mob_prototypes/obj_prototypes", {})`,
+  printing 0 prototype counts in production despite ~986 loaded mobs and ~1200 loaded objects;
+  corrected to `registry.mob_registry` / `registry.obj_registry` (`src/db.c:3307,3340,3355`).
+  Tests 13–15 in `tests/integration/test_inv046_phantom_registry.py`. (INV-046 family 3a)
+
 ## [2.14.19] — 2026-06-12
 
 ### Added

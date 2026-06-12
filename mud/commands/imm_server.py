@@ -241,8 +241,12 @@ def do_dump(char: Character, args: str) -> str:
     # Count various entities
     num_areas = len(getattr(registry, "areas", []))
     num_rooms = len(getattr(registry, "rooms", {}))
-    num_mobs = len(getattr(registry, "mob_prototypes", {}))
-    num_objs = len(getattr(registry, "obj_prototypes", {}))
+    # mirroring ROM src/db.c:3340,3355 — do_dump reports the prototype-table
+    # sizes (top_mob_index/top_obj_index). INV-046 family 3: the old code read
+    # phantom registry.mob_prototypes/obj_prototypes (real names are
+    # mob_registry/obj_registry), printing 0 in production.
+    num_mobs = len(registry.mob_registry)
+    num_objs = len(registry.obj_registry)
     # mirroring ROM src/db.c:3358-3367 — do_dump walks char_list counting all
     # live chars plus those with pcdata (PCs). INV-046: the old code measured
     # the phantom registry.char_list/players, printing 0 in production.

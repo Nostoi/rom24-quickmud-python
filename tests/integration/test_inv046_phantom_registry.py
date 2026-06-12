@@ -309,3 +309,72 @@ def test_die_follower_releases_cross_room_followers():
         assert follower.master is None, "cross-room follower must be released via character_registry walk"
     finally:
         _cleanup(leader, follower)
+
+
+def test_mfind_walks_real_mob_registry_with_is_name():
+    # mirrors ROM src/act_wiz.c:1784-1831 do_mfind — walks every mob prototype
+    # ascending by vnum and matches is_name(argument, pMobIndex->player_name),
+    # printing "[vnum] short_descr". The old code read the phantom
+    # registry.mob_prototypes (AttributeError in production — the real dict is
+    # registry.mob_registry) and substring-matched a "name" field MobIndex
+    # doesn't even have (ROM's field is player_name).
+    from mud.commands.imm_search import do_mfind
+    from mud.models.mob import MobIndex
+    from mud.registry import mob_registry
+
+    admin = _imm("Zzinvmfinder", 3001)
+    proto = MobIndex(vnum=98765, player_name="zzmfindmob target", short_descr="a zz-mfind test mob")
+    mob_registry[98765] = proto
+    try:
+        out = do_mfind(admin, "zzmfindmob")
+        assert "98765" in out and "a zz-mfind test mob" in out, f"mfind must walk mob_registry, got: {out!r}"
+
+        # ROM is_name is whole-word/prefix matching — a mid-word substring is no match.
+        miss = do_mfind(admin, "findmob")
+        assert "98765" not in miss, f"mid-word substring must not match (ROM is_name), got: {miss!r}"
+    finally:
+        mob_registry.pop(98765, None)
+        _cleanup(admin)
+
+
+def test_ofind_walks_real_obj_registry_with_is_name():
+    # mirrors ROM src/act_wiz.c:1835-1882 do_ofind — same walk over the object
+    # prototype table, matching is_name(argument, pObjIndex->name). The old
+    # code read the phantom registry.obj_prototypes (AttributeError in
+    # production — the real dict is registry.obj_registry).
+    from mud.commands.imm_search import do_ofind
+    from mud.models.obj import ObjIndex
+    from mud.registry import obj_registry
+
+    admin = _imm("Zzinvofinder", 3001)
+    proto = ObjIndex(vnum=98766, name="zzofindobj target", short_descr="a zz-ofind test object")
+    obj_registry[98766] = proto
+    try:
+        out = do_ofind(admin, "zzofindobj")
+        assert "98766" in out and "a zz-ofind test object" in out, f"ofind must walk obj_registry, got: {out!r}"
+
+        miss = do_ofind(admin, "findobj")
+        assert "98766" not in miss, f"mid-word substring must not match (ROM is_name), got: {miss!r}"
+    finally:
+        obj_registry.pop(98766, None)
+        _cleanup(admin)
+
+
+def test_memory_and_dump_count_real_prototype_tables():
+    # mirrors ROM src/db.c:3305,3309 — do_memory "Mobs"/"Objs" print
+    # top_mob_index/top_obj_index, the prototype-table sizes. The old code read
+    # phantom registry.mob_prototypes/obj_prototypes with a {} default, so both
+    # lines printed 0 in production regardless of the loaded world.
+    from mud.commands.imm_search import do_memory
+    from mud.registry import mob_registry, obj_registry
+
+    admin = _imm("Zzinvcounter", 3001)
+    try:
+        out = do_memory(admin, "")
+        mobs_line = next(line for line in out.splitlines() if line.lstrip().startswith("Mobs"))
+        objs_line = next(line for line in out.splitlines() if line.lstrip().startswith("Objs"))
+        assert int(mobs_line.split()[1]) == len(mob_registry), f"Mobs must equal len(mob_registry): {mobs_line!r}"
+        assert int(objs_line.split()[1]) == len(obj_registry), f"Objs must equal len(obj_registry): {objs_line!r}"
+        assert len(mob_registry) > 0, "world fixture must have loaded mob prototypes"
+    finally:
+        _cleanup(admin)

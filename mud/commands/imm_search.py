@@ -97,23 +97,25 @@ def do_mfind(char: Character, args: str) -> str:
     if not args or not args.strip():
         return "Find whom?"
 
-    search_name = args.strip().lower()
+    search_name = args.strip()
 
-    from mud import registry
+    # mirroring ROM src/act_wiz.c:1784-1831 — walk every mob prototype
+    # ascending by vnum, matching is_name(argument, pMobIndex->player_name).
+    # INV-046 family 3: the old code read the phantom registry.mob_prototypes
+    # (AttributeError in production — the real dict is mob_registry) and
+    # substring-matched a "name" field MobIndex doesn't have.
+    from mud.registry import mob_registry
+    from mud.world.char_find import is_name
 
     lines = []
-    for vnum, mob in sorted(registry.mob_prototypes.items()):
-        mob_name = (getattr(mob, "name", None) or "").lower()
-        short_desc = (getattr(mob, "short_descr", None) or "").lower()
-
-        if search_name in mob_name or search_name in short_desc:
-            display_name = getattr(mob, "short_descr", mob_name)
-            lines.append(f"[{vnum:5d}] {display_name}")
+    for vnum, mob in sorted(mob_registry.items()):
+        if is_name(search_name, getattr(mob, "player_name", None) or ""):
+            lines.append(f"[{vnum:5d}] {getattr(mob, 'short_descr', None) or ''}")
 
     if not lines:
         return "No mobiles by that name."
 
-    return "\n".join(lines[:50])  # Limit output
+    return "\n".join(lines)
 
 
 def do_ofind(char: Character, args: str) -> str:
@@ -127,23 +129,24 @@ def do_ofind(char: Character, args: str) -> str:
     if not args or not args.strip():
         return "Find what?"
 
-    search_name = args.strip().lower()
+    search_name = args.strip()
 
-    from mud import registry
+    # mirroring ROM src/act_wiz.c:1835-1882 — walk every object prototype
+    # ascending by vnum, matching is_name(argument, pObjIndex->name).
+    # INV-046 family 3: the old code read the phantom registry.obj_prototypes
+    # (AttributeError in production — the real dict is obj_registry).
+    from mud.registry import obj_registry
+    from mud.world.char_find import is_name
 
     lines = []
-    for vnum, obj in sorted(registry.obj_prototypes.items()):
-        obj_name = (getattr(obj, "name", None) or "").lower()
-        short_desc = (getattr(obj, "short_descr", None) or "").lower()
-
-        if search_name in obj_name or search_name in short_desc:
-            display_name = getattr(obj, "short_descr", obj_name)
-            lines.append(f"[{vnum:5d}] {display_name}")
+    for vnum, obj in sorted(obj_registry.items()):
+        if is_name(search_name, getattr(obj, "name", None) or ""):
+            lines.append(f"[{vnum:5d}] {getattr(obj, 'short_descr', None) or ''}")
 
     if not lines:
         return "No objects by that name."
 
-    return "\n".join(lines[:50])  # Limit output
+    return "\n".join(lines)
 
 
 def do_slookup(char: Character, args: str) -> str:
@@ -381,8 +384,12 @@ def do_memory(char: Character, args: str) -> str:
     # Count various entities
     num_areas = len(getattr(registry, "areas", []))
     num_rooms = len(getattr(registry, "rooms", {}))
-    num_mobs = len(getattr(registry, "mob_prototypes", {}))
-    num_objs = len(getattr(registry, "obj_prototypes", {}))
+    # mirroring ROM src/db.c:3305,3309 — "Mobs"/"Objs" print top_mob_index/
+    # top_obj_index, the prototype-table sizes. INV-046 family 3: the old code
+    # read phantom registry.mob_prototypes/obj_prototypes (real names are
+    # mob_registry/obj_registry), printing 0 in production.
+    num_mobs = len(registry.mob_registry)
+    num_objs = len(registry.obj_registry)
     num_helps = len(getattr(registry, "helps", {}))
     num_socials = len(getattr(registry, "social_registry", {}).socials if hasattr(registry, "social_registry") else {})
     # mirroring ROM src/db.c:3307 — "(in use)" prints mobile_count, the number
