@@ -609,9 +609,6 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
         dt=attack_dt,
     )
 
-    # Apply damage reduction modifiers (sanctuary, protection, drunk) following C src/fight.c:damage logic
-    damage = apply_damage_reduction(attacker, victim, damage)
-
     # Invoke any on-hit effects with scaled damage (can be monkeypatched in tests).
     on_hit_effects(attacker, victim, damage)
 
@@ -676,6 +673,10 @@ def apply_damage(
         # mirroring ROM src/fight.c:725-733 — damage() re-checks is_safe at entry
         if is_safe(attacker, victim):
             return ""
+
+    # mirroring ROM src/fight.c:775-785 — damage modifiers applied inside damage() for all callers
+    # (drunk, sanctuary, protection) — must come after is_safe and before parry/dodge.
+    damage = apply_damage_reduction(attacker, victim, damage)
 
     # Set up fighting state BEFORE defense checks (ROM parity: src/fight.c:damage sets fighting before parry/dodge)
     if victim != attacker:

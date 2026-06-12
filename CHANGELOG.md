@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.4] — 2026-06-11
+
+### Fixed
+
+- **FIGHT-058 spell/skill damage bypasses drunk/sanctuary/protection reductions** —
+  ROM `src/fight.c:775-785` applies all three damage modifiers inside `damage()` for every
+  caller: drunk PC takes 9/10 damage, sanctuary-buffed victim takes half damage, and
+  protect_evil/good alignment checks reduce damage by 1/4. Python factored
+  `apply_damage_reduction` into a helper only called from `one_hit` (the melee weapon path),
+  so every spell handler (`fireball`, `flamestrike`, `earthquake`, `energy_drain`,
+  `chain_lightning`, `lightning_bolt`, `magic_missile`, `ray_of_truth`, `cause_*`, etc.) that
+  calls `apply_damage` directly bypassed all three reductions. Moved the reduction call into
+  `apply_damage` (after `is_safe`, before parry/dodge — matching ROM fight.c:775-785 vs
+  fight.c:793-801) and removed the pre-call from `one_hit` to prevent double-reduction on
+  the melee path. All 25+ `apply_damage` callers now get correct reductions automatically.
+
 ## [2.14.3] — 2026-06-11
 
 ### Fixed
