@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.14] — 2026-06-12
+
+### Fixed
+
+- **LOOK-006 — `do_look` dark gate missing the PLR_HOLYLIGHT conjunct** — ROM's pitch-black
+  gate (`src/act_info.c:1068-1069`) is `!IS_NPC && !IS_SET(act, PLR_HOLYLIGHT) && room_is_dark`;
+  the port gated only on `!IS_NPC && room_is_dark` (a stale `TODO: Add PLR_HOLYLIGHT check`
+  comment sat where the conjunct belonged, even though `PlayerFlag.HOLYLIGHT` has existed in
+  constants all along), so holylight immortals in dark rooms wrongly got "It is pitch black ...".
+  The audit doc had marked the dark gate ✅ FIXED while quoting the very ROM line containing the
+  missing flag (stale-✅ class). Python: `mud/world/look.py` (`look`).
+  Test: `tests/integration/test_look_holylight_rom_parity.py::TestDarkGateHolylight`.
+
 ## [2.14.13] — 2026-06-12
 
 ### Fixed

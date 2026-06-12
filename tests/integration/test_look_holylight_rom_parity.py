@@ -109,3 +109,30 @@ class TestCheckBlindHolylight:
         char.add_affect(AffectFlag.BLIND)
 
         assert do_look(char, "") == "You can't see a thing!"
+
+
+class TestDarkGateHolylight:
+    """LOOK-006 — do_look dark gate PLR_HOLYLIGHT bypass (src/act_info.c:1068-1069)."""
+
+    def test_holylight_pc_sees_full_room_in_dark(self) -> None:
+        # mirrors ROM src/act_info.c:1068-1069 — the pitch-black gate is
+        # !IS_NPC && !IS_SET(act, PLR_HOLYLIGHT) && room_is_dark, so a
+        # holylight character gets the normal room view in a dark room.
+        room = _dark_room()
+        char = _pc(room, act=int(PlayerFlag.HOLYLIGHT))
+
+        output = do_look(char, "")
+
+        assert "It is pitch black" not in output
+        assert "Dark Cave" in output
+        assert "A pitch-black cave." in output
+
+    def test_mortal_pc_gets_pitch_black_in_dark(self) -> None:
+        # regression guard — without PLR_HOLYLIGHT the gate still fires
+        # (src/act_info.c:1070-1073).
+        room = _dark_room()
+        char = _pc(room)
+
+        output = do_look(char, "")
+
+        assert "It is pitch black" in output

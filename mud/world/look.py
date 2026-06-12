@@ -118,11 +118,17 @@ def look(char: Character, args: str = "") -> str:
         return "You can't see a thing!"
 
     # Check dark room - ROM src/act_info.c lines 1068-1074
+    from mud.models.constants import PlayerFlag
     from mud.world.vision import room_is_dark
 
     is_npc = getattr(char, "is_npc", False)
-    # TODO: Add PLR_HOLYLIGHT check when PlayerFlag is accessible
-    if not is_npc and room_is_dark(room):
+    # mirroring ROM src/act_info.c:1068-1069 — the gate is
+    # !IS_NPC && !IS_SET(ch->act, PLR_HOLYLIGHT) && room_is_dark (LOOK-006).
+    try:
+        has_holylight = bool(int(getattr(char, "act", 0) or 0) & int(PlayerFlag.HOLYLIGHT))
+    except (TypeError, ValueError):
+        has_holylight = False
+    if not is_npc and not has_holylight and room_is_dark(room):
         lines = ["It is pitch black ..."]
         for occupant in room.people:
             if occupant is char:

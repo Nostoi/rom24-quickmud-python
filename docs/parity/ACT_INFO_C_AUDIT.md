@@ -456,13 +456,14 @@ act_info.c is **100% complete** when:
    - **Fix**: Added dark room check in `mud/world/look.py:47-64`
    - **Impact**: Dark rooms now show "It is pitch black ..." message while still displaying characters (infravision equivalent)
    - **Test Coverage**: ✅ Verified in look integration tests
-   - **LOOK-006** 🔄 OPEN (filed 2026-06-12): the fix dropped the
+   - **LOOK-006** ✅ FIXED (2026-06-12, 2.14.14): the fix dropped the
      `!IS_SET(ch->act, PLR_HOLYLIGHT)` conjunct quoted in the ROM C above —
-     `mud/world/look.py` gates only on `not is_npc and room_is_dark(room)`
+     `mud/world/look.py` gated only on `not is_npc and room_is_dark(room)`
      (stale `TODO: Add PLR_HOLYLIGHT check` comment), so a holylight
-     immortal in a dark room wrongly gets "It is pitch black ..." instead
+     immortal in a dark room wrongly got "It is pitch black ..." instead
      of the full room view. ROM C: src/act_info.c:1068-1069. Python:
-     `mud/world/look.py` (`look`, dark gate).
+     `mud/world/look.py` (`look`, dark gate). Test:
+     `tests/integration/test_look_holylight_rom_parity.py::TestDarkGateHolylight`.
 
 **IMPORTANT Gaps** (P1 - SHOULD FIX):
 
