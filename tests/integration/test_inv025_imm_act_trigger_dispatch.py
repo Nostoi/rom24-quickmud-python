@@ -31,20 +31,11 @@ from mud.registry import room_registry
 
 @pytest.fixture(autouse=True)
 def _cleanup():
-    from mud import registry
-
     snapshot = list(character_registry)
     character_registry.clear()
-    prev_char_list = list(getattr(registry, "char_list", []))
-    prev_players = dict(getattr(registry, "players", {})) if hasattr(registry, "players") else {}
-    # Ensure registry has char_list and players
-    registry.char_list = []
-    registry.players = {}
     yield
     character_registry.clear()
     character_registry.extend(snapshot)
-    registry.char_list = prev_char_list
-    registry.players = prev_players
     room_registry.pop(9800, None)
     room_registry.pop(9801, None)
 
@@ -72,8 +63,6 @@ def _make_room(vnum: int = 9800, name: str = "Test Room") -> Room:
 
 
 def _make_imm(room: Room, name: str = "Immortal", trust: int = 60) -> Character:
-    from mud import registry
-
     imm = Character(
         name=name,
         is_npc=False,
@@ -89,14 +78,10 @@ def _make_imm(room: Room, name: str = "Immortal", trust: int = 60) -> Character:
     imm.pcdata = PCData()
     room.people.append(imm)
     character_registry.append(imm)
-    registry.char_list.append(imm)
-    registry.players[name.lower()] = imm
     return imm
 
 
 def _make_pc(room: Room, name: str = "Victim") -> Character:
-    from mud import registry
-
     pc = Character(
         name=name,
         is_npc=False,
@@ -111,13 +96,10 @@ def _make_pc(room: Room, name: str = "Victim") -> Character:
     pc.pcdata = PCData()
     room.people.append(pc)
     character_registry.append(pc)
-    registry.char_list.append(pc)
-    registry.players[name.lower()] = pc
     return pc
 
 
 def _make_listener(room: Room, phrase: str, vnum: int = 9801, name: str | None = None) -> Character:
-    from mud import registry
     from mud.mobprog import Trigger
 
     listener = Character(
@@ -143,7 +125,6 @@ def _make_listener(room: Room, phrase: str, vnum: int = 9801, name: str | None =
     listener.prototype = proto
     room.people.append(listener)
     character_registry.append(listener)
-    registry.char_list.append(listener)
     return listener
 
 
@@ -204,7 +185,6 @@ def test_transfer_vict_fires_act_trigger_on_npc_victim():
     new_room = _make_room(9801, "New Room")
     imm = _make_imm(old_room)
 
-    from mud import registry
     from mud.mobprog import Trigger
 
     victim = Character(
@@ -230,7 +210,6 @@ def test_transfer_vict_fires_act_trigger_on_npc_victim():
     victim.prototype = proto
     old_room.people.append(victim)
     character_registry.append(victim)
-    registry.char_list.append(victim)
 
     fired = _recorded_act_triggers(lambda: do_transfer(imm, f"target_npc {new_room.vnum}"))
 

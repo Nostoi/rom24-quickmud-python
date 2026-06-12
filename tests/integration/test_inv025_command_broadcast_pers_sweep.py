@@ -41,21 +41,15 @@ def _cleanup():
 
     snapshot = list(character_registry)
     character_registry.clear()
-    prev_char_list = list(getattr(registry, "char_list", []))
-    prev_players = dict(getattr(registry, "players", {})) if hasattr(registry, "players") else {}
     mob_registry = getattr(registry, "mob_registry", {})
     obj_registry = getattr(registry, "obj_registry", {})
     prev_mob_registry = dict(mob_registry)
     prev_obj_registry = dict(obj_registry)
-    registry.char_list = []
-    registry.players = {}
     mob_registry.clear()
     obj_registry.clear()
     yield
     character_registry.clear()
     character_registry.extend(snapshot)
-    registry.char_list = prev_char_list
-    registry.players = prev_players
     mob_registry.clear()
     mob_registry.update(prev_mob_registry)
     obj_registry.clear()
@@ -73,8 +67,6 @@ def _room() -> Room:
 
 
 def _actor(room: Room, *, invisible: bool, trust: int = 60) -> Character:
-    from mud import registry
-
     ch = Character(
         name="Glark",
         is_npc=False,
@@ -92,27 +84,20 @@ def _actor(room: Room, *, invisible: bool, trust: int = 60) -> Character:
     ch.condition = ch.pcdata.condition
     room.people.append(ch)
     character_registry.append(ch)
-    registry.char_list.append(ch)
-    registry.players["glark"] = ch
     if invisible:
         ch.add_affect(AffectFlag.INVISIBLE)
     return ch
 
 
 def _witness(room: Room) -> Character:
-    from mud import registry
-
     w = Character(name="Witness", is_npc=False, level=18, room=room, position=int(Position.STANDING))
     w.messages = []
     room.people.append(w)
     character_registry.append(w)
-    registry.char_list.append(w)
     return w
 
 
 def _npc(room: Room, name: str, *, vnum: int = 9710) -> Character:
-    from mud import registry
-
     npc = Character(
         name=name,
         is_npc=True,
@@ -126,7 +111,6 @@ def _npc(room: Room, name: str, *, vnum: int = 9710) -> Character:
     npc.short_descr = name.replace("_", " ")
     room.people.append(npc)
     character_registry.append(npc)
-    registry.char_list.append(npc)
     return npc
 
 

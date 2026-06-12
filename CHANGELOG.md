@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.19] — 2026-06-12
+
+### Added
+
+- **INV-046 Layer-A grep-guard** — new `tests/test_phantom_registry_convention.py` forbids the
+  phantom `registry.char_list`/`registry.players` attribute pattern on BOTH sides of the feedback
+  loop that produced the bug class: no reads under `mud/` (production walks must use
+  `character_registry`/`registry.descriptor_list`) and no injections under `tests/` (a test that
+  fabricates the phantom attributes lets new code "pass" against a structure the live game never
+  populates). Same scanner shape as `test_equipment_key_convention.py`.
+
+### Changed
+
+- Cleaned all ~60 phantom `registry.char_list`/`registry.players` injection sites out of 10 test
+  files (`test_act_wiz_command_parity.py`, the four `test_inv025_*_dispatch.py` files,
+  `test_inv025_command_broadcast_pers_sweep.py`, `test_flag_command_parity.py`,
+  `test_inv029_act_first_letter_cap.py`, `test_order_broadcasts.py`, `test_purge_broadcasts.py`) —
+  the fixtures and helpers now populate only the real `character_registry` (and the legitimate
+  lazily-attached `registry.descriptor_list`). No behavior change; the full suite stays green,
+  proving the injections were dead weight after the 2.14.18 walk rewrites.
+
 ## [2.14.18] — 2026-06-12
 
 ### Fixed

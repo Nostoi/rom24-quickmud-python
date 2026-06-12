@@ -19,24 +19,12 @@ from mud.world import create_test_character
 def _clean_act_wiz_state():
     original_rooms = set(room_registry)
     original_char_ids = {id(char) for char in character_registry}
-    original_players = getattr(global_registry, "players", None)
-    original_char_list = getattr(global_registry, "char_list", None)
     original_descriptor_list = getattr(global_registry, "descriptor_list", None)
     yield
     for vnum in list(room_registry):
         if vnum not in original_rooms:
             room_registry.pop(vnum, None)
     character_registry[:] = [char for char in character_registry if id(char) in original_char_ids]
-    if original_players is None:
-        if hasattr(global_registry, "players"):
-            delattr(global_registry, "players")
-    else:
-        global_registry.players = original_players
-    if original_char_list is None:
-        if hasattr(global_registry, "char_list"):
-            delattr(global_registry, "char_list")
-    else:
-        global_registry.char_list = original_char_list
     if original_descriptor_list is None:
         if hasattr(global_registry, "descriptor_list"):
             delattr(global_registry, "descriptor_list")
@@ -54,19 +42,6 @@ def _imm(name: str, room_vnum: int, *, trust: int = 60):
     char = create_test_character(name, room_vnum)
     char.level = trust
     char.trust = trust
-    players = getattr(global_registry, "players", None)
-    if players is None:
-        global_registry.players = {}
-        players = global_registry.players
-    players[char.name.lower()] = char
-
-    char_list = getattr(global_registry, "char_list", None)
-    if char_list is None:
-        global_registry.char_list = []
-        char_list = global_registry.char_list
-    if char not in char_list:
-        char_list.append(char)
-
     if not hasattr(global_registry, "descriptor_list"):
         global_registry.descriptor_list = []
     return char
@@ -163,14 +138,12 @@ def test_log_rejects_npc() -> None:
     npc.act = int(ActFlag.IS_NPC)
     room.people.append(npc)
     character_registry.append(npc)
-    global_registry.char_list.append(npc)
 
     result = cmd_log(admin, "guard")
     assert result == "Not on NPC's.\n\r"
 
     character_registry.remove(npc)
     room.people.remove(npc)
-    global_registry.char_list.remove(npc)
 
 
 def test_log_all_toggles_global_flag() -> None:
@@ -323,11 +296,6 @@ def test_stat_mob_dispatches_to_mstat() -> None:
     mob = create_test_character("test mob", room.vnum)
     mob.is_npc = True
     mob.short_descr = "a test mob"
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if mob not in global_registry.char_list:
-        global_registry.char_list.append(mob)
-
     admin = _imm("Admin", room.vnum, trust=60)
 
     result = do_stat(admin, "mob test mob")
@@ -462,11 +430,6 @@ def test_mstat_shows_character_info() -> None:
     mob.damroll = 5
     mob.saving_throw = 0
     mob.armor = [20, 15, 10, 5]
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if mob not in global_registry.char_list:
-        global_registry.char_list.append(mob)
-
     admin = _imm("Admin", room.vnum, trust=60)
 
     result = do_mstat(admin, "stat mob target")
@@ -510,11 +473,6 @@ def test_mstat_practices_uses_caller_npc_not_victim() -> None:
     pc = _imm("PCTarget", room.vnum, trust=5)
     pc.is_npc = False
     pc.practice = 7
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if pc not in global_registry.char_list:
-        global_registry.char_list.append(pc)
-
     admin = _imm("Admin", room.vnum, trust=60)
     result = do_mstat(admin, "PCTarget")
     assert "Practices: 7" in result
@@ -529,11 +487,6 @@ def test_mstat_uses_get_hitroll_and_get_damroll() -> None:
     mob.is_npc = True
     mob.hitroll = 5
     mob.damroll = 3
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if mob not in global_registry.char_list:
-        global_registry.char_list.append(mob)
-
     admin = _imm("Admin", room.vnum, trust=60)
     result = do_mstat(admin, "hitdam mob")
     assert "Hit:" in result
@@ -559,11 +512,6 @@ def test_mstat_age_played_last_level_computed() -> None:
     pc.logon = time.time() - 3600
     pc.pcdata.last_level = 12
     pc.timer = 5
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if pc not in global_registry.char_list:
-        global_registry.char_list.append(pc)
-
     admin = _imm("Admin", room.vnum, trust=60)
     result = do_mstat(admin, "AgeTarget")
     assert "Age:" in result
@@ -587,11 +535,6 @@ def test_mstat_carry_weight_uses_get_carry_weight() -> None:
     pc.carry_weight = 150
     pc.silver = 100
     pc.gold = 25
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if pc not in global_registry.char_list:
-        global_registry.char_list.append(pc)
-
     admin = _imm("Admin", room.vnum, trust=60)
     result = do_mstat(admin, "WeightTarget")
     assert "Carry number:" in result
@@ -729,11 +672,6 @@ def test_noshout_rejects_npc() -> None:
     admin = _imm("Admin", room.vnum, trust=60)
     mob = create_test_character("test guard", room.vnum)
     mob.is_npc = True
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if mob not in global_registry.char_list:
-        global_registry.char_list.append(mob)
-
     result = do_noshout(admin, "test guard")
     assert "Not on NPC" in result
 
@@ -794,11 +732,6 @@ def test_pardon_rejects_npc() -> None:
     admin = _imm("Admin", room.vnum, trust=60)
     mob = create_test_character("test mob", room.vnum)
     mob.is_npc = True
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if mob not in global_registry.char_list:
-        global_registry.char_list.append(mob)
-
     result = do_pardon(admin, "test mob killer")
     assert "Not on NPC" in result
 
@@ -829,11 +762,6 @@ def test_freeze_rejects_npc() -> None:
     admin = _imm("Admin", room.vnum, trust=60)
     mob = create_test_character("test mob", room.vnum)
     mob.is_npc = True
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if mob not in global_registry.char_list:
-        global_registry.char_list.append(mob)
-
     result = do_freeze(admin, "test mob")
     assert "Not on NPC" in result
 
@@ -853,11 +781,6 @@ def test_peace_stops_fighting_and_removes_aggressive() -> None:
     mob.act = int(getattr(mob, "act", 0)) | int(ActFlag.AGGRESSIVE)
     mob.fighting = admin
     admin.fighting = mob
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if mob not in global_registry.char_list:
-        global_registry.char_list.append(mob)
-
     result = do_peace(admin, "")
     assert "Ok" in result
     assert getattr(mob, "fighting", None) is None
@@ -1150,11 +1073,6 @@ def test_deny_rejects_npc() -> None:
     admin = _imm("Admin", 10002, trust=60)
     mob = create_test_character("denyvictim", room.vnum)
     mob.is_npc = True
-    if not hasattr(global_registry, "char_list"):
-        global_registry.char_list = []
-    if mob not in global_registry.char_list:
-        global_registry.char_list.append(mob)
-
     result = cmd_deny(admin, "denyvictim")
     assert "Not on NPC" in result
 

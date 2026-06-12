@@ -181,8 +181,8 @@ def _die_follower(char: Character) -> None:
 
     Delegates to the canonical ``mud.characters.follow.die_follower``
     (mirroring ROM src/act_comm.c:1658-1680, a char_list walk). INV-046: the
-    old duplicate walked the phantom ``registry.char_list`` plus the same
-    room only, leaving cross-room followers attached.
+    old duplicate walked a phantom registry attribute plus the same room
+    only, leaving cross-room followers attached.
     """
     from mud.characters.follow import die_follower
 

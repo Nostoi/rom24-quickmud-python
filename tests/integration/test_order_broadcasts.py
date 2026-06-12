@@ -31,9 +31,8 @@ def _clean_state():
         if vnum not in rooms:
             room_registry.pop(vnum, None)
     character_registry[:] = [c for c in character_registry if id(c) in char_ids]
-    for attr in ("players", "char_list", "descriptor_list"):
-        if hasattr(global_registry, attr):
-            delattr(global_registry, attr)
+    if hasattr(global_registry, "descriptor_list"):
+        delattr(global_registry, "descriptor_list")
 
 
 def _room(vnum: int) -> Room:
@@ -52,11 +51,6 @@ def _charmed_follower(name: str, room: Room, master: Character) -> Character:
     follower.messages = []
     room.people.append(follower)
     character_registry.append(follower)
-    char_list = getattr(global_registry, "char_list", None)
-    if char_list is None:
-        global_registry.char_list = []
-        char_list = global_registry.char_list
-    char_list.append(follower)
     return follower
 
 

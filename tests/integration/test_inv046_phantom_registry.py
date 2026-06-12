@@ -3,9 +3,9 @@
 ROM has exactly ONE live-character list: ``src/handler.c:2222-2243`` get_char_world
 (room-first, then the char_list walk gated on can_see + is_name) and
 ``src/handler.c:2194-2213`` get_char_room. ``mud/commands/imm_commands.py`` shipped
-a divergent duplicate pair that scanned ``getattr(registry, "char_list", [])`` /
-``getattr(registry, "players", {})`` — attributes that do not exist on
-``mud/registry.py`` in production; only the test suite injected them. Every
+a divergent duplicate pair that scanned phantom registry attributes — names
+that do not exist on ``mud/registry.py`` in production (see the guard test
+``tests/test_phantom_registry_convention.py``); only the test suite injected them. Every
 production immortal world-by-name lookup (notell/freeze/transfer/force/…)
 therefore resolved nothing and answered "They aren't here." for live targets.
 

@@ -24,21 +24,15 @@ def _cleanup():
 
     snapshot = list(character_registry)
     character_registry.clear()
-    prev_char_list = list(getattr(registry, "char_list", []))
-    prev_players = dict(getattr(registry, "players", {})) if hasattr(registry, "players") else {}
     mob_registry = getattr(registry, "mob_registry", {})
     obj_registry = getattr(registry, "obj_registry", {})
     prev_mob_registry = dict(mob_registry)
     prev_obj_registry = dict(obj_registry)
-    registry.char_list = []
-    registry.players = {}
     mob_registry.clear()
     obj_registry.clear()
     yield
     character_registry.clear()
     character_registry.extend(snapshot)
-    registry.char_list = prev_char_list
-    registry.players = prev_players
     mob_registry.clear()
     mob_registry.update(prev_mob_registry)
     obj_registry.clear()
@@ -67,8 +61,6 @@ def _make_room(vnum: int = 9900) -> Room:
 
 
 def _make_imm(room: Room, name: str = "Immortal", trust: int = 60) -> Character:
-    from mud import registry
-
     imm = Character(
         name=name,
         is_npc=False,
@@ -84,13 +76,10 @@ def _make_imm(room: Room, name: str = "Immortal", trust: int = 60) -> Character:
     imm.pcdata = PCData()
     room.people.append(imm)
     character_registry.append(imm)
-    registry.char_list.append(imm)
-    registry.players[name.lower()] = imm
     return imm
 
 
 def _make_npc(room: Room, name: str, *, phrase: str | None = None, vnum: int = 9901) -> Character:
-    from mud import registry
     from mud.mobprog import Trigger
 
     npc = Character(
@@ -117,7 +106,6 @@ def _make_npc(room: Room, name: str, *, phrase: str | None = None, vnum: int = 9
     npc.prototype = proto
     room.people.append(npc)
     character_registry.append(npc)
-    registry.char_list.append(npc)
     return npc
 
 

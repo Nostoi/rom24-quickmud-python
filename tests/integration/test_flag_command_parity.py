@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import pytest
 
-from mud import registry as global_registry
 from mud.commands.remaining_rom import do_flag
 from mud.models.character import character_registry
 from mud.models.constants import (
@@ -27,17 +26,11 @@ from mud.world import create_test_character
 def _clean_flag_state():
     original_rooms = set(room_registry)
     original_char_ids = {id(char) for char in character_registry}
-    original_players = getattr(global_registry, "players", None)
     yield
     for vnum in list(room_registry):
         if vnum not in original_rooms:
             room_registry.pop(vnum, None)
     character_registry[:] = [char for char in character_registry if id(char) in original_char_ids]
-    if original_players is None:
-        if hasattr(global_registry, "players"):
-            delattr(global_registry, "players")
-    else:
-        global_registry.players = original_players
 
 
 def _room(vnum: int) -> Room:
@@ -50,22 +43,11 @@ def _imm(name: str, room_vnum: int):
     char = create_test_character(name, room_vnum)
     char.level = 60
     char.trust = 60
-    players = getattr(global_registry, "players", None)
-    if players is None:
-        global_registry.players = {}
-        players = global_registry.players
-    players[char.name] = char
     return char
 
 
 def _pc(name: str, room_vnum: int):
-    char = create_test_character(name, room_vnum)
-    players = getattr(global_registry, "players", None)
-    if players is None:
-        global_registry.players = {}
-        players = global_registry.players
-    players[char.name] = char
-    return char
+    return create_test_character(name, room_vnum)
 
 
 def test_flag_char_plr_add_sets_player_flag_bit():

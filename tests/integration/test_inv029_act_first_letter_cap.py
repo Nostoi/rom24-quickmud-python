@@ -42,24 +42,17 @@ from mud.world import create_test_character
 def _clean_state():
     original_rooms = set(room_registry)
     original_char_ids = {id(c) for c in character_registry}
-    original_players = getattr(global_registry, "players", None)
-    original_char_list = getattr(global_registry, "char_list", None)
     original_descriptor_list = getattr(global_registry, "descriptor_list", None)
     yield
     for vnum in list(room_registry):
         if vnum not in original_rooms:
             room_registry.pop(vnum, None)
     character_registry[:] = [c for c in character_registry if id(c) in original_char_ids]
-    for attr, original in (
-        ("players", original_players),
-        ("char_list", original_char_list),
-        ("descriptor_list", original_descriptor_list),
-    ):
-        if original is None:
-            if hasattr(global_registry, attr):
-                delattr(global_registry, attr)
-        else:
-            setattr(global_registry, attr, original)
+    if original_descriptor_list is None:
+        if hasattr(global_registry, "descriptor_list"):
+            delattr(global_registry, "descriptor_list")
+    else:
+        global_registry.descriptor_list = original_descriptor_list
 
 
 def _room(vnum: int, *, name: str | None = None) -> Room:
@@ -73,17 +66,6 @@ def _imm(name: str, room_vnum: int, *, trust: int = 60):
     char = create_test_character(name, room_vnum)
     char.level = trust
     char.trust = trust
-    players = getattr(global_registry, "players", None)
-    if players is None:
-        global_registry.players = {}
-        players = global_registry.players
-    players[char.name.lower()] = char
-    char_list = getattr(global_registry, "char_list", None)
-    if char_list is None:
-        global_registry.char_list = []
-        char_list = global_registry.char_list
-    if char not in char_list:
-        char_list.append(char)
     if not hasattr(global_registry, "descriptor_list"):
         global_registry.descriptor_list = []
     return char

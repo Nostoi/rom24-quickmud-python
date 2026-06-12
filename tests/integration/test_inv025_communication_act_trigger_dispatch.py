@@ -23,19 +23,11 @@ from mud.registry import room_registry
 
 @pytest.fixture(autouse=True)
 def _cleanup():
-    from mud import registry
-
     snapshot = list(character_registry)
     character_registry.clear()
-    prev_char_list = list(getattr(registry, "char_list", []))
-    prev_players = dict(getattr(registry, "players", {})) if hasattr(registry, "players") else {}
-    registry.char_list = []
-    registry.players = {}
     yield
     character_registry.clear()
     character_registry.extend(snapshot)
-    registry.char_list = prev_char_list
-    registry.players = prev_players
     room_registry.pop(9800, None)
 
 
@@ -62,8 +54,6 @@ def _make_room() -> Room:
 
 
 def _make_pc(room: Room, name: str = "speaker") -> Character:
-    from mud import registry
-
     pc = Character(
         name=name,
         is_npc=False,
@@ -77,8 +67,6 @@ def _make_pc(room: Room, name: str = "speaker") -> Character:
     pc.equipment = {}
     room.people.append(pc)
     character_registry.append(pc)
-    registry.char_list.append(pc)
-    registry.players[name.lower()] = pc
     return pc
 
 
