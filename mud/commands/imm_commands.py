@@ -53,64 +53,15 @@ def find_location(char: Character, arg: str):
     return None
 
 
-def get_char_world(char: Character, name: str):
-    """Find a character anywhere in the world."""
-    from mud import registry
-
-    name_lower = name.lower()
-
-    # Handle numbered prefix (2.guard)
-    number = 1
-    if "." in name and name.split(".")[0].isdigit():
-        parts = name.split(".", 1)
-        number = int(parts[0])
-        name_lower = parts[1].lower()
-
-    count = 0
-
-    # Search all characters
-    for ch in getattr(registry, "char_list", []):
-        ch_name = (getattr(ch, "name", None) or "").lower()
-        if name_lower in ch_name or name_lower == ch_name:
-            count += 1
-            if count == number:
-                return ch
-
-    # Also check players
-    for player in getattr(registry, "players", {}).values():
-        p_name = (getattr(player, "name", None) or "").lower()
-        if name_lower in p_name or name_lower == p_name:
-            count += 1
-            if count == number:
-                return player
-
-    return None
-
-
-def get_char_room(char: Character, name: str):
-    """Find a character in the same room."""
-    room = getattr(char, "room", None)
-    if not room:
-        return None
-
-    name_lower = name.lower()
-
-    # Handle numbered prefix
-    number = 1
-    if "." in name and name.split(".")[0].isdigit():
-        parts = name.split(".", 1)
-        number = int(parts[0])
-        name_lower = parts[1].lower()
-
-    count = 0
-    for person in getattr(room, "people", []):
-        p_name = (getattr(person, "name", None) or "").lower()
-        if name_lower in p_name or name_lower == p_name:
-            count += 1
-            if count == number:
-                return person
-
-    return None
+# INV-046 (PHANTOM-REGISTRY): this module shipped a divergent duplicate
+# get_char_world/get_char_room pair that scanned `registry.char_list` /
+# `registry.players` — attributes that do not exist on mud/registry.py in
+# production (only tests injected them), so every immortal world-by-name
+# lookup silently resolved nothing. ROM has exactly ONE live-character list
+# and ONE lookup pair (src/handler.c:2194-2243, can_see + is_name gated);
+# all act_wiz commands resolve targets through it. Re-export the canonical
+# implementations (HANDLER-001..006-correct) for this module's many importers.
+from mud.world.char_find import get_char_room, get_char_world  # noqa: E402, F401
 
 
 def do_at(char: Character, args: str) -> str:

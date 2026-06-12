@@ -15,15 +15,23 @@ from __future__ import annotations
 
 import pytest
 
-from mud import registry as global_registry
 from mud.commands.imm_set import do_mset
-from mud.models.character import Character, PCData
+from mud.models.character import Character, PCData, character_registry
 from mud.models.constants import STAT_STR
 from mud.models.races import race_lookup
+from mud.models.room import Room
+from mud.registry import room_registry
 
 
 @pytest.fixture
 def setter_and_dwarf():
+    # INV-046: do_mset resolves its victim via the real get_char_world
+    # (src/handler.c:2222-2243), which walks character_registry and skips
+    # roomless chars — so both chars live in a registered room, not in the
+    # retired phantom `registry.char_list`.
+    room = Room(vnum=98765, name="Set Room", description="Set Room")
+    room_registry[room.vnum] = room
+
     setter = Character(name="Imm", level=60, trust=60, is_npc=False)
     setter.pcdata = PCData()
 
@@ -33,16 +41,18 @@ def setter_and_dwarf():
     dwarf.ch_class = 0  # mage — STR is non-prime, so its cap is the raw race max
     dwarf.perm_stat = [13, 13, 13, 13, 13]
 
-    original_char_list = getattr(global_registry, "char_list", None)
-    global_registry.char_list = [setter, dwarf]
+    for ch in (setter, dwarf):
+        room.add_character(ch)
+        character_registry.append(ch)
     try:
         yield setter, dwarf
     finally:
-        if original_char_list is None:
-            if hasattr(global_registry, "char_list"):
-                delattr(global_registry, "char_list")
-        else:
-            global_registry.char_list = original_char_list
+        for ch in (setter, dwarf):
+            if ch in room.people:
+                room.people.remove(ch)
+            if ch in character_registry:
+                character_registry.remove(ch)
+        room_registry.pop(room.vnum, None)
 
 
 def test_set_stat_uses_race_max_not_fallback(setter_and_dwarf):

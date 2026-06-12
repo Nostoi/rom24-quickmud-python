@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.17] — 2026-06-12
+
+### Fixed
+
+- **INV-046 family 1 — `imm_commands.py` shipped a divergent duplicate
+  `get_char_world`/`get_char_room` pair scanning phantom registry attributes** —
+  the duplicates read `getattr(registry, "char_list", [])` / `getattr(registry, "players", {})`,
+  attributes that do not exist on `mud/registry.py` in production (only tests injected them),
+  so every production immortal world-by-name lookup (notell/freeze/transfer/force/… — 25
+  direct callers across 8 importer modules) silently resolved nothing and answered "They
+  aren't here." for live targets. ROM has exactly ONE lookup pair (`src/handler.c:2194-2243`,
+  can_see + whole-word-prefix `is_name` gated, "self" keyword, roomless-skip); the module now
+  re-exports the canonical `mud.world.char_find` implementations. Filed **WIZ-051** (🔄 OPEN):
+  `find_location` is still missing ROM's `get_obj_world` fallback (`src/act_wiz.c:780-795`).
+  Test: `tests/integration/test_inv046_phantom_registry.py`.
+
 ## [2.14.16] — 2026-06-12
 
 ### Fixed

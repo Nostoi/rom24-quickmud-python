@@ -1318,6 +1318,7 @@ def test_guild_none_makes_clanless() -> None:
     # mirrors ROM src/act_wiz.c:217-222
     from mud.commands.remaining_rom import do_guild
 
+    _room(10603, name="GuildRoom")  # INV-046: real get_char_world skips roomless chars (src/handler.c:2236)
     admin = _imm("Admin", 10603)
     victim = _imm("GuildVictim", 10603, trust=10)
     victim.clan = 2
@@ -1334,6 +1335,7 @@ def test_guild_independent_clan_messages() -> None:
     from mud.commands.remaining_rom import do_guild
     from mud.models.clans import CLAN_TABLE
 
+    _room(10604, name="GuildRoom")  # INV-046: real get_char_world skips roomless chars (src/handler.c:2236)
     admin = _imm("Admin", 10604)
     victim = _imm("GuildVictim2", 10604, trust=10)
     victim.clan = 0
@@ -1350,6 +1352,7 @@ def test_guild_member_clan_messages() -> None:
     from mud.commands.remaining_rom import do_guild
     from mud.models.clans import CLAN_TABLE
 
+    _room(10605, name="GuildRoom")  # INV-046: real get_char_world skips roomless chars (src/handler.c:2236)
     admin = _imm("Admin", 10605)
     victim = _imm("GuildVictim3", 10605, trust=10)
     victim.clan = 0
@@ -1366,6 +1369,7 @@ def test_guild_no_such_clan() -> None:
     # mirrors ROM src/act_wiz.c:225-228
     from mud.commands.remaining_rom import do_guild
 
+    _room(10606, name="GuildRoom")  # INV-046: real get_char_world skips roomless chars (src/handler.c:2236)
     admin = _imm("Admin", 10606)
     victim = _imm("GuildVictim4", 10606, trust=10)
     result = do_guild(admin, f"{victim.name} bogusclan999")
