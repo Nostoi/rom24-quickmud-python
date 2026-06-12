@@ -211,6 +211,33 @@ def test_kill_blocks_charmed_player_attacking_master() -> None:
     assert master.fighting is None
 
 
+def test_apply_damage_charm_master_breaks_follow() -> None:
+    """ROM fight.c:756-757 — attacking your own charmed follower calls stop_follower(victim)."""
+    from unittest.mock import patch
+
+    from mud.combat.engine import apply_damage
+
+    initialize_world("area/area.lst")
+    attacker = create_test_character("Master", 3001)
+    victim = create_test_character("Pet", 3001)
+    victim.is_npc = True
+    victim.hit = 200
+    victim.max_hit = 200
+
+    # Make victim a charmed follower of attacker
+    victim.master = attacker
+    victim.leader = attacker
+    victim.add_affect(AffectFlag.CHARM)
+
+    with patch("mud.combat.engine.check_parry", return_value=False):
+        with patch("mud.combat.engine.check_dodge", return_value=False):
+            with patch("mud.combat.engine.check_shield_block", return_value=False):
+                apply_damage(attacker, victim, 10, int(DamageType.BASH))
+
+    # mirroring ROM src/fight.c:756-757 — stop_follower breaks the follow bond
+    assert victim.master is None, "stop_follower(victim) must be called when attacker is victim's master"
+
+
 def _load_kick_skill() -> None:
     skill_registry.skills.clear()
     skill_registry.handlers.clear()

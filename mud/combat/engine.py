@@ -692,6 +692,11 @@ def apply_damage(
             if attacker.fighting is None:
                 set_fighting(attacker, victim)
 
+        # mirroring ROM src/fight.c:756-757 — attacking your own charmed follower
+        # immediately breaks the follow relationship.
+        if getattr(victim, "master", None) is attacker:
+            stop_follower(victim)
+
     # Check for parry, dodge, and shield block following C src/fight.c:790-800.
     # These are checked AFTER hit determination but BEFORE damage application.
     # Order is critical: parry → dodge → shield_block.

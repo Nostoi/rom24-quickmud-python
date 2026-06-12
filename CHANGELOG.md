@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.5] — 2026-06-11
+
+### Fixed
+
+- **INV-044 charm-master attacks own pet does not break follow** —
+  ROM `src/fight.c:756-757` calls `stop_follower(victim)` inside `damage()` whenever
+  `victim->master == ch` (the attacker is the victim's controller). This immediately breaks
+  the charm/follow relationship when a PC attacks their own charmed pet. Python's
+  `apply_damage` was missing this check entirely, so a master attacking their charmed mob
+  would keep full control — the follow bond was never severed by the attack. Added
+  `if getattr(victim, "master", None) is attacker: stop_follower(victim)` in `apply_damage`
+  after the `set_fighting` block, matching ROM's exact position. Enforced by
+  `tests/test_combat.py::test_apply_damage_charm_master_breaks_follow`.
+
 ## [2.14.4] — 2026-06-11
 
 ### Fixed
