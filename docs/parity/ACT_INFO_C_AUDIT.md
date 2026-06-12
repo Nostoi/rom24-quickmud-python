@@ -119,7 +119,7 @@ See:
 | `show_char_to_char_0()` | 247-426 | ✅ `mud/world/look.py:_room_occupant_line` + `mud/world/vision.py:describe_character` | ✅ **LOOK-001 FIXED** (was falsely "100% PARITY") | **LOOK-001**: the `long_descr` branch (NPC at `position == start_pos` with non-empty long_descr is listed by its long_descr) was MISSING — `describe_character` only renders the PERS/brief path, so room lists showed the bare name. Row was marked "100% PARITY" on `do_look 9/9` smoke tests that never asserted NPC long_descr rendering. Found by the **differential harness (FINDING-001)**, fixed 2026-05-28: `MobInstance` now carries `long_descr` from its prototype (ROM `create_mobile`, src/db.c:2040) and `look.py:_room_occupant_line` implements the long_descr branch. Test: `tests/integration/test_look_long_descr_rom_parity.py`. **Related ✅ LOOK-002 FIXED (2026-05-28)**: `description` (look-AT-mob, `_look_char`/`show_char_to_char_1`) is now copied to `MobInstance` in `from_prototype` (ROM `create_mobile` copies it too), so `look <mob>` shows the mob description instead of "You see nothing special". Test: `tests/integration/test_look_long_descr_rom_parity.py::test_look_002_*`. |
 | `show_char_to_char_1()` | 428-512 | ✅ `mud/world/look.py:_look_char` (105-147) | ✅ **100% PARITY** | Detailed character examination (tested via do_examine 8/11) - See HELPER_FUNCTIONS_AUDIT.md |
 | `show_char_to_char()` | 514-540 | ✅ Inline in look.py | ✅ **100% PARITY** | Character list display (tested via do_look 9/9) - See HELPER_FUNCTIONS_AUDIT.md |
-| `check_blind()` | 542-556 | ✅ `mud/rom_api.py:check_blind` | ✅ **100% PARITY** | Blind check (exact match) - See HELPER_FUNCTIONS_AUDIT.md |
+| `check_blind()` | 542-556 | ✅ `mud/world/vision.py:check_blind` | ✅ **LOOK-005 FIXED** (was falsely "100% PARITY") | **LOOK-005**: the PLR_HOLYLIGHT bypass (`!IS_NPC && IS_SET(act, PLR_HOLYLIGHT)` returns TRUE *before* the AFF_BLIND test, src/act_info.c:544-545) was MISSING — a blind holylight immortal was wrongly blocked from `look`/`exits`. The row also pointed at `mud/rom_api.py`, a module that no longer exists; the real implementation is `mud/world/vision.py:check_blind`. `do_exits` additionally tested `AFF_BLIND` raw instead of calling `check_blind` (ROM src/act_info.c:1404), so it missed the bypass too. Both fixed 2026-06-12 (2.14.13). Test: `tests/integration/test_look_holylight_rom_parity.py::TestCheckBlindHolylight`. |
 
 ### Configuration Commands (18 functions)
 
@@ -452,10 +452,17 @@ act_info.c is **100% complete** when:
        return;
    }
    ```
-   - **Status**: ✅ **FIXED** (January 6, 2026)
+   - **Status**: ✅ **FIXED** (January 6, 2026) — ⚠️ **but incompletely**: see LOOK-006
    - **Fix**: Added dark room check in `mud/world/look.py:47-64`
    - **Impact**: Dark rooms now show "It is pitch black ..." message while still displaying characters (infravision equivalent)
    - **Test Coverage**: ✅ Verified in look integration tests
+   - **LOOK-006** 🔄 OPEN (filed 2026-06-12): the fix dropped the
+     `!IS_SET(ch->act, PLR_HOLYLIGHT)` conjunct quoted in the ROM C above —
+     `mud/world/look.py` gates only on `not is_npc and room_is_dark(room)`
+     (stale `TODO: Add PLR_HOLYLIGHT check` comment), so a holylight
+     immortal in a dark room wrongly gets "It is pitch black ..." instead
+     of the full room view. ROM C: src/act_info.c:1068-1069. Python:
+     `mud/world/look.py` (`look`, dark gate).
 
 **IMPORTANT Gaps** (P1 - SHOULD FIX):
 

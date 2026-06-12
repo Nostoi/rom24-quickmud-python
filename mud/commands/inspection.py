@@ -165,12 +165,13 @@ def do_exits(char: Character, args: str = "") -> str:
     rather than hiding them entirely. ROM C can_see_room() does NOT check darkness,
     only permission flags (handler.c lines 2590-2611).
     """
-    from mud.models.constants import EX_CLOSED, MAX_LEVEL, AffectFlag, RoomFlag
-    from mud.world.vision import room_is_dark
+    from mud.models.constants import EX_CLOSED, MAX_LEVEL, RoomFlag
+    from mud.world.vision import check_blind, room_is_dark
 
-    # ROM: check_blind - blind characters cannot see exits
-    # ROM C: if (IS_AFFECTED (ch, AFF_BLIND)) { send_to_char ("You can't see a thing!\n\r", ch); return FALSE; }
-    if char.has_affect(AffectFlag.BLIND):
+    # mirroring ROM src/act_info.c:1404 — do_exits gates on check_blind(),
+    # whose PLR_HOLYLIGHT bypass (src/act_info.c:544-545) lets blind
+    # holylight immortals still see exits (LOOK-005).
+    if not check_blind(char):
         return "You can't see a thing!"
 
     if not char.room:

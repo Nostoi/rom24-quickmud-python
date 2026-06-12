@@ -372,6 +372,16 @@ def check_blind(char: Character) -> bool:
 
     ROM parity: src/act_info.c:check_blind (line 542).
     """
+    # mirroring ROM src/act_info.c:544-545 — !IS_NPC && PLR_HOLYLIGHT
+    # short-circuits TRUE before AFF_BLIND is consulted (LOOK-005).  The
+    # !IS_NPC guard matters: ch->act holds ACT_* bits on NPCs.
+    if not getattr(char, "is_npc", False):
+        try:
+            if int(getattr(char, "act", 0) or 0) & int(PlayerFlag.HOLYLIGHT):
+                return True
+        except (TypeError, ValueError):
+            pass
+
     checker = getattr(char, "has_affect", None)
     if callable(checker):
         try:

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.13] — 2026-06-12
+
+### Fixed
+
+- **LOOK-005 — `check_blind` missing the PLR_HOLYLIGHT bypass** — ROM `check_blind`
+  (`src/act_info.c:544-545`) returns TRUE for a non-NPC with PLR_HOLYLIGHT *before* testing
+  AFF_BLIND, so blind holylight immortals still see; the Python port only tested AFF_BLIND.
+  `do_exits` additionally tested AFF_BLIND raw instead of calling `check_blind` (ROM
+  `src/act_info.c:1404`), missing the same bypass. The audit row had claimed "100% PARITY" at
+  `mud/rom_api.py:check_blind` — a module that no longer exists (stale-✅ class). Python:
+  `mud/world/vision.py:check_blind`, `mud/commands/inspection.py:do_exits`.
+  Test: `tests/integration/test_look_holylight_rom_parity.py::TestCheckBlindHolylight`.
+
 ## [2.14.12] — 2026-06-12
 
 ### Fixed
