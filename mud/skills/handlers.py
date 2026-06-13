@@ -2392,13 +2392,10 @@ def chill_touch(caster: Character, target: Character | None = None) -> int:
     else:
         room = getattr(target, "room", None)
         if room is not None:
-            target_name = getattr(target, "name", None) or "Someone"
-            message = f"{target_name} turns blue and shivers."
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is target:
-                    continue
-                # INV-001: single-channel delivery (push_message XOR).
-                _send_to_char(occupant, message)
+            # MAGIC-041: ROM act("$n turns blue and shivers.", victim, NULL, NULL,
+            # TO_ROOM) (magic.c:1417) — actor is the chilled victim, per-recipient
+            # PERS, excluded; INV-001 single-delivery + TRIG_ACT via act_to_room.
+            act_to_room(room, "$n turns blue and shivers.", target, exclude=target)
 
         effect = SpellEffect(
             name="chill touch",

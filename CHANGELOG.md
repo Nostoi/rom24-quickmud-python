@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.86] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-041 — chill_touch's "turns blue and shivers" room broadcast uses `$n`
+  PERS** — ROM `spell_chill_touch` (`src/magic.c:1417`) emits `act("$n turns blue
+  and shivers.", victim, …, TO_ROOM)` — the actor is the chilled victim, so `$n` =
+  PERS(victim), capitalized. The Python hand-rolled a room loop baking the keyword
+  `name`, so a bystander saw "goblin turns blue and shivers." vs ROM "A green goblin
+  …". Now uses `act_to_room` (per-recipient PERS + single-delivery + TRIG_ACT). Test:
+  `tests/integration/test_magic041_chill_touch_room_pers.py`.
+
 ## [2.14.85] — 2026-06-13
 
 ### Fixed
