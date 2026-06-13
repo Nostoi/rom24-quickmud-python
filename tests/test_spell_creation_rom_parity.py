@@ -401,7 +401,8 @@ def test_continual_light_adds_glow_flag_to_target_and_blocks_duplicate() -> None
 
     caster.messages.clear()
     assert continual_light(caster, amulet) is False
-    assert caster.messages[-1] == "a silver amulet is already glowing."
+    # MAGIC-026: ROM act("$p is already glowing.") caps buf[0].
+    assert caster.messages[-1] == "A silver amulet is already glowing."
 
 
 def test_continual_light_conjures_light_ball_value_cost_level_and_messages() -> None:

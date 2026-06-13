@@ -703,7 +703,8 @@ def test_fireproof_rejects_already_protected() -> None:
     obj = Object(instance_id=3, prototype=prototype, extra_flags=int(ExtraFlag.BURN_PROOF))
 
     assert skill_handlers.fireproof(caster, obj) is False
-    assert caster.messages[-1] == "ancient scroll is already protected from burning."
+    # MAGIC-026: ROM act("$p is already protected from burning.") caps buf[0].
+    assert caster.messages[-1] == "Ancient scroll is already protected from burning."
 
 
 def test_mass_invis_fades_group() -> None:

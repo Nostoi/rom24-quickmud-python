@@ -155,7 +155,8 @@ def test_poison_envenoms_weapon_and_messages(monkeypatch: pytest.MonkeyPatch) ->
 
     caster.messages.clear()
     assert skill_handlers.poison(caster, weapon) is False
-    assert caster.messages[-1] == "serrated dagger is already envenomed."
+    # MAGIC-026: ROM act("$p is already envenomed.") caps buf[0].
+    assert caster.messages[-1] == "Serrated dagger is already envenomed."
 
 
 def test_poison_rejects_protected_weapon() -> None:

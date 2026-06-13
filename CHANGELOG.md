@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.71] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-026 — object `$p` blocking lines capitalize buf[0]** — ROM renders the
+  already-affected object lines for `bless` (`src/magic.c:794`), `continual_light`
+  (`:1483`), `fireproof` (`:2770`), and `poison` (weapon branch `:3962`/`:3968`) as
+  `act("$p …", ch, obj, NULL, TO_CHAR)`, which capitalizes the first letter. The
+  Python baked a lowercase `_object_short_descr(obj)`, so blessing an
+  already-blessed "a glowing rune" showed "a glowing rune is already blessed." vs
+  ROM "A glowing rune is already blessed." All six sites now use
+  `capitalize_act_line(...)` (matching the same-function MAGIC-011 sibling leg).
+  Continues the MAGIC-022 batch. Test:
+  `tests/integration/test_magic026_object_p_capitalization.py`.
+
 ## [2.14.70] — 2026-06-13
 
 ### Fixed

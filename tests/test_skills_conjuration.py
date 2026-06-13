@@ -135,7 +135,8 @@ def test_continual_light_glows_object_in_inventory() -> None:
     assert glow_message in observer.messages
 
     assert continual_light(caster, amulet) is False
-    assert caster.messages[-1] == "a silver amulet is already glowing."
+    # MAGIC-026: ROM act("$p is already glowing.") caps buf[0].
+    assert caster.messages[-1] == "A silver amulet is already glowing."
 
 
 def test_continual_light_conjures_light_ball_in_room() -> None:

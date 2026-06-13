@@ -1513,9 +1513,11 @@ def bless(caster: Character, target: Character | Object | None = None) -> bool:
         obj = target
         extra_flags = _coerce_int(getattr(obj, "extra_flags", 0))
 
-        # ROM :792-795 — already blessed
+        # ROM :792-795 — already blessed. act("$p is already blessed.", ch, obj,
+        # NULL, TO_CHAR) caps buf[0] (MAGIC-026); the caster always sees the targeted
+        # object, so capitalize_act_line matches the MAGIC-011 sibling leg below.
         if extra_flags & int(ExtraFlag.BLESS):
-            _send_to_char(caster, f"{_object_short_descr(obj)} is already blessed.")
+            _send_to_char(caster, capitalize_act_line(f"{_object_short_descr(obj)} is already blessed."))
             return False
 
         # ROM :798-817 — evil object: try dispel
@@ -2526,7 +2528,8 @@ def continual_light(
 
         extra_flags = _coerce_int(getattr(target, "extra_flags", 0))
         if extra_flags & int(ExtraFlag.GLOW):
-            _send_to_char(caster, f"{_object_short_descr(target)} is already glowing.")
+            # ROM magic.c:1483 act("$p is already glowing.", ch, light, NULL, TO_CHAR) caps buf[0] (MAGIC-026).
+            _send_to_char(caster, capitalize_act_line(f"{_object_short_descr(target)} is already glowing."))
             return False
 
         target.extra_flags = extra_flags | int(ExtraFlag.GLOW)
@@ -4478,7 +4481,8 @@ def fireproof(caster: Character, target: Object | None = None) -> bool:
 
     extra_flags = _coerce_int(getattr(obj, "extra_flags", 0))
     if extra_flags & int(ExtraFlag.BURN_PROOF):
-        _send_to_char(caster, f"{_object_short_descr(obj)} is already protected from burning.")
+        # ROM magic.c:2770 act("$p is already protected from burning.", ch, obj, NULL, TO_CHAR) caps buf[0] (MAGIC-026).
+        _send_to_char(caster, capitalize_act_line(f"{_object_short_descr(obj)} is already protected from burning."))
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -6675,19 +6679,20 @@ def poison(
                 | WeaponFlag.VORPAL
                 | WeaponFlag.SHOCKING
             )
+            # ROM magic.c:3962/3968 — act("$p …", ch, obj, NULL, TO_CHAR) caps buf[0] (MAGIC-026).
             if weapon_flags & disallowed:
-                _send_to_char(caster, f"You can't seem to envenom {_object_short_descr(obj)}.")
+                _send_to_char(caster, capitalize_act_line(f"You can't seem to envenom {_object_short_descr(obj)}."))
                 return False
 
             base_flags = _coerce_int(getattr(obj, "extra_flags", 0))
             proto = getattr(obj, "prototype", None) or getattr(obj, "pIndexData", None)
             proto_flags = _coerce_int(getattr(proto, "extra_flags", 0)) if proto is not None else 0
             if (base_flags | proto_flags) & (int(ExtraFlag.BLESS) | int(ExtraFlag.BURN_PROOF)):
-                _send_to_char(caster, f"You can't seem to envenom {_object_short_descr(obj)}.")
+                _send_to_char(caster, capitalize_act_line(f"You can't seem to envenom {_object_short_descr(obj)}."))
                 return False
 
             if weapon_flags & int(WeaponFlag.POISON):
-                _send_to_char(caster, f"{_object_short_descr(obj)} is already envenomed.")
+                _send_to_char(caster, capitalize_act_line(f"{_object_short_descr(obj)} is already envenomed."))
                 return False
 
             level = max(int(getattr(caster, "level", 0) or 0), 0)

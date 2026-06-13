@@ -1,10 +1,21 @@
-# Session Status — 2026-06-13 — FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: FIGHT-065 — the `disarm` skill handler
+- **Last completed**: MAGIC-026 — six object `$p` blocking lines in
+  `mud/skills/handlers.py` (`bless`-object, `continual_light`, `fireproof`,
+  `poison` weapon branch ×3) now capitalize buf[0] via `capitalize_act_line(...)`,
+  matching ROM `act("$p …", ch, obj, NULL, TO_CHAR)` (`src/magic.c:794/1483/2770/3962/3968`).
+  Blessing an already-blessed "a glowing rune" now shows "A glowing rune is already
+  blessed." (was lowercase). Chose `capitalize_act_line` over `act_format("$p")` to
+  match the same-function MAGIC-011 sibling leg and avoid `can_see_object`-masking
+  fragility (the caster always sees a targeted object). Re-baselined two missed-caps
+  test assertions. **Follow-up filed (MAGIC-026 row):** the `envenom` skill's
+  dict-return `$p` paths (`handlers.py:~4139/4160`, ROM `do_envenom` act_obj.c:929)
+  have the same gap on a different delivery contract (v2.14.71). Before that:
+  FIGHT-065 — the `disarm` skill handler
   (`mud/skills/handlers.py:disarm`, the path `mob_hit`/`_mob_offensive_skill`
   dispatches) now emits ROM's **literal** "Your opponent is not wielding a weapon."
   when the victim is unarmed, instead of baking `_character_name(victim)`
@@ -323,8 +334,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.70 |
-| Tests | fight065 1/1, disarm cluster 13/13, full suite green 5737 passed / 4 skipped (v2.14.70) |
+| Version | 2.14.71 |
+| Tests | magic026 4/4, buffs+debuffs 43/43, full suite green 5741 passed / 4 skipped (v2.14.71) |
+| MAGIC-026 status | ✅ FIXED object `$p` cap (bless-obj/continual_light/fireproof/poison-weapon ×3); envenom-skill dict-return follow-up filed |
 | FIGHT-065 status | ✅ FIXED disarm no-weapon line uses ROM literal "Your opponent is not wielding a weapon." (was baked name) |
 | MAGIC-025 status | ✅ FIXED fly/infravision/pass_door (`$N` PERS short_descr, cap) |
 | MAGIC-024 status | ✅ FIXED giant_strength/haste (`$N`/`$E` PERS; sexless→"it") |
