@@ -1,4 +1,4 @@
-# Session Summary — 2026-06-13 — act()/PERS-rendering lens sweep (MAGIC-025..044, FIGHT-065/066, MOBCMD-020/021)
+# Session Summary — 2026-06-13 — act()/PERS-rendering lens sweep (MAGIC-025..044, FIGHT-065/066, MOBCMD-020/021, LOOK-007, FOLLOW-003)
 
 ## Scope
 
@@ -10,9 +10,9 @@ PERS masking, buf[0] capitalization) — systematically across **spell handlers 
 combat → commands → mob_cmds**, plus two spurious-output cases and a
 position-transition verification pass.
 
-Shipped **24 ROM-parity gaps**, each via failing-test-first → fix → green → audit
+Shipped **27 ROM-parity gaps**, each via failing-test-first → fix → green → audit
 row flip → CHANGELOG → version bump → commit → push → reindex. Suite grew 5733 →
-5778 passing; version 2.14.68 → 2.14.92.
+5782 passing; version 2.14.68 → 2.14.94.
 
 ## Outcomes
 
@@ -57,6 +57,22 @@ removed the invented "You …" self-variant, preserved ROM's literal "evil!." ty
 - All four ROM `act()` sites in `mob_cmds.c` now covered (mpecho already correct via
   `room.broadcast`; mpgecho/mpzecho correctly uncapped — ROM uses raw `send_to_char`).
 
+### act_info.c / act_comm.c broadcast sites
+
+- **LOOK-007** (`mud/world/look.py`) — looking at a character now broadcasts ROM
+  `show_char_to_char_1` (`act_info.c:438-446`): "$n looks at you." (TO_VICT) + "$n
+  looks at $N." (TO_NOTVICT) when looking at another, "$n looks at $mself." (TO_ROOM)
+  on a self-look, gated by `can_see(victim, ch)`. The Python emitted **nothing**
+  before — a genuine missing broadcast. (`do_report` REPORT-001 prior; `do_practice`
+  verified correct — baked skill name == ROM `$T`. act_info.c broadcast surface now
+  fully covered.)
+- **FOLLOW-003** (`mud/characters/follow.py`) — `add_follower`/`stop_follower`
+  master-facing "$n now/stops following you." (TO_VICT) now use `act_format` — `$n` =
+  PERS(follower) = NPC short_descr, capitalized. The Python baked
+  `_display_name(follower)` which returned the NPC keyword name uncapitalized
+  ("Goblin …" instead of "A green goblin …"). Re-baselined the pet-shop purchase
+  test.
+
 ## Verification findings (no code change — recorded to steer future work)
 
 - **act()-lens vein EXHAUSTED** across spell handlers, combat, commands, mob_cmds —
@@ -67,6 +83,15 @@ removed the invented "You …" self-variant, preserved ROM's literal "evil!." ty
 - **Position-transition messages + `update_pos` CONFIRMED ROM-faithful** — `update_pos`
   matches `fight.c:update_pos` line-for-line; the 4 position messages + HURT/BLEEDING
   default-case feedback match `damage()` `fight.c:835-869` exactly.
+- **update.c affect/decay message surface CONFIRMED CLEAN** — char-affect wear-off is
+  literal `send_to_char`; all `act()` sites (plague shivers, light goes-out, object
+  affect/decay `msg_obj`) already use `_act_to_room`/`capitalize_act_line` (INV-014).
+- **Mob memory / hunt NOT APPLICABLE** — this ROM 2.4b6 source has no `do_hunt`/
+  `do_track` command and no `hunting` field; mob aggression is `aggr_update`
+  (already audited GL-043/INV-045/INV-048).
+- **act()/PERS/cap/broadcast divergence class now comprehensively swept codebase-wide**
+  — spell handlers, combat, commands, mob_cmds, act_info.c, act_comm.c (follow),
+  update.c. The systematic baked-name/missing-cap vein is exhausted.
 
 ## Files Modified
 
@@ -83,16 +108,18 @@ removed the invented "You …" self-variant, preserved ROM's literal "evil!." ty
 
 ## Test Status
 
-- Full suite: **5778 passed / 4 skipped** (v2.14.92).
+- Full suite: **5782 passed / 4 skipped** (v2.14.94).
 - Each gap verified RED→GREEN; full suite green after every commit.
 
 ## Next Steps
 
-The act()/buf[0]-cap divergence class is comprehensively swept. Next veins (see
-SESSION_STATUS "Next Intended Task"):
-1. **Mob memory / hunt** — `src/fight.c` ATTACK_BACK + hunt/track loop vs the Python
-   AI tick (not yet probed).
-2. **act()-lens in remaining command render paths** — info/look/who/score (display
-   formatting, likely not act() sites — verify).
-3. Continue the cross-file invariants probe-then-scope on a fresh divergence class
-   from `docs/parity/DIVERGENCE_CLASS_ROSTER.md`.
+The act()/PERS/buf[0]-cap/broadcast divergence class is **comprehensively swept
+codebase-wide** (spell handlers, combat, commands, mob_cmds, act_info.c, act_comm.c,
+update.c). Next veins (see SESSION_STATUS "Next Intended Task"):
+1. **act_comm.c full broadcast inventory** — most channels done (GOSSIP/TELL/EMOTE/
+   follow), but do_say/do_yell/do_shout and the remaining `act()` sites
+   (`src/act_comm.c`) not yet line-by-line cross-checked for PERS/cap.
+2. A different divergence class from `docs/parity/DIVERGENCE_CLASS_ROSTER.md`
+   (fread-parsing, static-buffer reuse, C-int signed math) — larger probes.
+
+Mob memory/hunt is **N/A** in this ROM source (no `do_hunt`/`hunting`).
