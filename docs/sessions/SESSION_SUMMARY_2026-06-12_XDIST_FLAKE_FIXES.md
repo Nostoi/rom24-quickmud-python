@@ -851,6 +851,26 @@ and a test pinning the wrong RNG primitive).
 - **MAGIC-016 cluster status**: armor ✅, shield ✅, bless ✅, cures ✅ — **still
   OPEN**: change_sex (literal `$s(?)` quirk), curse-object aura lines.
 
+### `MAGIC-020` — ✅ FIXED (curse-object `$p` capitalization + TO_ALL aura broadcast)
+
+- **Python**: `mud/skills/handlers.py:curse` (object branch).
+- **ROM C**: `src/magic.c:1737` `act("$p is already filled with evil.", …, TO_CHAR)`,
+  `:1751/:1773` `act("$p glows with a red/malevolent aura.", …, TO_ALL)`, `:1758`
+  `act("The holy aura of $p is too powerful…", …, TO_CHAR)`.
+- **Gap**: baked the lowercase `obj.short_descr` (no buf[0] cap) AND sent the aura
+  lines TO_CHAR-only where ROM uses **TO_ALL** (room + caster). Cursing "a silver
+  dagger" showed "a silver dagger glows with a malevolent aura." to the caster alone
+  vs ROM "A silver dagger glows with a malevolent aura." to the whole room.
+- **Fix**: TO_CHAR lines via `act_format("$p …", arg1=obj)` (caps + `can_see_obj`
+  masking); the two TO_ALL aura lines deliver to the caster via `act_format` AND to
+  the room via `act_to_room(caster.room, "$p …", caster, arg1=obj)`.
+- **Tests**: `tests/integration/test_magic020_curse_object_pers.py` (caster + room
+  observer both receive "A silver dagger glows with a malevolent aura."; already-evil
+  → "A cursed blade is already filled with evil."). Existing curse test
+  (`test_skills.py:540`, substring) stays green. Curse+skills suites 31/31.
+- **MAGIC-016 cluster status**: armor/shield/bless/cures/curse all ✅ — **only
+  `change_sex` remains** (literal `$s(?)` quirk).
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

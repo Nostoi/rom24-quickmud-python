@@ -2887,24 +2887,42 @@ def curse(caster, target=None, *, override_level: int | None = None):
         if extra_flags & int(ExtraFlag.NOUNCURSE):
             return False
         if extra_flags & int(ExtraFlag.EVIL):
-            _send_to_char(caster, f"{obj.short_descr or 'It'} is already filled with evil.")
+            # MAGIC-020: ROM act("$p is already filled with evil.", ch, obj, NULL, TO_CHAR) — $p, cap.
+            _send_to_char(
+                caster, act_format("$p is already filled with evil.", recipient=caster, actor=caster, arg1=obj)
+            )
             return False
 
         level = int(getattr(caster, "level", 0) or 0)
         if extra_flags & int(ExtraFlag.BLESS):
             obj_level = int(getattr(obj, "level", getattr(obj.prototype, "level", 0)) or 0)
             if saves_dispel(level, obj_level, duration=0):
+                # MAGIC-020: ROM act("The holy aura of $p is too powerful for you to overcome.", …, TO_CHAR).
                 _send_to_char(
                     caster,
-                    f"The holy aura of {obj.short_descr or 'it'} is too powerful for you to overcome.",
+                    act_format(
+                        "The holy aura of $p is too powerful for you to overcome.",
+                        recipient=caster,
+                        actor=caster,
+                        arg1=obj,
+                    ),
                 )
                 return False
             obj.extra_flags = extra_flags & ~int(ExtraFlag.BLESS)
-            _send_to_char(caster, f"{obj.short_descr or 'It'} glows with a red aura.")
+            # MAGIC-020: ROM act("$p glows with a red aura.", ch, obj, NULL, TO_ALL) —
+            # TO_ALL = caster + room, $p PERS-masked per recipient, cap buf[0].
+            _send_to_char(caster, act_format("$p glows with a red aura.", recipient=caster, actor=caster, arg1=obj))
+            _curse_room = getattr(caster, "room", None)
+            if _curse_room is not None:
+                act_to_room(_curse_room, "$p glows with a red aura.", caster, arg1=obj)
             extra_flags = int(getattr(obj, "extra_flags", 0) or 0)
 
         obj.extra_flags = extra_flags | int(ExtraFlag.EVIL)
-        _send_to_char(caster, f"{obj.short_descr or 'It'} glows with a malevolent aura.")
+        # MAGIC-020: ROM act("$p glows with a malevolent aura.", ch, obj, NULL, TO_ALL).
+        _send_to_char(caster, act_format("$p glows with a malevolent aura.", recipient=caster, actor=caster, arg1=obj))
+        _curse_room = getattr(caster, "room", None)
+        if _curse_room is not None:
+            act_to_room(_curse_room, "$p glows with a malevolent aura.", caster, arg1=obj)
         return True
 
     if not isinstance(target, Character):

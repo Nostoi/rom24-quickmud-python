@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MAGIC-019 (cure spells $N PERS) + MAGIC-016/017/018 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-020 (curse object $p cap + TO_ALL) + MAGIC-016..019 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-019 — `cure_blindness`/`cure_disease`/`cure_poison`
+- **Last completed**: MAGIC-020 — `spell_curse` object branch
+  (`mud/skills/handlers.py:curse`) now capitalizes `$p` via `act_format` and
+  broadcasts the "glows with a red/malevolent aura" lines TO_ALL (caster +
+  `act_to_room`) instead of caster-only, matching ROM `act("$p …", ch, obj, NULL,
+  TO_CHAR/TO_ALL)` (`src/magic.c:1737/1751/1773`). Cursing "a silver dagger" now
+  shows "A silver dagger glows with a malevolent aura." to the whole room (was
+  lowercase, caster-only). The MAGIC-016 spell-handler cluster is now down to ONE
+  remaining member: `change_sex` (the literal `$s(?)` ROM quirk) (v2.14.64). Before
+  that: MAGIC-019 — `cure_blindness`/`cure_disease`/`cure_poison`
   (`mud/skills/handlers.py`) "$N doesn't appear to be blinded/diseased/poisoned."
   lines now render via `act_format` ($N = PERS NPC short_descr + cap) instead of the
   baked keyword name, matching ROM `act(..., TO_CHAR)` (`src/magic.c:1608/1650/1694`).
@@ -269,9 +277,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.63 |
-| Tests | cure-pers 3/3, healing 27/27, full suite last green 5721 passed / 4 skipped (v2.14.62) |
-| MAGIC-019 status | ✅ FIXED cure blindness/disease/poison (`$N` PERS); cluster: change_sex + curse still OPEN |
+| Version | 2.14.64 |
+| Tests | curse-object 2/2, curse+skills 31/31, full suite last green 5724 passed / 4 skipped (v2.14.63) |
+| MAGIC-020 status | ✅ FIXED curse-object ($p cap + TO_ALL aura broadcast); cluster: only change_sex left |
+| MAGIC-019 status | ✅ FIXED cure blindness/disease/poison (`$N` PERS) |
 | MAGIC-018 status | ✅ FIXED bless (`$N` PERS TO_CHAR ×2) |
 | MAGIC-017 status | ✅ FIXED shield (`$N` TO_CHAR + `$n` TO_ROOM PERS) |
 | MAGIC-016 status | ✅ FIXED armor (`$N` PERS); ⚠️ frenzy/change_sex/cures/curse baked-name cluster still OPEN |

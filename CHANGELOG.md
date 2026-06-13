@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.64] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-020 — `curse` spell object lines capitalize `$p` and broadcast the aura
+  TO_ALL** — ROM `spell_curse` object branch (`src/magic.c:1737/1751/1773`) renders
+  `act("$p is already filled with evil.", …, TO_CHAR)` and
+  `act("$p glows with a red/malevolent aura.", …, TO_ALL)`; `act()` caps buf[0] and
+  TO_ALL delivers to the whole room (including the caster). The Python baked the
+  lowercase `obj.short_descr` and sent the aura lines only to the caster — so
+  cursing "a silver dagger" showed "a silver dagger glows with a malevolent aura."
+  to the caster alone, vs ROM "A silver dagger glows with a malevolent aura." to the
+  whole room. Fixed via `act_format` (caps + `can_see_obj` masking) plus
+  `act_to_room` for the TO_ALL legs. Completes all but `change_sex` in the MAGIC-016
+  spell-handler cluster. Test:
+  `tests/integration/test_magic020_curse_object_pers.py`.
+
 ## [2.14.63] — 2026-06-13
 
 ### Fixed
