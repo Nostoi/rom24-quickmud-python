@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.75] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-030 — spell_sleep is silent on its reject gates** — ROM `spell_sleep`
+  (`src/magic.c:4363`) silently `return`s on every gate (already-asleep, undead NPC,
+  level, saves) — no message. The Python invented three lines ("You are already fast
+  asleep." / "$N is already fast asleep." / "$N is immune to sleep."). All removed;
+  the gates now return silently, matching ROM. Same class as MAGIC-027. Test:
+  `tests/integration/test_magic030_sleep_silent_gates.py`.
+
 ## [2.14.74] — 2026-06-13
 
 ### Fixed

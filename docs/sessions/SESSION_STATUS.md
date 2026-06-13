@@ -1,10 +1,21 @@
-# Session Status — 2026-06-13 — MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-029 — the `envenom` skill's already-poisoned-weapon
+- **Last completed**: MAGIC-030 — `sleep` (`mud/skills/handlers.py:sleep` ~7560)
+  no longer emits three invented reject messages ("You are already fast asleep." /
+  "$N is already fast asleep." / "$N is immune to sleep."); ROM `spell_sleep`
+  (`src/magic.c:4363`) silently `return`s on every gate (already-asleep, undead NPC,
+  level, saves). The already-affected and undead branches now return False silently
+  (the level/saves gates were already silent). Same spurious-output class as
+  MAGIC-027. Surfaced by a fresh act()-lens grep sweep after the MAGIC-022 batch
+  closed. **Filed next (MAGIC-031 candidate):** the same sweep found `spell_slow`
+  ("$N can't get any slower than that.") and `spell_stone_skin` ("$N is already as
+  hard as can be.") cross-target legs bake `_character_name` where ROM uses `$N`
+  PERS cap — a clean two-site conversion (v2.14.75). Before that:
+  MAGIC-029 — the `envenom` skill's already-poisoned-weapon
   dict message (`mud/skills/handlers.py:envenom` ~4160) now capitalizes buf[0] via
   `capitalize_act_line(...)`, matching ROM `do_envenom` `act("$p is already
   envenomed.")` (`src/act_obj.c:929`). Unlike the `poison`-spell weapon branch
@@ -359,9 +370,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.74 |
-| Tests | magic029 1/1, envenom 22/22, full suite green 5745 passed / 4 skipped (v2.14.74) |
+| Version | 2.14.75 |
+| Tests | magic030 3/3, sleep-related 45/45, full suite green 5748 passed / 4 skipped (v2.14.75) |
 | MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
+| MAGIC-030 status | ✅ FIXED sleep silent on all reject gates (removed 3 invented lines); slow/stone_skin `$N`-cap filed (MAGIC-031) |
 | MAGIC-029 status | ✅ FIXED envenom-skill dict-return "already envenomed" caps buf[0] |
 | MAGIC-028 status | ✅ FIXED plague "$N seems to be unaffected" uses PERS cap (was baked name) |
 | MAGIC-027 status | ✅ FIXED faerie_fire duplicate is silent (removed 2 invented "already surrounded" lines) |

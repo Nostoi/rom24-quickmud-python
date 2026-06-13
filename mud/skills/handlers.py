@@ -7557,19 +7557,17 @@ def sleep(
     if caster is None or target is None:
         raise ValueError("sleep requires a caster and target")
 
+    # MAGIC-030: ROM spell_sleep (src/magic.c:4363-4366) is SILENT on every reject
+    # gate — `if (IS_AFFECTED(victim, AFF_SLEEP) || (IS_NPC && ACT_UNDEAD) ||
+    # (level+2) < victim->level || saves_spell(...)) return;` with no message. The
+    # earlier Python invented "already fast asleep" / "immune to sleep" lines ROM
+    # never sends; replicate ROM's silent return exactly.
     if target.has_spell_effect("sleep") or target.has_affect(AffectFlag.SLEEP):
-        if target is caster:
-            _send_to_char(caster, "You are already fast asleep.")
-        else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} is already fast asleep.")
         return False
 
     if getattr(target, "is_npc", False):
         act_flags = _coerce_int(getattr(target, "act", 0))
         if act_flags & int(ActFlag.UNDEAD):
-            if target is not caster:
-                _send_to_char(caster, f"{_character_name(target)} is immune to sleep.")
             return False
 
     base_level = override_level if override_level is not None else getattr(caster, "level", 0)
