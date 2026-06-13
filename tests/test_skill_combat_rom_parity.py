@@ -171,6 +171,25 @@ class TestBackstabRomParity:
 
         assert "hurt and suspicious" in result.lower()
 
+    def test_backstab063_hurt_message_uses_pers_shortdescr_capitalized(
+        self, movable_char_factory, movable_mob_factory, object_factory
+    ):
+        """FIGHT-063 — ROM act("$N is hurt and suspicious ... you can't sneak up.",
+        ch, NULL, victim, TO_CHAR): $N = PERS(victim) = the NPC short_descr (not the
+        keyword name), capitalized buf[0]."""
+        char = movable_char_factory("thief", 3001)
+        char.skills["backstab"] = 75
+        mob = movable_mob_factory(3001, 3001)
+        mob.name = "goblin sneaky"
+        mob.short_descr = "a sneaky goblin"
+        mob.max_hit = 300
+        mob.hit = 90  # < 300/3
+
+        result = do_backstab(char, "goblin")
+
+        # ROM $N -> short_descr "a sneaky goblin", capitalized -> "A sneaky goblin …".
+        assert result == "A sneaky goblin is hurt and suspicious ... you can't sneak up.", result
+
     def test_backstab_auto_success_on_sleeping_victim(self, movable_char_factory, movable_mob_factory, object_factory):
         """ROM L2953-2955: Auto-success if skill >= 2 and victim is sleeping."""
         char = movable_char_factory("thief", 3001)

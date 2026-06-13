@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — GET-014 (carry-limit msg $d first keyword + cap) + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — FIGHT-063 (backstab hurt msg PERS short_descr) + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: GET-014 — `do_get` (`mud/commands/inventory.py`) carry-limit
+- **Last completed**: FIGHT-063 — `do_backstab` (`mud/commands/combat.py`)
+  "hurt and suspicious" rejection now renders via `act_format("$N is hurt and
+  suspicious ... you can't sneak up.", arg2=victim)` — `$N` = PERS = the NPC
+  short_descr (not the keyword name), capitalized — matching ROM
+  `act(..., ch, NULL, victim, TO_CHAR)` (`src/fight.c:2946`). Was baking
+  `victim.name` lowercase ("goblin sneaky is hurt…" vs ROM "A sneaky goblin is
+  hurt…"). Found applying the `$N`/PERS/ACT-CAP lens to fight.c (v2.14.57). Before
+  that: GET-014 — `do_get` (`mud/commands/inventory.py`) carry-limit
   messages now render via `act_format("$d: …", arg2=obj.name)` — `$d` = the FIRST
   keyword of `obj.name`, capitalized buf[0] — matching ROM `act("$d: you can't carry
   that many items.", ch, NULL, obj->name, TO_CHAR)`. Was baking the full lowercase
@@ -217,8 +224,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.56 |
-| Tests | encumbrance+shops+give 65/65, full suite last green 5712 passed / 4 skipped (v2.14.55) |
+| Version | 2.14.57 |
+| Tests | backstab 14/14, full suite last green 5713 passed / 4 skipped (v2.14.56) |
+| FIGHT-063 status | ✅ FIXED (backstab hurt msg uses $N PERS short_descr + cap via act_format) |
 | GET-014 status | ✅ FIXED (carry-limit msg uses $d first keyword + capitalization via act_format; closes ⚠️ SIMILAR) |
 | SAC-006 status | ✅ FIXED (sacrifice rejection/furniture msgs capitalize object name via act_format) |
 | GIVE-002 status | ✅ FIXED (give rejection lines use $N/$S pronouns via act_format; sexless → "its" not "their") |

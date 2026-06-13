@@ -26,7 +26,7 @@ from mud.models.constants import (
 from mud.skills import skill_registry
 from mud.skills.say_spell import broadcast_spell_words
 from mud.utils import rng_mm
-from mud.utils.act import act_to_room
+from mud.utils.act import act_format, act_to_room
 from mud.world.vision import can_see_character
 
 # mirroring ROM src/act_move.c:50-52 — movement_loss[SECT_MAX]
@@ -366,7 +366,10 @@ def do_backstab(char: Character, args: str) -> str:
         return "How can you sneak up on yourself?"
 
     if getattr(victim, "hit", 0) < c_div(getattr(victim, "max_hit", 0), 3):
-        return f"{victim.name} is hurt and suspicious ... you can't sneak up."
+        # FIGHT-063: ROM src/fight.c:2946 — act("$N is hurt and suspicious ... you
+        # can't sneak up.", ch, NULL, victim, TO_CHAR). $N = PERS(victim) renders the
+        # NPC short_descr (not the keyword name) and act() caps buf[0].
+        return act_format("$N is hurt and suspicious ... you can't sneak up.", recipient=char, actor=char, arg2=victim)
 
     try:
         skill = skill_registry.get("backstab")

@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.57] — 2026-06-13
+
+### Fixed
+
+- **FIGHT-063 — `backstab` "hurt and suspicious" message uses the victim's PERS
+  short_descr, capitalized** — ROM `do_backstab` (`src/fight.c:2946`) renders
+  `act("$N is hurt and suspicious ... you can't sneak up.", ch, NULL, victim,
+  TO_CHAR)`, where `$N` = the NPC short_descr (not the keyword name) and `act()`
+  caps buf[0]. The Python `mud/commands/combat.py:do_backstab` baked `victim.name`
+  (the keyword string) lowercase — so a wounded mob with name "goblin sneaky" /
+  short_descr "a sneaky goblin" showed "goblin sneaky is hurt …" vs ROM "A sneaky
+  goblin is hurt …". Rendered via `act_format("$N …", arg2=victim)`. Found applying
+  the `$N`/PERS/ACT-CAP lens to fight.c. Test:
+  `tests/test_skill_combat_rom_parity.py::TestBackstabRomParity::test_backstab063_hurt_message_uses_pers_shortdescr_capitalized`.
+
 ## [2.14.56] — 2026-06-13
 
 ### Fixed

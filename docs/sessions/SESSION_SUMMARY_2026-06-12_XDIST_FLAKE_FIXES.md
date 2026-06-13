@@ -730,6 +730,21 @@ and a test pinning the wrong RNG primitive).
   use substring `in` so unaffected; shop carry-limit is a separate literal-"You"
   message. Encumbrance+shops+give suites 65/65.
 
+### `FIGHT-063` — ✅ FIXED (backstab "hurt and suspicious" uses `$N` PERS short_descr + cap)
+
+- **Python**: `mud/commands/combat.py:do_backstab`.
+- **ROM C**: `src/fight.c:2946` — `act("$N is hurt and suspicious ... you can't sneak up.", ch, NULL, victim, TO_CHAR)`.
+- **Gap**: the message baked `victim.name` (the keyword string) lowercase, but ROM
+  `$N` = `PERS(victim, ch)` = the NPC **short_descr** (capitalized buf[0]). A
+  wounded mob with name "goblin sneaky" / short_descr "a sneaky goblin" showed
+  "goblin sneaky is hurt …" vs ROM "A sneaky goblin is hurt …" (and an invisible
+  victim would mask to "Someone"). Found applying the `$N`/PERS/ACT-CAP lens to fight.c.
+- **Fix**: `act_format("$N is hurt and suspicious ... you can't sneak up.",
+  recipient=char, actor=char, arg2=victim)`.
+- **Tests**: `tests/test_skill_combat_rom_parity.py::TestBackstabRomParity::test_backstab063_hurt_message_uses_pers_shortdescr_capitalized`
+  (RED→GREEN — short_descr rendered capitalized). Existing backstab test uses
+  `.lower()` substring so unaffected. Backstab suite 14/14.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)
