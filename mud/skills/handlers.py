@@ -6585,8 +6585,9 @@ def plague(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You feel momentarily ill, but it passes.")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} seems to be unaffected.")
+            # MAGIC-028: ROM act("$N seems to be unaffected.", ch, NULL, victim,
+            # TO_CHAR) (src/magic.c:3905) — $N = PERS(victim), cap.
+            _send_to_char(caster, act_format("$N seems to be unaffected.", recipient=caster, actor=caster, arg2=target))
         return False
 
     effect = SpellEffect(

@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.73] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-028 — plague "seems to be unaffected" uses `$N` PERS (closes the
+  MAGIC-022 batch)** — ROM `spell_plague` (`src/magic.c:3905`) renders
+  `act("$N seems to be unaffected.", ch, NULL, victim, TO_CHAR)` when the victim
+  saves or is an undead NPC — `$N` = PERS(victim) = NPC short_descr, capitalized.
+  The Python baked `_character_name(victim)`, so plaguing an undead "a green goblin"
+  showed "goblin seems to be unaffected." vs ROM "A green goblin …". Cross-target
+  leg now uses `act_format`. This closes the MAGIC-022 enumerated baked-name batch
+  (all members resolved; only the `envenom`-skill dict-return follow-up remains).
+  Test: `tests/integration/test_magic028_plague_unaffected_pers.py`.
+
 ## [2.14.72] — 2026-06-13
 
 ### Fixed

@@ -1,10 +1,19 @@
-# Session Status — 2026-06-13 — MAGIC-027 (faerie_fire silent duplicate) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-028 (plague $N PERS, closes MAGIC-022 batch) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-027 — `faerie_fire` (`mud/skills/handlers.py:faerie_fire`)
+- **Last completed**: MAGIC-028 — `plague` (`mud/skills/handlers.py:plague` ~6589)
+  "$N seems to be unaffected." cross-target leg now renders via `act_format`
+  ($N = PERS victim short_descr, cap) instead of the baked `_character_name`,
+  matching ROM `act(..., TO_CHAR)` (`src/magic.c:3905`). The batch's "sanctuary(?)"
+  note was misattributed — the line lives in `plague`. **This CLOSES the MAGIC-022
+  enumerated baked-name batch** (MAGIC-023/024/025/026/027/028 + FIGHT-065 all
+  resolved); only the `envenom`-skill dict-return `$p` follow-up (filed under the
+  MAGIC-026 row) remains. Re-baselined `test_plague_respects_saves_and_undead`
+  (FIELD→INSIDE so PERS isn't night-masked) (v2.14.73). Before that:
+  MAGIC-027 — `faerie_fire` (`mud/skills/handlers.py:faerie_fire`)
   no longer emits two invented "already surrounded by a pink outline" messages on a
   duplicate cast; ROM `spell_faerie_fire` (`src/magic.c:2811`) silently `return`s
   when the victim already has `AFF_FAERIE_FIRE`. Both fabricated lines removed (the
@@ -342,8 +351,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.72 |
-| Tests | magic027 2/2, detection 26/26, full suite green 5743 passed / 4 skipped (v2.14.72) |
+| Version | 2.14.73 |
+| Tests | magic028 1/1, plague 2/2, full suite green 5744 passed / 4 skipped (v2.14.73) |
+| MAGIC-022 batch | ✅ CLOSED (023/024/025/026/027/028 + FIGHT-065); envenom-skill dict-return `$p` follow-up remains |
+| MAGIC-028 status | ✅ FIXED plague "$N seems to be unaffected" uses PERS cap (was baked name) |
 | MAGIC-027 status | ✅ FIXED faerie_fire duplicate is silent (removed 2 invented "already surrounded" lines) |
 | MAGIC-026 status | ✅ FIXED object `$p` cap (bless-obj/continual_light/fireproof/poison-weapon ×3); envenom-skill dict-return follow-up filed |
 | FIGHT-065 status | ✅ FIXED disarm no-weapon line uses ROM literal "Your opponent is not wielding a weapon." (was baked name) |

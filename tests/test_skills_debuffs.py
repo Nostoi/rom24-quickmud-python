@@ -411,7 +411,10 @@ def test_plague_applies_affect_and_messages(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_plague_respects_saves_and_undead(monkeypatch: pytest.MonkeyPatch) -> None:
-    room = Room(vnum=4201, sector_type=int(Sector.FIELD))
+    # MAGIC-028: ROM act("$N seems to be unaffected.") renders PERS — a lit room
+    # (INSIDE) keeps can_see true so $N = the victim's name (FIELD is dark at night,
+    # which masks PERS to "Someone" non-deterministically).
+    room = Room(vnum=4201, sector_type=int(Sector.INSIDE))
 
     caster = _make_character("Priest", level=30)
     target = _make_character("Ghoul", level=26)
