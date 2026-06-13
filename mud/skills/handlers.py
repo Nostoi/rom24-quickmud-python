@@ -4096,9 +4096,9 @@ def envenom(
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             room = getattr(caster, "room", None)
             if room is not None:
-                _act_room(
-                    room, f"{_character_name(caster)} treats {short_descr} with deadly poison.", caster, exclude=caster
-                )
+                # MAGIC-043: ROM act("$n treats $p with deadly poison.", ch, obj,
+                # NULL, TO_ROOM) (act_obj.c:887) — $n = PERS(caster), $p = obj.
+                act_to_room(room, "$n treats $p with deadly poison.", caster, arg1=obj, exclude=caster)
 
             _send_to_char(caster, f"You treat {short_descr} with deadly poison.")
 
@@ -4200,9 +4200,9 @@ def envenom(
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
             room = getattr(caster, "room", None)
             if room is not None:
-                _act_room(
-                    room, f"{_character_name(caster)} coats {short_descr} with deadly venom.", caster, exclude=caster
-                )
+                # MAGIC-043: ROM act("$n coats $p with deadly venom.", ch, obj, NULL,
+                # TO_ROOM) (act_obj.c:946) — $n = PERS(caster), $p = obj.
+                act_to_room(room, "$n coats $p with deadly venom.", caster, arg1=obj, exclude=caster)
 
             _send_to_char(caster, f"You coat {short_descr} with venom.")
             check_improve(caster, "envenom", True, 3)

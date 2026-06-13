@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.88] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-043 — envenom's room broadcasts use `$n`/`$p` PERS** — ROM `do_envenom`
+  emits `act("$n treats $p with deadly poison.", …, TO_ROOM)` (`src/act_obj.c:887`)
+  and `act("$n coats $p with deadly venom.", …, TO_ROOM)` (`:946`). The Python passed
+  pre-baked `f"{_character_name(caster)} … {short_descr} …"` strings to `_act_room`,
+  so an NPC caster "a wandering alchemist" rendered the keyword "Alchemist" vs ROM
+  "A wandering alchemist". Both TO_ROOM lines now use `act_to_room` with `$n`/`$p`.
+  Test: `tests/integration/test_magic043_envenom_room_broadcast_pers.py`. Clears the
+  act()-lens baked-name tail in `handlers.py`.
+
 ## [2.14.87] — 2026-06-13
 
 ### Fixed
