@@ -1,10 +1,20 @@
-# Session Status — 2026-06-13 — ORDER-003 (do_order immortal-trust gate) + ORDER-002 (do_order WAIT_STATE) + PICK-001/002 (do_pick check_improve + WAIT_STATE) + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — SAVE-001 (do_save WAIT_STATE) + ORDER-002/003 (do_order WAIT_STATE + immortal-trust) + PICK-001/002 (do_pick check_improve + WAIT_STATE) + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: ORDER-003 — `do_order` (`mud/commands/group_commands.py`)
+- **Last completed**: SAVE-001 — `do_save` (`mud/commands/session.py`) now applies
+  `apply_wait_state(ch, 4 * get_pulse_violence())` (=48) after the save+message,
+  matching ROM `src/act_comm.c:1530` `WAIT_STATE(ch, 4 * PULSE_VIOLENCE)`. The code
+  saved but applied no wait (the audit doc's "+ WAIT_STATE ✅ 100%" was a stale
+  false-✅, corrected). Found by an enumerated ROM-WAIT_STATE-site cross-check
+  (move_char/do_recall confirmed faithful; do_save was the gap; do_password noted
+  below). **Filed for next agent:** `do_password` (`mud/commands/character.py`) uses
+  `ch.wait = 40` (assignment) where ROM `src/act_info.c:2895` uses
+  `WAIT_STATE(ch, 40)` = UMAX — a higher existing wait would be lowered (minor,
+  PASSWORD-001 candidate, see Outstanding) (v2.14.41). Before that: ORDER-003 —
+  `do_order` (`mud/commands/group_commands.py`)
   single-target gate now includes ROM's third "Do it yourself!" clause
   `IS_IMMORTAL(victim) && victim->trust >= ch->trust` (`src/act_comm.c`), via
   `victim.is_immortal() and victim.trust >= char.trust`. A charmed immortal whose
@@ -101,8 +111,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.40 |
-| Tests | order immortal-trust 2/2, order area 7/7, full suite last green 5690 passed / 4 skipped (v2.14.39) |
+| Version | 2.14.41 |
+| Tests | save wait-state 2/2, full suite last green 5692 passed / 4 skipped (v2.14.40) |
+| SAVE-001 status | ✅ FIXED (do_save applies WAIT_STATE(ch, 4*PULSE_VIOLENCE=48); stale false-✅ corrected) |
 | ORDER-003 status | ✅ FIXED (do_order gate adds IS_IMMORTAL(victim) && trust>=orderer clause) |
 | ORDER-002 status | ✅ FIXED (do_order applies WAIT_STATE(ch, PULSE_VIOLENCE=12) on landed orders; stale false-✅ corrected) |
 | PICK-002 status | ✅ FIXED (do_pick WAIT_STATE uses beats=12 + UMAX, data-driven; was +=24 additive) |

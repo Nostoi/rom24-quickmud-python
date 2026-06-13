@@ -435,7 +435,30 @@ and a test pinning the wrong RNG primitive).
 - **Tests**: `tests/integration/test_order003_immortal_trust.py` (2, RED→GREEN —
   refuses a charmed immortal with trust≥orderer; still allows a normal charmed mob).
 
+### `SAVE-001` — ✅ FIXED (do_save applies WAIT_STATE(ch, 4 * PULSE_VIOLENCE))
+
+- **Python**: `mud/commands/session.py:do_save`.
+- **ROM C**: `src/act_comm.c:1522-1532` — `save_char_obj(ch); send_to_char("Saving. ...\n\r", ch); WAIT_STATE(ch, 4 * PULSE_VIOLENCE);` (== 48).
+- **Gap**: `do_save` saved and returned the message but applied no WAIT_STATE, so
+  `save` could be spammed with zero lag. **Audit doc's "save_char_obj() +
+  WAIT_STATE ✅ 100%" row was a stale false-✅** (corrected). Found by enumerating
+  every ROM `WAIT_STATE(ch, <fixed>)` site in the act_* files and cross-checking
+  the Python equivalent — `move_char` (wait 1) and `do_recall` (wait 4) were
+  already faithful; `do_save` was the miss.
+- **Fix**: `apply_wait_state(ch, 4 * get_pulse_violence())` after the save+message
+  (UMAX; no-save-failure path returns early, as ROM only reaches WAIT_STATE on a
+  successful save).
+- **Tests**: `tests/integration/test_save001_wait_state.py` (2, RED→GREEN —
+  wait==48 after save; UMAX preserves a pre-existing wait==100).
+
 ## Outstanding
+
+- **PASSWORD-001** (candidate, filed by SAVE-001): `mud/commands/character.py:do_password`
+  sets `ch.wait = 40` (plain assignment) on the wrong-password path where ROM
+  `src/act_info.c:2895` uses `WAIT_STATE(ch, 40)` = `UMAX(ch->wait, 40)`. A player
+  with an existing wait > 40 would have it *lowered* to 40 by the Python. Minor
+  (only matters when already waiting), but a real UMAX-vs-assign divergence — same
+  class as PICK-002. Next agent: swap to `apply_wait_state(ch, 40)` + a test.
 
 - **do_pick / pick_lock duplication** (filed by PICK-001): the live `pick` command
   is `mud/commands/doors.py:do_pick` (inline reimplementation), but a second,

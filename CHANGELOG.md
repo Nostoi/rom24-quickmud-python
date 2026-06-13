@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.41] — 2026-06-13
+
+### Fixed
+
+- **SAVE-001 — `do_save` applies `WAIT_STATE(ch, 4 * PULSE_VIOLENCE)`** — ROM
+  `do_save` (`src/act_comm.c:1522-1532`) saves, sends the "Saving." message, then
+  `WAIT_STATE(ch, 4 * PULSE_VIOLENCE)` (== 48; `PULSE_VIOLENCE` == 12,
+  `src/merc.h:155-156`) — an anti-spam lag. The Python `mud/commands/session.py:do_save`
+  saved and returned the message but applied no wait, so `save` could be spammed
+  freely. Now `apply_wait_state(ch, 4 * get_pulse_violence())` (UMAX). The audit
+  doc's "save_char_obj() + WAIT_STATE ✅ 100%" row was a stale false-✅, now
+  corrected. Test: `tests/integration/test_save001_wait_state.py` (2).
+
 ## [2.14.40] — 2026-06-13
 
 ### Fixed

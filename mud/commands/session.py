@@ -9,9 +9,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from mud.config import get_pulse_violence
 from mud.models.constants import Position
 from mud.skills.registry import check_improve
 from mud.utils.act import act_to_room
+from mud.utils.timing import apply_wait_state
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -30,9 +32,13 @@ def do_save(ch: Character, args: str) -> str:
 
     try:
         save_character(ch)
-        return "Saving. Remember that ROM has automatic saving now."
     except Exception as e:
         return f"Save failed: {e}"
+
+    # SAVE-001: ROM src/act_comm.c:1530 — WAIT_STATE(ch, 4 * PULSE_VIOLENCE) (==48)
+    # applied after the save + message; anti-spam lag. UMAX semantics.
+    apply_wait_state(ch, 4 * get_pulse_violence())
+    return "Saving. Remember that ROM has automatic saving now."
 
 
 def do_quit(ch: Character, args: str) -> str:

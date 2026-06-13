@@ -501,7 +501,7 @@ return result
 | do_rent() | 1447-1451 | misc_info.py:262 | Info message → "no rent here" | ✅ **100%** |
 | do_bug() | 1433-1438 | feedback.py:54 | append_file() → "Bug logged" | ✅ **100%** |
 | do_typo() | 1440-1445 | feedback.py:82 | append_file() → "Typo logged" | ✅ **100%** |
-| do_save() | 1522-1532 | session.py:18 | save_char_obj() + WAIT_STATE | ✅ **100%** |
+| do_save() | 1522-1532 | session.py:18 | save_char_obj() + WAIT_STATE | ✅ **100%** (⚠️ the "+ WAIT_STATE" was a stale false-✅ until **SAVE-001** 2.14.41 — the code saved but applied no `WAIT_STATE(ch, 4*PULSE_VIOLENCE)`=48; now `apply_wait_state(ch, 4*get_pulse_violence())`. Test: `tests/integration/test_save001_wait_state.py`) |
 | do_quit() | 1462-1518 | session.py:36 | Full quit sequence | ✅ **100%** (QUIT-001 fixed 2.12.97) |
 
 **do_quit() Verification** (most complex):
