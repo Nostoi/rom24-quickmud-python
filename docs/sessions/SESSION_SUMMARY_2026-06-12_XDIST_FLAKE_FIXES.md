@@ -317,6 +317,28 @@ and a test pinning the wrong RNG primitive).
   `value[0]==0` case (still green — ROM also skips it there) with a corrected
   docstring. Full `test_consumables.py` 54/54.
 
+### `EAT-007` — ✅ FIXED (do_eat poison level/duration derive from raw `value[0]`)
+
+- **Python**: `mud/commands/consumption.py:do_eat` (poison branch, ~line 130).
+- **ROM C**: `src/act_obj.c:1347-1348` — `af.level = number_fuzzy(obj->value[0]);
+  af.duration = 2 * obj->value[0];`.
+- **Gap**: the Python derived both fields from `value[0] if value[0] else 1`, a
+  defensive substitution ROM does not make. For poisoned food with `value[0]==0`
+  that produced `duration = 2*1 = 2` and `level = number_fuzzy(1)` where ROM
+  yields `duration = 2*0 = 0` and `level = number_fuzzy(0)`. `number_fuzzy` is
+  called exactly once on both paths, so the shared Mitchell-Moore stream stays
+  aligned — only the argument value diverged, making the fix RNG-safe. Found by
+  the post-DRINK-010 sibling re-read (reading `do_eat` end-to-end against ROM
+  after closing `do_drink`'s DRINK-010, the same pattern that chained
+  EAT-006 → WIZ-052 → DRINK-010). Local single-function divergence → filed as
+  `EAT-007` in `ACT_OBJ_C_AUDIT.md`.
+- **Fix**: `level_val = obj_value[0] if len(obj_value) > 0 else 0` (raw value[0]);
+  `number_fuzzy(level_val)` and `2 * level_val` unchanged.
+- **Tests**: `tests/integration/test_consumables.py::test_eat_poison_duration_uses_raw_value0_not_substituted_one`
+  (1, RED→GREEN; value[0]=0 → duration 0). Existing
+  `::test_eat_poison_affect_uses_rom_duration` (value[0]=5 → duration 10) still
+  green, confirming the non-zero path is unaffected. Full `test_consumables.py` 55/55.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:

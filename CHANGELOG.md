@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.35] — 2026-06-13
+
+### Fixed
+
+- **EAT-007 — `do_eat` poison level/duration use the raw `value[0]`, not a
+  substituted `1`** — ROM `do_eat` (`src/act_obj.c:1347-1348`) sets the poison
+  affect's `level = number_fuzzy(obj->value[0])` and `duration = 2 * obj->value[0]`.
+  The Python port derived both from `value[0] if value[0] else 1`, so a poisoned
+  food with `value[0] == 0` got `duration = 2` and a level fuzzed from `1`, where
+  ROM gives `duration = 0` and a level fuzzed from `0`. `number_fuzzy` is still
+  called exactly once either way, so the shared RNG stream stays aligned — only
+  the argument value diverged. Now uses the raw `value[0]`. Test:
+  `tests/integration/test_consumables.py::test_eat_poison_duration_uses_raw_value0_not_substituted_one`.
+
 ## [2.14.34] — 2026-06-13
 
 ### Fixed

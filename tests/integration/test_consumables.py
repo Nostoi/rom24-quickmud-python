@@ -240,6 +240,31 @@ def test_eat_poison_affect_uses_rom_duration(test_character, object_factory):
     assert af.get("location") == 0, f"Expected location=0 (APPLY_NONE), got {af.get('location')}"
 
 
+def test_eat_poison_duration_uses_raw_value0_not_substituted_one(test_character, object_factory):
+    """EAT-007 — mirrors ROM src/act_obj.c:1347-1348. ROM derives the poison
+    affect's level/duration directly from `obj->value[0]`:
+        af.level    = number_fuzzy(obj->value[0]);
+        af.duration = 2 * obj->value[0];
+    The Python port substituted `value[0] if value[0] else 1`, so a poisoned food
+    with value[0]==0 got duration = 2*1 = 2 instead of ROM's 2*0 = 0 (and a fuzzed
+    level seeded from 1 instead of 0). Use the raw value[0]."""
+    poisoned = _make_obj(
+        object_factory,
+        item_type=ItemType.FOOD,
+        name="berry",
+        short_descr="a poisoned berry",
+        value=[0, 0, 0, 1, 0],  # value[0]=0 (no nutrition), value[3]=1 (poisoned)
+    )
+    test_character.add_object(poisoned)
+    test_character.affects = []
+
+    do_eat(test_character, "berry")
+
+    assert test_character.affects, "Expected the poison affect to be stored in ch.affects"
+    af = test_character.affects[0]
+    assert af.get("duration") == 0, f"Expected duration=2*value[0]=0, got {af.get('duration')}"
+
+
 # --------------------------------------------------------------------------- #
 # do_drink                                                                    #
 # --------------------------------------------------------------------------- #

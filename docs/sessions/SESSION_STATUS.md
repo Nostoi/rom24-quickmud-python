@@ -1,10 +1,16 @@
-# Session Status — 2026-06-13 — DRINK-010 (fountain value[1] drain) + WIZ-052 (do_mstat condition COND_* indices) + EAT-006 (do_eat→gain_condition); cross-file invariants is the active pass
+# Session Status — 2026-06-13 — EAT-007 (do_eat poison raw value[0]) + DRINK-010 (fountain value[1] drain) + WIZ-052 (do_mstat condition COND_* indices); cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: DRINK-010 — `do_drink` (`mud/commands/consumption.py`) now
+- **Last completed**: EAT-007 — `do_eat` (`mud/commands/consumption.py`) poison
+  branch now derives the affect's level/duration from the **raw** `value[0]`
+  (ROM act_obj.c:1347-1348: `level=number_fuzzy(value[0])`, `duration=2*value[0]`)
+  instead of the Python's `value[0] if value[0] else 1` substitution — so
+  poisoned food with `value[0]==0` yields `duration=0` (was 2). `number_fuzzy` is
+  still called once either way, so RNG alignment holds (v2.14.35). Before that:
+  DRINK-010 — `do_drink` (`mud/commands/consumption.py`) now
   decrements `value[1]` whenever `value[0] > 0` (ROM act_obj.c:1276-1277),
   removing a spurious `item_type == DRINK_CON` guard the Python had added; a
   fountain with positive capacity now drains (and may go negative, as ROM does)
@@ -57,8 +63,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.34 |
-| Tests | consumables 54/54, act_wiz parity 122/122, full suite last green 5679 passed / 4 skipped (v2.14.33) |
+| Version | 2.14.35 |
+| Tests | consumables 55/55, act_wiz parity 122/122, full suite last green 5680 passed / 4 skipped (v2.14.34) |
+| EAT-007 status | ✅ FIXED (do_eat poison level/duration use raw value[0], no `or 1` substitution) |
 | DRINK-010 status | ✅ FIXED (do_drink drains value[1] on value[0]>0 regardless of item type; fountains included) |
 | WIZ-052 status | ✅ FIXED (do_mstat condition line reads COND_* enum slots, not display order) |
 | EAT-006 status | ✅ FIXED (do_eat delegates condition restore to gain_condition; immortal/-1-sentinel guards honored) |

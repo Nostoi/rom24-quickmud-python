@@ -128,7 +128,12 @@ def do_eat(ch: Character, args: str) -> str:
             # EAT-005: apply poison flag; store ROM-correct affect metadata on ch.affects
             # ROM af: level=number_fuzzy(value[0]), duration=2*value[0], location=APPLY_NONE=0, modifier=0
             if hasattr(ch, "add_affect"):
-                level_val = obj_value[0] if obj_value[0] else 1
+                # EAT-007: derive level/duration from the RAW value[0], exactly as ROM
+                # (src/act_obj.c:1347-1348) — no `value[0] or 1` substitution. A poisoned
+                # food with value[0]==0 must yield duration=2*0=0 and level=number_fuzzy(0),
+                # not duration=2 / number_fuzzy(1). number_fuzzy is still called once either
+                # way, so the shared RNG stream stays aligned.
+                level_val = obj_value[0] if len(obj_value) > 0 else 0
                 # add_affect(AffectFlag) sets ch.affected_by |= flag
                 ch.add_affect(AffectFlag.POISON)
                 # Store full ROM affect metadata for game_loop poison tick
