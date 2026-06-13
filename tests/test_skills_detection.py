@@ -290,7 +290,10 @@ def test_faerie_fire_rejects_duplicates() -> None:
 
     assert skill_handlers.faerie_fire(caster, target) is False
     assert target.armor == previous_armor
-    assert caster.messages[-1] == "Rogue is already surrounded by a pink outline."
+    # MAGIC-027: ROM spell_faerie_fire (magic.c:2811) silently returns on a
+    # duplicate — no message. (Was asserting an invented non-ROM "already
+    # surrounded" line.)
+    assert caster.messages == []
 
 
 @pytest.mark.parametrize(

@@ -4219,12 +4219,11 @@ def faerie_fire(caster: Character, target: Character | None = None) -> bool:
     if caster is None or target is None:
         raise ValueError("faerie_fire requires a target")
 
+    # MAGIC-027: ROM spell_faerie_fire (src/magic.c:2811-2812) is SILENT on a
+    # duplicate — `if (IS_AFFECTED(victim, AFF_FAERIE_FIRE)) return;` with no
+    # message. The earlier Python invented "already surrounded" lines ROM never
+    # sends; replicate ROM's silent return exactly.
     if target.has_affect(AffectFlag.FAERIE_FIRE) or target.has_spell_effect("faerie fire"):
-        if target is caster:
-            _send_to_char(caster, "You are already surrounded by a pink outline.")
-        else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} is already surrounded by a pink outline.")
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)

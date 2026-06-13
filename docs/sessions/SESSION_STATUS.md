@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-027 (faerie_fire silent duplicate) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-026 — six object `$p` blocking lines in
+- **Last completed**: MAGIC-027 — `faerie_fire` (`mud/skills/handlers.py:faerie_fire`)
+  no longer emits two invented "already surrounded by a pink outline" messages on a
+  duplicate cast; ROM `spell_faerie_fire` (`src/magic.c:2811`) silently `return`s
+  when the victim already has `AFF_FAERIE_FIRE`. Both fabricated lines removed (the
+  branch now returns False silently). This closes the `faerie_fire` batch entry as a
+  **spurious-output** divergence, NOT the `$N` cap conversion the batch note assumed
+  — the ROM source check showed there is no message to convert. Re-baselined the
+  detection test that asserted the invented line (v2.14.72). Before that:
+  MAGIC-026 — six object `$p` blocking lines in
   `mud/skills/handlers.py` (`bless`-object, `continual_light`, `fireproof`,
   `poison` weapon branch ×3) now capitalize buf[0] via `capitalize_act_line(...)`,
   matching ROM `act("$p …", ch, obj, NULL, TO_CHAR)` (`src/magic.c:794/1483/2770/3962/3968`).
@@ -334,8 +342,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.71 |
-| Tests | magic026 4/4, buffs+debuffs 43/43, full suite green 5741 passed / 4 skipped (v2.14.71) |
+| Version | 2.14.72 |
+| Tests | magic027 2/2, detection 26/26, full suite green 5743 passed / 4 skipped (v2.14.72) |
+| MAGIC-027 status | ✅ FIXED faerie_fire duplicate is silent (removed 2 invented "already surrounded" lines) |
 | MAGIC-026 status | ✅ FIXED object `$p` cap (bless-obj/continual_light/fireproof/poison-weapon ×3); envenom-skill dict-return follow-up filed |
 | FIGHT-065 status | ✅ FIXED disarm no-weapon line uses ROM literal "Your opponent is not wielding a weapon." (was baked name) |
 | MAGIC-025 status | ✅ FIXED fly/infravision/pass_door (`$N` PERS short_descr, cap) |

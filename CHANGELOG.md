@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.72] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-027 — faerie_fire on an already-affected victim is silent** — ROM
+  `spell_faerie_fire` (`src/magic.c:2811`) silently `return`s when the victim
+  already has `AFF_FAERIE_FIRE` — no message to caster or victim. The Python
+  invented two non-ROM lines ("You are already surrounded by a pink outline." /
+  "$N is already surrounded by a pink outline."). Both removed; the duplicate
+  branch now returns silently, matching ROM. Re-baselined the detection test that
+  asserted the invented line. Test:
+  `tests/integration/test_magic027_faerie_fire_silent_duplicate.py`.
+
 ## [2.14.71] — 2026-06-13
 
 ### Fixed
