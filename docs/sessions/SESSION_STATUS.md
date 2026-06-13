@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — MAGIC-016 (armor spell $N PERS) + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-017 (shield spell $N/$n PERS) + MAGIC-016 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-016 — `spell_armor` (`mud/skills/handlers.py:armor`)
+- **Last completed**: MAGIC-017 — `spell_shield` (`mud/skills/handlers.py:shield`)
+  cross-target TO_CHAR "$N is already protected by a shield." now uses `act_format`,
+  and the success TO_ROOM "$n is surrounded by a force shield." now uses
+  `act_to_room` (replacing a hand-rolled name-baking loop with a "Someone"
+  fallback), matching ROM `act(..., TO_CHAR/TO_ROOM)`. PERS short_descr + cap;
+  invisible→"someone". Continues the MAGIC-016 spell-handler cluster (shield struck
+  off the remaining list; frenzy/change_sex/cures/curse still OPEN) (v2.14.61).
+  Before that: MAGIC-016 — `spell_armor` (`mud/skills/handlers.py:armor`)
   cross-target lines "$N is already armored." / "$N is protected by your magic."
   now render via `act_format` ($N = PERS NPC short_descr + cap) instead of the baked
   keyword name, matching ROM `act(..., ch, NULL, victim, TO_CHAR)`
@@ -250,9 +257,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.60 |
-| Tests | armor+buffs 30/30, full suite last green 5716 passed / 4 skipped (v2.14.59) |
-| MAGIC-016 status | ✅ FIXED armor (`$N` PERS); ⚠️ shield/frenzy/change_sex/cures/curse baked-name cluster OPEN |
+| Version | 2.14.61 |
+| Tests | shield-pers 2/2, armor+buffs 30/30, full suite last green 5717 passed / 4 skipped (v2.14.60) |
+| MAGIC-017 status | ✅ FIXED shield (`$N` TO_CHAR + `$n` TO_ROOM PERS) |
+| MAGIC-016 status | ✅ FIXED armor (`$N` PERS); ⚠️ frenzy/change_sex/cures/curse baked-name cluster still OPEN |
 | TRIP-001 status | ✅ FIXED (do_trip 3 blocking msgs use $S/$N pronouns via act_format) |
 | FIGHT-064 status | ✅ FIXED (kill/murder safety msgs use $N PERS short_descr; both combat.py + murder.py copies) |
 | FIGHT-063 status | ✅ FIXED (backstab hurt msg uses $N PERS short_descr + cap via act_format) |

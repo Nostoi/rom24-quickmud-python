@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.61] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-017 — `shield` spell TO_CHAR/TO_ROOM lines use PERS** — ROM `spell_shield`
+  renders `act("$N is already protected by a shield.", …, TO_CHAR)` and
+  `act("$n is surrounded by a force shield.", victim, NULL, NULL, TO_ROOM)`. The
+  Python `shield` handler baked the keyword `name` (TO_CHAR) and used a hand-rolled
+  room loop baking `target.name` with a "Someone" fallback (TO_ROOM) — so a visible
+  NPC rendered "Someone is surrounded by a force shield." and an invisible victim
+  leaked its name. Both now use `act_format`/`act_to_room` (PERS short_descr,
+  capitalized; invisible→"someone"). Continues the MAGIC-016 spell-handler cluster.
+  Test: `tests/integration/test_magic017_shield_pers.py`.
+
 ## [2.14.60] — 2026-06-13
 
 ### Fixed

@@ -7344,12 +7344,14 @@ def shield(caster, target=None):
 
     if target.has_spell_effect("shield"):
         # mirroring ROM src/magic.c:4312-4316 — send_to_char (self) / act TO_CHAR.
-        message = (
-            "You are already shielded from harm."
-            if target is caster
-            else f"{target.name} is already protected by a shield."
-        )
-        _send_to_char(caster, message)
+        # MAGIC-017: the cross-target line is act("$N is already protected by a
+        # shield.", ch, NULL, victim, TO_CHAR) — $N = PERS (NPC short_descr), cap.
+        if target is caster:
+            _send_to_char(caster, "You are already shielded from harm.")
+        else:
+            _send_to_char(
+                caster, act_format("$N is already protected by a shield.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -7367,17 +7369,12 @@ def shield(caster, target=None):
     # MAGIC-003: canonical single-delivery channel, not the char.messages mailbox.
     _send_to_char(target, "You are surrounded by a force shield.")
 
+    # MAGIC-017: ROM act("$n is surrounded by a force shield.", victim, NULL, NULL,
+    # TO_ROOM) — $n = PERS(victim) per recipient (NPC short_descr; invisible -> someone).
+    # Replaced the hand-rolled name-baking loop with the canonical act_to_room helper.
     room = getattr(target, "room", None)
     if room is not None:
-        room_message = (
-            f"{target.name} is surrounded by a force shield."
-            if target.name
-            else "Someone is surrounded by a force shield."
-        )
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, room_message)
+        act_to_room(room, "$n is surrounded by a force shield.", target, exclude=target)
 
     return True
 

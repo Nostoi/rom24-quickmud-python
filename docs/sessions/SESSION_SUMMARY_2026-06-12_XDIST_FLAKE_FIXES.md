@@ -801,6 +801,23 @@ and a test pinning the wrong RNG primitive).
   curse-object "glows with a … aura" lines (~2874/2887/2891, `$p`). Each needs its
   ROM `act()` code verified before conversion. See the MAGIC-016 row in `MAGIC_C_AUDIT.md`.
 
+### `MAGIC-017` — ✅ FIXED (shield spell TO_CHAR + TO_ROOM lines use PERS)
+
+- **Python**: `mud/skills/handlers.py:shield`.
+- **ROM C**: `src/magic.c` `spell_shield` — `act("$N is already protected by a shield.", …, TO_CHAR)` + `act("$n is surrounded by a force shield.", victim, NULL, NULL, TO_ROOM)`.
+- **Gap**: combined MAGIC-016 (TO_CHAR baked name) + MAGIC-014 (hand-rolled TO_ROOM
+  loop) in one handler. The "already protected" line baked the keyword name; the
+  success room broadcast iterated `room.people` baking `target.name` with a
+  "Someone" fallback (visible NPC → "Someone …"; invisible actor leaked its name).
+  ROM renders `$N`/`$n` = PERS short_descr, capitalized; invisible → "someone".
+- **Fix**: TO_CHAR via `act_format("$N …", arg2=target)`; TO_ROOM via
+  `act_to_room(room, "$n is surrounded by a force shield.", target, exclude=target)`.
+- **Tests**: `tests/integration/test_magic017_shield_pers.py` (NPC room broadcast →
+  "A green goblin is surrounded by a force shield."; already-protected TO_CHAR →
+  "A green goblin is already protected by a shield."). Shield+buffs suites 27/27.
+- Continues the **MAGIC-016 cluster** — shield struck off; frenzy/divine-favor,
+  change_sex (literal `(?)` quirk), cures, curse-object still OPEN.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)
