@@ -3346,7 +3346,8 @@ def disarm(caster: Character, target: Character | None = None) -> bool:
 
     victim_weapon = get_wielded_weapon(victim)
     if victim_weapon is None:
-        _send_to_char(caster, f"{_character_name(victim)} is not wielding a weapon.")
+        # ROM do_disarm src/fight.c:3175 — literal, not act("$N …").
+        _send_to_char(caster, "Your opponent is not wielding a weapon.")
         return False
 
     skill = _skill_percent(caster, "disarm")

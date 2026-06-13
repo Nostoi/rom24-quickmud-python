@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-025 — `fly` ("$N doesn't need your help to fly."),
+- **Last completed**: FIGHT-065 — the `disarm` skill handler
+  (`mud/skills/handlers.py:disarm`, the path `mob_hit`/`_mob_offensive_skill`
+  dispatches) now emits ROM's **literal** "Your opponent is not wielding a weapon."
+  when the victim is unarmed, instead of baking `_character_name(victim)`
+  ("goblin is not wielding a weapon."). ROM `do_disarm` (`src/fight.c:3175`) uses a
+  fixed `send_to_char(...)` — no `$N`/PERS render. The player command
+  `combat.py:do_disarm` (:1218) was already correct; this was the duplicate
+  skill-handler path. Closes the `disarm` entry in the MAGIC-022 batch as a literal
+  fix (NOT a `$N` conversion) (v2.14.70). Before that: MAGIC-025 — `fly` ("$N doesn't need your help to fly."),
   `infravision` ("$N already has infravision."), and `pass_door` ("$N is already
   shifted out of phase.") (`mud/skills/handlers.py`) already-affected blocking
   lines now render via `act_format` — $N = PERS NPC short_descr (cap) — matching ROM
@@ -315,8 +323,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.69 |
-| Tests | magic025 3/3, full suite green 5736 passed / 4 skipped (v2.14.69) |
+| Version | 2.14.70 |
+| Tests | fight065 1/1, disarm cluster 13/13, full suite green 5737 passed / 4 skipped (v2.14.70) |
+| FIGHT-065 status | ✅ FIXED disarm no-weapon line uses ROM literal "Your opponent is not wielding a weapon." (was baked name) |
 | MAGIC-025 status | ✅ FIXED fly/infravision/pass_door (`$N` PERS short_descr, cap) |
 | MAGIC-024 status | ✅ FIXED giant_strength/haste (`$N`/`$E` PERS; sexless→"it") |
 | MAGIC-023 status | ✅ FIXED frenzy (`$N` PERS ×4, `$e`-caster quirk replicated) |

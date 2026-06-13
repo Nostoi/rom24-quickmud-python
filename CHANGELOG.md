@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.70] — 2026-06-13
+
+### Fixed
+
+- **FIGHT-065 — disarm "no weapon" message is ROM's literal, not a baked name** —
+  ROM `do_disarm` (`src/fight.c:3175`) emits a fixed
+  `send_to_char("Your opponent is not wielding a weapon.\n\r", ch)` — no `$N`/PERS
+  render. The `handlers.py:disarm` skill handler (the path `mob_hit` dispatches,
+  distinct from the already-correct player command `combat.py:do_disarm`) baked
+  `_character_name(victim)`, so an NPC disarm against an unarmed "goblin" showed
+  "goblin is not wielding a weapon." vs ROM "Your opponent is not wielding a
+  weapon." Literal restored. Closes the `disarm` entry in the MAGIC-022 batch
+  (verified as a literal fix, not a `$N` conversion). Test:
+  `tests/integration/test_fight065_disarm_no_weapon_literal.py`.
+
 ## [2.14.69] — 2026-06-13
 
 ### Fixed
