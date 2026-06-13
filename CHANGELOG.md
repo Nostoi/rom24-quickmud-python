@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.47] — 2026-06-13
+
+### Fixed
+
+- **REPORT-001 — `do_report` room broadcast goes through the act() system** — ROM
+  `do_report` (`src/act_info.c:2670`) broadcasts via `act("$n says 'I have ...'",
+  ch, NULL, NULL, TO_ROOM)`. The Python `mud/commands/info.py:do_report` baked
+  `char.name` (no `$n` PERS masking — an invisible reporter leaked their name),
+  iterated `other.desc.send` directly (skipping descriptor-less occupants, so NPC
+  witnesses got no TRIG_ACT and the standard message channel was bypassed), and
+  used `other != char` instead of `is not`. Replaced the hand-rolled loop with
+  `act_to_room(room, "$n says 'I have …'", char)` — per-recipient PERS masking
+  (INV-025/027), single-delivery (INV-001), and TRIG_ACT dispatch. Test:
+  `tests/integration/test_info_display.py::test_report_broadcasts_to_room_via_act_system`.
+
 ## [2.14.46] — 2026-06-13
 
 ### Fixed

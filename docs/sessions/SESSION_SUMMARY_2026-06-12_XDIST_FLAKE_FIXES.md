@@ -542,6 +542,24 @@ and a test pinning the wrong RNG primitive).
   keeps the mid-sentence `$N` lowercase). Existing 15 consider tests use `.lower()`
   so unaffected. Consider suite 17/17.
 
+### `REPORT-001` — ✅ FIXED (do_report room broadcast uses the act() system)
+
+- **Python**: `mud/commands/info.py:do_report`.
+- **ROM C**: `src/act_info.c:2670` — `act("$n says 'I have ...'", ch, NULL, NULL, TO_ROOM)`.
+- **Gap**: the Python room broadcast was a hand-rolled loop with three faults at
+  once — (a) baked `char.name` (no `$n` PERS masking, so an invisible reporter
+  leaked their name); (b) iterated `other.desc.send` directly, skipping
+  descriptor-less occupants (NPC witnesses got no TRIG_ACT, and the INV-001
+  single-delivery channel was bypassed); (c) used `other != char` instead of
+  `is not`. Found by re-verifying the "do_report 100% COMPLETE" audit row against
+  source.
+- **Fix**: replaced the loop with `act_to_room(room, "$n says 'I have …'", char)`
+  — the canonical helper that applies per-recipient PERS masking (INV-025/027),
+  single-delivery (INV-001), and TRIG_ACT dispatch.
+- **Tests**: `tests/integration/test_info_display.py::test_report_broadcasts_to_room_via_act_system`
+  (RED→GREEN — a descriptor-less observer now receives the `$n`-rendered line).
+  Existing 17 info-display tests unaffected. Suite 18/18.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

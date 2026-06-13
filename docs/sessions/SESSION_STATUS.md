@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — CONSIDER-001 (act buf[0] cap) + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — REPORT-001 (do_report act broadcast) + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: CONSIDER-001 — `do_consider` (`mud/commands/consider.py`) now
+- **Last completed**: REPORT-001 — `do_report` (`mud/commands/info.py`) room
+  broadcast now routes through `act_to_room(room, "$n says 'I have …'", char)`
+  instead of a hand-rolled `desc.send` loop that baked `char.name` (no `$n` PERS
+  masking), skipped descriptor-less occupants (NPCs got no TRIG_ACT), and used
+  `!=` identity. Matches ROM `act("$n says ...", TO_ROOM)` (`src/act_info.c:2670`)
+  — INV-025/027 PERS masking + INV-001 single-delivery + TRIG_ACT. Found by
+  re-verifying the "do_report 100% COMPLETE" audit row against source (v2.14.47).
+  Before that: CONSIDER-001 — `do_consider` (`mud/commands/consider.py`) now
   capitalizes the rendered difficulty line via `capitalize_act_line`, matching ROM
   `act()` `buf[0] = UPPER(buf[0])` (`src/comm.c:2379`). For the four messages
   beginning with `$N`, the lowercase victim short_descr's first letter is now
@@ -144,8 +151,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.46 |
-| Tests | consider cap 2/2, consider suite 17/17, full suite last green 5701 passed / 4 skipped (v2.14.45) |
+| Version | 2.14.47 |
+| Tests | report broadcast 1/1, info_display 18/18, full suite last green 5703 passed / 4 skipped (v2.14.46) |
+| REPORT-001 status | ✅ FIXED (do_report room broadcast uses act_to_room — PERS mask + single-delivery + TRIG_ACT) |
 | CONSIDER-001 status | ✅ FIXED (do_consider capitalizes act() buf[0]; $N-first messages cap the victim name) |
 | PRACTICE-001 status | ✅ FIXED (do_practice trainer gate precedes session/spell gates, matching ROM order) |
 | CAST-011 status | ✅ FIXED (do_cast broadcasts say_spell to room, except ventriloquate; was silent) |

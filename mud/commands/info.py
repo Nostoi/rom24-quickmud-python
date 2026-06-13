@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from mud.models.character import Character
 from mud.models.constants import LEVEL_HERO
+from mud.utils.act import act_to_room
 
 ROM_NEWLINE = "\n\r"
 _COLUMNS_PER_ROW = 6
@@ -576,21 +577,16 @@ def do_report(char: Character, args: str) -> str:
     # ROM C format: "You say 'I have %d/%d hp %d/%d mana %d/%d mv %d xp.'"
     msg_to_self = f"You say 'I have {hit}/{max_hit} hp {mana}/{max_mana} mana {move}/{max_move} mv {exp} xp.'"
 
-    # Broadcast to room
-    # ROM C format: "$n says 'I have %d/%d hp %d/%d mana %d/%d mv %d xp.'"
+    # REPORT-001: ROM src/act_info.c:2670 — act("$n says 'I have ...'", ch, NULL,
+    # NULL, TO_ROOM). Route through the canonical act_to_room helper so $n is
+    # rendered per-recipient with PERS masking (an invisible reporter masks to
+    # "someone"), descriptor-less occupants (NPCs / test chars) still receive it
+    # via the standard message channel, and TRIG_ACT fires on NPC witnesses. The
+    # prior hand-rolled `desc.send` loop baked the name, used `!=` identity, and
+    # skipped everyone without a live descriptor.
     room = getattr(char, "room", None)
-    if room:
-        char_name = getattr(char, "name", "Someone")
-        room_msg = f"{char_name} says 'I have {hit}/{max_hit} hp {mana}/{max_mana} mana {move}/{max_move} mv {exp} xp.'"
-
-        # Send to all other characters in room
-        for other in getattr(room, "people", []):
-            if other != char:
-                try:
-                    desc = getattr(other, "desc", None)
-                    if desc and hasattr(desc, "send"):
-                        desc.send(room_msg)
-                except Exception:
-                    pass
+    if room is not None:
+        room_msg = f"$n says 'I have {hit}/{max_hit} hp {mana}/{max_mana} mana {move}/{max_move} mv {exp} xp.'"
+        act_to_room(room, room_msg, char)
 
     return msg_to_self

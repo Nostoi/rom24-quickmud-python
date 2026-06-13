@@ -246,6 +246,36 @@ def test_report_full_format(test_char):
     assert output == expected, f"Expected: {expected}\nGot: {output}"
 
 
+def test_report_broadcasts_to_room_via_act_system(test_char, test_room):
+    """REPORT-001 — ROM `act("$n says 'I have ...'", ch, NULL, NULL, TO_ROOM)`.
+
+    The room broadcast must go through the act() system (per-recipient PERS
+    masking + the standard message channel + TRIG_ACT), not a hand-rolled
+    `desc.send` loop that skips descriptor-less occupants and bakes the name.
+    A descriptor-less observer (the common test/NPC case) must still receive it.
+    """
+    test_char.hit = 100
+    test_char.max_hit = 120
+    test_char.mana = 50
+    test_char.max_mana = 80
+    test_char.move = 100
+    test_char.max_move = 110
+    test_char.exp = 1500
+
+    observer = Character(name="Observer", level=10, room=test_room, is_npc=False)
+    observer.messages = []
+    test_room.people.append(observer)
+
+    do_report(test_char, "")
+
+    joined = "\n".join(observer.messages)
+    assert "says 'I have 100/120 hp 50/80 mana 100/110 mv 1500 xp.'" in joined, (
+        f"observer did not receive the room broadcast: {observer.messages!r}"
+    )
+    # ROM act() renders $n (the reporter) — the actor name appears, not the observer's.
+    assert "TestChar" in joined, joined
+
+
 # ============================================================================
 # do_wimpy() TESTS
 # ROM C: Set wimpy threshold for auto-flee
