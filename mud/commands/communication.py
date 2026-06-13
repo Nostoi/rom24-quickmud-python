@@ -384,11 +384,18 @@ def do_auction(char: Character, args: str) -> str:
             return False
         return True
 
+    # GOSSIP-001 class: ROM renders $n per recipient via PERS (act_new TO_VICT).
+    from mud.world.vision import pers
+
+    def _render(target: Character) -> str:
+        return capitalize_act_line(f"{{a{pers(char, target)} auctions '{{A{cleaned}{{a'{{x")
+
     broadcast_global(
-        capitalize_act_line(f"{{a{char.name} auctions '{{A{cleaned}{{a'{{x"),
+        None,
         channel="auction",
         exclude=char,
         should_send=_should_receive,
+        render=_render,
     )
     return capitalize_act_line(f"{{aYou auction '{{A{cleaned}{{a'{{x")
 
@@ -416,11 +423,19 @@ def do_gossip(char: Character, args: str) -> str:
             return False
         return True
 
+    # GOSSIP-001: ROM act_new("{d$n gossips '{9$t{d'{x", ch, …, d->character, TO_VICT)
+    # renders $n per recipient via PERS — an invisible gossiper masks to "someone".
+    from mud.world.vision import pers
+
+    def _render(target: Character) -> str:
+        return capitalize_act_line(f"{{d{pers(char, target)} gossips '{{t{cleaned}{{d'{{x")
+
     broadcast_global(
-        capitalize_act_line(f"{{d{char.name} gossips '{{t{cleaned}{{d'{{x"),
+        None,
         channel="gossip",
         exclude=char,
         should_send=_should_receive,
+        render=_render,
     )
     return capitalize_act_line(f"{{dYou gossip '{{t{cleaned}{{d'{{x")
 

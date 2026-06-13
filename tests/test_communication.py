@@ -289,6 +289,31 @@ def test_gossip_channel_toggle_and_broadcast():
     gossiper.clear_comm_flag(CommFlag.NOCHANNELS)
 
 
+def test_gossip001_invisible_gossiper_masks_to_someone():
+    """GOSSIP-001 — global channel `$n` is PERS-masked per recipient.
+
+    ROM `do_gossip` (src/act_comm.c:333) renders each listener's copy via
+    `act_new("{d$n gossips '{9$t{d'{x", ch, argument, d->character, TO_VICT)`,
+    so `$n` → PERS(ch, listener): an invisible gossiper a listener can't see
+    renders as "someone" (capitalized buf[2] after the `{d` colour code), not the
+    gossiper's name. The Python baked `char.name` into one shared message.
+    """
+    from mud.models.constants import AffectFlag
+
+    initialize_world("area/area.lst")
+    character_registry.clear()
+    gossiper = make_player("Gossipghost", 3001)
+    listener = make_player("Gosslistener", 3001)
+    gossiper.affected_by |= int(AffectFlag.INVISIBLE)
+    assert not listener.has_affect(AffectFlag.DETECT_INVIS)
+
+    process_command(gossiper, "gossip psst")
+
+    joined = "\n".join(listener.messages)
+    assert "Someone gossips" in joined, f"expected PERS-masked gossip; got {listener.messages!r}"
+    assert "Gossipghost" not in joined, f"invisible gossiper's name leaked: {listener.messages!r}"
+
+
 def test_grats_channel_respects_mutes():
     celebrant = make_player("Celebrant", 3001)
     listener = make_player("Listener", 3001)

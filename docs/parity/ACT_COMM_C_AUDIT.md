@@ -1002,13 +1002,15 @@ return f"You <channel> '<message>'"
 
 | Function | ROM Lines | QuickMUD | Status | Notes |
 |----------|-----------|----------|--------|-------|
-| do_gossip() | 333-388 | communication.py:271 | ✅ **100%** | Global chat channel |
-| do_grats() | 390-446 | communication.py:303 | ✅ **100%** | Congratulations channel |
-| do_quote() | 447-504 | communication.py:335 | ✅ **100%** | Quote channel |
-| do_question() | 505-561 | communication.py:367 | ✅ **100%** | Question channel |
-| do_answer() | 562-618 | communication.py:399 | ✅ **100%** | Answer channel (same flag as question) |
-| do_music() | 619-676 | communication.py:431 | ✅ **100%** | Music channel |
-| do_auction() | 276-332 | communication.py:239 | ✅ **100%** | Auction channel |
+| do_gossip() | 333-388 | communication.py:271 | ✅ **100%** | Global chat channel — **GOSSIP-001 fixed (2.14.52, see below)** |
+| do_grats() | 390-446 | communication.py:303 | ⚠️ **GOSSIP-001 class OPEN** | Congratulations channel — still bakes `char.name` (no per-recipient PERS) |
+| do_quote() | 447-504 | communication.py:335 | ⚠️ **GOSSIP-001 class OPEN** | Quote channel — bakes `char.name` |
+| do_question() | 505-561 | communication.py:367 | ⚠️ **GOSSIP-001 class OPEN** | Question channel — bakes `char.name` |
+| do_answer() | 562-618 | communication.py:399 | ⚠️ **GOSSIP-001 class OPEN** | Answer channel — bakes `char.name` |
+| do_music() | 619-676 | communication.py:431 | ⚠️ **GOSSIP-001 class OPEN** | Music channel — bakes `char.name` |
+| do_auction() | 276-332 | communication.py:239 | ✅ **100%** | Auction channel — **GOSSIP-001 fixed (2.14.52)** |
+
+**GOSSIP-001** (MINOR, ✅ FIXED for gossip+auction 2.14.52; ⚠️ remaining channels OPEN) — global channel `$n` was not PERS-masked per recipient. ROM `do_gossip`/`do_auction`/etc. walk `descriptor_list` and render each listener's copy via `act_new("{d$n gossips '{9$t{d'{x", ch, argument, d->character, TO_VICT, POS_SLEEPING)` — `$n` → `PERS(ch, listener)`, so a wiz-invis / invisible sender a listener can't see renders as "someone", not the sender's name. The Python baked `char.name` into ONE shared string passed to `broadcast_global`, leaking the sender's identity to every listener. **Fix (2.14.52):** added a backward-compatible `render: recipient -> str` param to `broadcast_global` (`mud/net/protocol.py`); `do_gossip`/`do_auction` now pass `render=lambda target: capitalize_act_line(f"…{pers(char, target)}…")`. Test: `tests/test_communication.py::test_gossip001_invisible_gossiper_masks_to_someone` (invisible gossiper → listener sees "Someone gossips", name absent). **Remaining (next agent):** apply the identical `render=` pattern to `do_grats`, `do_quote`, `do_question`, `do_answer`, `do_music` (all bake `char.name` the same way) — mechanical, same infra. | ✅/⚠️ PARTIAL (2.14.52) |
 | do_clantalk() | 677-729 | communication.py:463 | ✅ **100%** | Clan-only channel |
 | do_immtalk() | 730-766 | communication.py:494 | ✅ **100%** | Immortal-only channel |
 

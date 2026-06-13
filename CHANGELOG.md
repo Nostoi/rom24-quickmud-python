@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.52] — 2026-06-13
+
+### Fixed
+
+- **GOSSIP-001 — global channels (`gossip`, `auction`) PERS-mask `$n` per
+  recipient** — ROM `do_gossip`/`do_auction` (`src/act_comm.c`) walk
+  `descriptor_list` and render each listener's copy via
+  `act_new("{d$n gossips…", ch, …, d->character, TO_VICT)`, so `$n` →
+  `PERS(ch, listener)` — an invisible/wiz-invis sender a listener can't see shows
+  as "someone", not the sender's name. The Python `mud/commands/communication.py`
+  baked `char.name` into one shared `broadcast_global` string, leaking the
+  sender's identity. Added a backward-compatible `render` param to
+  `broadcast_global` (`mud/net/protocol.py`) and wired per-recipient PERS into
+  `do_gossip`/`do_auction`. Test:
+  `tests/test_communication.py::test_gossip001_invisible_gossiper_masks_to_someone`.
+  (The remaining global channels — grats/quote/question/answer/music — bake the
+  name the same way; tracked in `ACT_COMM_C_AUDIT.md` for a mechanical follow-up.)
+
 ## [2.14.51] — 2026-06-13
 
 ### Fixed

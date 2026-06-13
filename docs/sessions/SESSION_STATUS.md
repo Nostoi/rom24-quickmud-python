@@ -1,10 +1,19 @@
-# Session Status — 2026-06-13 — TELL-008 (tell status msgs use $E/$S pronouns) + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — GOSSIP-001 (global channel $n PERS mask) + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: TELL-008 — `do_tell` (`mud/commands/communication.py`)
+- **Last completed**: GOSSIP-001 — global channels `do_gossip`/`do_auction`
+  (`mud/commands/communication.py`) now PERS-mask `$n` per recipient via a new
+  backward-compatible `render` param on `broadcast_global` (`mud/net/protocol.py`),
+  matching ROM's `descriptor_list` walk with `act_new("{d$n gossips…", …,
+  d->character, TO_VICT)`. An invisible/wiz-invis gossiper now shows "Someone
+  gossips" to listeners who can't see them, instead of leaking the name (the Python
+  baked `char.name` into one shared message). **Remaining (filed, next agent):** the
+  other global channels — grats/quote/question/answer/music — bake the name the same
+  way; mechanical follow-up with the same `render=` pattern (v2.14.52). Before that:
+  TELL-008 — `do_tell` (`mud/commands/communication.py`)
   teller-facing status lines now render the victim's gendered pronouns via
   `act_format` ($E=He/She/It, $S=his/her/its, $N=name) instead of the baked victim
   name + "they"/"their". Six messages (not-receiving / can't-hear / linkdead /
@@ -180,8 +189,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.51 |
-| Tests | communication 18/18, full suite last green 5707 passed / 4 skipped (v2.14.50) |
+| Version | 2.14.52 |
+| Tests | communication 19/19, channels 42/42, full suite last green 5708 passed / 4 skipped (v2.14.51) |
+| GOSSIP-001 status | ✅ FIXED gossip+auction (global `$n` PERS-masked per recipient); ⚠️ grats/quote/question/answer/music OPEN (same pattern) |
 | TELL-008 status | ✅ FIXED (tell status lines use $E/$S/$N pronouns via act_format, not baked name + "they") |
 | EMOTE-005 status | ✅ FIXED (emote self renders actor name via PERS, not "You"; reverts false-premise EMOTE-002) |
 | COMPARE-001 status | ✅ FIXED (do_compare equipped-match requires same item_type + overlapping wear_flags) |

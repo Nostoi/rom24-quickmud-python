@@ -641,6 +641,29 @@ and a test pinning the wrong RNG primitive).
   victim → "He is not receiving tells.", proving it's pronoun-driven not a string
   swap). Communication suite 18/18.
 
+### `GOSSIP-001` — ✅ FIXED gossip+auction (global channel `$n` PERS-masked per recipient)
+
+- **Python**: `mud/commands/communication.py:do_gossip` + `do_auction`; `mud/net/protocol.py:broadcast_global`.
+- **ROM C**: `src/act_comm.c:333` (do_gossip) / `:276` (do_auction) — `descriptor_list`
+  walk rendering each listener's copy via `act_new("{d$n gossips '{9$t{d'{x", ch,
+  argument, d->character, TO_VICT, POS_SLEEPING)`.
+- **Gap**: the Python baked `char.name` into ONE shared message passed to
+  `broadcast_global`, so `$n` was never PERS-masked per recipient — a wiz-invis /
+  invisible sender leaked their name to every listener (ROM shows "Someone gossips"
+  to those who can't see them). Found by extending the EMOTE-005/TELL-008 `$n`/PERS
+  lens to the global channels.
+- **Fix**: added a backward-compatible `render: recipient -> str` param to
+  `broadcast_global` (used per recipient when provided; `message` only when it's
+  None). `do_gossip`/`do_auction` pass `render=lambda target:
+  capitalize_act_line(f"…{pers(char, target)}…")` — the same proven PERS
+  infrastructure behind the room-channel sweep (SAY-002/EMOTE-001).
+- **Tests**: `tests/test_communication.py::test_gossip001_invisible_gossiper_masks_to_someone`
+  (RED→GREEN — invisible gossiper → listener sees "Someone gossips", name absent).
+  Existing channel tests (visible sender → name) 42/42 unaffected.
+- **Filed for next agent** (in `ACT_COMM_C_AUDIT.md`): `do_grats`, `do_quote`,
+  `do_question`, `do_answer`, `do_music` bake `char.name` identically — apply the
+  same `render=` pattern (mechanical, shared infra now in place).
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

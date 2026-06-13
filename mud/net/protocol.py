@@ -84,11 +84,21 @@ def broadcast_room(
 
 
 def broadcast_global(
-    message: str,
+    message: str | None,
     channel: str,
     exclude: Character | None = None,
     should_send: Callable[[Character], bool] | None = None,
+    render: Callable[[Character], str] | None = None,
 ) -> None:
+    """Deliver a channel message to every eligible character.
+
+    GOSSIP-001: ROM channel commands render `$n` PER RECIPIENT via
+    `act_new(..., d->character, TO_VICT)` — an invisible sender masks to
+    "someone" for listeners who can't see them. Pass ``render`` (a
+    ``recipient -> str`` callable) to compute each listener's copy with
+    per-recipient PERS masking; ``message`` is used only when ``render`` is None
+    (legacy callers with no actor to mask).
+    """
     for char in list(character_registry):
         if char is exclude:
             continue
@@ -96,9 +106,12 @@ def broadcast_global(
             continue
         if channel in getattr(char, "muted_channels", set()):
             continue
+        per_message = render(char) if render is not None else message
+        if per_message is None:
+            continue
         writer = getattr(char, "connection", None)
         if writer is not None:
             # INV-001 SINGLE-DELIVERY — async send XOR mailbox (see broadcast_room).
-            asyncio.create_task(send_to_char(char, message))
+            asyncio.create_task(send_to_char(char, per_message))
         elif hasattr(char, "messages"):
-            char.messages.append(message)
+            char.messages.append(per_message)
