@@ -108,9 +108,12 @@ def aggressive_update() -> None:
             if victim is None:
                 continue
 
+            # mirroring ROM src/update.c:1136 — aggr_update ends each aggression
+            # with a bare multi_hit(ch, victim, TYPE_UNDEFINED). It does NOT call
+            # check_assist: auto-assist is exclusively violence_update's job
+            # (src/fight.c:90, run on the next PULSE_VIOLENCE — Python's
+            # game_loop.violence_tick). Calling check_assist here started assists
+            # a full tick early and drew extra coins from the shared MM RNG
+            # stream (the comment that used to cite "fight.c:90" mislabeled the
+            # violence_update site as if it belonged to aggr_update).
             multi_hit(mob, victim)
-
-            # ROM src/fight.c:90 - Check for assist after combat starts
-            from mud.combat.assist import check_assist
-
-            check_assist(mob, victim)

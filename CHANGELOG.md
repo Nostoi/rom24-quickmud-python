@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.29] — 2026-06-13
+
+### Fixed
+
+- **INV-048 — auto-assist no longer fires on the aggression pulse (ROM
+  `aggr_update` never calls `check_assist`)** — ROM invokes `check_assist`
+  (`src/fight.c:105-181`) from exactly one site, `violence_update`
+  (`src/fight.c:90`), once per fighting char per `PULSE_VIOLENCE`. `aggr_update`
+  (`src/update.c:1136`) ends each aggression with a bare
+  `multi_hit(ch, victim, TYPE_UNDEFINED)` and does NOT assist — so when an
+  aggressive mob aggros a player, ROM pulls the mob's room-mates in only on the
+  NEXT violence tick. The Python `aggressive_update` mistakenly called
+  `check_assist` inline (mis-citing `fight.c:90`, which is the *violence_update*
+  site), starting assists a full tick early and drawing extra `number_bits`/
+  `number_range` coins from the shared MM RNG stream — desyncing every later draw
+  in that pulse. Removed the inline call; `check_assist` now fires only from
+  `game_loop.violence_tick` (mirroring `fight.c:90`). Test:
+  `tests/integration/test_mob_ai.py::TestAggressiveUpdateDoesNotAssist::test_aggression_pulse_does_not_invoke_check_assist`.
+
 ## [2.14.28] — 2026-06-13
 
 ### Fixed

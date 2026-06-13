@@ -740,3 +740,69 @@ class TestAggressiveUpdateIterationOrder:
             character_registry.extend(saved)
             room_registry.pop(room_old.vnum, None)
             room_registry.pop(room_new.vnum, None)
+
+
+class TestAggressiveUpdateDoesNotAssist:
+    """ROM ``aggr_update`` (src/update.c:1077-1141) ends each aggression with a
+    bare ``multi_hit(ch, victim, TYPE_UNDEFINED)`` (line 1136) — it NEVER calls
+    ``check_assist``. Auto-assist is exclusively ``violence_update``'s job
+    (src/fight.c:90, run on the next PULSE_VIOLENCE). So an aggressive mob that
+    aggros a player must NOT pull its room-mates into the fight during the
+    aggression pulse itself; assists land one violence-tick later.
+
+    The Python port previously fired ``check_assist`` inline at the end of
+    ``aggressive_update`` (mis-citing fight.c:90, which is the *violence_update*
+    site), drawing extra assist coins from the shared MM RNG stream and starting
+    assists a full tick early — a parity divergence.
+    """
+
+    def test_aggression_pulse_does_not_invoke_check_assist(self, monkeypatch):
+        """mirrors ROM src/update.c:1136 — aggr_update calls only multi_hit;
+        check_assist belongs to violence_update (src/fight.c:90), not here."""
+        import mud.ai.aggressive as aggressive_module
+        import mud.combat.assist as assist_module
+
+        saved = list(character_registry)
+        character_registry.clear()
+        room = Room(vnum=999210, name="Aggro-no-assist Room")
+        room_registry[room.vnum] = room
+        try:
+            player = create_test_player("Victim", room.vnum, level=10)
+            mob = create_test_mob(room.vnum, name="lone orc", act=int(ActFlag.AGGRESSIVE))
+            assert player is not None and mob is not None
+
+            # Force the aggression coin (number_bits(1)) to pass and the victim
+            # reservoir (number_range) to pick the first eligible PC.
+            monkeypatch.setattr(aggressive_module.rng_mm, "number_bits", lambda width: 1)
+            monkeypatch.setattr(aggressive_module.rng_mm, "number_range", lambda lo, hi: 0)
+
+            attacks: list[tuple[Character, Character]] = []
+            monkeypatch.setattr(
+                aggressive_module,
+                "multi_hit",
+                lambda attacker, victim: attacks.append((attacker, victim)),
+            )
+
+            # Spy on check_assist — aggressive_update imports it function-locally
+            # (`from mud.combat.assist import check_assist`), so patching the
+            # module attribute is seen at call time.
+            assist_calls: list[tuple[Character, Character]] = []
+            monkeypatch.setattr(
+                assist_module,
+                "check_assist",
+                lambda ch, victim: assist_calls.append((ch, victim)),
+            )
+
+            aggressive_update()
+
+            # Aggression must actually have fired, else the assertion below is vacuous.
+            assert attacks == [(mob, player)], "the aggressive mob should have aggro'd the player"
+            assert assist_calls == [], (
+                "aggr_update (src/update.c:1136) must NOT call check_assist — auto-assist "
+                "is violence_update's job (src/fight.c:90), one tick later. The inline "
+                "check_assist starts assists early and consumes extra RNG coins."
+            )
+        finally:
+            character_registry.clear()
+            character_registry.extend(saved)
+            room_registry.pop(room.vnum, None)

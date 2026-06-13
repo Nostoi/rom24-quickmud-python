@@ -161,6 +161,36 @@ and a test pinning the wrong RNG primitive).
   `test_mob_extract_drains_inventory_and_equipment`). Targeted
   extract/fighting/purge regression: 16/16.
 
+### `INV-048` — auto-assist is `violence_update`-only; `aggr_update` must not assist — ✅ ENFORCED (2.14.29)
+
+- **Python**: `mud/ai/aggressive.py:aggressive_update` (removed the inline
+  `check_assist` call); contract spans `mud/game_loop.py:violence_tick`,
+  `mud/combat/assist.py:check_assist`, `mud/combat/engine.py:multi_hit`.
+- **ROM C**: `src/update.c:1136` (aggr_update's bare `multi_hit`) vs
+  `src/fight.c:90` (the sole `check_assist` site, inside `violence_update`).
+- **Gap**: ROM calls `check_assist` from exactly one place — `violence_update`,
+  once per fighting char per `PULSE_VIOLENCE`. `aggr_update` just does
+  `multi_hit(ch, victim, TYPE_UNDEFINED)` and never assists, so an aggressive
+  mob's room-mates only join the fight on the NEXT violence tick. Python's
+  `aggressive_update` erroneously called `check_assist` inline (its comment
+  mis-cited `fight.c:90`, which is the *violence_update* site, as if it belonged
+  to `aggr_update`), starting assists a full tick early and drawing extra
+  `number_bits`/`number_range` coins from the shared MM RNG stream — desyncing
+  every subsequent draw in that pulse. Found by probe-then-scope: read the full
+  `aggr_update` (already faithful for iteration order/checks/victim reservoir
+  after INV-045), noticed the trailing `check_assist` had no ROM counterpart,
+  confirmed via `grep check_assist src/fight.c` that the only call site is line
+  90 in `violence_update`.
+- **Fix**: deleted the inline `check_assist` (+ its local import) from
+  `aggressive_update`, leaving the bare `multi_hit(mob, victim)`. `check_assist`
+  now fires only from `game_loop.violence_tick` (mirroring `fight.c:90`), as ROM
+  does. Filed as INV-048 (cross-module ownership contract).
+- **Tests**: `tests/integration/test_mob_ai.py::TestAggressiveUpdateDoesNotAssist`
+  (1, spy-asserts `aggressive_update` never invokes `check_assist` while still
+  firing aggression). Full `test_mob_ai.py` 18/18; combat/game-loop regression
+  (`test_group_combat`, `test_game_loop`, `test_game_loop_order`,
+  `test_gl028_mob_spell_effect_tick`) 44 passed/1 skipped.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:
