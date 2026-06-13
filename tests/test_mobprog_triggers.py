@@ -272,7 +272,6 @@ def test_event_hooks_fire_rom_triggers(monkeypatch) -> None:
     character_registry.extend([delay_npc, random_npc])
 
     monkeypatch.setattr("mud.game_loop.reset_tick", lambda: None)
-    monkeypatch.setattr("mud.game_loop.run_npc_specs", lambda: None)
     gl._mobile_counter = 1
     game_tick()
 

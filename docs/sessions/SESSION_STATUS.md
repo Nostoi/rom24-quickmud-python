@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — GL-044 (mobile_update wander RNG primitive) + INV-048 (assist-is-violence-update-only) + extract_char chain complete (INV-020 i–v, INV-047); cross-file invariants is the active pass
+# Session Status — 2026-06-13 — INV-049 (spec_fun dispatched inside mobile_update, gated + suppressing) + GL-044 (mobile_update wander RNG primitive) + INV-048 (assist-is-violence-update-only); cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: GL-044 — `mobile_update` wander now draws its direction
+- **Last completed**: INV-049 — mob special procedures are now dispatched INSIDE
+  the `mobile_update` per-mob loop (`mud/ai/__init__.py`) at the ROM position
+  (`src/update.c:425-431`): after the charm/empty-area gates, before shop-gold,
+  triggers, scavenge, and wander, with a TRUE result `continue`ing to skip the
+  rest of that mob's tick. The previous code ran `run_npc_specs()` as a separate
+  pass over `room_registry` after the whole loop, bypassing the charm/empty gates
+  and the TRUE-suppression and reordering the shared MM RNG draws.
+  `run_npc_specs()` is kept as a test/manual entry point only and removed from
+  `game_tick` (v2.14.31). Before that: GL-044 — `mobile_update` wander now draws its direction
   with `number_bits(5)` (single 5-bit roll, aborts when >5 → wanders 6/32 of
   eligible ticks), mirroring ROM `src/update.c:498`. Previously used
   `number_door()` (the do_flee primitive, `src/db.c:3541`) which re-rolls until
@@ -28,8 +36,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.30 |
-| Tests | mob-AI 19/19, game-loop+group-combat regression 43p/1s; full suite last green 5673 passed / 4 skipped (v2.14.29) |
+| Version | 2.14.31 |
+| Tests | mob-AI 21/21, full suite last green 5676 passed / 4 skipped (v2.14.31) |
+| INV-049 status | ✅ ENFORCED (spec_fun dispatched inside mobile_update — gated by charm/empty, TRUE-result suppresses rest of tick; no separate run_npc_specs pass) |
 | GL-044 status | ✅ FIXED (mobile_update wander uses number_bits(5), aborts >5; not number_door) |
 | INV-048 status | ✅ ENFORCED (check_assist fires only from violence_tick; aggr_update never assists) |
 | INV-020 status | ✅ ENFORCED (full extract_char chain — steps i–v — on all extract legs: raw_kill, _extract_character, quit, disconnect) |

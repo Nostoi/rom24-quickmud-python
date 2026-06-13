@@ -36,7 +36,6 @@ from mud.music import song_update
 from mud.net.protocol import broadcast_global
 from mud.skills.registry import skill_registry
 from mud.spawning.reset_handler import reset_tick
-from mud.spec_funs import run_npc_specs
 from mud.time import time_info
 from mud.utils import rng_mm
 from mud.utils.act import capitalize_act_line
@@ -1726,14 +1725,17 @@ def game_tick() -> None:
         song_update()
 
     # 3. Mobile AI + NPC spec_funs — ROM: if (--pulse_mobile <= 0) { mobile_update(); }
-    #    spec_fun is called inside mobile_update in ROM src/update.c:408-430.
+    #    spec_fun is dispatched INSIDE mobile_update, per-mob and gated, exactly
+    #    as ROM src/update.c:425-431 does (INV-049). The old separate
+    #    run_npc_specs() pass after the loop ignored ROM's charm/empty gates and
+    #    could not suppress a mob's scavenge/wander, so it is no longer called
+    #    from the tick (run_npc_specs remains a direct test entry point).
     _mobile_counter -= 1
     if _mobile_counter <= 0:
         from mud.config import get_pulse_mobile
 
         _mobile_counter = get_pulse_mobile()
         mobile_update()
-        run_npc_specs()
 
     # 4. Violence (combat rounds) — ROM: if (--pulse_violence <= 0)
     #    wait/daze decrement happens every pulse; multi_hit only on cadence.

@@ -62,41 +62,59 @@ def get_spec_fun(name: str) -> Callable[..., Any] | None:
     return spec_fun_registry.get(name.lower())
 
 
-def run_npc_specs() -> None:
-    """Invoke registered spec_funs for NPCs in all rooms.
+def _resolve_spec_fun(entity: Any) -> Callable[..., Any] | None:
+    """Resolve an entity's spec_fun to a callable (instance override or proto name)."""
+    spec_attr = getattr(entity, "spec_fun", None)
+    if callable(spec_attr):
+        return spec_attr
+    if isinstance(spec_attr, str) and spec_attr:
+        func = get_spec_fun(spec_attr)
+        if func is not None:
+            return func
 
-    For each NPC (MobInstance) present in any room, if its prototype has a
-    non-empty ``spec_fun`` name and a function is registered under that name,
-    call it with the mob instance.
+    proto = getattr(entity, "prototype", None)
+    proto_spec = getattr(proto, "spec_fun", None)
+    if callable(proto_spec):
+        return proto_spec
+    if isinstance(proto_spec, str) and proto_spec:
+        return get_spec_fun(proto_spec)
+    return None
+
+
+def run_spec_fun(entity: Any) -> bool:
+    """Resolve and invoke a single NPC's ``spec_fun``; return its bool result.
+
+    Mirrors ROM ``src/update.c:425-431`` where ``mobile_update`` calls
+    ``(*ch->spec_fun)(ch)`` per mob and `continue`s on a TRUE result. The caller
+    (``mud.ai.mobile_update``) is responsible for ROM's pre-spec gates
+    (``IS_NPC`` / ``in_room`` / ``AFF_CHARM`` / empty-area) — this helper only
+    dispatches. A missing spec or a raised exception yields ``False`` so the
+    tick loop never breaks.
+    """
+    func = _resolve_spec_fun(entity)
+    if func is None:
+        return False
+    try:
+        return bool(func(entity))
+    except Exception:
+        # Spec fun failures must not break the tick loop
+        return False
+
+
+def run_npc_specs() -> None:
+    """Invoke registered spec_funs for NPCs in all rooms (test/manual entry point).
+
+    NOTE: the production tick dispatches spec_funs from within
+    ``mud.ai.mobile_update`` (ROM ``src/update.c:425-431``), per-mob and gated.
+    This standalone room-walk remains as the direct test entry point — it
+    deliberately omits ROM's charm/empty-area gates so unit tests can exercise a
+    spec in isolation.
     """
     from mud.registry import room_registry
 
     for room in list(room_registry.values()):
         for entity in list(getattr(room, "people", [])):
-            spec_attr = getattr(entity, "spec_fun", None)
-            func = None
-
-            if callable(spec_attr):
-                func = spec_attr
-            elif isinstance(spec_attr, str) and spec_attr:
-                func = get_spec_fun(spec_attr)
-
-            if func is None:
-                proto = getattr(entity, "prototype", None)
-                proto_spec = getattr(proto, "spec_fun", None)
-                if callable(proto_spec):
-                    func = proto_spec
-                elif isinstance(proto_spec, str) and proto_spec:
-                    func = get_spec_fun(proto_spec)
-
-            if func is None:
-                continue
-
-            try:
-                func(entity)
-            except Exception:
-                # Spec fun failures must not break the tick loop
-                continue
+            run_spec_fun(entity)
 
 
 def _get_position(ch: Any) -> Position:

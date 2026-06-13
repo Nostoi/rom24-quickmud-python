@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.31] — 2026-06-13
+
+### Fixed
+
+- **INV-049 — mob special procedures dispatched INSIDE `mobile_update`, not as a
+  separate pass** — ROM calls `(*ch->spec_fun)(ch)` from inside the per-mob loop
+  in `mobile_update` (`src/update.c:425-431`), *after* the charm/empty-area gates
+  (`!IS_NPC || in_room==NULL || AFF_CHARM → continue`; `area->empty &&
+  !ACT_UPDATE_ALWAYS → continue`) and *before* shop-gold, TRIG_DELAY/TRIG_RANDOM,
+  the `position != POS_STANDING` gate, scavenge, and wander. A TRUE result
+  `continue`s, skipping the rest of that mob's tick. Python instead ran
+  `run_npc_specs()` as a separate pass over `room_registry` *after* the whole
+  `mobile_update` loop — bypassing the charm gate, the empty-area gate, and the
+  TRUE-result suppression, and reordering the shared Mitchell-Moore RNG draws
+  (a spec's rolls no longer interleave per-mob with scavenge/wander). Now
+  `mobile_update` calls `run_spec_fun(mob)` at the ROM position with the gates
+  ahead of it and `continue` on TRUE; `run_npc_specs()` is retained as a
+  test/manual entry point only and is no longer called from `game_tick`. Tests:
+  `tests/integration/test_mob_ai.py::TestMobileUpdateDispatchesSpecFun`.
+
 ## [2.14.30] — 2026-06-13
 
 ### Fixed

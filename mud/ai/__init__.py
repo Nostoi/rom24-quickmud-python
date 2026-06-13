@@ -295,6 +295,17 @@ def mobile_update() -> None:
             if not _mob_has_act_flag(mob, ActFlag.UPDATE_ALWAYS):
                 continue
 
+        # mirroring ROM src/update.c:425-431 — the special procedure runs INSIDE
+        # the per-mob loop, after the charm/empty gates and BEFORE shop-gold,
+        # triggers, scavenge, and wander. A TRUE result `continue`s, skipping the
+        # rest of this mob's tick. Dispatched here (not as a separate
+        # run_npc_specs pass) so the gates and suppression match ROM exactly
+        # and the spec's RNG draws interleave per-mob with scavenge/wander. INV-049.
+        from mud.spec_funs import run_spec_fun
+
+        if run_spec_fun(mob):
+            continue
+
         shop, wealth = _resolve_shop_info(mob)
         if shop is not None and wealth > 0:
             try:

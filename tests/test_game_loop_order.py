@@ -28,7 +28,6 @@ def test_rom_order_when_all_cadence_boundaries_coincide(monkeypatch):
     monkeypatch.setattr(gl, "obj_update", lambda: order.append("obj"))
     monkeypatch.setattr(gl, "aggressive_update", lambda: order.append("aggr"))
     monkeypatch.setattr(gl, "event_tick", lambda: None)
-    monkeypatch.setattr(gl, "run_npc_specs", lambda: None)
     monkeypatch.setattr(gl, "pump_idle", lambda: None)
 
     gl.game_tick()
@@ -60,7 +59,6 @@ def test_only_violence_fires(monkeypatch):
     monkeypatch.setattr(gl, "obj_update", lambda: order.append("obj"))
     monkeypatch.setattr(gl, "aggressive_update", lambda: order.append("aggr"))
     monkeypatch.setattr(gl, "event_tick", lambda: None)
-    monkeypatch.setattr(gl, "run_npc_specs", lambda: None)
     monkeypatch.setattr(gl, "pump_idle", lambda: None)
 
     gl.game_tick()

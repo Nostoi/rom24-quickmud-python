@@ -631,6 +631,88 @@ class TestMobileWanderUsesNumberBits5:
         assert assisted, "ASSIST_ALL mob should help any mob in combat (50% probability, 20 attempts)"
 
 
+class TestMobileUpdateDispatchesSpecFun:
+    """ROM ``mobile_update`` invokes each NPC's ``spec_fun`` INSIDE the per-mob
+    loop, after the charm / empty-area gates and BEFORE shop-gold / triggers /
+    scavenge / wander; a True result `continue`s, skipping the rest of that
+    mob's tick (src/update.c:425-431).
+
+    Python historically dispatched spec_funs from a SEPARATE ``run_npc_specs()``
+    pass that ran AFTER the whole ``mobile_update`` loop, walking
+    ``room_registry`` rather than ``char_list``. That pass (a) could not
+    suppress a mob's scavenge/wander (they had already run), (b) ignored the
+    AFF_CHARM gate (a charmed dragon would still breathe), (c) ignored the
+    empty-area gate, and (d) dispatched in room-creation order instead of ROM's
+    char_list newest-first. INV-049.
+    """
+
+    def test_mobile_update_invokes_spec_fun_and_true_suppresses_wander(self, isolated_wander_rooms, monkeypatch):
+        """mirrors ROM src/update.c:425-431 — spec_fun runs inside mobile_update
+        and a True return `continue`s, so the mob does not wander this tick."""
+        import mud.ai as ai_module
+        from mud.spec_funs import register_spec_fun, spec_fun_registry
+
+        calls: list = []
+
+        def _spy(mob):
+            calls.append(mob)
+            return True  # ROM: a True result -> continue (skip wander)
+
+        register_spec_fun("spec_test_inv049", _spy)
+        # All number_bits roll 0: the wander gate (number_bits(3)==0) passes and
+        # the door roll (number_bits(5)==0 -> NORTH) is valid, so WITHOUT the
+        # spec's suppression the mob would wander north. The spec returning True
+        # must short-circuit that.
+        monkeypatch.setattr(ai_module.rng_mm, "number_bits", lambda bits: 0)
+
+        try:
+            start = isolated_wander_rooms["outdoor_start"]
+            mob = create_test_mob(start.vnum, name="spec carrier", act=0)
+            mob.spec_fun = "spec_test_inv049"
+
+            mobile_update()
+
+            assert calls == [mob], (
+                "mobile_update must dispatch the mob's spec_fun once per tick "
+                "(ROM src/update.c:425-431), not a separate run_npc_specs pass."
+            )
+            assert mob.room is start, (
+                "a spec_fun returning True must `continue` and suppress the wander (ROM src/update.c:430)."
+            )
+        finally:
+            spec_fun_registry.pop("spec_test_inv049", None)
+
+    def test_mobile_update_skips_spec_for_charmed_mob(self, isolated_wander_rooms):
+        """mirrors ROM src/update.c:420 — the AFF_CHARM `continue` precedes the
+        spec_fun call, so a charmed NPC never runs its spec."""
+        from mud.spec_funs import register_spec_fun, spec_fun_registry
+
+        calls: list = []
+
+        def _spy(mob):
+            calls.append(mob)
+            return True
+
+        register_spec_fun("spec_test_inv049_charm", _spy)
+        try:
+            start = isolated_wander_rooms["outdoor_start"]
+            mob = create_test_mob(
+                start.vnum,
+                name="charmed spec carrier",
+                act=0,
+                affected_by=int(AffectFlag.CHARM),
+            )
+            mob.spec_fun = "spec_test_inv049_charm"
+
+            mobile_update()
+
+            assert calls == [], (
+                "ROM src/update.c:420 skips charmed NPCs before spec_fun; a charmed mob's spec must not run."
+            )
+        finally:
+            spec_fun_registry.pop("spec_test_inv049_charm", None)
+
+
 class TestIndoorOutdoorRestrictions:
     """Test ACT_INDOORS and ACT_OUTDOORS movement restrictions."""
 

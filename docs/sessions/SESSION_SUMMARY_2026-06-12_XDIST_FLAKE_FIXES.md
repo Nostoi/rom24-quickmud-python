@@ -213,6 +213,36 @@ and a test pinning the wrong RNG primitive).
   (1, RED→GREEN: door roll 10 > 5 → mob stays put). Full `test_mob_ai.py`
   19/19; game-loop + group-combat regression 43 passed/1 skipped.
 
+### `INV-049` — ✅ ENFORCED (spec_fun dispatched inside `mobile_update`, gated + suppressing)
+
+- **Python**: `mud/ai/__init__.py:mobile_update` (new `run_spec_fun(mob)`
+  dispatch inside the per-mob loop), `mud/spec_funs.py` (new
+  `_resolve_spec_fun` / `run_spec_fun`; `run_npc_specs` demoted to test/manual
+  entry point), `mud/game_loop.py` (removed the `run_npc_specs()` call +
+  import from `game_tick`).
+- **ROM C**: `src/update.c:425-431` — `(*ch->spec_fun)(ch)` is called INSIDE the
+  `mobile_update` per-mob loop, after the charm/empty-area gates and before
+  shop-gold, TRIG_DELAY/TRIG_RANDOM, the `position != POS_STANDING` gate,
+  scavenge, and wander; a TRUE result `continue`s.
+- **Gap**: Python ran `run_npc_specs()` as a separate pass over `room_registry`
+  *after* the whole `mobile_update` loop. That (a) bypassed the
+  `!IS_NPC || in_room==NULL || AFF_CHARM` and `area->empty && !ACT_UPDATE_ALWAYS`
+  gates — charmed mobs and mobs in empty areas still ran their spec; (b) dropped
+  the TRUE-result suppression — a spec returning TRUE no longer skipped the rest
+  of that mob's tick (scavenge/wander still fired); (c) reordered the shared
+  Mitchell-Moore RNG draws — a spec's rolls no longer interleaved per-mob with
+  scavenge/wander, desyncing the stream. Found by probe-then-scope: read
+  `mobile_update`'s spec-dispatch position in ROM, compared against the Python
+  game-tick ordering.
+- **Fix**: `mobile_update` now calls `run_spec_fun(mob)` at the ROM position
+  (after the gates, before shop-gold) and `continue`s on TRUE; `run_npc_specs()`
+  is retained ungated as a test/manual entry point and no longer called from
+  `game_tick`. Filed as INV-049 (cross-module dispatch-ordering contract).
+- **Tests**: `tests/integration/test_mob_ai.py::TestMobileUpdateDispatchesSpecFun`
+  (2: TRUE-result suppresses wander; charmed mob's spec is skipped). Stale
+  `run_npc_specs` monkeypatches removed from `test_game_loop_order.py` (×2) and
+  `test_mobprog_triggers.py` (×1). Full suite 5676 passed / 4 skipped.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:
