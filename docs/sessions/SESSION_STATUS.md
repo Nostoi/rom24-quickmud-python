@@ -630,11 +630,13 @@ INV-NNN):
    source has no `do_hunt`/`do_track` command and no `hunting` field in `merc.h`;
    mob aggression is `aggr_update` (`src/update.c:1077`), already audited
    (GL-043/INV-045/INV-048). Do not re-probe.
-2. **Affect wear-off / update.c message surface** — `affect_update` wear-off
-   messages (`src/update.c` → `send_to_char` self + some `act(... TO_ROOM)`),
-   `gain_condition` hunger/thirst/drunk lines, `char_update` regen — check PERS/cap
-   + delivery vs the Python `mud/affects/` + `mud/game_loop.py` ticks (not yet
-   probed; the wear-off `act(... TO_ROOM)` lines are the next act()-cap candidates).
+2. ~~Affect wear-off / update.c message surface~~ — **PROBED 2026-06-13 → CLEAN, do
+   not re-probe.** Char-affect wear-off (`update.c:779`) is a literal `send_to_char
+   (msg_off)` (no cap concern). All `act()`-using update.c message sites are already
+   PERS/cap-correct in `mud/game_loop.py`: plague "$n shivers and suffers." (:848
+   `_act_to_room`), light "$p goes out." (:541 `_act_to_room`), object affect/decay
+   `msg_obj` (:1410 `capitalize_act_line(_render_obj_message(...))` + TO_CHAR/TO_ROOM
+   per ROM `update.c:940-951`). Covered by prior INV-014 / decay-loop work.
 3. **act()-lens in remaining command render paths** — info/look/who/score (mostly
    display formatting from the viewer's own perspective, likely NOT act() sites —
    verify before assuming a gap).
