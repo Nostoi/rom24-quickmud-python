@@ -198,7 +198,7 @@ See:
 
 | ROM C Function | ROM Lines | QuickMUD Location | Status | Priority | Notes |
 |----------------|-----------|-------------------|--------|----------|-------|
-| `do_password()` | 2833-2925 | ✅ `mud/commands/character.py` | ✅ **100% COMPLETE!** | P1 | **4 GAPS FIXED!** Change password (15/15 tests passing) 🎉 - See DO_PASSWORD_AUDIT.md |
+| `do_password()` | 2833-2925 | ✅ `mud/commands/character.py` | ✅ **100% COMPLETE!** | P1 | **4 GAPS FIXED!** Change password (15/15 tests passing) 🎉 - See DO_PASSWORD_AUDIT.md (archived). **PASSWORD-001 ✅ FIXED (2.14.42):** the wrong-password penalty used `ch.wait = 40` (plain assignment) where ROM `src/act_info.c:2895` uses `WAIT_STATE(ch, 40)` = `UMAX(ch->wait, 40)` — a higher existing wait was lowered to 40. Now `apply_wait_state(ch, 40)`. Surfaced by the ROM-WAIT_STATE-site cross-check (sibling of SAVE-001). Test: `tests/integration/test_password001_wait_state_umax.py` (2). |
 | `do_telnetga()` | 2927-2943 | ✅ `mud/commands/auto_settings.py` | ✅ **100% COMPLETE!** | P3 | Toggle telnet GA protocol option |
 
 ---

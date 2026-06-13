@@ -12,6 +12,7 @@ from mud.account.account_manager import save_character
 from mud.models.titles import format_title_storage
 from mud.security.hash_utils import hash_password, verify_password
 from mud.utils.text import smash_tilde
+from mud.utils.timing import apply_wait_state
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -52,8 +53,10 @@ def do_password(ch: Character, args: str) -> str:
         return "Error: No password set."
 
     if not verify_password(old_password, current_pwd):
-        # ROM C: 10-second WAIT_STATE penalty (40 pulses * 0.25s = 10s)
-        ch.wait = 40
+        # PASSWORD-001: ROM src/act_info.c:2895 — WAIT_STATE(ch, 40) (10s @ 4 pulses/s).
+        # The macro is UMAX(ch->wait, 40); a plain `= 40` would lower a higher
+        # existing wait. Use the canonical UMAX helper.
+        apply_wait_state(ch, 40)
         return "Wrong password. Wait 10 seconds."
 
     # Gap 1 (P1): Check minimum length (ROM src/act_info.c:2897-2904)

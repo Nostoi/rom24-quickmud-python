@@ -451,14 +451,19 @@ and a test pinning the wrong RNG primitive).
 - **Tests**: `tests/integration/test_save001_wait_state.py` (2, RED→GREEN —
   wait==48 after save; UMAX preserves a pre-existing wait==100).
 
-## Outstanding
+### `PASSWORD-001` — ✅ FIXED (do_password wrong-password WAIT_STATE uses UMAX)
 
-- **PASSWORD-001** (candidate, filed by SAVE-001): `mud/commands/character.py:do_password`
-  sets `ch.wait = 40` (plain assignment) on the wrong-password path where ROM
-  `src/act_info.c:2895` uses `WAIT_STATE(ch, 40)` = `UMAX(ch->wait, 40)`. A player
-  with an existing wait > 40 would have it *lowered* to 40 by the Python. Minor
-  (only matters when already waiting), but a real UMAX-vs-assign divergence — same
-  class as PICK-002. Next agent: swap to `apply_wait_state(ch, 40)` + a test.
+- **Python**: `mud/commands/character.py:do_password` (wrong-password branch).
+- **ROM C**: `src/act_info.c:2895` — `WAIT_STATE(ch, 40)` = `UMAX(ch->wait, 40)`.
+- **Gap**: Python set `ch.wait = 40` (plain assignment), *lowering* a higher
+  existing wait to 40. Sibling of SAVE-001 from the same ROM-WAIT_STATE-site
+  cross-check; same UMAX-vs-assign class as PICK-002. The `do_password` row was
+  marked "100% COMPLETE" but missed this (annotated in `ACT_INFO_C_AUDIT.md`).
+- **Fix**: `apply_wait_state(ch, 40)`.
+- **Tests**: `tests/integration/test_password001_wait_state_umax.py` (2, RED→GREEN —
+  wait==40 from zero; UMAX preserves a pre-existing wait==100).
+
+## Outstanding
 
 - **do_pick / pick_lock duplication** (filed by PICK-001): the live `pick` command
   is `mud/commands/doors.py:do_pick` (inline reimplementation), but a second,

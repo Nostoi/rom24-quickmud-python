@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.42] — 2026-06-13
+
+### Fixed
+
+- **PASSWORD-001 — `do_password` wrong-password penalty uses `UMAX`, not
+  assignment** — ROM `do_password` (`src/act_info.c:2895`) applies
+  `WAIT_STATE(ch, 40)` on a wrong old-password; the macro is `UMAX(ch->wait, 40)`.
+  The Python `mud/commands/character.py:do_password` set `ch.wait = 40` (plain
+  assignment), *lowering* a higher existing wait to 40. Now `apply_wait_state(ch, 40)`.
+  Same UMAX-vs-assign class as PICK-002, surfaced by the same ROM-WAIT_STATE-site
+  cross-check as SAVE-001. Test: `tests/integration/test_password001_wait_state_umax.py` (2).
+
 ## [2.14.41] — 2026-06-13
 
 ### Fixed

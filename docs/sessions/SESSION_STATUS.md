@@ -1,10 +1,15 @@
-# Session Status — 2026-06-13 — SAVE-001 (do_save WAIT_STATE) + ORDER-002/003 (do_order WAIT_STATE + immortal-trust) + PICK-001/002 (do_pick check_improve + WAIT_STATE) + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — PASSWORD-001 + SAVE-001 (WAIT_STATE) + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: SAVE-001 — `do_save` (`mud/commands/session.py`) now applies
+- **Last completed**: PASSWORD-001 — `do_password` (`mud/commands/character.py`)
+  wrong-password penalty now uses `apply_wait_state(ch, 40)` (UMAX) instead of
+  `ch.wait = 40` (assignment), matching ROM `src/act_info.c:2895` `WAIT_STATE(ch, 40)`
+  — a higher existing wait is preserved, not lowered. Sibling of SAVE-001 from the
+  same ROM-WAIT_STATE-site cross-check (v2.14.42). Before that: SAVE-001 — `do_save`
+  (`mud/commands/session.py`) now applies
   `apply_wait_state(ch, 4 * get_pulse_violence())` (=48) after the save+message,
   matching ROM `src/act_comm.c:1530` `WAIT_STATE(ch, 4 * PULSE_VIOLENCE)`. The code
   saved but applied no wait (the audit doc's "+ WAIT_STATE ✅ 100%" was a stale
@@ -111,8 +116,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.41 |
-| Tests | save wait-state 2/2, full suite last green 5692 passed / 4 skipped (v2.14.40) |
+| Version | 2.14.42 |
+| Tests | password wait-state 2/2, save wait-state 2/2, full suite last green 5694 passed / 4 skipped (v2.14.41) |
+| PASSWORD-001 status | ✅ FIXED (do_password wrong-pwd penalty uses UMAX, not =40 assignment) |
 | SAVE-001 status | ✅ FIXED (do_save applies WAIT_STATE(ch, 4*PULSE_VIOLENCE=48); stale false-✅ corrected) |
 | ORDER-003 status | ✅ FIXED (do_order gate adds IS_IMMORTAL(victim) && trust>=orderer clause) |
 | ORDER-002 status | ✅ FIXED (do_order applies WAIT_STATE(ch, PULSE_VIOLENCE=12) on landed orders; stale false-✅ corrected) |
