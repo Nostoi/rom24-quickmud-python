@@ -1,10 +1,16 @@
-# Session Status — 2026-06-13 — MAGIC-023 (frenzy $N PERS + $e quirk) + MAGIC-022 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-023 — `spell_frenzy` (`mud/skills/handlers.py:frenzy`,
+- **Last completed**: MAGIC-024 — `giant_strength` ("$N can't get any stronger.")
+  and `haste` ("$N is already moving as fast as $E can.") (`mud/skills/handlers.py`)
+  now render via `act_format` — $N = PERS short_descr (cap), $E = victim's subject
+  pronoun (sexless → "it", not "they") — matching ROM `act(..., TO_CHAR)`
+  (`src/magic.c:3028,3074`). Continues the MAGIC-022 batch (giant_strength/haste
+  struck; infravision/fly/disarm/faerie_fire/pass_door/fireproof/envenom/bless-object
+  remain) (v2.14.68). Before that: MAGIC-023 — `spell_frenzy` (`mud/skills/handlers.py:frenzy`,
   4 sites) "$N is already in a frenzy." / "$N doesn't look like $e wants to fight
   anymore." / "Your god doesn't seem to like $N" now render via `act_format`
   ($N = PERS short_descr + cap) instead of baked name + literal "they". Replicates
@@ -300,8 +306,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.67 |
-| Tests | frenzy-pers 2/2, frenzy+buffs 29/29, full suite last green 5729 passed / 4 skipped (v2.14.66) |
+| Version | 2.14.68 |
+| Tests | strength/haste-pers 2/2, buffs+debuffs 41/41, full suite last green 5731 passed / 4 skipped (v2.14.67) |
+| MAGIC-024 status | ✅ FIXED giant_strength/haste (`$N`/`$E` PERS; sexless→"it") |
 | MAGIC-023 status | ✅ FIXED frenzy (`$N` PERS ×4, `$e`-caster quirk replicated) |
 | MAGIC-022 status | ✅ FIXED protection evil/good (`$N` PERS ×6); ⚠️ ~13-site baked-name batch tracked |
 | MAGIC-021 status | ✅ FIXED change_sex ($s(?) quirk replicated); **MAGIC-016 cluster CLOSED** |

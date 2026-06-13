@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.68] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-024 — giant_strength/haste blocking messages use `$N`/`$E` PERS** — ROM
+  `spell_giant_strength` renders `act("$N can't get any stronger.", …)` and
+  `spell_haste` `act("$N is already moving as fast as $E can.", …)` (`$E` = the
+  victim's subject pronoun). The Python baked the keyword `name` + literal "they",
+  so hasting an already-hasted sexless "Runner" showed "Runner is already moving as
+  fast as they can." vs ROM "… as it can." (Sex.NONE → "it"). Both now use
+  `act_format`. Continues the MAGIC-022 batch. Test:
+  `tests/integration/test_magic024_strength_haste_pers.py`.
+
 ## [2.14.67] — 2026-06-13
 
 ### Fixed

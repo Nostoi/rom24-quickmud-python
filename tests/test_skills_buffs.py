@@ -502,7 +502,9 @@ def test_haste_dispels_slow_or_blocks_duplicates(monkeypatch) -> None:
     target.apply_spell_effect(SpellEffect(name="haste", duration=5, level=20, affect_flag=AffectFlag.HASTE))
 
     assert skill_handlers.haste(caster, target) is False
-    assert caster.messages[-1] == "Runner is already moving as fast as they can."
+    # MAGIC-024: ROM act("$N is already moving as fast as $E can.", …) — $E is the
+    # victim's subject pronoun; a sexless "Runner" (Sex.NONE) renders "it", not "they".
+    assert caster.messages[-1] == "Runner is already moving as fast as it can."
 
     target.remove_spell_effect("haste")
     caster.messages.clear()

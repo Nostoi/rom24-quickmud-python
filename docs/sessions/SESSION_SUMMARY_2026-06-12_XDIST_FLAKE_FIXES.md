@@ -933,6 +933,23 @@ and a test pinning the wrong RNG primitive).
   documented** — `change_sex`'s `$s(?)` and `frenzy`'s `$e` both render the
   *caster's* pronoun where grammar wants the victim's; replicate exactly.
 
+### `MAGIC-024` — ✅ FIXED (giant_strength/haste use `$N`/`$E` PERS; sexless→"it")
+
+- **Python**: `mud/skills/handlers.py:giant_strength`/`haste`.
+- **ROM C**: `src/magic.c:3028` `act("$N can't get any stronger.", …)` + `:3074` `act("$N is already moving as fast as $E can.", …)`.
+- **Gap**: baked the keyword `name` + literal "they". `$N` = PERS short_descr (cap);
+  haste's `$E` = the **victim's** subject pronoun (correct uppercase `$E`, unlike
+  frenzy's actor-`$e`). Hasting an already-hasted sexless "Runner" showed "Runner is
+  already moving as fast as they can." vs ROM "… as **it** can." (Sex.NONE → "it").
+- **Fix**: both via `act_format` ($N + $E). Re-baselined the existing
+  `test_haste_dispels_slow_or_blocks_duplicates` ("they"→"it").
+- **Tests**: `tests/integration/test_magic024_strength_haste_pers.py` (giant_strength
+  NPC → "A green goblin can't get any stronger."; haste female NPC → "she can").
+  Buffs+debuffs suites 41/41.
+- **MAGIC-022 batch status**: protection ✅, frenzy ✅, giant_strength ✅, haste ✅ —
+  still tracked: infravision, fly, disarm, faerie_fire, pass_door, fireproof,
+  envenom, bless-object (~9 sites).
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

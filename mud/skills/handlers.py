@@ -5008,7 +5008,8 @@ def giant_strength(
         if target is caster:
             _send_to_char(caster, "You are already as strong as you can get!")
         else:
-            _send_to_char(caster, f"{_character_name(target)} can't get any stronger.")
+            # MAGIC-024: ROM act("$N can't get any stronger.", ch, NULL, victim, TO_CHAR).
+            _send_to_char(caster, act_format("$N can't get any stronger.", recipient=caster, actor=caster, arg2=target))
         return False
 
     base_level = override_level if override_level is not None else getattr(caster, "level", 0)
@@ -5079,8 +5080,12 @@ def haste(
         if target is caster:
             _send_to_char(caster, "You can't move any faster!")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} is already moving as fast as they can.")
+            # MAGIC-024: ROM act("$N is already moving as fast as $E can.", ch, NULL,
+            # victim, TO_CHAR) — $N PERS short_descr, $E = victim's subject pronoun.
+            _send_to_char(
+                caster,
+                act_format("$N is already moving as fast as $E can.", recipient=caster, actor=caster, arg2=target),
+            )
         return False
 
     off_flags = int(getattr(target, "off_flags", 0) or 0)
@@ -5088,8 +5093,12 @@ def haste(
         if target is caster:
             _send_to_char(caster, "You can't move any faster!")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} is already moving as fast as they can.")
+            # MAGIC-024: ROM act("$N is already moving as fast as $E can.", ch, NULL,
+            # victim, TO_CHAR) — $N PERS short_descr, $E = victim's subject pronoun.
+            _send_to_char(
+                caster,
+                act_format("$N is already moving as fast as $E can.", recipient=caster, actor=caster, arg2=target),
+            )
         return False
 
     base_level = override_level if override_level is not None else getattr(caster, "level", 0)
