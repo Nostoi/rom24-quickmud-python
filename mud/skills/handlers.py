@@ -3044,8 +3044,10 @@ def detect_evil(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You can already sense evil.")
         else:
-            target_name = getattr(target, "name", None) or "Someone"
-            _send_to_char(caster, f"{target_name} can already detect evil.")
+            # MAGIC-034: ROM act("$N can already detect evil.", ch, NULL, victim, TO_CHAR) (magic.c:1846).
+            _send_to_char(
+                caster, act_format("$N can already detect evil.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -3076,8 +3078,10 @@ def detect_good(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You can already sense good.")
         else:
-            target_name = getattr(target, "name", None) or "Someone"
-            _send_to_char(caster, f"{target_name} can already detect good.")
+            # MAGIC-034: ROM act("$N can already detect good.", ch, NULL, victim, TO_CHAR) (magic.c:1875).
+            _send_to_char(
+                caster, act_format("$N can already detect good.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -3108,8 +3112,11 @@ def detect_hidden(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You are already as alert as you can be.")
         else:
-            target_name = getattr(target, "name", None) or "Someone"
-            _send_to_char(caster, f"{target_name} can already sense hidden lifeforms.")
+            # MAGIC-034: ROM act("$N can already sense hidden lifeforms.", ch, NULL, victim, TO_CHAR) (magic.c:1905).
+            _send_to_char(
+                caster,
+                act_format("$N can already sense hidden lifeforms.", recipient=caster, actor=caster, arg2=target),
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -3140,8 +3147,11 @@ def detect_invis(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You can already see invisible.")
         else:
-            target_name = getattr(target, "name", None) or "Someone"
-            _send_to_char(caster, f"{target_name} can already see invisible things.")
+            # MAGIC-034: ROM act("$N can already see invisible things.", ch, NULL, victim, TO_CHAR) (magic.c:1936).
+            _send_to_char(
+                caster,
+                act_format("$N can already see invisible things.", recipient=caster, actor=caster, arg2=target),
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -3172,8 +3182,10 @@ def detect_magic(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You can already sense magical auras.")
         else:
-            target_name = getattr(target, "name", None) or "Someone"
-            _send_to_char(caster, f"{target_name} can already detect magic.")
+            # MAGIC-034: ROM act("$N can already detect magic.", ch, NULL, victim, TO_CHAR) (magic.c:1968).
+            _send_to_char(
+                caster, act_format("$N can already detect magic.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)

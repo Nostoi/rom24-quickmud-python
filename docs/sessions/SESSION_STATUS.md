@@ -1,10 +1,21 @@
-# Session Status — 2026-06-13 — MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-033 — `know_alignment` (`mud/skills/handlers.py:know_alignment`
+- **Last completed**: MAGIC-034 — the 5 sibling detect_* spells
+  (`detect_evil`/`good`/`hidden`/`invis`/`magic`, `mud/skills/handlers.py`)
+  cross-target "can already …" duplicate-cast rejects now render via
+  `act_format("$N can already …", arg2=target)` ($N = PERS victim short_descr, cap)
+  instead of the baked keyword `name`, matching ROM
+  `act(..., TO_CHAR)` (`src/magic.c:1846/1875/1905/1936/1968`); self-cast literals
+  were already correct. Re-baselined the 5 existing duplicate-gating tests
+  (lit-room setup for PERS). Found by the continuing act()-lens sweep.
+  **Filed next:** more baked `$N` lines from the same grep — "$N looks very
+  uncomfortable." (magic.c:1801), "$N does not seem to be affected." (:2027/:2059),
+  "$N is protected by $S evil." (:2053, TO_ROOM) (v2.14.79). Before that:
+  MAGIC-033 — `know_alignment` (`mud/skills/handlers.py:know_alignment`
   ~5860) now renders all 7 alignment-band messages via `act_format("$N …", arg2=victim)`,
   matching ROM `spell_know_alignment`'s single `act(msg, ch, NULL, victim, TO_CHAR)`
   (`src/magic.c:3674-3690`). Three divergences fixed: NPC victims now show the
@@ -395,9 +406,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.78 |
-| Tests | magic033 3/3, know_alignment band tests 27/27, full suite green 5754 passed / 4 skipped (v2.14.78) |
+| Version | 2.14.79 |
+| Tests | magic034 5/5, detect tests 42/42, full suite green 5759 passed / 4 skipped (v2.14.79) |
 | MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
+| MAGIC-034 status | ✅ FIXED detect_* cluster (5 spells) cross-target `$N` PERS cap; further `$N` lines filed (uncomfortable/not-affected/protected-by-evil) |
 | MAGIC-033 status | ✅ FIXED know_alignment via act("$N") — NPC short_descr cap, no "You" self-variant, "evil!." typo preserved |
 | MAGIC-032 status | ✅ FIXED sanctuary cross-target `$N` PERS cap |
 | MAGIC-031 status | ✅ FIXED slow/stone_skin cross-target `$N` PERS cap (self-legs were correct literals) |

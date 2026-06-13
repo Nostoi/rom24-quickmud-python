@@ -24,6 +24,7 @@ from mud.models.character import Character
 from mud.models.constants import AffectFlag, ItemType, Position
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
+from mud.models.room import Room
 from mud.skills.handlers import (
     detect_evil,
     detect_good,
@@ -103,6 +104,11 @@ def test_detect_evil_applies_affect_self_and_duration() -> None:
 def test_detect_evil_other_target_and_duplicate_gating_messages() -> None:
     caster = make_character(name="Cleric", level=18, is_npc=False)
     target = make_character(name="Scout", level=12, is_npc=False)
+    # MAGIC-034: the duplicate-cast reject renders act("$N …") — PERS needs the
+    # caster to see the target (a lit room), else it masks to "Someone".
+    _room = Room(vnum=98020, name="Sanctum")
+    _room.add_character(caster)
+    _room.add_character(target)
 
     assert detect_evil(caster, target) is True
     _assert_detect_effect(target, name="detect evil", flag=AffectFlag.DETECT_EVIL, level=18)
@@ -134,6 +140,10 @@ def test_detect_good_applies_affect_self_and_duration() -> None:
 def test_detect_good_other_target_and_duplicate_gating_messages() -> None:
     caster = make_character(name="Paladin", level=21, is_npc=False)
     target = make_character(name="Squire", level=10, is_npc=False)
+    # MAGIC-034: lit room so the act("$N …") reject resolves PERS to the name.
+    _room = Room(vnum=98021, name="Sanctum")
+    _room.add_character(caster)
+    _room.add_character(target)
 
     assert detect_good(caster, target) is True
     _assert_detect_effect(target, name="detect good", flag=AffectFlag.DETECT_GOOD, level=21)
@@ -165,6 +175,10 @@ def test_detect_hidden_applies_affect_self_and_duration() -> None:
 def test_detect_hidden_other_target_and_duplicate_gating_messages() -> None:
     caster = make_character(name="Ranger", level=13, is_npc=False)
     target = make_character(name="Scout", level=8, is_npc=False)
+    # MAGIC-034: lit room so the act("$N …") reject resolves PERS to the name.
+    _room = Room(vnum=98022, name="Sanctum")
+    _room.add_character(caster)
+    _room.add_character(target)
 
     assert detect_hidden(caster, target) is True
     _assert_detect_effect(target, name="detect hidden", flag=AffectFlag.DETECT_HIDDEN, level=13)
@@ -196,6 +210,10 @@ def test_detect_invis_applies_affect_self_and_duration() -> None:
 def test_detect_invis_other_target_and_duplicate_gating_messages() -> None:
     caster = make_character(name="Seer", level=24, is_npc=False)
     target = make_character(name="Watcher", level=10, is_npc=False)
+    # MAGIC-034: lit room so the act("$N …") reject resolves PERS to the name.
+    _room = Room(vnum=98023, name="Sanctum")
+    _room.add_character(caster)
+    _room.add_character(target)
 
     assert detect_invis(caster, target) is True
     _assert_detect_effect(target, name="detect invis", flag=AffectFlag.DETECT_INVIS, level=24)
@@ -227,6 +245,10 @@ def test_detect_magic_applies_affect_self_and_duration() -> None:
 def test_detect_magic_other_target_and_duplicate_gating_messages() -> None:
     caster = make_character(name="Wizard", level=9, is_npc=False)
     target = make_character(name="Apprentice", level=5, is_npc=False)
+    # MAGIC-034: lit room so the act("$N …") reject resolves PERS to the name.
+    _room = Room(vnum=98024, name="Sanctum")
+    _room.add_character(caster)
+    _room.add_character(target)
 
     assert detect_magic(caster, target) is True
     _assert_detect_effect(target, name="detect magic", flag=AffectFlag.DETECT_MAGIC, level=9)

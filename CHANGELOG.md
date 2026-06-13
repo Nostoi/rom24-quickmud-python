@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.79] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-034 — detect_* duplicate-cast rejects use `$N` PERS** — the 5 sibling
+  detect spells (`detect_evil`/`good`/`hidden`/`invis`/`magic`) baked the keyword
+  `name` into their cross-target "can already …" reject. ROM
+  (`src/magic.c:1846/1875/1905/1936/1968`) renders each as `act("$N can already …",
+  ch, NULL, victim, TO_CHAR)` — `$N` = PERS(victim) = NPC short_descr, capitalized.
+  Casting detect evil on an already-detecting NPC "a green goblin" now shows "A
+  green goblin can already detect evil." (was lowercase keyword). All 5 cross-legs
+  use `act_format`; the self-cast literals were already correct. Test:
+  `tests/integration/test_magic034_detect_cluster_pers.py`.
+
 ## [2.14.78] — 2026-06-13
 
 ### Fixed
