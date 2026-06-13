@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — FIGHT-062 (do_flee act broadcast) + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — COMPARE-001 (do_compare wear_flags match) + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: FIGHT-062 — `do_flee` (`mud/commands/combat.py`) "$n has
+- **Last completed**: COMPARE-001 — `do_compare` (`mud/commands/compare.py`)
+  arg2-empty equipped-match (`_find_equipped_match`) now requires the **same
+  item_type AND overlapping wear_flags** (`& ~ITEM_TAKE`), matching ROM
+  `src/act_info.c:2323-2332`. The old code returned the first equipped non-weapon
+  item for ARMOR, so "compare ring" wrongly compared against a worn helmet (no
+  shared wear slot). Rewrote to iterate `char.equipment` with the overlap check.
+  Found by re-verifying the "do_compare 100% COMPLETE" audit row (v2.14.49). Before
+  that: FIGHT-062 — `do_flee` (`mud/commands/combat.py`) "$n has
   fled!" room broadcast now routes through `act_to_room(was_in, "$n has fled!",
   char)` instead of a hand-rolled `desc.send` loop that baked `char.name` (no `$n`
   PERS masking) and skipped descriptor-less witnesses (NPCs got no TRIG_ACT, the
@@ -157,8 +164,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.48 |
-| Tests | flee broadcast 1/1, flee suite 17/17, full suite last green 5704 passed / 4 skipped (v2.14.47) |
+| Version | 2.14.49 |
+| Tests | compare wear-flags 2/2, compare suite 29/29, full suite last green 5705 passed / 4 skipped (v2.14.48) |
+| COMPARE-001 status | ✅ FIXED (do_compare equipped-match requires same item_type + overlapping wear_flags) |
 | FIGHT-062 status | ✅ FIXED (do_flee "$n has fled!" uses act_to_room — PERS mask + single-delivery + TRIG_ACT) |
 | REPORT-001 status | ✅ FIXED (do_report room broadcast uses act_to_room — PERS mask + single-delivery + TRIG_ACT) |
 | CONSIDER-001 status | ✅ FIXED (do_consider capitalizes act() buf[0]; $N-first messages cap the victim name) |

@@ -244,6 +244,39 @@ class TestDoCompareCriticalGaps:
         # Verify ROM C default message
         assert "can't compare" in result.lower()
 
+    def test_arg2_empty_requires_overlapping_wear_flags(self, test_char):
+        """COMPARE-001 — ROM src/act_info.c:2330 the arg2-empty equipped match
+        requires same item_type AND overlapping wear_flags (`& ~ITEM_TAKE`). A
+        carried ring (WEAR_FINGER) must NOT match a worn helmet (WEAR_HEAD)."""
+        from mud.models.constants import WearFlag, WearLocation
+
+        ring = create_armor("a gold ring", 1, 1, 1)
+        ring.wear_flags = int(WearFlag.TAKE | WearFlag.WEAR_FINGER)
+        test_char.inventory.append(ring)
+
+        helmet = create_armor("a steel helm", 5, 5, 5)
+        helmet.wear_flags = int(WearFlag.TAKE | WearFlag.WEAR_HEAD)
+        test_char.equipment = {int(WearLocation.HEAD): helmet}
+
+        result = do_compare(test_char, "ring")
+        assert "aren't wearing anything comparable" in result.lower(), result
+
+    def test_arg2_empty_matches_overlapping_wear_flags(self, test_char):
+        """A carried ring IS comparable to a worn ring (both WEAR_FINGER overlap)."""
+        from mud.models.constants import WearFlag, WearLocation
+
+        ring1 = create_armor("a gold ring", 1, 1, 1)
+        ring1.wear_flags = int(WearFlag.TAKE | WearFlag.WEAR_FINGER)
+        test_char.inventory.append(ring1)
+
+        ring2 = create_armor("a silver ring", 5, 5, 5)
+        ring2.wear_flags = int(WearFlag.TAKE | WearFlag.WEAR_FINGER)
+        test_char.equipment = {int(WearLocation.FINGER_L): ring2}
+
+        result = do_compare(test_char, "gold")
+        assert "comparable" not in result.lower(), result
+        assert "look" in result.lower(), result  # a real comparison was rendered
+
     def test_act_formatting_substitution(self, test_char):
         """
         CRITICAL GAP FIX 1: Use act() system with $p and $P placeholders.

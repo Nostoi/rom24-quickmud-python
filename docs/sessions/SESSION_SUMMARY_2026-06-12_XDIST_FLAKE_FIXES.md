@@ -578,6 +578,27 @@ and a test pinning the wrong RNG primitive).
   descriptor-less witness in the fled-from room receives the `$n`-rendered line).
   Existing flee tests (054/061/043/still-recovering/moves-character) 17/17.
 
+### `COMPARE-001` — ✅ FIXED (do_compare equipped-match requires overlapping wear slots)
+
+- **Python**: `mud/commands/compare.py:_find_equipped_match`.
+- **ROM C**: `src/act_info.c:2323-2332` — the arg2-empty branch breaks on the
+  first worn item with `obj1->item_type == obj2->item_type && (obj1->wear_flags &
+  obj2->wear_flags & ~ITEM_TAKE) != 0`.
+- **Gap**: the Python returned the first equipped non-weapon item for ARMOR (and
+  only handled WEAPON/ARMOR types), ignoring the wear_flags overlap — so
+  "compare ring" compared a WEAR_FINGER ring against a worn WEAR_HEAD helmet,
+  where ROM requires a shared wear slot and would say "You aren't wearing anything
+  comparable." Found by re-verifying the "do_compare 100% COMPLETE" row; the
+  `$p`/`$P` render + ACT-CAP was already correct via `act_format` (unlike
+  do_consider).
+- **Fix**: rewrote `_find_equipped_match` to iterate `char.equipment.values()`
+  (the worn items = ROM's `wear_loc != WEAR_NONE` entries) matching item_type and
+  `(obj1_wear & obj2_wear & ~TAKE) != 0`.
+- **Tests**: `tests/integration/test_compare_critical_gaps.py` (2, RED→GREEN —
+  ring↔helmet (no overlap) is "not comparable"; ring↔ring (WEAR_FINGER overlap)
+  renders a real comparison). Existing 10 compare tests (two-explicit-item path)
+  unaffected. Compare suite 29/29.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

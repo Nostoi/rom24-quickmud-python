@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.49] — 2026-06-13
+
+### Fixed
+
+- **COMPARE-001 — `do_compare` equipped-match requires overlapping wear slots** —
+  when `compare <item>` is used with no second item, ROM (`src/act_info.c:2323-2332`)
+  searches the worn items for the first with the **same item_type** AND a shared
+  wear slot (`obj1->wear_flags & obj2->wear_flags & ~ITEM_TAKE`). The Python
+  `mud/commands/compare.py:_find_equipped_match` returned the first equipped
+  non-weapon item for ARMOR, ignoring wear_flags — so "compare ring" wrongly
+  compared the ring against a worn helmet. Rewrote it to iterate `char.equipment`
+  matching item_type + wear_flags overlap. Test:
+  `tests/integration/test_compare_critical_gaps.py` (2 new — non-overlapping ring↔helmet
+  is "not comparable"; overlapping ring↔ring compares).
+
 ## [2.14.48] — 2026-06-13
 
 ### Fixed

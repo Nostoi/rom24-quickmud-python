@@ -7,7 +7,7 @@ ROM Reference: src/act_info.c do_compare (lines 2297-2395)
 from __future__ import annotations
 
 from mud.models.character import Character
-from mud.models.constants import ItemType, WearLocation
+from mud.models.constants import ItemType, WearFlag
 from mud.utils.act import act_format
 from mud.world.obj_find import get_obj_carry
 
@@ -94,17 +94,34 @@ def do_compare(char: Character, args: str) -> str:
     return act_format(msg, recipient=char, actor=char, arg1=obj1, arg2=obj2)
 
 
-def _find_equipped_match(char: Character, obj) -> object | None:
-    """Find an equipped item of the same type to compare against."""
-    item_type = getattr(obj, "item_type", 0)
-    equipped = getattr(char, "equipment", {})
+def _find_equipped_match(char: Character, obj1) -> object | None:
+    """Find a worn item comparable to ``obj1``.
 
-    if item_type == ItemType.WEAPON:
-        return equipped.get(int(WearLocation.WIELD))
-    elif item_type == ItemType.ARMOR:
-        # Check all armor slots (anything that isn't the weapon/held slot).
-        for slot, eq_obj in equipped.items():
-            if eq_obj and slot not in (int(WearLocation.WIELD), int(WearLocation.HOLD)):
-                return eq_obj
+    COMPARE-001: mirrors ROM ``src/act_info.c:2323-2332`` — iterate the worn
+    items and break on the first that has the **same item_type** AND **overlapping
+    wear_flags** with ``obj1`` (excluding ``ITEM_TAKE``):
+
+        if (obj2->wear_loc != WEAR_NONE && can_see_obj(ch, obj2)
+            && obj1->item_type == obj2->item_type
+            && (obj1->wear_flags & obj2->wear_flags & ~ITEM_TAKE) != 0)
+
+    The previous Python returned the first equipped non-weapon item for ARMOR,
+    which wrongly matched e.g. a ring (WEAR_FINGER) against a worn helmet
+    (WEAR_HEAD) where ROM requires a shared wear slot. Worn items live in
+    ``char.equipment`` (ROM's ``wear_loc != WEAR_NONE`` carrying entries).
+    """
+    obj1_type = getattr(obj1, "item_type", 0)
+    obj1_wear = int(getattr(obj1, "wear_flags", 0) or 0)
+    take = int(WearFlag.TAKE)
+    equipped = getattr(char, "equipment", {}) or {}
+
+    for obj2 in equipped.values():
+        if obj2 is None or obj2 is obj1:
+            continue
+        if getattr(obj2, "item_type", 0) != obj1_type:
+            continue
+        obj2_wear = int(getattr(obj2, "wear_flags", 0) or 0)
+        if (obj1_wear & obj2_wear & ~take) != 0:
+            return obj2
 
     return None
