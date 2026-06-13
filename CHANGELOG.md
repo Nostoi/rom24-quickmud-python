@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.59] — 2026-06-13
+
+### Fixed
+
+- **TRIP-001 — `trip` blocking messages use ROM pronouns/PERS** — ROM `do_trip`
+  (`src/fight.c`) renders `act("$S feet aren't on the ground.", …)` (`$S`=his/her/its),
+  `act("$N is already down.", …)` (`$N`=PERS short_descr), and `act("$N is your
+  beloved master.", …)`. The Python `mud/skills/handlers.py:trip` baked "Their feet
+  aren't on the ground.", the keyword name for "is already down.", and "They are
+  your beloved master." (also "are" vs ROM "is"). So tripping a male flyer showed
+  "Their feet…" vs ROM "His feet…", and an already-down NPC "goblin sneaky is
+  already down." vs ROM "A sneaky goblin is already down." Rendered all three via
+  `act_format`. Same class as TELL-008/FIGHT-064; the handler already used
+  act_format for its other lines. Test:
+  `tests/test_skills_combat.py::test_trip001_messages_use_rom_pronoun_and_pers`.
+
 ## [2.14.58] — 2026-06-13
 
 ### Fixed

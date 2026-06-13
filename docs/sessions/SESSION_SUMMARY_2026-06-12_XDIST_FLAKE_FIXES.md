@@ -763,6 +763,23 @@ and a test pinning the wrong RNG primitive).
   "Master is your beloved master.") and the `.lower()` pet/murder-safety tests stay
   green. Combat+skill-combat+safety suites 151/151.
 
+### `TRIP-001` — ✅ FIXED (do_trip blocking messages use `$S`/`$N` ROM pronouns)
+
+- **Python**: `mud/skills/handlers.py:trip`.
+- **ROM C**: `src/fight.c` `do_trip` — `act("$S feet aren't on the ground.", …)`,
+  `act("$N is already down.", …)`, `act("$N is your beloved master.", …)`.
+- **Gap**: three messages baked literal "Their"/"They" or the keyword name where
+  ROM uses `$S` (his/her/its, capitalized at start) and `$N` (PERS short_descr,
+  capitalized). The beloved-master line even said "They **are**" vs ROM "$N **is**".
+  The handler already used `act_format` for its disarm/dirt-kick lines, so this was
+  a self-inconsistency. Found applying the `act()`-rendering lens to fight.c skills.
+- **Fix**: all three via `act_format("$S …"/"$N …", recipient=caster, actor=caster, arg2=victim)`.
+- **Tests**: `tests/test_skills_combat.py::test_trip001_messages_use_rom_pronoun_and_pers`
+  (male flyer → "His feet aren't on the ground."; already-down NPC → "A sneaky
+  goblin is already down." — used an INSIDE/lit room so `can_see`/PERS resolves the
+  short_descr rather than masking to "Someone"). Existing trip tests use substring
+  so unaffected. Skill-combat suites 112/112.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

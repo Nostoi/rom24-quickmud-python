@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — FIGHT-064 (kill/murder safety msgs PERS short_descr) + FIGHT-063 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — TRIP-001 (trip blocking msgs $S/$N pronouns) + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: FIGHT-064 — the kill/murder safety messages "$N is your
+- **Last completed**: TRIP-001 — `do_trip` (`mud/skills/handlers.py:trip`) three
+  blocking messages now render via `act_format`: "$S feet aren't on the ground."
+  (his/her/its, was "Their"), "$N is already down." (PERS short_descr + cap, was
+  the keyword name), "$N is your beloved master." (was "They are your beloved
+  master." — wrong pronoun AND "are" vs ROM "is"), matching ROM `act(..., TO_CHAR)`
+  (`src/fight.c` do_trip). The handler already used act_format for its disarm/dirt
+  lines — this was an inconsistency. Found applying the `act()`-rendering lens to
+  fight.c skill commands (v2.14.59). Before that: FIGHT-064 — the kill/murder safety
+  messages "$N is your
   beloved master." and "But $N looks so cute and cuddly..." now render via
   `act_format("$N …", arg2=victim)` in BOTH copies (`combat.py:_kill_safety_message`
   + `murder.py:_murder_safety_check`), matching ROM `act("$N …", ch, NULL, victim,
@@ -232,8 +240,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.58 |
-| Tests | combat+skill-combat+safety 151/151, full suite last green 5714 passed / 4 skipped (v2.14.57) |
+| Version | 2.14.59 |
+| Tests | skill-combat 112/112, full suite last green 5715 passed / 4 skipped (v2.14.58) |
+| TRIP-001 status | ✅ FIXED (do_trip 3 blocking msgs use $S/$N pronouns via act_format) |
 | FIGHT-064 status | ✅ FIXED (kill/murder safety msgs use $N PERS short_descr; both combat.py + murder.py copies) |
 | FIGHT-063 status | ✅ FIXED (backstab hurt msg uses $N PERS short_descr + cap via act_format) |
 | GET-014 status | ✅ FIXED (carry-limit msg uses $d first keyword + capitalization via act_format; closes ⚠️ SIMILAR) |

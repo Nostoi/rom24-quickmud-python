@@ -250,3 +250,33 @@ def test_trip_checks_flying_and_self_trip(monkeypatch: pytest.MonkeyPatch) -> No
     assert slip == ""
     assert tripper.wait == skill_handlers._skill_beats("trip") * 2
     assert any("fall flat" in message for message in tripper.messages)
+
+
+def test_trip001_messages_use_rom_pronoun_and_pers(monkeypatch: pytest.MonkeyPatch) -> None:
+    """TRIP-001 — do_trip's blocking messages render ROM pronouns via act():
+    `$S feet aren't on the ground.` (his/her/its) and `$N is already down.` (PERS
+    short_descr + cap), not baked "Their"/keyword-name."""
+    from mud.models.constants import Sex
+
+    room = Room(vnum=3001, sector_type=int(Sector.INSIDE))  # always lit -> can_see passes for $N/PERS
+    tripper = _make_combatant("Acrobat", level=20)
+    tripper.skills["trip"] = 60
+
+    # $S: a MALE flying victim -> ROM "His feet aren't on the ground." (cap buf[0]).
+    flyer = _make_combatant("Hawk", level=20)
+    flyer.sex = Sex.MALE
+    flyer.add_affect(AffectFlag.FLYING)
+    room.add_character(tripper)
+    room.add_character(flyer)
+    skill_handlers.trip(tripper, target=flyer)
+    assert any(m == "His feet aren't on the ground." for m in tripper.messages), tripper.messages
+
+    # $N: an already-down NPC -> ROM "A sneaky goblin is already down." (short_descr + cap).
+    tripper.messages.clear()
+    goblin = _make_combatant("goblin", level=20)
+    goblin.is_npc = True
+    goblin.short_descr = "a sneaky goblin"
+    goblin.position = Position.SLEEPING
+    room.add_character(goblin)
+    skill_handlers.trip(tripper, target=goblin)
+    assert any(m == "A sneaky goblin is already down." for m in tripper.messages), tripper.messages

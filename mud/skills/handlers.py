@@ -7983,17 +7983,22 @@ def trip(caster: Character, target: Character | None = None) -> str:
             _send_to_char(caster, "Kill stealing is not permitted.")
             return ""
 
+    # TRIP-001: ROM src/fight.c do_trip renders these via act() with the victim's
+    # pronouns/PERS name, not baked "Their"/keyword-name:
+    #   act("$S feet aren't on the ground.", ch, NULL, victim, TO_CHAR)  ($S=his/her/its)
+    #   act("$N is already down.", ch, NULL, victim, TO_CHAR)            ($N=PERS short_descr)
+    #   act("$N is your beloved master.", ch, NULL, victim, TO_CHAR)
     if getattr(victim, "has_affect", None) and victim.has_affect(AffectFlag.FLYING):
-        _send_to_char(caster, "Their feet aren't on the ground.")
+        _send_to_char(caster, act_format("$S feet aren't on the ground.", recipient=caster, actor=caster, arg2=victim))
         return ""
 
     if getattr(victim, "position", Position.STANDING) < Position.FIGHTING:
-        _send_to_char(caster, f"{_character_name(victim)} is already down.")
+        _send_to_char(caster, act_format("$N is already down.", recipient=caster, actor=caster, arg2=victim))
         return ""
 
     if getattr(caster, "has_affect", None) and caster.has_affect(AffectFlag.CHARM):
         if getattr(caster, "master", None) is victim:
-            _send_to_char(caster, "They are your beloved master.")
+            _send_to_char(caster, act_format("$N is your beloved master.", recipient=caster, actor=caster, arg2=victim))
             return ""
 
     caster_size = int(getattr(caster, "size", 2) or 0)
