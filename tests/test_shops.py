@@ -1363,9 +1363,11 @@ def test_pet_shop_purchase_creates_charmed_pet():
     # (asserted above), not also via the mailbox — the connection loop sends both,
     # so a connected PC would otherwise see it twice. The mailbox now ends with the
     # haggle + follow lines (wrong-channel cousins, still mailbox-only).
+    # FOLLOW-003: ROM act("$n now follows you.") renders $n = PERS(pet) = the pet's
+    # short_descr ("a cuddly companion"), capitalized — not the baked keyword name.
     assert buyer.messages[-2:] == [
         "You haggle the price down to 210 coins.",
-        "companion pet Fluffy now follows you.",
+        "A cuddly companion now follows you.",
     ]
 
     pet = buyer.pet

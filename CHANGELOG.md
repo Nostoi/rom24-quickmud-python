@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.94] — 2026-06-13
+
+### Fixed
+
+- **FOLLOW-003 — "$n now/stops following you." use `$n` PERS short_descr (cap)** —
+  ROM `add_follower`/`stop_follower` (`src/act_comm.c:1603/1628`) deliver the
+  master-facing line via `act("$n …", ch, NULL, master, TO_VICT)`, where `$n` =
+  PERS(follower) = NPC short_descr, capitalized. The Python baked
+  `_display_name(follower)`, which returns the NPC's keyword name (not short_descr)
+  with no cap, so an NPC follower "a green goblin" rendered "Goblin now follows
+  you." vs ROM "A green goblin …". Both TO_VICT lines now use `act_format`. Test:
+  `tests/integration/test_followcap_master_notification_capitalized.py`.
+
 ## [2.14.93] — 2026-06-13
 
 ### Added

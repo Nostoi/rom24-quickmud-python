@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.models.constants import AffectFlag
+from mud.utils.act import act_format
 from mud.utils.messaging import push_message
 
 if TYPE_CHECKING:  # pragma: no cover - import for type checkers only
@@ -38,7 +39,9 @@ def add_follower(follower: Character, master: Character) -> None:
     if can_see_character(master, follower):
         # mirroring ROM src/act_comm.c:1602-1603 — act(..., TO_VICT)
         # writes immediately to the descriptor; mailbox is fallback only.
-        push_message(master, f"{_display_name(follower)} now follows you.")
+        # FOLLOW-003: ROM act("$n now follows you.", ch, NULL, master, TO_VICT) —
+        # $n = PERS(follower, master) = NPC short_descr (cap), not the keyword name.
+        push_message(master, act_format("$n now follows you.", recipient=master, actor=follower))
 
     # ROM line 1605: TO_CHAR is unconditional.
     push_message(follower, f"You now follow {_display_name(master)}.")
@@ -65,7 +68,9 @@ def stop_follower(follower: Character) -> None:
         # immediately to the descriptor; push_message routes a connected PC to the
         # async send and falls back to the mailbox only for disconnected chars
         # (matching add_follower above — ACT_COMM-003 / INV-001 wrong-channel).
-        push_message(master, f"{_display_name(follower)} stops following you.")
+        # FOLLOW-003: ROM act("$n stops following you.", ch, NULL, ch->master,
+        # TO_VICT) — $n = PERS(follower, master) = NPC short_descr (cap).
+        push_message(master, act_format("$n stops following you.", recipient=master, actor=follower))
         push_message(follower, f"You stop following {_display_name(master)}.")
 
     if getattr(master, "pet", None) is follower:

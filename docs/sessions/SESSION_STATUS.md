@@ -1,10 +1,20 @@
-# Session Status — 2026-06-13 — LOOK-007 (look-at-char broadcast) + MOBCMD-021 (mpasound cap) + MOBCMD-020 (mpecho buf[0] cap) + FIGHT-066 + MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — FOLLOW-003 (follow $n PERS) + LOOK-007 (look-at-char broadcast) + MOBCMD-020/021 (mpecho/mpasound cap) + FIGHT-066 + MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: LOOK-007 — looking at a character now broadcasts ROM's
+- **Last completed**: FOLLOW-003 — `add_follower`/`stop_follower`
+  (`mud/characters/follow.py:41,68`) master-facing "$n now/stops following you."
+  TO_VICT lines now render via `act_format("$n …", recipient=master, actor=follower)`
+  — `$n` = PERS(follower) = NPC short_descr, capitalized — instead of the baked
+  `_display_name(follower)` (which returned the NPC keyword name uncapitalized),
+  matching ROM `act(…, TO_VICT)` (`src/act_comm.c:1603/1628`). An NPC follower "a
+  green goblin" now shows the master "A green goblin now follows you." (was "Goblin
+  …"). Found extending the act()-lens to `act_comm.c`. The TO_CHAR "You now follow
+  $N." legs (start with "You", `$N` mid-sentence) left on `_display_name` — a
+  separate minor `$N`-masking concern, not the visible cap divergence. (v2.14.94).
+  Before that: LOOK-007 — looking at a character now broadcasts ROM's
   `show_char_to_char_1` lines (`mud/world/look.py:_look_char`): "$n looks at you."
   (TO_VICT) + "$n looks at $N." (TO_NOTVICT, PERS) when looking at another, or "$n
   looks at $mself." (TO_ROOM) on a self-look — gated by `can_see(victim, ch)`,
@@ -509,9 +519,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.93 |
-| Tests | look007 2/2, look/inspection 89/89, full suite green 5780 passed / 4 skipped (v2.14.93) |
+| Version | 2.14.94 |
+| Tests | followcap 2/2, follow 60/60, full suite green 5782 passed / 4 skipped (v2.14.94) |
 | MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
+| FOLLOW-003 status | ✅ FIXED follow "$n now/stops following you." uses PERS short_descr cap (was baked keyword) |
 | LOOK-007 status | ✅ FIXED look-at-character broadcasts "$n looks at you/$N/$mself" (was silent) |
 | act()-lens spell-handler tail | ✅ CLEARED (MAGIC-025..044 — baked-name $n/$N/$p/$S + hand-rolled-room-loop sites in handlers.py converted; commands/ confirmed clean) |
 | MOBCMD-020/021 status | ✅ FIXED mpechoaround/mpechoat/mpasound cap buf[0] (mpecho/mpgecho/mpzecho already correct) |
