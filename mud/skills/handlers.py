@@ -4157,10 +4157,11 @@ def envenom(
         if weapon_attack_type < 0 or attack_raw_damage == int(DamageType.BASH):
             return {"success": False, "message": "You can only envenom edged weapons."}
 
-        # ROM L927-931: check if already poisoned
+        # ROM L927-931: check if already poisoned. act("$p is already envenomed.",
+        # ch, obj, NULL, TO_CHAR) (act_obj.c:929) caps buf[0] (MAGIC-029).
         if weapon_flags & int(WeaponFlag.POISON):
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")
-            return {"success": False, "message": f"{short_descr} is already envenomed."}
+            return {"success": False, "message": capitalize_act_line(f"{short_descr} is already envenomed.")}
 
         # ROM L933-951: success check
         percent = rng_mm.number_percent()

@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MAGIC-028 (plague $N PERS, closes MAGIC-022 batch) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-028 — `plague` (`mud/skills/handlers.py:plague` ~6589)
+- **Last completed**: MAGIC-029 — the `envenom` skill's already-poisoned-weapon
+  dict message (`mud/skills/handlers.py:envenom` ~4160) now capitalizes buf[0] via
+  `capitalize_act_line(...)`, matching ROM `do_envenom` `act("$p is already
+  envenomed.")` (`src/act_obj.c:929`). Unlike the `poison`-spell weapon branch
+  (MAGIC-026, `_send_to_char`), this path returns a `{"message": …}` dict consumed by
+  the command layer, so it bypassed act()'s cap. Envenoming "a serrated dagger" now
+  returns "A serrated dagger is already envenomed." This **resolves the last
+  MAGIC-022-batch follow-up** — the batch is now 100% closed (v2.14.74). Before that:
+  MAGIC-028 — `plague` (`mud/skills/handlers.py:plague` ~6589)
   "$N seems to be unaffected." cross-target leg now renders via `act_format`
   ($N = PERS victim short_descr, cap) instead of the baked `_character_name`,
   matching ROM `act(..., TO_CHAR)` (`src/magic.c:3905`). The batch's "sanctuary(?)"
@@ -351,9 +359,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.73 |
-| Tests | magic028 1/1, plague 2/2, full suite green 5744 passed / 4 skipped (v2.14.73) |
-| MAGIC-022 batch | ✅ CLOSED (023/024/025/026/027/028 + FIGHT-065); envenom-skill dict-return `$p` follow-up remains |
+| Version | 2.14.74 |
+| Tests | magic029 1/1, envenom 22/22, full suite green 5745 passed / 4 skipped (v2.14.74) |
+| MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
+| MAGIC-029 status | ✅ FIXED envenom-skill dict-return "already envenomed" caps buf[0] |
 | MAGIC-028 status | ✅ FIXED plague "$N seems to be unaffected" uses PERS cap (was baked name) |
 | MAGIC-027 status | ✅ FIXED faerie_fire duplicate is silent (removed 2 invented "already surrounded" lines) |
 | MAGIC-026 status | ✅ FIXED object `$p` cap (bless-obj/continual_light/fireproof/poison-weapon ×3); envenom-skill dict-return follow-up filed |

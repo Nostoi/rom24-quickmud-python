@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.74] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-029 — envenom skill "already envenomed" message capitalizes buf[0]** —
+  ROM `do_envenom` (`src/act_obj.c:929`) renders `act("$p is already envenomed.")`,
+  which caps the first letter. The `envenom` skill returns this via a `{"message":
+  …}` dict (not `_send_to_char`), so it bypassed the act() capitalization and baked a
+  lowercase `short_descr`. Envenoming an already-poisoned "a serrated dagger" now
+  returns "A serrated dagger is already envenomed." (was lowercase). Resolves the
+  follow-up filed under MAGIC-026. Test:
+  `tests/integration/test_magic029_envenom_skill_already_envenomed_cap.py`.
+
 ## [2.14.73] — 2026-06-13
 
 ### Fixed
