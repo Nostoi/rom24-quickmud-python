@@ -4,17 +4,19 @@
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: Both known xdist flakes fixed (test-isolation hardening, no
-  production change) — `test_hpcnt_fires_exactly_once_per_violence_tick` (registry
-  isolation) and `test_ac_clamping_for_negative_values` (pin `number_bits` not
-  `number_percent`) (v2.14.23, commit `25e195ef`)
+- **Last completed**: MOBCMD-019 — `do_mpremember` now clears `mprog_target` on a
+  failed lookup (ROM unconditional `get_char_world` assign), mirroring
+  `src/mob_cmds.c:1160` (v2.14.24, commit `6725c202`). Earlier this session: both
+  known xdist flakes fixed (test-isolation hardening) — `test_hpcnt_*` (registry
+  isolation) and `test_ac_clamping_*` (pin `number_bits` not `number_percent`)
+  (v2.14.23, commit `25e195ef`)
 - **Pointer to latest summary**: [SESSION_SUMMARY_2026-06-12_XDIST_FLAKE_FIXES.md](SESSION_SUMMARY_2026-06-12_XDIST_FLAKE_FIXES.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.23 |
+| Version | 2.14.24 |
 | Tests | combat parity 10/10, hpcnt 2/2; full suite last green 5655 passed / 4 skipped (v2.14.21) |
 | INV-046 status | ✅ ENFORCED (phantom-registry class fully closed + grep-guarded) |
 | Per-file OPEN gaps | 0 live (DB2-004/005 deferred track-only) |

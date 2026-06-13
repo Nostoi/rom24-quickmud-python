@@ -57,6 +57,24 @@ and a test pinning the wrong RNG primitive).
   244 passed, 1 skipped
 - `ruff check` on changed files — clean
 
+### `MOBCMD-019` — `mob remember <unresolved>` left a stale mprog_target — ✅ FIXED (2.14.24)
+
+- **Python**: `mud/mob_cmds.py:1270-1277` (`do_mpremember`)
+- **ROM C**: `src/mob_cmds.c:1155-1164`
+- **Gap**: ROM assigns `ch->mprog_target = get_char_world(ch, arg)`
+  **unconditionally** for a non-empty argument, so a failed lookup (NULL) clears
+  the remembered target. Python early-returned on a failed lookup, leaving a
+  stale previous target — `$q`/`$Q` mobprog substitution codes would then
+  resolve to a departed character.
+- **Fix**: assign `_find_char_world(target_name)` unconditionally for non-empty
+  args; the empty-arg `bug()` branch still leaves the target untouched.
+- **Tests**: `tests/integration/test_mob_cmds_remember.py` (4 new, incl. the
+  failing-before clears-stale-target case). mob_cmds + mobprog suites: 91/91.
+- **Sibling sweep**: grepped all `get_char_world`/`get_char_room`/`get_obj_here`
+  assignments in `src/mob_cmds.c` — line 1160 is the only one assigning to a
+  *persistent* field; every other assigns to a local and guard-returns on NULL
+  (which Python mirrors correctly). No sibling divergences in this file.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:
