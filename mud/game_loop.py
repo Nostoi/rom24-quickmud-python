@@ -696,6 +696,16 @@ def _auto_quit_character(character: Character) -> None:
         character.pet = None
     die_follower(character)
 
+    # INV-047: ROM extract_char (src/handler.c:2151-2157) clears dangling
+    # reply / mprog_target pointers aimed at the extracted char on EVERY
+    # extraction. This link-dead quit leg is a separate extract path from
+    # _extract_character, so it must run the same cleanup (same multi-path
+    # class INV-020 closed for nuke_pets/die_follower). Run before the
+    # registry unlink, mirroring ROM's loop-then-unlink order.
+    from mud.combat.death import clear_extract_target_refs
+
+    clear_extract_target_refs(character)
+
     room = getattr(character, "room", None)
     if room is not None:
         remover = getattr(room, "remove_character", None)

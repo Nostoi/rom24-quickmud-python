@@ -179,12 +179,18 @@ def _disconnect_extract_cleanup(char: Character) -> None:
     dangling ``leader``/``master`` pointers at the extracted Character.
     """
     from mud.characters.follow import die_follower
-    from mud.combat.death import _nuke_pets
+    from mud.combat.death import _nuke_pets, clear_extract_target_refs
 
     _nuke_pets(char, room=getattr(char, "room", None))
     if hasattr(char, "pet"):
         char.pet = None
     die_follower(char)
+    # INV-047 EXTRACT-MPROG-TARGET — disconnect leg. ROM extract_char
+    # (src/handler.c:2151-2157) walks char_list clearing dangling
+    # `reply` pointers aimed at the extracted char and the
+    # `mprog_target` self-clear quirk. Every extract path must do this,
+    # not just _extract_character (same multi-path class as INV-020).
+    clear_extract_target_refs(char)
 
 
 def announce_wiznet_new_player(

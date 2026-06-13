@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.26] — 2026-06-13
+
+### Fixed
+
+- **INV-047 (multi-path) — the `extract_char` dangling-pointer cleanup now runs
+  on every Python extract path, not just `_extract_character`** — ROM has a
+  single `extract_char` (`src/handler.c:2151-2157`) whose `char_list` walk clears
+  dangling `reply` pointers and the `mprog_target` quirk on *every* extraction.
+  The Python port split extraction across call sites, so the PC-quit and
+  socket-disconnect legs still leaked dangling `reply`/`mprog_target` pointers —
+  the same multi-path class INV-020 closed for `nuke_pets`/`die_follower`. The
+  cleanup is now a shared helper `mud/combat/death.py:clear_extract_target_refs`
+  wired into all three extract paths: `mob_cmds.py:_extract_character`,
+  `game_loop.py:_auto_quit_character` (link-dead/void-quit), and
+  `connection.py:_disconnect_extract_cleanup` (telnet + websocket clean
+  disconnect). Tests:
+  `tests/integration/test_inv047_extract_paths_clear_refs.py` (4 — quit leg ×2 +
+  disconnect leg ×2).
+
 ## [2.14.25] — 2026-06-12
 
 ### Fixed

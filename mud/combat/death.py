@@ -567,6 +567,43 @@ def _nuke_pets(victim: Character, room) -> None:
         pass
 
 
+def clear_extract_target_refs(victim: Character) -> None:
+    """Clear dangling single-target pointers aimed at an extracted character.
+
+    Mirrors ROM ``extract_char``'s ``char_list`` walk (``src/handler.c:2151-2157``)
+    that nullifies two pointers on EVERY extraction:
+
+        for (wch = char_list; wch != NULL; wch = wch->next)
+        {
+            if (wch->reply == ch)        wch->reply = NULL;
+            if (ch->mprog_target == wch) wch->mprog_target = NULL;
+        }
+
+    The ``reply`` line is correct dangling-pointer hygiene. The ``mprog_target``
+    line is a faithfully-replicated ROM 2.4b6 quirk: it tests the *extracted*
+    char's target (``ch->mprog_target == wch``) and clears *that target's* OWN
+    ``mprog_target`` — so it does NOT clear mobs whose ``mprog_target`` points AT
+    the extracted char, and it DOES wipe the remembered target of whoever the
+    extracted char was targeting. We replicate the buggy line verbatim, not the
+    "corrected" ``wch->mprog_target == ch`` form many derivatives shipped.
+
+    INV-047: ROM has a single ``extract_char`` that always runs this loop; the
+    Python port split extraction across several call sites, so this helper is the
+    shared cleanup every extract path must invoke (``_extract_character``, the
+    ``do_quit``/link-dead leg, and the clean-disconnect teardown).
+    """
+    from mud.models.character import character_registry
+
+    victim_target = getattr(victim, "mprog_target", None)
+    for other in list(character_registry):
+        if other is victim:
+            continue
+        if getattr(other, "reply", None) is victim:
+            other.reply = None
+        if victim_target is other:
+            other.mprog_target = None
+
+
 def _move_player_to_death_room(victim: Character) -> None:
     """Place the player in their clan hall or the global death room."""
 
