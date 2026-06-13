@@ -268,6 +268,31 @@ and a test pinning the wrong RNG primitive).
   and `::test_eat_food_respects_permanent_condition_sentinel` (2, RED→GREEN).
   Full `test_consumables.py` 53/53; INV-025 consumption dispatch 2/2.
 
+### `WIZ-052` — ✅ FIXED (do_mstat condition line reads `COND_*` enum slots, not display order)
+
+- **Python**: `mud/commands/imm_search.py:do_mstat` (condition display, ~line 1126).
+- **ROM C**: `src/act_wiz.c:1637-1641` — `"Thirst: %d  Hunger: %d  Full: %d  Drunk: %d"`
+  ← `condition[COND_THIRST]`, `condition[COND_HUNGER]`, `condition[COND_FULL]`,
+  `condition[COND_DRUNK]`.
+- **Gap**: `do_mstat` read the `pcdata.condition` array **positionally by display
+  order** — `condition[0]`→thirst, `[1]`→hunger, `[2]`→full, `[3]`→drunk. But the
+  array is keyed by the `COND_*` enum (`DRUNK=0, FULL=1, THIRST=2, HUNGER=3`,
+  `mud/models/constants.py` `Condition`), so each label printed a *different*
+  condition's value: Thirst showed the DRUNK slot, Hunger the FULL slot, Full the
+  THIRST slot, Drunk the HUNGER slot. Invisible until the four slots hold distinct
+  values. Surfaced by a post-EAT-006 sibling sweep ("re-grep for other sites that
+  index `condition[]` by hand") — the same recall-oracle discipline that found
+  EAT-006's sibling discrepancy.
+- **Fix**: read each label from its enum slot —
+  `drunk=condition[Condition.DRUNK]`, `full=condition[Condition.FULL]`,
+  `thirst=condition[Condition.THIRST]`, `hunger=condition[Condition.HUNGER]`
+  (bounds checks preserved); added `Condition` to the module import. Local
+  single-function divergence → filed as `WIZ-052` in `ACT_WIZ_C_AUDIT.md`
+  (no INV — does not cross modules).
+- **Tests**: `tests/integration/test_act_wiz_command_parity.py::test_mstat_condition_line_maps_cond_indices_correctly`
+  (1, RED→GREEN; victim `condition=[1,2,3,4]` asserts
+  `"Thirst: 3  Hunger: 4  Full: 2  Drunk: 1"`). Full act_wiz parity 122/122.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:

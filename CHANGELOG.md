@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.33] — 2026-06-13
+
+### Fixed
+
+- **WIZ-052 — `do_mstat` condition line reads the `COND_*` enum slots, not
+  display order** — ROM `do_mstat` (`src/act_wiz.c:1637-1641`) prints
+  `"Thirst: %d  Hunger: %d  Full: %d  Drunk: %d"` from
+  `condition[COND_THIRST]`, `condition[COND_HUNGER]`, `condition[COND_FULL]`,
+  `condition[COND_DRUNK]`. The Python port read the `pcdata.condition` array by
+  display order instead — `condition[0]`→thirst, `[1]`→hunger, `[2]`→full,
+  `[3]`→drunk — but the array is enum-keyed (`DRUNK=0, FULL=1, THIRST=2,
+  HUNGER=3`), so every label showed a different condition's value (Thirst
+  printed the DRUNK slot, Hunger the FULL slot, etc.). `do_mstat` now reads each
+  label from its `Condition` enum slot (`mud/commands/imm_search.py`). Test:
+  `tests/integration/test_act_wiz_command_parity.py::test_mstat_condition_line_maps_cond_indices_correctly`.
+
 ## [2.14.32] — 2026-06-13
 
 ### Fixed

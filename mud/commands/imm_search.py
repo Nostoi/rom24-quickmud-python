@@ -37,6 +37,7 @@ from mud.models.constants import (
     AC_EXOTIC,
     AC_PIERCE,
     AC_SLASH,
+    Condition,
     ItemType,
     WeaponType,
 )
@@ -1123,10 +1124,13 @@ def do_mstat(char: Character, args: str) -> str:
         if pcdata is not None:
             condition = getattr(pcdata, "condition", None)
             if condition is not None:
-                thirst = int(condition[0]) if len(condition) > 0 else 0
-                hunger = int(condition[1]) if len(condition) > 1 else 0
-                full = int(condition[2]) if len(condition) > 2 else 0
-                drunk = int(condition[3]) if len(condition) > 3 else 0
+                # mirroring ROM src/act_wiz.c:1637-1641 — condition[] is indexed
+                # by the COND_* enum (DRUNK=0, FULL=1, THIRST=2, HUNGER=3), NOT by
+                # the display order. Read each label's value from its enum slot.
+                drunk = int(condition[Condition.DRUNK]) if len(condition) > Condition.DRUNK else 0
+                full = int(condition[Condition.FULL]) if len(condition) > Condition.FULL else 0
+                thirst = int(condition[Condition.THIRST]) if len(condition) > Condition.THIRST else 0
+                hunger = int(condition[Condition.HUNGER]) if len(condition) > Condition.HUNGER else 0
                 buf += f"Thirst: {thirst}  Hunger: {hunger}  Full: {full}  Drunk: {drunk}\n\r"
 
     carry_number = int(getattr(victim, "carry_number", 0))

@@ -1898,3 +1898,25 @@ def test_goto_object_resolves_to_room_object_lies_in() -> None:
     finally:
         if orb in object_registry:
             object_registry.remove(orb)
+
+
+def test_mstat_condition_line_maps_cond_indices_correctly() -> None:
+    # WIZ-052 — mirrors ROM src/act_wiz.c:1637-1641. do_mstat prints
+    #   "Thirst: %d  Hunger: %d  Full: %d  Drunk: %d"
+    # from condition[COND_THIRST], condition[COND_HUNGER], condition[COND_FULL],
+    # condition[COND_DRUNK]. The condition array is indexed by COND_* enum:
+    # DRUNK=0, FULL=1, THIRST=2, HUNGER=3 (mud/models/constants.py Condition).
+    # The Python port read raw indices [0]/[1]/[2]/[3] for thirst/hunger/full/
+    # drunk, so every label showed the wrong condition's value.
+    from mud.commands.imm_search import do_mstat
+
+    _room(9170, name="Stat Chamber")
+    admin = _imm("Statician", 9170, trust=60)
+    subject = _imm("Subject", 9170, trust=5)
+
+    # condition array is [DRUNK, FULL, THIRST, HUNGER]; pick distinct values.
+    subject.pcdata.condition = [1, 2, 3, 4]  # DRUNK=1, FULL=2, THIRST=3, HUNGER=4
+
+    result = do_mstat(admin, "Subject")
+
+    assert "Thirst: 3  Hunger: 4  Full: 2  Drunk: 1\n\r" in result
