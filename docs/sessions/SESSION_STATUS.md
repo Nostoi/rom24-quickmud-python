@@ -603,6 +603,15 @@ route through `dam_message`/act() (FIGHT-018/023/025).
 clean (the one candidate is fixed). Both the spell-handler and combat baked-name
 veins are exhausted.
 
+**mob_cmds act()-cap vein EXHAUSTED this session (2026-06-13):** `src/mob_cmds.c`
+has exactly four `act()` delivery sites — `do_mpasound` (:334), `do_mpechoaround`
+(:467), `do_mpechoat` (:488), `do_mpecho` (:500). All four now capitalize buf[0] in
+the Python: MOBCMD-020 fixed echoaround/echoat, MOBCMD-021 fixed asound, and mpecho
+was already correct via `room.broadcast`'s ACT-CAP-002. `do_mpgecho`/`do_mpzecho`
+are intentionally NOT capped (ROM delivers them via raw `send_to_char`, not
+`act()`). The act()/buf[0]-cap divergence class is now comprehensively swept across
+spell handlers, combat, commands, and mob_cmds.
+
 **Position-transition messages probed this session (2026-06-13) → CONFIRMED
 FAITHFUL, do not re-probe:** `update_pos` (`engine.py:826`) matches ROM
 `src/fight.c:update_pos` line-for-line (NPC dies at `hit < 1`, PC thresholds
