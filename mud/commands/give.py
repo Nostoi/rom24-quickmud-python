@@ -62,20 +62,26 @@ def do_give(char: Character, args: str) -> str:
         return "They aren't here."
 
     if _has_shop(victim):
-        return f"{_victim_name(victim)} tells you 'Sorry, you'll have to sell that.'"
+        # GIVE-002: ROM src/act_obj.c — act("$N tells you 'Sorry, you'll have to sell that.'", ...).
+        return act_format("$N tells you 'Sorry, you'll have to sell that.'", recipient=char, actor=char, arg2=victim)
 
     if not _can_drop_obj(char, obj):
         return "You can't let go of it."
 
+    # GIVE-002: ROM renders these via act() with the victim's pronouns/PERS name,
+    # not a baked name + "their". ROM src/act_obj.c:
+    #   act("$N has $S hands full.", ch, NULL, victim, TO_CHAR)   ($S = his/her/its)
+    #   act("$N can't carry that much weight.", ch, NULL, victim, TO_CHAR)
+    #   act("$N can't see it.", ch, NULL, victim, TO_CHAR)
     if int(getattr(victim, "carry_number", 0) or 0) + _object_carry_number(obj) > can_carry_n(victim):
-        return f"{_victim_name(victim)} has {_victim_possessive(victim)} hands full."
+        return act_format("$N has $S hands full.", recipient=char, actor=char, arg2=victim)
 
     obj_weight = _object_carry_weight(obj)
     if get_carry_weight(victim) + obj_weight > can_carry_w(victim):
-        return f"{_victim_name(victim)} can't carry that much weight."
+        return act_format("$N can't carry that much weight.", recipient=char, actor=char, arg2=victim)
 
     if not can_see_object(victim, obj):
-        return f"{_victim_name(victim)} can't see it."
+        return act_format("$N can't see it.", recipient=char, actor=char, arg2=victim)
 
     _obj_from_char(char, obj)
     _obj_to_char(obj, victim)
@@ -238,16 +244,6 @@ def _append_message(actor: Character, recipient: Character, template: str) -> No
     push_message(recipient, act_format(template, recipient=recipient, actor=actor, arg1=None, arg2=recipient))
 
 
-def _victim_name(victim: Character) -> str:
-    """Display name used in give feedback."""
-    return getattr(victim, "short_descr", None) or getattr(victim, "name", "They")
-
-
-def _victim_possessive(victim: Character) -> str:
-    """POSSESSIVE token substitute for hand-capacity feedback."""
-    sex = getattr(victim, "sex", None)
-    if sex == 1:
-        return "his"
-    if sex == 2:
-        return "her"
-    return "their"
+# GIVE-002: the former `_victim_name` / `_victim_possessive` helpers (baked name +
+# a "their"-for-sexless possessive) were removed — these feedback lines now render
+# through `act_format` ($N PERS name + $S = his/her/its), matching ROM act().

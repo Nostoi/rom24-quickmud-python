@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.54] — 2026-06-13
+
+### Fixed
+
+- **GIVE-002 — `give` rejection messages use the victim's gendered pronouns** —
+  ROM `do_give` (`src/act_obj.c`) renders the giver-facing rejections via `act()`
+  with `$N` (PERS name) and `$S` (possessive his/her/its): "$N has $S hands full.",
+  "$N can't carry that much weight.", "$N can't see it.", "$N tells you 'Sorry,
+  you'll have to sell that.'". The Python `mud/commands/give.py` baked the victim
+  name + a `_victim_possessive` helper that returned **"their"** for a sexless
+  victim where ROM's `$S` is **"its"** — so giving an over-full item to a sexless
+  mob showed "Receiver has their hands full." vs ROM "…its hands full." Rendered all
+  four via `act_format`; removed the dead helpers. Found applying the
+  EMOTE-005/TELL-008 pronoun lens to act_obj. Tests:
+  `tests/integration/test_give_command.py` (inverted + 1 gendered).
+
 ## [2.14.53] — 2026-06-13
 
 ### Fixed

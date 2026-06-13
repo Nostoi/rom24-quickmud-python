@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — GOSSIP-001/002 (all public channels $n PERS mask) + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — GIVE-002 (give rejections use $N/$S pronouns) + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: GOSSIP-002 — completed the global-channel PERS class:
+- **Last completed**: GIVE-002 — `do_give` (`mud/commands/give.py`) four giver-facing
+  rejection lines ("$N has $S hands full.", "$N can't carry that much weight.",
+  "$N can't see it.", shopkeeper "Sorry, you'll have to sell that.") now render via
+  `act_format` with ROM's `$N` (PERS name) + `$S` (possessive his/her/its) instead
+  of a baked name + a `_victim_possessive` helper that wrongly returned "their" for
+  sexless victims (ROM `$S` = "its"). Deleted the dead helpers. Found applying the
+  EMOTE-005/TELL-008 pronoun lens to act_obj (v2.14.54). Before that: GOSSIP-002 —
+  completed the global-channel PERS class:
   `do_grats`/`do_quote`/`do_question`/`do_answer`/`do_music`
   (`mud/commands/communication.py`) now PERS-mask `$n` per recipient via the
   `render` param added in GOSSIP-001, matching ROM `act_new("{t$n grats…", …,
@@ -196,8 +203,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.53 |
-| Tests | communication 20/20, channels 43/43, full suite last green 5709 passed / 4 skipped (v2.14.52) |
+| Version | 2.14.54 |
+| Tests | give 15/15, full suite last green 5710 passed / 4 skipped (v2.14.53) |
+| GIVE-002 status | ✅ FIXED (give rejection lines use $N/$S pronouns via act_format; sexless → "its" not "their") |
 | GOSSIP-001/002 status | ✅ FIXED all 7 public channels (gossip/auction/grats/quote/question/answer/music PERS-mask `$n`); clan/immtalk = low-value edge |
 | TELL-008 status | ✅ FIXED (tell status lines use $E/$S/$N pronouns via act_format, not baked name + "they") |
 | EMOTE-005 status | ✅ FIXED (emote self renders actor name via PERS, not "You"; reverts false-premise EMOTE-002) |

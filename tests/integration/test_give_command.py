@@ -206,9 +206,31 @@ def test_give_rejects_when_object_consumes_multiple_carry_slots(movable_char_fac
 
     result = process_command(giver, "give satchel receiver")
 
-    assert result == "Receiver has their hands full."
+    # GIVE-002: ROM act("$N has $S hands full.", ch, NULL, victim, TO_CHAR) renders
+    # the victim's possessive pronoun — a sexless Receiver -> "its", not "their".
+    assert result == "Receiver has its hands full."
     assert satchel in giver.inventory
     assert satchel not in victim.inventory
+
+
+def test_give002_hands_full_uses_gendered_possessive(movable_char_factory, object_factory, test_room_3001):
+    """GIVE-002 — the "$S hands full" line renders the victim's gendered possessive
+    via act() ($S). A MALE victim yields "his", proving it's pronoun-driven."""
+    from mud.models.constants import Sex
+
+    giver = movable_char_factory("Giver", 3001)
+    victim = movable_char_factory("Receiver", 3001)
+    victim.sex = Sex.MALE
+
+    satchel = object_factory(
+        {"vnum": 9215, "name": "satchel", "short_descr": "a canvas satchel", "item_type": int(ItemType.CONTAINER)}
+    )
+    giver.add_object(satchel)
+    victim.carry_number = can_carry_n(victim) + 10  # already over capacity
+
+    result = process_command(giver, "give satchel receiver")
+
+    assert result == "Receiver has his hands full.", result
 
 
 def test_give_rejects_when_object_would_put_victim_over_carry_weight(

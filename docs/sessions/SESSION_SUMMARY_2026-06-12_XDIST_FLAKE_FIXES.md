@@ -679,6 +679,24 @@ and a test pinning the wrong RNG primitive).
   `do_immtalk` still bake the name — immtalk recipients are holylight-visible
   immortals (PERS == name anyway), clantalk a small mutually-visible audience.
 
+### `GIVE-002` — ✅ FIXED (give rejection lines use the victim's `$N`/`$S` pronouns)
+
+- **Python**: `mud/commands/give.py:do_give`.
+- **ROM C**: `src/act_obj.c` — `act("$N has $S hands full.", ch, NULL, victim, TO_CHAR)`,
+  `act("$N can't carry that much weight.", …)`, `act("$N can't see it.", …)`,
+  `act("$N tells you 'Sorry, you'll have to sell that.'", …)`.
+- **Gap**: the four giver-facing rejections baked the victim NAME and used a local
+  `_victim_possessive` helper that returned **"their"** for `Sex.NONE` where ROM's
+  `$S` is **"its"** — so giving an over-full item to a sexless mob showed "Receiver
+  has their hands full." vs ROM "…its hands full." Found extending the
+  EMOTE-005/TELL-008 pronoun lens to `act_obj`.
+- **Fix**: rendered all four via `act_format("$N has $S hands full.", recipient=char,
+  actor=char, arg2=victim)` (etc.) — correct `$N` PERS name + `$S` = its/his/her,
+  caps buf[0]; deleted the dead `_victim_name`/`_victim_possessive` helpers.
+- **Tests**: inverted the `test_give_command.py` hands-full assertion (sexless →
+  "its") + added `test_give002_hands_full_uses_gendered_possessive` (male → "his").
+  Give suite 15/15.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)
