@@ -560,6 +560,24 @@ and a test pinning the wrong RNG primitive).
   (RED→GREEN — a descriptor-less observer now receives the `$n`-rendered line).
   Existing 17 info-display tests unaffected. Suite 18/18.
 
+### `FIGHT-062` — ✅ FIXED (do_flee "$n has fled!" broadcast uses the act() system)
+
+- **Python**: `mud/commands/combat.py:do_flee` (success path, fled-from room broadcast).
+- **ROM C**: `src/fight.c:3005-3007` — restores `ch->in_room = was_in` and calls
+  `act("$n has fled!", ch, NULL, NULL, TO_ROOM)`.
+- **Gap**: same class as REPORT-001 — a hand-rolled loop over `was_in.people`
+  calling `other.desc.send(f"{char.name} has fled!")`: baked the name (no `$n`
+  PERS masking, so an invisible fleer leaked it) and skipped descriptor-less
+  occupants (NPC witnesses got no TRIG_ACT; the opponent left behind received
+  nothing). Found by sweeping the command layer for `desc.send`/manual
+  `for … in room.people` broadcast loops after REPORT-001.
+- **Fix**: replaced with `act_to_room(was_in, "$n has fled!", char)`. `char` has
+  already moved to `now_in`, so it isn't in `was_in.people`; `exclude=char` is
+  harmless and documents ROM's TO_ROOM intent.
+- **Tests**: `tests/integration/test_fight062_flee_broadcast.py` (RED→GREEN — a
+  descriptor-less witness in the fled-from room receives the `$n`-rendered line).
+  Existing flee tests (054/061/043/still-recovering/moves-character) 17/17.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

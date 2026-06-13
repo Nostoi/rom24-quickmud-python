@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.48] — 2026-06-13
+
+### Fixed
+
+- **FIGHT-062 — `do_flee` "$n has fled!" broadcast goes through the act() system** —
+  ROM `do_flee` (`src/fight.c:3005-3007`) restores `ch->in_room = was_in` and calls
+  `act("$n has fled!", ch, NULL, NULL, TO_ROOM)`. The Python
+  `mud/commands/combat.py:do_flee` iterated `was_in.people` calling
+  `other.desc.send(f"{char.name} has fled!")` — baking the name (no `$n` PERS
+  masking, so an invisible fleer leaked their name) and skipping descriptor-less
+  occupants (NPC witnesses got no TRIG_ACT; the opponent left behind received
+  nothing). Replaced with `act_to_room(was_in, "$n has fled!", char)` — per-recipient
+  PERS masking (INV-025/027), single-delivery (INV-001), and TRIG_ACT dispatch.
+  Same class as REPORT-001. Test: `tests/integration/test_fight062_flee_broadcast.py`.
+
 ## [2.14.47] — 2026-06-13
 
 ### Fixed

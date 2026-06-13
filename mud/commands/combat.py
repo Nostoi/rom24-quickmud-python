@@ -26,6 +26,7 @@ from mud.models.constants import (
 from mud.skills import skill_registry
 from mud.skills.say_spell import broadcast_spell_words
 from mud.utils import rng_mm
+from mud.utils.act import act_to_room
 from mud.world.vision import can_see_character
 
 # mirroring ROM src/act_move.c:50-52 — movement_loss[SECT_MAX]
@@ -775,16 +776,14 @@ def do_flee(char: Character, args: str) -> str:
 
     # Success path — mirrors ROM src/fight.c:3004-3021
 
-    # Broadcast "$n has fled!" from was_in — mirrors ROM src/fight.c:3005-3007
-    # (ROM temporarily sets ch->in_room = was_in for the act() call)
-    for other in list(getattr(was_in, "people", [])):
-        if other is not char:
-            try:
-                desc = getattr(other, "desc", None)
-                if desc and hasattr(desc, "send"):
-                    desc.send(f"{char.name} has fled!")
-            except Exception:
-                pass
+    # FIGHT-062: Broadcast "$n has fled!" to the fled-from room — ROM src/fight.c:3005-3007
+    # temporarily restores ch->in_room = was_in and calls act("$n has fled!", ch, NULL,
+    # NULL, TO_ROOM). Route through act_to_room so $n is PERS-masked per recipient (an
+    # invisible fleer masks to "someone"), descriptor-less witnesses (NPCs / the
+    # opponent left behind) still receive it via the standard channel, and TRIG_ACT
+    # fires on NPC witnesses. char has already moved to now_in, so it is not in
+    # was_in.people; exclude=char is harmless and documents ROM's TO_ROOM intent.
+    act_to_room(was_in, "$n has fled!", char)
 
     messages: list[str] = []
     if not getattr(char, "is_npc", False):
