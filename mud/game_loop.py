@@ -716,6 +716,14 @@ def _auto_quit_character(character: Character) -> None:
 
     stop_fighting(character, both=True)
 
+    # INV-020 step (v): ROM extract_char (src/handler.c:2123-2127) extracts
+    # every carried + worn object. save_character above already persisted the
+    # inventory, so draining object_registry here (inventory + equipment)
+    # prevents a phantom-object leak on quit (the INV-046 class).
+    from mud.combat.death import extract_carried_objects
+
+    extract_carried_objects(character)
+
     room = getattr(character, "room", None)
     if room is not None:
         remover = getattr(room, "remove_character", None)

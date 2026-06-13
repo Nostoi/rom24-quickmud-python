@@ -130,6 +130,37 @@ and a test pinning the wrong RNG primitive).
   `test_disconnect_stops_attackers_fighting`; file now 6/6). Targeted
   extract/fighting regression: 56/56.
 
+### `INV-020` step (v) — extract carried + worn objects on every non-death extract leg — ✅ ENFORCED (2.14.28)
+
+- **Python**: `mud/combat/death.py:extract_carried_objects` (new shared helper),
+  wired into `mud/game_loop.py:_auto_quit_character`,
+  `mud/net/connection.py:_disconnect_extract_cleanup`,
+  `mud/mob_cmds.py:_extract_character`.
+- **ROM C**: `src/handler.c:2123-2127` (the `for (obj = ch->carrying; …) extract_obj(obj)`
+  loop — step (v) of `extract_char`).
+- **Gap**: ROM frees every object on `ch->carrying`, which includes **worn**
+  items (equipment only carries an extra `wear_loc`). Python splits inventory
+  and equipment into `char.inventory` + the `char.equipment` dict, so a faithful
+  "extract all carrying" must drain BOTH. The quit/disconnect legs extracted
+  *nothing*, and the mob/`do_purge` leg looped `victim.inventory` only — so a
+  quitting/disconnecting PC, and any purged mob with equipment, left carried +
+  worn objects lingering in `object_registry` forever (phantom-object leak,
+  INV-046 class on the extract path). The death leg is unaffected: `make_corpse`
+  moves eq+inv into the corpse before `raw_kill` extracts the char, so its carry
+  list is already empty.
+- **Fix**: `extract_carried_objects(victim)` drains `victim.inventory` then
+  `equipment.values()` via `_extract_obj`; the mob leg's inventory-only loop was
+  replaced with the helper call. Discovered the mob-leg equipment leak while
+  wiring the PC legs — folded into the same commit (same step-(v) invariant
+  across all three non-death paths) rather than filed as a separate MOBCMD row,
+  mirroring how INV-047 and INV-020 step (iv) were closed multi-path.
+- **Tests**: `tests/integration/test_inv020_quit_extracts_objects.py` (4:
+  `test_void_quit_extracts_inventory_objects`,
+  `test_void_quit_extracts_equipped_objects`,
+  `test_disconnect_extracts_carried_objects`,
+  `test_mob_extract_drains_inventory_and_equipment`). Targeted
+  extract/fighting/purge regression: 16/16.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:

@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.28] — 2026-06-13
+
+### Fixed
+
+- **INV-020 step (v) — every non-death extract leg now extracts the character's
+  carried AND worn objects** — ROM's `extract_char` (`src/handler.c:2123-2127`)
+  walks `ch->carrying` and `extract_obj`s every object, which in ROM **includes
+  worn items** (equipment only carries an extra `wear_loc`). The Python port
+  splits inventory and equipment into `char.inventory` + the `char.equipment`
+  dict, so a faithful "extract all carrying" must drain BOTH. The quit/disconnect
+  legs never extracted these objects at all, and the mob/`do_purge` leg
+  (`_extract_character`) drained `inventory` only — so a quitting/disconnecting
+  PC, and any purged mob with equipment, left every carried + worn object
+  lingering in `object_registry` forever (a phantom-object leak observable via
+  `ofind`/`do_dump`/`get_obj_world`, the INV-046 phantom-registry class on the
+  extract path). A shared `mud/combat/death.py:extract_carried_objects(victim)`
+  helper now drains inventory then equipment via `_extract_obj`, wired into
+  `game_loop.py:_auto_quit_character`, `connection.py:_disconnect_extract_cleanup`,
+  and `mob_cmds.py:_extract_character`. The death leg is unaffected — `make_corpse`
+  already moves eq+inv into the corpse before `raw_kill` extracts the char. Tests:
+  `tests/integration/test_inv020_quit_extracts_objects.py` (4 — inventory + equipped
+  on quit, both on disconnect, both on mob purge).
+
 ## [2.14.27] — 2026-06-13
 
 ### Fixed

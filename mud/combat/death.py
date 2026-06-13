@@ -604,6 +604,38 @@ def clear_extract_target_refs(victim: Character) -> None:
             other.mprog_target = None
 
 
+def extract_carried_objects(victim: Character) -> None:
+    """Extract every object a character is carrying or wearing.
+
+    Mirrors ROM ``extract_char`` (``src/handler.c:2123-2127``)::
+
+        for (obj = ch->carrying; obj != NULL; obj = obj_next)
+        {
+            obj_next = obj->next_content;
+            extract_obj (obj);
+        }
+
+    In ROM, worn items live on ``ch->carrying`` (they only carry an extra
+    ``wear_loc``), so a single walk frees inventory AND equipment. The Python
+    port splits them into ``char.inventory`` and the ``char.equipment`` dict, so
+    a faithful "extract all carrying" must drain BOTH — otherwise a quitting /
+    disconnecting PC leaves their objects lingering in ``object_registry``
+    (phantom-object leak, the INV-046 class on the extract path).
+
+    INV-020 step (v): ROM has a single ``extract_char`` that always runs this
+    loop; the Python port split extraction across call sites, so this is the
+    shared object-cleanup every extract path must invoke.
+    """
+    from mud.game_loop import _extract_obj
+
+    for obj in list(getattr(victim, "inventory", []) or []):
+        _extract_obj(obj)
+    equipment = getattr(victim, "equipment", None)
+    if isinstance(equipment, dict):
+        for obj in list(equipment.values()):
+            _extract_obj(obj)
+
+
 def _move_player_to_death_room(victim: Character) -> None:
     """Place the player in their clan hall or the global death room."""
 

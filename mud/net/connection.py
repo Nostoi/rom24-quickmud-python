@@ -179,7 +179,7 @@ def _disconnect_extract_cleanup(char: Character) -> None:
     dangling ``leader``/``master`` pointers at the extracted Character.
     """
     from mud.characters.follow import die_follower
-    from mud.combat.death import _nuke_pets, clear_extract_target_refs
+    from mud.combat.death import _nuke_pets, clear_extract_target_refs, extract_carried_objects
     from mud.combat.engine import stop_fighting
 
     _nuke_pets(char, room=getattr(char, "room", None))
@@ -197,6 +197,11 @@ def _disconnect_extract_cleanup(char: Character) -> None:
     # char and on every char fighting it, so a mob does not keep a
     # dangling `fighting` pointer at the disconnected PC.
     stop_fighting(char, both=True)
+    # INV-020 step (v): ROM extract_char (src/handler.c:2123-2127) extracts
+    # every carried + worn object. The caller saves the character first, so
+    # the persisted inventory is intact; draining object_registry here
+    # prevents a phantom-object leak on disconnect.
+    extract_carried_objects(char)
 
 
 def announce_wiznet_new_player(

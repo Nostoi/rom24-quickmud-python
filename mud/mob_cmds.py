@@ -238,9 +238,8 @@ def _extract_character(victim: Character, fPull: bool = True) -> None:
         fPull: If True, completely remove. If False, send to death room (clan hall)
     """
     from mud.characters.follow import die_follower
-    from mud.combat.death import _nuke_pets
+    from mud.combat.death import _nuke_pets, extract_carried_objects
     from mud.combat.engine import stop_fighting
-    from mud.game_loop import _extract_obj
     from mud.models.character import character_registry
 
     # ROM C handler.c:2115 - Remove pets
@@ -255,10 +254,12 @@ def _extract_character(victim: Character, fPull: bool = True) -> None:
     # ROM C handler.c:2121 - Stop all fighting
     stop_fighting(victim, both=True)
 
-    # ROM C handler.c:2123-2127 - Extract all inventory
-    inventory = getattr(victim, "inventory", [])
-    for obj in list(inventory):  # Copy list to safely modify during iteration
-        _extract_obj(obj)
+    # ROM C handler.c:2123-2127 - Extract all of ch->carrying, which in ROM
+    # includes worn items (they only carry an extra wear_loc). The Python port
+    # splits inventory and equipment, so extract_carried_objects drains BOTH —
+    # an inventory-only loop here leaked equipped objects into object_registry
+    # on the do_purge / non-death extract path (INV-020 step (v), INV-046 class).
+    extract_carried_objects(victim)
 
     # ROM C handler.c:2129-2130 - Remove from room
     room = getattr(victim, "room", None)
