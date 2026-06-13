@@ -912,6 +912,27 @@ and a test pinning the wrong RNG primitive).
   grep reveals a class is pervasive, enumerate it in the tracker so the scope is
   durable — don't let "I fixed the ones I found" imply completeness.
 
+### `MAGIC-023` — ✅ FIXED (frenzy blocking messages use `$N` PERS + ROM's `$e`-caster quirk)
+
+- **Python**: `mud/skills/handlers.py:frenzy` (4 sites).
+- **ROM C**: `spell_frenzy` — `act("$N is already in a frenzy.", …)`,
+  `act("$N doesn't look like $e wants to fight anymore.", …)` (×2), `act("Your god
+  doesn't seem to like $N", …)` (no trailing period).
+- **Gap**: baked the keyword name + literal "they". `$N` = PERS short_descr (cap);
+  the "wants to fight" line's `$e` is ROM's `he_she[ch->sex]` = the **caster's**
+  subject pronoun (a likely ROM bug — should be the victim's `$E`).
+- **Fix**: all four via `act_format`, replicating the `$e`-is-caster quirk verbatim.
+  A male caster blocked on a calm female NPC "a green goblin" → "A green goblin
+  doesn't look like **he** wants to fight anymore." (the "he" is the caster's).
+- **Tests**: `tests/integration/test_magic023_frenzy_pers.py` (already-frenzied →
+  "A green goblin is already in a frenzy."; calm + male caster → caster's "he").
+  Frenzy+buffs suites 29/29.
+- **MAGIC-022 batch status**: protection ✅, frenzy ✅ — still tracked:
+  faerie_fire, disarm, fly, giant_strength, haste, infravision, pass_door,
+  fireproof, envenom, bless-object (~13 sites). **Two ROM act-pronoun quirks now
+  documented** — `change_sex`'s `$s(?)` and `frenzy`'s `$e` both render the
+  *caster's* pronoun where grammar wants the victim's; replicate exactly.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

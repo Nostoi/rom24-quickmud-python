@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.67] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-023 — `frenzy` blocking messages use `$N` PERS + replicate ROM's `$e`
+  quirk** — ROM `spell_frenzy` renders `act("$N is already in a frenzy.", …)`,
+  `act("$N doesn't look like $e wants to fight anymore.", …)`, and
+  `act("Your god doesn't seem to like $N", …)`. `$N` = PERS short_descr; the
+  "wants to fight" line's `$e` is the **caster's** subject pronoun (a likely ROM
+  bug — should be the victim's `$E`), which the Python rendered as literal "they".
+  All four sites now use `act_format`, replicating the `$e`-is-caster quirk verbatim
+  (a male caster blocked on a calm female NPC "a green goblin" sees "A green goblin
+  doesn't look like he wants to fight anymore."). Continues the MAGIC-022 baked-name
+  batch (faerie_fire/disarm/fly/giant_strength/haste/… still tracked). Test:
+  `tests/integration/test_magic023_frenzy_pers.py`.
+
 ## [2.14.66] — 2026-06-13
 
 ### Fixed

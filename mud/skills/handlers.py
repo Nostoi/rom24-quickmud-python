@@ -4654,24 +4654,40 @@ def frenzy(caster: Character, target: Character | None = None) -> bool:  # noqa:
         if target is caster:
             _send_to_char(caster, "You are already in a frenzy.")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} is already in a frenzy.")
+            # MAGIC-023: ROM act("$N is already in a frenzy.", ch, NULL, victim, TO_CHAR).
+            _send_to_char(caster, act_format("$N is already in a frenzy.", recipient=caster, actor=caster, arg2=target))
         return False
 
     if getattr(target, "has_spell_effect", None) and target.has_spell_effect("calm"):
         if target is caster:
             _send_to_char(caster, "Why don't you just relax for a while?")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} doesn't look like they want to fight anymore.")
+            # MAGIC-023: ROM act("$N doesn't look like $e wants to fight anymore.", ch,
+            # NULL, victim, TO_CHAR). ROM's `$e` is the CASTER's subject pronoun (a
+            # likely ROM bug — grammatically it should be the victim's `$E`); replicate
+            # it verbatim ($e = actor = caster).
+            _send_to_char(
+                caster,
+                act_format(
+                    "$N doesn't look like $e wants to fight anymore.", recipient=caster, actor=caster, arg2=target
+                ),
+            )
         return False
 
     if hasattr(target, "has_affect") and target.has_affect(AffectFlag.CALM):
         if target is caster:
             _send_to_char(caster, "Why don't you just relax for a while?")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} doesn't look like they want to fight anymore.")
+            # MAGIC-023: ROM act("$N doesn't look like $e wants to fight anymore.", ch,
+            # NULL, victim, TO_CHAR). ROM's `$e` is the CASTER's subject pronoun (a
+            # likely ROM bug — grammatically it should be the victim's `$E`); replicate
+            # it verbatim ($e = actor = caster).
+            _send_to_char(
+                caster,
+                act_format(
+                    "$N doesn't look like $e wants to fight anymore.", recipient=caster, actor=caster, arg2=target
+                ),
+            )
         return False
 
     caster_good = is_good(caster)
@@ -4686,8 +4702,11 @@ def frenzy(caster: Character, target: Character | None = None) -> bool:  # noqa:
         or (caster_neutral and not target_neutral)
         or (caster_evil and not target_evil)
     ):
-        name = _character_name(target)
-        _send_to_char(caster, f"Your god doesn't seem to like {name}")
+        # MAGIC-023: ROM act("Your god doesn't seem to like $N", ch, NULL, victim,
+        # TO_CHAR) — note ROM has no trailing period; $N = PERS(victim) mid-sentence.
+        _send_to_char(
+            caster, act_format("Your god doesn't seem to like $N", recipient=caster, actor=caster, arg2=target)
+        )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
