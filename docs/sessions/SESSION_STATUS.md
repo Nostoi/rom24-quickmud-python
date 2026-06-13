@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MAGIC-020 (curse object $p cap + TO_ALL) + MAGIC-016..019 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-021 (change_sex $s(?) quirk, cluster CLOSED) + MAGIC-016..020 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-020 — `spell_curse` object branch
+- **Last completed**: MAGIC-021 — `spell_change_sex` (`mud/skills/handlers.py:change_sex`)
+  already-changed line now replicates ROM's literal `$s(?)` quirk exactly via
+  `act_format("$N has already had $s(?) sex changed.", recipient=caster,
+  actor=caster, arg2=victim)` — `$N` = victim PERS (cap), `$s` = the **caster's**
+  possessive (a ROM bug the author flagged with "(?)"), + literal "(?)". Was baking
+  victim name + "their" with no "(?)". A male caster sees "A green goblin has already
+  had his(?) sex changed." **This CLOSES the MAGIC-016 baked-name spell-handler
+  cluster** (armor/shield/bless/cures/curse/change_sex all ✅) (v2.14.65). Before
+  that: MAGIC-020 — `spell_curse` object branch
   (`mud/skills/handlers.py:curse`) now capitalizes `$p` via `act_format` and
   broadcasts the "glows with a red/malevolent aura" lines TO_ALL (caster +
   `act_to_room`) instead of caster-only, matching ROM `act("$p …", ch, obj, NULL,
@@ -277,9 +285,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.64 |
-| Tests | curse-object 2/2, curse+skills 31/31, full suite last green 5724 passed / 4 skipped (v2.14.63) |
-| MAGIC-020 status | ✅ FIXED curse-object ($p cap + TO_ALL aura broadcast); cluster: only change_sex left |
+| Version | 2.14.65 |
+| Tests | change_sex-quirk 1/1, buffs 26/26, full suite last green 5726 passed / 4 skipped (v2.14.64) |
+| MAGIC-021 status | ✅ FIXED change_sex ($s(?) quirk replicated); **MAGIC-016 cluster CLOSED** |
+| MAGIC-020 status | ✅ FIXED curse-object ($p cap + TO_ALL aura broadcast) |
 | MAGIC-019 status | ✅ FIXED cure blindness/disease/poison (`$N` PERS) |
 | MAGIC-018 status | ✅ FIXED bless (`$N` PERS TO_CHAR ×2) |
 | MAGIC-017 status | ✅ FIXED shield (`$N` TO_CHAR + `$n` TO_ROOM PERS) |

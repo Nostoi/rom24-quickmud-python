@@ -58,7 +58,7 @@ def test_change_sex_applies_affect_and_messages(monkeypatch: pytest.MonkeyPatch)
 
 
 def test_change_sex_respects_duplicates_and_saves(monkeypatch: pytest.MonkeyPatch) -> None:
-    caster = Character(name="Prankster", level=20, is_npc=False)
+    caster = Character(name="Prankster", level=20, is_npc=False, sex=int(Sex.MALE))
     target = Character(name="Guard", level=18, is_npc=False, sex=int(Sex.MALE))
     room = _make_room(3051)
     room.add_character(caster)
@@ -71,7 +71,10 @@ def test_change_sex_respects_duplicates_and_saves(monkeypatch: pytest.MonkeyPatc
     caster.messages.clear()
 
     assert skill_handlers.change_sex(caster, target) is False
-    assert caster.messages[-1] == "Guard has already had their sex changed."
+    # MAGIC-021: ROM act("$N has already had $s(?) sex changed.", ch, NULL, victim,
+    # TO_CHAR) — $N = victim PERS (PC "Guard"), and `$s` is the CASTER's possessive
+    # (a ROM bug flagged with the literal "(?)"). Male caster -> "his(?)".
+    assert caster.messages[-1] == "Guard has already had his(?) sex changed."
 
     target.remove_spell_effect("change sex")
     target.sex = int(Sex.MALE)

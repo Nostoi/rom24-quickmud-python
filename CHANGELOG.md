@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.65] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-021 — `change_sex` already-changed line replicates ROM's literal `$s(?)`
+  quirk** — ROM `spell_change_sex` (`src/magic.c:1321`) renders `act("$N has already
+  had $s(?) sex changed.", ch, NULL, victim, TO_CHAR)`, where `$s` is the **caster's**
+  possessive (a likely ROM bug — grammatically it should be the victim's `$S` —
+  which the original author flagged with the literal "(?)"). The Python baked the
+  victim name + "their" and dropped the "(?)". Per the "replicate ROM quirks
+  exactly" parity rule, rendered via `act_format("$N has already had $s(?) sex
+  changed.", recipient=caster, actor=caster, arg2=victim)` — preserving the
+  `$s`-is-caster bug and the literal "(?)". A male caster changing an already-changed
+  NPC "a green goblin" now sees "A green goblin has already had his(?) sex changed."
+  **This closes the MAGIC-016 spell-handler baked-name cluster** (armor, shield,
+  bless, cures, curse, change_sex all done). Test:
+  `tests/integration/test_magic021_change_sex_quirk.py`.
+
 ## [2.14.64] — 2026-06-13
 
 ### Fixed

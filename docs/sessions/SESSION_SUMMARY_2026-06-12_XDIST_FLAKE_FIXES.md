@@ -871,6 +871,24 @@ and a test pinning the wrong RNG primitive).
 - **MAGIC-016 cluster status**: armor/shield/bless/cures/curse all ✅ — **only
   `change_sex` remains** (literal `$s(?)` quirk).
 
+### `MAGIC-021` — ✅ FIXED (change_sex replicates ROM's literal `$s(?)` quirk; cluster CLOSED)
+
+- **Python**: `mud/skills/handlers.py:change_sex`.
+- **ROM C**: `src/magic.c:1321` — `act("$N has already had $s(?) sex changed.", ch, NULL, victim, TO_CHAR)`.
+- **Gap**: baked the victim name + "their" and dropped ROM's literal `$s(?)`. ROM's
+  `$s` is the **caster's** possessive (a likely ROM bug — grammatically should be the
+  victim's `$S` — which the author flagged with the literal "(?)"). Per "replicate
+  ROM quirks exactly", we keep the bug verbatim.
+- **Fix**: `act_format("$N has already had $s(?) sex changed.", recipient=caster,
+  actor=caster, arg2=victim)` — `$N` = victim PERS (cap), `$s` = caster possessive,
+  literal "(?)". A male caster changing an already-changed "a green goblin" → "A
+  green goblin has already had his(?) sex changed." (the "his" is the *caster's*).
+- **Tests**: `tests/integration/test_magic021_change_sex_quirk.py` (male caster +
+  female NPC victim → caster's "his(?)"); inverted `test_skills_buffs.py:74`
+  ("their"→"his(?)", made the caster explicitly male).
+- **MAGIC-016 cluster: CLOSED** — armor, shield, bless, cures, curse, change_sex all
+  ✅. The systematic spell-handler baked-name sweep is complete.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

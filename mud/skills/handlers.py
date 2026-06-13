@@ -2200,8 +2200,14 @@ def change_sex(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You've already been changed.")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} has already had their sex changed.")
+            # MAGIC-021: replicate ROM exactly — act("$N has already had $s(?) sex
+            # changed.", ch, NULL, victim, TO_CHAR) (src/magic.c:1321). ROM's `$s` is
+            # the CASTER's possessive (a likely ROM bug — it should be the victim's
+            # `$S`), which the author flagged with the literal "(?)". We replicate the
+            # quirk verbatim: $N = PERS(victim) (cap), $s = caster possessive, "(?)".
+            _send_to_char(
+                caster, act_format("$N has already had $s(?) sex changed.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
