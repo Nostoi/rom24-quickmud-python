@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from mud.characters import is_same_group
 from mud.skills.registry import skill_registry
 from mud.utils import rng_mm
+from mud.utils.act import capitalize_act_line
 
 logger = logging.getLogger(__name__)
 
@@ -450,10 +451,13 @@ def do_mpechoaround(ch: Character, argument: str) -> None:
     if victim is None:
         return
     room = getattr(ch, "room", None)
+    # MOBCMD-020: ROM act(argument, ch, NULL, victim, TO_NOTVICT) caps buf[0]
+    # (src/comm.c:2376-2379); the hand-rolled loop skipped the capitalization.
+    rendered = capitalize_act_line(message.strip())
     for occupant in _iter_room_people(room):
         if occupant is ch or occupant is victim:
             continue
-        _append_message(occupant, message.strip())
+        _append_message(occupant, rendered)
 
 
 def do_mpechoat(ch: Character, argument: str) -> None:
@@ -463,7 +467,8 @@ def do_mpechoat(ch: Character, argument: str) -> None:
     victim = _find_char_in_room(ch, target_name)
     if victim is None:
         return
-    _append_message(victim, message.strip())
+    # MOBCMD-020: ROM act(argument, ch, NULL, victim, TO_VICT) caps buf[0].
+    _append_message(victim, capitalize_act_line(message.strip()))
 
 
 def do_mpcall(ch: Character, argument: str) -> None:

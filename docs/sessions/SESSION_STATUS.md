@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — FIGHT-066 (combat defense-return PERS) + MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MOBCMD-020 (mpecho buf[0] cap) + FIGHT-066 (combat defense-return PERS) + MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: FIGHT-066 — `attack_round`'s parry/dodge/shield-block
+- **Last completed**: MOBCMD-020 — `do_mpechoaround`/`do_mpechoat`
+  (`mud/mob_cmds.py` ~445/~459) now wrap their (program-expanded) message in
+  `capitalize_act_line(...)`, matching ROM `act(argument, ch, NULL, victim,
+  TO_NOTVICT/TO_VICT)`'s buf[0] capitalization (`src/comm.c:2376-2379`). The
+  hand-rolled `_append_message` loop had skipped the cap, so a mob-prog echo
+  beginning with an expanded lowercase NPC short_descr leaked lowercase. `do_mpecho`
+  was already correct (`room.broadcast` caps via ACT-CAP-002). First mob_cmds
+  act()-lens close (v2.14.91). Before that: FIGHT-066 — `attack_round`'s parry/dodge/shield-block
   defense-return strings (`mud/combat/engine.py` ~705-713) now render via
   `capitalize_act_line(f"{pers(victim, attacker)} …")` instead of baking
   `victim.name`, matching ROM `act("$N … your attack.", …, TO_CHAR)`
@@ -489,10 +496,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.90 |
-| Tests | fight066 1/1, combat defense 51/51, full suite green 5774 passed / 4 skipped (v2.14.90) |
+| Version | 2.14.91 |
+| Tests | mobcmd020 3/3, mob_cmds 35/35, full suite green 5777 passed / 4 skipped (v2.14.91) |
 | MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
 | act()-lens spell-handler tail | ✅ CLEARED (MAGIC-025..044 — baked-name $n/$N/$p/$S + hand-rolled-room-loop sites in handlers.py converted; commands/ confirmed clean) |
+| MOBCMD-020 status | ✅ FIXED mpechoaround/mpechoat cap buf[0] (mpecho already correct) |
 | FIGHT-066 status | ✅ FIXED combat defense-return uses `$N` PERS (was latent baked name) |
 | MAGIC-044 status | ✅ FIXED blindness room broadcast `$n` PERS (act_to_room) |
 | MAGIC-043 status | ✅ FIXED envenom room broadcasts `$n`/`$p` PERS (act_to_room) |

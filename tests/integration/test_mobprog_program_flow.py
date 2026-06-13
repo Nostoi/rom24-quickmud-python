@@ -68,9 +68,10 @@ def test_nested_if_inside_else_executes_inner_branch(monkeypatch):
 
     run_prog(mob, Trigger.SPEECH, actor=pc, phrase="hello")
 
-    # The inner branch ran for the PC.
-    assert any("inner-pc" in msg for msg in pc.messages)
-    assert not any("outer-true" in msg for msg in pc.messages)
+    # The inner branch ran for the PC. MOBCMD-020: ROM act() (do_mpechoat) caps
+    # buf[0], so the "inner-pc" marker renders "Inner-pc".
+    assert any("Inner-pc" in msg for msg in pc.messages)
+    assert not any("outer-true" in msg.lower() for msg in pc.messages)
 
 
 def test_invalid_if_keyword_aborts_program(monkeypatch):

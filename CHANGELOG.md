@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.91] — 2026-06-13
+
+### Fixed
+
+- **MOBCMD-020 — mpechoaround/mpechoat capitalize buf[0] like ROM act()** — ROM
+  `do_mpechoaround`/`do_mpechoat` (`src/mob_cmds.c`) deliver via `act(argument, ch,
+  …, TO_NOTVICT/TO_VICT)`, which capitalizes the first visible char
+  (`src/comm.c:2376-2379`). The Python's hand-rolled `_append_message` loop skipped
+  the cap, so a mob-program echo beginning with an expanded lowercase NPC
+  short_descr leaked lowercase ("a cave goblin collapses." vs ROM "A cave goblin
+  …"). Both now wrap the message in `capitalize_act_line(...)`. (`do_mpecho` was
+  already correct via `room.broadcast`'s ACT-CAP-002.) Test:
+  `tests/integration/test_mobcmd020_echo_capitalization.py`.
+
 ## [2.14.90] — 2026-06-13
 
 ### Fixed
