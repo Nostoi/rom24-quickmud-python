@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.23] — 2026-06-12
+
+### Fixed
+
+- **Two xdist test flakes (test-isolation hardening, no production change)** —
+  - `test_hpcnt_fires_exactly_once_per_violence_tick` —
+    `violence_tick` walks the **global** `character_registry`
+    (`mud/game_loop.py:1590`), so a fighting NPC leaked by a sibling test on the
+    same xdist worker fired its own HPCNT and inflated the call count. The test
+    now snapshots and replaces the registry contents in place
+    (`character_registry[:] = [attacker, victim]`) so the pulse sees only its two
+    actors, restoring on teardown.
+  - `test_ac_clamping_for_negative_values` — ROM's to-hit roll is
+    `number_bits(5)` (`src/fight.c:508`), **not** `number_percent`, and a natural
+    `diceroll == 0` is an automatic miss regardless of hitroll/AC
+    (`src/fight.c:510`). The test pinned `number_percent` (no effect on the d20
+    roll), so leaked global RNG landed on 0 ~1/20 runs and flaked the
+    `"miss" not in result` assertion under `-n auto`. Now pins `number_bits` to
+    19 (the auto-hit roll) for a deterministic hit.
+
 ## [2.14.22] — 2026-06-12
 
 ### Fixed

@@ -107,16 +107,22 @@ def test_hpcnt_fires_exactly_once_per_violence_tick(monkeypatch) -> None:
     victim.max_hit = 100
     room.add_character(attacker)
     room.add_character(victim)
-    character_registry.append(attacker)
-    character_registry.append(victim)
+
+    # violence_tick walks the GLOBAL character_registry (game_loop.py:1590), so
+    # a fighting NPC leaked by a sibling test on this xdist worker would fire its
+    # own HPCNT and inflate the count. Snapshot and replace the registry contents
+    # in place (not rebind — violence_tick holds the list by reference) so the
+    # pulse sees only this test's two actors, then restore. (AGENTS.md: "Reset
+    # global mutable singletons you mutate.")
+    saved_registry = list(character_registry)
+    character_registry[:] = [attacker, victim]
 
     attacker.fighting = victim
     victim.fighting = attacker
     try:
         game_loop.violence_tick(do_combat=True)
     finally:
-        character_registry.remove(attacker)
-        character_registry.remove(victim)
+        character_registry[:] = saved_registry
 
     assert len(calls) == 1, (
         "ROM src/fight.c:97 fires mp_hprct_trigger exactly once per "
