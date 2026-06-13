@@ -1669,14 +1669,10 @@ def blindness(caster: Character, target: Character | None = None) -> bool:
 
     room = getattr(target, "room", None)
     if room is not None:
-        if target.name:
-            room_message = f"{target.name} appears to be blinded."
-        else:
-            room_message = "Someone appears to be blinded."
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is target:
-                continue
-            _send_to_char(occupant, room_message)
+        # MAGIC-044: ROM act("$n appears to be blinded.", victim, NULL, NULL,
+        # TO_ROOM) (magic.c:889) — actor is the blinded victim, per-recipient PERS,
+        # excluded; INV-001 single-delivery + TRIG_ACT via act_to_room.
+        act_to_room(room, "$n appears to be blinded.", target, exclude=target)
 
     return True
 

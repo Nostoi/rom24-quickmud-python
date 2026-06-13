@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.89] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-044 — blindness's "appears to be blinded" room broadcast uses `$n` PERS**
+  — ROM `spell_blindness` (`src/magic.c:889`) emits `act("$n appears to be
+  blinded.", victim, …, TO_ROOM)` — the actor is the blinded victim, so `$n` =
+  PERS(victim), capitalized. The Python hand-rolled a room loop with a
+  `target.name`-or-"Someone" ternary, so a visible NPC "a green goblin" showed
+  bystanders "goblin …"/"Someone …" vs ROM "A green goblin …". Now uses
+  `act_to_room`. Test: `tests/integration/test_magic044_blindness_room_pers.py`.
+
 ## [2.14.88] — 2026-06-13
 
 ### Fixed

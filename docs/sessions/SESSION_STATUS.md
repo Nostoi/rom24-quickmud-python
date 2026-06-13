@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-043 — `envenom`'s two room broadcasts (food "treats $p
+- **Last completed**: MAGIC-044 — `blindness`'s "$n appears to be blinded." room
+  broadcast (`mud/skills/handlers.py:blindness` ~1672) now uses `act_to_room(room,
+  "$n …", target, exclude=target)` — actor is the blinded victim, `$n` = PERS(victim)
+  cap — instead of a hand-rolled loop baking `target.name` (with a "Someone" ternary
+  that masked visible NPCs), matching ROM `act(…, TO_ROOM)` (`src/magic.c:889`). The
+  MAGIC-003 fix had converted the delivery channel but left the baked-name loop.
+  Found by the post-MAGIC-043 verification sweep (commands/ confirmed clean of baked
+  `$n` patterns). Existing PC-target test stays green (v2.14.89). Before that:
+  MAGIC-043 — `envenom`'s two room broadcasts (food "treats $p
   with deadly poison", weapon "coats $p with deadly venom", `mud/skills/handlers.py`
   ~4099/~4203) now use `act_to_room(room, "$n … $p …", caster, arg1=obj,
   exclude=caster)` — $n = PERS(caster), $p = obj — instead of pre-baked
@@ -473,10 +481,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.88 |
-| Tests | magic043 1/1, envenom 23/23, full suite green 5772 passed / 4 skipped (v2.14.88) |
+| Version | 2.14.89 |
+| Tests | magic044 1/1, blindness 4/4, full suite green 5773 passed / 4 skipped (v2.14.89) |
 | MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
-| act()-lens spell-handler tail | ✅ CLEARED (MAGIC-025..043 — all baked-name $n/$N/$p/$S sites in handlers.py converted) |
+| act()-lens spell-handler tail | ✅ CLEARED (MAGIC-025..044 — baked-name $n/$N/$p/$S + hand-rolled-room-loop sites in handlers.py converted; commands/ confirmed clean) |
+| MAGIC-044 status | ✅ FIXED blindness room broadcast `$n` PERS (act_to_room) |
 | MAGIC-043 status | ✅ FIXED envenom room broadcasts `$n`/`$p` PERS (act_to_room) |
 | MAGIC-042 status | ✅ FIXED faerie_fog "$n is revealed!" per-recipient PERS (act_to_room) |
 | MAGIC-041 status | ✅ FIXED chill_touch room broadcast `$n` PERS (actor=victim, act_to_room) |
