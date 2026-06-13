@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.85] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-040 — cure_blindness/cure_poison room broadcasts use `$n` PERS** — ROM
+  emits `act("$n is no longer blinded.", victim, …, TO_ROOM)` (`src/magic.c:1062`)
+  and `act("$n looks much better.", victim, …, TO_ROOM)` (`:1702`) — the actor is the
+  cured victim, so `$n` = PERS(victim), capitalized. The Python hand-rolled a room
+  loop that baked the keyword `name`, so a bystander saw "goblin is no longer
+  blinded." vs ROM "A green goblin …". Both now use `act_to_room` (per-recipient
+  PERS + single-delivery + TRIG_ACT). Test:
+  `tests/integration/test_magic040_cure_room_broadcast_pers.py`.
+
 ## [2.14.84] — 2026-06-13
 
 ### Fixed

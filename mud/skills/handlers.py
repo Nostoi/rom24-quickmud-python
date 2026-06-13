@@ -2732,13 +2732,10 @@ def cure_blindness(caster: Character, target: Character | None = None) -> bool:
         _send_to_char(victim, "Your vision returns!")
         room = getattr(victim, "room", None)
         if room is not None:
-            name = getattr(victim, "name", None) or "Someone"
-            message = f"{name} is no longer blinded."
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is victim:
-                    continue
-                # INV-001: single-channel delivery (push_message XOR).
-                _send_to_char(occupant, message)
+            # MAGIC-040: ROM act("$n is no longer blinded.", victim, NULL, NULL,
+            # TO_ROOM) (magic.c:1062) — actor is the victim, per-recipient PERS,
+            # excluded; INV-001 single-delivery + TRIG_ACT via act_to_room.
+            act_to_room(room, "$n is no longer blinded.", victim, exclude=victim)
         return True
 
     _send_to_char(caster, "Spell failed.")
@@ -2847,13 +2844,10 @@ def cure_poison(caster: Character, target: Character | None = None) -> bool:
         _send_to_char(victim, "A warm feeling runs through your body.")
         room = getattr(victim, "room", None)
         if room is not None:
-            name = getattr(victim, "name", None) or "Someone"
-            message = f"{name} looks much better."
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is victim:
-                    continue
-                # INV-001: single-channel delivery (push_message XOR).
-                _send_to_char(occupant, message)
+            # MAGIC-040: ROM act("$n looks much better.", victim, NULL, NULL,
+            # TO_ROOM) (magic.c:1702) — actor is the victim, per-recipient PERS,
+            # excluded; INV-001 single-delivery + TRIG_ACT via act_to_room.
+            act_to_room(room, "$n looks much better.", victim, exclude=victim)
         return True
 
     _send_to_char(caster, "Spell failed.")
