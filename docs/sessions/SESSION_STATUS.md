@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — CAST-011 (do_cast say_spell broadcast) + CAST-010 (spell beats) + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — PRACTICE-001 (do_practice gate order) + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: CAST-011 — `do_cast` (`mud/commands/combat.py`) now broadcasts
+- **Last completed**: PRACTICE-001 — `do_practice` (`mud/commands/advancement.py`)
+  failure-gate order now matches ROM (`src/act_info.c`): the ACT_PRACTICE
+  trainer-presence gate ("You can't do that here.") fires *before* the
+  `practice <= 0` and spell-validity gates (was after). A player not at a trainer
+  who also had 0 practices / named an invalid skill saw the wrong message. Moved
+  the trainer gate to right after IS_AWAKE (awake → trainer → sessions → spell).
+  Found by re-verifying the "do_practice 100% COMPLETE" audit claim against source
+  (v2.14.45). Before that: CAST-011 — `do_cast` (`mud/commands/combat.py`) now broadcasts
   the spell incantation to the room via `broadcast_spell_words(char, skill.name)`
   (skipping `ventriloquate`), matching ROM `src/magic.c:544-545`
   `if (str_cmp(name, "ventriloquate")) say_spell(ch, sn)`. The helper existed
@@ -130,8 +137,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.44 |
-| Tests | cast say_spell 2/2, cast/spell suites 78/78, full suite last green 5697 passed / 4 skipped (v2.14.43) |
+| Version | 2.14.45 |
+| Tests | practice gate-order 2/2, practice suites 42/42, full suite last green 5699 passed / 4 skipped (v2.14.44) |
+| PRACTICE-001 status | ✅ FIXED (do_practice trainer gate precedes session/spell gates, matching ROM order) |
 | CAST-011 status | ✅ FIXED (do_cast broadcasts say_spell to room, except ventriloquate; was silent) |
 | CAST-010 status | ✅ FIXED (do_cast uses per-spell beats for WAIT_STATE, not flat PULSE_VIOLENCE) |
 | PASSWORD-001 status | ✅ FIXED (do_password wrong-pwd penalty uses UMAX, not =40 assignment) |

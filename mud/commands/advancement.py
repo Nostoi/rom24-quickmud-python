@@ -124,6 +124,14 @@ def do_practice(char: Character, args: str) -> str:
     if not char.is_awake():
         return "In your dreams, or what?"
 
+    # PRACTICE-001: ROM src/act_info.c — the ACT_PRACTICE trainer-presence gate
+    # ("You can't do that here.") fires BEFORE the practice-count and spell-validity
+    # gates. A player not at a trainer must see this message even when they also
+    # have 0 practices or named an invalid skill.
+    trainer = _find_practice_trainer(char)
+    if trainer is None and getattr(char, "room", None) is not None:
+        return "You can't do that here."
+
     if char.practice <= 0:
         return "You have no practice sessions left."
 
@@ -163,10 +171,6 @@ def do_practice(char: Character, args: str) -> str:
     rating = _rating_for_class(skill, char.ch_class)
     if rating <= 0:
         return "You can't practice that."
-
-    trainer = _find_practice_trainer(char)
-    if trainer is None and getattr(char, "room", None) is not None:
-        return "You can't do that here."
 
     adept = char.skill_adept_cap()
     if current >= adept:

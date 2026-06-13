@@ -196,6 +196,31 @@ def test_practice_no_sessions(practice_char, practice_trainer, test_skill):
     assert "You have no practice sessions left" in output
 
 
+def test_practice_no_trainer_gate_precedes_session_check(practice_char, test_skill):
+    """PRACTICE-001 — ROM checks the trainer gate BEFORE the practice-count gate.
+
+    ROM ``do_practice`` (``src/act_info.c``) order after IS_AWAKE: find an
+    ACT_PRACTICE mob (-> "You can't do that here." if none), THEN ``practice <= 0``
+    (-> "no practice sessions left"), THEN spell validity. So a player NOT at a
+    trainer who also has 0 practices must see the trainer message, not the
+    session message. Python checked the session count first.
+    """
+    practice_char.room.people = [practice_char]  # no trainer mob present
+    practice_char.practice = 0
+    practice_char.skills["fireball"] = 50
+
+    output = do_practice(practice_char, "fireball")
+    assert "you can't do that here" in output.lower(), output
+
+
+def test_practice_no_trainer_gate_precedes_invalid_skill(practice_char):
+    """PRACTICE-001 — trainer gate also precedes the spell-validity gate."""
+    practice_char.room.people = [practice_char]  # no trainer mob present
+
+    output = do_practice(practice_char, "invalid_skill")
+    assert "you can't do that here" in output.lower(), output
+
+
 def test_practice_cant_practice_invalid_skill(practice_char, practice_trainer):
     """Invalid skill returns error (ROM C lines 2720-2721)"""
     output = do_practice(practice_char, "invalid_skill")

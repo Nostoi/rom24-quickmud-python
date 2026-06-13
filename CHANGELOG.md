@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.45] — 2026-06-13
+
+### Fixed
+
+- **PRACTICE-001 — `do_practice` failure-gate ordering matches ROM** — ROM
+  `do_practice` (`src/act_info.c`) checks the ACT_PRACTICE trainer-presence gate
+  ("You can't do that here.") *before* the `practice <= 0` and spell-validity
+  gates. The Python `mud/commands/advancement.py:do_practice` checked the session
+  count and skill validity first, so a player not at a trainer who also had 0
+  practices (or named an invalid skill) saw "You have no practice sessions left." /
+  "You can't practice that." where ROM shows "You can't do that here." Moved the
+  trainer gate to immediately after the IS_AWAKE check (ROM order: awake → trainer
+  → sessions → spell-valid). Test:
+  `tests/integration/test_do_practice_command.py` (2 new).
+
 ## [2.14.44] — 2026-06-13
 
 ### Fixed

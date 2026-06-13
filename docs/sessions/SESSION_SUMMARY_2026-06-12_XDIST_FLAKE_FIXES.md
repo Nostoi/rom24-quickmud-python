@@ -501,6 +501,27 @@ and a test pinning the wrong RNG primitive).
   normal spell broadcasts the spell name; ventriloquate is excluded). Cast/spell
   regression suites 78/78.
 
+### `PRACTICE-001` — ✅ FIXED (do_practice failure-gate ordering matches ROM)
+
+- **Python**: `mud/commands/advancement.py:do_practice`.
+- **ROM C**: `src/act_info.c` — order after IS_AWAKE: find ACT_PRACTICE mob (→ "You
+  can't do that here."), THEN `practice <= 0` (→ "no practice sessions left"), THEN
+  spell validity (→ "You can't practice that.").
+- **Gap**: Python checked `practice <= 0` and `find_spell`/skill-validity *before*
+  the trainer-presence gate. So a player **not at a trainer** who *also* had 0
+  practices (or named an invalid skill) saw "You have no practice sessions left." /
+  "You can't practice that." where ROM shows "You can't do that here." (The single-
+  failure cases already matched — a valid skill + practices but no trainer reached
+  the trainer gate either way.) Found by re-verifying the "do_practice 100%
+  COMPLETE" audit row against source — the same stale-✅ re-verification vein that
+  produced PICK-001/ORDER-002/SAVE-001/PASSWORD-001.
+- **Fix**: moved the `_find_practice_trainer` gate to immediately after the
+  `is_awake()` check (ROM order: awake → trainer → sessions → spell-valid).
+- **Tests**: `tests/integration/test_do_practice_command.py` (2 new, RED→GREEN —
+  no-trainer+0-practices and no-trainer+invalid-skill both → "You can't do that
+  here."). Existing 16 practice tests unaffected (their session/invalid-skill cases
+  all have a trainer present). Practice suites 42/42.
+
 ## ROM WAIT_STATE-site cross-check (this session's method)
 
 Enumerated every `WAIT_STATE(ch, <value>)` site in the ROM `src/*.c` files and

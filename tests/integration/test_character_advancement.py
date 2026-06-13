@@ -306,10 +306,20 @@ def test_practice_command_improves_skills(test_character):
     Then skill improves and practice consumed
 
     ROM Parity: src/act_info.c:do_practice skill improvement
+
+    PRACTICE-001: ROM requires an ACT_PRACTICE trainer in the room (the gate now
+    fires before the session/skill checks), so add one — otherwise the command
+    short-circuits to "You can't do that here." regardless of practices/skill.
     """
+    from mud.models.constants import ActFlag
+
     char = test_character
     char.level = 5
     char.practice = 10
+
+    trainer = Character(name="practice master", is_npc=True, level=30, room=char.room)
+    trainer.act = int(ActFlag.PRACTICE)
+    char.room.people.append(trainer)
 
     result = process_command(char, "practice bash")
 
