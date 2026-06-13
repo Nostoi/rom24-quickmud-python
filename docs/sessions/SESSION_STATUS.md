@@ -495,7 +495,7 @@
   `stop_fighting(both=True)` on quit+disconnect (v2.14.27, `20c22cb1`), INV-047
   multi-path extract-ref cleanup (v2.14.26, `cb67db83`), INV-047 single-path
   mprog_target quirk (v2.14.25), MOBCMD-019 (v2.14.24), xdist flakes (v2.14.23)
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-06-12_XDIST_FLAKE_FIXES.md](SESSION_SUMMARY_2026-06-12_XDIST_FLAKE_FIXES.md)
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-06-13_ACT_LENS_SWEEP.md](SESSION_SUMMARY_2026-06-13_ACT_LENS_SWEEP.md)
 
 ## Project Status (snapshot)
 
