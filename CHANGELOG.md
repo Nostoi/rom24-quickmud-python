@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.46] — 2026-06-13
+
+### Fixed
+
+- **CONSIDER-001 — `do_consider` capitalizes the rendered line (ROM `act()`
+  buf[0])** — ROM renders the difficulty message via `act(msg, ch, NULL, victim,
+  TO_CHAR)`, and `act_new` upper-cases `buf[0]` (`src/comm.c:2379`). For the four
+  messages beginning with `$N` (the victim name), that capitalizes the victim
+  short_descr's first letter — "a fierce goblin" → "A fierce goblin is no match for
+  you." The Python `mud/commands/consider.py` baked the raw lowercase short_descr.
+  Now wraps the message in `capitalize_act_line` (the caster always sees the victim
+  here, so the baked name equals ROM's `PERS`; only the buf[0] cap was missing).
+  Test: `tests/integration/test_do_consider_command.py::TestDoConsiderCapitalization` (2).
+
 ## [2.14.45] — 2026-06-13
 
 ### Fixed

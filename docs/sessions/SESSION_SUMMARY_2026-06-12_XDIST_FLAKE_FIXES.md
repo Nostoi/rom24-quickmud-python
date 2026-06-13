@@ -522,6 +522,33 @@ and a test pinning the wrong RNG primitive).
   here."). Existing 16 practice tests unaffected (their session/invalid-skill cases
   all have a trainer present). Practice suites 42/42.
 
+### `CONSIDER-001` — ✅ FIXED (do_consider capitalizes the act() line)
+
+- **Python**: `mud/commands/consider.py:do_consider`.
+- **ROM C**: `src/comm.c:2379` — `act_new` upper-cases `buf[0]`; do_consider
+  renders via `act(msg, ch, NULL, victim, TO_CHAR)` (`src/act_info.c`).
+- **Gap**: four of the seven difficulty messages begin with `$N` (the victim
+  name). ROM's act() caps the first letter of the rendered line, so a lowercase
+  mob short_descr ("a fierce goblin") renders capitalized ("A fierce goblin is no
+  match for you."). Python baked the raw lowercase short_descr. The "You…"- and
+  "The…"/"Death…"-first messages were already correct (literal capital). Found by
+  re-verifying the "do_consider 100% COMPLETE" row against source.
+- **Fix**: wrap the final message in `capitalize_act_line` (the INV-029
+  ACT-FIRST-LETTER-CAP helper). The caster always sees the victim here
+  (get_char_room succeeded), so the baked name == ROM's `PERS(victim, ch)`; only
+  the buf[0] cap was missing.
+- **Tests**: `tests/integration/test_do_consider_command.py::TestDoConsiderCapitalization`
+  (2, RED→GREEN — `$N`-first message caps the victim name; "You…"-first message
+  keeps the mid-sentence `$N` lowercase). Existing 15 consider tests use `.lower()`
+  so unaffected. Consider suite 17/17.
+
+### Re-verified faithful this session (recall-oracle, no change)
+
+`do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)
+and `do_train` (trainer-first gate, +10 hp/mana to perm/max/current, +1 stat,
+`get_max_train` gate, all three TO_ROOM increase broadcasts, the big-stud/hot-babe/
+wild-thing easter eggs) both confirmed ROM-faithful against source.
+
 ## ROM WAIT_STATE-site cross-check (this session's method)
 
 Enumerated every `WAIT_STATE(ch, <value>)` site in the ROM `src/*.c` files and

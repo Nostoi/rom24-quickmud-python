@@ -156,6 +156,50 @@ class TestDoConsiderDifficultyLevels:
         assert "death" in result.lower() or "run" in result.lower() or "impossible" in result.lower()
 
 
+class TestDoConsiderCapitalization:
+    """CONSIDER-001 — ROM act() capitalizes buf[0] of every rendered line."""
+
+    def test_consider_message_first_letter_capitalized(self, test_character, test_room):
+        """ROM src/comm.c:2379 — act() upper-cases buf[0]. For the messages that
+        begin with $N (the victim name), the rendered victim short_descr's first
+        letter is capitalized. A lowercase short_descr like 'a fierce goblin'
+        must render as 'A fierce goblin is no match for you.'."""
+        test_character.room = test_room
+        test_character.level = 15
+        test_room.add_character(test_character)
+
+        mob = Character()
+        mob.name = "goblin"
+        mob.short_descr = "a fierce goblin"  # lowercase, as ROM mob short_descrs are
+        mob.is_npc = True
+        mob.level = 10  # diff -5 -> "$N is no match for you."
+        mob.room = test_room
+        test_room.add_character(mob)
+
+        result = do_consider(test_character, "goblin")
+
+        assert result == "A fierce goblin is no match for you.", result
+
+    def test_consider_naked_message_keeps_literal_capital(self, test_character, test_room):
+        """The '-10' message starts with 'You', not $N — its capital is already
+        correct and the $N mid-sentence stays lowercase (ROM only caps buf[0])."""
+        test_character.room = test_room
+        test_character.level = 25
+        test_room.add_character(test_character)
+
+        mob = Character()
+        mob.name = "goblin"
+        mob.short_descr = "a fierce goblin"
+        mob.is_npc = True
+        mob.level = 10  # diff -15 -> "You can kill $N naked and weaponless."
+        mob.room = test_room
+        test_room.add_character(mob)
+
+        result = do_consider(test_character, "goblin")
+
+        assert result == "You can kill a fierce goblin naked and weaponless.", result
+
+
 class TestDoConsiderEdgeCases:
     """Test error conditions and edge cases."""
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from mud.combat.safety import is_safe
 from mud.models.character import Character
+from mud.utils.act import capitalize_act_line
 from mud.world.char_find import get_char_room
 
 
@@ -66,4 +67,10 @@ def do_consider(char: Character, args: str) -> str:
     else:
         msg = "Death will thank you for your gift."
 
-    return msg
+    # CONSIDER-001: ROM renders the line via act(msg, ch, NULL, victim, TO_CHAR)
+    # and act_new upper-cases buf[0] (src/comm.c:2379). For the messages that
+    # begin with $N, that capitalizes the (lowercase) victim short_descr's first
+    # letter; the baked render above otherwise leaves it lowercase. The caster
+    # provably can see the victim (get_char_room succeeded), so the baked name
+    # equals ROM's PERS(victim, ch); only the buf[0] cap was missing.
+    return capitalize_act_line(msg)
