@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — FIGHT-066 (combat defense-return PERS) + MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-044 — `blindness`'s "$n appears to be blinded." room
+- **Last completed**: FIGHT-066 — `attack_round`'s parry/dodge/shield-block
+  defense-return strings (`mud/combat/engine.py` ~705-713) now render via
+  `capitalize_act_line(f"{pers(victim, attacker)} …")` instead of baking
+  `victim.name`, matching ROM `act("$N … your attack.", …, TO_CHAR)`
+  (`src/fight.c:1316-1370`) and the already-correct pushed lines (FIGHT-031/032). The
+  return was latent (all `multi_hit` callers discard it; tests read the pushed line),
+  so no re-baseline was needed; the fix guards against a future refactor delivering
+  the baked keyword. First close of the combat act()-lens vein (v2.14.90). Before
+  that: MAGIC-044 — `blindness`'s "$n appears to be blinded." room
   broadcast (`mud/skills/handlers.py:blindness` ~1672) now uses `act_to_room(room,
   "$n …", target, exclude=target)` — actor is the blinded victim, `$n` = PERS(victim)
   cap — instead of a hand-rolled loop baking `target.name` (with a "Someone" ternary
@@ -481,10 +489,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.89 |
-| Tests | magic044 1/1, blindness 4/4, full suite green 5773 passed / 4 skipped (v2.14.89) |
+| Version | 2.14.90 |
+| Tests | fight066 1/1, combat defense 51/51, full suite green 5774 passed / 4 skipped (v2.14.90) |
 | MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
 | act()-lens spell-handler tail | ✅ CLEARED (MAGIC-025..044 — baked-name $n/$N/$p/$S + hand-rolled-room-loop sites in handlers.py converted; commands/ confirmed clean) |
+| FIGHT-066 status | ✅ FIXED combat defense-return uses `$N` PERS (was latent baked name) |
 | MAGIC-044 status | ✅ FIXED blindness room broadcast `$n` PERS (act_to_room) |
 | MAGIC-043 status | ✅ FIXED envenom room broadcasts `$n`/`$p` PERS (act_to_room) |
 | MAGIC-042 status | ✅ FIXED faerie_fog "$n is revealed!" per-recipient PERS (act_to_room) |
@@ -577,16 +586,21 @@ discards the return and the tests read the pushed line — so it's never deliver
 Low-priority fix recipe is in the FIGHT-066 row. Combat damage broadcasts already
 route through `dam_message`/act() (FIGHT-018/023/025).
 
+**FIGHT-066 closed this session (v2.14.90)** — the combat act()-lens is now also
+clean (the one candidate is fixed). Both the spell-handler and combat baked-name
+veins are exhausted.
+
 Next veins (cross-file invariants probe-then-scope: read ROM C contract → read
 Python equivalent → one failing test → close as a single gap or file the next free
 INV-NNN):
 
-1. **FIGHT-066** (filed) — convert `attack_round`'s latent baked defense-return to
-   `pers()`+cap (or delete it); a quick, self-contained close.
-2. **Mob memory / hunt** — `src/fight.c` ATTACK_BACK and the hunt/track loop vs the
+1. **Mob memory / hunt** — `src/fight.c` ATTACK_BACK and the hunt/track loop vs the
    Python AI tick (not yet probed).
-3. **Position-transition edges** — `update_pos` / `stop_fighting` ordering across
+2. **Position-transition edges** — `update_pos` / `stop_fighting` ordering across
    damage, sleep, rest, and death.
+3. **act()-lens in remaining command files** — apply the same baked-name lens to
+   `mud/commands/` modules not yet swept (info/look/who/score render paths) and
+   `mud/mob_cmds.py` mob-program output.
 
 Confirmed-faithful (do not re-probe without new evidence): weather/time fan-out and
 `update_handler` pulse cadence (locked by `tests/test_game_loop_order.py` +

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.90] — 2026-06-13
+
+### Fixed
+
+- **FIGHT-066 — attack_round's defense-return string uses `$N` PERS, not a baked
+  name** — ROM `check_parry`/`check_dodge`/`check_shield_block` emit `act("$N
+  parries/dodges/blocks your attack.", …, TO_CHAR)` (`src/fight.c:1316-1370`). The
+  real player line is already delivered correctly via `_push_message` + `pers()`
+  inside those functions (FIGHT-031/032); but `apply_damage`/`attack_round` also
+  returned a latent `f"{victim.name} …"` baked string (never delivered — all
+  `multi_hit` callers discard the return). The three returns now mirror the pushed
+  lines via `capitalize_act_line(f"{pers(victim, attacker)} …")`, so an NPC victim
+  renders "A green goblin parries your attack." Guards against a future refactor
+  reintroducing the baked keyword. Test:
+  `tests/integration/test_fight066_defense_return_pers.py`.
+
 ## [2.14.89] — 2026-06-13
 
 ### Fixed

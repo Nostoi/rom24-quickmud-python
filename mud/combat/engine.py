@@ -701,12 +701,16 @@ def apply_damage(
     # These are checked AFTER hit determination but BEFORE damage application.
     # Order is critical: parry → dodge → shield_block.
     if dam_type is not None and attacker != victim and _should_check_weapon_defenses(dt):
+        # FIGHT-066: ROM check_parry/dodge/shield_block emit act("$N … your attack.",
+        # ch, NULL, victim, TO_CHAR) — $N = PERS(victim), cap. The real player line is
+        # already pushed inside the check_* functions (FIGHT-031/032); this return
+        # string mirrors it (pers + cap) instead of baking victim.name.
         if check_parry(attacker, victim):
-            return f"{victim.name} parries your attack."
+            return capitalize_act_line(f"{pers(victim, attacker)} parries your attack.")
         if check_dodge(attacker, victim):
-            return f"{victim.name} dodges your attack."
+            return capitalize_act_line(f"{pers(victim, attacker)} dodges your attack.")
         if check_shield_block(attacker, victim):
-            return f"{victim.name} blocks your attack with a shield."
+            return capitalize_act_line(f"{pers(victim, attacker)} blocks your attack with a shield.")
 
     # Apply damage type resistance/vulnerability modifiers (ROM fight.c:804-816)
     # This must happen AFTER defense checks but BEFORE damage application
