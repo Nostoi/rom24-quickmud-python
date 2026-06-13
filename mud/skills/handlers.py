@@ -2304,15 +2304,18 @@ def charm_person(caster: Character, target: Character | None = None) -> bool:
         stop_follower(target)
         return False
 
-    actor_name = getattr(caster, "name", None) or "Someone"
-    # INV-001: single-channel delivery for the cross-character target line.
-    _send_to_char(target, f"Isn't {actor_name} just so nice?")
+    # MAGIC-039: ROM act("Isn't $n just so nice?", ch, NULL, victim, TO_VICT)
+    # (magic.c:1388) — $n = PERS(caster) seen by the victim. INV-001 single-channel.
+    _send_to_char(target, act_format("Isn't $n just so nice?", recipient=target, actor=caster))
 
     if caster is not target:
-        target_name = getattr(target, "name", None) or "Someone"
+        # MAGIC-039: ROM act("$N looks at you with adoring eyes.", ch, NULL, victim,
+        # TO_CHAR) (magic.c:1390) — $N = PERS(victim), cap.
         caster_messages = getattr(caster, "messages", None)
         if isinstance(caster_messages, list):
-            caster_messages.append(f"{target_name} looks at you with adoring eyes.")
+            caster_messages.append(
+                act_format("$N looks at you with adoring eyes.", recipient=caster, actor=caster, arg2=target)
+            )
 
     return True
 

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.84] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-039 — charm_person's success messages use PERS** — ROM
+  `spell_charm_person` renders `act("Isn't $n just so nice?", …, TO_VICT)` (`$n` =
+  PERS(caster)) and `act("$N looks at you with adoring eyes.", …, TO_CHAR)` (`$N` =
+  PERS(victim), capitalized) (`src/magic.c:1388/1390`). The Python baked the
+  keywords, so charming an NPC "a green goblin" showed the caster "goblin looks at
+  you with adoring eyes." vs ROM "A green goblin …". Both now use `act_format`. Test:
+  `tests/integration/test_magic039_charm_person_pers.py`.
+
 ## [2.14.83] — 2026-06-13
 
 ### Fixed
