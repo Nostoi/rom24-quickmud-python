@@ -3027,8 +3027,12 @@ def demonfire(caster: Character, target: Character | None = None) -> int:
         if victim.apply_spell_effect(effect):
             _send_to_char(victim, "You feel unclean.")
             if victim is not caster:
-                victim_name = getattr(victim, "name", None) or "Someone"
-                _send_to_char(caster, f"{victim_name} looks very uncomfortable.")
+                # MAGIC-037: ROM demonfire delegates to spell_curse, whose cross-target
+                # line is act("$N looks very uncomfortable.", ch, NULL, victim, TO_CHAR)
+                # (magic.c:1801) — $N PERS, cap.
+                _send_to_char(
+                    caster, act_format("$N looks very uncomfortable.", recipient=caster, actor=caster, arg2=victim)
+                )
 
     return damage
 

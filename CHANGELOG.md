@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.82] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-037 — demonfire's curse-tail "looks very uncomfortable" uses `$N` PERS**
+  — ROM `spell_demonfire` ends by calling `spell_curse(...)`, whose cross-target
+  line is `act("$N looks very uncomfortable.", ch, NULL, victim, TO_CHAR)`
+  (`src/magic.c:1801`). The Python's inline copy baked the keyword `name`, so
+  demonfiring an NPC "a green goblin" showed "goblin looks very uncomfortable." vs
+  ROM "A green goblin …". Now uses `act_format`. Test:
+  `tests/integration/test_magic037_demonfire_curse_pers.py`.
+
 ## [2.14.81] — 2026-06-13
 
 ### Fixed
