@@ -553,14 +553,29 @@
 
 ## Next Intended Task
 
-The per-file audit tracker has no live `🔄 OPEN` rows; cross-file invariants is the
-primary pass. Use the probe-then-scope method (read ROM C contract → read Python
-equivalent → one failing test → close as a single gap or file as the next free
-INV-NNN). Candidates:
+**The act()-lens baked-name vein in spell handlers is now EXHAUSTED (verified this
+session, MAGIC-025..044).** Every `_send_to_char(caster, f"{name|_character_name|
+victim_name|target_name|short_descr}…")` and hand-rolled-room-loop broadcast in
+`mud/skills/handlers.py` that maps to a ROM `act("$n/$N/$p/$S …")` has been
+converted; a fresh grep of `mud/skills/` and `mud/commands/` for those patterns is
+empty. **Do NOT re-open this vein, and do NOT convert `colour_spray`'s colour-coded
+"You spray red, blue, yellow light…" messages** (`handlers.py:colour_spray` ~2476) —
+those are a **QuickMUD enhancement with NO ROM equivalent** (`src/magic.c
+spell_colour_spray` only calls `damage()` + `spell_blindness`, no spray text), so
+converting them would invent ROM behavior. Other remaining `for occupant` loops in
+handlers.py are calc/gating (`calm`) or already act()-converted (`chain_lightning`
+MAGIC-004).
 
-1. **Mob memory / hunt** — `src/fight.c` ATTACK_BACK and the hunt/track loop vs the
+Next veins (cross-file invariants probe-then-scope: read ROM C contract → read
+Python equivalent → one failing test → close as a single gap or file the next free
+INV-NNN):
+
+1. **act()-lens in `fight.c` / combat & skill messages** — the same baked-name lens,
+   applied to `mud/combat/` and `mud/commands/combat.py` damage/skill broadcasts
+   (the handlers.py spell vein is done; combat is the natural next surface).
+2. **Mob memory / hunt** — `src/fight.c` ATTACK_BACK and the hunt/track loop vs the
    Python AI tick (not yet probed).
-2. **Position-transition edges** — `update_pos` / `stop_fighting` ordering across
+3. **Position-transition edges** — `update_pos` / `stop_fighting` ordering across
    damage, sleep, rest, and death.
 
 Confirmed-faithful (do not re-probe without new evidence): weather/time fan-out and
