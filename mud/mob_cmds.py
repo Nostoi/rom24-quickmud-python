@@ -286,13 +286,23 @@ def _extract_character(victim: Character, fPull: bool = True) -> None:
     # ROM C handler.c:2142-2146 - Handle switched characters (do_return)
     # QuickMUD doesn't have character switching, skip
 
-    # ROM C handler.c:2148-2154 - Clear reply and mobprog target references
+    # ROM C handler.c:2151-2157 - Clear reply and mprog_target references.
+    # INV-047: ROM nullifies two single-target pointers on the char_list walk.
+    # The `reply` line is correct dangling-pointer hygiene. The mprog_target line
+    # is a faithfully-replicated ROM 2.4b6 quirk: it tests `ch->mprog_target ==
+    # wch` (the *extracted* char's target) and clears `wch->mprog_target` (wch's
+    # OWN target) — so it wipes the remembered target of whoever the extracted
+    # char was targeting, and does NOT clear mobs whose mprog_target points AT
+    # the extracted char. We mirror the buggy line verbatim, not the "corrected"
+    # `wch->mprog_target == ch` form many derivatives shipped.
+    victim_target = getattr(victim, "mprog_target", None)
     for other in list(character_registry):
-        if other == victim:
+        if other is victim:
             continue
-        if getattr(other, "reply", None) == victim:
+        if getattr(other, "reply", None) is victim:
             other.reply = None
-        # Note: mobprog_target handling would go here if needed
+        if victim_target is other:
+            other.mprog_target = None
 
     # ROM C handler.c:2156-2175 - Remove from character_list
     try:

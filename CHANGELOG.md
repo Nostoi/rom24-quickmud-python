@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.25] — 2026-06-12
+
+### Fixed
+
+- **INV-047 — `extract_char` now clears the ROM `mprog_target` pointer
+  (quirk-faithful)** — ROM `extract_char` (`src/handler.c:2151-2157`) nullifies
+  two single-target pointers on its `char_list` walk: `reply` (already mirrored)
+  and `mprog_target`. The latter is a faithfully-replicated ROM 2.4b6 quirk — it
+  clears the remembered target of whoever the extracted char was *targeting*
+  (`ch->mprog_target == wch → wch->mprog_target = NULL`), and does NOT clear mobs
+  whose `mprog_target` points *at* the extracted char. Python's
+  `_extract_character` previously left this as a `# would go here if needed`
+  TODO, so a mob's remembered `$q`/`$Q` target could survive an extraction it
+  should not. Now mirrors the buggy ROM line verbatim (not the "corrected"
+  `wch->mprog_target == ch` form). Tests:
+  `tests/integration/test_inv047_extract_clears_mprog_target.py` (pins both
+  halves of the quirk).
+
 ## [2.14.24] — 2026-06-12
 
 ### Fixed
