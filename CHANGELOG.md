@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.58] — 2026-06-13
+
+### Fixed
+
+- **FIGHT-064 — kill/murder safety messages use the victim's PERS short_descr** —
+  ROM renders `act("$N is your beloved master.", …)` (`src/fight.c:2707`) and
+  `act("But $N looks so cute and cuddly...", …)` (`:1061`) with `$N` =
+  `PERS(victim)` = the NPC short_descr (capitalized buf[0] for the beloved-master
+  line). The Python `_kill_safety_message` (combat.py) and `_murder_safety_check`
+  (murder.py) — two near-identical copies — baked `victim.name` (the keyword
+  string), so a charmed PC killing an NPC master "wizard"/"a dark wizard" saw
+  "wizard is your beloved master." vs ROM "A dark wizard is your beloved master."
+  Fixed all four sites via `act_format("$N …", arg2=victim)`. PC masters and the
+  literal `send_to_char` guards are unchanged. Found applying the `$N`/PERS/ACT-CAP
+  lens to the is_safe family. Test:
+  `tests/test_combat.py::test_fight064_beloved_master_message_uses_pers_shortdescr_capitalized`.
+
 ## [2.14.57] — 2026-06-13
 
 ### Fixed

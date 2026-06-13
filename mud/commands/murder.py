@@ -25,6 +25,7 @@ from mud.models.constants import (
     RoomFlag,
 )
 from mud.skills import skill_registry
+from mud.utils.act import act_format
 from mud.world.char_find import get_char_room
 
 
@@ -130,8 +131,8 @@ def _murder_safety_check(char: Character, victim: Character) -> str | None:
         victim_act = getattr(victim, "act", 0)
         # no attacking pets — mirroring ROM src/fight.c:1059
         if victim_act & ActFlag.PET:
-            victim_name = getattr(victim, "name", "they") or "they"
-            return f"But {victim_name} looks so cute and cuddly..."
+            # FIGHT-064: ROM act("But $N looks so cute and cuddly...", ch, NULL, victim, TO_CHAR).
+            return act_format("But $N looks so cute and cuddly...", recipient=char, actor=char, arg2=victim)
         # no attacking charmed creatures unless owner — mirroring ROM src/fight.c:1067
         victim_affected = getattr(victim, "affected_by", 0)
         if victim_affected & AffectFlag.CHARM:
@@ -142,7 +143,8 @@ def _murder_safety_check(char: Character, victim: Character) -> str | None:
     affected_by = getattr(char, "affected_by", 0)
     master = getattr(char, "master", None)
     if affected_by & AffectFlag.CHARM and master is victim:
-        return f"{getattr(victim, 'name', 'They')} is your beloved master."
+        # FIGHT-064: ROM act("$N is your beloved master.", ch, NULL, victim, TO_CHAR).
+        return act_format("$N is your beloved master.", recipient=char, actor=char, arg2=victim)
 
     # PC-vs-PC clan/level guards — mirroring ROM src/fight.c:1096-1121
     char_is_npc = getattr(char, "is_npc", True)

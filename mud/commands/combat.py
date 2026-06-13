@@ -62,8 +62,9 @@ def _kill_safety_message(attacker: Character, victim: Character) -> str | None:
         return None
 
     if skill_handlers._is_charmed(attacker) and getattr(attacker, "master", None) is victim:
-        victim_name = getattr(victim, "name", None) or "Someone"
-        return f"{victim_name} is your beloved master."
+        # FIGHT-064: ROM act("$N is your beloved master.", ch, NULL, victim, TO_CHAR) —
+        # $N = PERS(victim) = NPC short_descr (not keyword name), cap buf[0].
+        return act_format("$N is your beloved master.", recipient=attacker, actor=attacker, arg2=victim)
 
     victim_is_npc = bool(getattr(victim, "is_npc", True))
 
@@ -81,8 +82,8 @@ def _kill_safety_message(attacker: Character, victim: Character) -> str | None:
 
         if not getattr(attacker, "is_npc", False):
             if act_flags & ActFlag.PET:
-                victim_name = getattr(victim, "name", "they") or "they"
-                return f"But {victim_name} looks so cute and cuddly..."
+                # FIGHT-064: ROM act("But $N looks so cute and cuddly...", ch, NULL, victim, TO_CHAR).
+                return act_format("But $N looks so cute and cuddly...", recipient=attacker, actor=attacker, arg2=victim)
             if skill_handlers._is_charmed(victim) and getattr(victim, "master", None) is not attacker:
                 return "You don't own that monster."
     else:

@@ -745,6 +745,24 @@ and a test pinning the wrong RNG primitive).
   (RED→GREEN — short_descr rendered capitalized). Existing backstab test uses
   `.lower()` substring so unaffected. Backstab suite 14/14.
 
+### `FIGHT-064` — ✅ FIXED (kill/murder safety messages use `$N` PERS short_descr)
+
+- **Python**: `mud/commands/combat.py:_kill_safety_message` + `mud/commands/murder.py:_murder_safety_check` (two near-identical copies).
+- **ROM C**: `src/fight.c:1061` `act("But $N looks so cute and cuddly...", …)` + `:2707/:2805/:2873` `act("$N is your beloved master.", ch, NULL, victim, TO_CHAR)`.
+- **Gap**: both messages baked `victim.name` (keyword string) where ROM `$N` =
+  `PERS(victim)` = NPC short_descr (capitalized buf[0] for the beloved-master line,
+  which begins with `$N`). A charmed PC killing NPC master "wizard"/short_descr
+  "a dark wizard" saw "wizard is your beloved master." vs ROM "A dark wizard is your
+  beloved master." 4 sites (2 functions × 2 messages). Found applying the
+  `$N`/PERS/ACT-CAP lens to the is_safe family.
+- **Fix**: all four via `act_format("$N …", recipient=char, actor=char, arg2=victim)`.
+  PC masters (PERS=name) and the literal `send_to_char` guards ("don't own that
+  monster", "leave them alone", "Pick on someone") are unchanged.
+- **Tests**: `tests/test_combat.py::test_fight064_beloved_master_message_uses_pers_shortdescr_capitalized`
+  (NPC master → "A dark wizard …"). Existing PC-master test (test_combat.py:209,
+  "Master is your beloved master.") and the `.lower()` pet/murder-safety tests stay
+  green. Combat+skill-combat+safety suites 151/151.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

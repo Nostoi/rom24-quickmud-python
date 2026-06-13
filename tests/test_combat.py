@@ -207,6 +207,24 @@ def test_kill_blocks_charmed_player_attacking_master() -> None:
     out = process_command(thrall, "kill master")
 
     assert out == "Master is your beloved master."
+
+
+def test_fight064_beloved_master_message_uses_pers_shortdescr_capitalized() -> None:
+    """FIGHT-064 — ROM act("$N is your beloved master.", ch, NULL, victim, TO_CHAR):
+    $N = PERS(victim) renders the NPC short_descr (not the keyword name), cap buf[0]."""
+    initialize_world("area/area.lst")
+    thrall = create_test_character("Thrall", 3001)
+    master = create_test_character("wizard", 3001)
+    master.is_npc = True
+    master.short_descr = "a dark wizard"
+
+    thrall.add_affect(AffectFlag.CHARM)
+    thrall.master = master
+
+    out = process_command(thrall, "kill wizard")
+
+    # ROM $N -> short_descr "a dark wizard", capitalized -> "A dark wizard …".
+    assert out == "A dark wizard is your beloved master.", out
     assert thrall.fighting is None
     assert master.fighting is None
 
