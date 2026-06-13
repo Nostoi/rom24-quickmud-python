@@ -272,7 +272,9 @@ def test_drink_empty_container_message(test_character, object_factory):
 
 
 def test_drink_from_fountain_does_not_decrement(test_character, object_factory):
-    """ROM: ITEM_FOUNTAIN is infinite — value[1] is not modified."""
+    """ROM act_obj.c:1276-1277 — the decrement is gated on value[0] > 0, NOT on
+    item type. A fountain with value[0]==0 is therefore not decremented (this
+    case), which is how stock ROM fountains are configured (infinite)."""
     room = test_character.room
     fountain = _make_obj(
         object_factory,
@@ -283,8 +285,29 @@ def test_drink_from_fountain_does_not_decrement(test_character, object_factory):
     )
     room.add_object(fountain)
     result = do_drink(test_character, "fountain")
-    assert fountain.value[1] == 0, "Fountain should remain at value[1]==0 (infinite)"
+    assert fountain.value[1] == 0, "value[0]==0 → no decrement (ROM gates on value[0]>0)"
     assert isinstance(result, str)
+
+
+def test_drink_from_fountain_with_capacity_decrements_value(test_character, object_factory):
+    """DRINK-010 — mirrors ROM src/act_obj.c:1276-1277. ROM decrements value[1]
+    by `amount` whenever `value[0] > 0`, regardless of item type — fountains
+    included. The Python port wrongly guarded the decrement on
+    `item_type == DRINK_CON`, so a fountain with a positive value[0] never
+    drained (its value[1] stayed frozen) where ROM would subtract from it (and,
+    since the FOUNTAIN branch has no empty-check, let it go negative)."""
+    test_character.pcdata.condition[1] = 0  # FULL=0 so DRINK-009 (>45) doesn't trip
+    room = test_character.room
+    fountain = _make_obj(
+        object_factory,
+        item_type=ItemType.FOUNTAIN,
+        name="fountain",
+        short_descr="a stone fountain",
+        value=[20, 12, 0, 0, 0],  # cap=20 (>0), current=12, water, not poisoned
+    )
+    room.add_object(fountain)
+    do_drink(test_character, "fountain")
+    assert fountain.value[1] < 12, f"Fountain with value[0]>0 should decrement value[1]; got {fountain.value[1]}"
 
 
 # --------------------------------------------------------------------------- #

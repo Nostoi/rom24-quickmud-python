@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.34] — 2026-06-13
+
+### Fixed
+
+- **DRINK-010 — `do_drink` drains a fountain's `value[1]` when `value[0] > 0`,
+  not only drink containers** — ROM `do_drink` (`src/act_obj.c:1276-1277`)
+  decrements `obj->value[1]` by the sip amount whenever `obj->value[0] > 0`,
+  regardless of item type. The Python port added an
+  `item_type == ITEM_DRINK_CON` clause ROM does not have, so a fountain
+  configured with a positive capacity (`value[0] > 0`) never drained — its
+  `value[1]` stayed frozen where ROM subtracts from it (and, since the FOUNTAIN
+  branch has no empty-check, lets it go negative). Removed the spurious item-type
+  guard. Stock ROM fountains use `value[0] == 0` (infinite), so this is invisible
+  for them; it only diverges for capacity-bearing fountains. Test:
+  `tests/integration/test_consumables.py::test_drink_from_fountain_with_capacity_decrements_value`.
+
 ## [2.14.33] — 2026-06-13
 
 ### Fixed

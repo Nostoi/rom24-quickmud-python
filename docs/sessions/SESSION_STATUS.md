@@ -1,10 +1,16 @@
-# Session Status — 2026-06-13 — WIZ-052 (do_mstat condition COND_* indices) + EAT-006 (do_eat→gain_condition) + INV-049 (spec_fun dispatched inside mobile_update); cross-file invariants is the active pass
+# Session Status — 2026-06-13 — DRINK-010 (fountain value[1] drain) + WIZ-052 (do_mstat condition COND_* indices) + EAT-006 (do_eat→gain_condition); cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: WIZ-052 — `do_mstat` (`mud/commands/imm_search.py`) now reads
+- **Last completed**: DRINK-010 — `do_drink` (`mud/commands/consumption.py`) now
+  decrements `value[1]` whenever `value[0] > 0` (ROM act_obj.c:1276-1277),
+  removing a spurious `item_type == DRINK_CON` guard the Python had added; a
+  fountain with positive capacity now drains (and may go negative, as ROM does)
+  instead of staying frozen. Stock ROM fountains use `value[0]==0` so this is
+  invisible for them; only capacity-bearing fountains diverged (v2.14.34). Before
+  that: WIZ-052 — `do_mstat` (`mud/commands/imm_search.py`) now reads
   the `pcdata.condition` array by `COND_*` enum slot
   (`thirst=condition[Condition.THIRST]`, `hunger=[HUNGER]`, `full=[FULL]`,
   `drunk=[DRUNK]`) instead of by display order (`[0]/[1]/[2]/[3]`). The array is
@@ -51,8 +57,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.33 |
-| Tests | act_wiz parity 122/122, consumables 53/53, mob-AI 21/21, full suite last green 5678 passed / 4 skipped (v2.14.32) |
+| Version | 2.14.34 |
+| Tests | consumables 54/54, act_wiz parity 122/122, full suite last green 5679 passed / 4 skipped (v2.14.33) |
+| DRINK-010 status | ✅ FIXED (do_drink drains value[1] on value[0]>0 regardless of item type; fountains included) |
 | WIZ-052 status | ✅ FIXED (do_mstat condition line reads COND_* enum slots, not display order) |
 | EAT-006 status | ✅ FIXED (do_eat delegates condition restore to gain_condition; immortal/-1-sentinel guards honored) |
 | INV-049 status | ✅ ENFORCED (spec_fun dispatched inside mobile_update — gated by charm/empty, TRUE-result suppresses rest of tick; no separate run_npc_specs pass) |

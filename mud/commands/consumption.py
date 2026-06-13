@@ -301,9 +301,12 @@ def do_drink(ch: Character, args: str) -> str:
                 }
             )
 
-    # DRINK-005: decrement container only (not fountain); only if value[0] > 0
-    # ROM src/act_obj.c:1276-1277
-    if item_type_int == int(ItemType.DRINK_CON) and len(value) > 0 and value[0] > 0:
+    # DRINK-010: decrement value[1] by amount whenever value[0] > 0, regardless
+    # of item type — ROM gates ONLY on value[0] > 0 (src/act_obj.c:1276-1277), so
+    # a fountain with a positive capacity drains too (and, with no FOUNTAIN
+    # empty-check, may go negative). Previously this added an `item_type ==
+    # DRINK_CON` clause ROM does not have.
+    if len(value) > 0 and value[0] > 0:
         value[1] -= amount
 
     return "\n".join(messages)

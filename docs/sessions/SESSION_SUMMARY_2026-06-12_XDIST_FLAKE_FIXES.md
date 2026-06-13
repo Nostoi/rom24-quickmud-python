@@ -293,6 +293,30 @@ and a test pinning the wrong RNG primitive).
   (1, RED→GREEN; victim `condition=[1,2,3,4]` asserts
   `"Thirst: 3  Hunger: 4  Full: 2  Drunk: 1"`). Full act_wiz parity 122/122.
 
+### `DRINK-010` — ✅ FIXED (do_drink drains `value[1]` on `value[0] > 0`, not only for drink containers)
+
+- **Python**: `mud/commands/consumption.py:do_drink` (final decrement, ~line 304).
+- **ROM C**: `src/act_obj.c:1276-1277` — `if (obj->value[0] > 0) obj->value[1] -= amount;`.
+- **Gap**: the Python decrement was guarded on
+  `item_type == ITEM_DRINK_CON and value[0] > 0`. ROM gates it on `value[0] > 0`
+  **alone**, regardless of item type — so a fountain (`ITEM_FOUNTAIN`) with a
+  positive capacity drains its `value[1]` in ROM, while the Python's item-type
+  clause froze it. Because the FOUNTAIN switch branch has no `value[1] <= 0`
+  empty-check (unlike DRINK_CON), ROM lets a draining fountain's `value[1]` go
+  negative — a quirk we now replicate. Stock ROM fountains use `value[0] == 0`
+  (infinite), so the divergence is invisible for them and only manifests for
+  capacity-bearing fountains. Found by the same post-EAT-006 sibling re-read that
+  produced WIZ-052: reading `do_drink` end-to-end against ROM after closing its
+  sibling `do_eat` (EAT-006). Local single-function divergence → filed as
+  `DRINK-010` in `ACT_OBJ_C_AUDIT.md` (no INV — does not cross modules).
+- **Fix**: removed the `item_type_int == int(ItemType.DRINK_CON)` clause; the
+  decrement now reads `if len(value) > 0 and value[0] > 0: value[1] -= amount`.
+- **Tests**: `tests/integration/test_consumables.py::test_drink_from_fountain_with_capacity_decrements_value`
+  (1, RED→GREEN; fountain `value=[20,12,...]` → `value[1] < 12`); the existing
+  `::test_drink_from_fountain_does_not_decrement` was re-pinned to the
+  `value[0]==0` case (still green — ROM also skips it there) with a corrected
+  docstring. Full `test_consumables.py` 54/54.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:
