@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.83] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-038 — demonfire's "demons of Hell" lines use PERS + ROM TO_ROOM topology**
+  — ROM `spell_demonfire` broadcasts `act("$n calls forth the demons of Hell upon
+  $N!", …, TO_ROOM)` (every occupant except the actor — the victim is included) and
+  `act("$n has assailed you …", …, TO_VICT)`. The Python baked both names and
+  excluded the victim from the room loop (TO_NOTVICT topology), so the victim never
+  saw the "calls forth" line. Now uses `act_to_room` (victim included, caster
+  excluded) + `act_format` for the TO_VICT line. Re-baselined the demonfire damage
+  test. Test: `tests/integration/test_magic038_demonfire_demons_pers.py`.
+
 ## [2.14.82] — 2026-06-13
 
 ### Fixed

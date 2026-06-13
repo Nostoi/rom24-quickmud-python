@@ -59,7 +59,10 @@ def test_demonfire_applies_curse_and_fire_damage(monkeypatch: pytest.MonkeyPatch
     assert caster.messages[-1] == "Paladin looks very uncomfortable."
     assert observer.messages[-1] == "Warlock calls forth the demons of Hell upon Paladin!"
     assert caster.messages[0] == "You conjure forth the demons of hell!"
-    assert victim.messages[0] == "Warlock has assailed you with the demons of Hell!"
+    # MAGIC-038: ROM "$n calls forth …" is TO_ROOM (includes the victim), so the
+    # victim receives it before the TO_VICT "has assailed you" line.
+    assert victim.messages[0] == "Warlock calls forth the demons of Hell upon Paladin!"
+    assert victim.messages[1] == "Warlock has assailed you with the demons of Hell!"
 
 
 def test_ray_of_truth_blinds_and_scales_damage(monkeypatch: pytest.MonkeyPatch) -> None:

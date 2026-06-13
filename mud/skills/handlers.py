@@ -2984,16 +2984,15 @@ def demonfire(caster: Character, target: Character | None = None) -> int:
     caster.alignment = max(-1000, int(getattr(caster, "alignment", 0) or 0) - 50)
 
     if victim is not caster:
+        # MAGIC-038: ROM act("$n calls forth the demons of Hell upon $N!", ch, NULL,
+        # victim, TO_ROOM) (per-recipient PERS, excludes only the actor — the victim
+        # IS included) + act("$n has assailed you …", …, TO_VICT) + literal to ch.
         room = getattr(caster, "room", None)
-        caster_name = getattr(caster, "name", None) or "Someone"
-        victim_name = getattr(victim, "name", None) or "Someone"
         if room is not None:
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is caster or occupant is victim:
-                    continue
-                message = f"{caster_name} calls forth the demons of Hell upon {victim_name}!"
-                _send_to_char(occupant, message)
-        _send_to_char(victim, f"{caster_name} has assailed you with the demons of Hell!")
+            act_to_room(room, "$n calls forth the demons of Hell upon $N!", caster, arg2=victim, exclude=caster)
+        _send_to_char(
+            victim, act_format("$n has assailed you with the demons of Hell!", recipient=victim, actor=caster)
+        )
         _send_to_char(caster, "You conjure forth the demons of hell!")
 
     level = max(1, int(getattr(caster, "level", 0) or 0))

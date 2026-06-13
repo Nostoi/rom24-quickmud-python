@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-037 — `demonfire`'s curse-tail "$N looks very
+- **Last completed**: MAGIC-038 — `demonfire`'s "demons of Hell" broadcast
+  (`mud/skills/handlers.py:demonfire` ~2986) now renders via `act_to_room`/`act_format`
+  ($n/$N PERS) with ROM's TO_ROOM topology — the "calls forth" line is TO_ROOM
+  (every occupant except the actor, **victim included**) and "has assailed you" is
+  TO_VICT ($n PERS to victim). The Python had baked both names and excluded the
+  victim from the room loop, so the victim never saw "calls forth". Re-baselined the
+  demonfire damage test (victim now gets "calls forth" at messages[0]). Matches ROM
+  `spell_demonfire` (v2.14.83). Before that: MAGIC-037 — `demonfire`'s curse-tail "$N looks very
   uncomfortable." line (`mud/skills/handlers.py:demonfire` ~3031) now renders via
   `act_format` ($N = PERS victim short_descr, cap) instead of the baked keyword
   `name`. ROM `spell_demonfire` ends by calling `spell_curse(...)`, whose line is
@@ -430,10 +437,11 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.82 |
-| Tests | magic037 1/1, demonfire 2/2, full suite green 5765 passed / 4 skipped (v2.14.82) |
+| Version | 2.14.83 |
+| Tests | magic038 1/1, demonfire 2/2, full suite green 5766 passed / 4 skipped (v2.14.83) |
 | MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
-| MAGIC-037 status | ✅ FIXED demonfire curse-tail `$N` PERS cap; "demons of Hell" lines filed (MAGIC-038) |
+| MAGIC-038 status | ✅ FIXED demonfire "demons of Hell" — PERS + ROM TO_ROOM (victim included) topology |
+| MAGIC-037 status | ✅ FIXED demonfire curse-tail `$N` PERS cap |
 | MAGIC-036 status | ✅ FIXED dispel TO_ROOM "protected" lines — PERS + `$S` + actor-excluded delivery |
 | MAGIC-035 status | ✅ FIXED curse/dispel TO_CHAR `$N` PERS cap |
 | MAGIC-034 status | ✅ FIXED detect_* cluster (5 spells) cross-target `$N` PERS cap |
