@@ -1,10 +1,16 @@
-# Session Status — 2026-06-13 — INV-048 (assist-is-violence-update-only) + extract_char chain complete (INV-020 i–v, INV-047); cross-file invariants is the active pass
+# Session Status — 2026-06-13 — GL-044 (mobile_update wander RNG primitive) + INV-048 (assist-is-violence-update-only) + extract_char chain complete (INV-020 i–v, INV-047); cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: INV-048 — auto-assist (`check_assist`) now fires from
+- **Last completed**: GL-044 — `mobile_update` wander now draws its direction
+  with `number_bits(5)` (single 5-bit roll, aborts when >5 → wanders 6/32 of
+  eligible ticks), mirroring ROM `src/update.c:498`. Previously used
+  `number_door()` (the do_flee primitive, `src/db.c:3541`) which re-rolls until
+  ≤5 and never aborts — mobs wandered ~5× too often and the variable reroll loop
+  desynced the shared Mitchell-Moore stream (v2.14.30). Before that: INV-048 —
+  auto-assist (`check_assist`) now fires from
   exactly one site, `game_loop.violence_tick` (ROM `src/fight.c:90`,
   `violence_update`). Removed the erroneous inline `check_assist` from
   `mud/ai/aggressive.py:aggressive_update` — ROM `aggr_update` (`src/update.c:1136`)
@@ -22,8 +28,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.29 |
-| Tests | mob-AI 18/18, combat/game-loop regression 44p/1s; full suite last green 5672 passed / 4 skipped (v2.14.28) |
+| Version | 2.14.30 |
+| Tests | mob-AI 19/19, game-loop+group-combat regression 43p/1s; full suite last green 5673 passed / 4 skipped (v2.14.29) |
+| GL-044 status | ✅ FIXED (mobile_update wander uses number_bits(5), aborts >5; not number_door) |
 | INV-048 status | ✅ ENFORCED (check_assist fires only from violence_tick; aggr_update never assists) |
 | INV-020 status | ✅ ENFORCED (full extract_char chain — steps i–v — on all extract legs: raw_kill, _extract_character, quit, disconnect) |
 | INV-047 status | ✅ ENFORCED (extract-ref cleanup on all paths) |

@@ -191,6 +191,28 @@ and a test pinning the wrong RNG primitive).
   (`test_group_combat`, `test_game_loop`, `test_game_loop_order`,
   `test_gl028_mob_spell_effect_tick`) 44 passed/1 skipped.
 
+### `GL-044` — ✅ FIXED (mobile_update wander uses `number_bits(5)`, not `number_door()`)
+
+- **Python**: `mud/ai/__init__.py:_maybe_wander` (direction draw).
+- **ROM C**: `src/update.c:498` (`(door = number_bits(5)) <= 5`) vs the wrongly
+  borrowed `src/db.c:3541` `number_door` (do_flee/do_mpflee primitive).
+- **Gap**: ROM's wander draws a single 5-bit value and **aborts the whole
+  wander when it exceeds 5** — an eligible mob wanders only 6/32 of those ticks.
+  Python used `rng_mm.number_door()`, which re-rolls with a 3-bit mask until ≤5
+  and therefore always returns a valid direction, never aborting. Two
+  divergences: (a) mobs wandered ~5× too often (never bailing on a >5 roll);
+  (b) `number_door`'s reroll loop consumes a *variable* number of MM-stream
+  words (vs exactly one for `number_bits(5)`), desyncing every downstream roll
+  that tick. The stale comment mis-cited `mob_cmds.c:1274` (the flee path)
+  instead of the real `update.c:498` wander site. Found by probe-then-scope:
+  read `mobile_update`'s wander block in ROM, compared the RNG primitive.
+- **Fix**: `door = rng_mm.number_bits(5); if door > 5: return`, mirroring ROM.
+  Filed as the local single-function divergence `GL-044` in `UPDATE_C_AUDIT.md`
+  (wrong RNG primitive — not cross-file, so no INV row).
+- **Tests**: `tests/integration/test_mob_ai.py::TestMobileWanderUsesNumberBits5`
+  (1, RED→GREEN: door roll 10 > 5 → mob stays put). Full `test_mob_ai.py`
+  19/19; game-loop + group-combat regression 43 passed/1 skipped.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:

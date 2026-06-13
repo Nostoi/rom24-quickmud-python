@@ -229,8 +229,15 @@ def _maybe_wander(mob: Character, room: Room) -> None:
     if rng_mm.number_bits(3) != 0:
         return
 
-    # ROM C mob_cmds.c:1274 uses number_door() for random direction
-    door = rng_mm.number_door()
+    # mirroring ROM src/update.c:498 — wander draws a SINGLE 5-bit direction
+    # `(door = number_bits(5)) <= 5` and aborts the whole wander when the roll
+    # exceeds 5 (so a mob only wanders on 6/32 of otherwise-eligible ticks).
+    # NOT number_door() (the do_flee/do_mpflee primitive, src/db.c:3541), which
+    # re-rolls with a 3-bit mask until ≤5 and therefore always returns a valid
+    # door — that over-wanders ~5× and desyncs the shared Mitchell-Moore stream.
+    door = rng_mm.number_bits(5)
+    if door > 5:
+        return
 
     exit_obj = _valid_exit(room, door)
     if exit_obj is None:

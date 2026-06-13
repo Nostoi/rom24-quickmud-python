@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.30] — 2026-06-13
+
+### Fixed
+
+- **GL-044 — `mobile_update` wander uses `number_bits(5)`, not `number_door()`**
+  — ROM `src/update.c:498` draws a single 5-bit direction
+  `(door = number_bits(5)) <= 5` and aborts the whole wander when the roll
+  exceeds 5, so an eligible mob only wanders on 6/32 of those ticks. The Python
+  `_maybe_wander` (`mud/ai/__init__.py`) instead used `rng_mm.number_door()` —
+  the do_flee/do_mpflee primitive (`src/db.c:3541`) that re-rolls with a 3-bit
+  mask until ≤5 and therefore always returns a valid direction, never aborting.
+  Result: mobs wandered ~5× too often, and `number_door`'s variable reroll loop
+  desynced the shared Mitchell-Moore RNG stream for every downstream roll that
+  tick (combat hits, saves, later mobs' scavenge/wander). Now mirrors ROM:
+  `door = number_bits(5); if door > 5: return`. Test:
+  `tests/integration/test_mob_ai.py::TestMobileWanderUsesNumberBits5`.
+
 ## [2.14.29] — 2026-06-13
 
 ### Fixed

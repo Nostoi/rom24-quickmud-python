@@ -509,7 +509,43 @@ class TestStayAreaBehavior:
         assert stay_area.room.area is original_room.area
 
 
-class TestMobAssistBehavior:
+class TestMobileWanderUsesNumberBits5:
+    """ROM ``mobile_update`` wander draws the door with a SINGLE ``number_bits(5)``
+    and aborts the wander when the result is ``> 5`` (src/update.c:498:
+    ``(door = number_bits(5)) <= 5``). It must NOT use ``number_door()`` — that is
+    the ``do_flee``/``do_mpflee`` primitive (src/db.c:3541, a `while (... > 5)`
+    loop that re-rolls until it lands on a valid 0-5 door and so ALWAYS yields a
+    direction). Borrowing ``number_door`` here makes mobs wander ~5x too often
+    (every gated tick instead of 6/32 of them) and desyncs the shared MM RNG
+    stream (a loop of variable draws vs one fixed draw).
+    """
+
+    def test_wander_aborts_when_number_bits5_exceeds_five(self, isolated_wander_rooms, monkeypatch):
+        """mirrors ROM src/update.c:498 — a door roll > 5 aborts the wander; the
+        mob stays put for this tick rather than re-rolling into a valid door."""
+        import mud.ai as ai_module
+
+        # Gate (number_bits(3)) passes; the door roll (number_bits(5)) returns 10,
+        # which is > 5 and must abort the wander. number_door is patched to a valid
+        # door so the OLD (buggy) number_door()-based code would deterministically
+        # move the mob — making this a clean RED before the fix.
+        monkeypatch.setattr(ai_module.rng_mm, "number_bits", lambda bits: 0 if bits != 5 else 10)
+        monkeypatch.setattr(ai_module.rng_mm, "number_door", lambda: int(Direction.NORTH))
+
+        start = isolated_wander_rooms["outdoor_start"]
+        wanderer = create_test_mob(start.vnum, name="roaming peddler", act=0)
+        assert wanderer.room is start
+        # sanity: the room really does have a NORTH exit the mob could take
+        assert start.exits[int(Direction.NORTH)] is not None
+
+        mobile_update()
+
+        assert wanderer.room is start, (
+            "ROM src/update.c:498 aborts the wander when number_bits(5) > 5; the mob "
+            "must stay put. A moved mob means the wander used number_door() (the flee "
+            "primitive), which re-rolls until valid and never aborts."
+        )
+
     """Test mob assist mechanics (ASSIST_VNUM, ASSIST_ALL, etc)."""
 
     def test_assist_vnum_same_mob_helps_in_combat(self, test_room):
