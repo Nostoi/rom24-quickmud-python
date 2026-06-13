@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.69] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-025 — fly/infravision/pass_door already-affected lines use `$N` PERS** —
+  ROM `spell_fly` (`magic.c:2892`), `spell_infravision` (`:3594`), and
+  `spell_pass_door` (`:3874`) all render their blocking line as
+  `act("$N …", ch, NULL, victim, TO_CHAR)` — `$N` = PERS(victim) = NPC short_descr,
+  capitalized. The Python baked the victim keyword `name`, so casting on an
+  already-affected NPC "goblin"/"a green goblin" showed lowercase "goblin doesn't
+  need your help to fly." vs ROM "A green goblin doesn't need your help to fly."
+  All three now route through `act_format`; orphaned `name` assignments removed.
+  Continues the MAGIC-022 batch. Test:
+  `tests/integration/test_magic025_fly_infra_passdoor_pers.py`.
+
 ## [2.14.68] — 2026-06-13
 
 ### Fixed

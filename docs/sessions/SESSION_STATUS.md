@@ -1,10 +1,19 @@
-# Session Status — 2026-06-13 — MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-024 — `giant_strength` ("$N can't get any stronger.")
+- **Last completed**: MAGIC-025 — `fly` ("$N doesn't need your help to fly."),
+  `infravision` ("$N already has infravision."), and `pass_door` ("$N is already
+  shifted out of phase.") (`mud/skills/handlers.py`) already-affected blocking
+  lines now render via `act_format` — $N = PERS NPC short_descr (cap) — matching ROM
+  `act(..., ch, NULL, victim, TO_CHAR)` (`src/magic.c:2892/3594/3874`). Casting on an
+  already-affected NPC "goblin"/"a green goblin" now shows "A green goblin doesn't
+  need your help to fly." (was lowercase "goblin …"). Orphaned `name` assignments
+  removed. Continues the MAGIC-022 batch (fly/infravision/pass_door struck;
+  disarm/faerie_fire/fireproof/envenom/bless-object/sanctuary remain) (v2.14.69).
+  Before that: MAGIC-024 — `giant_strength` ("$N can't get any stronger.")
   and `haste` ("$N is already moving as fast as $E can.") (`mud/skills/handlers.py`)
   now render via `act_format` — $N = PERS short_descr (cap), $E = victim's subject
   pronoun (sexless → "it", not "they") — matching ROM `act(..., TO_CHAR)`
@@ -306,8 +315,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.68 |
-| Tests | strength/haste-pers 2/2, buffs+debuffs 41/41, full suite last green 5731 passed / 4 skipped (v2.14.67) |
+| Version | 2.14.69 |
+| Tests | magic025 3/3, full suite green 5736 passed / 4 skipped (v2.14.69) |
+| MAGIC-025 status | ✅ FIXED fly/infravision/pass_door (`$N` PERS short_descr, cap) |
 | MAGIC-024 status | ✅ FIXED giant_strength/haste (`$N`/`$E` PERS; sexless→"it") |
 | MAGIC-023 status | ✅ FIXED frenzy (`$N` PERS ×4, `$e`-caster quirk replicated) |
 | MAGIC-022 status | ✅ FIXED protection evil/good (`$N` PERS ×6); ⚠️ ~13-site baked-name batch tracked |

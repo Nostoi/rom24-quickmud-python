@@ -4602,8 +4602,10 @@ def fly(caster, target=None):
         if target is caster:
             _send_to_char(caster, "You are already airborne.")
         else:
-            name = getattr(target, "name", None) or "Someone"
-            _send_to_char(caster, f"{name} doesn't need your help to fly.")
+            # MAGIC-025: ROM act("$N doesn't need your help to fly.", ch, NULL, victim, TO_CHAR).
+            _send_to_char(
+                caster, act_format("$N doesn't need your help to fly.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -5676,7 +5678,10 @@ def infravision(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You can already see in the dark.")
         else:
-            _send_to_char(caster, f"{_character_name(target)} already has infravision.")
+            # MAGIC-025: ROM act("$N already has infravision.", ch, NULL, victim, TO_CHAR).
+            _send_to_char(
+                caster, act_format("$N already has infravision.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -6343,8 +6348,10 @@ def pass_door(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You are already out of phase.")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} is already shifted out of phase.")
+            # MAGIC-025: ROM act("$N is already shifted out of phase.", ch, NULL, victim, TO_CHAR).
+            _send_to_char(
+                caster, act_format("$N is already shifted out of phase.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
