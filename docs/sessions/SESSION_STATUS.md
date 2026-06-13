@@ -626,12 +626,18 @@ Next veins (cross-file invariants probe-then-scope: read ROM C contract → read
 Python equivalent → one failing test → close as a single gap or file the next free
 INV-NNN):
 
-1. **Mob memory / hunt** — `src/fight.c` ATTACK_BACK and the hunt/track loop vs the
-   Python AI tick (not yet probed).
-2. **act()-lens in remaining command files** — apply the same baked-name lens to
-   `mud/commands/` modules not yet swept (info/look/who/score render paths) and
-   `mud/mob_cmds.py` mob-program output (the combat + spell-handler surfaces are
-   done and confirmed clean).
+1. ~~Mob memory / hunt~~ — **NOT APPLICABLE** (verified 2026-06-13): this ROM 2.4b6
+   source has no `do_hunt`/`do_track` command and no `hunting` field in `merc.h`;
+   mob aggression is `aggr_update` (`src/update.c:1077`), already audited
+   (GL-043/INV-045/INV-048). Do not re-probe.
+2. **Affect wear-off / update.c message surface** — `affect_update` wear-off
+   messages (`src/update.c` → `send_to_char` self + some `act(... TO_ROOM)`),
+   `gain_condition` hunger/thirst/drunk lines, `char_update` regen — check PERS/cap
+   + delivery vs the Python `mud/affects/` + `mud/game_loop.py` ticks (not yet
+   probed; the wear-off `act(... TO_ROOM)` lines are the next act()-cap candidates).
+3. **act()-lens in remaining command render paths** — info/look/who/score (mostly
+   display formatting from the viewer's own perspective, likely NOT act() sites —
+   verify before assuming a gap).
 
 Confirmed-faithful (do not re-probe without new evidence): weather/time fan-out and
 `update_handler` pulse cadence (locked by `tests/test_game_loop_order.py` +
