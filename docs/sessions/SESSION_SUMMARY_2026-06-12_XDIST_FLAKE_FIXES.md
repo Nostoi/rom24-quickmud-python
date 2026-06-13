@@ -339,6 +339,31 @@ and a test pinning the wrong RNG primitive).
   `::test_eat_poison_affect_uses_rom_duration` (value[0]=5 → duration 10) still
   green, confirming the non-zero path is unaffected. Full `test_consumables.py` 55/55.
 
+### `BRANDISH-007` — ✅ FIXED (do_brandish `check_improve` fires once per affected target)
+
+- **Python**: `mud/commands/magic_items.py:do_brandish` (success branch, per-target loop ~line 248).
+- **ROM C**: `src/act_obj.c:2050-2052` — `check_improve(ch, gsn_staves, TRUE, 2)`
+  sits *inside* the `for (vch = ch->in_room->people; ...)` loop, after
+  `obj_cast_spell`, so each successful cast is its own learn opportunity.
+- **Gap**: the Python hoisted `check_improve(ch, "staves", True, 2)` to run once
+  *after* the loop. For AoE staves — a TAR_CHAR_OFFENSIVE/DEFENSIVE spell hitting
+  N valid targets — ROM calls `check_improve` N times; the Python called it once.
+  `check_improve` rolls `number_range(1, 1000)` for PCs (it early-returns for
+  NPCs), so the divergence under-counted both the skill-learn rate and the shared
+  Mitchell-Moore RNG draw count by N−1, desyncing every subsequent roll that tick.
+  Found by the post-EAT-007 magic-item sibling sweep (read `do_quaff`,
+  `do_recite`, `do_brandish`, `do_zap` against ROM; the three single-target
+  commands have no loop and were confirmed faithful — only `do_brandish` loops).
+  Local single-function divergence → filed as `BRANDISH-007` in `ACT_OBJ_C_AUDIT.md`.
+- **Fix**: moved the `check_improve(ch, "staves", True, 2)` call inside the
+  `for vch` loop, immediately after `_obj_cast_spell` (the failure-branch
+  `check_improve(..., False, 2)` was already correctly once-per-brandish).
+- **Tests**: `tests/integration/test_consumables.py::test_brandish_check_improve_fires_once_per_affected_target`
+  (1, RED→GREEN; PC caster + 2 NPCs, forced offensive target kind + success branch,
+  asserts 2 success calls). Magic-item area suite
+  (`test_consumables.py` + `test_inv025_magic_items_act_trigger_dispatch.py` +
+  `test_spell_casting.py`) 90/90.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:

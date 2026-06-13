@@ -712,6 +712,51 @@ def test_brandish_level_check_failure(test_character, object_factory):
     assert staff.value[2] == 4, staff.value[2]
 
 
+def test_brandish_check_improve_fires_once_per_affected_target(test_character, object_factory, monkeypatch):
+    """BRANDISH-007 — ROM src/act_obj.c:2050-2052 calls check_improve INSIDE the
+    per-target for-loop, once per target the spell is cast on. The previous Python
+    called it once after the loop, diverging both the skill-learning rate and the
+    shared MM RNG draw count for AoE (TAR_CHAR_OFFENSIVE/DEFENSIVE) staff spells.
+
+    Isolate the loop body: force the offensive target kind, stub the spell cast,
+    force the success branch, and count check_improve calls. With a PC caster and
+    two NPCs in the room, the offensive branch targets both NPCs -> 2 calls.
+    """
+    import mud.commands.magic_items as magic_items
+
+    # Two NPC targets in the same room as the PC caster.
+    room = test_character.room
+    for i in range(2):
+        npc = Character(name=f"dummy{i}", is_npc=True, level=5, room=room)
+        npc.messages = []
+        room.people.append(npc)
+
+    staff = _make_obj(
+        object_factory,
+        item_type=ItemType.STAFF,
+        name="staff",
+        short_descr="a wooden staff",
+        value=[20, 0, 5, "magic missile", 0],
+        level=1,
+    )
+    _hold_staff(test_character, staff)
+
+    calls: list[bool] = []
+    monkeypatch.setattr(magic_items, "_resolve_target_kind", lambda _name: "victim")
+    monkeypatch.setattr(magic_items, "_obj_cast_spell", lambda *a, **k: None)
+    monkeypatch.setattr(magic_items.rng_mm, "number_percent", lambda: 1)
+    monkeypatch.setattr(
+        magic_items,
+        "check_improve",
+        lambda ch, name, success, mult: calls.append(success),
+    )
+
+    do_brandish(test_character, "")
+
+    # ROM casts on both NPCs and calls check_improve once per cast.
+    assert calls == [True, True], f"expected 2 success check_improve calls, got {calls}"
+
+
 # --------------------------------------------------------------------------- #
 # do_zap — ZAP-NNN parity (ROM src/act_obj.c:2068-2157)                        #
 # --------------------------------------------------------------------------- #

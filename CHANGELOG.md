@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.36] — 2026-06-13
+
+### Fixed
+
+- **BRANDISH-007 — `do_brandish` calls `check_improve` once per affected target,
+  not once per brandish** — ROM `do_brandish` (`src/act_obj.c:2050-2052`) calls
+  `check_improve(ch, gsn_staves, TRUE, 2)` *inside* the per-target `for` loop, so
+  each successful cast is its own skill-learn opportunity. The Python port hoisted
+  the call to run once *after* the loop, so AoE staves (TAR_CHAR_OFFENSIVE /
+  TAR_CHAR_DEFENSIVE spells hitting N people) under-counted learn rolls and
+  under-drew the shared Mitchell-Moore RNG (`check_improve` rolls
+  `number_range(1, 1000)` for PCs) by N−1. Moved the call back inside the loop.
+  Test:
+  `tests/integration/test_consumables.py::test_brandish_check_improve_fires_once_per_affected_target`.
+
 ## [2.14.35] — 2026-06-13
 
 ### Fixed

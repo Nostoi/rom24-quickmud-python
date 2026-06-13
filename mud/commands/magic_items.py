@@ -246,7 +246,11 @@ def do_brandish(ch: Character, args: str) -> str:
                     return "\n".join(filter(None, out_lines))
 
                 _obj_cast_spell(spell_name, spell_level, ch, vch, None)
-            check_improve(ch, "staves", True, 2)
+                # BRANDISH-007: ROM src/act_obj.c:2050-2052 calls check_improve
+                # INSIDE the per-target loop — once per cast, not once total. This
+                # matters for AoE staves (TAR_CHAR_OFFENSIVE/DEFENSIVE): each cast
+                # is its own learn roll AND its own number_range(1,1000) draw.
+                check_improve(ch, "staves", True, 2)
 
     # ROM 2056: --staff->value[2] <= 0 (decrement unconditionally; check after)
     new_charges = charges - 1

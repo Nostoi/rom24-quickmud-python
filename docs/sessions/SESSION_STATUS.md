@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — EAT-007 (do_eat poison raw value[0]) + DRINK-010 (fountain value[1] drain) + WIZ-052 (do_mstat condition COND_* indices); cross-file invariants is the active pass
+# Session Status — 2026-06-13 — BRANDISH-007 (do_brandish check_improve per-target) + EAT-007 + DRINK-010 + WIZ-052; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: EAT-007 — `do_eat` (`mud/commands/consumption.py`) poison
+- **Last completed**: BRANDISH-007 — `do_brandish` (`mud/commands/magic_items.py`)
+  now calls `check_improve(ch, "staves", True, 2)` **inside** the per-target loop,
+  once per cast, matching ROM `src/act_obj.c:2050-2052`. The previous code hoisted
+  it to run once after the loop, so AoE staves (TAR_CHAR_OFFENSIVE/DEFENSIVE spells
+  hitting N people) under-counted skill-learn rolls and under-drew the shared MM RNG
+  (`check_improve` rolls `number_range(1,1000)` for PCs) by N−1. Surfaced by a
+  do_quaff/do_recite/do_brandish/do_zap sibling sweep of the magic-item command
+  cluster after EAT-007 (do_recite and do_zap are single-target, no loop, confirmed
+  faithful) (v2.14.36). Before that: EAT-007 — `do_eat` (`mud/commands/consumption.py`) poison
   branch now derives the affect's level/duration from the **raw** `value[0]`
   (ROM act_obj.c:1347-1348: `level=number_fuzzy(value[0])`, `duration=2*value[0]`)
   instead of the Python's `value[0] if value[0] else 1` substitution — so
@@ -63,8 +71,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.35 |
-| Tests | consumables 55/55, act_wiz parity 122/122, full suite last green 5680 passed / 4 skipped (v2.14.34) |
+| Version | 2.14.36 |
+| Tests | magic-item area 90/90, consumables 56/56, full suite last green 5681 passed / 4 skipped (v2.14.35) |
+| BRANDISH-007 status | ✅ FIXED (do_brandish check_improve fires inside per-target loop, once per cast — AoE skill-learn + RNG draw count) |
 | EAT-007 status | ✅ FIXED (do_eat poison level/duration use raw value[0], no `or 1` substitution) |
 | DRINK-010 status | ✅ FIXED (do_drink drains value[1] on value[0]>0 regardless of item type; fountains included) |
 | WIZ-052 status | ✅ FIXED (do_mstat condition line reads COND_* enum slots, not display order) |
