@@ -108,6 +108,28 @@ and a test pinning the wrong RNG primitive).
 - **Tests**: `tests/integration/test_inv047_extract_paths_clear_refs.py` (4 —
   quit leg ×2 + disconnect leg ×2). Broader extract/death suites: 38/38.
 
+### `INV-020` step (iv) — `stop_fighting(both=True)` on quit + disconnect legs — ✅ ENFORCED (2.14.27)
+
+- **Python**: `mud/game_loop.py:_auto_quit_character`,
+  `mud/net/connection.py:_disconnect_extract_cleanup`.
+- **ROM C**: `src/handler.c:2121` (final step of the `extract_char` cleanup chain).
+- **Gap**: ROM's `extract_char` ends with `stop_fighting(ch, TRUE)` — `fBoth`
+  clears `fighting` on the extracted char AND every char fighting it. The
+  mob-extract leg (`_extract_character`) already did this, but the two PC-extract
+  legs (link-dead void-quit, socket disconnect) ran only steps i–iii + the
+  INV-047 ref-clear, leaving a mob with a dangling `fighting` pointer at the
+  unlinked PC — dereferenced on the next combat tick. Found by walking ROM's
+  4-step chain against each Python extract path (the same multi-path audit that
+  produced INV-047); INV-020's own row enumerated step (iv) but the quit/disconnect
+  legs silently omitted it.
+- **Fix**: both legs now call `stop_fighting(char, both=True)` after the INV-047
+  ref-clear, before the room/registry unlink (ROM loop-then-unlink order). All
+  four extract legs now run the full chain.
+- **Tests**: `tests/integration/test_inv020_extract_quit_cleanup.py` (+2:
+  `test_void_quit_stops_attackers_fighting`,
+  `test_disconnect_stops_attackers_fighting`; file now 6/6). Targeted
+  extract/fighting regression: 56/56.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:
