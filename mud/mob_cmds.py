@@ -404,6 +404,9 @@ def do_mpasound(ch: Character, argument: str) -> None:
     room = getattr(ch, "room", None)
     if room is None:
         return
+    # MOBCMD-021: ROM relocates the mob into each adjacent room and emits
+    # act(argument, ch, NULL, NULL, TO_ROOM), which caps buf[0] (src/comm.c:2376-2379).
+    rendered = capitalize_act_line(argument)
     exits = list(getattr(room, "exits", []) or [])
     for exit_obj in exits:
         if exit_obj is None:
@@ -411,7 +414,7 @@ def do_mpasound(ch: Character, argument: str) -> None:
         target_room = getattr(exit_obj, "to_room", None)
         if target_room is None or target_room is room:
             continue
-        _broadcast(target_room, argument)
+        _broadcast(target_room, rendered)
 
 
 def do_mpgecho(ch: Character, argument: str) -> None:

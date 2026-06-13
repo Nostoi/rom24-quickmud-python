@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.92] — 2026-06-13
+
+### Fixed
+
+- **MOBCMD-021 — mpasound capitalizes buf[0] like ROM act()** — ROM `do_mpasound`
+  (`src/mob_cmds.c`) relocates the mob into each adjacent room and emits
+  `act(argument, ch, NULL, NULL, TO_ROOM)`, capitalizing the first visible char. The
+  Python broadcast the sound to neighbouring rooms raw, so a line beginning with a
+  lowercase word reached listeners uncapitalized. Now caps via `capitalize_act_line`
+  before the per-exit broadcast. (`do_mpgecho`/`do_mpzecho` are correct as-is — ROM
+  delivers those via raw `send_to_char`, not `act()`.) Test:
+  `tests/integration/test_mobcmd021_asound_capitalization.py`.
+
 ## [2.14.91] — 2026-06-13
 
 ### Fixed
