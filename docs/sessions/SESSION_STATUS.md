@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — EMOTE-005 (emote self shows name not "You", reverts EMOTE-002) + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — TELL-008 (tell status msgs use $E/$S pronouns) + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: EMOTE-005 — `do_emote` (`mud/commands/communication.py`) self
+- **Last completed**: TELL-008 — `do_tell` (`mud/commands/communication.py`)
+  teller-facing status lines now render the victim's gendered pronouns via
+  `act_format` ($E=He/She/It, $S=his/her/its, $N=name) instead of the baked victim
+  name + "they"/"their". Six messages (not-receiving / can't-hear / linkdead /
+  AFK-NPC / AFK-PC / writing-note) matching ROM `act("$E …", ch, 0, victim,
+  TO_CHAR)` (`src/act_comm.c`). E.g. `tell bob hi` (sexless, QUIET) → "It is not
+  receiving tells." (was "Bob is not receiving tells."). Found applying the
+  EMOTE-005 $n/PERS lens to the comm commands (v2.14.51). Before that: EMOTE-005 —
+  `do_emote` (`mud/commands/communication.py`) self
   line now renders the actor's OWN NAME via `pers(char, char)` (e.g. "Bob nods"),
   not "You nods" — **correcting the false-premise EMOTE-002**. ROM `act()` does no
   `$n`→"You" conversion; `$n` → `PERS(ch, to)`, and `PERS(ch, ch)` = the actor's
@@ -172,8 +180,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.50 |
-| Tests | emote parity 32/32, full suite last green 5707 passed / 4 skipped (v2.14.49) |
+| Version | 2.14.51 |
+| Tests | communication 18/18, full suite last green 5707 passed / 4 skipped (v2.14.50) |
+| TELL-008 status | ✅ FIXED (tell status lines use $E/$S/$N pronouns via act_format, not baked name + "they") |
 | EMOTE-005 status | ✅ FIXED (emote self renders actor name via PERS, not "You"; reverts false-premise EMOTE-002) |
 | COMPARE-001 status | ✅ FIXED (do_compare equipped-match requires same item_type + overlapping wear_flags) |
 | FIGHT-062 status | ✅ FIXED (do_flee "$n has fled!" uses act_to_room — PERS mask + single-delivery + TRIG_ACT) |

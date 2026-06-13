@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.51] — 2026-06-13
+
+### Fixed
+
+- **TELL-008 — `tell` status messages use the victim's gendered pronouns, not
+  their name** — ROM renders the teller-facing status lines ("$E is not receiving
+  tells.", "$E can't hear you.", "$N seems to have misplaced $S link…", the AFK and
+  note-writing lines) via `act()` with the victim's pronouns (`$E`=He/She/It,
+  `$S`=his/her/its, `$N`=name). The Python `mud/commands/communication.py` baked the
+  victim's name + "they"/"their" — so `tell bob hi` (Bob sexless, QUIET) showed
+  "Bob is not receiving tells." where ROM shows "It is not receiving tells.", and a
+  male linkdead victim showed "…their link…" where ROM shows "…his link…". Rendered
+  all six via `act_format` with the ROM `$E`/`$N`/`$S` templates. Found applying the
+  EMOTE-005 `$n`/PERS lens to the comm commands. Tests:
+  `tests/test_communication.py` (3 inverted + 1 gendered).
+
 ## [2.14.50] — 2026-06-13
 
 ### Fixed

@@ -109,8 +109,27 @@ def test_shout_and_tell_respect_comm_flags():
 
     bob.set_comm_flag(CommFlag.QUIET)
     out = process_command(alice, "tell Bob hi")
-    assert out == "Bob is not receiving tells."
+    # TELL-008: ROM act("$E is not receiving tells.", ch, 0, victim, TO_CHAR) renders
+    # the victim's subject pronoun (sexless Bob -> "it", capitalized buf[0]).
+    assert out == "It is not receiving tells."
     assert not bob.messages
+    bob.clear_comm_flag(CommFlag.QUIET)
+
+
+def test_tell008_status_messages_use_gendered_pronoun():
+    """TELL-008 — the teller-facing status lines render the victim's gendered
+    `$E` pronoun (ROM act()), not the victim's name. A MALE victim yields "He"."""
+    from mud.models.constants import Sex
+
+    initialize_world("area/area.lst")
+    character_registry.clear()
+    alice = make_player("Alice", 3001)
+    bob = make_player("Bob", 3001)
+    bob.sex = Sex.MALE
+
+    bob.set_comm_flag(CommFlag.QUIET)
+    out = process_command(alice, "tell Bob hi")
+    assert out == "He is not receiving tells.", out
 
 
 def test_question_channel_toggle_and_broadcast():
@@ -477,7 +496,9 @@ def test_reply_and_afk_buffer_match_rom():
     bob.messages.clear()
     bob.set_comm_flag(CommFlag.AFK)
     response = process_command(alice, "tell Bob hello there")
-    assert response == "Bob is AFK, but your tell will go through when they return."
+    # TELL-008: ROM act("$E is AFK, but your tell will go through when $E returns.", ...)
+    # — sexless Bob's subject pronoun "it" (first occurrence capitalized).
+    assert response == "It is AFK, but your tell will go through when it returns."
     assert bob.messages[-1] == "{kAlice tells you '{Khello there{k'{x"
     assert bob.reply is alice
 
@@ -485,7 +506,9 @@ def test_reply_and_afk_buffer_match_rom():
     bob.clear_comm_flag(CommFlag.AFK)
     bob.desc = None
     offline = process_command(alice, "tell Bob you around?")
-    assert offline == "Bob seems to have misplaced their link...try again later."
+    # TELL-008: ROM act("$N seems to have misplaced $S link...try again later.", ...)
+    # — $N is the victim NAME (Bob), $S the possessive pronoun (sexless -> "its").
+    assert offline == "Bob seems to have misplaced its link...try again later."
     assert bob.messages[-1] == "{kAlice tells you '{Kyou around?{k'{x"
     assert bob.reply is alice
 

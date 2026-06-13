@@ -8,7 +8,7 @@ from mud.characters import is_clan_member, is_same_clan
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
 from mud.net.protocol import broadcast_global, send_to_char
-from mud.utils.act import capitalize_act_line
+from mud.utils.act import act_format, capitalize_act_line
 from mud.utils.messaging import push_message
 
 if TYPE_CHECKING:
@@ -84,10 +84,14 @@ def _validate_tell_target(sender: Character, target: Character) -> str | None:
         return "You tell yourself nothing new."
     if "tell" in target.muted_channels:
         return "They aren't listening."
+    # TELL-008: ROM renders these teller-facing status lines via act() with the
+    # victim's gendered pronouns ($E subject, $S possessive), not the victim NAME.
+    # `act("$E is not receiving tells.", ch, 0, victim, TO_CHAR)` (src/act_comm.c).
     if (_has_comm_flag(target, CommFlag.QUIET) or _has_comm_flag(target, CommFlag.DEAF)) and not sender.is_immortal():
-        return f"{target.name} is not receiving tells."
+        return act_format("$E is not receiving tells.", recipient=sender, actor=sender, arg2=target)
     if not sender.is_immortal() and not getattr(target, "is_awake", lambda: True)():
-        return "They can't hear you."
+        # ROM: act("$E can't hear you.", ch, 0, victim, TO_CHAR).
+        return act_format("$E can't hear you.", recipient=sender, actor=sender, arg2=target)
     return None
 
 
@@ -107,22 +111,34 @@ def _handle_buffered_tell(sender: Character, target: Character, message: str) ->
     sender_name = pers(sender, target)
     formatted = capitalize_act_line(f"{{k{sender_name} tells you '{{K{message}{{k'{{x")
 
+    # TELL-008: ROM renders these via act() with the victim's pronouns. The
+    # linkdead line uses $N (the victim NAME, src/act_comm.c:890) + $S (possessive);
+    # the AFK / note-writing lines use $E (subject pronoun).
     if _is_player_linkdead(target):
         _queue_personal_message(target, formatted)
         target.reply = sender
-        return f"{target.name} seems to have misplaced their link...try again later."
+        return act_format(
+            "$N seems to have misplaced $S link...try again later.", recipient=sender, actor=sender, arg2=target
+        )
 
     if _has_comm_flag(target, CommFlag.AFK):
         if getattr(target, "is_npc", False):
-            return f"{target.name} is AFK, and not receiving tells."
+            return act_format("$E is AFK, and not receiving tells.", recipient=sender, actor=sender, arg2=target)
         _queue_personal_message(target, formatted)
         target.reply = sender
-        return f"{target.name} is AFK, but your tell will go through when they return."
+        return act_format(
+            "$E is AFK, but your tell will go through when $E returns.", recipient=sender, actor=sender, arg2=target
+        )
 
     if _is_player_writing_note(target):
         _queue_personal_message(target, formatted)
         target.reply = sender
-        return f"{target.name} is writing a note, but your tell will go through when they return."
+        return act_format(
+            "$E is writing a note, but your tell will go through when $E returns.",
+            recipient=sender,
+            actor=sender,
+            arg2=target,
+        )
 
     _deliver_tell(sender, target, formatted)
     return None

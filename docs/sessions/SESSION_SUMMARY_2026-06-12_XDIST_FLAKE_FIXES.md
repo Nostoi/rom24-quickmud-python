@@ -620,6 +620,27 @@ and a test pinning the wrong RNG primitive).
 - **Lesson**: a documented CRITICAL ✅ can itself be the bug — the re-verify-against-source
   rule caught a "fix" that was a misreading of ROM `act()`.
 
+### `TELL-008` — ✅ FIXED (tell status lines use the victim's gendered pronouns)
+
+- **Python**: `mud/commands/communication.py:_validate_tell_target` + `_handle_buffered_tell`.
+- **ROM C**: `src/act_comm.c` — `act("$E is not receiving tells.", ch, 0, victim, TO_CHAR)`,
+  `act("$E can't hear you.", …)`, `act("$N seems to have misplaced $S link…", …)`,
+  the AFK / note-writing lines (all `$E`).
+- **Gap**: six teller-facing status lines baked the victim's NAME + "they"/"their"
+  where ROM renders the victim's gendered pronouns through `act()` (`$E`=He/She/It,
+  `$S`=his/her/its, `$N`=PERS name). So `tell bob hi` (Bob sexless, QUIET) showed
+  "Bob is not receiving tells." where ROM shows "It is not receiving tells.", and a
+  male linkdead victim showed "…their link…" vs ROM "…his link…". Found by applying
+  the EMOTE-005 `$n`/PERS lens to the comm commands. Three existing tests asserted
+  the name-based (non-ROM) forms.
+- **Fix**: rendered all six via `act_format("$E …"/"$N … $S …", recipient=sender,
+  actor=sender, arg2=target)` — `act_format` already supports the pronoun codes and
+  caps buf[0]. The linkdead line keeps `$N` (ROM uses the name there) + `$S`.
+- **Tests**: inverted 3 `tests/test_communication.py` assertions (sexless Bob →
+  "It"/"its") + added `test_tell008_status_messages_use_gendered_pronoun` (male
+  victim → "He is not receiving tells.", proving it's pronoun-driven not a string
+  swap). Communication suite 18/18.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)
