@@ -73,7 +73,7 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 
 | ROM C Function | Lines | QuickMUD | Status | Notes |
 |----------------|-------|----------|--------|-------|
-| `do_get()` | 195-344 | ✅ `inventory.py::do_get()` (line 142) | ✅ **AUDITED** | GET-001..012 fixed in prior sessions; 60/60 integration tests passing across `test_container_retrieval.py`, `test_furniture_occupancy.py`, `test_get_room_messages.py`, `test_numbered_get_syntax.py`, `test_pit_timer_handling.py`, `test_room_retrieval.py`. Verified April 27, 2026. |
+| `do_get()` | 195-344 | ✅ `inventory.py::do_get()` (line 142) | ✅ **AUDITED** | GET-001..012 fixed in prior sessions; 60/60 integration tests passing across `test_container_retrieval.py`, `test_furniture_occupancy.py`, `test_get_room_messages.py`, `test_numbered_get_syntax.py`, `test_pit_timer_handling.py`, `test_room_retrieval.py`. Verified April 27, 2026. **GET-014 ✅ FIXED (2.14.55):** the carry-limit messages (`"…: you can't carry that many items./much weight."`) baked the **full** `obj.name` keyword string with no capitalization. ROM `act("$d: you can't carry that many items.", ch, NULL, obj->name, TO_CHAR)` renders `$d` = the **first keyword** of `obj->name` and caps buf[0] — e.g. obj name "relic ancient" → "Relic: …", not "relic ancient: …". (This was the long-standing ⚠️ SIMILAR row in the comparison table below.) Rendered both via `act_format("$d: …", recipient=char, actor=char, arg2=obj.name)`. Test: `tests/test_encumbrance.py::test_get014_carry_limit_message_uses_first_keyword_capitalized`. |
 | `do_steal()` | 2161-2404 | ✅ `thief_skills.py::do_steal()` (line 99) | ✅ **AUDITED** | STEAL-001..014 fixed (full rewrite); 15/15 integration tests in `test_steal_command.py`. See do_steal section below. |
 
 **Estimated Complexity**: HIGH  
@@ -444,7 +444,7 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 | Not a container | `"That's not a container.\n\r"` | N/A | ❌ **MISSING** |
 | Container closed | `"The $d is closed."` | N/A | ❌ **MISSING** |
 | Cannot loot corpse | `"You can't do that.\n\r"` | `"You cannot loot that corpse."` | ⚠️ **DIFFERENT** |
-| Can't carry items | `"$d: you can't carry that many items."` | `"{obj}: you can't carry that many items."` | ⚠️ **SIMILAR** |
+| Can't carry items | `"$d: you can't carry that many items."` | `act_format("$d: …")` → first keyword + cap | ✅ **FIXED (GET-014, 2.14.55)** |
 | Can't carry weight | `"$d: you can't carry that much weight."` | `"{obj}: you can't carry that much weight."` | ⚠️ **SIMILAR** |
 | Can't take object | `"You can't take that.\n\r"` | N/A | ❌ **MISSING** |
 | Object in use (furniture) | `"$N appears to be using $p."` | N/A | ❌ **MISSING** |

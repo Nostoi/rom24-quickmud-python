@@ -714,6 +714,22 @@ and a test pinning the wrong RNG primitive).
   (RED→GREEN — "A blessed relic …"). Existing sacrifice + furniture-occupancy tests
   use `.lower()` so unaffected. Sacrifice+furniture suites 13/13.
 
+### `GET-014` — ✅ FIXED (carry-limit message uses `$d` first keyword + capitalization)
+
+- **Python**: `mud/commands/inventory.py:do_get` (carry-number + carry-weight gates).
+- **ROM C**: `src/act_obj.c:107,115` — `act("$d: you can't carry that many items./much weight.", ch, NULL, obj->name, TO_CHAR)`.
+- **Gap**: ROM `$d` renders the **first keyword** of `obj->name` and `act()` caps
+  buf[0]. The Python baked the **full** lowercase `obj.name` keyword string — e.g.
+  obj name "relic ancient" → "relic ancient: you can't carry that many items." vs
+  ROM "Relic: …". This was the long-standing ⚠️ SIMILAR row in the ACT_OBJ audit
+  comparison table (flagged but never closed). Found applying the ACT-CAP/`$d` lens.
+- **Fix**: rendered both messages via `act_format("$d: …", recipient=char,
+  actor=char, arg2=obj.name)` — `act_format`'s `$d` = `str(arg2).split()[0]` + caps.
+- **Tests**: `tests/test_encumbrance.py::test_get014_carry_limit_message_uses_first_keyword_capitalized`
+  (multi-word name "relic ancient" → "Relic: …"). Existing encumbrance/shop tests
+  use substring `in` so unaffected; shop carry-limit is a separate literal-"You"
+  message. Encumbrance+shops+give suites 65/65.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

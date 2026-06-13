@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.56] — 2026-06-13
+
+### Fixed
+
+- **GET-014 — `get` carry-limit messages use the first keyword, capitalized** —
+  ROM `do_get` (`src/act_obj.c:107,115`) renders `act("$d: you can't carry that
+  many items.", ch, NULL, obj->name, TO_CHAR)` — `$d` is the **first keyword** of
+  `obj->name` and `act()` caps buf[0]. The Python `mud/commands/inventory.py:do_get`
+  baked the **full** `obj.name` keyword string lowercase (e.g. "relic ancient: you
+  can't carry that many items." vs ROM "Relic: …"). Rendered both messages via
+  `act_format("$d: …", arg2=obj.name)`. (Closes the long-standing ⚠️ SIMILAR row in
+  `ACT_OBJ_C_AUDIT.md`.) Test:
+  `tests/test_encumbrance.py::test_get014_carry_limit_message_uses_first_keyword_capitalized`.
+
 ## [2.14.55] — 2026-06-13
 
 ### Fixed

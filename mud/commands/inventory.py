@@ -31,7 +31,7 @@ from mud.models.constants import (
     canonical_wear_slot,
 )
 from mud.spawning.obj_spawner import spawn_object
-from mud.utils.act import act_to_room
+from mud.utils.act import act_format, act_to_room
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
 from mud.world.obj_find import get_obj_carry, get_obj_here
 from mud.world.vision import can_see_object
@@ -233,8 +233,11 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
     # ROM C lines 105-110: Encumbrance check (carry_number)
     obj_number = _get_obj_number(obj)
     if char.carry_number + obj_number > can_carry_n(char):
-        obj_name = getattr(obj, "name", "object")
-        return f"{obj_name}: you can't carry that many items."
+        # GET-014: ROM act("$d: you can't carry that many items.", ch, NULL, obj->name,
+        # TO_CHAR) — $d renders the FIRST keyword of obj->name and act() caps buf[0].
+        return act_format(
+            "$d: you can't carry that many items.", recipient=char, actor=char, arg2=getattr(obj, "name", "object")
+        )
 
     # ROM C lines 112-118: Weight check (carry_weight)
     obj_weight = _get_obj_weight(obj)
@@ -244,8 +247,10 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
     skip_weight_check = obj_in_obj_carried_by == char
 
     if not skip_weight_check and (get_carry_weight(char) + obj_weight > can_carry_w(char)):
-        obj_name = getattr(obj, "name", "object")
-        return f"{obj_name}: you can't carry that much weight."
+        # GET-014: ROM act("$d: you can't carry that much weight.", ch, NULL, obj->name, TO_CHAR).
+        return act_format(
+            "$d: you can't carry that much weight.", recipient=char, actor=char, arg2=getattr(obj, "name", "object")
+        )
 
     # ROM C lines 120-124: can_loot() check
     if not _can_loot(char, obj):

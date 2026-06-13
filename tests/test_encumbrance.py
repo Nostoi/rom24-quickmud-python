@@ -174,6 +174,31 @@ def test_do_get_blocked_by_item_count_limit(object_factory):
     assert light_obj not in ch.inventory
 
 
+def test_get014_carry_limit_message_uses_first_keyword_capitalized(object_factory):
+    """GET-014 — ROM act("$d: you can't carry that many items.", ch, NULL, obj->name,
+    TO_CHAR): `$d` renders the FIRST keyword of obj->name and act() caps buf[0]."""
+    room = Room(vnum=2002, name="Test Room")
+    ch = Character(name="Full Hands", level=1)
+    room.add_character(ch)
+    ch.carry_number = can_carry_n(ch)
+
+    relic = object_factory(
+        {
+            "vnum": 102,
+            "name": "relic ancient",
+            "short_descr": "an ancient relic",
+            "weight": 1,
+            "wear_flags": int(WearFlag.TAKE),
+        }
+    )
+    room.add_object(relic)
+
+    result = do_get(ch, "relic")
+
+    # ROM $d = first keyword "relic", capitalized buf[0] -> "Relic:".
+    assert result == "Relic: you can't carry that many items.", result
+
+
 def test_do_get_succeeds_when_under_limits(object_factory):
     """Test successful get when under both weight and item limits."""
     room = Room(vnum=2002, name="Test Room")

@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — SAC-006 (sacrifice msgs cap object name) + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — GET-014 (carry-limit msg $d first keyword + cap) + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: SAC-006 — `do_sacrifice` (`mud/commands/obj_manipulation.py`)
+- **Last completed**: GET-014 — `do_get` (`mud/commands/inventory.py`) carry-limit
+  messages now render via `act_format("$d: …", arg2=obj.name)` — `$d` = the FIRST
+  keyword of `obj.name`, capitalized buf[0] — matching ROM `act("$d: you can't carry
+  that many items.", ch, NULL, obj->name, TO_CHAR)`. Was baking the full lowercase
+  `obj.name` keyword string ("relic ancient: …" vs ROM "Relic: …"). Closed the
+  long-standing ⚠️ SIMILAR row in the audit's comparison table. Found applying the
+  ACT-CAP/`$d` lens (v2.14.56). Before that: SAC-006 — `do_sacrifice`
+  (`mud/commands/obj_manipulation.py`)
   rejection line ("$p is not an acceptable sacrifice.") and furniture line
   ("$N appears to be using $p.") now render via `act_format` so ROM's act() buf[0]
   capitalization applies — a lowercase object short_descr ("a blessed relic") shows
@@ -210,8 +217,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.55 |
-| Tests | sacrifice+furniture 13/13, full suite last green 5711 passed / 4 skipped (v2.14.54) |
+| Version | 2.14.56 |
+| Tests | encumbrance+shops+give 65/65, full suite last green 5712 passed / 4 skipped (v2.14.55) |
+| GET-014 status | ✅ FIXED (carry-limit msg uses $d first keyword + capitalization via act_format; closes ⚠️ SIMILAR) |
 | SAC-006 status | ✅ FIXED (sacrifice rejection/furniture msgs capitalize object name via act_format) |
 | GIVE-002 status | ✅ FIXED (give rejection lines use $N/$S pronouns via act_format; sexless → "its" not "their") |
 | GOSSIP-001/002 status | ✅ FIXED all 7 public channels (gossip/auction/grats/quote/question/answer/music PERS-mask `$n`); clan/immtalk = low-value edge |
