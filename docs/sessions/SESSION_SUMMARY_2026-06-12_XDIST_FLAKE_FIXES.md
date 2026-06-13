@@ -385,6 +385,24 @@ and a test pinning the wrong RNG primitive).
   `doors.check_improve`, force `number_percent` via module patch). Pick area suite
   (`test_pick001` + `test_pick_broadcasts` + `test_skill_pick_lock_rom_parity`) 17/17.
 
+### `PICK-002` — ✅ FIXED (do_pick WAIT_STATE uses skill beats with UMAX, not +=24)
+
+- **Python**: `mud/commands/doors.py:do_pick` (WAIT_STATE, ~line 570).
+- **ROM C**: `src/act_move.c:856` — `WAIT_STATE(ch, skill_table[gsn_pick_lock].beats)`;
+  the macro is `ch->wait = UMAX(ch->wait, beats)`, pick-lock beats=12
+  (`src/const.c:1739` / `data/skills.json` `lag:12`).
+- **Gap**: `do_pick` used `char.wait = getattr(char,"wait",0) + 24` — wrong value
+  (24 not 12) and wrong operator (additive, not `UMAX`). A single pick cost double
+  the ROM lag; repeated picks stacked wait unboundedly (wait 30 → 54 instead of
+  staying 30). Found immediately after PICK-001 — it was the adjacent
+  `# TODO: Implement wait state delay based on skill_table[gsn_pick_lock].beats`
+  stub in the same function.
+- **Fix**: replaced with `apply_wait_state(char, beats)` (the canonical `UMAX`
+  helper at `mud/utils/timing.py`), `beats` sourced data-driven from
+  `skill_registry.skills["pick lock"].beats` (fallback 12).
+- **Tests**: `tests/integration/test_pick002_wait_state.py` (2, RED→GREEN —
+  wait==12 after a pick; UMAX preserves a pre-existing wait==30). Pick area suite 19/19.
+
 ## Outstanding
 
 - **do_pick / pick_lock duplication** (filed by PICK-001): the live `pick` command

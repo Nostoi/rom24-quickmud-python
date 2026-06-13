@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.38] — 2026-06-13
+
+### Fixed
+
+- **PICK-002 — `do_pick` WAIT_STATE uses the pick-lock skill beats (12) with
+  `UMAX` semantics** — ROM `do_pick_lock` (`src/act_move.c:856`) applies
+  `WAIT_STATE(ch, skill_table[gsn_pick_lock].beats)`; the macro is
+  `ch->wait = UMAX(ch->wait, beats)` and pick-lock beats is 12 (`src/const.c:1739`
+  / `data/skills.json` `lag:12`). The Python `mud/commands/doors.py:do_pick` used
+  `char.wait += 24` — wrong value (24 not 12) and wrong operator (additive, not
+  max), so one pick cost double the ROM lag and repeated picks stacked wait
+  unboundedly. Now `apply_wait_state(char, beats)` with beats sourced data-driven
+  from the skill registry. Test: `tests/integration/test_pick002_wait_state.py` (2).
+
 ## [2.14.37] — 2026-06-13
 
 ### Fixed

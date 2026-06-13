@@ -1,10 +1,16 @@
-# Session Status — 2026-06-13 — PICK-001 (do_pick check_improve) + BRANDISH-007 (do_brandish check_improve per-target) + EAT-007 + DRINK-010 + WIZ-052; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — PICK-002 (do_pick WAIT_STATE beats/UMAX) + PICK-001 (do_pick check_improve) + BRANDISH-007 (do_brandish check_improve per-target) + EAT-007 + DRINK-010 + WIZ-052; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: PICK-001 — `do_pick` (`mud/commands/doors.py`, the live
+- **Last completed**: PICK-002 — `do_pick` (`mud/commands/doors.py`) WAIT_STATE now
+  uses `apply_wait_state(char, beats)` (canonical `UMAX` helper) with the pick-lock
+  skill beats (12, data-driven from the registry), matching ROM
+  `src/act_move.c:856` `WAIT_STATE(ch, skill_table[gsn_pick_lock].beats)`. The old
+  code did `char.wait += 24` — wrong value (24 vs 12) and additive (stacked) instead
+  of `UMAX`. Adjacent to PICK-001's TODO stubs in the same function (v2.14.38).
+  Before that: PICK-001 — `do_pick` (`mud/commands/doors.py`, the live
   `pick` command) now calls `check_improve(char, "pick lock", FALSE/TRUE, 2)` at
   all four ROM sites (failure src/act_move.c:872; portal/container/door success
   908/946/982). The code shipped with four `# TODO: Implement check_improve` stubs
@@ -81,8 +87,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.37 |
-| Tests | pick check_improve 3/3, pick area 17/17, full suite last green 5682 passed / 4 skipped (v2.14.36) |
+| Version | 2.14.38 |
+| Tests | pick wait-state 2/2, pick area 19/19, full suite last green 5685 passed / 4 skipped (v2.14.37) |
+| PICK-002 status | ✅ FIXED (do_pick WAIT_STATE uses beats=12 + UMAX, data-driven; was +=24 additive) |
 | PICK-001 status | ✅ FIXED (do_pick wires check_improve at all 4 ROM sites; stale false-✅ corrected) |
 | BRANDISH-007 status | ✅ FIXED (do_brandish check_improve fires inside per-target loop, once per cast — AoE skill-learn + RNG draw count) |
 | EAT-007 status | ✅ FIXED (do_eat poison level/duration use raw value[0], no `or 1` substitution) |

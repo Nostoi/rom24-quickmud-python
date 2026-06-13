@@ -20,8 +20,9 @@ from mud.models.constants import (
     ItemType,
 )
 from mud.net.protocol import broadcast_room
-from mud.skills.registry import check_improve
+from mud.skills.registry import check_improve, skill_registry
 from mud.utils.act import act_to_room
+from mud.utils.timing import apply_wait_state
 from mud.world.obj_find import get_obj_here
 
 
@@ -567,9 +568,13 @@ def do_pick(char: Character, args: str) -> str:
     if skill_level <= 0:
         return "You don't know how to pick locks."
 
-    # WAIT_STATE (ROM C line 856)
-    # TODO: Implement wait state delay based on skill_table[gsn_pick_lock].beats
-    char.wait = getattr(char, "wait", 0) + 24  # Placeholder: 24 pulses = 1 round
+    # PICK-002: WAIT_STATE(ch, skill_table[gsn_pick_lock].beats) — ROM src/act_move.c:856.
+    # The macro is ch->wait = UMAX(ch->wait, beats); pick-lock beats is 12
+    # (src/const.c:1739 / data/skills.json lag:12), sourced data-driven from the
+    # registry. The old code did `wait += 24` — wrong value and additive (stacked).
+    _pick_skill = skill_registry.skills.get("pick lock")
+    _pick_beats = int(getattr(_pick_skill, "beats", 0) or 0) if _pick_skill is not None else 0
+    apply_wait_state(char, _pick_beats or 12)
 
     # Guard detection (ROM C lines 858-867)
     people = getattr(room, "people", [])
