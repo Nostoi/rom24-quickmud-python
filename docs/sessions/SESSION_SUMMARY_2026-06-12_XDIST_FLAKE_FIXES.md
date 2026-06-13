@@ -243,6 +243,31 @@ and a test pinning the wrong RNG primitive).
   `run_npc_specs` monkeypatches removed from `test_game_loop_order.py` (×2) and
   `test_mobprog_triggers.py` (×1). Full suite 5676 passed / 4 skipped.
 
+### `EAT-006` — ✅ FIXED (do_eat restores conditions via `gain_condition`, not an inline clamp)
+
+- **Python**: `mud/commands/consumption.py:do_eat` (FOOD branch).
+- **ROM C**: `src/act_obj.c:1326-1327` (`gain_condition(COND_FULL, value[0])` /
+  `gain_condition(COND_HUNGER, value[1])`); guard logic in
+  `src/update.c:367-377` (`gain_condition`).
+- **Gap**: `do_eat`'s FOOD branch reimplemented the satiation clamp inline as
+  `condition[i] = min(48, condition[i] + value)`. That bypassed two guards baked
+  into `gain_condition`: (a) the `level >= LEVEL_IMMORTAL` early-return — an
+  immortal eating food had FULL/HUNGER bumped where ROM leaves them untouched;
+  (b) the `condition == -1` permanent-satiation sentinel — a -1 ("off") slot was
+  clobbered to `min(48, -1+value)` (e.g. `4`) instead of staying -1. `do_drink`
+  (DRINK-004) already delegated to `gain_condition` correctly — the two sibling
+  commands diverging on the same mechanic was the tell. Found by probe-then-scope
+  while reading the consumption surface for position/condition transitions.
+- **Fix**: the FOOD branch now calls
+  `gain_condition(ch, Condition.FULL, value[0])` and
+  `gain_condition(ch, Condition.HUNGER, value[1])`, matching `do_drink` and ROM;
+  the "no longer hungry" / "You are full" message logic still reads the slot
+  before/after. Local single-function divergence → filed as `EAT-006` in
+  `ACT_OBJ_C_AUDIT.md` (no INV — does not cross modules).
+- **Tests**: `tests/integration/test_consumables.py::test_eat_food_does_not_change_immortal_conditions`
+  and `::test_eat_food_respects_permanent_condition_sentinel` (2, RED→GREEN).
+  Full `test_consumables.py` 53/53; INV-025 consumption dispatch 2/2.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:

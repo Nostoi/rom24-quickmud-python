@@ -150,6 +150,48 @@ def test_eat_immortal_can_eat_non_food(test_character, object_factory):
     assert "edible" not in result.lower(), f"Immortal should not get 'not edible' message; got: {result!r}"
 
 
+def test_eat_food_does_not_change_immortal_conditions(test_character, object_factory):
+    """ROM act_obj.c:1326-1327 — do_eat applies hunger/fullness via gain_condition,
+    which early-returns for level >= LEVEL_IMMORTAL (src/update.c:367-371). An
+    immortal eating food must leave COND_FULL/COND_HUNGER unchanged.
+
+    EAT-006: do_eat previously reimplemented the clamp inline as
+    ``min(48, current + value)``, bypassing gain_condition's immortal-skip (and
+    its ``condition == -1`` permanent-satiation sentinel) — so an immortal's
+    conditions were wrongly bumped where do_drink (which delegates to
+    gain_condition) leaves them alone.
+    """
+    bread = _make_obj(
+        object_factory, item_type=ItemType.FOOD, name="bread", short_descr="a loaf of bread", value=[8, 5, 0, 0, 0]
+    )
+    test_character.add_object(bread)
+    test_character.level = 52  # LEVEL_IMMORTAL (MAX_LEVEL - 8)
+    test_character.pcdata.condition = [0, 0, 0, 0]
+
+    do_eat(test_character, "bread")
+
+    assert test_character.pcdata.condition[1] == 0, "immortal COND_FULL must be unchanged"
+    assert test_character.pcdata.condition[3] == 0, "immortal COND_HUNGER must be unchanged"
+
+
+def test_eat_food_respects_permanent_condition_sentinel(test_character, object_factory):
+    """ROM update.c:375-376 — gain_condition returns immediately when the slot is
+    -1 (permanent / "off"). Eating food must not overwrite a -1 hunger slot.
+
+    EAT-006 (same root cause as the immortal case): the inline ``min(48, ...)``
+    computed ``min(48, -1 + 5) == 4``, clobbering the sentinel.
+    """
+    bread = _make_obj(
+        object_factory, item_type=ItemType.FOOD, name="bread", short_descr="a loaf of bread", value=[8, 5, 0, 0, 0]
+    )
+    test_character.add_object(bread)
+    test_character.pcdata.condition = [0, 0, 0, -1]  # COND_HUNGER permanently off
+
+    do_eat(test_character, "bread")
+
+    assert test_character.pcdata.condition[3] == -1, "permanent (-1) COND_HUNGER must be preserved"
+
+
 def test_eat_broadcasts_to_room(test_character, object_factory):
     """ROM act_obj.c:1317 — TO_ROOM act fires before TO_CHAR.
 

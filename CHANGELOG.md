@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.32] — 2026-06-13
+
+### Fixed
+
+- **EAT-006 — `do_eat` restores hunger/fullness via `gain_condition`, not an
+  inline clamp** — ROM `do_eat` (`src/act_obj.c:1326-1327`) feeds a PC by calling
+  `gain_condition(ch, COND_FULL, value[0])` and `gain_condition(ch, COND_HUNGER,
+  value[1])`, exactly as `do_drink` does. The Python `do_eat`
+  (`mud/commands/consumption.py`) instead reimplemented the clamp inline as
+  `min(48, current + value)`, which bypassed two guards baked into
+  `gain_condition` (`src/update.c:367-377`): the `level >= LEVEL_IMMORTAL`
+  early-return and the `condition == -1` permanent-satiation sentinel. As a
+  result an immortal eating food had FULL/HUNGER wrongly bumped (ROM leaves them
+  unchanged), and a `-1` ("off") hunger slot was clobbered to `min(48, -1+value)`
+  instead of being preserved. `do_eat` now delegates to `gain_condition`, so it
+  matches `do_drink` and ROM. Tests:
+  `tests/integration/test_consumables.py::test_eat_food_does_not_change_immortal_conditions`,
+  `::test_eat_food_respects_permanent_condition_sentinel`.
+
 ## [2.14.31] — 2026-06-13
 
 ### Fixed

@@ -93,14 +93,21 @@ def do_eat(ch: Character, args: str) -> str:
             _pcdata = getattr(ch, "pcdata", None)
             condition = getattr(_pcdata, "condition", None) if _pcdata else None
             if isinstance(condition, list) and len(condition) > _COND_HUNGER:
+                # EAT-006: delegate to gain_condition (as do_drink does), NOT an
+                # inline min(48, ...) clamp. ROM calls gain_condition(COND_FULL/
+                # COND_HUNGER), which early-returns for level >= LEVEL_IMMORTAL and
+                # for a permanent (-1) slot, and URANGE-clamps to [0,48]
+                # (src/update.c:367-377). The old inline clamp bypassed both guards,
+                # bumping immortals' and -1-sentinel conditions where ROM leaves them.
+                from mud.characters.conditions import gain_condition
+                from mud.models.constants import Condition
+
                 food_value = getattr(obj, "value", [0, 0, 0, 0, 0])
                 old_hunger = condition[_COND_HUNGER]
                 if isinstance(food_value, list):
                     # value[0] = full gain, value[1] = hunger gain (ROM gain_condition calls)
-                    if len(food_value) > 0 and food_value[0]:
-                        condition[_COND_FULL] = min(48, condition[_COND_FULL] + food_value[0])
-                    if len(food_value) > 1 and food_value[1]:
-                        condition[_COND_HUNGER] = min(48, condition[_COND_HUNGER] + food_value[1])
+                    gain_condition(ch, Condition.FULL, food_value[0] if len(food_value) > 0 else 0)
+                    gain_condition(ch, Condition.HUNGER, food_value[1] if len(food_value) > 1 else 0)
                 new_hunger = condition[_COND_HUNGER]
                 if old_hunger == 0 and new_hunger > 0:
                     messages.append("You are no longer hungry.")

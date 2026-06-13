@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — INV-049 (spec_fun dispatched inside mobile_update, gated + suppressing) + GL-044 (mobile_update wander RNG primitive) + INV-048 (assist-is-violence-update-only); cross-file invariants is the active pass
+# Session Status — 2026-06-13 — EAT-006 (do_eat→gain_condition) + INV-049 (spec_fun dispatched inside mobile_update) + GL-044 (mobile_update wander RNG primitive); cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: INV-049 — mob special procedures are now dispatched INSIDE
+- **Last completed**: EAT-006 — `do_eat` (`mud/commands/consumption.py`) now
+  restores hunger/fullness by calling `gain_condition(ch, Condition.FULL/HUNGER,
+  …)` (as `do_drink` already did), instead of an inline `min(48, current+value)`
+  clamp that bypassed `gain_condition`'s `level >= LEVEL_IMMORTAL` early-return
+  and `condition == -1` permanent-satiation sentinel (ROM act_obj.c:1326-1327 /
+  update.c:367-377). Immortals eating food no longer have conditions bumped, and
+  a -1 slot is preserved (v2.14.32). Before that: INV-049 — mob special
+  procedures are now dispatched INSIDE
   the `mobile_update` per-mob loop (`mud/ai/__init__.py`) at the ROM position
   (`src/update.c:425-431`): after the charm/empty-area gates, before shop-gold,
   triggers, scavenge, and wander, with a TRUE result `continue`ing to skip the
@@ -36,8 +43,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.31 |
-| Tests | mob-AI 21/21, full suite last green 5676 passed / 4 skipped (v2.14.31) |
+| Version | 2.14.32 |
+| Tests | consumables 53/53, mob-AI 21/21, full suite last green 5678 passed / 4 skipped (v2.14.32) |
+| EAT-006 status | ✅ FIXED (do_eat delegates condition restore to gain_condition; immortal/-1-sentinel guards honored) |
 | INV-049 status | ✅ ENFORCED (spec_fun dispatched inside mobile_update — gated by charm/empty, TRUE-result suppresses rest of tick; no separate run_npc_specs pass) |
 | GL-044 status | ✅ FIXED (mobile_update wander uses number_bits(5), aborts >5; not number_door) |
 | INV-048 status | ✅ ENFORCED (check_assist fires only from violence_tick; aggr_update never assists) |
