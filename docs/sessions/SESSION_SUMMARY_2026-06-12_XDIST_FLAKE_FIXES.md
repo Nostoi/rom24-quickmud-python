@@ -835,6 +835,22 @@ and a test pinning the wrong RNG primitive).
 - **MAGIC-016 cluster status**: armor ✅, shield ✅, bless ✅ — **still OPEN**:
   change_sex (literal `$s(?)` quirk), cure_blindness/disease/poison, curse-object.
 
+### `MAGIC-019` — ✅ FIXED (cure_blindness/disease/poison "doesn't appear to be …" use `$N` PERS)
+
+- **Python**: `mud/skills/handlers.py:cure_blindness`/`cure_disease`/`cure_poison`.
+- **ROM C**: `src/magic.c:1608/1650/1694` — `act("$N doesn't appear to be blinded/diseased/poisoned.", ch, NULL, victim, TO_CHAR)`.
+- **Gap**: all three baked the victim's keyword `name` where ROM `$N` = PERS = NPC
+  short_descr (capitalized). Curing a non-blind NPC "goblin"/"a green goblin" showed
+  "goblin doesn't appear to be blinded." vs ROM "A green goblin doesn't appear to be
+  blinded." Self-cast lines were already correct.
+- **Fix**: all three via `act_format("$N doesn't appear to be …", arg2=victim)`;
+  dropped the dead `name = …` locals.
+- **Tests**: `tests/integration/test_magic019_cure_pers.py` (3 — blindness/disease/
+  poison → "A green goblin doesn't appear to be …"; direct handler calls bypass the
+  do_cast class/level setup). Healing suites 27/27.
+- **MAGIC-016 cluster status**: armor ✅, shield ✅, bless ✅, cures ✅ — **still
+  OPEN**: change_sex (literal `$s(?)` quirk), curse-object aura lines.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

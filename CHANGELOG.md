@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.63] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-019 — cure_blindness/disease/poison "doesn't appear to be …" lines use
+  PERS** — ROM (`src/magic.c:1608/1650/1694`) renders `act("$N doesn't appear to be
+  blinded/diseased/poisoned.", ch, NULL, victim, TO_CHAR)` with `$N` = PERS = NPC
+  short_descr (capitalized). The Python cure handlers baked the keyword `name` — so
+  curing a non-blind NPC "goblin"/"a green goblin" showed "goblin doesn't appear to
+  be blinded." vs ROM "A green goblin doesn't appear to be blinded." All three now
+  use `act_format`. Continues the MAGIC-016 spell-handler cluster (armor/shield/
+  bless/cures now done; change_sex and curse-object remain). Test:
+  `tests/integration/test_magic019_cure_pers.py`.
+
 ## [2.14.62] — 2026-06-13
 
 ### Fixed

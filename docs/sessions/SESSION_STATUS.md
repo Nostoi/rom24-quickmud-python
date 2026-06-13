@@ -1,10 +1,16 @@
-# Session Status — 2026-06-13 — MAGIC-018 (bless spell $N PERS) + MAGIC-016/017 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-019 (cure spells $N PERS) + MAGIC-016/017/018 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-018 — `spell_bless` (`mud/skills/handlers.py:bless`)
+- **Last completed**: MAGIC-019 — `cure_blindness`/`cure_disease`/`cure_poison`
+  (`mud/skills/handlers.py`) "$N doesn't appear to be blinded/diseased/poisoned."
+  lines now render via `act_format` ($N = PERS NPC short_descr + cap) instead of the
+  baked keyword name, matching ROM `act(..., TO_CHAR)` (`src/magic.c:1608/1650/1694`).
+  MAGIC-016 cluster progress — armor/shield/bless/cures ✅ done; only change_sex
+  (literal `(?)` quirk) and curse-object remain OPEN (v2.14.63). Before that:
+  MAGIC-018 — `spell_bless` (`mud/skills/handlers.py:bless`)
   cross-target lines "$N already has divine favor." / "You grant $N the favor of
   your god." now render via `act_format` ($N = PERS NPC short_descr + cap) instead
   of the baked keyword name, matching ROM `act(..., TO_CHAR)` (`src/magic.c:845,863`).
@@ -263,9 +269,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.62 |
-| Tests | bless-pers 2/2, buffs+heal+bless 34/34, full suite last green 5719 passed / 4 skipped (v2.14.61) |
-| MAGIC-018 status | ✅ FIXED bless (`$N` PERS TO_CHAR ×2); cluster: change_sex/cures/curse still OPEN |
+| Version | 2.14.63 |
+| Tests | cure-pers 3/3, healing 27/27, full suite last green 5721 passed / 4 skipped (v2.14.62) |
+| MAGIC-019 status | ✅ FIXED cure blindness/disease/poison (`$N` PERS); cluster: change_sex + curse still OPEN |
+| MAGIC-018 status | ✅ FIXED bless (`$N` PERS TO_CHAR ×2) |
 | MAGIC-017 status | ✅ FIXED shield (`$N` TO_CHAR + `$n` TO_ROOM PERS) |
 | MAGIC-016 status | ✅ FIXED armor (`$N` PERS); ⚠️ frenzy/change_sex/cures/curse baked-name cluster still OPEN |
 | TRIP-001 status | ✅ FIXED (do_trip 3 blocking msgs use $S/$N pronouns via act_format) |

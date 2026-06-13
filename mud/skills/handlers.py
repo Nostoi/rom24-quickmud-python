@@ -2709,8 +2709,10 @@ def cure_blindness(caster: Character, target: Character | None = None) -> bool:
         if victim is caster:
             _send_to_char(victim, "You aren't blind.")
         else:
-            name = getattr(victim, "name", None) or "Someone"
-            _send_to_char(caster, f"{name} doesn't appear to be blinded.")
+            # MAGIC-019: ROM act("$N doesn't appear to be blinded.", ch, NULL, victim, TO_CHAR).
+            _send_to_char(
+                caster, act_format("$N doesn't appear to be blinded.", recipient=caster, actor=caster, arg2=victim)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -2765,8 +2767,10 @@ def cure_disease(caster: Character, target: Character | None = None) -> bool:
         if victim is caster:
             _send_to_char(victim, "You aren't ill.")
         else:
-            name = getattr(victim, "name", None) or "Someone"
-            _send_to_char(caster, f"{name} doesn't appear to be diseased.")
+            # MAGIC-019: ROM act("$N doesn't appear to be diseased.", ch, NULL, victim, TO_CHAR).
+            _send_to_char(
+                caster, act_format("$N doesn't appear to be diseased.", recipient=caster, actor=caster, arg2=victim)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -2820,8 +2824,10 @@ def cure_poison(caster: Character, target: Character | None = None) -> bool:
         if victim is caster:
             _send_to_char(victim, "You aren't poisoned.")
         else:
-            name = getattr(victim, "name", None) or "Someone"
-            _send_to_char(caster, f"{name} doesn't appear to be poisoned.")
+            # MAGIC-019: ROM act("$N doesn't appear to be poisoned.", ch, NULL, victim, TO_CHAR).
+            _send_to_char(
+                caster, act_format("$N doesn't appear to be poisoned.", recipient=caster, actor=caster, arg2=victim)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
