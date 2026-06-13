@@ -646,9 +646,19 @@ INV-NNN):
    `_act_to_room`), light "$p goes out." (:541 `_act_to_room`), object affect/decay
    `msg_obj` (:1410 `capitalize_act_line(_render_obj_message(...))` + TO_CHAR/TO_ROOM
    per ROM `update.c:940-951`). Covered by prior INV-014 / decay-loop work.
-3. **act()-lens in remaining command render paths** — info/look/who/score (mostly
-   display formatting from the viewer's own perspective, likely NOT act() sites —
-   verify before assuming a gap).
+3. ~~act()-lens in remaining command render paths (info/look/who/score)~~ —
+   **SWEPT 2026-06-13.** `src/act_info.c` has exactly three act() broadcast sites:
+   do_look (439-443 → **LOOK-007 ✅** this session), do_report (2673 → **REPORT-001 ✅**
+   prior), do_practice (2780/2788 → already correct, baked skill name == ROM `$T`).
+   who/score/exits are viewer-perspective display formatting (no act() broadcast).
+   **The act()/PERS/cap/broadcast divergence class is now comprehensively swept
+   codebase-wide** — spell handlers, combat, commands, mob_cmds, act_info, update.c.
+
+Genuinely fresh veins for the next session (the act()-lens is exhausted):
+- **act_comm.c broadcast sites** not yet cross-checked (do_say/do_yell/do_shout/
+  channels — many already done as GOSSIP/TELL/EMOTE, but verify the full inventory).
+- A different divergence class from `docs/parity/DIVERGENCE_CLASS_ROSTER.md`
+  (fread-parsing, static-buffer reuse, C-int signed math) — larger probes.
 
 Confirmed-faithful (do not re-probe without new evidence): weather/time fan-out and
 `update_handler` pulse cadence (locked by `tests/test_game_loop_order.py` +
