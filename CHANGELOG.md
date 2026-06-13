@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.93] — 2026-06-13
+
+### Added
+
+- **LOOK-007 — looking at a character broadcasts ROM's "$n looks at …" lines** — ROM
+  `show_char_to_char_1` (`src/act_info.c:438-446`), gated by `can_see(victim, ch)`,
+  tells the victim "Bob looks at you." (TO_VICT) and the room "Bob looks at a tall
+  elf." (TO_NOTVICT, PERS), or "Bob looks at himself." on a self-look (TO_ROOM). The
+  Python `_look_char` emitted no broadcast at all. Added the gated broadcast (the
+  looker still gets the description; bystanders/victim now get the act() lines). Test:
+  `tests/integration/test_look007_look_at_char_broadcast.py`.
+
 ## [2.14.92] — 2026-06-13
 
 ### Fixed

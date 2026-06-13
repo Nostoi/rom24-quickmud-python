@@ -464,6 +464,20 @@ act_info.c is **100% complete** when:
      of the full room view. ROM C: src/act_info.c:1068-1069. Python:
      `mud/world/look.py` (`look`, dark gate). Test:
      `tests/integration/test_look_holylight_rom_parity.py::TestDarkGateHolylight`.
+   - **LOOK-007** ✅ FIXED (2026-06-13, 2.14.93): looking at a character emitted
+     NO room broadcast. ROM `show_char_to_char_1` (src/act_info.c:438-446), gated by
+     `can_see(victim, ch)`, broadcasts `act("$n looks at $mself.", …, TO_ROOM)` on a
+     self-look, or `act("$n looks at you.", …, TO_VICT)` + `act("$n looks at $N.", …,
+     TO_NOTVICT)` when looking at another. The Python `_look_char`
+     (`mud/world/look.py`) returned only the description string and broadcast nothing
+     — the victim was never told they were being examined, and the room saw nothing.
+     **Fix**: added the gated broadcast at the top of `_look_char` — self-look via
+     `act_to_room("$n looks at $mself.", char, exclude=char)`; cross-look via
+     `push_message(victim, act_format("$n looks at you.", actor=char))` (TO_VICT) +
+     `act_to_room("$n looks at $N.", char, arg2=victim, exclude=victim)` (TO_NOTVICT,
+     dual-exclude of actor+victim). `$mself` renders the actor's reflexive pronoun
+     (sexless → "itself"). Found extending the act()-lens to `act_info.c` broadcast
+     sites. Test: `tests/integration/test_look007_look_at_char_broadcast.py`.
 
 **IMPORTANT Gaps** (P1 - SHOULD FIX):
 

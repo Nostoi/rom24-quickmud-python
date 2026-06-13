@@ -247,6 +247,19 @@ def _look_room(char: Character, room) -> str:
 
 def _look_char(char: Character, victim: Character) -> str:
     """Show character description - ROM src/act_info.c show_char_to_char_1"""
+    # LOOK-007: ROM show_char_to_char_1 (src/act_info.c:438-446) broadcasts the look,
+    # gated by can_see(victim, ch) — the victim must be able to see the looker.
+    room = getattr(char, "room", None)
+    if room is not None and can_see_character(victim, char):
+        from mud.utils.act import act_format, act_to_room
+        from mud.utils.messaging import push_message
+
+        if victim is char:
+            act_to_room(room, "$n looks at $mself.", char, exclude=char)
+        else:
+            push_message(victim, act_format("$n looks at you.", recipient=victim, actor=char))
+            act_to_room(room, "$n looks at $N.", char, arg2=victim, exclude=victim)
+
     lines = []
 
     # Show description

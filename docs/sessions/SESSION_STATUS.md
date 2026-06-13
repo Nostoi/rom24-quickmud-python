@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MOBCMD-021 (mpasound cap) + MOBCMD-020 (mpecho buf[0] cap) + FIGHT-066 (combat defense-return PERS) + MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — LOOK-007 (look-at-char broadcast) + MOBCMD-021 (mpasound cap) + MOBCMD-020 (mpecho buf[0] cap) + FIGHT-066 + MAGIC-044 (blindness room $n PERS) + MAGIC-043 (envenom room broadcast PERS) + MAGIC-042 (faerie_fog reveal PERS) + MAGIC-041 (chill_touch room $n PERS) + MAGIC-040 (cure room broadcast $n PERS) + MAGIC-039 (charm_person PERS) + MAGIC-038 (demonfire demons-of-Hell PERS+TO_ROOM) + MAGIC-037 (demonfire curse-tail $N) + MAGIC-036 (dispel TO_ROOM PERS+$S) + MAGIC-035 (curse/dispel TO_CHAR $N PERS) + MAGIC-034 (detect_* cluster $N PERS) + MAGIC-033 (know_alignment act semantics) + MAGIC-032 (sanctuary $N PERS) + MAGIC-031 (slow/stone_skin $N PERS) + MAGIC-030 (sleep silent gates) + MAGIC-029 (envenom-skill $p cap) + MAGIC-028 (plague $N PERS, MAGIC-022 batch fully closed) + MAGIC-027 (faerie_fire silent) + MAGIC-026 (object $p cap) + FIGHT-065 (disarm no-weapon literal) + MAGIC-025 (fly/infravision/pass_door $N PERS) + MAGIC-024 (giant_strength/haste $N/$E PERS) + MAGIC-022/023 + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MOBCMD-021 — `do_mpasound` (`mud/mob_cmds.py` ~400) now caps
+- **Last completed**: LOOK-007 — looking at a character now broadcasts ROM's
+  `show_char_to_char_1` lines (`mud/world/look.py:_look_char`): "$n looks at you."
+  (TO_VICT) + "$n looks at $N." (TO_NOTVICT, PERS) when looking at another, or "$n
+  looks at $mself." (TO_ROOM) on a self-look — gated by `can_see(victim, ch)`,
+  matching ROM `src/act_info.c:438-446`. The Python emitted no broadcast at all (the
+  victim was never told they were being examined). Found extending the act()-lens to
+  `act_info.c` broadcast sites; `do_practice` broadcasts (advancement.py:200/204)
+  were verified already correct (the baked skill name == ROM's `$T`). (v2.14.93).
+  Before that: MOBCMD-021 — `do_mpasound` (`mud/mob_cmds.py` ~400) now caps
   the sound message via `capitalize_act_line(...)` before broadcasting to each
   adjacent room, matching ROM's `act(argument, ch, NULL, NULL, TO_ROOM)` buf[0]
   capitalization (`src/mob_cmds.c`). Same class as MOBCMD-020. (`do_mpgecho`/
@@ -501,9 +509,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.92 |
-| Tests | mobcmd021 1/1, mobprog/mob_cmds 122/122, full suite green 5778 passed / 4 skipped (v2.14.92) |
+| Version | 2.14.93 |
+| Tests | look007 2/2, look/inspection 89/89, full suite green 5780 passed / 4 skipped (v2.14.93) |
 | MAGIC-022 batch | ✅ FULLY CLOSED (023/024/025/026/027/028/029 + FIGHT-065) |
+| LOOK-007 status | ✅ FIXED look-at-character broadcasts "$n looks at you/$N/$mself" (was silent) |
 | act()-lens spell-handler tail | ✅ CLEARED (MAGIC-025..044 — baked-name $n/$N/$p/$S + hand-rolled-room-loop sites in handlers.py converted; commands/ confirmed clean) |
 | MOBCMD-020/021 status | ✅ FIXED mpechoaround/mpechoat/mpasound cap buf[0] (mpecho/mpgecho/mpzecho already correct) |
 | FIGHT-066 status | ✅ FIXED combat defense-return uses `$N` PERS (was latent baked name) |
