@@ -590,17 +590,26 @@ route through `dam_message`/act() (FIGHT-018/023/025).
 clean (the one candidate is fixed). Both the spell-handler and combat baked-name
 veins are exhausted.
 
+**Position-transition messages probed this session (2026-06-13) → CONFIRMED
+FAITHFUL, do not re-probe:** `update_pos` (`engine.py:826`) matches ROM
+`src/fight.c:update_pos` line-for-line (NPC dies at `hit < 1`, PC thresholds
+−3/−6/−11); the 4 position-transition messages (MORTAL/INCAP/STUNNED/DEAD, via
+`_position_change_message` + `_broadcast_pos_change`) match ROM `damage()`
+`src/fight.c:835-861` exactly (text, `{R..{x` colour, per-recipient PERS, INV-001
+single-delivery, TRIG_ACT); and the `default`-case injury feedback ("That really
+did HURT!" when `dam > max_hit/4`, "You sure are BLEEDING!" when `hit < max_hit/4`,
+gated to `position > STUNNED`) matches ROM `fight.c:864-869`. No gap.
+
 Next veins (cross-file invariants probe-then-scope: read ROM C contract → read
 Python equivalent → one failing test → close as a single gap or file the next free
 INV-NNN):
 
 1. **Mob memory / hunt** — `src/fight.c` ATTACK_BACK and the hunt/track loop vs the
    Python AI tick (not yet probed).
-2. **Position-transition edges** — `update_pos` / `stop_fighting` ordering across
-   damage, sleep, rest, and death.
-3. **act()-lens in remaining command files** — apply the same baked-name lens to
+2. **act()-lens in remaining command files** — apply the same baked-name lens to
    `mud/commands/` modules not yet swept (info/look/who/score render paths) and
-   `mud/mob_cmds.py` mob-program output.
+   `mud/mob_cmds.py` mob-program output (the combat + spell-handler surfaces are
+   done and confirmed clean).
 
 Confirmed-faithful (do not re-probe without new evidence): weather/time fan-out and
 `update_handler` pulse cadence (locked by `tests/test_game_loop_order.py` +
