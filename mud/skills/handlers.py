@@ -2962,8 +2962,8 @@ def curse(caster, target=None, *, override_level: int | None = None):
 
     _send_to_char(victim, "You feel unclean.")
     if victim is not caster:
-        victim_name = getattr(victim, "name", None) or "Someone"
-        _send_to_char(caster, f"{victim_name} looks very uncomfortable.")
+        # MAGIC-035: ROM act("$N looks very uncomfortable.", ch, NULL, victim, TO_CHAR) (magic.c:1801).
+        _send_to_char(caster, act_format("$N looks very uncomfortable.", recipient=caster, actor=caster, arg2=victim))
     return True
 
 
@@ -3518,8 +3518,11 @@ def dispel_evil(caster: Character, target: Character | None = None) -> int:
         return 0
 
     if is_neutral(victim):
-        victim_name = getattr(victim, "name", None) or "Someone"
-        _send_to_char(caster, f"{victim_name} does not seem to be affected.")
+        # MAGIC-035: ROM act("$N does not seem to be affected.", ch, NULL, victim, TO_CHAR)
+        # (magic.c:2027 dispel_evil / :2059 dispel_good).
+        _send_to_char(
+            caster, act_format("$N does not seem to be affected.", recipient=caster, actor=caster, arg2=victim)
+        )
         return 0
 
     level = max(1, int(getattr(caster, "level", 0) or 0))
@@ -3563,8 +3566,11 @@ def dispel_good(caster: Character, target: Character | None = None) -> int:
         return 0
 
     if is_neutral(victim):
-        victim_name = getattr(victim, "name", None) or "Someone"
-        _send_to_char(caster, f"{victim_name} does not seem to be affected.")
+        # MAGIC-035: ROM act("$N does not seem to be affected.", ch, NULL, victim, TO_CHAR)
+        # (magic.c:2027 dispel_evil / :2059 dispel_good).
+        _send_to_char(
+            caster, act_format("$N does not seem to be affected.", recipient=caster, actor=caster, arg2=victim)
+        )
         return 0
 
     level = max(1, int(getattr(caster, "level", 0) or 0))

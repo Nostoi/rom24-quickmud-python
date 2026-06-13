@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.80] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-035 — curse/dispel_evil/dispel_good TO_CHAR rejects use `$N` PERS** — ROM
+  `spell_curse` "$N looks very uncomfortable." (`src/magic.c:1801`) and the
+  `dispel_evil`/`dispel_good` neutral-victim "$N does not seem to be affected."
+  (`:2027`/`:2059`) all render `act("$N …", ch, NULL, victim, TO_CHAR)` — `$N` =
+  PERS(victim) = NPC short_descr, capitalized. The Python baked the keyword `name`,
+  so cursing an NPC "a green goblin" showed "goblin looks very uncomfortable." vs
+  ROM "A green goblin …". All three now use `act_format`. Test:
+  `tests/integration/test_magic035_curse_dispel_neutral_pers.py`.
+
 ## [2.14.79] — 2026-06-13
 
 ### Fixed
