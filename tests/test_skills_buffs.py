@@ -207,6 +207,11 @@ def test_infravision_applies_affect_and_messages() -> None:
 def test_protection_evil_applies_save_bonus() -> None:
     caster = Character(name="Priest", level=20, is_npc=False)
     target = Character(name="Knight", level=18, is_npc=False)
+    # MAGIC-022: the cross-target lines now render $N via PERS (act()), which needs
+    # caster/target in the same lit room for can_see to resolve the name.
+    room = _make_room()
+    room.add_character(caster)
+    room.add_character(target)
 
     assert skill_handlers.protection_evil(caster, target) is True
 
@@ -249,6 +254,10 @@ def test_protection_evil_applies_save_bonus() -> None:
 def test_protection_good_applies_save_bonus() -> None:
     caster = Character(name="DarkCleric", level=22, is_npc=False)
     target = Character(name="Defender", level=20, is_npc=False)
+    # MAGIC-022: PERS-rendered $N needs both in the same lit room (see protection_evil).
+    room = _make_room()
+    room.add_character(caster)
+    room.add_character(target)
 
     target.apply_spell_effect(
         SpellEffect(

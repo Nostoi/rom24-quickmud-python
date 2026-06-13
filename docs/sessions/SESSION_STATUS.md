@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — MAGIC-021 (change_sex $s(?) quirk, cluster CLOSED) + MAGIC-016..020 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-022 (protection evil/good $N PERS) + MAGIC-016..021 cluster + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-021 — `spell_change_sex` (`mud/skills/handlers.py:change_sex`)
+- **Last completed**: MAGIC-022 — `protection_evil`/`protection_good`
+  (`mud/skills/handlers.py`, 6 sites across the sibling pair) "$N is already
+  protected." / "$N is protected from evil/good." now render via `act_format`
+  ($N = PERS NPC short_descr + cap) instead of the baked keyword name, matching ROM
+  `act(..., TO_CHAR)`. **A NEW enumerated batch of ~15 remaining baked-name
+  spell-handler sites is now tracked in MAGIC_C_AUDIT.md** (faerie_fire, disarm, fly,
+  frenzy, giant_strength, haste, infravision, pass_door, envenom, etc.) — same
+  `act_format` fix, each ROM act-code to verify (v2.14.66). Before that: MAGIC-021 —
+  `spell_change_sex` (`mud/skills/handlers.py:change_sex`)
   already-changed line now replicates ROM's literal `$s(?)` quirk exactly via
   `act_format("$N has already had $s(?) sex changed.", recipient=caster,
   actor=caster, arg2=victim)` — `$N` = victim PERS (cap), `$s` = the **caster's**
@@ -285,8 +293,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.65 |
-| Tests | change_sex-quirk 1/1, buffs 26/26, full suite last green 5726 passed / 4 skipped (v2.14.64) |
+| Version | 2.14.66 |
+| Tests | protection-pers 2/2, buffs 27/27, full suite last green 5727 passed / 4 skipped (v2.14.65) |
+| MAGIC-022 status | ✅ FIXED protection evil/good (`$N` PERS ×6); ⚠️ ~15-site baked-name batch tracked |
 | MAGIC-021 status | ✅ FIXED change_sex ($s(?) quirk replicated); **MAGIC-016 cluster CLOSED** |
 | MAGIC-020 status | ✅ FIXED curse-object ($p cap + TO_ALL aura broadcast) |
 | MAGIC-019 status | ✅ FIXED cure blindness/disease/poison (`$N` PERS) |

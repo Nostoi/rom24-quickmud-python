@@ -6850,13 +6850,13 @@ def protection_evil(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You are already protected.")
         else:
-            _send_to_char(caster, f"{_character_name(target)} is already protected.")
+            _send_to_char(caster, act_format("$N is already protected.", recipient=caster, actor=caster, arg2=target))
         return False
     if target.has_spell_effect("protection evil") or target.has_spell_effect("protection good"):
         if target is caster:
             _send_to_char(caster, "You are already protected.")
         else:
-            _send_to_char(caster, f"{_character_name(target)} is already protected.")
+            _send_to_char(caster, act_format("$N is already protected.", recipient=caster, actor=caster, arg2=target))
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -6874,7 +6874,8 @@ def protection_evil(caster: Character, target: Character | None = None) -> bool:
 
     _send_to_char(target, "You feel holy and pure.")
     if target is not caster:
-        _send_to_char(caster, f"{_character_name(target)} is protected from evil.")
+        # MAGIC-022: ROM act("$N is protected from evil.", ch, NULL, victim, TO_CHAR).
+        _send_to_char(caster, act_format("$N is protected from evil.", recipient=caster, actor=caster, arg2=target))
     return True
 
 
@@ -6892,13 +6893,13 @@ def protection_good(caster: Character, target: Character | None = None) -> bool:
         if target is caster:
             _send_to_char(caster, "You are already protected.")
         else:
-            _send_to_char(caster, f"{_character_name(target)} is already protected.")
+            _send_to_char(caster, act_format("$N is already protected.", recipient=caster, actor=caster, arg2=target))
         return False
     if target.has_spell_effect("protection good") or target.has_spell_effect("protection evil"):
         if target is caster:
             _send_to_char(caster, "You are already protected.")
         else:
-            _send_to_char(caster, f"{_character_name(target)} is already protected.")
+            _send_to_char(caster, act_format("$N is already protected.", recipient=caster, actor=caster, arg2=target))
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -6916,7 +6917,8 @@ def protection_good(caster: Character, target: Character | None = None) -> bool:
 
     _send_to_char(target, "You feel aligned with darkness.")
     if target is not caster:
-        _send_to_char(caster, f"{_character_name(target)} is protected from good.")
+        # MAGIC-022: ROM act("$N is protected from good.", ch, NULL, victim, TO_CHAR).
+        _send_to_char(caster, act_format("$N is protected from good.", recipient=caster, actor=caster, arg2=target))
     return True
 
 

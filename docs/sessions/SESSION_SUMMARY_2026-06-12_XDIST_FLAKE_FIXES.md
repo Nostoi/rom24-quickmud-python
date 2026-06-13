@@ -889,6 +889,29 @@ and a test pinning the wrong RNG primitive).
 - **MAGIC-016 cluster: CLOSED** — armor, shield, bless, cures, curse, change_sex all
   ✅. The systematic spell-handler baked-name sweep is complete.
 
+### `MAGIC-022` — ✅ FIXED (protection_evil/good messages use `$N` PERS short_descr)
+
+- **Python**: `mud/skills/handlers.py:protection_evil`/`protection_good`.
+- **ROM C**: `spell_protection_evil`/`_good` — `act("$N is already protected.", …)` + `act("$N is protected from evil/good.", …)`, TO_CHAR.
+- **Gap**: 6 baked-name sites across the sibling pair. Protecting an NPC
+  "goblin"/"a green goblin" showed "goblin is protected from evil." vs ROM "A green
+  goblin is protected from evil."
+- **Fix**: all six via `act_format("$N …", arg2=target)`. Had to add room setup to
+  the two existing `test_skills_buffs.py` protection tests — they created
+  caster/target with **no room**, so PERS's `can_see` returned "Someone"; adding a
+  lit room resolves the name (this is a real test-setup gap the baked-name code
+  masked).
+- **Tests**: `tests/integration/test_magic022_protection_pers.py` (NPC →
+  "A green goblin is protected from evil." / "… is already protected."). Buffs
+  suite 27/27.
+- **⚠️ NEW ENUMERATED BATCH filed** (in `MAGIC_C_AUDIT.md` MAGIC-022 row): the
+  baked-name pattern is pervasive — ~15 MORE spell-handler sites remain
+  (faerie_fire, disarm, fly, frenzy, giant_strength, haste, infravision, pass_door,
+  fireproof, envenom, bless-object, …). Each needs its ROM `act()` code verified
+  ($N/$E/$p/$S/literal) before the same `act_format` conversion. **Lesson:** when a
+  grep reveals a class is pervasive, enumerate it in the tracker so the scope is
+  durable — don't let "I fixed the ones I found" imply completeness.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

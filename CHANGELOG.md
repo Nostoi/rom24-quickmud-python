@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.66] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-022 — protection_from_evil/good messages use the victim's PERS
+  short_descr** — ROM `spell_protection_evil`/`_good` render `act("$N is already
+  protected.", …)` and `act("$N is protected from evil/good.", …)` with `$N` = PERS
+  = NPC short_descr (capitalized). The Python handlers (a sibling pair, 6 sites)
+  baked the keyword `name`, so protecting an NPC "goblin"/"a green goblin" showed
+  "goblin is protected from evil." vs ROM "A green goblin is protected from evil."
+  All six now use `act_format`. A broader enumerated batch of ~15 remaining
+  baked-name spell-handler sites (faerie_fire, disarm, fly, frenzy, giant_strength,
+  haste, infravision, etc.) is now tracked in `MAGIC_C_AUDIT.md` for systematic
+  follow-up. Test: `tests/integration/test_magic022_protection_pers.py`.
+
 ## [2.14.65] — 2026-06-13
 
 ### Fixed
