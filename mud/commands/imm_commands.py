@@ -50,6 +50,15 @@ def find_location(char: Character, arg: str):
     if victim:
         return getattr(victim, "room", None)
 
+    # ROM src/act_wiz.c:791-792 — final fallback: resolve an object anywhere in
+    # the world and return the room it lies in (obj->in_room). Lets `at <obj>` /
+    # `goto <obj>` / `transfer <player> <obj>` target the room an object is in.
+    from mud.world.obj_find import get_obj_world
+
+    obj = get_obj_world(char, arg)
+    if obj is not None:
+        return getattr(obj, "in_room", None)
+
     return None
 
 

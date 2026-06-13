@@ -1872,3 +1872,29 @@ def test_force_shows_immortal_name_to_seeing_victim() -> None:
     do_force(ghost, "Watcher smile")
 
     assert any("Despot forces you to 'smile'." in m for m in victim.messages)
+
+
+def test_goto_object_resolves_to_room_object_lies_in() -> None:
+    # WIZ-051 — mirrors ROM src/act_wiz.c:780-795 find_location: after the
+    # numeric-vnum and get_char_world lookups, find_location falls back to
+    # get_obj_world(ch, arg) and returns obj->in_room. So `goto <object>`
+    # teleports the immortal to the room the object lies in. The Python port
+    # previously stopped after get_char_world, so this returned "No such location."
+    from mud.models.obj import ObjIndex, object_registry
+    from mud.models.object import Object
+
+    source = _room(9140, name="Study")
+    target = _room(9141, name="Treasure Vault")
+    admin = _imm("Archmage", source.vnum, trust=60)
+
+    proto = ObjIndex(vnum=88560, name="orb crystal", short_descr="a crystal orb")
+    orb = Object(instance_id=None, prototype=proto)
+    orb.in_room = target
+    object_registry.append(orb)
+    try:
+        result = do_goto(admin, "orb")
+        assert admin.room is target, f"expected goto to land in vault, got {admin.room}"
+        assert "Treasure Vault" in result
+    finally:
+        if orb in object_registry:
+            object_registry.remove(orb)

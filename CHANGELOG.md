@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.22] — 2026-06-12
+
+### Fixed
+
+- **WIZ-051 — `find_location` missing object fallback** — ROM `find_location`
+  (`src/act_wiz.c:780-795`) resolves a target in three steps: numeric vnum →
+  `get_char_world` (→ `victim->in_room`) → `get_obj_world` (→ `obj->in_room`).
+  The Python port stopped after the character lookup, so `at <object>`,
+  `goto <object>`, and `transfer <player> <object>` could not target the room an
+  object lies in (they answered "No such location."). Added the object fallback
+  returning `obj.in_room`. Test:
+  `tests/integration/test_act_wiz_command_parity.py::test_goto_object_resolves_to_room_object_lies_in`.
+
 ## [2.14.21] — 2026-06-12
 
 ### Fixed
