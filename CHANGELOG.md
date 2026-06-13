@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.77] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-032 — sanctuary cross-target reject line uses `$N` PERS** — ROM
+  `spell_sanctuary` (`src/magic.c:4284`) renders `act("$N is already in sanctuary.",
+  ch, NULL, victim, TO_CHAR)` on a cross-target cast — `$N` = PERS(victim) = NPC
+  short_descr, capitalized. The Python baked `target.name`, so casting on an
+  already-sanctuary NPC "a green goblin" showed "goblin is already in sanctuary." vs
+  ROM "A green goblin …". Cross-leg now uses `act_format` (the self-cast literal was
+  already correct). Test: `tests/integration/test_magic032_sanctuary_pers.py`.
+
 ## [2.14.76] — 2026-06-13
 
 ### Fixed

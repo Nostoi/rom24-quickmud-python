@@ -7382,9 +7382,15 @@ def sanctuary(caster, target=None):
         raise ValueError("sanctuary requires a target")
 
     if target.has_affect(AffectFlag.SANCTUARY) or target.has_spell_effect("sanctuary"):
-        # mirroring ROM src/magic.c:4288-4291 — send_to_char (self) / act TO_CHAR.
-        message = "You are already in sanctuary." if target is caster else f"{target.name} is already in sanctuary."
-        _send_to_char(caster, message)
+        # MAGIC-032: ROM src/magic.c:4282/4284 — send_to_char (self literal) /
+        # act("$N is already in sanctuary.", ch, NULL, victim, TO_CHAR) ($N = PERS
+        # victim, cap) for a cross-target cast.
+        if target is caster:
+            _send_to_char(caster, "You are already in sanctuary.")
+        else:
+            _send_to_char(
+                caster, act_format("$N is already in sanctuary.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
