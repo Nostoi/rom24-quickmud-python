@@ -566,13 +566,23 @@ converting them would invent ROM behavior. Other remaining `for occupant` loops 
 handlers.py are calc/gating (`calm`) or already act()-converted (`chain_lightning`
 MAGIC-004).
 
+**Combat act()-lens probed this session (2026-06-13):** `mud/combat/engine.py` +
+`mud/commands/combat.py` are largely act()-clean already — the parry/dodge/
+shield-block player messages are delivered correctly via `_push_message` +
+`pers()` + `capitalize_act_line` inside `check_parry`/`check_dodge`/
+`check_shield_block` (FIGHT-031/032). The ONE candidate found is **FIGHT-066
+(filed 🔄 OPEN, LATENT)**: `attack_round` (engine.py:~705-709) returns a baked
+`f"{victim.name} parries your attack."` string, but every `multi_hit` caller
+discards the return and the tests read the pushed line — so it's never delivered.
+Low-priority fix recipe is in the FIGHT-066 row. Combat damage broadcasts already
+route through `dam_message`/act() (FIGHT-018/023/025).
+
 Next veins (cross-file invariants probe-then-scope: read ROM C contract → read
 Python equivalent → one failing test → close as a single gap or file the next free
 INV-NNN):
 
-1. **act()-lens in `fight.c` / combat & skill messages** — the same baked-name lens,
-   applied to `mud/combat/` and `mud/commands/combat.py` damage/skill broadcasts
-   (the handlers.py spell vein is done; combat is the natural next surface).
+1. **FIGHT-066** (filed) — convert `attack_round`'s latent baked defense-return to
+   `pers()`+cap (or delete it); a quick, self-contained close.
 2. **Mob memory / hunt** — `src/fight.c` ATTACK_BACK and the hunt/track loop vs the
    Python AI tick (not yet probed).
 3. **Position-transition edges** — `update_pos` / `stop_fighting` ordering across
