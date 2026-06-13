@@ -75,6 +75,39 @@ and a test pinning the wrong RNG primitive).
   *persistent* field; every other assigns to a local and guard-returns on NULL
   (which Python mirrors correctly). No sibling divergences in this file.
 
+### `INV-047` — `extract_char` mprog_target quirk (single-path) — ✅ ENFORCED (2.14.25)
+
+- **Python**: `mud/mob_cmds.py:_extract_character`
+- **ROM C**: `src/handler.c:2151-2157`
+- **Gap**: ROM's `extract_char` `char_list` walk nullifies two single-target
+  pointers — `reply` (already mirrored) and `mprog_target`. The latter is a
+  faithfully-replicated 2.4b6 quirk: it tests `ch->mprog_target == wch` (the
+  *extracted* char's target) and clears `wch->mprog_target` (that target's OWN
+  pointer) — so it wipes the remembered target of whoever the extracted char was
+  targeting and does NOT clear mobs pointing AT the extracted char. Python left
+  it a `# would go here if needed` TODO.
+- **Fix**: mirror the buggy line verbatim (not the "corrected"
+  `wch->mprog_target == ch` form).
+- **Tests**: `tests/integration/test_inv047_extract_clears_mprog_target.py` (2 —
+  pins both halves).
+
+### `INV-047` (multi-path) — cleanup on every extract path — ✅ ENFORCED (2.14.26)
+
+- **Python**: `mud/combat/death.py:clear_extract_target_refs` (new shared helper);
+  wired into `mob_cmds.py:_extract_character`,
+  `game_loop.py:_auto_quit_character` (link-dead/void-quit leg), and
+  `connection.py:_disconnect_extract_cleanup` (telnet + websocket clean-disconnect).
+- **ROM C**: `src/handler.c:2151-2157` (one `extract_char`).
+- **Gap**: ROM has a single `extract_char`; the Python port split extraction
+  across call sites, so the PC-quit and socket-disconnect legs leaked dangling
+  `reply`/`mprog_target` pointers — the same multi-path class INV-020 closed for
+  `nuke_pets`/`die_follower`. The single-path 2.14.25 fix only covered
+  `_extract_character`.
+- **Fix**: extract the cleanup into `clear_extract_target_refs` and invoke it
+  from all three extract paths (ROM loop-then-unlink order preserved).
+- **Tests**: `tests/integration/test_inv047_extract_paths_clear_refs.py` (4 —
+  quit leg ×2 + disconnect leg ×2). Broader extract/death suites: 38/38.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:
