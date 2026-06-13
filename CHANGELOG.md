@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.62] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-018 — `bless` spell cross-target lines use the victim's PERS short_descr** —
+  ROM `spell_bless` (`src/magic.c:845,863`) renders `act("$N already has divine
+  favor.", …)` and `act("You grant $N the favor of your god.", …)` with `$N` = PERS
+  = NPC short_descr (capitalized for the first, which starts with `$N`). The Python
+  `bless` handler baked the keyword `name` — so casting bless on NPC "goblin"/"a
+  green goblin" showed "You grant goblin the favor of your god." vs ROM "You grant
+  a green goblin the favor of your god." Rendered both via `act_format`. Continues
+  the MAGIC-016 spell-handler cluster (armor/shield/bless now done; change_sex,
+  cures, curse-object still tracked open). Test:
+  `tests/integration/test_magic018_bless_pers.py`.
+
 ## [2.14.61] — 2026-06-13
 
 ### Fixed

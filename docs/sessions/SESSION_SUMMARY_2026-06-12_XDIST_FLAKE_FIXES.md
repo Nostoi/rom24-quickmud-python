@@ -818,6 +818,23 @@ and a test pinning the wrong RNG primitive).
 - Continues the **MAGIC-016 cluster** — shield struck off; frenzy/divine-favor,
   change_sex (literal `(?)` quirk), cures, curse-object still OPEN.
 
+### `MAGIC-018` — ✅ FIXED (bless spell cross-target lines use `$N` PERS short_descr)
+
+- **Python**: `mud/skills/handlers.py:bless`.
+- **ROM C**: `src/magic.c:845` `act("$N already has divine favor.", …, TO_CHAR)` + `:863` `act("You grant $N the favor of your god.", …, TO_CHAR)`.
+- **Gap**: both baked `_character_name(victim)` (keyword name for an NPC) where ROM
+  `$N` = PERS = short_descr (capitalized for the "$N already…" line). Casting bless
+  on NPC "goblin"/"a green goblin" showed "You grant goblin the favor of your god."
+  vs ROM "You grant a green goblin the favor of your god." Self-cast / PC victims
+  already correct. Continues the MAGIC-016 cluster.
+- **Fix**: both via `act_format("$N …"/"You grant $N …", arg2=victim)`.
+- **Tests**: `tests/integration/test_magic018_bless_pers.py` (NPC → "A green goblin
+  already has divine favor." + "You grant a green goblin the favor of your god.").
+  Note: bless is a cleric spell — the test caster uses `ch_class=1` (level 7 req),
+  not 2 (level 53). Buffs/heal/bless suites 34/34.
+- **MAGIC-016 cluster status**: armor ✅, shield ✅, bless ✅ — **still OPEN**:
+  change_sex (literal `$s(?)` quirk), cure_blindness/disease/poison, curse-object.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

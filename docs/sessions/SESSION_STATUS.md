@@ -1,10 +1,16 @@
-# Session Status — 2026-06-13 — MAGIC-017 (shield spell $N/$n PERS) + MAGIC-016 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-018 (bless spell $N PERS) + MAGIC-016/017 + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: MAGIC-017 — `spell_shield` (`mud/skills/handlers.py:shield`)
+- **Last completed**: MAGIC-018 — `spell_bless` (`mud/skills/handlers.py:bless`)
+  cross-target lines "$N already has divine favor." / "You grant $N the favor of
+  your god." now render via `act_format` ($N = PERS NPC short_descr + cap) instead
+  of the baked keyword name, matching ROM `act(..., TO_CHAR)` (`src/magic.c:845,863`).
+  Continues the MAGIC-016 spell-handler cluster — armor/shield/bless now done;
+  change_sex (literal `(?)` quirk), cures, curse-object still tracked OPEN
+  (v2.14.62). Before that: MAGIC-017 — `spell_shield` (`mud/skills/handlers.py:shield`)
   cross-target TO_CHAR "$N is already protected by a shield." now uses `act_format`,
   and the success TO_ROOM "$n is surrounded by a force shield." now uses
   `act_to_room` (replacing a hand-rolled name-baking loop with a "Someone"
@@ -257,8 +263,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.61 |
-| Tests | shield-pers 2/2, armor+buffs 30/30, full suite last green 5717 passed / 4 skipped (v2.14.60) |
+| Version | 2.14.62 |
+| Tests | bless-pers 2/2, buffs+heal+bless 34/34, full suite last green 5719 passed / 4 skipped (v2.14.61) |
+| MAGIC-018 status | ✅ FIXED bless (`$N` PERS TO_CHAR ×2); cluster: change_sex/cures/curse still OPEN |
 | MAGIC-017 status | ✅ FIXED shield (`$N` TO_CHAR + `$n` TO_ROOM PERS) |
 | MAGIC-016 status | ✅ FIXED armor (`$N` PERS); ⚠️ frenzy/change_sex/cures/curse baked-name cluster still OPEN |
 | TRIP-001 status | ✅ FIXED (do_trip 3 blocking msgs use $S/$N pronouns via act_format) |

@@ -1604,7 +1604,11 @@ def bless(caster: Character, target: Character | Object | None = None) -> bool:
         if victim is caster:
             _send_to_char(caster, "You are already blessed.")
         else:
-            _send_to_char(caster, f"{_character_name(victim)} already has divine favor.")
+            # MAGIC-018: ROM act("$N already has divine favor.", ch, NULL, victim, TO_CHAR)
+            # — $N = PERS (NPC short_descr), cap buf[0]; not the baked keyword name.
+            _send_to_char(
+                caster, act_format("$N already has divine favor.", recipient=caster, actor=caster, arg2=victim)
+            )
         return False
 
     level = max(getattr(caster, "level", 0), 0)
@@ -1624,7 +1628,10 @@ def bless(caster: Character, target: Character | Object | None = None) -> bool:
     # TO_CHAR only when ch != victim.
     _send_to_char(victim, "You feel righteous.")
     if caster is not victim:
-        _send_to_char(caster, f"You grant {_character_name(victim)} the favor of your god.")
+        # MAGIC-018: ROM act("You grant $N the favor of your god.", ch, NULL, victim, TO_CHAR).
+        _send_to_char(
+            caster, act_format("You grant $N the favor of your god.", recipient=caster, actor=caster, arg2=victim)
+        )
     return True
 
 
