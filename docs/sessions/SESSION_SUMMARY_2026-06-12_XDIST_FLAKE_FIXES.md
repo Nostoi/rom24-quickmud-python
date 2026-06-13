@@ -660,9 +660,24 @@ and a test pinning the wrong RNG primitive).
 - **Tests**: `tests/test_communication.py::test_gossip001_invisible_gossiper_masks_to_someone`
   (RED→GREEN — invisible gossiper → listener sees "Someone gossips", name absent).
   Existing channel tests (visible sender → name) 42/42 unaffected.
-- **Filed for next agent** (in `ACT_COMM_C_AUDIT.md`): `do_grats`, `do_quote`,
-  `do_question`, `do_answer`, `do_music` bake `char.name` identically — apply the
-  same `render=` pattern (mechanical, shared infra now in place).
+- **Follow-up done same session as GOSSIP-002** (see below).
+
+### `GOSSIP-002` — ✅ FIXED (grats/quote/question/answer/music PERS-mask `$n`)
+
+- **Python**: `mud/commands/communication.py:do_grats`/`do_quote`/`do_question`/`do_answer`/`do_music`.
+- **ROM C**: `src/act_comm.c` — each renders per recipient via
+  `act_new("{t$n grats '$t'{x", ch, …, d->character, TO_VICT)` (and the analogous
+  `$n quotes/questions/answers/MUSIC` forms).
+- **Gap**: same class as GOSSIP-001 — all five baked `char.name` into one shared
+  `broadcast_global` message, leaking an invisible/wiz-invis sender's identity.
+- **Fix**: applied the GOSSIP-001 `render=lambda target:
+  capitalize_act_line(f"…{pers(char, target)}…")` per-recipient PERS pattern to all
+  five (the `broadcast_global` `render` infra was already in place from GOSSIP-001).
+- **Tests**: `tests/test_communication.py::test_gossip002_invisible_sender_masks_across_global_channels`
+  (grats: invisible sender → "Someone grats", name absent). Channel suite 43/43.
+- **Left as a low-value edge** (noted in `ACT_COMM_C_AUDIT.md`): `do_clantalk` /
+  `do_immtalk` still bake the name — immtalk recipients are holylight-visible
+  immortals (PERS == name anyway), clantalk a small mutually-visible audience.
 
 ### Re-verified faithful this session (recall-oracle, no change)
 

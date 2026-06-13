@@ -463,12 +463,13 @@ def do_grats(char: Character, args: str) -> str:
             return False
         return True
 
-    broadcast_global(
-        capitalize_act_line(f"{{t{char.name} grats '{cleaned}'{{x"),
-        channel="grats",
-        exclude=char,
-        should_send=_should_receive,
-    )
+    # GOSSIP-001 class: ROM act_new("{t$n grats '$t'{x", …, d->character, TO_VICT).
+    from mud.world.vision import pers
+
+    def _render(target: Character) -> str:
+        return capitalize_act_line(f"{{t{pers(char, target)} grats '{cleaned}'{{x")
+
+    broadcast_global(None, channel="grats", exclude=char, should_send=_should_receive, render=_render)
     return capitalize_act_line(f"{{tYou grats '{cleaned}'{{x")
 
 
@@ -495,12 +496,13 @@ def do_quote(char: Character, args: str) -> str:
             return False
         return True
 
-    broadcast_global(
-        capitalize_act_line(f"{{h{char.name} quotes '{{H{cleaned}{{h'{{x"),
-        channel="quote",
-        exclude=char,
-        should_send=_should_receive,
-    )
+    # GOSSIP-001 class: ROM act_new("{h$n quotes '{H$t{h'{x", …, d->character, TO_VICT).
+    from mud.world.vision import pers
+
+    def _render(target: Character) -> str:
+        return capitalize_act_line(f"{{h{pers(char, target)} quotes '{{H{cleaned}{{h'{{x")
+
+    broadcast_global(None, channel="quote", exclude=char, should_send=_should_receive, render=_render)
     return capitalize_act_line(f"{{hYou quote '{{H{cleaned}{{h'{{x")
 
 
@@ -527,12 +529,13 @@ def do_question(char: Character, args: str) -> str:
             return False
         return True
 
-    broadcast_global(
-        capitalize_act_line(f"{{q{char.name} questions '{{Q{cleaned}{{q'{{x"),
-        channel="question",
-        exclude=char,
-        should_send=_should_receive,
-    )
+    # GOSSIP-001 class: ROM act_new("{q$n questions '{Q$t{q'{x", …, d->character, TO_VICT).
+    from mud.world.vision import pers
+
+    def _render(target: Character) -> str:
+        return capitalize_act_line(f"{{q{pers(char, target)} questions '{{Q{cleaned}{{q'{{x")
+
+    broadcast_global(None, channel="question", exclude=char, should_send=_should_receive, render=_render)
     return capitalize_act_line(f"{{qYou question '{{Q{cleaned}{{q'{{x")
 
 
@@ -559,12 +562,13 @@ def do_answer(char: Character, args: str) -> str:
             return False
         return True
 
-    broadcast_global(
-        capitalize_act_line(f"{{f{char.name} answers '{{F{cleaned}{{f'{{x"),
-        channel="question",
-        exclude=char,
-        should_send=_should_receive,
-    )
+    # GOSSIP-001 class: ROM act_new("{f$n answers '{F$t{f'{x", …, d->character, TO_VICT).
+    from mud.world.vision import pers
+
+    def _render(target: Character) -> str:
+        return capitalize_act_line(f"{{f{pers(char, target)} answers '{{F{cleaned}{{f'{{x")
+
+    broadcast_global(None, channel="question", exclude=char, should_send=_should_receive, render=_render)
     return capitalize_act_line(f"{{fYou answer '{{F{cleaned}{{f'{{x")
 
 
@@ -591,12 +595,13 @@ def do_music(char: Character, args: str) -> str:
             return False
         return True
 
-    broadcast_global(
-        capitalize_act_line(f"{{e{char.name} MUSIC: '{{E{cleaned}{{e'{{x"),
-        channel="music",
-        exclude=char,
-        should_send=_should_receive,
-    )
+    # GOSSIP-001 class: ROM act_new("{e$n MUSIC: '{E$t{e'{x", …, d->character, TO_VICT).
+    from mud.world.vision import pers
+
+    def _render(target: Character) -> str:
+        return capitalize_act_line(f"{{e{pers(char, target)} MUSIC: '{{E{cleaned}{{e'{{x")
+
+    broadcast_global(None, channel="music", exclude=char, should_send=_should_receive, render=_render)
     return capitalize_act_line(f"{{eYou MUSIC: '{{E{cleaned}{{e'{{x")
 
 

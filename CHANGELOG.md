@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.53] — 2026-06-13
+
+### Fixed
+
+- **GOSSIP-002 — the grats/quote/question/answer/music channels PERS-mask `$n`
+  per recipient** — completes the global-channel class started by GOSSIP-001. ROM
+  renders each of these via `act_new("{t$n grats '$t'{x", ch, …, d->character,
+  TO_VICT)` etc., so an invisible/wiz-invis sender masks to "someone" for listeners
+  who can't see them. The Python baked `char.name` into one shared message. Applied
+  the same `render=` per-recipient PERS pattern (the `broadcast_global` infra added
+  in GOSSIP-001). Test:
+  `tests/test_communication.py::test_gossip002_invisible_sender_masks_across_global_channels`.
+  (`clantalk`/`immtalk` still bake the name — immtalk recipients always see the
+  sender via holylight, clantalk is a small mutually-visible audience; noted in
+  `ACT_COMM_C_AUDIT.md` as a low-value edge.)
+
 ## [2.14.52] — 2026-06-13
 
 ### Fixed

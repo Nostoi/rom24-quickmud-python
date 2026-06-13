@@ -1002,15 +1002,15 @@ return f"You <channel> '<message>'"
 
 | Function | ROM Lines | QuickMUD | Status | Notes |
 |----------|-----------|----------|--------|-------|
-| do_gossip() | 333-388 | communication.py:271 | ✅ **100%** | Global chat channel — **GOSSIP-001 fixed (2.14.52, see below)** |
-| do_grats() | 390-446 | communication.py:303 | ⚠️ **GOSSIP-001 class OPEN** | Congratulations channel — still bakes `char.name` (no per-recipient PERS) |
-| do_quote() | 447-504 | communication.py:335 | ⚠️ **GOSSIP-001 class OPEN** | Quote channel — bakes `char.name` |
-| do_question() | 505-561 | communication.py:367 | ⚠️ **GOSSIP-001 class OPEN** | Question channel — bakes `char.name` |
-| do_answer() | 562-618 | communication.py:399 | ⚠️ **GOSSIP-001 class OPEN** | Answer channel — bakes `char.name` |
-| do_music() | 619-676 | communication.py:431 | ⚠️ **GOSSIP-001 class OPEN** | Music channel — bakes `char.name` |
-| do_auction() | 276-332 | communication.py:239 | ✅ **100%** | Auction channel — **GOSSIP-001 fixed (2.14.52)** |
+| do_gossip() | 333-388 | communication.py:271 | ✅ **100%** | Global chat channel — **GOSSIP-001 (2.14.52)** |
+| do_grats() | 390-446 | communication.py:303 | ✅ **100%** | Congratulations channel — **GOSSIP-002 (2.14.53)** |
+| do_quote() | 447-504 | communication.py:335 | ✅ **100%** | Quote channel — **GOSSIP-002 (2.14.53)** |
+| do_question() | 505-561 | communication.py:367 | ✅ **100%** | Question channel — **GOSSIP-002 (2.14.53)** |
+| do_answer() | 562-618 | communication.py:399 | ✅ **100%** | Answer channel — **GOSSIP-002 (2.14.53)** |
+| do_music() | 619-676 | communication.py:431 | ✅ **100%** | Music channel — **GOSSIP-002 (2.14.53)** |
+| do_auction() | 276-332 | communication.py:239 | ✅ **100%** | Auction channel — **GOSSIP-001 (2.14.52)** |
 
-**GOSSIP-001** (MINOR, ✅ FIXED for gossip+auction 2.14.52; ⚠️ remaining channels OPEN) — global channel `$n` was not PERS-masked per recipient. ROM `do_gossip`/`do_auction`/etc. walk `descriptor_list` and render each listener's copy via `act_new("{d$n gossips '{9$t{d'{x", ch, argument, d->character, TO_VICT, POS_SLEEPING)` — `$n` → `PERS(ch, listener)`, so a wiz-invis / invisible sender a listener can't see renders as "someone", not the sender's name. The Python baked `char.name` into ONE shared string passed to `broadcast_global`, leaking the sender's identity to every listener. **Fix (2.14.52):** added a backward-compatible `render: recipient -> str` param to `broadcast_global` (`mud/net/protocol.py`); `do_gossip`/`do_auction` now pass `render=lambda target: capitalize_act_line(f"…{pers(char, target)}…")`. Test: `tests/test_communication.py::test_gossip001_invisible_gossiper_masks_to_someone` (invisible gossiper → listener sees "Someone gossips", name absent). **Remaining (next agent):** apply the identical `render=` pattern to `do_grats`, `do_quote`, `do_question`, `do_answer`, `do_music` (all bake `char.name` the same way) — mechanical, same infra. | ✅/⚠️ PARTIAL (2.14.52) |
+**GOSSIP-001 / GOSSIP-002** (MINOR, ✅ FIXED — gossip+auction 2.14.52, grats/quote/question/answer/music 2.14.53) — global channel `$n` was not PERS-masked per recipient. ROM `do_gossip`/`do_auction`/`do_grats`/`do_quote`/`do_question`/`do_answer`/`do_music` walk `descriptor_list` and render each listener's copy via `act_new("{d$n gossips '{9$t{d'{x", ch, argument, d->character, TO_VICT, POS_SLEEPING)` — `$n` → `PERS(ch, listener)`, so a wiz-invis / invisible sender a listener can't see renders as "someone", not the sender's name. The Python baked `char.name` into ONE shared string passed to `broadcast_global`, leaking the sender's identity to every listener. **Fix:** added a backward-compatible `render: recipient -> str` param to `broadcast_global` (`mud/net/protocol.py`); each channel now passes `render=lambda target: capitalize_act_line(f"…{pers(char, target)}…")` (per-recipient PERS, same infra as the room-channel SAY-002/EMOTE-001 sweep). Tests: `tests/test_communication.py::test_gossip001_invisible_gossiper_masks_to_someone` + `::test_gossip002_invisible_sender_masks_across_global_channels`. **Minor remaining (edge):** `do_clantalk` / `do_immtalk` still bake `char.name` — immtalk recipients are immortals (holylight → always see the sender, so PERS == name), and clantalk is a small mutually-visible audience; low-value, file if a clan-invis case ever matters. | ✅ FIXED (2.14.53) |
 | do_clantalk() | 677-729 | communication.py:463 | ✅ **100%** | Clan-only channel |
 | do_immtalk() | 730-766 | communication.py:494 | ✅ **100%** | Immortal-only channel |
 

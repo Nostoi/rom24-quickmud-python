@@ -314,6 +314,25 @@ def test_gossip001_invisible_gossiper_masks_to_someone():
     assert "Gossipghost" not in joined, f"invisible gossiper's name leaked: {listener.messages!r}"
 
 
+def test_gossip002_invisible_sender_masks_across_global_channels():
+    """GOSSIP-002 — the grats/quote/question/answer/music channels also PERS-mask
+    `$n` per recipient (ROM act_new TO_VICT), same as gossip/auction (GOSSIP-001)."""
+    from mud.models.constants import AffectFlag
+
+    initialize_world("area/area.lst")
+    character_registry.clear()
+    sender = make_player("Ghostsinger", 3001)
+    listener = make_player("Gratslistener", 3001)
+    sender.affected_by |= int(AffectFlag.INVISIBLE)
+    assert not listener.has_affect(AffectFlag.DETECT_INVIS)
+
+    process_command(sender, "grats woohoo")
+
+    joined = "\n".join(listener.messages)
+    assert "Someone grats" in joined, f"expected PERS-masked grats; got {listener.messages!r}"
+    assert "Ghostsinger" not in joined, f"invisible sender's name leaked: {listener.messages!r}"
+
+
 def test_grats_channel_respects_mutes():
     celebrant = make_player("Celebrant", 3001)
     listener = make_player("Listener", 3001)
