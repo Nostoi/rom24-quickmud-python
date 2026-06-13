@@ -7618,8 +7618,11 @@ def slow(
         if target is caster:
             _send_to_char(caster, "You can't move any slower!")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} can't get any slower than that.")
+            # MAGIC-031: ROM act("$N can't get any slower than that.", ch, NULL,
+            # victim, TO_CHAR) (src/magic.c:4396) — $N = PERS(victim), cap.
+            _send_to_char(
+                caster, act_format("$N can't get any slower than that.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     base_level = override_level if override_level is not None else getattr(caster, "level", 0)
@@ -7848,8 +7851,11 @@ def stone_skin(caster: Character, target: Character | None = None) -> bool:  # n
         if target is caster:
             _send_to_char(caster, "Your skin is already as hard as a rock.")
         else:
-            name = _character_name(target)
-            _send_to_char(caster, f"{name} is already as hard as can be.")
+            # MAGIC-031: ROM act("$N is already as hard as can be.", ch, NULL,
+            # victim, TO_CHAR) (src/magic.c:4452) — $N = PERS(victim), cap.
+            _send_to_char(
+                caster, act_format("$N is already as hard as can be.", recipient=caster, actor=caster, arg2=target)
+            )
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)

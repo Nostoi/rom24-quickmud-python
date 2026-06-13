@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.76] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-031 — slow/stone_skin cross-target reject lines use `$N` PERS** — ROM
+  `spell_slow` (`src/magic.c:4396`) and `spell_stone_skin` (`:4452`) render
+  `act("$N …", ch, NULL, victim, TO_CHAR)` — `$N` = PERS(victim) = NPC short_descr,
+  capitalized. The Python baked `_character_name`, so slowing an already-slowed NPC
+  "a green goblin" showed "goblin can't get any slower than that." vs ROM "A green
+  goblin …". Both cross-legs now use `act_format` (the self-cast literals were
+  already correct). Test: `tests/integration/test_magic031_slow_stoneskin_pers.py`.
+
 ## [2.14.75] — 2026-06-13
 
 ### Fixed
