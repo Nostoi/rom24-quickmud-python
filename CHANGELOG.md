@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.55] — 2026-06-13
+
+### Fixed
+
+- **SAC-006 — `sacrifice` rejection/furniture messages capitalize the object name
+  (ROM act() buf[0])** — ROM `do_sacrifice` (`src/act_obj.c`) renders
+  `act("$p is not an acceptable sacrifice.", ch, obj, 0, TO_CHAR)` and
+  `act("$N appears to be using $p.", ch, obj, gch, TO_CHAR)`, both of which cap the
+  first letter of the line. The Python `mud/commands/obj_manipulation.py:do_sacrifice`
+  baked the lowercase `short_descr` ("a blessed relic is not an acceptable
+  sacrifice.") with no capitalization. Rendered both via `act_format` ($p/$N + cap;
+  $N also gains PERS masking). Found applying the CONSIDER-001 ACT-CAP lens to
+  act_obj. Test:
+  `tests/integration/test_sacrifice_command.py::test_sacrifice006_rejection_capitalizes_object_name`.
+
 ## [2.14.54] — 2026-06-13
 
 ### Fixed

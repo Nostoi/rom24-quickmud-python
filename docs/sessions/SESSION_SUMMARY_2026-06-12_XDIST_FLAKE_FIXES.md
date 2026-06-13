@@ -697,6 +697,23 @@ and a test pinning the wrong RNG primitive).
   "its") + added `test_give002_hands_full_uses_gendered_possessive` (male → "his").
   Give suite 15/15.
 
+### `SAC-006` — ✅ FIXED (sacrifice rejection/furniture messages capitalize via act())
+
+- **Python**: `mud/commands/obj_manipulation.py:do_sacrifice`.
+- **ROM C**: `src/act_obj.c` — `act("$p is not an acceptable sacrifice.", ch, obj, 0, TO_CHAR)`
+  and `act("$N appears to be using $p.", ch, obj, gch, TO_CHAR)` (act() caps buf[0]).
+- **Gap**: both lines baked the lowercase object `short_descr`, so "a blessed relic
+  is not an acceptable sacrifice." where ROM caps the first letter ("A blessed
+  relic …"). The `$N appears to be using $p` line also skipped PERS. Found applying
+  the CONSIDER-001 ACT-CAP / `$N` lens to act_obj.
+- **Fix**: rendered both via `act_format("$p …"/"$N appears to be using $p.",
+  recipient=char, actor=char, arg1=obj[, arg2=person])` — caps buf[0], $N PERS-masked.
+  The `$mself` self-sacrifice reflexive was already faithful (`_object_pronoun(NONE)`
+  + "self" = "itself").
+- **Tests**: `tests/integration/test_sacrifice_command.py::test_sacrifice006_rejection_capitalizes_object_name`
+  (RED→GREEN — "A blessed relic …"). Existing sacrifice + furniture-occupancy tests
+  use `.lower()` so unaffected. Sacrifice+furniture suites 13/13.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

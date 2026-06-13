@@ -10,7 +10,7 @@ from mud.handler import unequip_char
 from mud.models.character import Character
 from mud.models.constants import OBJ_VNUM_PIT, ExtraFlag, ItemType, PlayerFlag, WearFlag
 from mud.utils import rng_mm
-from mud.utils.act import act_to_room
+from mud.utils.act import act_format, act_to_room
 from mud.world.obj_find import get_obj_carry, get_obj_here, get_obj_wear
 
 # Container flags
@@ -413,16 +413,17 @@ def do_sacrifice(char: Character, args: str) -> str:
             wear_flags = getattr(proto, "wear_flags", 0)
 
     if not (wear_flags & WearFlag.TAKE) or (wear_flags & WearFlag.NO_SAC):
-        obj_name = getattr(obj, "short_descr", "That")
-        return f"{obj_name} is not an acceptable sacrifice."
+        # SAC-006: ROM act("$p is not an acceptable sacrifice.", ch, obj, 0, TO_CHAR)
+        # caps buf[0], so a lowercase short_descr ("a sword") renders "A sword …".
+        return act_format("$p is not an acceptable sacrifice.", recipient=char, actor=char, arg1=obj)
 
     # Check if someone is using the object
     room_people = getattr(room, "people", [])
     for person in room_people:
         if getattr(person, "on", None) is obj:
-            person_name = getattr(person, "name", "Someone")
-            obj_name = getattr(obj, "short_descr", "it")
-            return f"{person_name} appears to be using {obj_name}."
+            # SAC-006: ROM act("$N appears to be using $p.", ch, obj, gch, TO_CHAR) —
+            # $N PERS-rendered, $p object, buf[0] capitalized.
+            return act_format("$N appears to be using $p.", recipient=char, actor=char, arg1=obj, arg2=person)
 
     # Calculate silver reward
     obj_level = getattr(obj, "level", 1)

@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — GIVE-002 (give rejections use $N/$S pronouns) + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — SAC-006 (sacrifice msgs cap object name) + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: GIVE-002 — `do_give` (`mud/commands/give.py`) four giver-facing
+- **Last completed**: SAC-006 — `do_sacrifice` (`mud/commands/obj_manipulation.py`)
+  rejection line ("$p is not an acceptable sacrifice.") and furniture line
+  ("$N appears to be using $p.") now render via `act_format` so ROM's act() buf[0]
+  capitalization applies — a lowercase object short_descr ("a blessed relic") shows
+  "A blessed relic is not an acceptable sacrifice." (was lowercase). Found applying
+  the CONSIDER-001 ACT-CAP lens to act_obj; the `$mself` reflexive was already
+  faithful (object_pronoun+"self" = itself) (v2.14.55). Before that: GIVE-002 —
+  `do_give` (`mud/commands/give.py`) four giver-facing
   rejection lines ("$N has $S hands full.", "$N can't carry that much weight.",
   "$N can't see it.", shopkeeper "Sorry, you'll have to sell that.") now render via
   `act_format` with ROM's `$N` (PERS name) + `$S` (possessive his/her/its) instead
@@ -203,8 +210,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.54 |
-| Tests | give 15/15, full suite last green 5710 passed / 4 skipped (v2.14.53) |
+| Version | 2.14.55 |
+| Tests | sacrifice+furniture 13/13, full suite last green 5711 passed / 4 skipped (v2.14.54) |
+| SAC-006 status | ✅ FIXED (sacrifice rejection/furniture msgs capitalize object name via act_format) |
 | GIVE-002 status | ✅ FIXED (give rejection lines use $N/$S pronouns via act_format; sexless → "its" not "their") |
 | GOSSIP-001/002 status | ✅ FIXED all 7 public channels (gossip/auction/grats/quote/question/answer/music PERS-mask `$n`); clan/immtalk = low-value edge |
 | TELL-008 status | ✅ FIXED (tell status lines use $E/$S/$N pronouns via act_format, not baked name + "they") |

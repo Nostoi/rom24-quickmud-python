@@ -158,6 +158,19 @@ def test_sacrifice_no_sac_item_rejected(test_room, actor, object_factory):
     assert actor.silver == 0, "Silver should not be granted for a NO_SAC item"
 
 
+def test_sacrifice006_rejection_capitalizes_object_name(test_room, actor, object_factory):
+    """SAC-006 — ROM `act("$p is not an acceptable sacrifice.", ch, obj, 0, TO_CHAR)`
+    caps buf[0], so a lowercase object short_descr renders capitalized."""
+    obj = _make_sacrificeable_obj(object_factory, short_descr="a blessed relic")
+    obj.wear_flags = int(WearFlag.TAKE) | int(WearFlag.NO_SAC)
+    test_room.contents.append(obj)
+    obj.location = test_room
+
+    result = do_sacrifice(actor, "relic")
+
+    assert result == "A blessed relic is not an acceptable sacrifice.", result
+
+
 # ---------------------------------------------------------------------------
 # SAC-004: AUTOSPLIT with group members splits silver
 # ---------------------------------------------------------------------------
