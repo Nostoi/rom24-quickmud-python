@@ -155,29 +155,27 @@ def do_slookup(char: Character, args: str) -> str:
     if not arg:
         return "Lookup which skill or spell?\n\r"
 
-    from mud import registry
+    # INV-046 family 3b: the real skill table is name-keyed
+    # mud.skills.registry.skill_registry.skills — NOT a phantom registry.skill_table
+    # (which returned [] in production, so slookup listed nothing). ROM's integer
+    # `sn` is the table index, preserved here by enumerating the loaded skills.
+    from mud.skills.registry import skill_registry
 
-    skill_table = getattr(registry, "skill_table", [])
+    skills = list(skill_registry.skills.values())
 
     if arg.lower() == "all":
         lines = []
-        for sn, skill in enumerate(skill_table):
-            skill_name = getattr(skill, "name", None)
-            if skill_name is None:
-                break
+        for sn, skill in enumerate(skills):
             slot = getattr(skill, "slot", 0)
-            lines.append(f"Sn: {sn:3d}  Slot: {slot:3d}  Skill/spell: '{skill_name}'\n\r")
+            lines.append(f"Sn: {sn:3d}  Slot: {slot:3d}  Skill/spell: '{skill.name}'\n\r")
         return "".join(lines)
 
     # mirrors ROM: prefix match on skill names
     arg_lower = arg.lower()
-    for sn, skill in enumerate(skill_table):
-        skill_name = getattr(skill, "name", None)
-        if skill_name is None:
-            break
-        if skill_name.lower().startswith(arg_lower):
+    for sn, skill in enumerate(skills):
+        if skill.name.lower().startswith(arg_lower):
             slot = getattr(skill, "slot", 0)
-            return f"Sn: {sn:3d}  Slot: {slot:3d}  Skill/spell: '{skill_name}'\n\r"
+            return f"Sn: {sn:3d}  Slot: {slot:3d}  Skill/spell: '{skill.name}'\n\r"
 
     return "No such skill or spell.\n\r"
 
@@ -195,13 +193,16 @@ def do_owhere(char: Character, args: str) -> str:
 
     search_name = args.strip().lower()
 
-    from mud import registry
+    # INV-046 family 3b: walk the real live-object list
+    # mud.models.obj.object_registry (ROM's object_list) — the old reader read a
+    # phantom registry.object_list that was empty in production.
+    from mud.models.obj import object_registry
 
     lines = []
     count = 0
     max_found = 200
 
-    for obj in getattr(registry, "object_list", []):
+    for obj in object_registry:
         obj_name = (getattr(obj, "name", None) or "").lower()
         if search_name not in obj_name:
             continue
@@ -381,17 +382,25 @@ def do_memory(char: Character, args: str) -> str:
 
     lines = []
 
-    # Count various entities
-    num_areas = len(getattr(registry, "areas", []))
-    num_rooms = len(getattr(registry, "rooms", {}))
+    # Count various entities — INV-046 family 3b: read the real registries.
+    # The old code read phantom registry.areas / registry.rooms (the real names
+    # are area_registry / room_registry), printing 0 in production.
+    num_areas = len(registry.area_registry)
+    num_rooms = len(registry.room_registry)
     # mirroring ROM src/db.c:3305,3309 — "Mobs"/"Objs" print top_mob_index/
     # top_obj_index, the prototype-table sizes. INV-046 family 3: the old code
     # read phantom registry.mob_prototypes/obj_prototypes (real names are
     # mob_registry/obj_registry), printing 0 in production.
     num_mobs = len(registry.mob_registry)
     num_objs = len(registry.obj_registry)
-    num_helps = len(getattr(registry, "helps", {}))
-    num_socials = len(getattr(registry, "social_registry", {}).socials if hasattr(registry, "social_registry") else {})
+    # INV-046 family 3b: helps live in mud.models.help.help_entries (flat list)
+    # and socials in mud.models.social.social_registry (name-keyed dict). The old
+    # code read phantom registry.helps / registry.social_registry.socials, both 0.
+    from mud.models.help import help_entries
+    from mud.models.social import social_registry
+
+    num_helps = len(help_entries)
+    num_socials = len(social_registry)
     # mirroring ROM src/db.c:3307 — "(in use)" prints mobile_count, the number
     # of live NPC mobiles. INV-046: the old code measured the phantom
     # registry.char_list, printing 0 in production.

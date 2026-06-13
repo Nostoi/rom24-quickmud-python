@@ -238,9 +238,11 @@ def do_dump(char: Character, args: str) -> str:
     lines = []
     lines.append("=== Memory Dump ===")
 
-    # Count various entities
-    num_areas = len(getattr(registry, "areas", []))
-    num_rooms = len(getattr(registry, "rooms", {}))
+    # Count various entities — INV-046 family 3b: read the real registries
+    # (area_registry/room_registry); the old code read phantom registry.areas/rooms,
+    # printing 0 in production.
+    num_areas = len(registry.area_registry)
+    num_rooms = len(registry.room_registry)
     # mirroring ROM src/db.c:3340,3355 — do_dump reports the prototype-table
     # sizes (top_mob_index/top_obj_index). INV-046 family 3: the old code read
     # phantom registry.mob_prototypes/obj_prototypes (real names are

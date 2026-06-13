@@ -122,13 +122,21 @@ def do_count(char: Character, args: str) -> str:
         if hasattr(desc, "character") and desc.character:
             count += 1
 
-    # Check player registry as fallback
+    # Check live PCs as fallback for descriptor-less test contexts.
+    # INV-046 family 3b: count live PCs in character_registry (the old code read a
+    # phantom registry.player_registry that never existed in production).
     if count == 0:
-        players = getattr(registry, "player_registry", {})
-        count = len(players)
+        from mud.models.character import character_registry
 
-    # Track max online
-    max_on = getattr(registry, "max_on_today", 0)
+        count = sum(
+            1
+            for wch in character_registry
+            if not getattr(wch, "is_npc", False) and getattr(wch, "pcdata", None) is not None
+        )
+
+    # Track max online — registry.max_on_today mirrors ROM's static `max_on`
+    # global (src/act_info.c do_count). Declared in mud/registry.py.
+    max_on = registry.max_on_today
     if count > max_on:
         registry.max_on_today = count
         max_on = count
@@ -249,12 +257,22 @@ def do_whois(char: Character, args: str) -> str:
             results.append(format_whois_line(wch))
 
     # Fallback for tests/contexts without descriptor-backed sessions.
-    players = getattr(registry, "player_registry", {})
-    for name, player in players.items():
-        if name.lower().startswith(target_name):
-            if any(name.lower() in r.lower() for r in results):
-                continue  # Already in list
-            results.append(format_whois_line(player))
+    # INV-046 family 3b: the live-player source is character_registry (PCs carry
+    # pcdata); the old code read a phantom registry.player_registry that never
+    # existed in production, so this fallback always matched nothing.
+    from mud.models.character import character_registry
+
+    for wch in character_registry:
+        if getattr(wch, "is_npc", False) or getattr(wch, "pcdata", None) is None:
+            continue
+        if not can_see_character(char, wch):
+            continue
+        wch_name = (getattr(wch, "name", None) or "").lower()
+        if not wch_name.startswith(target_name):
+            continue
+        if any(wch_name in r.lower() for r in results):
+            continue  # already shown via the descriptor walk
+        results.append(format_whois_line(wch))
 
     if not results:
         return "No one of that name is playing."

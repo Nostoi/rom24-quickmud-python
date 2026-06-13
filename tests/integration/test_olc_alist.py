@@ -2,7 +2,7 @@
 
 ROM Reference: src/olc.c:1478-1502.
 
-Pre-fix bug: `do_alist` iterated `getattr(registry, "areas", [])` which
+Pre-fix bug: `do_alist` iterated a phantom ``areas`` registry attribute which
 does not exist on `mud.registry` (the real attribute is `area_registry`,
 a vnum→Area dict). The pre-fix command returned only a header row on a
 live system. Also drifted on field names (`filename` vs `file_name`) and

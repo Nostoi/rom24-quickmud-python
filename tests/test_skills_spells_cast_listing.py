@@ -1,7 +1,7 @@
 """Regression coverage for do_skills, do_spells, and do_cast.
 
 These tests guard against the bug class where the listing/cast commands read
-from a non-existent data source (`mud.registry.skill_table`) or use
+from a non-existent data source (a phantom skill-table registry attribute) or use
 exact-match parsing that breaks multi-word spell names. Both regressions
 silently produced "no skills found" / "you don't know any spells of that name"
 even when the character had learned skills and spells (provable via the

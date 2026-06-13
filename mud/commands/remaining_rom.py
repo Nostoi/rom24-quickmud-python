@@ -298,15 +298,18 @@ def do_groups(char: Character, args: str) -> str:
 
     if arg == "all":
         lines = ["All available groups:"]
-        from mud import registry
+        # INV-046 family 3b: the real group table is mud.skills.groups (GroupType
+        # tuple). The old code read a phantom registry.group_table, so `groups all`
+        # printed "(no groups defined)" in production.
+        from mud.skills.groups import list_groups
 
-        groups = getattr(registry, "group_table", {})
-        if not groups:
+        all_groups = list_groups()
+        if not all_groups:
             lines.append("  (no groups defined)")
         else:
             col = 0
             row = []
-            for name in sorted(groups.keys()):
+            for name in sorted(g.name for g in all_groups):
                 row.append(f"{name:<20s}")
                 col += 1
                 if col >= 3:
@@ -317,16 +320,16 @@ def do_groups(char: Character, args: str) -> str:
                 lines.append(" ".join(row))
         return "\n".join(lines)
 
-    # Show specific group
-    from mud import registry
+    # Show specific group — INV-046 family 3b: same real table as the `all` branch.
+    from mud.skills.groups import get_group
 
-    groups = getattr(registry, "group_table", {})
-
-    if arg not in groups:
+    group = get_group(arg)
+    if group is None:
         return "No group of that name exists.\nType 'groups all' for a full listing."
 
-    group = groups[arg]
-    spells = getattr(group, "spells", [])
+    # ROM GroupType exposes `.skills` (the member skill/spell names); the old code
+    # read a nonexistent `.spells` attribute, so every group listed "(none)".
+    spells = getattr(group, "skills", [])
 
     lines = [f"Skills in group '{arg}':"]
     if not spells:
@@ -549,21 +552,9 @@ def do_teleport(char: Character, args: str) -> str:
 # Helper functions
 
 
-def _get_skill(char: Character, skill_name: str) -> int:
-    """Get character's skill level."""
-    pcdata = getattr(char, "pcdata", None)
-    if pcdata is None:
-        return 0
-
-    learned = getattr(pcdata, "learned", {})
-
-    from mud import registry
-
-    for sn, skill in enumerate(getattr(registry, "skill_table", [])):
-        if skill and (getattr(skill, "name", None) or "").lower() == skill_name.lower():
-            return learned.get(sn, 0)
-
-    return 0
+# INV-046 family 3b: a dead duplicate `_get_skill` once lived here, reading the
+# phantom registry.skill_table into pcdata.learned[sn]. It had no callers (the
+# canonical helper is thief_skills._get_skill / char.skills) and was removed.
 
 
 # DUPL-001a — canonical at mud/utils/messaging.py:send_to_char_buffered.

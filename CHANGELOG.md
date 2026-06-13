@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.21] — 2026-06-12
+
+### Fixed
+
+- **INV-046 family 3b — phantom stat-table aliases printed zero/empty in production** — a second
+  wave of immortal/info commands read attributes `mud/registry.py` never defines, via
+  `getattr(registry, "<name>", default)`, silently scanning the empty default on a live system.
+  Each reader is rewired to its real backing structure:
+  - `slookup` `skill_table` → `mud.skills.registry.skill_registry.skills` (name-keyed; ROM `sn`
+    preserved by enumerate); `slookup all` now lists the 134 loaded skills (`src/act_wiz.c:3191`).
+  - `owhere` `object_list` → `mud.models.obj.object_registry` (`src/act_wiz.c:1886`).
+  - `memory`/`dump` `areas`/`rooms`/`helps`/`socials` → `registry.area_registry` /
+    `registry.room_registry` / `mud.models.help.help_entries` / `mud.models.social.social_registry`
+    (counts were all 0; `src/db.c:3289`). The `dump` `areas`/`rooms` reads were missed by the
+    family-3a sweep and caught here.
+  - `count`/`whois` `player_registry` fallback → `character_registry` PC filter; `max_on_today`
+    promoted to a real `mud/registry.py` scalar mirroring ROM's static `max_on`
+    (`src/act_info.c:2228`).
+  - `unread` `note_boards` + `pcdata.last_read` → `mud.notes.board_registry` + `pcdata.last_notes`.
+  - `sset` and `peek`'s skill lookup `skill_table` + `pcdata.learned[sn]` → the canonical
+    name-keyed `char.skills` store (the old writes/reads hit a dict the game never consults, so
+    `sset` silently no-op'd and `peek` always resolved to 0). A dead duplicate
+    `remaining_rom._get_skill` (no callers) was removed.
+  - `socials` `social_table` → `mud.models.social.social_registry` (answered "No socials found."
+    despite 244 loaded; `src/act_info.c:606`).
+  - `groups all` / `groups <name>` `group_table` → `mud.skills.groups` (`list_groups`/`get_group`);
+    also fixed the `.spells` field name to the real `GroupType.skills`, so groups list their
+    member skills instead of "(none)".
+  - Layer-A guard (`tests/test_phantom_registry_convention.py`) extended to ban all 13 phantom
+    alias names; `max_on_today` and the five real `*_registry` dicts are deliberately allowed.
+  Tests: `tests/integration/test_inv046_family3b.py` (11). **INV-046 is now fully closed and
+  flipped to ✅ ENFORCED.** (INV-046 family 3b)
+
 ## [2.14.20] — 2026-06-12
 
 ### Fixed

@@ -346,28 +346,23 @@ def do_sset(char: Character, args: str) -> str:
     if pcdata is None:
         return "They don't have skill data.\n\r"
 
-    learned = getattr(pcdata, "learned", {})
+    # INV-046 family 3b: the real skill table is name-keyed
+    # mud.skills.registry.skill_registry.skills, and the learned store is
+    # char.skills (also name-keyed) — NOT a phantom registry.skill_table indexed
+    # into pcdata.learned[sn]. The old code wrote into a dict the game never read,
+    # so `sset <victim> <skill> <n>` silently did nothing in production.
+    from mud.skills.registry import skill_registry
 
     if skill_name == "all":
-        from mud import registry
-
-        skill_table = getattr(registry, "skill_table", [])
-        for sn, skill in enumerate(skill_table):
-            if skill and getattr(skill, "name", None):
-                learned[sn] = value
-        pcdata.learned = learned
+        for name in skill_registry.skills:
+            victim.skills[name] = value
         return ""
 
-    from mud import registry
-
-    skill_table = getattr(registry, "skill_table", [])
-
-    for sn, skill in enumerate(skill_table):
-        if skill and getattr(skill, "name", None):
-            if skill.name.lower() == skill_name or skill.name.lower().startswith(skill_name):
-                learned[sn] = value
-                pcdata.learned = learned
-                return ""
+    for name in skill_registry.skills:
+        lname = name.lower()
+        if lname == skill_name or lname.startswith(skill_name):
+            victim.skills[name] = value
+            return ""
 
     return "No such skill or spell.\n\r"
 

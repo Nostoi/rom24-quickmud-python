@@ -1,35 +1,38 @@
-# Session Status — 2026-06-12 — INV-046 PHANTOM-REGISTRY families 1+2+Layer-A+3a closed
+# Session Status — 2026-06-12 — INV-046 PHANTOM-REGISTRY fully closed (✅ ENFORCED)
 
 ## Current State
 
-- **Active focus**: INV-046 (PHANTOM-REGISTRY) — ⚠️ PARTIAL (families 1, 2, Layer-A, 3a closed; family 3b remains)
-- **Last completed**: INV-046 family 3a — `mfind`/`ofind` crash + `memory`/`dump` zero prototype counts (v2.14.20, commit `ac118d1d`)
-- **Pointer to latest summary**: [SESSION_SUMMARY_2026-06-12_INV046_FAMILIES_1_2_LAYER_A_3A.md](SESSION_SUMMARY_2026-06-12_INV046_FAMILIES_1_2_LAYER_A_3A.md)
+- **Active focus**: INV-046 (PHANTOM-REGISTRY) — ✅ ENFORCED (all families 1, 2, Layer-A, 3a, 3b closed)
+- **Last completed**: INV-046 family 3b — all phantom stat-table aliases rewired to real backing structures; Layer-A guard extended to all 13 phantom names (v2.14.21)
+- **Pointer to latest summary**: [SESSION_SUMMARY_2026-06-12_INV046_FAMILY_3B.md](SESSION_SUMMARY_2026-06-12_INV046_FAMILY_3B.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.20 |
-| Tests collected | 5648 |
-| INV-046 integration tests | 15 / 15 passing |
-| INV-046 status | ⚠️ PARTIAL — families 1+2+Layer-A+3a ✅; family 3b open |
-| Active focus | INV-046 PHANTOM-REGISTRY (family 3b — phantom stat-table aliases) |
+| Version | 2.14.21 |
+| Tests | 5655 passed / 4 skipped |
+| INV-046 family 3b tests | 11 / 11 passing |
+| INV-046 status | ✅ ENFORCED — phantom-registry bug class fully closed + grep-guarded |
+| Active focus | Cross-file invariants pass (per-file audit tracker exhausted) |
 
 ## Next Intended Task
 
-Close **INV-046 family 3b**: the remaining phantom stat-table alias reads. Most are
-`getattr`-with-default (not crash-severity, but silently print zero/empty in production).
-Key sites:
-- `imm_search.py:157,201,357-362` — `areas`, `rooms`, `helps`, `socials`, `skill_table`,
-  `object_list`, `social_registry`
-- `info_extended.py:127,131,252` — `player_registry`, `max_on_today`
-- `misc_player.py:236,272`, `imm_set.py:354,363` — `note_boards`, `skill_table`
-- `remaining_rom.py:303,323` — `group_table`; `misc_info.py:75` — `social_table`
+INV-046 is fully closed; the phantom-registry bug class is locked by the Layer-A guard
+(`tests/test_phantom_registry_convention.py`, all 13 phantom names). Pick up the cross-file
+invariants pass:
 
-Approach: extend the Layer-A guard (`tests/test_phantom_registry_convention.py`) to cover the
-family-3b alias set, then fix each call site to use the real registry attribute or return a
-`"Not yet implemented.\n\r"` stub. Then flip INV-046 to ✅ ENFORCED once all phantom reads are
-gone. Also: file WIZ-051 in `ACT_WIZ_C_AUDIT.md` (find_location missing get_obj_world fallback)
-and diagnose the two xdist flakes (`test_ac_clamping_for_negative_values`,
-`test_hpcnt_fires_exactly_once_per_violence_tick`).
+1. **File WIZ-051** in `docs/parity/ACT_WIZ_C_AUDIT.md` — `find_location` in `imm_commands.py`
+   falls back to `get_obj_world` for object vnums but the world-object fallback is missing — then
+   close it via `/rom-gap-closer`.
+2. **Diagnose the two xdist flakes** — `test_ac_clamping_for_negative_values` and
+   `test_hpcnt_fires_exactly_once_per_violence_tick` flaked under `-n auto` in an earlier session
+   (did not recur this session). Isolate with `-n0`, reproduce with `-n auto`.
+3. Resume probing for the next cross-file invariant: mob memory (`src/fight.c` ATTACK_BACK / hunt),
+   `weather_update` message fan-out order, `update_handler` pulse cadence vs the Python tick
+   scheduler. Use the probe-then-scope method (read ROM C contract → read Python equivalent →
+   one failing test), file as the next free INV-NNN or close as a single gap.
+
+**Process reminder:** after every phantom-class / list-walk fix, re-grep the whole `mud/` tree
+before trusting a hand-built site inventory — family 3a's inventory missed 2 sites that the
+family-3b post-fix re-grep caught.

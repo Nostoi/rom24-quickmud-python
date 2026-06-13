@@ -61,21 +61,13 @@ def do_socials(char: Character, args: str) -> str:
 
     ROM Reference: src/act_info.c do_socials (lines 606-625)
     """
-    # Try to import socials from various locations
-    socials = []
+    # INV-046 family 3b: socials live in mud.models.social.social_registry
+    # (name-keyed). The old code tried a nonexistent mud.data.social_data module,
+    # then fell back to a phantom registry.social_table — so this always answered
+    # "No socials found." in production despite 244 loaded socials.
+    from mud.models.social import social_registry
 
-    try:
-        from mud.data.social_data import SOCIALS
-
-        socials = list(SOCIALS.keys())
-    except ImportError:
-        try:
-            from mud import registry
-
-            soc_table = getattr(registry, "social_table", {})
-            socials = list(soc_table.keys())
-        except (ImportError, AttributeError):
-            pass
+    socials = list(social_registry.keys())
 
     if not socials:
         return "No socials found."

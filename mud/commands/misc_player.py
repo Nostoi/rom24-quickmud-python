@@ -230,22 +230,24 @@ def do_unread(char: Character, args: str) -> str:
     if getattr(char, "is_npc", False):
         return "NPCs can't read notes."
 
-    from mud import registry
+    # INV-046 family 3b: boards live in mud.notes.board_registry (name → Board)
+    # and the per-board read stamp in pcdata.last_notes (name → timestamp). The
+    # old code read phantom registry.note_boards / pcdata.last_read, so unread
+    # always reported "no note boards" in production.
+    from mud.notes import board_registry
 
-    # Get note boards
-    boards = getattr(registry, "note_boards", {})
-    if not boards:
+    if not board_registry:
         return "There are no note boards."
 
     lines = []
     total_unread = 0
 
     pcdata = getattr(char, "pcdata", None)
-    last_read = getattr(pcdata, "last_read", {}) if pcdata else {}
+    last_read = getattr(pcdata, "last_notes", {}) if pcdata else {}
 
-    for board_name, notes in boards.items():
+    for board_name, board in board_registry.items():
         last_time = last_read.get(board_name, 0)
-        unread = sum(1 for note in notes if getattr(note, "timestamp", 0) > last_time)
+        unread = sum(1 for note in board.notes if getattr(note, "timestamp", 0) > last_time)
         if unread > 0:
             lines.append(f"  {board_name}: {unread} unread note{'s' if unread != 1 else ''}")
             total_unread += unread
@@ -260,17 +262,20 @@ def do_unread(char: Character, args: str) -> str:
 
 
 def _get_skill(char: Character, skill_name: str) -> int:
-    """Get character's skill level."""
-    pcdata = getattr(char, "pcdata", None)
-    if pcdata is None:
+    """Get character's learned percentage for a skill.
+
+    INV-046 family 3b: the canonical learned store is ``char.skills`` (name-keyed),
+    NOT a phantom skill-table attribute indexed into ``pcdata.learned[sn]`` —
+    that combination read nothing in production, so ``peek`` (and any other gated
+    skill) always resolved to 0.
+    """
+    skills = getattr(char, "skills", None)
+    if not skills:
         return 0
 
-    learned = getattr(pcdata, "learned", {})
-
-    from mud import registry
-
-    for sn, skill in enumerate(getattr(registry, "skill_table", [])):
-        if skill and (getattr(skill, "name", None) or "").lower() == skill_name.lower():
-            return learned.get(sn, 0)
+    target = skill_name.lower()
+    for name, value in skills.items():
+        if name.lower() == target:
+            return int(value or 0)
 
     return 0
