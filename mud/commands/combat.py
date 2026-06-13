@@ -24,6 +24,7 @@ from mud.models.constants import (
     convert_flags_from_letters,
 )
 from mud.skills import skill_registry
+from mud.skills.say_spell import broadcast_spell_words
 from mud.utils import rng_mm
 from mud.world.vision import can_see_character
 
@@ -989,6 +990,14 @@ def do_cast(char: Character, args: str) -> str:
             and getattr(char, "master", None) is target
         ):
             return "You can't do that on your own follower."
+
+    # CAST-011: ROM src/magic.c:544-545 — `if (str_cmp(skill_table[sn].name,
+    # "ventriloquate")) say_spell(ch, sn);`. Every spell except ventriloquate
+    # broadcasts "$n utters the words, '...'" to the room (actual words to
+    # same-class observers, garbled to others; src/magic.c:199-204), fired after
+    # the mana check and before WAIT_STATE / the success roll.
+    if str(getattr(skill, "name", "")).lower() != "ventriloquate":
+        broadcast_spell_words(char, skill.name)
 
     # CAST-010: ROM src/magic.c:547 — WAIT_STATE(ch, skill_table[sn].beats), the
     # spell's *own* cast lag (fly=18, enchant armor=24, mass healing=36, …), not a

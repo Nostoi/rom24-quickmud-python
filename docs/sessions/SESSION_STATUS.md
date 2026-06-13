@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — CAST-010 (do_cast spell beats) + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007 (WAIT_STATE/check_improve sweep); cross-file invariants is the active pass
+# Session Status — 2026-06-13 — CAST-011 (do_cast say_spell broadcast) + CAST-010 (spell beats) + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: CAST-010 — `do_cast` (`mud/commands/combat.py`) cast-lag now
+- **Last completed**: CAST-011 — `do_cast` (`mud/commands/combat.py`) now broadcasts
+  the spell incantation to the room via `broadcast_spell_words(char, skill.name)`
+  (skipping `ventriloquate`), matching ROM `src/magic.c:544-545`
+  `if (str_cmp(name, "ventriloquate")) say_spell(ch, sn)`. The helper existed
+  (`mud/skills/say_spell.py`, with class-based garbling + INV-001 single-delivery)
+  but `do_cast` never called it — casting was silent to the room. Caster still
+  receives nothing (FINDING-013 preserved) (v2.14.44). Before that: CAST-010 —
+  `do_cast` (`mud/commands/combat.py`) cast-lag now
   uses the spell's own `beats` (`apply_wait_state(char, skill.beats)`) instead of a
   flat `get_pulse_violence()` (12), matching ROM `src/magic.c:547`
   `WAIT_STATE(ch, skill_table[sn].beats)`. 34 of ~120 spells have beats≠12 (fly=18,
@@ -123,8 +130,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.43 |
-| Tests | cast beats 1/1, spell-casting 45/45, full suite last green 5696 passed / 4 skipped (v2.14.42) |
+| Version | 2.14.44 |
+| Tests | cast say_spell 2/2, cast/spell suites 78/78, full suite last green 5697 passed / 4 skipped (v2.14.43) |
+| CAST-011 status | ✅ FIXED (do_cast broadcasts say_spell to room, except ventriloquate; was silent) |
 | CAST-010 status | ✅ FIXED (do_cast uses per-spell beats for WAIT_STATE, not flat PULSE_VIOLENCE) |
 | PASSWORD-001 status | ✅ FIXED (do_password wrong-pwd penalty uses UMAX, not =40 assignment) |
 | SAVE-001 status | ✅ FIXED (do_save applies WAIT_STATE(ch, 4*PULSE_VIOLENCE=48); stale false-✅ corrected) |

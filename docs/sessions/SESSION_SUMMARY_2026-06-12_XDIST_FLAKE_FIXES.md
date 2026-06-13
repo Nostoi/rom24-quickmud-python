@@ -483,6 +483,24 @@ and a test pinning the wrong RNG primitive).
   RED→GREEN — casting `fly` (beats 18) sets wait 18, not 12). Spell-casting +
   cast-listing suites 45/45.
 
+### `CAST-011` — ✅ FIXED (do_cast broadcasts the spell incantation to the room)
+
+- **Python**: `mud/commands/combat.py:do_cast` (before the WAIT_STATE block).
+- **ROM C**: `src/magic.c:544-545` — `if (str_cmp(skill_table[sn].name, "ventriloquate")) say_spell(ch, sn);` (say_spell broadcast: `src/magic.c:199-204`).
+- **Gap**: `do_cast` never broadcast the incantation, so casting was *silent* to the
+  room — other players never saw `"$n utters the words, '...'"`. The Python port
+  already had a complete `broadcast_spell_words` helper (`mud/skills/say_spell.py`,
+  class-based garbling + INV-001 single-delivery) but only a **test** called it;
+  the command flow didn't. Found by probing the do_cast flow right after CAST-010.
+- **Fix**: `do_cast` now calls `broadcast_spell_words(char, skill.name)` before the
+  WAIT_STATE, gated by `skill.name.lower() != "ventriloquate"` (ROM's `str_cmp`
+  exclusion). Placed after the PK gates (a safety-blocked cast returns before it,
+  as in ROM). Caster receives nothing (FINDING-013 silent-on-success preserved —
+  `broadcast_spell_words` targets other occupants only).
+- **Tests**: `tests/integration/test_cast011_say_spell_broadcast.py` (2, RED→GREEN —
+  normal spell broadcasts the spell name; ventriloquate is excluded). Cast/spell
+  regression suites 78/78.
+
 ## ROM WAIT_STATE-site cross-check (this session's method)
 
 Enumerated every `WAIT_STATE(ch, <value>)` site in the ROM `src/*.c` files and

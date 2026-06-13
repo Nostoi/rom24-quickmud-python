@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.44] — 2026-06-13
+
+### Fixed
+
+- **CAST-011 — spell casting is no longer silent to the room** — ROM `do_cast`
+  (`src/magic.c:544-545`) calls `say_spell(ch, sn)` for every spell except
+  `ventriloquate`, broadcasting `"$n utters the words, '...'"` to the room (actual
+  words to same-class observers, garbled syllables to others). The Python port had
+  a complete `broadcast_spell_words` helper but `do_cast` never invoked it, so
+  other players never saw anyone casting. Now `do_cast` calls
+  `broadcast_spell_words(char, skill.name)` before the WAIT_STATE, skipping
+  `ventriloquate`. The caster still receives nothing (FINDING-013 silent-on-success
+  preserved). Test: `tests/integration/test_cast011_say_spell_broadcast.py` (2).
+
 ## [2.14.43] — 2026-06-13
 
 ### Fixed
