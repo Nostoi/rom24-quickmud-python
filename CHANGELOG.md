@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.78] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-033 — know_alignment renders via ROM `act("$N …")` semantics** — ROM
+  `spell_know_alignment` (`src/magic.c:3674`) emits every alignment-band message via
+  a single `act(msg, ch, NULL, victim, TO_CHAR)`. The Python diverged three ways:
+  NPC victims showed the baked keyword instead of the capitalized PERS short_descr;
+  it invented a "You …" self-variant (ROM has none — a self-cast shows the caster's
+  own name); and it dropped ROM's literal "…pure evil!." typo (rendered "evil!").
+  All three fixed via `act_format`; the "evil!." typo is preserved verbatim.
+  Existing band tests re-baselined across three files. Test:
+  `tests/integration/test_magic033_know_alignment_act_semantics.py`.
+
 ## [2.14.77] — 2026-06-13
 
 ### Fixed

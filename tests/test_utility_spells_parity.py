@@ -4,6 +4,7 @@ from mud.models.character import Character, SpellEffect
 from mud.models.constants import ExtraFlag, ItemType, Position
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
+from mud.models.room import Room
 from mud.skills.handlers import dispel_magic, identify, know_alignment, locate_object
 from mud.utils import rng_mm
 
@@ -77,8 +78,13 @@ def test_identify_container():
 
 
 def test_know_alignment_pure_good():
+    # MAGIC-033: know_alignment renders act("$N …"); the caster needs to see the
+    # target (a lit room) for PERS to resolve to the name.
+    room = Room(vnum=98013, name="Sanctum")
     caster = make_character(name="Caster")
     target = make_character(name="Saint", alignment=1000)
+    room.add_character(caster)
+    room.add_character(target)
 
     know_alignment(caster, target)
 
@@ -86,12 +92,16 @@ def test_know_alignment_pure_good():
 
 
 def test_know_alignment_pure_evil():
+    room = Room(vnum=98014, name="Sanctum")
     caster = make_character(name="Caster")
     target = make_character(name="Demon", alignment=-1000)
+    room.add_character(caster)
+    room.add_character(target)
 
     know_alignment(caster, target)
 
-    assert "Demon is the embodiment of pure evil!" in caster.messages
+    # MAGIC-033: ROM's literal "evil!." typo (src/magic.c:3688).
+    assert "Demon is the embodiment of pure evil!." in caster.messages
 
 
 def test_locate_object_basic():

@@ -305,7 +305,8 @@ def test_faerie_fire_rejects_duplicates() -> None:
         (0, "Subject doesn't have a firm moral commitment."),
         (-200, "Subject lies to his friends."),
         (-500, "Subject is a black-hearted murderer."),
-        (-900, "Subject is the embodiment of pure evil!"),
+        # MAGIC-033: ROM's literal "evil!." typo (src/magic.c:3688).
+        (-900, "Subject is the embodiment of pure evil!."),
     ],
 )
 def test_know_alignment_reports_aura(alignment: int, expected: str) -> None:
@@ -337,11 +338,12 @@ def test_know_alignment_reports_aura(alignment: int, expected: str) -> None:
         (100, "Subject doesn't have a firm moral commitment."),
         (-100, "Subject lies to her friends."),
         (-350, "Subject is a black-hearted murderer."),
-        (-700, "Subject is the embodiment of pure evil!"),
+        # MAGIC-033: ROM's literal "evil!." typo (src/magic.c:3688).
+        (-700, "Subject is the embodiment of pure evil!."),
     ],
 )
 def test_know_alignment_bounds_edges(alignment: int, expected: str) -> None:
-    caster = Character(name="Oracle", level=22, is_npc=False)
+    caster = Character(name="Oracle", level=22, is_npc=False, sex=int(Sex.MALE))
     target = Character(
         name="Subject",
         level=18,
@@ -365,5 +367,7 @@ def test_know_alignment_bounds_edges(alignment: int, expected: str) -> None:
 
     self_message = skill_handlers.know_alignment(caster)
 
-    assert self_message == "You lie to your friends."
-    assert caster.messages[-1] == "You lie to your friends."
+    # MAGIC-033: ROM has no "You …" self-variant; act("$N …") renders the caster's
+    # own name (PERS(ch, ch)).
+    assert self_message == "Oracle lies to his friends."
+    assert caster.messages[-1] == "Oracle lies to his friends."

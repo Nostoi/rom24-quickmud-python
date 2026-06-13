@@ -5857,27 +5857,29 @@ def know_alignment(caster: Character, target: Character | None = None) -> str:
         raise ValueError("know_alignment requires a target")
 
     alignment = int(getattr(victim, "alignment", 0) or 0)
-    name = _character_name(victim)
-    possessive = _possessive_pronoun(victim)
 
-    def _choose(other: str, self_msg: str) -> str:
-        return self_msg if victim is caster else other
-
+    # MAGIC-033: ROM spell_know_alignment (src/magic.c:3674-3690) selects a band
+    # message and emits it with a SINGLE act(msg, ch, NULL, victim, TO_CHAR) — every
+    # tier starts with $N = PERS(victim) (NPC short_descr, capitalized) and the
+    # "lies to $S friends" tier uses $S = victim's possessive. There is NO "You …"
+    # self-variant (a self-cast renders the caster's own name via PERS). The
+    # most-evil tier's "evil!." is ROM's literal typo, preserved verbatim.
     if alignment > 700:
-        message = _choose(f"{name} has a pure and good aura.", "You have a pure and good aura.")
+        template = "$N has a pure and good aura."
     elif alignment > 350:
-        message = _choose(f"{name} is of excellent moral character.", "You are of excellent moral character.")
+        template = "$N is of excellent moral character."
     elif alignment > 100:
-        message = _choose(f"{name} is often kind and thoughtful.", "You are often kind and thoughtful.")
+        template = "$N is often kind and thoughtful."
     elif alignment > -100:
-        message = _choose(f"{name} doesn't have a firm moral commitment.", "You don't have a firm moral commitment.")
+        template = "$N doesn't have a firm moral commitment."
     elif alignment > -350:
-        message = _choose(f"{name} lies to {possessive} friends.", "You lie to your friends.")
+        template = "$N lies to $S friends."
     elif alignment > -700:
-        message = _choose(f"{name} is a black-hearted murderer.", "You are a black-hearted murderer.")
+        template = "$N is a black-hearted murderer."
     else:
-        message = _choose(f"{name} is the embodiment of pure evil!", "You are the embodiment of pure evil!")
+        template = "$N is the embodiment of pure evil!."
 
+    message = act_format(template, recipient=caster, actor=caster, arg2=victim)
     _send_to_char(caster, message)
     return message
 

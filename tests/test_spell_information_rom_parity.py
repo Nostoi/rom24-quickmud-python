@@ -292,12 +292,18 @@ def test_identify_name_falls_back_to_short_descr_when_name_missing() -> None:
         (0, "Subject doesn't have a firm moral commitment."),
         (-200, "Subject lies to his friends."),
         (-500, "Subject is a black-hearted murderer."),
-        (-900, "Subject is the embodiment of pure evil!"),
+        # MAGIC-033: ROM's literal "evil!." typo (src/magic.c:3688).
+        (-900, "Subject is the embodiment of pure evil!."),
     ],
 )
 def test_know_alignment_reports_correct_band_message(alignment: int, expected: str) -> None:
+    # MAGIC-033: know_alignment renders act("$N …") — $N = PERS(victim), which needs
+    # the caster to see the target (a lit room), else PERS masks to "Someone".
+    room = Room(vnum=98010, name="Sanctum")
     caster = make_character(name="Diviner", level=24)
     target = make_character(name="Subject", level=20, alignment=alignment, sex=int(Sex.MALE))
+    room.add_character(caster)
+    room.add_character(target)
 
     message = know_alignment(caster, target)
 
@@ -306,21 +312,28 @@ def test_know_alignment_reports_correct_band_message(alignment: int, expected: s
 
 
 def test_know_alignment_uses_female_pronoun_in_negative_band() -> None:
+    room = Room(vnum=98011, name="Sanctum")
     caster = make_character(name="Diviner", level=24)
     target = make_character(name="Subject", level=20, alignment=-200, sex=int(Sex.FEMALE))
+    room.add_character(caster)
+    room.add_character(target)
 
     message = know_alignment(caster, target)
 
     assert message == "Subject lies to her friends."
 
 
-def test_know_alignment_self_message_uses_you() -> None:
-    caster = make_character(name="Diviner", level=24, alignment=-120)
+def test_know_alignment_self_message_uses_pers_name() -> None:
+    # MAGIC-033: ROM has NO "You …" self-variant — act("$N …") renders the caster's
+    # own name (PERS(ch, ch) = name) on a self-cast.
+    room = Room(vnum=98012, name="Sanctum")
+    caster = make_character(name="Diviner", level=24, alignment=-120, sex=int(Sex.MALE))
+    room.add_character(caster)
 
     message = know_alignment(caster)
 
-    assert message == "You lie to your friends."
-    assert caster.messages[-1] == "You lie to your friends."
+    assert message == "Diviner lies to his friends."
+    assert caster.messages[-1] == "Diviner lies to his friends."
 
 
 # ==========================================================================
