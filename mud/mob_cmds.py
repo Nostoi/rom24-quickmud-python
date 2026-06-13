@@ -1268,13 +1268,14 @@ def do_mpdamage(ch: Character, argument: str) -> None:
 
 
 def do_mpremember(ch: Character, argument: str) -> None:
+    # ROM src/mob_cmds.c:1155-1164 — empty arg hits the bug() branch and leaves
+    # mprog_target untouched; a non-empty arg assigns the get_char_world result
+    # UNCONDITIONALLY, so a failed lookup (NULL) clears any stale target rather
+    # than preserving it (MOBCMD-019).
     target_name = argument.strip()
     if not target_name:
         return
-    target = _find_char_world(target_name)
-    if target is None:
-        return
-    ch.mprog_target = target
+    ch.mprog_target = _find_char_world(target_name)
 
 
 def do_mpforget(ch: Character, argument: str) -> None:

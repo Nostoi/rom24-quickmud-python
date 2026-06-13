@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.24] — 2026-06-12
+
+### Fixed
+
+- **MOBCMD-019 — `mob remember <unresolved>` left a stale mprog_target** — ROM
+  `do_mpremember` (`src/mob_cmds.c:1155-1164`) assigns
+  `ch->mprog_target = get_char_world(ch, arg)` *unconditionally* for a non-empty
+  argument, so a lookup that finds no one returns `NULL` and **clears** the
+  remembered target. The Python port early-returned on a failed lookup, leaving
+  the previous target in place — `$q`/`$Q` mobprog substitution codes would then
+  resolve to a departed character. `do_mpremember` now assigns the lookup result
+  unconditionally for non-empty args (the empty-arg `bug()` branch still leaves
+  the target untouched). Test:
+  `tests/integration/test_mob_cmds_remember.py::test_remember_unknown_name_clears_stale_target`.
+
 ## [2.14.23] — 2026-06-12
 
 ### Fixed
