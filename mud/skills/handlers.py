@@ -3507,14 +3507,12 @@ def dispel_evil(caster: Character, target: Character | None = None) -> int:
         victim = caster
 
     if is_good(victim):
-        victim_name = getattr(victim, "name", None) or "Someone"
+        # MAGIC-036: ROM act("Mota protects $N.", ch, NULL, victim, TO_ROOM)
+        # (magic.c:2024) — per-recipient PERS, excludes the actor (caster). The
+        # earlier Python baked the keyword AND over-delivered to the caster.
         room = getattr(caster, "room", None)
         if room is not None:
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is caster:
-                    continue
-                _send_to_char(occupant, f"Mota protects {victim_name}.")
-        _send_to_char(caster, f"Mota protects {victim_name}.")
+            act_to_room(room, "Mota protects $N.", caster, arg2=victim, exclude=caster)
         return 0
 
     if is_neutral(victim):
@@ -3555,14 +3553,12 @@ def dispel_good(caster: Character, target: Character | None = None) -> int:
         victim = caster
 
     if is_evil(victim):
-        victim_name = getattr(victim, "name", None) or "Someone"
+        # MAGIC-036: ROM act("$N is protected by $S evil.", ch, NULL, victim, TO_ROOM)
+        # (magic.c:2053) — $N PERS + $S victim possessive, excludes the actor. The
+        # earlier Python baked "name's evil" AND over-delivered to the caster.
         room = getattr(caster, "room", None)
         if room is not None:
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is caster:
-                    continue
-                _send_to_char(occupant, f"{victim_name} is protected by {victim_name}'s evil.")
-        _send_to_char(caster, f"{victim_name} is protected by {victim_name}'s evil.")
+            act_to_room(room, "$N is protected by $S evil.", caster, arg2=victim, exclude=caster)
         return 0
 
     if is_neutral(victim):

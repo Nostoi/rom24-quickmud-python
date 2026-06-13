@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.81] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-036 — dispel_evil/good TO_ROOM "protected" lines use PERS + `$S`, exclude
+  actor** — ROM `spell_dispel_evil` is_good `act("Mota protects $N.", …, TO_ROOM)`
+  (`src/magic.c:2024`) and `spell_dispel_good` is_evil `act("$N is protected by $S
+  evil.", …, TO_ROOM)` (`:2053`). The Python baked the keyword `name`, used
+  "name's evil" instead of `$S` (victim possessive), and over-delivered the line to
+  the caster (ROM TO_ROOM excludes the actor). Both branches now use `act_to_room`
+  with actor exclusion — an evil sexless NPC reads "A green goblin is protected by
+  its evil." to bystanders only. Test:
+  `tests/integration/test_magic036_dispel_to_room_pers.py`.
+
 ## [2.14.80] — 2026-06-13
 
 ### Fixed
