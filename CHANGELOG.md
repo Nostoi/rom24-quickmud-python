@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.87] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-042 — faerie_fog's "$n is revealed!" broadcast uses per-recipient PERS** —
+  ROM `spell_faerie_fog` (`src/magic.c:2850`) reveals each hidden character with
+  `act("$n is revealed!", ich, …, TO_ROOM)` — the actor is the revealed char, so
+  `$n` = PERS(ich), capitalized and masked per recipient. The Python passed a
+  pre-baked `f"{_character_name(occupant)} is revealed!"` string to `_act_room`, so
+  a bystander watching an NPC "a green goblin" get revealed saw the lowercase
+  keyword vs ROM "A green goblin is revealed!". Now uses `act_to_room`. Test:
+  `tests/integration/test_magic042_faerie_fog_revealed_pers.py`.
+
 ## [2.14.86] — 2026-06-13
 
 ### Fixed

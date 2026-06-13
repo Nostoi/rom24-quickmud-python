@@ -4301,12 +4301,9 @@ def faerie_fog(caster: Character, target: Character | None = None) -> bool:
             occupant.remove_affect(AffectFlag.INVISIBLE)
             occupant.remove_affect(AffectFlag.SNEAK)
 
-        _act_room(
-            room,
-            f"{_character_name(occupant)} is revealed!",
-            occupant,
-            exclude=occupant,
-        )
+        # MAGIC-042: ROM act("$n is revealed!", ich, NULL, NULL, TO_ROOM)
+        # (magic.c:2850) — actor is the revealed char, per-recipient PERS, excluded.
+        act_to_room(room, "$n is revealed!", occupant, exclude=occupant)
         _send_to_char(occupant, "You are revealed!")
         revealed_any = True
 
