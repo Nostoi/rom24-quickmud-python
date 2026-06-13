@@ -706,6 +706,16 @@ def _auto_quit_character(character: Character) -> None:
 
     clear_extract_target_refs(character)
 
+    # INV-020 step (iv): ROM extract_char (src/handler.c:2121) calls
+    # stop_fighting(ch, TRUE). The fBoth flag clears `fighting` on the
+    # extracted char AND on every char fighting it, resetting their
+    # position — otherwise a mob keeps a dangling `fighting` pointer at
+    # the now-unlinked PC. Run while the char is still registry-linked,
+    # mirroring ROM's char_list walk order (loop-then-unlink).
+    from mud.combat.engine import stop_fighting
+
+    stop_fighting(character, both=True)
+
     room = getattr(character, "room", None)
     if room is not None:
         remover = getattr(room, "remove_character", None)

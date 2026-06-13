@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.27] — 2026-06-13
+
+### Fixed
+
+- **INV-020 step (iv) — the PC-quit and disconnect extract legs now call
+  `stop_fighting(ch, both=True)`** — ROM's `extract_char` cleanup chain
+  (`src/handler.c:2117-2122`) ends with `stop_fighting(ch, TRUE)`, whose `fBoth`
+  flag clears `fighting` on the extracted char AND on every char fighting it
+  (resetting their position). The Python mob-extract leg (`_extract_character`)
+  already did this, but the link-dead void-quit leg
+  (`game_loop.py:_auto_quit_character`) and the clean-disconnect teardown
+  (`connection.py:_disconnect_extract_cleanup`) ran only steps i–iii — so a mob
+  still fighting a PC who quit/disconnected kept a dangling `fighting` pointer at
+  the now-unlinked character, which the next combat tick would dereference. Both
+  legs now run the full 4-step chain. Tests:
+  `tests/integration/test_inv020_extract_quit_cleanup.py::test_void_quit_stops_attackers_fighting`
+  + `::test_disconnect_stops_attackers_fighting`.
+
 ## [2.14.26] — 2026-06-13
 
 ### Fixed

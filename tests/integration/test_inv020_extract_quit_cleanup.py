@@ -177,3 +177,61 @@ def test_disconnect_calls_die_follower() -> None:
         "ROM src/act_comm.c:1673-1674 — die_follower calls stop_follower "
         f"for every fch.master == ch. Got master={follower.master!r}"
     )
+
+
+def test_void_quit_stops_attackers_fighting() -> None:
+    """``_auto_quit_character`` (link-dead extract leg) must call
+    ``stop_fighting(ch, both=True)`` — step (iv) of ROM's extract_char
+    cleanup chain (``src/handler.c:2121``). Without it, a mob still
+    fighting the extracted PC keeps ``fighting`` pointing at a character
+    that has been removed from the registry/room — a dangling-pointer
+    hazard the next combat tick would dereference.
+    """
+    room = Room(vnum=99954, name="Quit fight probe")
+    quitter = Character(name="Quitter", is_npc=False, position=Position.FIGHTING)
+    quitter.desc = None
+    quitter.connection = None
+    attacker = Character(name="Attacker", is_npc=True, position=Position.FIGHTING)
+    attacker.default_pos = int(Position.STANDING)
+
+    room.add_character(quitter)
+    room.add_character(attacker)
+    character_registry.extend([quitter, attacker])
+
+    quitter.fighting = attacker
+    attacker.fighting = quitter
+
+    _auto_quit_character(quitter)
+
+    assert attacker.fighting is None, (
+        "ROM src/handler.c:2121 — extract_char calls stop_fighting(ch, TRUE); "
+        "fBoth clears every fch->fighting == ch. The link-dead quit leg left "
+        f"the attacker fighting an extracted char. Got fighting={attacker.fighting!r}"
+    )
+
+
+def test_disconnect_stops_attackers_fighting() -> None:
+    """The clean-disconnect teardown (``_disconnect_extract_cleanup``)
+    must also run ``stop_fighting(ch, both=True)`` so a mob fighting the
+    disconnected PC does not keep a dangling ``fighting`` pointer. Same
+    step (iv) of the extract_char chain, different trigger.
+    """
+    room = Room(vnum=99955, name="Disconnect fight probe")
+    leaver = Character(name="Leaver", is_npc=False, position=Position.FIGHTING)
+    attacker = Character(name="DiscoAttacker", is_npc=True, position=Position.FIGHTING)
+    attacker.default_pos = int(Position.STANDING)
+
+    room.add_character(leaver)
+    room.add_character(attacker)
+    character_registry.extend([leaver, attacker])
+
+    leaver.fighting = attacker
+    attacker.fighting = leaver
+
+    _disconnect_extract_cleanup(leaver)
+
+    assert attacker.fighting is None, (
+        "ROM src/handler.c:2121 — extract_char calls stop_fighting(ch, TRUE). "
+        "The disconnect cleanup leg left the attacker fighting an extracted "
+        f"char. Got fighting={attacker.fighting!r}"
+    )

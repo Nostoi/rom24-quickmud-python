@@ -180,6 +180,7 @@ def _disconnect_extract_cleanup(char: Character) -> None:
     """
     from mud.characters.follow import die_follower
     from mud.combat.death import _nuke_pets, clear_extract_target_refs
+    from mud.combat.engine import stop_fighting
 
     _nuke_pets(char, room=getattr(char, "room", None))
     if hasattr(char, "pet"):
@@ -191,6 +192,11 @@ def _disconnect_extract_cleanup(char: Character) -> None:
     # `mprog_target` self-clear quirk. Every extract path must do this,
     # not just _extract_character (same multi-path class as INV-020).
     clear_extract_target_refs(char)
+    # INV-020 step (iv): ROM extract_char (src/handler.c:2121) calls
+    # stop_fighting(ch, TRUE) — fBoth clears `fighting` on the extracted
+    # char and on every char fighting it, so a mob does not keep a
+    # dangling `fighting` pointer at the disconnected PC.
+    stop_fighting(char, both=True)
 
 
 def announce_wiznet_new_player(
