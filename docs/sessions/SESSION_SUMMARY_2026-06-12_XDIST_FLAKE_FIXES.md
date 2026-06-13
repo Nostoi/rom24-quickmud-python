@@ -780,6 +780,27 @@ and a test pinning the wrong RNG primitive).
   short_descr rather than masking to "Someone"). Existing trip tests use substring
   so unaffected. Skill-combat suites 112/112.
 
+### `MAGIC-016` — ✅ FIXED (armor spell cross-target lines use `$N` PERS short_descr)
+
+- **Python**: `mud/skills/handlers.py:armor`.
+- **ROM C**: `src/magic.c:763` `act("$N is already armored.", …)` + `:776` `act("$N is protected by your magic.", …)`.
+- **Gap**: both cross-target TO_CHAR lines baked `_character_name(target)` (the
+  keyword `name` for an NPC) where ROM `$N` = PERS = NPC short_descr (capitalized).
+  Casting armor on NPC "goblin"/"a green goblin" showed "goblin is protected by your
+  magic." vs ROM "A green goblin is protected by your magic." Self-cast and PC-victim
+  lines were already correct (PERS=name). Found applying the `act()`-rendering lens
+  to the spell handlers.
+- **Fix**: both via `act_format("$N …", recipient=caster, actor=caster, arg2=target)`.
+- **Tests**: `tests/integration/test_magic_002_armor_message.py::test_magic016_armor_cross_target_npc_uses_pers_shortdescr_capitalized`
+  (NPC → "A green goblin is protected by your magic."). Existing PC-victim ("Bob")
+  tests stay green. Armor+buffs suites 30/30.
+- **⚠️ Filed for next agent (MAGIC-016 cluster):** the identical baked-name pattern
+  recurs across many spell handlers — `shield`, `frenzy`/divine-favor (magic.c:845/863),
+  `change_sex` (magic.c:1321 — replicate the **literal `(?)` ROM quirk** + `$s`),
+  cure_blindness/disease/poison "doesn't appear to be …" lines (~2703/2759/2814),
+  curse-object "glows with a … aura" lines (~2874/2887/2891, `$p`). Each needs its
+  ROM `act()` code verified before conversion. See the MAGIC-016 row in `MAGIC_C_AUDIT.md`.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.60] — 2026-06-13
+
+### Fixed
+
+- **MAGIC-016 — `armor` spell cross-target messages use the victim's PERS
+  short_descr** — ROM `spell_armor` (`src/magic.c:763,776`) renders
+  `act("$N is already armored.", …)` and `act("$N is protected by your magic.", …)`
+  with `$N` = PERS = the NPC short_descr (capitalized). The Python `armor` handler
+  baked the keyword `name`, so casting armor on an NPC "goblin"/"a green goblin"
+  showed "goblin is protected by your magic." vs ROM "A green goblin is protected
+  by your magic." Rendered both via `act_format`. (Self-cast and PC-victim lines
+  were already correct.) The broader baked-name spell-handler cluster (shield,
+  frenzy/divine-favor, change_sex, cures, curse-object) is tracked in
+  `MAGIC_C_AUDIT.md` for a verified follow-up. Test:
+  `tests/integration/test_magic_002_armor_message.py::test_magic016_armor_cross_target_npc_uses_pers_shortdescr_capitalized`.
+
 ## [2.14.59] — 2026-06-13
 
 ### Fixed

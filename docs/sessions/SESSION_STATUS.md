@@ -1,10 +1,20 @@
-# Session Status — 2026-06-13 — TRIP-001 (trip blocking msgs $S/$N pronouns) + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — MAGIC-016 (armor spell $N PERS) + TRIP-001 + FIGHT-063/064 + GET-014 + SAC-006 + GIVE-002 + GOSSIP-001/002 + TELL-008 + EMOTE-005 + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: TRIP-001 — `do_trip` (`mud/skills/handlers.py:trip`) three
+- **Last completed**: MAGIC-016 — `spell_armor` (`mud/skills/handlers.py:armor`)
+  cross-target lines "$N is already armored." / "$N is protected by your magic."
+  now render via `act_format` ($N = PERS NPC short_descr + cap) instead of the baked
+  keyword name, matching ROM `act(..., ch, NULL, victim, TO_CHAR)`
+  (`src/magic.c:763,776`). Casting armor on NPC "goblin"/"a green goblin" now shows
+  "A green goblin is protected by your magic." (was "goblin is …"). **⚠️ Filed
+  cluster (next agent):** the same baked-name pattern in shield / frenzy-divine-favor
+  / change_sex (literal `(?)` ROM quirk!) / cure_blindness-disease-poison /
+  curse-object handlers — each needs its ROM act() code verified before conversion
+  (see MAGIC-016 row in MAGIC_C_AUDIT.md) (v2.14.60). Before that: TRIP-001 —
+  `do_trip` (`mud/skills/handlers.py:trip`) three
   blocking messages now render via `act_format`: "$S feet aren't on the ground."
   (his/her/its, was "Their"), "$N is already down." (PERS short_descr + cap, was
   the keyword name), "$N is your beloved master." (was "They are your beloved
@@ -240,8 +250,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.59 |
-| Tests | skill-combat 112/112, full suite last green 5715 passed / 4 skipped (v2.14.58) |
+| Version | 2.14.60 |
+| Tests | armor+buffs 30/30, full suite last green 5716 passed / 4 skipped (v2.14.59) |
+| MAGIC-016 status | ✅ FIXED armor (`$N` PERS); ⚠️ shield/frenzy/change_sex/cures/curse baked-name cluster OPEN |
 | TRIP-001 status | ✅ FIXED (do_trip 3 blocking msgs use $S/$N pronouns via act_format) |
 | FIGHT-064 status | ✅ FIXED (kill/murder safety msgs use $N PERS short_descr; both combat.py + murder.py copies) |
 | FIGHT-063 status | ✅ FIXED (backstab hurt msg uses $N PERS short_descr + cap via act_format) |

@@ -93,6 +93,30 @@ def test_armor_cross_target_messages_caster_and_victim():
     assert victim.armor == [80, 80, 80, 80]
 
 
+def test_magic016_armor_cross_target_npc_uses_pers_shortdescr_capitalized():
+    """MAGIC-016 — ROM act("$N is protected by your magic.", ch, NULL, victim,
+    TO_CHAR): $N = PERS(victim) = the NPC short_descr (not keyword name), cap buf[0]."""
+    room = Room(vnum=99110, name="Arena")
+    caster = _mage("Caster", room)
+    goblin = Character(
+        name="goblin",
+        is_npc=True,
+        short_descr="a green goblin",
+        level=10,
+        position=int(Position.STANDING),
+        armor=[100, 100, 100, 100],
+    )
+    goblin.room = room
+    room.people.append(goblin)
+    goblin.messages = []
+
+    rng_mm.seed_mm(42)
+    do_cast(caster, "armor goblin")
+
+    # ROM $N -> short_descr "a green goblin", capitalized -> "A green goblin …".
+    assert any("A green goblin is protected by your magic." in m for m in caster.messages), caster.messages
+
+
 def test_armor_already_affected_uses_rom_message():
     """The already-affected branch is ROM's "You are already armored." for a
     self-cast (src/magic.c:758-763), not the legacy "They are already protected.\" """

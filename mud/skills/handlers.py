@@ -1346,11 +1346,13 @@ def armor(caster: Character, target: Character | None = None) -> bool:
         raise ValueError("armor requires a target")
 
     if target.has_spell_effect("armor"):
-        # mirroring ROM src/magic.c:758-763
+        # mirroring ROM src/magic.c:758-763. MAGIC-016: the cross-target line is
+        # act("$N is already armored.", ch, NULL, victim, TO_CHAR) — $N = PERS
+        # (NPC short_descr), cap buf[0]; not the baked keyword name.
         if target is caster:
             _send_to_char(caster, "You are already armored.")
         else:
-            _send_to_char(caster, f"{_character_name(target)} is already armored.")
+            _send_to_char(caster, act_format("$N is already armored.", recipient=caster, actor=caster, arg2=target))
         return False
 
     level = max(int(getattr(caster, "level", 0) or 0), 0)
@@ -1363,7 +1365,8 @@ def armor(caster: Character, target: Character | None = None) -> bool:
     # only when ch != victim.
     _send_to_char(target, "You feel someone protecting you.")
     if caster is not target:
-        _send_to_char(caster, f"{_character_name(target)} is protected by your magic.")
+        # MAGIC-016: ROM act("$N is protected by your magic.", ch, NULL, victim, TO_CHAR).
+        _send_to_char(caster, act_format("$N is protected by your magic.", recipient=caster, actor=caster, arg2=target))
     return True
 
 
