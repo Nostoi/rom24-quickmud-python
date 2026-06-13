@@ -673,10 +673,15 @@ def do_emote(char: Character, args: str) -> str:
         # (`emote bows` tripping an NPC scripted on "bows").  Messages still
         # reach PCs (the fanout above); the trigger must not fire.
 
-    # mirroring ROM src/act_comm.c:1092 — `act("$n $T", ..., TO_CHAR)`.
-    # ROM act() substitutes `$n` to "You" on the TO_CHAR branch so the
-    # actor sees `"You <args>"` rather than their own name (EMOTE-002).
-    return capitalize_act_line(f"You {args}")
+    # EMOTE-005 (corrects EMOTE-002): mirroring ROM src/act_comm.c:1092 —
+    # `act("$n $T", ch, NULL, argument, TO_CHAR)`. ROM act() renders `$n` via
+    # PERS(ch, to) with NO `$n`->"You" conversion (do_say proves it by writing a
+    # LITERAL "You say" for self-lines). For TO_CHAR, PERS(ch, ch) = the actor's
+    # own name (a char always sees itself), so the emoter sees "<Name> <args>",
+    # matching the TO_ROOM leg — NOT "You <args>".
+    from mud.world.vision import pers as _pers
+
+    return capitalize_act_line(f"{_pers(char, char)} {args}")
 
 
 def do_pose(char: Character, args: str) -> str:

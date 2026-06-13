@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — COMPARE-001 (do_compare wear_flags match) + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — EMOTE-005 (emote self shows name not "You", reverts EMOTE-002) + COMPARE-001 + FIGHT-062 + REPORT-001 + CONSIDER-001 + PRACTICE-001 + CAST-010/011 + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: COMPARE-001 — `do_compare` (`mud/commands/compare.py`)
+- **Last completed**: EMOTE-005 — `do_emote` (`mud/commands/communication.py`) self
+  line now renders the actor's OWN NAME via `pers(char, char)` (e.g. "Bob nods"),
+  not "You nods" — **correcting the false-premise EMOTE-002**. ROM `act()` does no
+  `$n`→"You" conversion; `$n` → `PERS(ch, to)`, and `PERS(ch, ch)` = the actor's
+  name (a char always sees itself). Proof: ROM `do_say` writes a *literal*
+  "You say '%s'" for its self-line, redundant if `act()` did the conversion. Stock
+  ROM emote shows the emoter their own name. Found by re-verifying the EMOTE-002 ✅
+  against source (AGENTS.md re-verify rule); inverted its test (v2.14.50). Before
+  that: COMPARE-001 — `do_compare` (`mud/commands/compare.py`)
   arg2-empty equipped-match (`_find_equipped_match`) now requires the **same
   item_type AND overlapping wear_flags** (`& ~ITEM_TAKE`), matching ROM
   `src/act_info.c:2323-2332`. The old code returned the first equipped non-weapon
@@ -164,8 +172,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.49 |
-| Tests | compare wear-flags 2/2, compare suite 29/29, full suite last green 5705 passed / 4 skipped (v2.14.48) |
+| Version | 2.14.50 |
+| Tests | emote parity 32/32, full suite last green 5707 passed / 4 skipped (v2.14.49) |
+| EMOTE-005 status | ✅ FIXED (emote self renders actor name via PERS, not "You"; reverts false-premise EMOTE-002) |
 | COMPARE-001 status | ✅ FIXED (do_compare equipped-match requires same item_type + overlapping wear_flags) |
 | FIGHT-062 status | ✅ FIXED (do_flee "$n has fled!" uses act_to_room — PERS mask + single-delivery + TRIG_ACT) |
 | REPORT-001 status | ✅ FIXED (do_report room broadcast uses act_to_room — PERS mask + single-delivery + TRIG_ACT) |

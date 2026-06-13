@@ -82,9 +82,11 @@ class TestEmoteCommand:
         """Test emote displays custom action to room."""
         result = do_emote(alice, "smiles happily")
 
-        # ROM src/act_comm.c:1092 — `act("$n $T", ..., TO_CHAR)` substitutes
-        # `$n` to "You" on the self branch (EMOTE-002).
-        assert result == "You smiles happily"
+        # EMOTE-005 (corrects EMOTE-002): ROM src/act_comm.c:1092 —
+        # `act("$n $T", ..., TO_CHAR)` renders `$n` via PERS(ch, ch) = the actor's
+        # OWN NAME (act() has no `$n`->"You" conversion; do_say proves it by using a
+        # literal "You say" string). The emoter sees "Alice smiles happily".
+        assert result == "Alice smiles happily"
 
     def test_emote_requires_argument(self, alice):
         """Test emote without argument shows error."""

@@ -599,6 +599,27 @@ and a test pinning the wrong RNG primitive).
   renders a real comparison). Existing 10 compare tests (two-explicit-item path)
   unaffected. Compare suite 29/29.
 
+### `EMOTE-005` — ✅ FIXED (emote self-line shows the actor's name, not "You"; reverts EMOTE-002)
+
+- **Python**: `mud/commands/communication.py:do_emote` (TO_CHAR return).
+- **ROM C**: `src/act_comm.c:1092` `act("$n $T", ch, NULL, argument, TO_CHAR)` +
+  `src/comm.c` `act_new` (`$n` → `PERS(ch, to)`) + `src/merc.h:2145` `PERS`.
+- **Gap (a false-premise prior ✅)**: EMOTE-002 (marked CRITICAL ✅ FIXED 2.8.43)
+  claimed "TO_CHAR `$n` substitutes to 'You' (act() handles the self branch)" and
+  changed the self-line from `f"{char.name} {args}"` to `f"You {args}"`. ROM `act()`
+  does **no** `$n`→"You" conversion: `PERS(ch, ch) = can_see(ch, ch) ? name :
+  "someone"` = the actor's own name. **Decisive proof:** ROM `do_say` writes a
+  *literal* `"You say '%s'"` for its self-line and only uses `act("$n says…")` for
+  the room — redundant if `act()` converted `$n`→"You". So stock ROM emote shows
+  the emoter their own name (a well-known ROM quirk); EMOTE-002 introduced the
+  divergence. Found by re-verifying the EMOTE-002 ✅ against source.
+- **Fix**: TO_CHAR return is now `capitalize_act_line(f"{pers(char, char)} {args}")`,
+  matching the TO_ROOM leg's PERS render. Marked EMOTE-002 ❌ REVERTED in the audit.
+- **Tests**: inverted `test_emote_002_…renders_you_…` → `test_emote_005_…renders_actor_name_not_you`
+  (actor "Emoself" now sees "Emoself nods"). Emote + act_comm-gaps suites 32/32.
+- **Lesson**: a documented CRITICAL ✅ can itself be the bug — the re-verify-against-source
+  rule caught a "fix" that was a misreading of ROM `act()`.
+
 ### Re-verified faithful this session (recall-oracle, no change)
 
 `do_quit` (connection-layer tear-down handled by the harness via `_quit_requested`)

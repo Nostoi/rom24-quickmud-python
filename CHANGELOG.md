@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.50] — 2026-06-13
+
+### Fixed
+
+- **EMOTE-005 — `emote` shows the emoter their own name, not "You" (corrects
+  EMOTE-002)** — ROM `do_emote` (`src/act_comm.c:1092`) uses the same
+  `act("$n $T", ch, NULL, argument, TO_CHAR)` for the self line as the room line.
+  ROM `act()` renders `$n` via `PERS(ch, to)` with no `$n`→"You" conversion, and
+  `PERS(ch, ch)` is the actor's own name (a char always sees itself) — ROM proves
+  this by writing a *literal* "You say '%s'" for `do_say`'s self-line, which would
+  be redundant if `act()` did the conversion. The prior EMOTE-002 "fix" changed
+  the self-line to "You <args>" on a false premise; reverted to the PERS-rendered
+  actor name ("Bob nods"), a well-known stock-ROM quirk. Found by re-verifying the
+  EMOTE-002 ✅ against source. Test:
+  `tests/integration/test_emote_parity.py::test_emote_005_self_message_renders_actor_name_not_you`.
+
 ## [2.14.49] — 2026-06-13
 
 ### Fixed
