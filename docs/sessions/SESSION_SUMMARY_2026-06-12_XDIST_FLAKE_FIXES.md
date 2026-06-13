@@ -403,8 +403,32 @@ and a test pinning the wrong RNG primitive).
 - **Tests**: `tests/integration/test_pick002_wait_state.py` (2, RED→GREEN —
   wait==12 after a pick; UMAX preserves a pre-existing wait==30). Pick area suite 19/19.
 
+### `ORDER-002` — ✅ FIXED (do_order applies WAIT_STATE on a landed order)
+
+- **Python**: `mud/commands/group_commands.py:do_order` (both the `all` and single-target tails).
+- **ROM C**: `src/act_comm.c` — `if (found) { WAIT_STATE(ch, PULSE_VIOLENCE); send_to_char("Ok.\n\r", ch); }`; `PULSE_VIOLENCE` == 12 (`src/merc.h:155-156`).
+- **Gap**: both Python branches returned `"Ok."` with no lag — the all-branch had
+  an explicit `# Note: WAIT_STATE not implemented yet` stub. So an orderer could
+  spam orders with zero wait. **The audit doc's "✅ WAIT_STATE and 'Ok.'
+  confirmation" row was a stale false-✅** (corrected in `ACT_COMM_C_AUDIT.md`).
+  Found by the WAIT_STATE-placeholder sweep that followed PICK-002 (grepped
+  `not implemented yet` / `Placeholder` across `mud/`).
+- **Fix**: `apply_wait_state(char, get_pulse_violence())` before both `"Ok."`
+  returns. The no-follower path correctly stays lag-free (ROM only sets WAIT_STATE
+  inside `if (found)`).
+- **Tests**: `tests/integration/test_order002_wait_state.py` (3, RED→GREEN —
+  single-target wait==12, `order all` wait==12, no-follower wait==0). Order area
+  suite (`test_order002` + `test_order_broadcasts`) 5/5.
+
 ## Outstanding
 
+- **ORDER-003** (🔄 OPEN, filed by ORDER-002, in `ACT_COMM_C_AUDIT.md`): `do_order`'s
+  single-target "Do it yourself!" gate omits ROM's third clause. ROM
+  (`src/act_comm.c`): `if (!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch || (IS_IMMORTAL(victim) && victim->trust >= ch->trust))`.
+  Python checks only `not (affected_by & CHARM) or master is not char` — missing
+  `IS_IMMORTAL(victim) && victim->trust >= ch->trust`, so a charmed immortal with
+  trust ≥ the orderer's could be ordered where ROM refuses. Edge-case but a real
+  divergence; next agent: add the clause + a test.
 - **do_pick / pick_lock duplication** (filed by PICK-001): the live `pick` command
   is `mud/commands/doors.py:do_pick` (inline reimplementation), but a second,
   fully-featured `mud/skills/handlers.py:pick_lock` (dict-returning, already calls

@@ -7,8 +7,10 @@ ROM Reference: src/act_comm.c (follow, group, order, gtell, split)
 from __future__ import annotations
 
 from mud.characters.follow import add_follower, stop_follower
+from mud.config import get_pulse_violence
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, PlayerFlag
+from mud.utils.timing import apply_wait_state
 from mud.world.char_find import get_char_room
 
 
@@ -485,8 +487,9 @@ def do_order(char: Character, args: str) -> str:
                         pass
 
         if found:
-            # ROM C lines 1760-1761: WAIT_STATE and confirmation
-            # Note: WAIT_STATE not implemented yet, just return confirmation
+            # ORDER-002: ROM src/act_comm.c — `if (found) { WAIT_STATE(ch, PULSE_VIOLENCE);
+            # send_to_char("Ok.\n\r", ch); }`. PULSE_VIOLENCE == 12 (src/merc.h:155-156).
+            apply_wait_state(char, get_pulse_violence())
             return "Ok."
         else:
             # ROM C line 1764: No followers
@@ -520,5 +523,7 @@ def do_order(char: Character, args: str) -> str:
             # Silently handle execution errors (ROM C doesn't error-check interpret())
             pass
 
-        # ROM C lines 1760-1761: WAIT_STATE and confirmation
+        # ORDER-002: ROM src/act_comm.c — WAIT_STATE(ch, PULSE_VIOLENCE) on a landed
+        # single-target order (the shared `if (found)` tail; == 12, src/merc.h:155-156).
+        apply_wait_state(char, get_pulse_violence())
         return "Ok."

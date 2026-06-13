@@ -666,13 +666,34 @@ except Exception:
     pass  # Silently handle errors
 ```
 
-**Parity Check**: ✅ PERFECT
+**Parity Check**: ⚠️ NOT "PERFECT" — two divergences found 2026-06-13 (see ORDER-002/003 below)
 - ✅ Dangerous command blocking ("delete", "mob")
 - ✅ AFF_CHARM check (charmed can't give orders)
 - ✅ Command execution via process_command() (ROM's interpret())
 - ✅ Order message sent to followers
-- ✅ WAIT_STATE and "Ok." confirmation
+- ⚠️ ~~WAIT_STATE~~ and "Ok." confirmation — **WAIT_STATE was a stale false-✅**: the
+  code carried `# Note: WAIT_STATE not implemented yet` and applied no lag. Closed
+  as **ORDER-002** (2.14.39). Re-read `group_commands.py:do_order` before trusting
+  this line.
 - ✅ "order all" broadcasts to all charmed followers
+
+**ORDER-002** (MINOR, ✅ FIXED 2.14.39) — `do_order` applied no `WAIT_STATE`. ROM
+`src/act_comm.c` ends with `if (found) { WAIT_STATE(ch, PULSE_VIOLENCE); send_to_char("Ok.\n\r", ch); }`
+(`PULSE_VIOLENCE` == 12, `src/merc.h:155-156`). Both Python branches returned `"Ok."`
+with no lag (the all-branch had an explicit "not implemented yet" note). Fix:
+`apply_wait_state(char, get_pulse_violence())` before both `"Ok."` returns; the
+no-follower path correctly stays lag-free (ROM only sets it inside `if (found)`).
+Test: `tests/integration/test_order002_wait_state.py` (3: single-target, all,
+no-follower-no-lag).
+
+**ORDER-003** (MINOR, 🔄 OPEN — filed 2026-06-13) — `do_order` single-target
+"Do it yourself!" gate is missing ROM's third clause. ROM
+(`src/act_comm.c`): `if (!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch || (IS_IMMORTAL(victim) && victim->trust >= ch->trust))`.
+Python (`group_commands.py` single-target branch) checks only
+`not (affected_by & CHARM) or master is not char` — it omits the
+`IS_IMMORTAL(victim) && victim->trust >= ch->trust` clause, so a charmed immortal
+follower whose trust ≥ the orderer's could be ordered where ROM refuses. Edge-case
+(requires a charmed immortal), but a real divergence. Next agent: add the clause.
 
 ---
 

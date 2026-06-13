@@ -1,10 +1,18 @@
-# Session Status — 2026-06-13 — PICK-002 (do_pick WAIT_STATE beats/UMAX) + PICK-001 (do_pick check_improve) + BRANDISH-007 (do_brandish check_improve per-target) + EAT-007 + DRINK-010 + WIZ-052; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — ORDER-002 (do_order WAIT_STATE) + PICK-002 (do_pick WAIT_STATE beats/UMAX) + PICK-001 (do_pick check_improve) + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: PICK-002 — `do_pick` (`mud/commands/doors.py`) WAIT_STATE now
+- **Last completed**: ORDER-002 — `do_order` (`mud/commands/group_commands.py`) now
+  applies `apply_wait_state(char, get_pulse_violence())` (=12) on both the
+  single-target and `order all` paths when an order lands, matching ROM
+  `src/act_comm.c` `if (found) { WAIT_STATE(ch, PULSE_VIOLENCE); ... }`. The code
+  had a `# Note: WAIT_STATE not implemented yet` stub (and the audit doc's "✅
+  WAIT_STATE" claim was a stale false-✅, now corrected). No-follower path stays
+  lag-free, as ROM. **Also filed ORDER-003 (🔄 OPEN):** the single-target "Do it
+  yourself!" gate omits ROM's `IS_IMMORTAL(victim) && victim->trust >= ch->trust`
+  clause (v2.14.39). Before that: PICK-002 — `do_pick` (`mud/commands/doors.py`) WAIT_STATE now
   uses `apply_wait_state(char, beats)` (canonical `UMAX` helper) with the pick-lock
   skill beats (12, data-driven from the registry), matching ROM
   `src/act_move.c:856` `WAIT_STATE(ch, skill_table[gsn_pick_lock].beats)`. The old
@@ -87,8 +95,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.38 |
-| Tests | pick wait-state 2/2, pick area 19/19, full suite last green 5685 passed / 4 skipped (v2.14.37) |
+| Version | 2.14.39 |
+| Tests | order wait-state 3/3, order area 5/5, full suite last green 5687 passed / 4 skipped (v2.14.38) |
+| ORDER-002 status | ✅ FIXED (do_order applies WAIT_STATE(ch, PULSE_VIOLENCE=12) on landed orders; stale false-✅ corrected) |
+| ORDER-003 status | 🔄 OPEN (do_order single-target gate missing IS_IMMORTAL/trust clause) |
 | PICK-002 status | ✅ FIXED (do_pick WAIT_STATE uses beats=12 + UMAX, data-driven; was +=24 additive) |
 | PICK-001 status | ✅ FIXED (do_pick wires check_improve at all 4 ROM sites; stale false-✅ corrected) |
 | BRANDISH-007 status | ✅ FIXED (do_brandish check_improve fires inside per-target loop, once per cast — AoE skill-learn + RNG draw count) |

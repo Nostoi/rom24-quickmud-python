@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.39] — 2026-06-13
+
+### Fixed
+
+- **ORDER-002 — `do_order` applies `WAIT_STATE(ch, PULSE_VIOLENCE)` when an order
+  lands** — ROM `do_order` (`src/act_comm.c`) ends with
+  `if (found) { WAIT_STATE(ch, PULSE_VIOLENCE); send_to_char("Ok.\n\r", ch); }`,
+  `PULSE_VIOLENCE` == 12 (`src/merc.h:155-156`). The Python
+  `mud/commands/group_commands.py:do_order` carried a `# Note: WAIT_STATE not
+  implemented yet` stub and returned `"Ok."` with no lag, so an orderer could spam
+  orders freely. Now `apply_wait_state(char, get_pulse_violence())` fires on both
+  the single-target and `order all` paths; the no-follower path correctly stays
+  lag-free (ROM only sets it inside `if (found)`). The audit doc's "✅ WAIT_STATE"
+  claim was a stale false-✅, now corrected. Also filed ORDER-003 (missing
+  `IS_IMMORTAL(victim) && trust` clause in the "Do it yourself!" gate) for a future
+  pass. Test: `tests/integration/test_order002_wait_state.py` (3).
+
 ## [2.14.38] — 2026-06-13
 
 ### Fixed
