@@ -20,6 +20,7 @@ from mud.models.constants import (
     ItemType,
 )
 from mud.net.protocol import broadcast_room
+from mud.skills.registry import check_improve
 from mud.utils.act import act_to_room
 from mud.world.obj_find import get_obj_here
 
@@ -585,7 +586,8 @@ def do_pick(char: Character, args: str) -> str:
     # Skill check (ROM C lines 869-874)
     is_npc = getattr(char, "is_npc", False)
     if not is_npc and number_percent() > skill_level:
-        # TODO: Implement check_improve(ch, gsn_pick_lock, FALSE, 2)
+        # PICK-001: ROM src/act_move.c:872 — check_improve(ch, gsn_pick_lock, FALSE, 2)
+        check_improve(char, "pick lock", False, 2)
         return "You failed."
 
     # Check for object first (portal or container)
@@ -608,11 +610,12 @@ def do_pick(char: Character, args: str) -> str:
                 return "You failed."
 
             obj.value[1] = values[1] & ~EX_LOCKED
-            # TODO: Implement check_improve(ch, gsn_pick_lock, TRUE, 2)
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # BCAST-034: TO_ROOM mirroring ROM src/act_move.c:907 —
             # act("$n picks the lock on $p.", ch, obj, NULL, TO_ROOM).
             _broadcast_act_to_room(room, "$n picks the lock on $p.", char, arg1=obj)
+            # PICK-001: ROM src/act_move.c:908 — check_improve(ch, gsn_pick_lock, TRUE, 2)
+            check_improve(char, "pick lock", True, 2)
             return f"You pick the lock on {obj_name}."
 
         # Container (ROM C lines 916-947)
@@ -627,11 +630,12 @@ def do_pick(char: Character, args: str) -> str:
                 return "You failed."
 
             obj.value[1] = values[1] & ~ContainerFlag.LOCKED
-            # TODO: Implement check_improve(ch, gsn_pick_lock, TRUE, 2)
             obj_name = getattr(obj, "short_descr", None) or getattr(obj, "name", "it")
             # BCAST-034: TO_ROOM mirroring ROM src/act_move.c:945 —
             # act("$n picks the lock on $p.", ch, obj, NULL, TO_ROOM).
             _broadcast_act_to_room(room, "$n picks the lock on $p.", char, arg1=obj)
+            # PICK-001: ROM src/act_move.c:946 — check_improve(ch, gsn_pick_lock, TRUE, 2)
+            check_improve(char, "pick lock", True, 2)
             return f"You pick the lock on {obj_name}."
 
         return "That's not a container."
@@ -662,7 +666,12 @@ def do_pick(char: Character, args: str) -> str:
     # Unlock this side
     pexit.exit_info = exit_info & ~EX_LOCKED
 
-    # TODO: Implement check_improve(ch, gsn_pick_lock, TRUE, 2)
+    # PICK-001: ROM src/act_move.c:982 — check_improve(ch, gsn_pick_lock, TRUE, 2).
+    # ROM calls this between the *Click*/act broadcast and the reverse-side unlock;
+    # neither the reverse-side unlock nor the broadcast draws RNG, so placement here
+    # is observationally identical (the check_improve number_range/percent draws are
+    # the only RNG on this branch).
+    check_improve(char, "pick lock", True, 2)
 
     # Unlock the other side (ROM C lines 984-990)
     to_room = getattr(pexit, "to_room", None)

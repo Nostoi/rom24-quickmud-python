@@ -1,10 +1,20 @@
-# Session Status — 2026-06-13 — BRANDISH-007 (do_brandish check_improve per-target) + EAT-007 + DRINK-010 + WIZ-052; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — PICK-001 (do_pick check_improve) + BRANDISH-007 (do_brandish check_improve per-target) + EAT-007 + DRINK-010 + WIZ-052; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: BRANDISH-007 — `do_brandish` (`mud/commands/magic_items.py`)
+- **Last completed**: PICK-001 — `do_pick` (`mud/commands/doors.py`, the live
+  `pick` command) now calls `check_improve(char, "pick lock", FALSE/TRUE, 2)` at
+  all four ROM sites (failure src/act_move.c:872; portal/container/door success
+  908/946/982). The code shipped with four `# TODO: Implement check_improve` stubs
+  — the per-file audit's "do_pick 100% — check_improve FIXED" rows were a **stale
+  false-✅** (now corrected in `ACT_MOVE_C_AUDIT.md`). Identical class to RECALL-002.
+  Surfaced by the post-BRANDISH-007 check_improve-site sweep. **Out-of-scope, filed
+  for next agent:** there is a second, fully-featured `mud/skills/handlers.py:pick_lock`
+  that also handles check_improve but is NOT the dispatched command — the do_pick /
+  pick_lock duplication should be reconciled (delegate, like SNEAK-001/HIDE-001 did)
+  (v2.14.37). Before that: BRANDISH-007 — `do_brandish` (`mud/commands/magic_items.py`)
   now calls `check_improve(ch, "staves", True, 2)` **inside** the per-target loop,
   once per cast, matching ROM `src/act_obj.c:2050-2052`. The previous code hoisted
   it to run once after the loop, so AoE staves (TAR_CHAR_OFFENSIVE/DEFENSIVE spells
@@ -71,8 +81,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.36 |
-| Tests | magic-item area 90/90, consumables 56/56, full suite last green 5681 passed / 4 skipped (v2.14.35) |
+| Version | 2.14.37 |
+| Tests | pick check_improve 3/3, pick area 17/17, full suite last green 5682 passed / 4 skipped (v2.14.36) |
+| PICK-001 status | ✅ FIXED (do_pick wires check_improve at all 4 ROM sites; stale false-✅ corrected) |
 | BRANDISH-007 status | ✅ FIXED (do_brandish check_improve fires inside per-target loop, once per cast — AoE skill-learn + RNG draw count) |
 | EAT-007 status | ✅ FIXED (do_eat poison level/duration use raw value[0], no `or 1` substitution) |
 | DRINK-010 status | ✅ FIXED (do_drink drains value[1] on value[0]>0 regardless of item type; fountains included) |

@@ -364,6 +364,39 @@ and a test pinning the wrong RNG primitive).
   (`test_consumables.py` + `test_inv025_magic_items_act_trigger_dispatch.py` +
   `test_spell_casting.py`) 90/90.
 
+### `PICK-001` — ✅ FIXED (do_pick wires check_improve; stale false-✅ corrected)
+
+- **Python**: `mud/commands/doors.py:do_pick` (the registered `pick` command, dispatcher.py:332).
+- **ROM C**: `src/act_move.c:872` (failure, FALSE), `:908`/`:946`/`:982` (portal/container/door success, TRUE) — `check_improve(ch, gsn_pick_lock, ...)`.
+- **Gap**: `do_pick` shipped with four `# TODO: Implement check_improve(ch,
+  gsn_pick_lock, ...)` stubs and never called the function, so the pick-lock skill
+  never improved and ROM's `number_range(1,1000)`/`number_percent()` learn draws
+  were skipped. Identical class to RECALL-002 (TODO stub never wired). **The
+  per-file audit's "do_pick 100% (29/29) COMPLETE — check_improve FIXED" rows
+  (items 59/378 + the table rows) were a stale false-✅** — caught by re-reading
+  the code, exactly the AGENTS.md "✅ records when someone last checked, not that
+  it is still true" anti-pattern. Found by the post-BRANDISH-007 check_improve
+  call-site sweep (grepped every `check_improve` site against its ROM context).
+- **Fix**: added `from mud.skills.registry import check_improve`; replaced all
+  four TODO stubs with `check_improve(char, "pick lock", FALSE/TRUE, 2)`. Corrected
+  the false-✅ claims in `ACT_MOVE_C_AUDIT.md` (annotated, not deleted).
+- **Tests**: `tests/integration/test_pick001_check_improve.py` (3, RED→GREEN —
+  container success TRUE, skill-failure FALSE, door success TRUE; spy on
+  `doors.check_improve`, force `number_percent` via module patch). Pick area suite
+  (`test_pick001` + `test_pick_broadcasts` + `test_skill_pick_lock_rom_parity`) 17/17.
+
+## Outstanding
+
+- **do_pick / pick_lock duplication** (filed by PICK-001): the live `pick` command
+  is `mud/commands/doors.py:do_pick` (inline reimplementation), but a second,
+  fully-featured `mud/skills/handlers.py:pick_lock` (dict-returning, already calls
+  check_improve, used by `tests/test_skill_pick_lock_rom_parity.py`) exists in
+  parallel. They are not wired together — `do_pick` does not delegate. This is the
+  same shape SNEAK-001/HIDE-001 reconciled (make the command delegate to the
+  canonical handler). Next agent: consider collapsing `do_pick` onto
+  `handlers.pick_lock` so the two paths can't drift again. Not a behavior bug today
+  (PICK-001 closed the observable divergence), but a maintenance/drift risk.
+
 ## Next Steps
 
 Cross-file invariants remains the active pass. Remaining candidate probes:

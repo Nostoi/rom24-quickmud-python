@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.37] — 2026-06-13
+
+### Fixed
+
+- **PICK-001 — `do_pick` (the live `pick` command) now improves the pick-lock
+  skill** — ROM `do_pick_lock` (`src/act_move.c`) calls `check_improve(ch,
+  gsn_pick_lock, ...)` on the skill-roll failure (line 872, FALSE) and on every
+  successful unlock — portal (908), container (946), door (982), all TRUE. The
+  Python `mud/commands/doors.py:do_pick` (registered as `pick` in the dispatcher)
+  carried four `# TODO: Implement check_improve` stubs and never called it, so the
+  skill never improved and ROM's `number_range(1,1000)`/`number_percent()` learn
+  draws were skipped. Same class as RECALL-002. Wired up all four sites. (The
+  per-file audit's "do_pick 100% — check_improve FIXED" rows were a stale false-✅,
+  now corrected in `ACT_MOVE_C_AUDIT.md`.) Test:
+  `tests/integration/test_pick001_check_improve.py` (3).
+
 ## [2.14.36] — 2026-06-13
 
 ### Fixed
