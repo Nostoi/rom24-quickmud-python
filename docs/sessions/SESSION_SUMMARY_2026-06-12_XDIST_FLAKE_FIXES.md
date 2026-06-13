@@ -463,6 +463,39 @@ and a test pinning the wrong RNG primitive).
 - **Tests**: `tests/integration/test_password001_wait_state_umax.py` (2, RED→GREEN —
   wait==40 from zero; UMAX preserves a pre-existing wait==100).
 
+### `CAST-010` — ✅ FIXED (do_cast WAIT_STATE uses the spell's beats, not flat PULSE_VIOLENCE)
+
+- **Python**: `mud/commands/combat.py:do_cast` (cast-lag, before the success roll).
+- **ROM C**: `src/magic.c:547` — `WAIT_STATE(ch, skill_table[sn].beats)`.
+- **Gap**: Python applied a flat `get_pulse_violence()` (==12) for every spell.
+  Spell beats vary — 81 spells at 12, but **34 differ** (22@24, 7@18, 4@36, 1@20:
+  fly=18, enchant armor=24, mass healing=36) and 19 are 0. So a third of all spells
+  got the wrong cast lag (slower spells cast too fast; beats-0 spells over-lagged).
+  This was the deepest find of the ROM-WAIT_STATE-site cross-check — the only one
+  outside the simple "missing/assign" class, since it's a per-spell *data* lookup
+  the flat constant silently flattened.
+- **Fix**: `spell_beats = int(getattr(skill, "beats", 0) or getattr(skill, "lag", 0) or 0)`;
+  `_apply_wait_state(char, spell_beats)`. ROM uses the **raw** beats (no HASTE/SLOW
+  for casting), so this reads `skill.beats` directly rather than via
+  `_compute_skill_lag`; `_apply_wait_state` treats 0 as a UMAX no-op = ROM
+  `WAIT_STATE(ch, 0)`.
+- **Tests**: `tests/integration/test_cast010_wait_state_uses_spell_beats.py` (1,
+  RED→GREEN — casting `fly` (beats 18) sets wait 18, not 12). Spell-casting +
+  cast-listing suites 45/45.
+
+## ROM WAIT_STATE-site cross-check (this session's method)
+
+Enumerated every `WAIT_STATE(ch, <value>)` site in the ROM `src/*.c` files and
+cross-checked the Python equivalent. **Confirmed faithful (no change):**
+`move_char` (1), `do_recall` (4), `do_shout` (12), `do_brandish`/`do_zap`
+(2*PULSE_VIOLENCE), `do_berserk` (12 success / 36 fail), `do_kill`/`do_murder`
+(PULSE_VIOLENCE), healer. **Fixed this session:** `do_order` (ORDER-002, was
+missing), `do_save` (SAVE-001, was missing), `do_password` (PASSWORD-001, was
+`=` not UMAX), `do_cast` (CAST-010, was flat 12 not per-spell beats). The
+recurring tells: a `# not implemented yet` / `# Placeholder` stub, a plain `=`
+assignment where ROM's macro is UMAX, or a flat constant where ROM reads a
+per-entity field.
+
 ## Outstanding
 
 - **do_pick / pick_lock duplication** (filed by PICK-001): the live `pick` command

@@ -990,7 +990,13 @@ def do_cast(char: Character, args: str) -> str:
         ):
             return "You can't do that on your own follower."
 
-    skill_registry._apply_wait_state(char, get_pulse_violence())
+    # CAST-010: ROM src/magic.c:547 — WAIT_STATE(ch, skill_table[sn].beats), the
+    # spell's *own* cast lag (fly=18, enchant armor=24, mass healing=36, …), not a
+    # flat PULSE_VIOLENCE. ROM uses the RAW beats (no HASTE/SLOW adjustment for
+    # casting), so read skill.beats directly rather than via _compute_skill_lag.
+    # beats==0 spells become a UMAX no-op, exactly as ROM WAIT_STATE(ch, 0).
+    spell_beats = int(getattr(skill, "beats", 0) or getattr(skill, "lag", 0) or 0)
+    skill_registry._apply_wait_state(char, spell_beats)
 
     roll = rng_mm.number_percent()
     success = roll <= spell_level

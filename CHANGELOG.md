@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.43] — 2026-06-13
+
+### Fixed
+
+- **CAST-010 — `do_cast` cast-lag uses the spell's own `beats`, not a flat
+  `PULSE_VIOLENCE`** — ROM `do_cast` (`src/magic.c:547`) applies
+  `WAIT_STATE(ch, skill_table[sn].beats)` — the per-spell cast lag. Spell beats
+  vary (fly=18, enchant armor=24, mass healing=36; 34 of ~120 spells differ from
+  12, and 19 are 0). The Python `mud/commands/combat.py:do_cast` applied a flat
+  `get_pulse_violence()` (== 12) for every spell, so slower spells cast too fast
+  and beats-0 spells were over-lagged. Now reads `skill.beats` directly (ROM uses
+  the raw beats — no HASTE/SLOW adjustment for casting); beats-0 is a UMAX no-op,
+  matching ROM. Surfaced by the ROM-WAIT_STATE-site cross-check. Test:
+  `tests/integration/test_cast010_wait_state_uses_spell_beats.py`.
+
 ## [2.14.42] — 2026-06-13
 
 ### Fixed

@@ -1,10 +1,17 @@
-# Session Status — 2026-06-13 — PASSWORD-001 + SAVE-001 (WAIT_STATE) + ORDER-002/003 + PICK-001/002 + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — CAST-010 (do_cast spell beats) + PASSWORD-001 + SAVE-001 + ORDER-002/003 + PICK-001/002 + BRANDISH-007 (WAIT_STATE/check_improve sweep); cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: PASSWORD-001 — `do_password` (`mud/commands/character.py`)
+- **Last completed**: CAST-010 — `do_cast` (`mud/commands/combat.py`) cast-lag now
+  uses the spell's own `beats` (`apply_wait_state(char, skill.beats)`) instead of a
+  flat `get_pulse_violence()` (12), matching ROM `src/magic.c:547`
+  `WAIT_STATE(ch, skill_table[sn].beats)`. 34 of ~120 spells have beats≠12 (fly=18,
+  enchant armor=24, mass healing=36) so they were mis-lagged; 19 beats-0 spells were
+  over-lagged. ROM uses the RAW beats (no HASTE/SLOW for casting), so the fix reads
+  `skill.beats` directly, not `_compute_skill_lag` (v2.14.43). Before that:
+  PASSWORD-001 — `do_password` (`mud/commands/character.py`)
   wrong-password penalty now uses `apply_wait_state(ch, 40)` (UMAX) instead of
   `ch.wait = 40` (assignment), matching ROM `src/act_info.c:2895` `WAIT_STATE(ch, 40)`
   — a higher existing wait is preserved, not lowered. Sibling of SAVE-001 from the
@@ -116,8 +123,9 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.42 |
-| Tests | password wait-state 2/2, save wait-state 2/2, full suite last green 5694 passed / 4 skipped (v2.14.41) |
+| Version | 2.14.43 |
+| Tests | cast beats 1/1, spell-casting 45/45, full suite last green 5696 passed / 4 skipped (v2.14.42) |
+| CAST-010 status | ✅ FIXED (do_cast uses per-spell beats for WAIT_STATE, not flat PULSE_VIOLENCE) |
 | PASSWORD-001 status | ✅ FIXED (do_password wrong-pwd penalty uses UMAX, not =40 assignment) |
 | SAVE-001 status | ✅ FIXED (do_save applies WAIT_STATE(ch, 4*PULSE_VIOLENCE=48); stale false-✅ corrected) |
 | ORDER-003 status | ✅ FIXED (do_order gate adds IS_IMMORTAL(victim) && trust>=orderer clause) |
