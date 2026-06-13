@@ -420,15 +420,23 @@ and a test pinning the wrong RNG primitive).
   single-target wait==12, `order all` wait==12, no-follower wait==0). Order area
   suite (`test_order002` + `test_order_broadcasts`) 5/5.
 
+### `ORDER-003` — ✅ FIXED (do_order single-target gate adds the immortal-trust clause)
+
+- **Python**: `mud/commands/group_commands.py:do_order` (single-target "Do it yourself!" gate).
+- **ROM C**: `src/act_comm.c` — `if (!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch || (IS_IMMORTAL(victim) && victim->trust >= ch->trust))`.
+- **Gap**: Python checked only the first two clauses, omitting
+  `IS_IMMORTAL(victim) && victim->trust >= ch->trust`, so a charmed immortal whose
+  trust ≥ the orderer's could be ordered where ROM refuses. Filed alongside
+  ORDER-002, closed immediately after (full context in hand).
+- **Fix**: added `victim.is_immortal() and victim.trust >= char.trust` to the gate.
+  `Character.is_immortal()` mirrors ROM `IS_IMMORTAL` (`get_trust >= LEVEL_IMMORTAL`
+  = 52), so a normal charmed mob (`is_immortal()` False) is unaffected and stays
+  orderable.
+- **Tests**: `tests/integration/test_order003_immortal_trust.py` (2, RED→GREEN —
+  refuses a charmed immortal with trust≥orderer; still allows a normal charmed mob).
+
 ## Outstanding
 
-- **ORDER-003** (🔄 OPEN, filed by ORDER-002, in `ACT_COMM_C_AUDIT.md`): `do_order`'s
-  single-target "Do it yourself!" gate omits ROM's third clause. ROM
-  (`src/act_comm.c`): `if (!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch || (IS_IMMORTAL(victim) && victim->trust >= ch->trust))`.
-  Python checks only `not (affected_by & CHARM) or master is not char` — missing
-  `IS_IMMORTAL(victim) && victim->trust >= ch->trust`, so a charmed immortal with
-  trust ≥ the orderer's could be ordered where ROM refuses. Edge-case but a real
-  divergence; next agent: add the clause + a test.
 - **do_pick / pick_lock duplication** (filed by PICK-001): the live `pick` command
   is `mud/commands/doors.py:do_pick` (inline reimplementation), but a second,
   fully-featured `mud/skills/handlers.py:pick_lock` (dict-returning, already calls

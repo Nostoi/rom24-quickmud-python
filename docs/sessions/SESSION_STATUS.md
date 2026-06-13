@@ -1,10 +1,16 @@
-# Session Status — 2026-06-13 — ORDER-002 (do_order WAIT_STATE) + PICK-002 (do_pick WAIT_STATE beats/UMAX) + PICK-001 (do_pick check_improve) + BRANDISH-007; cross-file invariants is the active pass
+# Session Status — 2026-06-13 — ORDER-003 (do_order immortal-trust gate) + ORDER-002 (do_order WAIT_STATE) + PICK-001/002 (do_pick check_improve + WAIT_STATE) + BRANDISH-007; cross-file invariants is the active pass
 
 ## Current State
 
 - **Active focus**: Cross-file invariants pass (per-file audit tracker exhausted —
   only deferred track-only DB2 rows remain)
-- **Last completed**: ORDER-002 — `do_order` (`mud/commands/group_commands.py`) now
+- **Last completed**: ORDER-003 — `do_order` (`mud/commands/group_commands.py`)
+  single-target gate now includes ROM's third "Do it yourself!" clause
+  `IS_IMMORTAL(victim) && victim->trust >= ch->trust` (`src/act_comm.c`), via
+  `victim.is_immortal() and victim.trust >= char.trust`. A charmed immortal whose
+  trust ≥ the orderer's is now refused (a normal charmed mob is unaffected, since
+  `is_immortal()` = ROM `get_trust >= 52`) (v2.14.40). Before that: ORDER-002 —
+  `do_order` (`mud/commands/group_commands.py`) now
   applies `apply_wait_state(char, get_pulse_violence())` (=12) on both the
   single-target and `order all` paths when an order lands, matching ROM
   `src/act_comm.c` `if (found) { WAIT_STATE(ch, PULSE_VIOLENCE); ... }`. The code
@@ -95,10 +101,10 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.39 |
-| Tests | order wait-state 3/3, order area 5/5, full suite last green 5687 passed / 4 skipped (v2.14.38) |
+| Version | 2.14.40 |
+| Tests | order immortal-trust 2/2, order area 7/7, full suite last green 5690 passed / 4 skipped (v2.14.39) |
+| ORDER-003 status | ✅ FIXED (do_order gate adds IS_IMMORTAL(victim) && trust>=orderer clause) |
 | ORDER-002 status | ✅ FIXED (do_order applies WAIT_STATE(ch, PULSE_VIOLENCE=12) on landed orders; stale false-✅ corrected) |
-| ORDER-003 status | 🔄 OPEN (do_order single-target gate missing IS_IMMORTAL/trust clause) |
 | PICK-002 status | ✅ FIXED (do_pick WAIT_STATE uses beats=12 + UMAX, data-driven; was +=24 additive) |
 | PICK-001 status | ✅ FIXED (do_pick wires check_improve at all 4 ROM sites; stale false-✅ corrected) |
 | BRANDISH-007 status | ✅ FIXED (do_brandish check_improve fires inside per-target loop, once per cast — AoE skill-learn + RNG draw count) |

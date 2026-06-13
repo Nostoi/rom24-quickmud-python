@@ -507,8 +507,16 @@ def do_order(char: Character, args: str) -> str:
         affected_by = getattr(victim, "affected_by", 0)
         master = getattr(victim, "master", None)
 
-        # ROM C lines 1735-1740: Validate charm and master relationship
-        if not (affected_by & AffectFlag.CHARM) or master is not char:
+        # ROM C lines 1735-1740: Validate charm and master relationship.
+        # ORDER-003: ROM's third clause refuses ordering a charmed *immortal* whose
+        # trust outranks the orderer — `IS_IMMORTAL(victim) && victim->trust >= ch->trust`
+        # (src/act_comm.c). is_immortal() mirrors ROM IS_IMMORTAL (get_trust >= 52),
+        # so a normal charmed mob (is_immortal() False) is unaffected.
+        victim_immortal = bool(getattr(victim, "is_immortal", lambda: False)())
+        immortal_outranks = victim_immortal and int(getattr(victim, "trust", 0) or 0) >= int(
+            getattr(char, "trust", 0) or 0
+        )
+        if not (affected_by & AffectFlag.CHARM) or master is not char or immortal_outranks:
             return "Do it yourself!"
 
         # mirroring ROM src/act_comm.c:1752-1753 — act() pers(ch, vict) gates $n on visibility

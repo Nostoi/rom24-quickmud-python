@@ -686,14 +686,16 @@ no-follower path correctly stays lag-free (ROM only sets it inside `if (found)`)
 Test: `tests/integration/test_order002_wait_state.py` (3: single-target, all,
 no-follower-no-lag).
 
-**ORDER-003** (MINOR, 🔄 OPEN — filed 2026-06-13) — `do_order` single-target
-"Do it yourself!" gate is missing ROM's third clause. ROM
-(`src/act_comm.c`): `if (!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch || (IS_IMMORTAL(victim) && victim->trust >= ch->trust))`.
-Python (`group_commands.py` single-target branch) checks only
-`not (affected_by & CHARM) or master is not char` — it omits the
-`IS_IMMORTAL(victim) && victim->trust >= ch->trust` clause, so a charmed immortal
-follower whose trust ≥ the orderer's could be ordered where ROM refuses. Edge-case
-(requires a charmed immortal), but a real divergence. Next agent: add the clause.
+**ORDER-003** (MINOR, ✅ FIXED 2.14.40) — `do_order` single-target "Do it
+yourself!" gate was missing ROM's third clause. ROM (`src/act_comm.c`):
+`if (!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch || (IS_IMMORTAL(victim) && victim->trust >= ch->trust))`.
+Python checked only `not (affected_by & CHARM) or master is not char` — omitting
+`IS_IMMORTAL(victim) && victim->trust >= ch->trust`, so a charmed immortal whose
+trust ≥ the orderer's could be ordered where ROM refuses. Fix: added
+`victim.is_immortal() and victim.trust >= char.trust` to the gate (`is_immortal()`
+mirrors ROM `IS_IMMORTAL` = `get_trust >= 52`, so a normal charmed mob is
+unaffected). Test: `tests/integration/test_order003_immortal_trust.py` (2: refuses
+charmed immortal with trust≥orderer; still allows a normal charmed mob).
 
 ---
 

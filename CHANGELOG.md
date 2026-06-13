@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.40] — 2026-06-13
+
+### Fixed
+
+- **ORDER-003 — `do_order` refuses ordering a charmed immortal that outranks the
+  orderer** — ROM `do_order` (`src/act_comm.c`) gates the single-target order on
+  `!IS_AFFECTED(victim, AFF_CHARM) || victim->master != ch || (IS_IMMORTAL(victim)
+  && victim->trust >= ch->trust)`. The Python `mud/commands/group_commands.py:do_order`
+  checked only the first two clauses, so a charmed immortal follower whose trust ≥
+  the orderer's could be ordered where ROM refuses. Added the missing
+  `victim.is_immortal() and victim.trust >= char.trust` clause (`is_immortal()`
+  mirrors ROM `IS_IMMORTAL` = `get_trust >= 52`; a normal charmed mob is
+  unaffected). Test: `tests/integration/test_order003_immortal_trust.py` (2).
+
 ## [2.14.39] — 2026-06-13
 
 ### Fixed
