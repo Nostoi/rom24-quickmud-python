@@ -113,12 +113,18 @@ def do_give(char: Character, args: str) -> str:
 
 def _give_money(char: Character, room, amount: int, parts: list[str]) -> str:
     """ROM money-give path: give N coins|gold|silver victim."""
-    if amount <= 0 or len(parts) < 3:
-        return "Give what to whom?" if len(parts) < 3 else "Sorry, you can't do that."
-
+    # GIVE-003: ROM src/act_obj.c:683-698 validates amount + currency BEFORE
+    # re-reading the victim token, so a malformed currency or non-positive amount
+    # with no recipient yields "Sorry, you can't do that.", not the missing-target
+    # message. The prior single guard checked `len(parts) < 3` first and inverted
+    # ROM's order (same gate-ordering class as SHOUT-005).
     currency = parts[1].lower()
-    if currency not in {"coins", "coin", "gold", "silver"}:
+    if amount <= 0 or currency not in {"coins", "coin", "gold", "silver"}:
         return "Sorry, you can't do that."
+
+    # ROM src/act_obj.c:693-698 — re-read arg2 as the recipient; empty → ask whom.
+    if len(parts) < 3:
+        return "Give what to whom?"
 
     target_name = parts[2]
     victim = get_char_room(char, target_name)

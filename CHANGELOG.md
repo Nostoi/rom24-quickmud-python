@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.98] — 2026-06-14
+
+### Fixed
+
+- **GIVE-003 — `give N <currency>` money-path gate ordering matches ROM** — ROM
+  `do_give` (`src/act_obj.c:682-698`) validates the *amount and currency* first
+  (`amount <= 0` or a non-currency word → "Sorry, you can't do that.") and only
+  then checks for a missing recipient ("Give what to whom?"). Python's
+  `_give_money` collapsed both into a single missing-victim-first guard, so a
+  malformed currency or non-positive amount with no recipient (`give 3 copper`,
+  `give 0 gold`) wrongly surfaced "Give what to whom?" instead of ROM's "Sorry,
+  you can't do that." Same gate-ordering class as SHOUT-005/TELL-009 — the first
+  failing gate selects the player-facing message. Surfaced sweeping act_obj.c
+  entry gates for the act_comm.c "category-error" shape. Tests:
+  `tests/integration/test_give_command.py::test_give003_invalid_currency_without_target_uses_sorry_not_missing_target`
+  + `::test_give003_zero_amount_without_target_uses_sorry_not_missing_target`.
+
 ## [2.14.97] — 2026-06-14
 
 ### Fixed

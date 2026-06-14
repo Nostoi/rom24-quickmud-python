@@ -273,6 +273,37 @@ def test_give_numeric_path_requires_target_after_valid_currency(movable_char_fac
     assert result == "Give what to whom?"
 
 
+def test_give003_invalid_currency_without_target_uses_sorry_not_missing_target(movable_char_factory, test_room_3001):
+    """GIVE-003: ROM validates amount+currency BEFORE checking for a recipient.
+
+    mirrors ROM src/act_obj.c:682-698 — the money branch first tests
+    `amount <= 0 || arg2 not a currency` → "Sorry, you can't do that.", and only
+    then re-reads arg2 as the victim and tests for the missing recipient. With a
+    malformed currency and no recipient (`give 3 copper`), the first failing gate
+    is the currency check, so ROM emits "Sorry, you can't do that." Python's
+    `_give_money` collapsed both into one missing-victim-first guard and wrongly
+    returned "Give what to whom?".
+    """
+    giver = movable_char_factory("Giver", 3001)
+
+    result = process_command(giver, "give 3 copper")
+
+    assert result == "Sorry, you can't do that."
+
+
+def test_give003_zero_amount_without_target_uses_sorry_not_missing_target(movable_char_factory, test_room_3001):
+    """GIVE-003: a non-positive amount also fails the currency/amount gate first.
+
+    mirrors ROM src/act_obj.c:683 — `amount <= 0` → "Sorry, you can't do that."
+    even when the currency word is valid and no recipient is supplied.
+    """
+    giver = movable_char_factory("Giver", 3001)
+
+    result = process_command(giver, "give 0 gold")
+
+    assert result == "Sorry, you can't do that."
+
+
 def test_give_all_is_not_supported_by_rom_and_falls_back_to_missing_item(
     movable_char_factory, object_factory, test_room_3001
 ):
