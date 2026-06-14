@@ -440,6 +440,24 @@ def do_bash(char: Character, args: str) -> str:
     if getattr(victim, "position", Position.STANDING) < Position.FIGHTING:
         return "You'll have to let them get back up first."
 
+    # FIGHT-067: ROM gates the bash at command entry, before any chance/lag/daze/
+    # knockdown — mirroring src/fight.c:2405-2419. is_safe() short-circuits the whole
+    # skill (it sends its own context message: "Not in this room.", shopkeeper, pet,
+    # …). FIGHT-002's apply_damage re-check is downstream and silent — it suppresses
+    # only HP damage, not the lag/daze/knockdown/"sends you sprawling" broadcast.
+    if is_safe(char, victim):  # mirroring ROM src/fight.c:2405
+        return ""
+    if (
+        getattr(victim, "is_npc", False)
+        and getattr(victim, "fighting", None) is not None
+        and not is_same_group(char, victim.fighting)
+    ):
+        # mirroring ROM src/fight.c:2408-2413
+        return "Kill stealing is not permitted."
+    if char.has_affect(AffectFlag.CHARM) and getattr(char, "master", None) is victim:
+        # mirroring ROM src/fight.c:2415-2419
+        return act_format("But $N is your friend!", recipient=char, actor=char, arg2=victim)
+
     if int(getattr(char, "wait", 0) or 0) > 0:
         # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
         # double-deliver (the connection loop sends the return AND drains char.messages).

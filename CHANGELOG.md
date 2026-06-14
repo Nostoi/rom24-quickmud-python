@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.100] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-067 — `bash` in a safe room no longer lags/floors the target** — Python
+  `do_bash` was missing ROM's entry-level offensive-target gate block
+  (`src/fight.c:2405-2419`): `is_safe`, kill-steal, and charm-friend, all checked
+  at command entry *before* computing chance, applying WAIT_STATE, dazing the
+  victim, or knocking them to RESTING. Python relied solely on `apply_damage`'s
+  downstream `is_safe` re-check (FIGHT-002), which is silent and suppresses only
+  the HP damage — so in a ROOM_SAFE room a bash still applied 24-pulse attacker
+  lag, dazed the victim, knocked them to RESTING, and broadcast "sends you
+  sprawling" (a real griefing divergence in safe rooms / town squares). Added the
+  ROM gate block: `is_safe` → silent short-circuit (consistent with FIGHT-002),
+  kill-steal → "Kill stealing is not permitted.", charm-friend →
+  `act_format("But $N is your friend!", …)` (`$N` PERS, FIGHT-064 precedent).
+  Surfaced continuing the category-error / borrowed-gate sweep (SHOUT-005 /
+  TELL-009 / GIVE-003 / RECITE-006 class) into the `fight.c` offensive-skill
+  entry gates. Three follow-ups filed (FIGHT-068 entry-gate order swap, FIGHT-069
+  do_trip/do_dirt gate parity, FIGHT-070 is_safe context-message surfacing).
+  Test: `tests/integration/test_fight067_bash_safe_room_entry_gate.py`.
+
 ## [2.14.99] — 2026-06-14
 
 ### Fixed
