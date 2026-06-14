@@ -1,53 +1,43 @@
-# Session Status — 2026-06-14 — act_comm.c broadcast-verb sweep COMPLETE (TELL-009 + GOSSIP-003)
+# Session Status — 2026-06-14 — act_obj.c entry-gate sweep (GIVE-003)
 
 ## Current State
 
-- **Active focus**: Cross-file / broadcast-surface parity pass (per-file audit
-  tracker exhausted). The `act_comm.c` broadcast-verb inventory is now **fully
-  swept** under the act()/sender-gate lens — every verb reconciled with ROM.
+- **Active focus**: Cross-file / divergence-class sweep (per-file audit tracker
+  exhausted). Following the act_comm.c "category-error" lead into **act_obj.c
+  entry gates** — a precondition checked in the wrong order or borrowed from the
+  wrong command family, where the *first failing gate selects the message*
+  (SHOUT-005, TELL-009 shape).
 - **Last completed**:
-  - **TELL-009** — removed a spurious `COMM_NOCHANNELS` sender gate from
-    `do_tell` (`mud/commands/communication.py:do_tell`). ROM `do_tell`
-    (`src/act_comm.c:850-866`) gates the sender only on `NOTELL||DEAF` then
-    `QUIET`; NOCHANNELS revokes the *public* talk_channel family, not the
-    private `tell`. A god-silenced player can still tell in ROM. Same
-    category error as SHOUT-005. (v2.14.96)
-  - **GOSSIP-003** — the NOCHANNELS channel-revocation line now uses ROM's
-    **misspelled** "priviliges" (not corrected "privileges") at both Python
-    sites: the shared `_check_channel_blockers` gate (gossip/grats/quote/
-    question/answer/music/auction) and `do_clantalk`'s inline gate. ROM emits
-    "priviliges" verbatim at all 8 talk_channel sites + the imm revoke/restore
-    (`src/act_wiz.c:342/351`); `imm_punish.py` already matched. 7 contra-ROM
-    test assertions inverted. (v2.14.97)
-  - **do_pmote** and **do_reply** verified parity-clean (no code change).
-  - Both gaps were stale-audit-note catches (the "acceptable addition /
-    enhancement" notes asserted the divergent behavior was ROM-correct);
-    re-verified false against ROM source per the AGENTS.md re-verify mandate.
+  - **GIVE-003** — `_give_money` money-path gate-ordering inversion. ROM
+    `do_give` (`src/act_obj.c:682-698`) validates *amount + currency* first
+    ("Sorry, you can't do that.") then checks for a missing recipient ("Give
+    what to whom?"); Python collapsed both into a missing-victim-first guard, so
+    `give 3 copper` / `give 0 gold` (bad currency / non-positive amount, no
+    victim) returned the wrong message. Reordered to match ROM. (v2.14.98)
+  - **do_get / `_get_obj`** and **do_drop** verified parity-clean (no change) —
+    gate sequences match ROM in presence + order. do_drop's money branch reads
+    the currency token before validating, so it does NOT share GIVE-003's
+    inversion.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-14_ACT_COMM_TELL009_GOSSIP003.md](SESSION_SUMMARY_2026-06-14_ACT_COMM_TELL009_GOSSIP003.md)
+  [SESSION_SUMMARY_2026-06-14_ACT_OBJ_GIVE003.md](SESSION_SUMMARY_2026-06-14_ACT_OBJ_GIVE003.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.97 |
-| Tests | 5785 passed / 4 skipped |
+| Version | 2.14.98 |
+| Tests | 5787 passed / 4 skipped |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
-| Active focus | act_comm.c broadcast surface fully swept; cross-file / divergence-class pass next |
+| Active focus | act_obj.c entry-gate sweep (GIVE-003 closed); cross-file / divergence-class pass continues |
 
 ## Next Intended Task
 
-The act_comm.c broadcast-verb sweep is **done** — do_say/do_yell/do_shout,
-the talk_channel family, do_tell/do_reply, do_pmote, do_clantalk/do_immtalk are
-all reconciled with ROM. The per-file audit tracker has no ⚠️ Partial /
-❌ Not Audited rows, so the active pass is **cross-file invariants /
-divergence-class sweep**. Pick a fresh divergence class from
-`docs/parity/DIVERGENCE_CLASS_ROSTER.md` (`/rom-divergence-sweep`) or the next
-cross-file INV candidate (affect ticks, position transitions, mob script
-triggers, group/follower chain).
-
-**Targeted lead worth a probe**: the recurring shape in act_comm.c was the
-"category error" — a channel-family precondition (QUIET/NOCHANNELS) wrongly
-borrowed onto a hand-written verb (SHOUT-005, TELL-009). Any command file that
-mixes a generic gate helper with per-command gates (act_move.c, act_obj.c entry
-gates) is a candidate for the same class of bug.
+The act_obj.c entry-gate probe covered get/give/drop this pass (do_put read clean
+against ROM `:357-489` but not locked with a fresh test). Continuing the
+"category-error" lead, the next untouched candidates are the **position/condition
+gate families** in `consumption.py` (do_eat/do_drink/do_quaff — ROM gates on item
+type + hunger/thirst + position). Alternatively, per
+`docs/parity/DIVERGENCE_CLASS_ROSTER.md`, the explicitly-named open lever is the
+**Hypothesis state-machine → diff_harness widening** (Class 11/Phase C), which is
+enumeration-independent (guardrail 3) and where most recent FINDING-0xx
+originated — higher expected yield than another hand-picked verb probe.
