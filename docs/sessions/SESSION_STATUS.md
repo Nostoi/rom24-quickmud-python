@@ -1,54 +1,53 @@
-# Session Status — 2026-06-14 — SHOUT-005 (do_shout sender-gate parity); act_comm.c core broadcast verbs swept clean
+# Session Status — 2026-06-14 — act_comm.c broadcast-verb sweep COMPLETE (TELL-009 + GOSSIP-003)
 
 ## Current State
 
 - **Active focus**: Cross-file / broadcast-surface parity pass (per-file audit
-  tracker exhausted — only deferred track-only DB2 rows remain). Sweeping the
-  `act_comm.c` broadcast-verb inventory under the act()/sender-gate lens.
-- **Last completed**: **SHOUT-005** — `do_shout` (`mud/commands/communication.py:319-326`)
-  sender-gate sequence now matches ROM. ROM `do_shout` (`src/act_comm.c:814-820`)
-  gates the sender **only** on `COMM_NOSHOUT`, then unconditionally
-  `REMOVE_BIT(ch->comm, COMM_SHOUTSOFF)` and proceeds. Python had borrowed three
-  blocking gates that belong to the `talk_channel` family (gossip/grats,
-  `act_comm.c:297-303`), not to shout: a `NOCHANNELS` player was blocked ("The gods
-  have revoked your channel privileges."), a `QUIET` player was blocked ("You must
-  turn off quiet mode first."), and a `SHOUTSOFF` player was blocked ("You must turn
-  shouts back on first.") instead of having their own shouts-off silently
-  auto-cleared and the shout delivered. Removed the two spurious gates and inverted
-  the SHOUTSOFF branch to `_clear_comm_flag` (ROM `REMOVE_BIT`). `banned_channels`
-  (a QuickMUD extension) untouched. Test:
-  `tests/integration/test_shout_yell_parity.py::test_shout_005_sender_gate_matches_rom`
-  (3 facets); 2 legacy assertions in `tests/test_communication.py` corrected.
-  Found by the act_comm.c broadcast-inventory sweep that SESSION_STATUS named as the
-  next task — **`do_say` and `do_yell` verified clean** in the same pass (no gap).
-  (v2.14.95).
+  tracker exhausted). The `act_comm.c` broadcast-verb inventory is now **fully
+  swept** under the act()/sender-gate lens — every verb reconciled with ROM.
+- **Last completed**:
+  - **TELL-009** — removed a spurious `COMM_NOCHANNELS` sender gate from
+    `do_tell` (`mud/commands/communication.py:do_tell`). ROM `do_tell`
+    (`src/act_comm.c:850-866`) gates the sender only on `NOTELL||DEAF` then
+    `QUIET`; NOCHANNELS revokes the *public* talk_channel family, not the
+    private `tell`. A god-silenced player can still tell in ROM. Same
+    category error as SHOUT-005. (v2.14.96)
+  - **GOSSIP-003** — the NOCHANNELS channel-revocation line now uses ROM's
+    **misspelled** "priviliges" (not corrected "privileges") at both Python
+    sites: the shared `_check_channel_blockers` gate (gossip/grats/quote/
+    question/answer/music/auction) and `do_clantalk`'s inline gate. ROM emits
+    "priviliges" verbatim at all 8 talk_channel sites + the imm revoke/restore
+    (`src/act_wiz.c:342/351`); `imm_punish.py` already matched. 7 contra-ROM
+    test assertions inverted. (v2.14.97)
+  - **do_pmote** and **do_reply** verified parity-clean (no code change).
+  - Both gaps were stale-audit-note catches (the "acceptable addition /
+    enhancement" notes asserted the divergent behavior was ROM-correct);
+    re-verified false against ROM source per the AGENTS.md re-verify mandate.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-14_SHOUT_005_SENDER_GATE.md](SESSION_SUMMARY_2026-06-14_SHOUT_005_SENDER_GATE.md)
+  [SESSION_SUMMARY_2026-06-14_ACT_COMM_TELL009_GOSSIP003.md](SESSION_SUMMARY_2026-06-14_ACT_COMM_TELL009_GOSSIP003.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.95 |
-| Tests | 5783 passed / 4 skipped |
+| Version | 2.14.97 |
+| Tests | 5785 passed / 4 skipped |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
-| Active focus | act_comm.c broadcast inventory (core verbs clean; channel family next) |
+| Active focus | act_comm.c broadcast surface fully swept; cross-file / divergence-class pass next |
 
 ## Next Intended Task
 
-Continue the **act_comm.c broadcast-verb sweep**. The three core verbs
-(`do_say`/`do_yell`/`do_shout`) are now verified clean. Remaining sites:
-
-1. **`talk_channel` family** — `do_gossip`/`do_grats`/`do_quote`/`do_question`/
-   `do_answer`. Confirm each gates the **sender** on `COMM_QUIET` + `COMM_NOCHANNELS`
-   per ROM `act_comm.c:297-303` (the gates `do_shout` correctly lacks), and renders
-   `$n` per-listener PERS. GOSSIP-001/002 prior — verify the siblings.
-2. **`do_pmote`** — verify against ROM (EMOTE-005 closed `do_emote`).
-3. **`do_tell`/`do_reply`** — TELL-series prior; spot-check the gate sequence.
-
-Method per verb: read the ROM C gate sequence → diff the Python early-returns →
-one failing test if they diverge (one gap = one test = one commit via
-`/rom-gap-closer`). If all clean, the act_comm.c broadcast surface is fully swept;
-next move is a fresh divergence class from
+The act_comm.c broadcast-verb sweep is **done** — do_say/do_yell/do_shout,
+the talk_channel family, do_tell/do_reply, do_pmote, do_clantalk/do_immtalk are
+all reconciled with ROM. The per-file audit tracker has no ⚠️ Partial /
+❌ Not Audited rows, so the active pass is **cross-file invariants /
+divergence-class sweep**. Pick a fresh divergence class from
 `docs/parity/DIVERGENCE_CLASS_ROSTER.md` (`/rom-divergence-sweep`) or the next
-cross-file INV candidate.
+cross-file INV candidate (affect ticks, position transitions, mob script
+triggers, group/follower chain).
+
+**Targeted lead worth a probe**: the recurring shape in act_comm.c was the
+"category error" — a channel-family precondition (QUIET/NOCHANNELS) wrongly
+borrowed onto a hand-written verb (SHOUT-005, TELL-009). Any command file that
+mixes a generic gate helper with per-command gates (act_move.c, act_obj.c entry
+gates) is a candidate for the same class of bug.
