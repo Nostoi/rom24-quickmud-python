@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.102] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-071 — charmed `dirt`/`trip` against your master now show ROM's line
+  in ROM's order** — `do_dirt` and `do_trip` routed their charmed-attacker check
+  through `_kill_safety_message` (do_kill's composite), which always emitted
+  do_kill's `"$N is your beloved master."` at the top, before the is_safe body.
+  ROM checks charm **last** with per-command strings: `do_dirt`
+  (`src/fight.c:2544-2548`) says `"But $N is such a good friend!"`, `do_trip`
+  (`:2705-2709`) says `"$N is your beloved master."` only *after* the flying /
+  position / self checks. So a charmed PC dirt-kicking its master saw the wrong
+  string, and a charmed PC tripping a *flying* master heard the charm line
+  instead of "Their feet aren't on the ground." Added an `include_charm`
+  parameter to `_kill_safety_message` (do_kill keeps the default, byte-identical);
+  `do_dirt`/`do_trip` now call it with `include_charm=False` and carry their own
+  correctly-worded, correctly-ordered charm gate (FIGHT-067 `do_bash` pattern).
+  Test: `tests/integration/test_fight071_dirt_trip_charm_gate.py`.
+
 ## [2.14.101] — 2026-06-14
 
 ### Fixed
