@@ -173,13 +173,41 @@ def test_answer_channel_respects_comm_flags():
 
     responder.set_comm_flag(CommFlag.NOCHANNELS)
     nochannels_msg = process_command(responder, "answer Check the quad.")
-    assert nochannels_msg == "The gods have revoked your channel privileges."
+    assert nochannels_msg == "The gods have revoked your channel priviliges."
     responder.clear_comm_flag(CommFlag.NOCHANNELS)
 
     out = process_command(responder, "answer Ask the guard to help.")
     assert out == "{fYou answer '{FAsk the guard to help.{f'{x"
     assert "{fResponder answers '{FAsk the guard to help.{f'{x" in listener.messages
     assert all("guard" not in msg for msg in blocked.messages)
+
+
+def test_gossip003_nochannels_message_matches_rom_misspelling():
+    """GOSSIP-003 — the NOCHANNELS channel-revocation line is ROM's
+    *misspelled* "priviliges", not corrected English "privileges".
+
+    ROM emits `"The gods have revoked your channel priviliges.\\n\\r"`
+    verbatim at all 8 talk_channel sites (src/act_comm.c:306/363/420/477/
+    535/592/649/704) and the imm revoke/restore (src/act_wiz.c:342/351).
+    A faithful port replicates the typo. The shared
+    `_check_channel_blockers` helper (gossip/grats/quote/question/answer/
+    music/auction) and `do_clantalk` had silently "corrected" it to
+    "privileges", diverging from ROM. `imm_punish.py` already matches ROM.
+    """
+    rom_line = "The gods have revoked your channel priviliges."
+
+    # Shared talk_channel gate (covers all 6 family verbs via _check_channel_blockers)
+    speaker = make_player("Gossiper3", 3001)
+    speaker.set_comm_flag(CommFlag.NOCHANNELS)
+    assert process_command(speaker, "gossip hi") == rom_line
+
+    # do_clantalk's own inline NOCHANNELS gate (src/act_comm.c:704). ROM gates
+    # clan-membership first (act_comm.c:682), so the speaker must be in a clan
+    # for the NOCHANNELS branch to be reachable.
+    clanner = make_player("Clanner3", 3001)
+    clanner.clan = 1
+    clanner.set_comm_flag(CommFlag.NOCHANNELS)
+    assert process_command(clanner, "clantalk hi") == rom_line
 
 
 def test_music_channel_toggle_and_broadcast():
@@ -211,7 +239,7 @@ def test_music_channel_toggle_and_broadcast():
 
     bard.set_comm_flag(CommFlag.NOCHANNELS)
     nochannels_msg = process_command(bard, "music Loud ballad")
-    assert nochannels_msg == "The gods have revoked your channel privileges."
+    assert nochannels_msg == "The gods have revoked your channel priviliges."
     bard.clear_comm_flag(CommFlag.NOCHANNELS)
 
 
@@ -249,7 +277,7 @@ def test_auction_channel_toggle_and_broadcast():
 
     seller.set_comm_flag(CommFlag.NOCHANNELS)
     nochannels_msg = process_command(seller, "auction hush")
-    assert nochannels_msg == "The gods have revoked your channel privileges."
+    assert nochannels_msg == "The gods have revoked your channel priviliges."
     seller.clear_comm_flag(CommFlag.NOCHANNELS)
 
     seller.banned_channels.add("auction")
@@ -289,7 +317,7 @@ def test_gossip_channel_toggle_and_broadcast():
 
     gossiper.set_comm_flag(CommFlag.NOCHANNELS)
     nochannels_msg = process_command(gossiper, "gossip hush")
-    assert nochannels_msg == "The gods have revoked your channel privileges."
+    assert nochannels_msg == "The gods have revoked your channel priviliges."
     gossiper.clear_comm_flag(CommFlag.NOCHANNELS)
 
 
@@ -369,7 +397,7 @@ def test_grats_channel_respects_mutes():
 
     celebrant.set_comm_flag(CommFlag.NOCHANNELS)
     nochannels_msg = process_command(celebrant, "grats hush")
-    assert nochannels_msg == "The gods have revoked your channel privileges."
+    assert nochannels_msg == "The gods have revoked your channel priviliges."
     celebrant.clear_comm_flag(CommFlag.NOCHANNELS)
 
 
@@ -405,7 +433,7 @@ def test_quote_channel_toggle_and_broadcast():
 
     quoter.set_comm_flag(CommFlag.NOCHANNELS)
     nochannels_msg = process_command(quoter, "quote hush")
-    assert nochannels_msg == "The gods have revoked your channel privileges."
+    assert nochannels_msg == "The gods have revoked your channel priviliges."
     quoter.clear_comm_flag(CommFlag.NOCHANNELS)
 
 
@@ -432,7 +460,7 @@ def test_clantalk_reaches_clan_members():
 
     leader.set_comm_flag(CommFlag.NOCHANNELS)
     denied = process_command(leader, "clan denied")
-    assert denied == "The gods have revoked your channel privileges."
+    assert denied == "The gods have revoked your channel priviliges."
     leader.clear_comm_flag(CommFlag.NOCHANNELS)
 
     ally.messages.clear()

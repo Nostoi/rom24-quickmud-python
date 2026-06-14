@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.97] — 2026-06-14
+
+### Fixed
+
+- **GOSSIP-003 — NOCHANNELS revocation message now matches ROM's misspelling** —
+  ROM emits `"The gods have revoked your channel priviliges."` (note the
+  misspelled *priviliges*) verbatim at all 8 `talk_channel` sites
+  (`src/act_comm.c:306/363/420/477/535/592/649` + `do_clantalk:704`) and the
+  immortal revoke/restore (`src/act_wiz.c:342/351`). Two Python sites had
+  silently "corrected" it to *privileges*: the shared `_check_channel_blockers`
+  gate (gossip/grats/quote/question/answer/music/auction) and `do_clantalk`'s
+  own inline gate. A faithful port replicates the typo — both now emit
+  "priviliges" (`mud/commands/imm_punish.py` already matched ROM). The prior
+  audit's "acceptable addition" note had masked the divergence; re-verified
+  false against ROM source. Test:
+  `tests/test_communication.py::test_gossip003_nochannels_message_matches_rom_misspelling`.
+
 ## [2.14.96] — 2026-06-14
 
 ### Fixed

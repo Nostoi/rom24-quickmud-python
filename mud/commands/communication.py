@@ -363,7 +363,9 @@ def _check_channel_blockers(char: Character, toggle_flag: CommFlag) -> str | Non
     if _has_comm_flag(char, CommFlag.QUIET):
         return "You must turn off quiet mode first."
     if _has_comm_flag(char, CommFlag.NOCHANNELS) and toggle_flag != CommFlag.NOWIZ:
-        return "The gods have revoked your channel privileges."
+        # GOSSIP-003: ROM emits the misspelled "priviliges" verbatim
+        # (src/act_comm.c:306/363/420/477/535/592/649). Faithful port keeps the typo.
+        return "The gods have revoked your channel priviliges."
     return None
 
 
@@ -626,7 +628,8 @@ def do_clantalk(char: Character, args: str) -> str:
         return "Clan channel is now OFF."
 
     if _has_comm_flag(char, CommFlag.NOCHANNELS):
-        return "The gods have revoked your channel privileges."
+        # GOSSIP-003: ROM's misspelled "priviliges" (src/act_comm.c:704), kept verbatim.
+        return "The gods have revoked your channel priviliges."
 
     _clear_comm_flag(char, CommFlag.NOCLAN)
 

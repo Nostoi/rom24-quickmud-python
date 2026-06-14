@@ -1018,10 +1018,12 @@ return f"You <channel> '<message>'"
 | do_clantalk() | 677-729 | communication.py:463 | ✅ **100%** | Clan-only channel |
 | do_immtalk() | 730-766 | communication.py:494 | ✅ **100%** | Immortal-only channel |
 
+**GOSSIP-003** (MINOR, ✅ FIXED — 2.14.97) — the `COMM_NOCHANNELS` channel-revocation line used corrected English "privileges" instead of ROM's *misspelled* "priviliges". ROM emits `"The gods have revoked your channel priviliges.\n\r"` verbatim at all 8 `talk_channel` sites (`src/act_comm.c:306/363/420/477/535/592/649` + `do_clantalk:704`) and the imm revoke/restore (`src/act_wiz.c:342/351`). A faithful port replicates the typo. Two production sites diverged: the shared `_check_channel_blockers` helper (gossip/grats/quote/question/answer/music/auction) and `do_clantalk`'s own inline gate — both now emit "priviliges". `mud/commands/imm_punish.py:41/48` already matched ROM. **The prior audit had a stale "acceptable addition / acceptable enhancement" note that masked this** — re-verified against ROM source per the AGENTS.md re-verify mandate. 7 contra-ROM assertions in `tests/test_communication.py` (asserting "privileges") inverted. Test: `tests/test_communication.py::test_gossip003_nochannels_message_matches_rom_misspelling`. | ✅ FIXED (2.14.97) |
+
 **Parity Check**: ✅ **PERFECT** (all 9 channel commands)
 - ✅ Toggle behavior
 - ✅ QUIET check
-- ✅ NOCHANNELS check
+- ✅ NOCHANNELS check (ROM's misspelled "priviliges" — GOSSIP-003)
 - ✅ Auto-enable on send
 - ✅ Global broadcast with filtering
 - ✅ Clan filtering (clantalk)
