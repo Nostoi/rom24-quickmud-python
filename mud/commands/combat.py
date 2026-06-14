@@ -1105,6 +1105,16 @@ def do_dirt(char: Character, args: str) -> str:
     if safety_msg:
         return safety_msg
 
+    # FIGHT-069: ROM do_dirt has a kill-steal gate (src/fight.c:2537-2542) that lives
+    # OUTSIDE is_safe — _kill_safety_message (do_kill's is_safe composite) omits it, so
+    # do_kill re-adds it separately (combat.py:141). do_dirt must too.
+    if (
+        getattr(victim, "is_npc", False)
+        and getattr(victim, "fighting", None) is not None
+        and not is_same_group(char, victim.fighting)
+    ):
+        return "Kill stealing is not permitted."
+
     # Delegate parity math/effects to the skill handler.
     result = skill_handlers.dirt_kicking(char, target=victim)
     check_killer(char, victim)
@@ -1146,6 +1156,16 @@ def do_trip(char: Character, args: str) -> str:
     safety_msg = _kill_safety_message(char, victim)
     if safety_msg:
         return safety_msg
+
+    # FIGHT-069: ROM do_trip's kill-steal gate (src/fight.c:2678-2683) sits between
+    # is_safe and the flying/position/self checks. _kill_safety_message (do_kill's
+    # is_safe composite) omits the kill-steal block, so add it explicitly here.
+    if (
+        getattr(victim, "is_npc", False)
+        and getattr(victim, "fighting", None) is not None
+        and not is_same_group(char, victim.fighting)
+    ):
+        return "Kill stealing is not permitted."
 
     # Can't trip flying targets
     victim_affected = getattr(victim, "affected_by", 0)

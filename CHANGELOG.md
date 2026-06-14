@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.101] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-069 — `dirt`/`trip` now reject kill-stealing** — Python `do_dirt` and
+  `do_trip` ported their safety gate as a single call to `_kill_safety_message`,
+  which is `do_kill`'s is_safe composite and does **not** include the kill-steal
+  block (`do_kill` re-adds it separately). ROM `do_dirt` (`src/fight.c:2537-2542`)
+  and `do_trip` (`:2678-2683`) both reject attacking an NPC that an ungrouped
+  third party is already fighting (`IS_NPC(victim) && victim->fighting && !is_same_group`
+  → "Kill stealing is not permitted."). Without it a player could dirt-kick or
+  trip a mob someone else was fighting and steal the kill. Added the kill-steal
+  block to both commands (matching ROM's kill-steal-after-is_safe ordering and the
+  FIGHT-067 `do_bash` block). Continues the category-error / borrowed-gate sweep
+  (the `_kill_safety_message` reuse dropped a gate that lives outside the helper).
+  Two residual `do_dirt`/`do_trip` charm-gate divergences filed (FIGHT-071
+  message/order). Test: `tests/integration/test_fight069_dirt_trip_kill_steal_gate.py`.
+
 ## [2.14.100] — 2026-06-14
 
 ### Fixed
