@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.103] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-074 — `do_kill` now checks the charm gate LAST, matching ROM's
+  is_safe → kill-steal → charm order** — `do_kill` routed safety through
+  `_kill_safety_message` with the bundled `"$N is your beloved master."` charm
+  gate checked at the *top* of the helper (before its is_safe body) and before
+  do_kill's separate kill-steal gate. ROM (`src/fight.c:2794-2807`) orders the
+  gates is_safe → kill-steal → charm, so a charmed PC targeting its master in a
+  safe room saw "… is your beloved master." where ROM emits "Not in this room.",
+  and one whose master was being kill-stolen saw the charm line instead of "Kill
+  stealing is not permitted." **Fix (full removal):** removed the `include_charm`
+  parameter and the charm branch from `_kill_safety_message` entirely, making it
+  a pure ROM `is_safe()` mirror; all three offensive verbs now own their charm
+  gate at the ROM position (do_kill after kill-steal, `src/fight.c:2803-2807`;
+  do_dirt/do_trip already correct from FIGHT-071). Completes the kill/dirt/trip
+  charm-order trio. Test: `tests/integration/test_fight074_kill_charm_order.py`.
+
 ## [2.14.102] — 2026-06-14
 
 ### Fixed

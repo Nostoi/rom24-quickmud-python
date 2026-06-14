@@ -45,12 +45,13 @@ _FLEE_MOVEMENT_LOSS: dict[Sector, int] = {
 }
 
 
-def _kill_safety_message(attacker: Character, victim: Character, *, include_charm: bool = True) -> str | None:
-    # FIGHT-071: ``include_charm`` lets do_dirt/do_trip reuse the is_safe body
-    # WITHOUT the bundled charm gate. ROM's is_safe() (src/fight.c:1059) contains
-    # no charm check — do_kill appends "beloved master" after is_safe, but do_dirt
-    # / do_trip check charm LAST with their own strings/positions. Defaulting True
-    # keeps do_kill byte-identical.
+def _kill_safety_message(attacker: Character, victim: Character) -> str | None:
+    # FIGHT-074: pure mirror of ROM's is_safe() (src/fight.c:1059) — which contains
+    # NO charm check. Each offensive verb (do_kill/do_dirt/do_trip/do_bash) appends
+    # its own charm gate AFTER is_safe (and after kill-steal), with its own string
+    # and position. The charm branch used to live here behind an ``include_charm``
+    # flag (FIGHT-071); that made do_kill emit "beloved master" BEFORE its own
+    # kill-steal gate, diverging from ROM's is_safe → kill-steal → charm order.
     victim_room = getattr(victim, "room", None)
     attacker_room = getattr(attacker, "room", None)
     if victim_room is None or attacker_room is None:
@@ -65,11 +66,6 @@ def _kill_safety_message(attacker: Character, victim: Character, *, include_char
         and skill_handlers._coerce_int(getattr(attacker, "level", 0)) > LEVEL_IMMORTAL
     ):
         return None
-
-    if include_charm and skill_handlers._is_charmed(attacker) and getattr(attacker, "master", None) is victim:
-        # FIGHT-064: ROM act("$N is your beloved master.", ch, NULL, victim, TO_CHAR) —
-        # $N = PERS(victim) = NPC short_descr (not keyword name), cap buf[0].
-        return act_format("$N is your beloved master.", recipient=attacker, actor=attacker, arg2=victim)
 
     victim_is_npc = bool(getattr(victim, "is_npc", True))
 
@@ -145,6 +141,11 @@ def do_kill(char: Character, args: str) -> str:
 
     if getattr(victim, "fighting", None) is not None and not is_same_group(char, victim.fighting):
         return "Kill stealing is not permitted."
+
+    # FIGHT-074: charm gate fires LAST — after is_safe + kill-steal — mirroring
+    # ROM src/fight.c:2803-2807 act("$N is your beloved master.", ch, NULL, victim).
+    if skill_handlers._is_charmed(char) and getattr(char, "master", None) is victim:
+        return act_format("$N is your beloved master.", recipient=char, actor=char, arg2=victim)
 
     if getattr(char, "position", Position.STANDING) == Position.FIGHTING:
         return "You do the best you can!"
@@ -1106,10 +1107,10 @@ def do_dirt(char: Character, args: str) -> str:
     if victim_affected & AffectFlag.BLIND:
         return "They're already blinded."
 
-    # FIGHT-071: include_charm=False — ROM do_dirt checks charm with its OWN
-    # string ("such a good friend") AFTER is_safe + kill-steal, not do_kill's
-    # bundled "beloved master" line. See the explicit gate below.
-    safety_msg = _kill_safety_message(char, victim, include_charm=False)
+    # FIGHT-071/074: _kill_safety_message is now a pure is_safe mirror (no charm).
+    # ROM do_dirt checks charm with its OWN string ("such a good friend") AFTER
+    # is_safe + kill-steal, not do_kill's "beloved master" line. See gate below.
+    safety_msg = _kill_safety_message(char, victim)
     if safety_msg:
         return safety_msg
 
@@ -1165,10 +1166,10 @@ def do_trip(char: Character, args: str) -> str:
         if victim is None:
             return "They aren't here."
 
-    # Safety checks. FIGHT-071: include_charm=False — ROM do_trip checks charm
+    # Safety checks. FIGHT-071/074: helper is a pure is_safe mirror. ROM do_trip checks charm
     # LAST (after is_safe, kill-steal, flying, position, victim==ch), not in the
     # bundled is_safe composite. See the explicit gate below.
-    safety_msg = _kill_safety_message(char, victim, include_charm=False)
+    safety_msg = _kill_safety_message(char, victim)
     if safety_msg:
         return safety_msg
 
