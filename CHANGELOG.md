@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.96] — 2026-06-14
+
+### Fixed
+
+- **TELL-009 — spurious `COMM_NOCHANNELS` sender gate removed from `do_tell`** —
+  ROM `do_tell` (`src/act_comm.c:850-866`) gates the sender *only* on
+  `NOTELL||DEAF` → "Your message didn't get through.", then `QUIET` → "You must
+  turn off quiet mode first." (then a dead `DEAF` branch). There is **no**
+  `COMM_NOCHANNELS` gate — `NOCHANNELS` revokes the *public* channels
+  (gossip/grats/quote/…, the `talk_channel` family, `act_comm.c:297-303`), not
+  the private `tell`. Python had borrowed a NOCHANNELS gate that blocked the
+  sender with "The gods have revoked your channel privileges." — a god-silenced
+  player could not send a tell, diverging from ROM (in which they still can).
+  Same category error closed for `do_shout` as SHOUT-005. The prior audit's
+  "acceptable enhancement" note was a stale claim, re-verified false against ROM
+  source. Gate removed; `banned_channels` (a QuickMUD extension) untouched. Test:
+  `tests/integration/test_tell_parity.py::test_tell_009_nochannels_sender_can_still_tell`.
+
 ## [2.14.95] — 2026-06-14
 
 ### Fixed

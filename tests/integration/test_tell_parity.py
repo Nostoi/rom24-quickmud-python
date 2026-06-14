@@ -155,3 +155,28 @@ def test_tell_005_to_vict_wraps_rom_color_codes() -> None:
     assert expected in target.messages, (
         f"TO_VICT colour wrapping diverges from ROM; expected {expected!r} in {target.messages!r}"
     )
+
+
+def test_tell_009_nochannels_sender_can_still_tell() -> None:
+    """TELL-009 — ROM `do_tell` (src/act_comm.c:850-866) gates the sender
+    ONLY on NOTELL||DEAF then QUIET (then a dead DEAF branch). There is
+    **no** COMM_NOCHANNELS gate — NOCHANNELS revokes the *public* channels
+    (gossip/grats/quote/…, talk_channel act_comm.c:297-303), not the private
+    `tell`. Python had borrowed a spurious NOCHANNELS gate that blocked the
+    sender with "The gods have revoked your channel privileges." — the same
+    category error closed for `do_shout` as SHOUT-005.
+
+    A NOCHANNELS sender must still deliver the tell normally.
+    """
+    from mud.commands.communication import _set_comm_flag
+    from mud.models.constants import CommFlag
+
+    sender = create_test_character("Tellnochan", 3001)
+    target = _make_online(create_test_character("Tellnochanrcv", 3001))
+    _set_comm_flag(sender, CommFlag.NOCHANNELS)
+
+    out = do_tell(sender, f"{target.name} hi there")
+    plain = _strip(out)
+    assert plain == "You tell Tellnochanrcv 'hi there'", (
+        f"NOCHANNELS sender must still tell (ROM do_tell has no NOCHANNELS gate); got {out!r}"
+    )

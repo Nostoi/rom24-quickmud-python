@@ -867,6 +867,7 @@ return f"You shout, '{cleaned}'"
 | `TELL-006` | MINOR (analyzed-inert) | src/act_comm.c:893,926,937 | mud/commands/communication.py:69 | Buffered tells ROM-uppercases first char via `buf[0] = UPPER(buf[0])` after formatting. The formatted ROM string always starts with `'{'` (colour code `{k`), and `UPPER('{') == '{'` since `{` is not lowercase — the transformation is provably a no-op in ROM C, not "masked" by a Python code path. No behavior to mirror; no test can fail. Closed as ✅ ANALYZED-INERT (doc-only, no code change). | ✅ ANALYZED (2.8.53) |
 | `TELL-007` | CRITICAL | src/act_comm.c:942 / src/comm.c:2384 | mud/commands/communication.py:_deliver_tell | Sibling of SAY-005. The live-tell delivery helper did `_queue_personal_message(target, message)` (unconditional mailbox append) **and then** `if writer: asyncio.create_task(send_to_char(...))` → a connected target received the tell **twice**. Fix: replaced the queue+async pair with `push_message(target, message)` (XOR); the separate `not writer`-gated TRIG_ACT dispatch is unchanged. The linkdead/AFK/note-writing branches in `_handle_buffered_tell` keep their `_queue_personal_message` mailbox queue — those targets are not actively receiving, so the mailbox is the correct (deferred) channel. Test: `tests/integration/test_inv001_comm_delivery_channel.py::test_tell_single_delivers_to_connected_target`. | ✅ FIXED (2.12.69) |
 | `TELL-008` | MINOR | src/act_comm.c — `act("$E is not receiving tells.", …)`, `act("$E can't hear you.", …)`, `act("$N seems to have misplaced $S link…", …)`, `act("$E is AFK, …when $E returns.", …)`, `act("$E is writing a note, …when $E returns.", …)` (all TO_CHAR, victim = arg) | mud/commands/communication.py:`_validate_tell_target` + `_handle_buffered_tell` | **The teller-facing status lines used the victim's NAME + "they"/"their" where ROM uses the victim's gendered pronouns via act().** ROM renders `$E` = subject pronoun (He/She/It), `$S` = possessive (his/her/its), `$N` = PERS name. So `tell bob hi` when Bob (sexless) is QUIET shows ROM "It is not receiving tells." (Python showed "Bob is not receiving tells."); a male linkdead victim shows "Bob seems to have misplaced his link…" (Python "…their link…"). Six messages affected. `act_format` already supports the `$E`/`$S`/`$N` codes and caps buf[0]. **Fix (2.14.51):** replaced the six baked f-strings with `act_format("$E …"/"$N … $S …", recipient=sender, actor=sender, arg2=target)`. The linkdead line keeps `$N` (ROM uses the name there) but renders `$S` for the possessive. Surfaced 2026-06-13 applying the EMOTE-005 `$n`/PERS lens to the comm commands. Inverted 3 tests in `tests/test_communication.py` (sexless Bob → "It"/"its") + added `test_tell008_status_messages_use_gendered_pronoun` (male victim → "He"). | ✅ FIXED (2.14.51) |
+| `TELL-009` | IMPORTANT | src/act_comm.c:850-866 | mud/commands/communication.py:do_tell | **Spurious COMM_NOCHANNELS sender gate.** ROM `do_tell` gates the sender ONLY on `NOTELL\|\|DEAF` → "Your message didn't get through." (act_comm.c:850-854), then `QUIET` → "You must turn off quiet mode first." (856-860), then a dead `DEAF` branch (862-866). There is **no** `COMM_NOCHANNELS` gate — `NOCHANNELS` revokes the *public* channels (gossip/grats/quote/…, `talk_channel` act_comm.c:297-303), not the private `tell`. Python had borrowed a NOCHANNELS gate that blocked the sender with "The gods have revoked your channel privileges." — the same category error closed for `do_shout` as SHOUT-005. A NOCHANNELS player can still send tells in ROM. Fix: delete the NOCHANNELS gate (the prior audit's "acceptable enhancement" note was a stale claim — re-verified against ROM source). Surfaced by the act_comm.c broadcast-verb sweep that closed SHOUT-005. Test: `tests/integration/test_tell_parity.py::test_tell_009_nochannels_sender_can_still_tell`. | ✅ FIXED (2.14.96) |
 
 **ROM C Behavior** (comprehensive):
 1. COMM_NOTELL or COMM_DEAF → "Your message didn't get through."
@@ -885,8 +886,8 @@ return f"You shout, '{cleaned}'"
 ```python
 if "tell" in char.banned_channels:
     return "You are banned from tell."
-if _has_comm_flag(char, CommFlag.NOCHANNELS):
-    return "The gods have revoked your channel privileges."
+# TELL-009 (FIXED): the spurious NOCHANNELS sender gate was removed — ROM
+# do_tell has no NOCHANNELS check (NOCHANNELS revokes public channels, not tell).
 if _has_comm_flag(char, CommFlag.NOTELL) or _has_comm_flag(char, CommFlag.DEAF):
     return "Your message didn't get through."
 if _has_comm_flag(char, CommFlag.QUIET):
@@ -914,7 +915,7 @@ _deliver_tell(sender, target, formatted)
 ```
 
 **Parity Check**: ✅ EXCELLENT (all ROM behaviors implemented)
-- ✅ All COMM flag checks
+- ✅ COMM flag checks (NOTELL/DEAF, QUIET) — NOCHANNELS is NOT a tell gate in ROM (TELL-009 removed the spurious one)
 - ✅ get_char_world() usage (FIXED Dec 2025)
 - ✅ NPC same-room restriction
 - ✅ Linkdead buffering

@@ -243,8 +243,13 @@ def do_tell(char: Character, args: str) -> str:
     """
     if "tell" in char.banned_channels:
         return "You are banned from tell."
-    if _has_comm_flag(char, CommFlag.NOCHANNELS):
-        return "The gods have revoked your channel privileges."
+    # TELL-009: ROM `do_tell` (src/act_comm.c:850-866) gates the sender ONLY on
+    # NOTELL||DEAF → "Your message didn't get through.", then QUIET → "You must
+    # turn off quiet mode first." (then a dead DEAF branch). There is NO
+    # COMM_NOCHANNELS gate — NOCHANNELS revokes the *public* channels
+    # (gossip/grats/quote/…, talk_channel act_comm.c:297-303), not the private
+    # `tell`. The borrowed NOCHANNELS gate here was the same category error
+    # closed for `do_shout` as SHOUT-005; removed.
     if _has_comm_flag(char, CommFlag.NOTELL) or _has_comm_flag(char, CommFlag.DEAF):
         return "Your message didn't get through."
     if _has_comm_flag(char, CommFlag.QUIET):
