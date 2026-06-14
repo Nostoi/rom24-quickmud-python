@@ -117,9 +117,10 @@ def do_recite(ch: Character, args: str) -> str:
     arg1 = parts[0] if parts else ""
     arg2 = parts[1] if len(parts) > 1 else ""
 
-    if not arg1:
-        return "What do you want to recite?"
-
+    # RECITE-006: ROM do_recite (src/act_obj.c:1910-1974) has NO empty-arg gate
+    # (unlike sibling do_quaff's "Quaff what?"). It goes straight to
+    # get_obj_carry; with an empty arg, is_name("") is FALSE
+    # (src/handler.c:942-943), so nothing matches → "You do not have that scroll."
     # ROM 1921: get_obj_carry(ch, arg1, ch)
     scroll = get_obj_carry(ch, arg1)
     if scroll is None:

@@ -597,6 +597,25 @@ def test_recite_only_scrolls(test_character, object_factory):
     assert "only scrolls" in do_recite(test_character, "rock").lower()
 
 
+def test_recite_empty_arg_has_no_borrowed_what_gate(test_character, object_factory):
+    """RECITE-006: empty arg falls to get_obj_carry, not a borrowed 'What...?' gate.
+
+    ROM do_recite (src/act_obj.c:1910-1974) has NO empty-arg gate — unlike the
+    sibling do_quaff ('Quaff what?'). It calls get_obj_carry(ch, arg1, ch) directly
+    (1921). With arg1 == "", get_obj_carry's is_name("") returns FALSE
+    (src/handler.c:942-943, the explicit 'fixed to prevent is_name on "" returning
+    TRUE' guard), so no carried object matches and the lookup returns NULL → the
+    player sees "You do not have that scroll." — even while holding a non-scroll.
+    The wrong-but-plausible outcomes this discriminates against:
+      - "What do you want to recite?"  (the borrowed gate this removes)
+      - "You can recite only scrolls." (the pre-fix is_name("")==TRUE first-match)
+    """
+    rock = _make_obj(object_factory, item_type=ItemType.TRASH, name="rock", short_descr="a rock")
+    test_character.add_object(rock)
+    result = do_recite(test_character, "")
+    assert "do not have" in result.lower(), result
+
+
 def test_recite_level_gate(test_character, object_factory):
     """ROM 1933-1937: ch->level < scroll->level => 'too complex'."""
     test_character.level = 5

@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.99] — 2026-06-14
+
+### Fixed
+
+- **RECITE-006 — `recite` (no argument) drops a borrowed entry gate** — Python
+  `do_recite` opened with `if not arg1: return "What do you want to recite?"`, a
+  gate ROM `do_recite` does **not** have (it was borrowed from the sibling
+  `do_quaff`'s "Quaff what?", `src/act_obj.c:1872`). ROM goes straight to
+  `get_obj_carry(ch, arg1, ch)` (`src/act_obj.c:1921`); with an empty argument
+  `is_name("")` returns FALSE (`src/handler.c:942-943`, the explicit "fixed to
+  prevent is_name on \"\" returning TRUE" guard), so the lookup returns NULL and
+  the player sees "You do not have that scroll." — even while holding a
+  non-scroll. Removed the borrowed gate so empty-arg `recite` matches ROM.
+  Python's own `is_name`/`get_obj_carry` already short-circuit on empty input, so
+  no helper change was needed (the earlier "is_name('')==TRUE first-match"
+  hypothesis was overturned by re-reading the C source). Same category-error /
+  borrowed-gate class as SHOUT-005/TELL-009/GIVE-003 — the first failing gate
+  selects the player-facing message. Surfaced sweeping `magic_items.py` entry
+  gates. Test:
+  `tests/integration/test_consumables.py::test_recite_empty_arg_has_no_borrowed_what_gate`.
+
 ## [2.14.98] — 2026-06-14
 
 ### Fixed
