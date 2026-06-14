@@ -75,18 +75,22 @@ def test_shout_and_tell_respect_comm_flags():
     assert out == "You will no longer hear shouts."
     assert alice.has_comm_flag(CommFlag.SHOUTSOFF)
 
+    # SHOUT-005: ROM `do_shout` auto-clears the shouter's own COMM_SHOUTSOFF
+    # (REMOVE_BIT, src/act_comm.c:820) and delivers the shout — it does NOT block
+    # with "You must turn shouts back on first." (that branch was a divergence).
     bob.messages.clear()
     out = process_command(alice, "shout hello")
-    assert out == "You must turn shouts back on first."
-    assert not bob.messages
-
-    out = process_command(alice, "shout")
-    assert out == "You can hear shouts again."
+    assert out == "You shout 'hello'"
     assert not alice.has_comm_flag(CommFlag.SHOUTSOFF)
+    assert "Alice shouts 'hello'" in bob.messages
 
+    # SHOUT-005: ROM `do_shout` has no sender COMM_QUIET gate (that belongs to the
+    # talk_channel family, act_comm.c:297-303); a quieted player can still shout.
     alice.set_comm_flag(CommFlag.QUIET)
+    bob.messages.clear()
     out = process_command(alice, "shout hi")
-    assert out == "You must turn off quiet mode first."
+    assert out == "You shout 'hi'"
+    assert "Alice shouts 'hi'" in bob.messages
     alice.clear_comm_flag(CommFlag.QUIET)
 
     bob.messages.clear()

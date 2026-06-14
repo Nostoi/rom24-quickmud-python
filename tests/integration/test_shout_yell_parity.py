@@ -104,3 +104,54 @@ def test_yell_001_invisible_yeller_renders_as_someone_to_listener() -> None:
     assert not any("Yellghost" in m for m in delivered), (
         f"invisible yeller's real name leaked through PERS; got {delivered!r}"
     )
+
+
+def test_shout_005_sender_gate_matches_rom() -> None:
+    """SHOUT-005 — `do_shout`'s only sender precondition is COMM_NOSHOUT.
+
+    ROM `do_shout` (src/act_comm.c:813-820) gates the sender solely on
+    COMM_NOSHOUT, then unconditionally `REMOVE_BIT(ch->comm, COMM_SHOUTSOFF)`
+    and proceeds. The COMM_QUIET / COMM_NOCHANNELS sender gates belong to the
+    `talk_channel` family (gossip/grats, act_comm.c:297-303), NOT to do_shout.
+    Python wrongly borrowed all three. This test pins all three facets:
+
+      (a) a COMM_NOCHANNELS sender can still shout;
+      (b) a COMM_QUIET sender can still shout;
+      (c) a COMM_SHOUTSOFF sender who shouts has SHOUTSOFF auto-cleared AND the
+          shout is delivered (ROM `REMOVE_BIT` at act_comm.c:820, silent — no
+          "you can hear shouts again" in this path).
+    """
+    from mud.models.constants import CommFlag
+
+    # (a) NOCHANNELS sender — ROM do_shout has no such gate.
+    nch = create_test_character("Shoutnch", 3001)
+    nch_listener = create_test_character("Shoutnchear", 3001)
+    nch.set_comm_flag(CommFlag.NOCHANNELS)
+    out = do_shout(nch, "alpha")
+    assert out == "You shout 'alpha'", f"NOCHANNELS sender wrongly blocked from shouting; got {out!r}"
+    assert any("Shoutnch shouts 'alpha'" in _strip(m) for m in nch_listener.messages), (
+        f"NOCHANNELS sender's shout not delivered; messages={nch_listener.messages}"
+    )
+
+    # (b) QUIET sender — ROM do_shout has no such gate.
+    q = create_test_character("Shoutquiet", 3001)
+    q_listener = create_test_character("Shoutquietear", 3001)
+    q.set_comm_flag(CommFlag.QUIET)
+    out = do_shout(q, "beta")
+    assert out == "You shout 'beta'", f"QUIET sender wrongly blocked from shouting; got {out!r}"
+    assert any("Shoutquiet shouts 'beta'" in _strip(m) for m in q_listener.messages), (
+        f"QUIET sender's shout not delivered; messages={q_listener.messages}"
+    )
+
+    # (c) SHOUTSOFF sender — ROM auto-clears the flag and proceeds (silent).
+    so = create_test_character("Shoutoff", 3001)
+    so_listener = create_test_character("Shoutoffear", 3001)
+    so.set_comm_flag(CommFlag.SHOUTSOFF)
+    out = do_shout(so, "gamma")
+    assert out == "You shout 'gamma'", f"SHOUTSOFF sender wrongly blocked instead of auto-cleared; got {out!r}"
+    assert not so.has_comm_flag(CommFlag.SHOUTSOFF), (
+        "ROM REMOVE_BIT(COMM_SHOUTSOFF) — flag must be auto-cleared when shouting content"
+    )
+    assert any("Shoutoff shouts 'gamma'" in _strip(m) for m in so_listener.messages), (
+        f"SHOUTSOFF sender's shout not delivered after auto-clear; messages={so_listener.messages}"
+    )

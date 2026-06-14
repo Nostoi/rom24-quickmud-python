@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.95] — 2026-06-14
+
+### Fixed
+
+- **SHOUT-005 — `do_shout` sender-gate sequence now matches ROM** — ROM
+  `do_shout` (`src/act_comm.c:814-820`) gates the sender *only* on
+  `COMM_NOSHOUT`, then unconditionally `REMOVE_BIT(ch->comm, COMM_SHOUTSOFF)`
+  and proceeds; the `COMM_QUIET` / `COMM_NOCHANNELS` sender gates belong to the
+  `talk_channel` family (gossip/grats, `act_comm.c:297-303`), not to shout.
+  Python had borrowed all three, so: a god-silenced (`NOCHANNELS`) player was
+  blocked with "The gods have revoked your channel privileges."; a quieted
+  (`QUIET`) player was blocked with "You must turn off quiet mode first."; and a
+  shouts-off (`SHOUTSOFF`) player was blocked with "You must turn shouts back on
+  first." instead of having their own shouts-off silently auto-cleared and the
+  shout delivered. All three spurious gates removed; `SHOUTSOFF` is now
+  auto-cleared (ROM `REMOVE_BIT`). `banned_channels` (a QuickMUD extension) is
+  untouched. Test:
+  `tests/integration/test_shout_yell_parity.py::test_shout_005_sender_gate_matches_rom`.
+
 ## [2.14.94] — 2026-06-13
 
 ### Fixed

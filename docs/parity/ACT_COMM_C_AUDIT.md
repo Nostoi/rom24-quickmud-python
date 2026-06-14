@@ -803,14 +803,16 @@ if char.room:
 | `SHOUT-002` | CRITICAL | src/act_comm.c:836 | mud/commands/communication.py:265 | TO_VICT wording: ROM `"$n shouts '$t'"` (no comma). Python emitted `"{name} shouts, '..'"`. Fix: drop comma. Legacy assertions in `tests/test_communication.py` (×2) updated. Test: `tests/integration/test_shout_yell_parity.py::test_shout_002_to_vict_wording_drops_comma`. | ✅ FIXED (2.8.50) |
 | `SHOUT-003` | CRITICAL | src/act_comm.c:836, src/handler.c:2618 | mud/commands/communication.py:265 | TO_VICT `$n` routes through PERS — invisible shouter shows as "someone" to listeners without DETECT_INVIS. Python hardcoded `char.name` and broadcast one fixed message via `broadcast_global`. Fix: replace `broadcast_global` with a per-listener loop over `character_registry` (mirroring ROM's descriptor_list iteration at src/act_comm.c:825-838) that filters by SHOUTSOFF/QUIET/muted_channels and renders `pers(char, victim)` per recipient. Test: `tests/integration/test_shout_yell_parity.py::test_shout_003_invisible_shouter_renders_as_someone_to_listener`. | ✅ FIXED (2.8.51) |
 | `SHOUT-004` | CRITICAL | src/act_comm.c:836 / src/comm.c:2384 | mud/commands/communication.py:do_shout | Sibling of SAY-005 (same hand-rolled-loop double-delivery). The SHOUT-003 per-listener PERS rewrite delivered each line via `if writer: asyncio.create_task(send_to_char(...))` **and** an unconditional `victim.messages.append(...)` → a connected listener received the shout **twice** (async send now + mailbox drain on next prompt). Fix: replaced with `push_message(victim, per_message)` (XOR). Test: `tests/integration/test_inv001_comm_delivery_channel.py::test_shout_single_delivers_to_connected_listener`. | ✅ FIXED (2.12.69) |
+| `SHOUT-005` | CRITICAL | src/act_comm.c:813-820 | mud/commands/communication.py:319-326 | **Sender-gate sequence diverges from ROM `do_shout`.** ROM's only sender precondition is `COMM_NOSHOUT` (act_comm.c:814-818 → "You can't shout."); it then does `REMOVE_BIT(ch->comm, COMM_SHOUTSOFF)` (act_comm.c:820) — a player who shouts content **auto-clears their own shouts-off and proceeds** (silently — no "you can hear shouts again" in this path). The `COMM_QUIET`/`COMM_NOCHANNELS` sender gates belong to the `talk_channel` family (gossip/grats, act_comm.c:297-303), **not** to `do_shout`. Python borrowed all three, producing three divergences: (a) NOCHANNELS player wrongly blocked with "The gods have revoked your channel privileges."; (b) QUIET player wrongly blocked with "You must turn off quiet mode first."; (c) SHOUTSOFF player wrongly blocked with "You must turn shouts back on first." instead of auto-clearing + shouting. Fix: delete the NOCHANNELS and QUIET sender gates and replace the SHOUTSOFF-block branch with `_clear_comm_flag(char, CommFlag.SHOUTSOFF)`, leaving only the NOSHOUT gate before the clear. (`banned_channels` is an intentional QuickMUD extension — untouched.) Legacy assertions in `tests/test_communication.py::test_shout_and_tell_respect_comm_flags` (×2) updated. Test: `tests/integration/test_shout_yell_parity.py::test_shout_005_sender_gate_matches_rom`. | ✅ FIXED (2.14.95) |
 
 **ROM C Behavior**:
 1. Empty arg → toggle COMM_SHOUTSOFF
-2. Check COMM_NOSHOUT → "You can't shout."
-3. Check COMM_QUIET → (handled by caller)
-4. REMOVE_BIT(COMM_SHOUTSOFF) (auto-enable when shouting)
-5. WAIT_STATE(ch, 12)
-6. Broadcast to all descriptors (check COMM_SHOUTSOFF, COMM_QUIET)
+2. Check COMM_NOSHOUT → "You can't shout." (the ONLY sender precondition — `do_shout`
+   does NOT gate the sender on COMM_QUIET or COMM_NOCHANNELS; those belong to the
+   `talk_channel` family, act_comm.c:297-303. See SHOUT-005.)
+3. REMOVE_BIT(COMM_SHOUTSOFF) (auto-enable when shouting; silent)
+4. WAIT_STATE(ch, 12)
+5. Broadcast to all descriptors (filter each LISTENER by COMM_SHOUTSOFF, COMM_QUIET)
 
 **QuickMUD Behavior**:
 ```python

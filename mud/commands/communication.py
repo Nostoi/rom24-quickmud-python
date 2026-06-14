@@ -316,14 +316,15 @@ def do_shout(char: Character, args: str) -> str:
             return "You can hear shouts again."
         _set_comm_flag(char, CommFlag.SHOUTSOFF)
         return "You will no longer hear shouts."
-    if _has_comm_flag(char, CommFlag.NOCHANNELS):
-        return "The gods have revoked your channel privileges."
-    if _has_comm_flag(char, CommFlag.QUIET):
-        return "You must turn off quiet mode first."
+    # SHOUT-005: ROM `do_shout` (src/act_comm.c:814-820) gates the sender ONLY on
+    # COMM_NOSHOUT, then unconditionally REMOVE_BIT(COMM_SHOUTSOFF) and proceeds.
+    # The COMM_QUIET / COMM_NOCHANNELS sender gates belong to the talk_channel
+    # family (gossip/grats, act_comm.c:297-303) — NOT to do_shout, so they are
+    # absent here. A SHOUTSOFF shouter auto-re-enables their own shouts (silent).
     if _has_comm_flag(char, CommFlag.NOSHOUT):
         return "You can't shout."
-    if _has_comm_flag(char, CommFlag.SHOUTSOFF):
-        return "You must turn shouts back on first."
+    # mirroring ROM src/act_comm.c:820 — REMOVE_BIT(ch->comm, COMM_SHOUTSOFF).
+    _clear_comm_flag(char, CommFlag.SHOUTSOFF)
     # mirroring ROM src/act_comm.c:836 — `act("$n shouts '$t'", ...)`.
     # No comma between `shouts` and the open quote (SHOUT-002). `$n`
     # routes through PERS(ch, victim) per ROM's act() macro, so an
