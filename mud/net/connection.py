@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 from mud.account import (
     LoginFailureReason,
     character_exists,
-    create_account,
     create_character,
     get_creation_classes,
     get_creation_races,
@@ -26,6 +25,7 @@ from mud.account import (
     lookup_creation_race,
     lookup_hometown,
     lookup_weapon_choice,
+    mark_character_active,
     release_account,
     release_character,
     roll_creation_stats,
@@ -55,6 +55,7 @@ from mud.net.protocol import send_to_char
 from mud.net.session import SESSIONS, Session
 from mud.security import bans
 from mud.security.bans import BanFlag
+from mud.security.hash_utils import hash_password
 from mud.skills.groups import get_group, list_groups
 from mud.utils.act import act_format
 from mud.utils.prompt import bust_a_prompt
@@ -1239,16 +1240,20 @@ async def _run_character_login(
         password = await _prompt_new_password(conn, username.capitalize())
         if password is None:
             return None
-        if not create_account(username, password):
-            await _send_line(conn, "Character creation failed.")
-            continue
-
-        result = login_with_host(username, password, host_for_ban)
-        if result.account:
-            return result.account, username, bool(result.was_reconnect), True
-
-        await _send_line(conn, "Login failed.")
-        return None
+        # INV-051 — ROM persists nothing until save_char_obj at the very end of
+        # creation (src/nanny.c: the in-memory char carries the hashed password
+        # through CON_GET_NEW_PASSWORD → race/class/... and is only written at
+        # CON_READ_MOTD). Hold the hash in a transient in-memory account and let
+        # create_character() do the single DB INSERT at creation end. Writing a
+        # bare level-0 row here (the old create_account call) left abandoned,
+        # loginable, half-initialised characters behind when a player quit or the
+        # server restarted mid-creation — the real-world `Eddol` case, which also
+        # crashed do_train via an empty perm_stat (TRAIN-006).
+        transient_account = SimpleNamespace(
+            name=username.capitalize(),
+            password_hash=hash_password(password),
+        )
+        return transient_account, username, False, True
 
 
 async def _prompt_for_race(conn: TelnetStream, help_character: object | None = None) -> PcRaceType | None:
@@ -1865,20 +1870,12 @@ async def handle_connection_with_stream(
             return
         account, username, was_reconnect, is_new_character = login_result
 
-        selection = await _select_character(
-            conn,
-            account,
-            username,
-            permit_banned=permit_banned,
-            newbie_banned=newbie_banned,
-        )
-        if selection is None:
-            return
-
-        char, forced_reconnect = selection
-        reconnecting = bool(was_reconnect or forced_reconnect)
-
-        if is_new_character and not reconnecting:
+        if is_new_character:
+            # INV-051 — a new character has nothing persisted yet (the password
+            # phase no longer writes a bare row). Run the creation flow, which
+            # performs the single DB INSERT at the end (create_character), THEN
+            # load the freshly-written row. Calling _select_character first would
+            # fail with "Failed to load that character" because no row exists.
             created = await _run_character_creation_flow(
                 conn,
                 account,
@@ -1889,12 +1886,28 @@ async def handle_connection_with_stream(
             if not created:
                 release_character(username)
                 return
-            # reload char with full creation data
-            reloaded = load_character(sanitize_account_name(username).capitalize())
-            if reloaded is None:
+            char = load_character(sanitize_account_name(username).capitalize())
+            if char is None:
                 release_character(username)
                 return
-            char = reloaded
+            # INV-051 — the deferred-persistence path no longer routes through
+            # login_with_host (which marks the in-memory active flag), so flag the
+            # freshly-created character active here. Keeps the name-phase duplicate
+            # -login check (is_account_active) consistent with returning logins.
+            mark_character_active(username)
+            reconnecting = False
+        else:
+            selection = await _select_character(
+                conn,
+                account,
+                username,
+                permit_banned=permit_banned,
+                newbie_banned=newbie_banned,
+            )
+            if selection is None:
+                return
+            char, forced_reconnect = selection
+            reconnecting = bool(was_reconnect or forced_reconnect)
 
         if char is None:
             return
@@ -2164,20 +2177,10 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             return
         account, username, was_reconnect, is_new_character = login_result
 
-        selection = await _select_character(
-            conn,
-            account,
-            username,
-            permit_banned=permit_banned,
-            newbie_banned=newbie_banned,
-        )
-        if selection is None:
-            return
-
-        char, forced_reconnect = selection
-        reconnecting = bool(was_reconnect or forced_reconnect)
-
-        if is_new_character and not reconnecting:
+        if is_new_character:
+            # INV-051 — defer-persistence: run the creation flow (single DB
+            # INSERT at the end) before loading. See handle_connection_with_stream
+            # for the full rationale; no bare row exists yet to _select_character.
             created = await _run_character_creation_flow(
                 conn,
                 account,
@@ -2188,11 +2191,31 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
             if not created:
                 release_character(username)
                 return
-            reloaded = load_character(sanitize_account_name(username).capitalize())
-            if reloaded is None:
+            char = load_character(sanitize_account_name(username).capitalize())
+            if char is None:
                 release_character(username)
                 return
-            char = reloaded
+            # INV-051 — the deferred-persistence path no longer routes through
+            # login_with_host (which marks the in-memory active flag), so flag the
+            # freshly-created character active here. Keeps the name-phase duplicate
+            # -login check (is_account_active) consistent with returning logins.
+            mark_character_active(username)
+            reconnecting = False
+        else:
+            selection = await _select_character(
+                conn,
+                account,
+                username,
+                permit_banned=permit_banned,
+                newbie_banned=newbie_banned,
+            )
+            if selection is None:
+                return
+            char, forced_reconnect = selection
+            reconnecting = bool(was_reconnect or forced_reconnect)
+
+        if char is None:
+            return
 
         # mirroring ROM src/nanny.c:760 — reset_char(ch) runs on every login
         apply_login_state_refresh(char)

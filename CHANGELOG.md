@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-051 — new characters are no longer persisted until creation completes**
+  — the Python nanny INSERTed a bare level-0 DB row the moment a new player
+  chose a password (`_run_character_login` → `create_account` →
+  `create_character_record`), before race/sex/class/alignment/stats existed. A
+  player who quit (or whose server restarted) between the password prompt and
+  the end of the creation menu left behind a loginable, half-initialised row —
+  the real-world `Eddol` case, which then crashed `do_train` (TRAIN-006). ROM
+  writes nothing to the pfile until `save_char_obj` at the very end of
+  `CON_READ_MOTD` (`src/nanny.c`); the in-memory `CHAR_DATA` carries the crypted
+  password through the whole menu. Python now mirrors this: the password phase
+  holds the hash on a transient in-memory carrier and the single DB INSERT is
+  deferred to `create_character` at creation end. Both login handlers
+  (`handle_connection_with_stream`, `handle_connection`) run the creation flow
+  before any load on the new-character path, and flag the freshly-created
+  character active (the deferred path no longer routes through `login_with_host`,
+  which previously set that marker). Test:
+  `tests/integration/test_inv051_deferred_persistence.py`.
 - **DELETE-001 — `delete` now actually deletes your character** — the confirmed
   `delete` command `os.unlink`ed a non-existent pfile path (`player/Name`) while
   the canonical store is the `characters` DB row (INV-008, DB-canonical). The

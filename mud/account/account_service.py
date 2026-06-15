@@ -824,6 +824,19 @@ def _mark_character_active(name: str) -> None:
     _active_characters.add(_normalize(name))
 
 
+def mark_character_active(name: str) -> None:
+    """Set the active-session marker for this character.
+
+    Public counterpart to :func:`release_character`. ``login_with_host`` marks
+    returning logins internally; the INV-051 deferred-persistence new-character
+    path needs this entry point because it no longer routes through
+    ``login_with_host`` (it persists via ``create_character`` at creation end),
+    so a freshly-created in-game character must still be flagged active for the
+    name-phase duplicate-login check (``connection.py`` ``is_account_active``).
+    """
+    _mark_character_active(name)
+
+
 def release_character(name: str) -> None:
     """Clear the active-session marker for this character."""
     _active_characters.discard(_normalize(name))
