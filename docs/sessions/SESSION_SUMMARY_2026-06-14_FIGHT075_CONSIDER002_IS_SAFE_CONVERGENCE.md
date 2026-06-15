@@ -1,4 +1,4 @@
-# Session Summary — 2026-06-14 — do_bash `$M` render + is_safe convergence (FIGHT-075 / CONSIDER-002 / CAST-012 / FIGHT-076 / STEAL-003)
+# Session Summary — 2026-06-14 — do_bash `$M` render + is_safe convergence (FIGHT-075 / CONSIDER-002 / CAST-012 / FIGHT-076 / STEAL-003 / spec-funs)
 
 ## Scope
 
@@ -128,6 +128,25 @@ is_safe at all).
   (`data/skills.json:1816`) — reachable via the skill system independently of the
   `do_steal` command. Filed in `ACT_OBJ_C_AUDIT.md`.
 
+### `spec_troll_member` / `spec_ogre_member` — ✅ CONVERGED (2.14.113, INV-050 refactor)
+
+- **Python**: `mud/spec_funs.py:spec_troll_member` (~1341), `spec_ogre_member` (~1382)
+- **ROM C**: `src/special.c:145, 213` + `src/fight.c:1018-1124`
+- **Nature**: a **refactor toward bool-retirement, not a player-facing fix.** Both
+  faction spec-funs gated rival victim selection on the silent bool. Converged onto
+  a `_is_safe_mirror` predicate over `_kill_safety_message`, correcting the bool's
+  `ActFlag.GAIN` over-block (not in ROM is_safe). The message is **moot** here — the
+  is_safe recipient is the NPC attacker, whose `send_to_char` no-ops (`desc==NULL`),
+  exactly as ROM. Removed the now-unused `is_safe` import.
+- **Tests**: 1 contract-assertion test
+  (`test_spec_funs.py::test_spec_troll_member_attacks_gain_flagged_ogre` — a
+  contrived GAIN-flagged ogre is now eligible; verified it changes *victim
+  selection*, red before / green after). No live faction mob carries GAIN.
+- **Significance**: with this, INV-050's **player-facing message-surfacing
+  divergence is fully closed** (bash/consider/cast/assist/steal). The silent bool
+  now serves only the intentionally-silent apply_damage re-check and
+  `is_safe_spell`'s internal delegation.
+
 ### Pre-existing failure ROM-corrected (separate commit, NOT caused this session)
 
 - **`test_combat.py::test_kill_blocks_charmed_player_attacking_master`** — a
@@ -173,8 +192,11 @@ is_safe at all).
   given clan=1 so PC-victim steal reaches the failure broadcast under faithful is_safe.
 - `docs/parity/FIGHT_C_AUDIT.md` — added FIGHT-076 ✅ FIXED row.
 - `docs/parity/ACT_OBJ_C_AUDIT.md` — updated STEAL-003 (INV-050 completion); added STEAL-015 🔄 OPEN.
-- `CHANGELOG.md` — added 2.14.108 … 2.14.112 sections.
-- `pyproject.toml` — 2.14.107 → 2.14.112.
+- `mud/spec_funs.py` — `spec_troll_member`/`spec_ogre_member` is_safe → `_is_safe_mirror`
+  helper; removed unused `is_safe` import.
+- `tests/test_spec_funs.py` — new GAIN-over-block contract test; `ActFlag` import.
+- `CHANGELOG.md` — added 2.14.108 … 2.14.113 sections.
+- `pyproject.toml` — 2.14.107 → 2.14.113.
 
 ## Test Status
 
@@ -188,21 +210,26 @@ is_safe at all).
 - `pytest tests/test_combat.py tests/test_combat_assist.py` — 50 passed (incl. the ROM-corrected do_kill test).
 - Diff-harness smoke (`test_differential_smoke` + `test_diff_harness_unit`) — 67 passed (check_assist is on the combat-tick path).
 - `pytest -k steal` — 40 passed (STEAL-003; incl. 4 ROM-corrected block-set tests).
+- `pytest tests/test_spec_funs.py tests/test_spec_fun_behaviors.py` — 52 passed (spec-funs).
 - `python3 test_all_commands.py` — 1 pre-existing attribute error (confirmed present in stashed baseline; not introduced this session).
 - `ruff check .` — clean. Pre-commit hooks all passed.
 - GitNexus `impact` on `do_bash` / `do_consider` / `do_cast` — LOW risk, 0 affected processes. `detect_changes` scope confined to the three functions + docs. Index reindexed after each commit.
 
 ## Next Steps
 
-- **INV-050 remaining callers** (the active lever): only ~2 silent-bool callers
-  remain — `spec_funs.py:1341,1382` (read the ROM spec-fun call sites first) and
-  `combat/engine.py:671-674` (apply_damage re-check — FIGHT-002, **intentionally**
-  silent; confirm against `src/fight.c:725-733` — likely leave as-is). After those,
-  the bool can likely be retired or made a thin wrapper over `_kill_safety_message`.
-  **Watch for block-set fallout** like CAST-012 / FIGHT-076 / STEAL-003: converging
-  corrects *which* targets block, not just the message, so existing tests asserting
-  the silent-bool's over/under-block must be ROM-corrected (cite ROM C). ⚠️ PARTIAL
-  in `CROSS_FILE_INVARIANTS_TRACKER.md`.
+- **INV-050 player-facing half is DONE.** All five message-surfacing callers
+  (bash/consider/cast/assist/steal) now surface ROM's is_safe context line, and the
+  two NPC-predicate spec-funs are converged. The silent bool now serves only the
+  intentionally-silent apply_damage re-check (FIGHT-002 — leave as-is) and
+  `is_safe_spell`'s internal delegation.
+- **Bool retirement is GATED on an `is_safe_spell` audit** (do NOT skip this).
+  `safety.py:is_safe_spell` delegates to `is_safe` (line 113), but ROM
+  `is_safe_spell` (`src/fight.c:1126-1218`) is a **standalone** function with extra
+  checks (area handling + the `victim->fighting != NULL && !is_same_group`
+  legal-kill clause). So Python's `is_safe_spell` is *already* a latent divergence,
+  and naively rewriting `is_safe` into a `_kill_safety_message` wrapper would
+  silently shift `is_safe_spell` → do_cast's TAR_OBJ_CHAR_OFF branch. **Audit
+  is_safe_spell vs ROM's standalone function first**, then retire/thin the bool.
 - **STEAL-015 🔄 OPEN** — the steal *skill-handler* `skills/handlers.py:steal`
   (~7762) has no is_safe at all but is registered as the "steal" skill function;
   converge it onto `_kill_safety_message` too (returning the line in the result
