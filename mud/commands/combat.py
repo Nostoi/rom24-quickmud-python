@@ -1112,12 +1112,14 @@ def do_dirt(char: Character, args: str) -> str:
             return "They aren't here."
 
     # Match ROM safety/validation gates in the command layer.
-    if victim is char:
-        return "Very funny."
-
+    # FIGHT-072: ROM checks AFF_BLIND BEFORE the self-target check
+    # (src/fight.c:2522-2532 — blind gate at :2522 precedes victim==ch at :2528).
     victim_affected = getattr(victim, "affected_by", 0)
     if victim_affected & AffectFlag.BLIND:
         return "They're already blinded."
+
+    if victim is char:
+        return "Very funny."
 
     # FIGHT-071/074: _kill_safety_message is now a pure is_safe mirror (no charm).
     # ROM do_dirt checks charm with its OWN string ("such a good friend") AFTER

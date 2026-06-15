@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.106] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-072 — `do_dirt` now checks AFF_BLIND before the self-target check,
+  matching ROM order** — ROM `do_dirt` (`src/fight.c:2522-2532`) gates on
+  `IS_AFFECTED(victim, AFF_BLIND)` ("$E's already been blinded.") *before* the
+  `victim == ch` self-target check ("Very funny."); Python had the two
+  early-return blocks reversed. Observable when dirt-kicking *yourself* while
+  already blind: Python emitted "Very funny." where ROM emits the blind line.
+  **Fix:** swapped the two blocks. Test:
+  `tests/integration/test_fight072_dirt_blind_before_self.py`. Sibling of
+  FIGHT-068. (The blind message's literal "They're" vs ROM's `$E` render remains
+  open as FIGHT-073.)
+
 ## [2.14.105] — 2026-06-14
 
 ### Fixed
