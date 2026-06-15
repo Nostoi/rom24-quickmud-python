@@ -73,8 +73,11 @@ and a diff_harness C-oracle scenario.
   `_push_message` path), both mechanically against the immutable C trace. It does
   **not** exercise the spec-fun path, so **SPEC-017's
   `spec_funs.py:_append_message → push_message` fix is NOT guarded by this
-  scenario** — reverting SPEC-017 leaves this replay green. A dedicated
-  adept-healing spec-fun diff_harness scenario is still owed (see Next Steps).
+  scenario** — reverting SPEC-017 leaves this replay green. And SPEC-017 *cannot*
+  be guarded by any diff_harness scenario (the harness collapses the socket and
+  mailbox channels; it is a Python-only channel-routing divergence with no ROM C
+  counterpart) — its correct lock is the committed Layer-A grep-guard. See Next
+  Steps item 0 for the full rationale.
 
 ## Files Modified
 
@@ -106,13 +109,23 @@ and a diff_harness C-oracle scenario.
 Regression-prevention trio complete (FIGHT-077 locked; SPEC-017 doc + Layer-A
 guard shipped). Open follow-ups, in priority order:
 
-0. **SPEC-017 spec-fun diff_harness scenario (owed)** — author a dedicated
-   adept-healing scenario that mloads a friendly caster mob (the cage-room
-   adept) and pulses its spec-fun so the replay exercises
-   `spec_funs.py:_append_message → push_message`. The `aggression_onset`
-   scenario does **not** cover this path (combat damage routes through
-   `engine.py:_push_message`), so SPEC-017 has a Layer-A guard + doc rule but no
-   C-oracle lock. Without it, reverting SPEC-017 passes the diff suite.
+0. **SPEC-017 — Layer-A is the correct lock; a diff_harness C-oracle is
+   infeasible (evaluated and rejected).** A spec-fun scenario was considered and
+   does **not** work: the harness runs a disconnected test char with no event
+   loop, so `push_message` (fixed) falls back to the *same* `char.messages`
+   mailbox the bug (`messages.append`) wrote to (`messaging.py:56-58`), and
+   `pyreplay.py:51-52` drains that mailbox into the snapshot — so both paths
+   produce a byte-identical trace (green-regardless, non-load-bearing). Deeper,
+   SPEC-017 is a **Python-only channel-routing divergence** (async socket vs
+   mailbox) with **no ROM C counterpart** — ROM has a single
+   `write_to_buffer → socket` channel, so there is nothing to diff. SPEC-017's
+   correct verification layer is its committed **Layer-A grep-guard** + the
+   AGENTS.md doc rule (which it has). A Python-vs-Python delivery test would need
+   harness surgery (simulate a connected PC; capture the socket channel apart
+   from the mailbox) for marginal gain — deferred as a harness limitation, not an
+   owed parity guard. (Harness-blindness to channel routing is a concrete
+   instance of guardrail 3: the diff harness is enumeration-independent only for
+   behavior it can *observe*, and it collapses delivery channels.)
 1. **INV-001 debt burndown** — 14 frozen `_INV001_DEBT` sites in the guard, each
    an INV-001 "Touched by" row; migrate to `push_message` one at a time (clean
    ROM-confirmed fix, TDD, ROM citation, delete its allowlist line). Candidates:

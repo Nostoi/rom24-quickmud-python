@@ -7,10 +7,11 @@
   friendly mobs not casting) were closed earlier today (FIGHT-077 + SPEC-017,
   v2.14.115). This session landed the **regression-prevention package**:
   FIGHT-077 is now diff_harness-locked (C-oracle, negative-control-proven);
-  SPEC-017 has a Layer-A grep-guard + AGENTS.md doc rule but **no C-oracle
-  scenario yet** — the `aggression_onset` combat path routes through
-  `engine.py:_push_message`, not `spec_funs.py`, so a dedicated adept-healing
-  spec-fun scenario is still owed (see Next Intended Task).
+  SPEC-017 is locked at the correct layer by its Layer-A grep-guard + AGENTS.md
+  doc rule. A diff_harness C-oracle for it was evaluated and found **infeasible**
+  (the harness collapses the socket and mailbox channels, and SPEC-017 is a
+  Python-only channel-routing divergence with no ROM C counterpart) — see Next
+  Intended Task item 0.
 - **Last completed** (this session, all three deliverables of the authorized
   package):
   - **(a) Layer-A grep-guard** (v2.14.116, commit 5e7ca15c) —
@@ -36,22 +37,32 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.118 |
+| Version | 2.14.119 |
 | Tests | 5812 passed (v2.14.115 baseline) + diff_harness 68 passed (41 scenarios incl. aggression_onset) + message-delivery guard green |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
-| Active focus | Cross-file invariants pass — FIGHT-077 diff-locked; SPEC-017 doc+Layer-A guarded (C-oracle scenario owed) |
+| Active focus | Cross-file invariants pass — FIGHT-077 diff-locked; SPEC-017 Layer-A guarded (C-oracle infeasible: Python-only channel divergence) |
 
 ## Next Intended Task
 
 Regression-prevention trio complete (FIGHT-077 diff-locked; SPEC-017 doc +
 Layer-A guarded). Open follow-ups, in priority order:
 
-0. **SPEC-017 spec-fun diff_harness scenario (owed)** — author an adept-healing
-   scenario (mload the cage-room friendly caster, pulse its spec-fun) so the
-   replay exercises `spec_funs.py:_append_message → push_message`. The
-   `aggression_onset` scenario does NOT cover this (combat damage routes through
-   `engine.py:_push_message`), so reverting SPEC-017 currently passes the diff
-   suite — SPEC-017 has only a Layer-A guard + doc rule, no C-oracle lock.
+0. **SPEC-017 — Layer-A is the correct/sufficient lock (no C-oracle possible).**
+   A diff_harness scenario was considered and **rejected as infeasible**: in the
+   harness there is no connection and no event loop, so `push_message` (fixed)
+   falls back to the *same* `char.messages` mailbox that the bug
+   (`messages.append`) wrote to (`messaging.py:56-58`), and `pyreplay.py:51-52`
+   drains that mailbox into the captured output. So both the fixed and buggy
+   paths produce a byte-identical snapshot — a scenario would be green-regardless
+   (non-load-bearing). Deeper: SPEC-017 is a **Python-only channel-routing
+   divergence** (async socket vs mailbox) with **no ROM C counterpart** (C has a
+   single `write_to_buffer → socket` channel), so there is nothing to diff
+   against — "C-oracle" is a category error here. SPEC-017's correct verification
+   layer is the **Layer-A grep-guard** (committed, self-maintaining) + the
+   AGENTS.md doc rule, which it already has. A Python-vs-Python delivery test
+   would require harness surgery (simulate a connected PC + capture the socket
+   channel separately from the mailbox) for marginal gain — deferred, tracked as
+   a harness limitation, not an owed parity guard.
 1. **INV-001 debt burndown** — migrate the 14 frozen `_INV001_DEBT` sites in
    `tests/test_message_delivery_convention.py` to `push_message`, one clean
    ROM-confirmed TDD fix per site, deleting its allowlist line. Candidates:

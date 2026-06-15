@@ -33,8 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `apply_damage` → `engine.py:_push_message` path) against the immutable C
   trace. It does **not** exercise the spec-fun path, so SPEC-017's
   `spec_funs.py:_append_message → push_message` fix is *not* guarded by this
-  scenario — a dedicated adept-healing spec-fun scenario is still owed (tracked
-  in the session summary's Next Steps). Completes the diff_harness leg of the
+  scenario — and cannot be guarded by any diff_harness scenario (the harness
+  collapses the socket and mailbox channels, and SPEC-017 is a Python-only
+  channel-routing divergence with no ROM C counterpart). SPEC-017's correct lock
+  is its committed Layer-A grep-guard; see the session summary's Next Steps for
+  the full rationale. Completes the diff_harness leg of the
   v2.14.116 regression-prevention trio (Layer-A guard + AGENTS.md doc rule +
   diff_harness scenario).
 - **Layer-A grep-guard for message-delivery (INV-001 SINGLE-DELIVERY ratchet)** —
