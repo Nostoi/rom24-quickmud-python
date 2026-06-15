@@ -15,16 +15,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `__aggr_update` step-handlers in the C shim (`src/diff_shim/diffmain.c`,
   calling ROM `src/update.c:1077 aggr_update`) and the Python replay
   (`tools/diff_harness/pyreplay.py`, calling `mud.ai.aggressive_update`). The
-  scenario mloads the AGGRESSIVE mob 3704 into an idle level-5 PC's room and runs
-  one aggression pulse; the committed golden
-  (`tests/data/golden/diff/aggression_onset.golden.json`) is C-engine ground
-  truth showing the mob proactively launching `multi_hit` (PC → `FIGHTING`, hp
-  20→16, "The aggressive monster's claw injures you." on the socket). This locks
-  the FIGHT-077 fix (deleted fabricated `is_safe` NPC-level-gate) and the
-  SPEC-017 tick-time socket-delivery contract mechanically against the C oracle —
-  a reintroduced level-gate or mailbox-only delivery would diverge from the
-  immutable C trace. Completes the v2.14.116 regression-prevention trio (Layer-A
-  guard + AGENTS.md doc rule + diff_harness scenario).
+  scenario mloads the AGGRESSIVE mob 2302 (the Cave Dweller, **level 15**) into
+  an idle **level-1** PC's room and runs one aggression pulse; the committed
+  golden (`tests/data/golden/diff/aggression_onset.golden.json`) is C-engine
+  ground truth showing the mob proactively launching `multi_hit` (PC →
+  `FIGHTING`, hp 20→13, "The Cave Dweller's pierce decimates you." on the
+  socket). The high-mob / low-PC level relationship is deliberate: the deleted
+  FIGHT-077 gate was `victim_level < char_level - 10` (char=attacker mob,
+  victim=PC), so it only fires when the mob is >10 levels above the player —
+  L15-mob-vs-L1-PC satisfies it (`1 < 15-10`), whereas the earlier L1-mob /
+  L5-PC fixture never tripped the gate and would have passed with or without the
+  bug. Verified by negative control: temporarily re-adding the gate to
+  `safety.py:is_safe` makes the Python replay diverge from the C golden (the mob
+  fails to attack — `py=[]`), proving the guard fails when the bug is present.
+  Locks the FIGHT-077 fix (negative-control-proven) **and** tick-time delivery
+  of the resulting combat message to the socket (the `multi_hit` →
+  `apply_damage` → `engine.py:_push_message` path) against the immutable C
+  trace. It does **not** exercise the spec-fun path, so SPEC-017's
+  `spec_funs.py:_append_message → push_message` fix is *not* guarded by this
+  scenario — a dedicated adept-healing spec-fun scenario is still owed (tracked
+  in the session summary's Next Steps). Completes the diff_harness leg of the
+  v2.14.116 regression-prevention trio (Layer-A guard + AGENTS.md doc rule +
+  diff_harness scenario).
 - **Layer-A grep-guard for message-delivery (INV-001 SINGLE-DELIVERY ratchet)** —
   `tests/test_message_delivery_convention.py` is a new static scanner (same idiom
   as `test_rng_determinism.py` / `test_equipment_key_convention.py`) that forbids

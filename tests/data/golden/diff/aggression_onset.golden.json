@@ -1,6 +1,6 @@
 {
   "scenario": "aggression_onset",
-  "c_commit": "5e7ca15cbcfc8b272a9ab6e22cd8fb427cf723c2",
+  "c_commit": "bee7a6b506fee3f2ff5bf35cea58a20ce6f4c861",
   "build_flags": "-DOLD_RAND",
   "seed": 12345,
   "trace": [
@@ -16,7 +16,7 @@
           "max_hp": 20,
           "mana": 100,
           "move": 100,
-          "level": 5,
+          "level": 1,
           "align": 0,
           "gold": 0,
           "silver": 0,
@@ -52,7 +52,7 @@
     },
     {
       "step": 2,
-      "command": "__mload=3704",
+      "command": "__mload=2302",
       "chars": [
         {
           "key": "Tester",
@@ -62,7 +62,7 @@
           "max_hp": 20,
           "mana": 100,
           "move": 100,
-          "level": 5,
+          "level": 1,
           "align": 0,
           "gold": 0,
           "silver": 0,
@@ -82,29 +82,33 @@
           "master": null
         },
         {
-          "key": "monster",
+          "key": "oldstyle",
           "room": 3008,
           "position": "STANDING",
-          "hp": 8,
-          "max_hp": 8,
-          "mana": 100,
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
           "move": 100,
-          "level": 1,
+          "level": 15,
           "align": 0,
           "gold": 0,
-          "silver": 10,
+          "silver": 99,
           "fighting": null,
           "affects": [],
-          "affect_flags": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
           "inventory": [],
           "equipment": {},
           "eff_hitroll": 0,
-          "eff_damroll": 0,
+          "eff_damroll": 4,
           "eff_ac": [
-            100,
-            100,
-            100,
-            100
+            -20,
+            -20,
+            -20,
+            70
           ],
           "master": null
         }
@@ -113,7 +117,7 @@
         {
           "vnum": 3008,
           "people": [
-            "monster",
+            "oldstyle",
             "Tester"
           ],
           "contents": [
@@ -132,15 +136,15 @@
           "key": "Tester",
           "room": 3008,
           "position": "FIGHTING",
-          "hp": 16,
+          "hp": 13,
           "max_hp": 20,
           "mana": 100,
           "move": 100,
-          "level": 5,
+          "level": 1,
           "align": 0,
           "gold": 0,
           "silver": 0,
-          "fighting": "monster",
+          "fighting": "oldstyle",
           "affects": [],
           "affect_flags": [],
           "inventory": [],
@@ -156,29 +160,33 @@
           "master": null
         },
         {
-          "key": "monster",
+          "key": "oldstyle",
           "room": 3008,
           "position": "FIGHTING",
-          "hp": 8,
-          "max_hp": 8,
-          "mana": 100,
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
           "move": 100,
-          "level": 1,
+          "level": 15,
           "align": 0,
           "gold": 0,
-          "silver": 10,
+          "silver": 99,
           "fighting": "Tester",
           "affects": [],
-          "affect_flags": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
           "inventory": [],
           "equipment": {},
           "eff_hitroll": 0,
-          "eff_damroll": 0,
+          "eff_damroll": 4,
           "eff_ac": [
-            100,
-            100,
-            100,
-            100
+            -20,
+            -20,
+            -20,
+            70
           ],
           "master": null
         }
@@ -187,7 +195,7 @@
         {
           "vnum": 3008,
           "people": [
-            "monster",
+            "oldstyle",
             "Tester"
           ],
           "contents": [
@@ -198,7 +206,8 @@
       ],
       "output": [
         "",
-        "\rThe aggressive monster's claw injures you.",
+        "\rThe Cave Dweller's pierce decimates you.",
+        "\rThat really did HURT!",
         ""
       ]
     }

@@ -31,15 +31,25 @@ and a diff_harness C-oracle scenario.
   the standard (connected PCs receive via `push_message`, mailbox is test/
   disconnected fallback only) is enforced going forward.
 
-### (b) diff_harness `aggression_onset` scenario — ✅ SHIPPED (v2.14.117, commit 55134261)
+### (b) diff_harness `aggression_onset` scenario — ✅ SHIPPED (v2.14.117 plumbing, **corrected to a load-bearing fixture in v2.14.118**, commit 55134261 + this commit)
 
 - **Scenario**: `tools/diff_harness/scenarios/aggression_onset.json` — mloads
-  AGGRESSIVE mob 3704 ("the aggressive monster", level 1, `ABF` =
-  NPC|SENTINEL|AGGRESSIVE, not WIMPY) into an idle level-5 PC's room (3008),
-  seed 777, one `__aggr_update` pulse.
+  AGGRESSIVE mob **2302** ("the Cave Dweller", **level 15**, `ABF` =
+  NPC|SENTINEL|AGGRESSIVE) into an idle **level-1** PC's room (3008), seed 777,
+  one `__aggr_update` pulse. (Snapshot key is `oldstyle`, the first keyword of
+  its `player_name` line `oldstyle dweller cave creature~`.)
+- **Why a level-15 mob vs a level-1 PC (the fixture that actually guards
+  FIGHT-077)**: the deleted gate was `victim_level < char_level - 10`
+  (char=attacker mob, victim=PC), so it fires *only* when the mob is >10 levels
+  above the player. L15-mob-vs-L1-PC → `1 < 15-10=5` → True → the bug would mark
+  the PC safe and the mob would refuse to attack. The original fixture (mob 3704
+  L1 vs PC L5) gave `5 < 1-10=-9` → False — the gate never fired, so that
+  scenario passed identically with or without the bug and locked nothing. This
+  is the actual field repro (Cave Dweller vs a level-1 PC).
 - **Golden**: `tests/data/golden/diff/aggression_onset.golden.json` — C-engine
-  ground truth: PC → `FIGHTING`, hp 20→16, mob → `FIGHTING`, output
-  "The aggressive monster's claw injures you." on the socket.
+  ground truth: PC → `FIGHTING`, hp 20→13, mob → `FIGHTING`, output
+  "The Cave Dweller's pierce decimates you." (+ "That really did HURT!" wimpy
+  warning) on the socket.
 - **New step-handlers** added to BOTH engines (mirrored):
   - C shim: `src/diff_shim/diffmain.c` `__aggr_update` → `aggr_update()`
     (ROM `src/update.c:1077`, non-static so reachable without touching read-only
@@ -48,11 +58,23 @@ and a diff_harness C-oracle scenario.
     `mud.ai.aggressive_update`.
 - **RNG draw-order parity**: the minimal scenario (one seed, one mload, one
   pulse) consumes only the identical mob-spawn path before the aggression coin
-  `number_bits(1)`; seed 777 fired the coin on the first capture. Python replay
-  matches the C golden exactly — the scenario **passes** (not skip, not xfail).
-- Locks the FIGHT-077 fix (a reintroduced `is_safe` level-gate) and the SPEC-017
-  tick-time socket-delivery contract (a regression to mailbox-only delivery)
-  mechanically against the immutable C trace.
+  `number_bits(1)`; seed 777 fired the coin. Python replay matches the C golden
+  exactly — the scenario **passes** (not skip, not xfail).
+- **Negative control verified**: temporarily re-adding the deleted gate to
+  `safety.py:is_safe` makes the Python replay **diverge** from the C golden
+  (`step 3 · output · C=["The Cave Dweller's pierce decimates you.", …] py=[]` —
+  the mob fails to attack). This proves the guard fails when the bug is present,
+  which the v2.14.117 fixture did **not** do.
+- **Guard scope (re-verified against the call path, not assumed)**: the pulse
+  routes `aggr_update → multi_hit → apply_damage → engine.py:_push_message`,
+  which never enters `spec_funs.py`. So this scenario locks **(1) the FIGHT-077
+  fix** (a reintroduced `is_safe` level-gate — negative-control-proven above) and
+  **(2) tick-time delivery of the resulting combat message to the socket** (the
+  `_push_message` path), both mechanically against the immutable C trace. It does
+  **not** exercise the spec-fun path, so **SPEC-017's
+  `spec_funs.py:_append_message → push_message` fix is NOT guarded by this
+  scenario** — reverting SPEC-017 leaves this replay green. A dedicated
+  adept-healing spec-fun diff_harness scenario is still owed (see Next Steps).
 
 ## Files Modified
 
@@ -65,7 +87,10 @@ and a diff_harness C-oracle scenario.
 - `tests/test_message_delivery_convention.py` — new Layer-A guard (commit 5e7ca15c).
 - `AGENTS.md` — Message Delivery section cites the guard (commit 5e7ca15c).
 - `CHANGELOG.md` — Added entries for the guard and the scenario.
-- `pyproject.toml` — 2.14.115 → 2.14.116 (guard) → 2.14.117 (scenario).
+- `pyproject.toml` — 2.14.115 → 2.14.116 (guard) → 2.14.117 (scenario plumbing)
+  → 2.14.118 (scenario fixture corrected to a load-bearing FIGHT-077 guard).
+- `tools/diff_harness/scenarios/aggression_onset.json` — corrected fixture
+  (mob 2302 L15 / PC L1; was mob 3704 L1 / PC L5) + regenerated golden.
 
 ## Test Status
 
@@ -78,9 +103,16 @@ and a diff_harness C-oracle scenario.
 
 ## Next Steps
 
-Regression-prevention trio complete. Open follow-ups unchanged from the
-FIGHT-077/SPEC-017 summary, in priority order:
+Regression-prevention trio complete (FIGHT-077 locked; SPEC-017 doc + Layer-A
+guard shipped). Open follow-ups, in priority order:
 
+0. **SPEC-017 spec-fun diff_harness scenario (owed)** — author a dedicated
+   adept-healing scenario that mloads a friendly caster mob (the cage-room
+   adept) and pulses its spec-fun so the replay exercises
+   `spec_funs.py:_append_message → push_message`. The `aggression_onset`
+   scenario does **not** cover this path (combat damage routes through
+   `engine.py:_push_message`), so SPEC-017 has a Layer-A guard + doc rule but no
+   C-oracle lock. Without it, reverting SPEC-017 passes the diff suite.
 1. **INV-001 debt burndown** — 14 frozen `_INV001_DEBT` sites in the guard, each
    an INV-001 "Touched by" row; migrate to `push_message` one at a time (clean
    ROM-confirmed fix, TDD, ROM citation, delete its allowlist line). Candidates:
