@@ -1,6 +1,6 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.13.31-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.14.113-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://img.shields.io/badge/tests-5451%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
@@ -24,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 5,451 passing tests across unit, integration, and command-registry suites
+- **📊 Comprehensive Testing**: 5,807 passing tests across unit, integration, and command-registry suites
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -166,7 +166,7 @@ python -m mud  # Start development server
 **Stage: parity beta** — feature-complete and playable; parity fidelity is being
 systematically hardened toward ROM-exact behavioral equivalence.
 
-- **Version**: 2.13.52
+- **Version**: 2.14.113
 - **Playability**: ✅ All 255 ROM commands implemented. Combat, spells, skills,
   movement, shops, mob programs, OLC building, and admin tools work and pass their
   tests. You can run a server and play today.
@@ -191,7 +191,7 @@ systematically hardened toward ROM-exact behavioral equivalence.
   diffed. Any behavioral divergence surfaces mechanically rather than requiring a
   hand-written assertion. Coverage is growing; uncovered surfaces are the remaining
   parity-confidence gap.
-- **Test Suite**: ✅ **5,474 passed, 5 skipped** (full `pytest` run, ~150s parallel).
+- **Test Suite**: ✅ **5,807 passed, 4 skipped** (full `pytest` run, ~150s parallel).
   Unit, integration, command-registry, and differential-harness layers.
 - **Active focus**: Class 11 dynamic differential widening — all deterministic
   OLC-created mobprog trigger types (`entry`, `greet`, `speech`, `act`, `bribe`,
@@ -354,7 +354,7 @@ being hardened gap-by-gap (see **Project Status** above).
 
 ### 📈 Quality Metrics
 
-- **Test Suite**: 5,474 passing, 5 skipped on the latest full run.
+- **Test Suite**: 5,807 passing, 4 skipped on the latest full run.
 - **Audit Coverage**: every ROM 2.4b6 gameplay subsystem has a completed audit
   document (combat, skills, spells, movement, communication, world/db, save/load,
   mob programs, 255/255 commands). Audit completion means *reviewed and documented*,
