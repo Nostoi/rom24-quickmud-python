@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.111] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-076 (INV-050) — non-clan PC group members no longer wrongly
+  auto-assist in PvP** — ROM `check_assist` (`src/fight.c:131`) gates the
+  PC/charmed auto-assist on `!is_safe(rch, victim)`, and ROM `is_safe` writes its
+  own rejection line to the autoassister before returning TRUE. The Python port
+  routed through the silent bool `combat.safety.is_safe`, which lacks the
+  PC-vs-PC clan ladder — so a non-clan PC in your group auto-assisted you against
+  another player, silently. **Fix:** converged `check_assist` onto the faithful
+  mirror `combat._kill_safety_message` (do_bash/consider/cast pattern) — a
+  blocked autoassister now stays out of the fight and sees the context line (e.g.
+  "Join a clan if you want to kill players."). Fourth INV-050 caller converged.
+  Test: `tests/test_combat_assist.py::TestPlayerAutoAssist::test_autoassist_blocked_by_is_safe_clan_ladder`.
+
 ## [2.14.110] — 2026-06-14
 
 ### Fixed

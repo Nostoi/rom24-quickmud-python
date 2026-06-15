@@ -86,8 +86,10 @@ def test_fight060_assist_align_fires_when_race_flag_set_but_race_differs(monkeyp
     # Bypass vision check — focuses on assist logic, not lighting/invis system
     monkeypatch.setattr(_assist_module, "can_see_character", lambda _o, _t: True)
 
-    # Bypass is_safe — we're testing assist logic, not safety
-    monkeypatch.setattr(_assist_module, "is_safe", lambda _a, _v: False)
+    # NOTE: the NPC-assist branch does not call is_safe (only the PC autoassist
+    # branch does — INV-050 / src/fight.c:131); the former is_safe monkeypatch
+    # here was vestigial and was removed when assist.py converged onto
+    # _kill_safety_message.
 
     # Pass the 50% skip guard — mirroring ROM src/fight.c:156-157
     monkeypatch.setattr(rng_mm, "number_bits", lambda _: 1)
@@ -132,7 +134,10 @@ def test_fight060_assist_vnum_fires_when_race_flag_set_but_race_differs(monkeypa
 
     monkeypatch.setattr(_assist_module, "multi_hit", mock_multi_hit)
     monkeypatch.setattr(_assist_module, "can_see_character", lambda _o, _t: True)
-    monkeypatch.setattr(_assist_module, "is_safe", lambda _a, _v: False)
+    # NOTE: the NPC-assist branch (ASSIST_ALIGN/VNUM) does not call is_safe — only
+    # the PC autoassist branch does (INV-050 / src/fight.c:131). The former
+    # is_safe monkeypatch here was vestigial; removed when assist.py converged
+    # onto _kill_safety_message and dropped the module-level is_safe symbol.
     monkeypatch.setattr(rng_mm, "number_bits", lambda _: 1)
     monkeypatch.setattr(rng_mm, "number_range", lambda lo, hi: 0)
 

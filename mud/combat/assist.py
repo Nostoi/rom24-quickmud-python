@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 
 from mud.characters import is_same_group
 from mud.combat.engine import is_evil, is_good, is_neutral, multi_hit
-from mud.combat.safety import is_safe
 from mud.models.constants import AffectFlag, OffFlag, PlayerFlag
 from mud.utils import rng_mm
 from mud.world.vision import can_see_character
@@ -81,8 +80,23 @@ def check_assist(ch: Character, victim: Character) -> None:
             is_rch_charmed = _is_affected(rch, AffectFlag.CHARM)
 
             if (is_rch_autoassist or is_rch_charmed) and is_same_group(ch, rch):
-                if not is_safe(rch, victim):
+                # INV-050: route through the faithful ROM is_safe() mirror
+                # (_kill_safety_message, src/fight.c:1018-1124) rather than the
+                # silent bool combat.safety.is_safe. ROM check_assist gates on
+                # `!is_safe(rch, victim)` (src/fight.c:131); is_safe writes its
+                # OWN rejection line to rch via send_to_char BEFORE returning
+                # TRUE (e.g. "Join a clan if you want to kill players." for a
+                # non-clan PC autoassister) — so a blocked assister sees the
+                # line. A None return == not safe → rch assists. The silent bool
+                # lacked the PC clan ladder, so non-clan PCs wrongly auto-assisted
+                # in PvP. (Function-local import avoids an engine→command cycle.)
+                from mud.commands.combat import _kill_safety_message
+
+                safety_message = _kill_safety_message(rch, victim)
+                if safety_message is None:
                     multi_hit(rch, victim, None)
+                else:
+                    _send_to_char(rch, safety_message + "\n")
 
             continue
 

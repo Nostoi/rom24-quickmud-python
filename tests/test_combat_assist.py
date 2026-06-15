@@ -146,6 +146,35 @@ class TestPlayerAutoAssist:
         # Bob should NOT assist (different group)
         assert helper.fighting is None, "Bob should not assist different group"
 
+    def test_autoassist_blocked_by_is_safe_clan_ladder(self, test_room, create_char):
+        """INV-050: a non-clan PC autoassister is blocked by ROM is_safe and sees its line.
+
+        ROM check_assist (src/fight.c:131) gates the auto-assist on
+        ``!is_safe(rch, victim)``.  When ``rch`` (the autoassister) is a PC who
+        is NOT in a clan and ``victim`` is a PC, ROM is_safe hits the PC-attacker
+        clan ladder (src/fight.c:1107) → ``send_to_char("Join a clan if you want
+        to kill players.", rch)`` and returns TRUE → rch does NOT assist.
+
+        The silent bool ``combat.safety.is_safe`` has NO PC clan ladder, so it
+        returned not-safe and rch WRONGLY assisted (silently).  Converging onto
+        the faithful mirror ``_kill_safety_message`` both blocks the assist and
+        surfaces the context line to rch.
+        """
+        attacker = create_char("Alice", is_npc=False, level=30, group="party1", clan=1)
+        helper = create_char("Bob", is_npc=False, level=30, group="party1", clan=0, act=PlayerFlag.AUTOASSIST)
+        victim = create_char("Carol", is_npc=False, level=30, clan=2)
+
+        attacker.fighting = victim
+        for ch in test_room.people:
+            ch.messages = []
+
+        check_assist(attacker, victim)
+
+        assert helper.fighting is None, "non-clan PC must NOT auto-assist a PC victim (ROM is_safe blocks it)"
+        assert any("Join a clan" in m for m in helper.messages), (
+            f"rch should see ROM is_safe's context line, got {helper.messages!r}"
+        )
+
     def test_charmed_mob_assists_master(self, test_room, create_char):
         """Charmed mob assists master."""
         master = create_char("Player", is_npc=False, level=10, group="party1")
