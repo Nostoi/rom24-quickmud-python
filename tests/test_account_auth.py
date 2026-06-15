@@ -1033,6 +1033,54 @@ def test_create_character_persists_creation_skills():
         session.close()
 
 
+def test_delete_removes_character_from_canonical_store():
+    """DELETE-001 — confirmed `delete` actually removes the character.
+
+    ROM `do_delete` (src/act_comm.c:54-93) on the confirm pass runs
+    `do_quit` (which saves the pfile) then `unlink(strsave)` — the character is
+    gone. The Python port is DB-canonical (INV-008): state + auth live in the
+    `characters` row, so deletion must remove that row. The old code unlinked a
+    non-existent path ("player/Name"), so the row survived and the character
+    stayed loginable after delete-delete (the reported bug). This asserts the
+    row is gone and the name is no longer loginable.
+    """
+    Base.metadata.drop_all(engine)
+    Base.metadata.create_all(engine)
+    bans.clear_all_bans()
+    clear_active_accounts()
+    reset_lockdowns()
+
+    assert create_account("doomed", "secret")
+    account = login("doomed", "secret")
+    assert account is not None
+    assert create_character(account, "Doomed")
+
+    char = load_player_character("Doomed")
+    assert char is not None
+    assert char.pcdata is not None
+
+    from mud.commands.player_config import do_delete
+
+    # First `delete` arms confirmation; second `delete` confirms.
+    do_delete(char, "")
+    assert char.pcdata.confirm_delete is True
+    do_delete(char, "")
+
+    # DB row must be gone (DB-canonical deletion).
+    session = SessionLocal()
+    try:
+        assert session.query(Character).filter_by(name="Doomed").first() is None
+    finally:
+        session.close()
+
+    # And the character must no longer be loadable or loginable.
+    assert load_player_character("Doomed") is None
+    clear_active_accounts()
+    result = login_with_host("Doomed", "secret", None)
+    assert result.account is None
+    assert result.failure is LoginFailureReason.UNKNOWN_ACCOUNT
+
+
 def test_new_character_starts_with_recall():
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)

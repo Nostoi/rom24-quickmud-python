@@ -76,6 +76,42 @@ def load_character(char_name: str, _ignored: str | None = None) -> Character | N
             session.close()
 
 
+def delete_character(char_name: str) -> bool:
+    """Permanently delete a character from the canonical store (DB row).
+
+    DB-canonical (INV-008): the player's gameplay state and auth both live in
+    the ``characters`` DB row, so deletion means removing that row — NOT
+    unlinking a pfile (there is no JSON pfile path). Also drops any matching
+    runtime ``Character`` from ``character_registry`` so the name cannot be
+    referenced after deletion (INV-003 complement).
+
+    ROM Reference: src/act_comm.c do_delete (lines 54-93) — ROM ``do_quit``s the
+    character (which saves the pfile) and then ``unlink(strsave)`` removes it.
+    The DB-row delete here is the faithful equivalent of that ``unlink``.
+
+    Returns True if a row was deleted, False if no row existed.
+    """
+    # Drop any live runtime instance(s) by name first (idempotent).
+    for prior in [c for c in character_registry if getattr(c, "name", None) == char_name]:
+        character_registry.remove(prior)
+
+    session = None
+    try:
+        session = SessionLocal()
+        db_char = session.query(DBCharacter).filter(DBCharacter.name == char_name).first()
+        if db_char is None:
+            return False
+        session.delete(db_char)
+        session.commit()
+        return True
+    except Exception as e:
+        print(f"[ERROR] delete_character failed for {char_name}: {e}")
+        return False
+    finally:
+        if session:
+            session.close()
+
+
 def save_character(character: Character) -> None:
     """Persist ``character`` to the DB row (DB-canonical path).
 

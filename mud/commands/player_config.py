@@ -131,21 +131,20 @@ def do_delete(char: Character, args: str) -> str:
             if hasattr(char, "fighting") and char.fighting:
                 char.fighting = None
 
-            # Log out
+            # Log out — ROM do_function(ch, &do_quit, "") (saves, then unlink).
             from mud.commands.session import do_quit
 
             do_quit(char, "")
 
-            # Delete player file
-            import os
+            # Delete the character. DB-canonical (INV-008): the player's state +
+            # auth live in the `characters` DB row, so deletion removes that row
+            # — the faithful equivalent of ROM's `unlink(strsave)` on the pfile.
+            # The old code unlinked a path that was never written ("player/Name",
+            # capitalized, no extension), so the row survived and the character
+            # stayed loginable after delete-delete. DELETE-001.
+            from mud.account.account_manager import delete_character
 
-            player_dir = "player"
-            player_file = os.path.join(player_dir, f"{char_name.capitalize()}")
-            if os.path.exists(player_file):
-                try:
-                    os.unlink(player_file)
-                except OSError:
-                    pass
+            delete_character(char_name)
 
             return ""  # Player is gone
 

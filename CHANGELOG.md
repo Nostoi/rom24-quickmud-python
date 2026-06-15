@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **DELETE-001 — `delete` now actually deletes your character** — the confirmed
+  `delete` command `os.unlink`ed a non-existent pfile path (`player/Name`) while
+  the canonical store is the `characters` DB row (INV-008, DB-canonical). The
+  delete silently no-op'd and the character stayed loginable after
+  `delete`/`delete` (reported bug). New `account_manager.delete_character(name)`
+  removes the DB row and drops the name from `character_registry`; `do_delete`
+  calls it after `do_quit` (mirroring ROM's save-then-`unlink` order,
+  src/act_comm.c:54-93). Corrects a prior false-✅ audit row. Test:
+  `tests/test_account_auth.py::test_delete_removes_character_from_canonical_store`.
 - **TRAIN-006 — `do_train` no longer crashes on a malformed (short/empty)
   `perm_stat`** — ROM `do_train` (`src/act_move.c:1781,1791`) reads and
   increments `ch->perm_stat[stat]`, always safe because ROM's `perm_stat` is a
