@@ -5,7 +5,6 @@ from typing import Any
 
 from mud.combat import multi_hit
 from mud.combat.engine import stop_fighting
-from mud.combat.safety import is_safe
 from mud.math.c_compat import c_div
 from mud.mobprog import mp_act_trigger_room
 from mud.models.constants import (
@@ -365,6 +364,22 @@ def _prototype_group(entity: Any) -> int:
         return int(group)
     except Exception:
         return 0
+
+
+def _is_safe_mirror(ch: Any, victim: Any) -> bool:
+    """ROM ``is_safe(ch, victim)`` as a pure predicate (INV-050).
+
+    Routes through the faithful message-mirror ``combat._kill_safety_message``
+    (``src/fight.c:1018-1124``) rather than the silent bool ``combat.safety.is_safe``,
+    correcting the bool's bidirectional over/under-block. Returns True when the
+    target is "safe" (attack suppressed). The mirror's would-be context line is
+    not surfaced here: every caller is an NPC spec-fun where ROM's ``send_to_char``
+    targets the NPC ``ch`` and no-ops (``desc == NULL``), so ROM delivers nothing
+    either. (Function-local import avoids an engine→command import cycle.)
+    """
+    from mud.commands.combat import _kill_safety_message
+
+    return _kill_safety_message(ch, victim) is not None
 
 
 def _room_occupants(room: Any) -> list[Any]:
@@ -1337,8 +1352,12 @@ def spec_troll_member(mob: Any) -> bool:
         target_level = int(getattr(candidate, "level", 0) or 0)
         if mob_level <= target_level - 2:
             continue
-        # mirroring ROM src/special.c:145 — is_safe prevents attack in safe rooms
-        if is_safe(mob, candidate):
+        # mirroring ROM src/special.c:145 — is_safe prevents attack in safe rooms.
+        # INV-050: faithful is_safe mirror (combat._kill_safety_message) instead of
+        # the silent bool — corrects the bool's ActFlag.GAIN over-block (not in ROM
+        # is_safe). Pure predicate: ROM's send_to_char goes to the NPC attacker
+        # `mob` and no-ops (desc==NULL), so no message is surfaced (faithful).
+        if _is_safe_mirror(mob, candidate):
             continue
         if rng_mm.number_range(0, count) == 0:
             victim = candidate
@@ -1378,8 +1397,9 @@ def spec_ogre_member(mob: Any) -> bool:
         target_level = int(getattr(candidate, "level", 0) or 0)
         if mob_level <= target_level - 2:
             continue
-        # mirroring ROM src/special.c:213 — is_safe prevents attack in safe rooms
-        if is_safe(mob, candidate):
+        # mirroring ROM src/special.c:213 — is_safe prevents attack in safe rooms.
+        # INV-050: faithful is_safe mirror (see spec_troll_member above).
+        if _is_safe_mirror(mob, candidate):
             continue
         if rng_mm.number_range(0, count) == 0:
             victim = candidate

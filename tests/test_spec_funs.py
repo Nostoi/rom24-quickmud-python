@@ -10,6 +10,7 @@ from mud.models.constants import (
     GROUP_VNUM_TROLLS,
     MOB_VNUM_PATROLMAN,
     OBJ_VNUM_WHISTLE,
+    ActFlag,
     AffectFlag,
     CommFlag,
     Direction,
@@ -1533,4 +1534,53 @@ def test_spec_troll_member_backs_off_when_patrol_present(monkeypatch) -> None:
         room.people.remove(patrol)
         mob_registry.pop(troll_proto.vnum, None)
         mob_registry.pop(patrol_proto.vnum, None)
+        character_registry.clear()
+
+
+def test_spec_troll_member_attacks_gain_flagged_ogre(monkeypatch) -> None:
+    """INV-050: spec_troll_member gates victim selection on is_safe(mob, candidate)
+    (ROM src/special.c:145). The silent bool over-blocks ActFlag.GAIN victims
+    (safety.py:59) — a flag NOT in ROM is_safe — so a GAIN-flagged rival ogre was
+    wrongly skipped. Converged onto the faithful mirror _kill_safety_message, under
+    which a GAIN ogre is eligible. Contract assertion that the Python predicate
+    matches ROM is_safe's NPC-victim semantics (no live faction mob carries GAIN, so
+    this is a refactor toward bool-retirement, not a player-facing fix). The message
+    half is moot — the is_safe recipient is the NPC attacker, whose send_to_char
+    no-ops, exactly as ROM (send_to_char early-returns on desc==NULL)."""
+    character_registry.clear()
+
+    room = Room(vnum=7910, name="Faction Arena", room_flags=0)
+
+    troll_proto = MobIndex(vnum=7911, short_descr="a troll grunt", level=30)
+    troll_proto.spec_fun = "spec_troll_member"
+    mob_registry[troll_proto.vnum] = troll_proto
+    troll = MobInstance.from_prototype(troll_proto)
+    troll.spec_fun = "spec_troll_member"
+    troll.position = int(Position.STANDING)
+    troll.affected_by = 0
+    troll.messages = []
+    room.add_mob(troll)
+
+    # group lives on the prototype (_prototype_group reads proto.group first)
+    ogre_proto = MobIndex(vnum=7912, short_descr="an ogre grunt", level=20, group=GROUP_VNUM_OGRES)
+    mob_registry[ogre_proto.vnum] = ogre_proto
+    ogre = MobInstance.from_prototype(ogre_proto)
+    ogre.position = int(Position.STANDING)  # rival faction (spec_troll_member targets ogres)
+    ogre.act = int(ActFlag.GAIN)  # the silent bool wrongly treats this as "safe"
+    ogre.messages = []
+    room.add_mob(ogre)
+
+    calls: list[tuple[object, object]] = []
+    monkeypatch.setattr(spec_module, "_attack", lambda mob, vic: calls.append((mob, vic)))
+    rng_mm.seed_mm(1)
+
+    try:
+        result = spec_module.spec_troll_member(troll)
+        assert result is True, "troll must attack the GAIN-flagged ogre (ROM is_safe has no GAIN over-block)"
+        assert calls == [(troll, ogre)]
+    finally:
+        room.people.remove(troll)
+        room.people.remove(ogre)
+        mob_registry.pop(troll_proto.vnum, None)
+        mob_registry.pop(ogre_proto.vnum, None)
         character_registry.clear()

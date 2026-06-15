@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.113] — 2026-06-14
+
+### Changed
+
+- **INV-050 — `spec_troll_member` / `spec_ogre_member` faction combat now use the
+  faithful is_safe mirror** — the two ROM faction spec-funs (`src/special.c:145,213`)
+  gated rival-faction victim selection on the silent bool `combat.safety.is_safe`,
+  which over-blocks `ActFlag.GAIN` victims (a flag ROM `is_safe` does not check).
+  Converged onto a `_is_safe_mirror` predicate over `combat._kill_safety_message`,
+  correcting the over-block. This is a refactor toward retiring the silent bool, not
+  a player-facing fix — the is_safe message is moot here (the recipient is the NPC
+  attacker, whose `send_to_char` no-ops, matching ROM). With this, INV-050's
+  **player-facing message-surfacing divergence is fully closed** (bash/consider/cast/
+  assist/steal all surface ROM's context line); the bool now serves only the
+  intentionally-silent apply_damage re-check and `is_safe_spell`'s delegation. Test:
+  `tests/test_spec_funs.py::test_spec_troll_member_attacks_gain_flagged_ogre`.
+
 ## [2.14.112] — 2026-06-14
 
 ### Fixed
