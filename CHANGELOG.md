@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.105] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-068 — `do_bash` now checks victim position before the self-target
+  check, matching ROM order** — ROM `do_bash` (`src/fight.c:2392-2403`) gates on
+  `victim->position < POS_FIGHTING` ("You'll have to let $M get back up first.")
+  *before* the `victim == ch` self-target check ("You try to bash your brains
+  out, but fail."); Python had the two early-return blocks reversed. Observable
+  when bashing *yourself* while sitting/sleeping: Python emitted the brains-out
+  line where ROM emits the position line. **Fix:** swapped the two blocks. Test:
+  `tests/integration/test_fight068_bash_position_before_self.py`. (The position
+  message's literal "them" vs ROM's `$M` pronoun render is filed as FIGHT-075.)
+
 ## [2.14.104] — 2026-06-14
 
 ### Fixed

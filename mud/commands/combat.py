@@ -440,11 +440,13 @@ def do_bash(char: Character, args: str) -> str:
         if victim is None:
             return "But you aren't fighting anyone!"
 
-    if victim is char:
-        return "You try to bash your brains out, but fail."
-
+    # FIGHT-068: ROM checks victim position BEFORE the self-target check
+    # (src/fight.c:2392-2403 — position gate at :2392 precedes victim==ch at :2399).
     if getattr(victim, "position", Position.STANDING) < Position.FIGHTING:
         return "You'll have to let them get back up first."
+
+    if victim is char:
+        return "You try to bash your brains out, but fail."
 
     # FIGHT-067: ROM gates the bash at command entry, before any chance/lag/daze/
     # knockdown — mirroring src/fight.c:2405-2419. is_safe() short-circuits the whole
