@@ -22,7 +22,7 @@ def is_safe(char: Character, victim: Character) -> bool:  # noqa: C901
     - Victim is in a SAFE room
     - Victim is a shopkeeper
     - Victim is a healer
-    - Attacker is too much lower level (for NPCs attacking players)
+    - A charmed NPC attacker would attack a PC its master is not fighting
     """
     from mud.models.constants import ActFlag, AffectFlag, RoomFlag
 
@@ -81,7 +81,12 @@ def is_safe(char: Character, victim: Character) -> bool:  # noqa: C901
     if proto is not None and getattr(proto, "pShop", None) is not None:
         return True
 
-    # NPC attacking player — mirroring ROM src/fight.c:1080-1093
+    # NPC attacking player — mirroring ROM src/fight.c:1075-1093 ("killing
+    # players", IS_NPC(ch) branch). ROM has EXACTLY two guards here: the safe-room
+    # check (handled above via victim.room ROOM_SAFE) and the charmed-pet-owner
+    # check. There is NO level-difference gate — a fabricated
+    # `victim_level < char_level - 10` over-block (FIGHT-077, INV-050) used to live
+    # here and silently stopped any mob >10 levels above a player from aggressing.
     if getattr(char, "is_npc", False) and not getattr(victim, "is_npc", True):
         # charmed mobs and pets cannot attack players while master is not fighting them
         # mirroring ROM src/fight.c:1087-1093
@@ -90,11 +95,6 @@ def is_safe(char: Character, victim: Character) -> bool:  # noqa: C901
             master = getattr(char, "master", None)
             if master is not None and getattr(master, "fighting", None) is not victim:
                 return True
-
-        char_level = getattr(char, "level", 1)
-        victim_level = getattr(victim, "level", 1)
-        if victim_level < char_level - 10:
-            return True
 
     return False
 

@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FIGHT-077 — aggressive mobs now attack low-level players (fabricated
+  `is_safe` level gate removed)** — `mud/combat/safety.py:is_safe` carried a
+  `if victim_level < char_level - 10: return True` gate in the NPC-attacking-PC
+  branch with **no ROM basis**. ROM `src/fight.c:1075-1093` ("NPC doing the
+  killing") has exactly two guards there — the safe-room check and the
+  charmed-pet-owner check — and **no level-difference gate**. Because
+  `apply_damage` re-checks `is_safe` at entry (`src/fight.c:731`) and returns
+  `""` when safe, any mob more than 10 levels above a player silently refused to
+  deal damage or enter combat: aggression was effectively dead for every
+  low-level PC (the live `Eddol` level-1 case vs the level-13 Cave Dweller).
+  This is the missed level-gate facet of INV-050 (silent `is_safe` over-block);
+  the faithful message-returning mirror `_kill_safety_message` in
+  `mud/commands/combat.py` already correctly omitted any level gate. Test:
+  `tests/integration/test_fight077_is_safe_no_npc_level_gate.py`.
 - **INV-051 — new characters are no longer persisted until creation completes**
   — the Python nanny INSERTed a bare level-0 DB row the moment a new player
   chose a password (`_run_character_login` → `create_account` →
