@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.112] — 2026-06-14
+
+### Fixed
+
+- **STEAL-003 (INV-050) — a blocked `steal` now shows ROM's is_safe context
+  line** — ROM `do_steal` (`src/act_obj.c:2191`) calls `is_safe`, which sends its
+  own rejection line (e.g. "I don't think Mota would approve.") before returning
+  TRUE; `do_steal` then returns. The Python port routed through the silent bool
+  `combat.safety.is_safe` and returned `""` — the thief saw *nothing*, and the
+  bool's missing PC clan ladder let non-clan PCs reach PC-victim steal logic.
+  **Fix:** converged `do_steal` onto the faithful mirror
+  `combat._kill_safety_message` (do_bash/consider/cast/assist pattern). Fifth
+  INV-050 caller converged. Four steal tests asserting the silent-bool
+  under-block (non-clan PC reaching PC-victim logic) were ROM-corrected to clan
+  thief/victim. Test:
+  `tests/integration/test_steal_command.py::test_steal_from_safe_healer_surfaces_is_safe_line`.
+
 ## [2.14.111] — 2026-06-14
 
 ### Fixed

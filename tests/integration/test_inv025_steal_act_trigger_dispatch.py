@@ -62,6 +62,11 @@ def _make_pc(room: Room, name: str = "thief") -> Character:
     pc.skills = {"steal": 0}
     pc.gold = 100
     pc.silver = 100
+    # INV-050: ROM is_safe (src/fight.c:1099) blocks a non-clan PC thief from PC
+    # victims ("Join a clan if you want to kill players.") before the steal logic.
+    # These tests exercise the *failure broadcast* path (skill=0), so the thief
+    # must be a clan member for is_safe to pass; the skill=0 roll still fails.
+    pc.clan = 1
     room.people.append(pc)
     character_registry.append(pc)
     return pc
@@ -82,6 +87,10 @@ def _make_pc_victim(room: Room, name: str = "victim") -> Character:
     pc.pcdata = PCData()
     pc.gold = 200
     pc.silver = 200
+    # INV-050: the PC victim must be a clan member so ROM is_safe passes (a
+    # non-clan PC victim is blocked at "They aren't in a clan, leave them alone."
+    # src/fight.c:1112) and the steal reaches the failure broadcast path.
+    pc.clan = 1
     room.people.append(pc)
     character_registry.append(pc)
     return pc

@@ -6,6 +6,7 @@ import pytest
 
 from mud.commands.thief_skills import do_steal
 from mud.models.constants import (
+    ActFlag,
     AffectFlag,
     ExtraFlag,
     PlayerFlag,
@@ -98,6 +99,23 @@ def test_steal_from_fighting_npc_rejected(movable_char_factory, room):
     _make_victim(movable_char_factory, name="Goblin", position=Position.FIGHTING, gold=500)
     out = do_steal(thief, "gold goblin")
     assert "Kill stealing is not permitted" in out
+
+
+# ---------------------------------------------------------------------------
+# STEAL-003 / INV-050: is_safe surfaces its own context line
+# ---------------------------------------------------------------------------
+def test_steal_from_safe_healer_surfaces_is_safe_line(movable_char_factory, room):
+    # ROM do_steal (act_obj.c:2191-2192) calls is_safe, which sends its OWN
+    # context line ("I don't think Mota would approve." for a healer) via
+    # send_to_char BEFORE returning TRUE; do_steal then just returns. The silent
+    # bool combat.safety.is_safe dropped that line, returning "". Converged onto
+    # the faithful mirror combat._kill_safety_message (do_bash/consider/cast/assist
+    # pattern).
+    thief = _make_thief(movable_char_factory)
+    healer = _make_victim(movable_char_factory, name="Healer", gold=500)
+    healer.act = int(ActFlag.IS_HEALER)
+    out = do_steal(thief, "gold healer")
+    assert "Mota would approve" in out, f"expected ROM is_safe context line, got {out!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -302,8 +320,16 @@ def test_steal_failure_strips_sneak(movable_char_factory, room, monkeypatch):
 # STEAL-012: failure on PC->PC sets PLR_THIEF
 # ---------------------------------------------------------------------------
 def test_steal_failure_pc_to_pc_sets_thief_flag(movable_char_factory, room, monkeypatch):
-    thief = _make_thief(movable_char_factory, level=30, clan=0)
-    _make_victim(movable_char_factory, name="Alice", is_npc=False, gold=100)
+    # INV-050: ROM is_safe (src/fight.c:1099-1119) blocks a non-clan PC thief from
+    # PC victims ("Join a clan if you want to kill players.") BEFORE the steal
+    # logic — so the PLR_THIEF flag (set only on a PC-victim failure,
+    # act_obj.c:2256) is reachable only for a CLAN thief vs a CLAN PC victim that
+    # passes is_safe. Force the failure via the level gap (act_obj.c:2210 — |level
+    # diff|>7) with the victim HIGHER level, so is_safe's "pick on someone your own
+    # size" (attacker over-level) does not fire. (Was clan=0 thief vs non-clan
+    # victim — asserting the silent bool's missing PC clan ladder.)
+    thief = _make_thief(movable_char_factory, level=30, clan=1)
+    _make_victim(movable_char_factory, name="Alice", is_npc=False, level=38, clan=1, gold=100)
 
     import mud.commands.thief_skills as ts
 
@@ -335,8 +361,13 @@ def test_steal_applies_wait_state(movable_char_factory, room, monkeypatch):
 # STEAL-014: PvP level diff > 7 forces failure
 # ---------------------------------------------------------------------------
 def test_steal_level_diff_forces_failure_pc_to_pc(movable_char_factory, room, monkeypatch):
+    # INV-050: victim must be a CLAN member so ROM is_safe passes (a non-clan PC
+    # victim is blocked at "They aren't in a clan, leave them alone."
+    # src/fight.c:1112 before the level-gap logic). The thief is LOWER level than
+    # the victim, so is_safe's over-level guard does not fire; the level gap
+    # (act_obj.c:2210) still forces the "Oops." failure.
     thief = _make_thief(movable_char_factory, level=10, clan=1, skill=100)
-    _make_victim(movable_char_factory, name="Alice", is_npc=False, level=25, gold=1000)
+    _make_victim(movable_char_factory, name="Alice", is_npc=False, level=25, clan=1, gold=1000)
 
     import mud.commands.thief_skills as ts
 

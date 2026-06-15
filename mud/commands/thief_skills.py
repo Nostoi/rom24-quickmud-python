@@ -126,12 +126,18 @@ def do_steal(char: Character, args: str) -> str:
     if victim is char:
         return "That's pointless.\n"
 
-    # ROM L2191-2192: is_safe (suppresses theft on safe targets, like ROM)
-    from mud.combat.safety import is_safe
+    # ROM L2191-2192: is_safe (suppresses theft on safe targets, like ROM).
+    # INV-050: route through the faithful is_safe mirror (combat._kill_safety_message,
+    # src/fight.c:1018-1124) rather than the silent bool combat.safety.is_safe. ROM
+    # is_safe writes its OWN context line to ch (e.g. "I don't think Mota would
+    # approve.") via send_to_char BEFORE returning TRUE; do_steal then just returns
+    # (act_obj.c:2191-2192). The silent bool dropped that line, returning "". A
+    # non-None return == ROM is_safe TRUE.
+    from mud.commands.combat import _kill_safety_message
 
-    if is_safe(char, victim):
-        # ROM is_safe sends its own message; return empty TO_CHAR
-        return ""
+    safety_message = _kill_safety_message(char, victim)
+    if safety_message is not None:
+        return safety_message + "\n"
 
     # ROM L2194-2199: kill-stealing prevention
     victim_is_npc = bool(getattr(victim, "is_npc", False))
