@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.108] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-075 — `do_bash` position-gate message now renders ROM's `$M`
+  pronoun** — ROM `do_bash` (`src/fight.c:2394`) emits
+  `act("You'll have to let $M get back up first.", ch, NULL, victim, TO_CHAR)`
+  (`$M` = victim objective pronoun → "him"/"her"/"it"); Python returned the
+  literal "You'll have to let them get back up first.". **Fix:**
+  `act_format("You'll have to let $M get back up first.", …)`. Test:
+  `tests/integration/test_fight075_bash_position_pronoun_message.py`. Same
+  act()-render class as FIGHT-073/TRIP-001/FIGHT-064.
+
 ## [2.14.107] — 2026-06-14
 
 ### Fixed

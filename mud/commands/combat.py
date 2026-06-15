@@ -443,7 +443,9 @@ def do_bash(char: Character, args: str) -> str:
     # FIGHT-068: ROM checks victim position BEFORE the self-target check
     # (src/fight.c:2392-2403 — position gate at :2392 precedes victim==ch at :2399).
     if getattr(victim, "position", Position.STANDING) < Position.FIGHTING:
-        return "You'll have to let them get back up first."
+        # FIGHT-075: ROM renders act("You'll have to let $M get back up first.",
+        # ch, NULL, victim, TO_CHAR) — $M = victim objective pronoun (src/fight.c:2394).
+        return act_format("You'll have to let $M get back up first.", recipient=char, actor=char, arg2=victim)
 
     if victim is char:
         return "You try to bash your brains out, but fail."
