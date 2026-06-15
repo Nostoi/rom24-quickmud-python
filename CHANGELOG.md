@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.109] — 2026-06-14
+
+### Fixed
+
+- **CONSIDER-002 (INV-050) — `consider` on a safe target now shows ROM's
+  is_safe context line** — ROM `do_consider` (`src/act_info.c:2490-2493`) runs
+  `if (is_safe(ch,victim)) { send_to_char("Don't even think about it."); return; }`,
+  and ROM `is_safe` writes its own rejection line (e.g. "The shopkeeper wouldn't
+  like that.", "I don't think Mota would approve.") *before* returning TRUE — so
+  a blocked `consider` shows two lines. Python routed through the silent bool
+  `combat.safety.is_safe` and printed only "Don't even think about it.". **Fix:**
+  converged the gate onto the faithful mirror `combat._kill_safety_message`
+  (do_bash's FIGHT-070 pattern). Second INV-050 caller converged. Test:
+  `tests/integration/test_consider002_safe_target_context_message.py`.
+
 ## [2.14.108] — 2026-06-14
 
 ### Fixed

@@ -6,7 +6,7 @@ ROM Reference: src/act_info.c do_consider (lines 2469-2510)
 
 from __future__ import annotations
 
-from mud.combat.safety import is_safe
+from mud.commands.combat import _kill_safety_message
 from mud.models.character import Character
 from mud.utils.act import capitalize_act_line
 from mud.world.char_find import get_char_room
@@ -39,9 +39,16 @@ def do_consider(char: Character, args: str) -> str:
     if not victim:
         return "They're not here."
 
-    # Check if safe to attack
-    if is_safe(char, victim):
-        return "Don't even think about it."
+    # INV-050: route through the faithful ROM is_safe() mirror
+    # (combat._kill_safety_message, src/fight.c:1018-1124) rather than the silent
+    # bool combat.safety.is_safe. ROM is_safe writes its OWN context line via
+    # send_to_char/act BEFORE returning TRUE (e.g. "The shopkeeper wouldn't like
+    # that."), then do_consider appends "Don't even think about it."
+    # (src/act_info.c:2490-2493). The silent bool dropped that context line; a
+    # non-None return from the mirror == ROM is_safe returning TRUE.
+    safety_message = _kill_safety_message(char, victim)
+    if safety_message is not None:
+        return f"{safety_message}\nDon't even think about it."
 
     # Calculate level difference - ROM src/act_info.c line 2492
     char_level = getattr(char, "level", 1)
