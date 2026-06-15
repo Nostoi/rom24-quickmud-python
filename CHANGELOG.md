@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.107] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-073 — `do_dirt` "already blinded" message now renders ROM's `$E`
+  pronoun** — ROM `do_dirt` (`src/fight.c:2524`) emits
+  `act("$E's already been blinded.", ch, NULL, victim, TO_CHAR)` (`$E` = victim
+  subjective pronoun, first letter capitalized → "He's already been blinded."
+  for a male victim); Python returned the literal "They're already blinded.".
+  **Fix:** `act_format("$E's already been blinded.", …)`. Test:
+  `tests/integration/test_fight073_dirt_blind_pronoun_message.py`. Same
+  act()-render class as TRIP-001/FIGHT-064.
+
 ## [2.14.106] — 2026-06-14
 
 ### Fixed

@@ -1116,7 +1116,9 @@ def do_dirt(char: Character, args: str) -> str:
     # (src/fight.c:2522-2532 — blind gate at :2522 precedes victim==ch at :2528).
     victim_affected = getattr(victim, "affected_by", 0)
     if victim_affected & AffectFlag.BLIND:
-        return "They're already blinded."
+        # FIGHT-073: ROM renders act("$E's already been blinded.", ch, NULL, victim,
+        # TO_CHAR) — $E = victim subjective pronoun, capitalized (src/fight.c:2524).
+        return act_format("$E's already been blinded.", recipient=char, actor=char, arg2=victim)
 
     if victim is char:
         return "Very funny."
