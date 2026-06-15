@@ -1,56 +1,57 @@
-# Session Status — 2026-06-15 — Tick aggression + spec-fun delivery (FIGHT-077 + SPEC-017)
+# Session Status — 2026-06-15 — Tick-aggression regression-prevention trio
 
 ## Current State
 
 - **Active focus**: Cross-file / divergence-class sweep (per-file audit tracker
-  exhausted). This session closed the two reported **tick-driven** symptoms
-  (aggressive mobs not attacking; friendly mobs not casting) and confirmed via a
-  broad tick-path sweep that no further live tick bugs remain.
-- **Last completed**:
-  - **FIGHT-077** (2.14.115, commit 5a93cec7) — removed a fabricated
-    `is_safe` NPC level gate (`if victim_level < char_level - 10: return True`)
-    with no ROM basis. ROM `src/fight.c:1075-1093` has only the safe-room and
-    charmed-pet-owner checks; any mob >10 levels above a PC had silently refused
-    to aggress. Aggression restored. Missed level-gate facet of INV-050.
-  - **SPEC-017** (2.14.115, commit c47d550e) — `spec_funs.py:_append_message`,
-    the single sink for all spec-fun room flavor, delivered mailbox-only (last
-    helper missed by the INV-001 sweep). Now routed through the loop-aware
-    chokepoint `push_message`, so idle connected players see spec-fun casting
-    announcements on a tick (mirroring ROM `src/comm.c:act`). INV-001
-    wrong-channel cousin.
+  exhausted). The two reported tick symptoms (aggressive mobs not attacking;
+  friendly mobs not casting) were closed earlier today (FIGHT-077 + SPEC-017,
+  v2.14.115). This session landed the **regression-prevention package** that
+  locks those fixes against reintroduction.
+- **Last completed** (this session, all three deliverables of the authorized
+  package):
+  - **(a) Layer-A grep-guard** (v2.14.116, commit 5e7ca15c) —
+    `tests/test_message_delivery_convention.py` forbids `<entity>.messages.append`
+    / `getattr(x, "messages")` bypasses outside the `push_message` chokepoint
+    (7 legitimate + 14 frozen INV-001 debt entries, self-cleaning orphan check).
+  - **(c) AGENTS.md doc rule** (v2.14.116, commit 5e7ca15c) — Message Delivery
+    section cites the guard.
+  - **(b) diff_harness `aggression_onset` scenario** (v2.14.117, commit 55134261)
+    — mloads AGGRESSIVE mob 3704 into an idle PC's room, runs one `__aggr_update`
+    pulse; committed C golden shows the mob proactively attacking (PC →
+    `FIGHTING`, hp 20→16, "The aggressive monster's claw injures you."). New
+    `__aggr_update` step-handlers in both engines (C shim → `aggr_update()`,
+    Python → `aggressive_update`). Python replay matches the C oracle exactly.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-15_TICK_AGGRESSION_SPECFUN_DELIVERY_FIGHT077_SPEC017.md](SESSION_SUMMARY_2026-06-15_TICK_AGGRESSION_SPECFUN_DELIVERY_FIGHT077_SPEC017.md)
+  [SESSION_SUMMARY_2026-06-15_TICK_AGGRESSION_REGRESSION_PREVENTION.md](SESSION_SUMMARY_2026-06-15_TICK_AGGRESSION_REGRESSION_PREVENTION.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.115 |
-| Tests | 5812 passed, 4 skipped (+2 new test files: FIGHT-077, SPEC-017) |
+| Version | 2.14.117 |
+| Tests | 5812 passed (v2.14.115 baseline) + diff_harness 68 passed (41 scenarios incl. aggression_onset) + message-delivery guard green |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
-| Active focus | Cross-file invariants pass — FIGHT-077 + SPEC-017 closed |
+| Active focus | Cross-file invariants pass — FIGHT-077/SPEC-017 regression-locked |
 
 ## Next Intended Task
 
-Both reported tick symptoms are fixed and verified. Open follow-ups, in priority
-order:
+Regression-prevention trio complete. Open follow-ups, in priority order:
 
-1. **Vestigial dual-channel in `process_weapon_special_attacks`** —
-   `mud/combat/engine.py` builds both `_push_message` and a `messages.append`
-   return list; all `multi_hit` callers discard the return, so it is not a live
-   bug, but it is a latent INV-001 footgun. Low-priority cleanup; not yet filed
-   as a stable ID.
-2. **Eddol data cleanup (needs user confirmation)** — the existing corrupt
-   `Eddol` DB row is forward-only unaffected; deleting it is destructive.
+1. **INV-001 debt burndown** — migrate the 14 frozen `_INV001_DEBT` sites in
+   `tests/test_message_delivery_convention.py` to `push_message`, one clean
+   ROM-confirmed TDD fix per site, deleting its allowlist line. Candidates:
+   `thief_skills.py:253`, `connection.py:766/787`, `dispatcher.py:1201`,
+   `communication.py:29`, `magic_items.py:319`, `skills/handlers.py` (4 sites),
+   `skills/registry.py` cluster.
+2. **Vestigial dual-channel in `process_weapon_special_attacks`**
+   (`mud/combat/engine.py`) — latent INV-001 footgun; not yet a stable ID.
 3. **DELETE-002 🔄 OPEN** — `do_delete` lacks ROM's wiznet self-deletion
-   broadcast (`src/act_comm.c`). Local divergence, low priority.
-4. **STEAL-015 🔄 OPEN** — steal skill-handler `skills/handlers.py:steal` has no
-   `is_safe` gate; converge onto `_kill_safety_message`.
+   broadcast (`src/act_comm.c`).
+4. **STEAL-015 🔄 OPEN** — steal skill-handler has no `is_safe` gate.
 5. **INV-050 bool-retirement** — gated on the `is_safe_spell`-vs-ROM audit
-   (`safety.py:is_safe_spell` vs `src/fight.c:1126-1218`); message-half done,
-   FIGHT-077 closed the missed level-gate facet.
+   (`safety.py:is_safe_spell` vs `src/fight.c:1126-1218`).
 6. **`mud/entrypoint.py`** dead code (`prompt_account_creation` / `prompt_login`,
-   no callers) — candidate for removal in a hygiene pass.
+   no callers) — hygiene-pass removal candidate.
 
 Beyond these, per `docs/parity/DIVERGENCE_CLASS_ROSTER.md` the higher-yield open
 lever remains the **Hypothesis state-machine → diff_harness widening** (Class 11
