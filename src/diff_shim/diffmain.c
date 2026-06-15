@@ -941,6 +941,19 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __aggr_update: run one aggr_update() pulse (src/update.c:1077) —
+         * wakes AGGRESSIVE mobs and launches multi_hit at an eligible PC in
+         * the room.  Mirrors the Python-side __aggr_update handler in
+         * pyreplay.py (mud.ai.aggressive.aggressive_update).  Captures the
+         * mob's opening combat output. */
+        if (strncmp (line, "__aggr_update", 13) == 0)
+        {
+            shim_reset_output ();
+            aggr_update ();
+            emit_output ();
+            continue;
+        }
+
         /* __char_update: run one char_update() pulse (regen, conditions,
          * affect ticks, idle timer) for all characters.  Mirrors the Python-
          * side __char_update handler in pyreplay.py. */

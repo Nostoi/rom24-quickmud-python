@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **diff_harness `aggression_onset` scenario — C-oracle lock on tick-time
+  aggression (FIGHT-077 regression guard)** — new
+  `tools/diff_harness/scenarios/aggression_onset.json` plus matching
+  `__aggr_update` step-handlers in the C shim (`src/diff_shim/diffmain.c`,
+  calling ROM `src/update.c:1077 aggr_update`) and the Python replay
+  (`tools/diff_harness/pyreplay.py`, calling `mud.ai.aggressive_update`). The
+  scenario mloads the AGGRESSIVE mob 3704 into an idle level-5 PC's room and runs
+  one aggression pulse; the committed golden
+  (`tests/data/golden/diff/aggression_onset.golden.json`) is C-engine ground
+  truth showing the mob proactively launching `multi_hit` (PC → `FIGHTING`, hp
+  20→16, "The aggressive monster's claw injures you." on the socket). This locks
+  the FIGHT-077 fix (deleted fabricated `is_safe` NPC-level-gate) and the
+  SPEC-017 tick-time socket-delivery contract mechanically against the C oracle —
+  a reintroduced level-gate or mailbox-only delivery would diverge from the
+  immutable C trace. Completes the v2.14.116 regression-prevention trio (Layer-A
+  guard + AGENTS.md doc rule + diff_harness scenario).
 - **Layer-A grep-guard for message-delivery (INV-001 SINGLE-DELIVERY ratchet)** —
   `tests/test_message_delivery_convention.py` is a new static scanner (same idiom
   as `test_rng_determinism.py` / `test_equipment_key_convention.py`) that forbids

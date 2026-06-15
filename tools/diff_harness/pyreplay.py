@@ -246,6 +246,14 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
 
         violence_tick(do_combat=True)
         return ""
+    if command.startswith("__aggr_update"):
+        # Run one aggression-onset pulse (ROM src/update.c:1077 aggr_update):
+        # wakes AGGRESSIVE mobs and launches multi_hit at an eligible PC in
+        # the room. Mirrors the C-shim __aggr_update handler in diffmain.c.
+        from mud.ai import aggressive_update
+
+        aggressive_update()
+        return ""
     if command.startswith("__char_update"):
         from mud.game_loop import char_update
 
