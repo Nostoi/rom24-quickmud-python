@@ -1,4 +1,4 @@
-# Session Summary — 2026-06-14 — do_bash `$M` render + is_safe convergence (FIGHT-075 / CONSIDER-002 / CAST-012 / FIGHT-076)
+# Session Summary — 2026-06-14 — do_bash `$M` render + is_safe convergence (FIGHT-075 / CONSIDER-002 / CAST-012 / FIGHT-076 / STEAL-003)
 
 ## Scope
 
@@ -8,10 +8,12 @@ one spin-off (FIGHT-075). Closed it, then moved to the next-higher lever named
 in the status doc — **INV-050** (converging the silent-bool `is_safe` callers
 onto the faithful message-mirror `_kill_safety_message`) — and converged the
 **second** (`do_consider`, CONSIDER-002), **third** (`do_cast`
-`TAR_CHAR_OFFENSIVE`, CAST-012), and **fourth** (`check_assist`, FIGHT-076)
-callers. One gap = one test = one commit (do_bash was the first caller,
-converged last session under FIGHT-070). Also ROM-corrected one standing
-pre-existing red test (do_kill charm gate) surfaced by the assist fallout run.
+`TAR_CHAR_OFFENSIVE`, CAST-012), **fourth** (`check_assist`, FIGHT-076), and
+**fifth** (`do_steal`, STEAL-003) callers. One gap = one test = one commit
+(do_bash was the first caller, converged last session under FIGHT-070). Also
+ROM-corrected one standing pre-existing red test (do_kill charm gate) surfaced
+by the assist fallout run, and filed STEAL-015 (the steal *skill-handler* has no
+is_safe at all).
 
 ## Outcomes
 
@@ -100,6 +102,32 @@ pre-existing red test (do_kill charm gate) surfaced by the assist fallout run.
   (`test_combat_assist.py::TestPlayerAutoAssist::test_autoassist_blocked_by_is_safe_clan_ladder`);
   red before, green after. Full assist/group slice 93 passed, 1 skipped.
 
+### `STEAL-003` — ✅ FIXED (2.14.112, INV-050 fifth caller)
+
+- **Python**: `mud/commands/thief_skills.py:do_steal` (~thief_skills.py:132)
+- **ROM C**: `src/act_obj.c:2191-2192` + `src/fight.c:1018-1124`
+- **Gap**: ROM `do_steal` calls `is_safe`, which sends its own context line before
+  returning TRUE; do_steal then returns. STEAL-003's *original* fix returned `""`
+  on the assumption "is_safe already messaged" — but it routed through the
+  **silent bool**, which writes nothing, so a blocked steal showed nothing (and
+  inherited the bool's missing PC clan ladder).
+- **Fix**: converged onto `_kill_safety_message` (do_bash/consider/cast/assist
+  pattern) — a non-None return is surfaced to ch.
+- **Block-set fallout**: 4 tests ROM-corrected for the under-block —
+  `test_steal_command.py::{test_steal_failure_pc_to_pc_sets_thief_flag,
+  test_steal_level_diff_forces_failure_pc_to_pc}` and
+  `test_inv025_steal_act_trigger_dispatch.py::{...notvict..., ...pc_victim_sees_message}`
+  all reached PC-victim steal logic with a non-clan PC, which ROM is_safe blocks;
+  corrected to clan thief/victim.
+- **Tests**: 1 new
+  (`test_steal_command.py::test_steal_from_safe_healer_surfaces_is_safe_line`);
+  red before, green after. Full steal slice 40 passed.
+- **Out-of-scope finding filed (STEAL-015 🔄 OPEN)**: the *skill-handler*
+  `mud/skills/handlers.py:steal` (~7762) has **no is_safe at all** ("simplified -
+  no is_safe implemented yet"), yet is registered as the "steal" skill function
+  (`data/skills.json:1816`) — reachable via the skill system independently of the
+  `do_steal` command. Filed in `ACT_OBJ_C_AUDIT.md`.
+
 ### Pre-existing failure ROM-corrected (separate commit, NOT caused this session)
 
 - **`test_combat.py::test_kill_blocks_charmed_player_attacking_master`** — a
@@ -138,9 +166,15 @@ pre-existing red test (do_kill charm gate) surfaced by the assist fallout run.
 - `tests/integration/test_fight060_check_assist_elif_chain.py` — removed vestigial
   `is_safe` monkeypatches (NPC-assist branch never calls it).
 - `tests/test_combat.py` — ROM-corrected the stale do_kill charm-gate test (NPC master).
+- `mud/commands/thief_skills.py` — `do_steal` safety gate → `_kill_safety_message`.
+- `tests/integration/test_steal_command.py` — new healer is_safe-line test; 2 PC-to-PC
+  tests ROM-corrected (clan thief/victim).
+- `tests/integration/test_inv025_steal_act_trigger_dispatch.py` — `_make_pc`/`_make_pc_victim`
+  given clan=1 so PC-victim steal reaches the failure broadcast under faithful is_safe.
 - `docs/parity/FIGHT_C_AUDIT.md` — added FIGHT-076 ✅ FIXED row.
-- `CHANGELOG.md` — added 2.14.108 / 2.14.109 / 2.14.110 / 2.14.111 sections.
-- `pyproject.toml` — 2.14.107 → 2.14.111.
+- `docs/parity/ACT_OBJ_C_AUDIT.md` — updated STEAL-003 (INV-050 completion); added STEAL-015 🔄 OPEN.
+- `CHANGELOG.md` — added 2.14.108 … 2.14.112 sections.
+- `pyproject.toml` — 2.14.107 → 2.14.112.
 
 ## Test Status
 
@@ -153,24 +187,26 @@ pre-existing red test (do_kill charm gate) surfaced by the assist fallout run.
 - `pytest -k "assist or group or check_assist"` — 93 passed, 1 skipped (FIGHT-076).
 - `pytest tests/test_combat.py tests/test_combat_assist.py` — 50 passed (incl. the ROM-corrected do_kill test).
 - Diff-harness smoke (`test_differential_smoke` + `test_diff_harness_unit`) — 67 passed (check_assist is on the combat-tick path).
+- `pytest -k steal` — 40 passed (STEAL-003; incl. 4 ROM-corrected block-set tests).
 - `python3 test_all_commands.py` — 1 pre-existing attribute error (confirmed present in stashed baseline; not introduced this session).
 - `ruff check .` — clean. Pre-commit hooks all passed.
 - GitNexus `impact` on `do_bash` / `do_consider` / `do_cast` — LOW risk, 0 affected processes. `detect_changes` scope confined to the three functions + docs. Index reindexed after each commit.
 
 ## Next Steps
 
-- **INV-050 remaining callers** (the active lever): converge the rest of the
-  silent-bool `is_safe` callers onto `_kill_safety_message` —
-  `spec_funs.py:1341,1382`, `commands/thief_skills.py:132`, and
+- **INV-050 remaining callers** (the active lever): only ~2 silent-bool callers
+  remain — `spec_funs.py:1341,1382` (read the ROM spec-fun call sites first) and
   `combat/engine.py:671-674` (apply_damage re-check — FIGHT-002, **intentionally**
-  silent; confirm against `src/fight.c:725-733` — likely leave as-is). Each needs
-  its ROM C call-site read first. **Watch for block-set fallout** like CAST-012 /
-  FIGHT-076: converging corrects *which* targets block, not just the message, so
-  existing tests asserting the silent-bool's over/under-block must be ROM-corrected
-  (cite ROM C — the assist run also surfaced a *pre-existing* do_kill test
-  asserting the same divergence). ⚠️ PARTIAL in `CROSS_FILE_INVARIANTS_TRACKER.md`.
-  Ultimate goal: collapse all callers onto the mirror and retire the bool (or make
-  it a thin wrapper) — eliminating its bidirectional over/under-block.
+  silent; confirm against `src/fight.c:725-733` — likely leave as-is). After those,
+  the bool can likely be retired or made a thin wrapper over `_kill_safety_message`.
+  **Watch for block-set fallout** like CAST-012 / FIGHT-076 / STEAL-003: converging
+  corrects *which* targets block, not just the message, so existing tests asserting
+  the silent-bool's over/under-block must be ROM-corrected (cite ROM C). ⚠️ PARTIAL
+  in `CROSS_FILE_INVARIANTS_TRACKER.md`.
+- **STEAL-015 🔄 OPEN** — the steal *skill-handler* `skills/handlers.py:steal`
+  (~7762) has no is_safe at all but is registered as the "steal" skill function;
+  converge it onto `_kill_safety_message` too (returning the line in the result
+  dict). Filed in `ACT_OBJ_C_AUDIT.md`.
 - Beyond INV-050, per `docs/parity/DIVERGENCE_CLASS_ROSTER.md` the higher-yield
   open lever remains the **Hypothesis state-machine → diff_harness widening**
   (Class 11 / Phase C), enumeration-independent (guardrail 3).
