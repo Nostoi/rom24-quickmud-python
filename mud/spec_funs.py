@@ -141,9 +141,16 @@ def _is_awake(ch: Any) -> bool:
 
 
 def _append_message(target: Any, message: str) -> None:
-    inbox = getattr(target, "messages", None)
-    if isinstance(inbox, list):
-        inbox.append(message)
+    # SPEC-017 / INV-001 SINGLE-DELIVERY — route spec-fun flavor through the
+    # canonical loop-aware chokepoint, mirroring ROM src/comm.c:act which writes
+    # straight to each recipient's descriptor via write_to_buffer. push_message
+    # sends to a connected PC's socket (async, single delivery) and falls back to
+    # the char.messages mailbox for tests/disconnected chars. The prior
+    # mailbox-only append left idle connected players (e.g. watching the cage-room
+    # adept cast) never seeing the announcement until their next command.
+    from mud.utils.messaging import push_message
+
+    push_message(target, message)
 
 
 def _broadcast_room_message(room: Any, template: str | None, actor: Any, victim: Any | None) -> None:

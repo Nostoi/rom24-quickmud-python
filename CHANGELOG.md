@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **SPEC-017 — spec-fun flavor now reaches idle connected players on the socket
+  (adept/mayor/janitor/fido/thief/poison/breath casting announcements)** —
+  `mud/spec_funs.py:_append_message`, the single sink for every spec-fun room
+  message, appended only to the `char.messages` mailbox and never the socket. It
+  was the **last** mailbox-only delivery helper, missed by the INV-001
+  SINGLE-DELIVERY sweep that migrated its identical `mud/mob_cmds.py` twin. For a
+  *connected* PC the line only surfaced after the player's NEXT command (the
+  connection read loop drains the mailbox), so an idle web-client player watching
+  the cage-room adept never saw `The healer utters the word 'fido'.` on a game
+  tick — the user-visible "friendly mobs aren't casting healing spells"
+  symptom. ROM `src/comm.c:act` writes spec-fun flavor straight to each
+  recipient's descriptor via `write_to_buffer`. Fixed by routing
+  `_append_message` through the loop-aware chokepoint
+  `mud.utils.messaging.push_message` (async socket for connected PCs, mailbox
+  fallback for tests/disconnected). INV-001 wrong-channel cousin. Test:
+  `tests/integration/test_spec017_delivery_channel.py`.
 - **FIGHT-077 — aggressive mobs now attack low-level players (fabricated
   `is_safe` level gate removed)** — `mud/combat/safety.py:is_safe` carried a
   `if victim_level < char_level - 10: return True` gate in the NPC-attacking-PC

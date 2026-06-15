@@ -131,6 +131,7 @@ ROM: `number_percent() > 2 * ch->level` → check. Python: `rng_mm.number_percen
 | SPEC-014 | MINOR | `special.c:112-123` | `spec_funs.py:273-281` | `spec_name` reverse-lookup not needed — Python uses dict-based registry. | N/A |
 | SPEC-015 | MINOR | `special.c:57-62` | `spec_funs.py:50-57` | `spec_lookup` uses `str_prefix` (prefix match). Python uses exact dict lookup. Area files use full names so this is not a behavioral gap in practice. | N/A |
 | SPEC-016 | MINOR | `special.c:452-459` | `spec_funs.py:432-441` | `spec_breath_any` switch/case fall-through for lightning (1,2) and frost (5,6,7). Python `if roll in (1, 2)` and `return spec_breath_frost(mob)` for 5+ are equivalent. | ✅ VERIFIED |
+| SPEC-017 | CRITICAL | `special.c` (`act`/`send_to_char` → `comm.c:write_to_buffer`) | `spec_funs.py:_append_message` | All spec-fun flavor (adept cast `$n utters the word …`, mayor proclamation, janitor pickups, fido gore, thief steal, poison hiss, breath weapons) was delivered **mailbox-only** — `_append_message` appended to `char.messages` and never the socket. Idle **connected** PCs (web client) only saw the line after their *next* command, so the cage-room adept appeared to never cast on a tick. INV-001 SINGLE-DELIVERY wrong-channel cousin — the last helper missed by the 2.11.6–2.13.10 sweep (identical to the `mob_cmds.py:_append_message` migration). Fixed: route through `mud.utils.messaging.push_message` (loop-aware async-socket for connected PCs, mailbox fallback). Test: `tests/integration/test_spec017_delivery_channel.py`. | ✅ FIXED |
 
 ---
 
