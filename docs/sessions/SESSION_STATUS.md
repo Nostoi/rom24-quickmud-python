@@ -1,54 +1,49 @@
-# Session Status — 2026-06-14 — fight.c do_bash is_safe message-surfacing (FIGHT-070, INV-050)
+# Session Status — 2026-06-14 — do_bash / do_dirt entry-gate ordering + `$E` render (FIGHT-068 / FIGHT-072 / FIGHT-073)
 
 ## Current State
 
 - **Active focus**: Cross-file / divergence-class sweep (per-file audit tracker
-  exhausted). Following the "category-error / borrowed-gate / split-helper" lead
-  in the `fight.c` offensive-skill **entry gates** — where the *first failing gate
-  selects the player-facing message* (SHOUT-005, TELL-009, GIVE-003, RECITE-006,
-  FIGHT-067/069/071/074 shape).
+  exhausted). Closing the residual `fight.c` offensive-skill **entry-gate**
+  ordering/message follow-ups left from the FIGHT-067/069/070/071/074 closures.
 - **Last completed**:
-  - **FIGHT-070** — `do_bash`'s entry gate now routes through the faithful ROM
-    `is_safe()` mirror (`_kill_safety_message`) instead of the **silent** bool
-    `mud/combat/safety.py:is_safe`, so it surfaces ROM's context line ("Not in
-    this room.", shopkeeper, pet, clan ladder, …) — `src/fight.c:1018-1124` +
-    `:2405`. The silent bool's bidirectional divergence (over-blocks `is_ghost`/
-    `ActFlag.GAIN`; under-blocks immortal/fighting-back bypass + PC-vs-PC clan
-    ladder) and its ~8 remaining callers are filed as **INV-050** (⚠️ PARTIAL).
-    One pre-existing test (`test_bash_pc_dodge_penalty_applied`) repaired (gave
-    both PCs `clan=1` to clear ROM's PK gate). (v2.14.104)
+  - **FIGHT-068** (2.14.105) — `do_bash` now checks `position < POS_FIGHTING`
+    **before** the `victim == ch` self-target check, matching ROM
+    `src/fight.c:2392-2403` (was reversed; self-bash-while-sitting emitted the
+    brains-out line instead of the position line).
+  - **FIGHT-072** (2.14.106) — `do_dirt` now checks `AFF_BLIND` **before** the
+    `victim == ch` self-target check, matching ROM `src/fight.c:2522-2532` (was
+    reversed; self-dirt-while-blind emitted "Very funny." instead of the blind
+    line). Sibling of FIGHT-068.
+  - **FIGHT-073** (2.14.107) — `do_dirt`'s already-blind message now renders ROM's
+    `$E` pronoun + wording via `act_format` ("He's already been blinded." for a
+    male victim), `src/fight.c:2524` (was the literal "They're already blinded.").
+  - Spin-off **FIGHT-075** filed 🔄 OPEN: do_bash's position-gate message still
+    uses literal "them" where ROM renders `$M` (`src/fight.c:2394`).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-14_FIGHT070_BASH_IS_SAFE_MESSAGE.md](SESSION_SUMMARY_2026-06-14_FIGHT070_BASH_IS_SAFE_MESSAGE.md)
+  [SESSION_SUMMARY_2026-06-14_FIGHT068_072_073_ENTRY_GATE_ORDER.md](SESSION_SUMMARY_2026-06-14_FIGHT068_072_073_ENTRY_GATE_ORDER.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.104 |
-| Tests | +1 FIGHT-070 (`pytest -k bash`: 34 passed; area suite `bash or fight or dirt or trip or kill`: 295 passed / 1 skipped) |
+| Version | 2.14.107 |
+| Tests | +3 (FIGHT-068/072/073); `bash or dirt or trip or fight or kill or combat` integration: 352 passed / 2 skipped |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
-| Active focus | fight.c offensive-skill entry-gate sweep (FIGHT-067/069/071/074/070 closed); INV-050 convergence + cross-file / divergence-class pass continue |
+| Active focus | fight.c offensive-skill entry-gate sweep — ordering/message follow-ups closed (FIGHT-068/072/073); FIGHT-075 + INV-050 convergence remain |
 
 ## Next Intended Task
 
-Continue the fight.c offensive-skill entry-gate sweep and the INV-050 convergence.
-Open rows in `docs/parity/FIGHT_C_AUDIT.md` and `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`:
+The fight.c entry-gate ordering/message follow-ups are exhausted. Open rows:
 
-- **INV-050** — converge the remaining ~8 silent-bool `is_safe` callers onto the
-  faithful message-mirror (`spec_funs.py:1341,1382`, `combat/assist.py:84`,
-  `combat/engine.py:671-674` apply_damage re-check, `commands/consider.py:43`,
-  `commands/thief_skills.py:132`, `combat.py:do_cast` ~1003), or retire the bool.
-  **Caution:** the apply_damage re-check (engine.py:671-674) is the FIGHT-002
-  silent-suppression port and is *meant* to be silent mid-combat (ROM
-  `damage()`/is_safe at `src/fight.c:725-733` re-checks silently) — confirm against
-  ROM C before converting it.
-- **FIGHT-068** — do_bash `victim==ch`/position order swap (Python checks
-  `victim==ch` before position; ROM checks position first, `src/fight.c:2392` vs
-  `:2399`). MINOR ordering.
-- **FIGHT-072 / FIGHT-073** — do_dirt `victim==ch`-before-BLIND order swap + BLIND
-  `$E` pronoun message. MINOR, act()-render class.
-
-Beyond this verb family, per `docs/parity/DIVERGENCE_CLASS_ROSTER.md` the
-higher-yield open lever remains the **Hypothesis state-machine → diff_harness
-widening** (Class 11 / Phase C), enumeration-independent (guardrail 3), where most
-recent FINDING-0xx originated.
+- **FIGHT-075** — do_bash position-gate message `$M` render (1-line `act_format`
+  fix + test; act()-render class, sibling of FIGHT-073).
+- **INV-050** — converge the remaining ~8 silent-bool `mud/combat/safety.py:is_safe`
+  callers onto the faithful message-mirror `_kill_safety_message` (or retire the
+  bool): `spec_funs.py:1341,1382`, `combat/assist.py:84`, `combat/engine.py:671-674`
+  (apply_damage re-check — FIGHT-002, *intentionally* silent; confirm against
+  `src/fight.c:725-733` before converting), `commands/consider.py:43`,
+  `commands/thief_skills.py:132`, `combat.py:do_cast` (~1003). ⚠️ PARTIAL in
+  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`.
+- Beyond fight.c, per `docs/parity/DIVERGENCE_CLASS_ROSTER.md` the higher-yield
+  open lever remains the **Hypothesis state-machine → diff_harness widening**
+  (Class 11 / Phase C), enumeration-independent (guardrail 3).
