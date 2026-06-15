@@ -387,6 +387,19 @@ def do_train(char: Character, args: str) -> str:
 
     # Train stat (ROM C lines 1781-1799)
     if stat_index >= 0:
+        # TRAIN-006: ROM `ch->perm_stat` is a fixed `sh_int[MAX_STATS]`
+        # (src/merc.h), so ROM's read at src/act_move.c:1781 and the increment
+        # at :1791 are always in-bounds. A malformed Python save (e.g. an
+        # abandoned mid-creation level-0 row) can leave `perm_stat` short/empty,
+        # which made the direct index/increment below raise IndexError. Normalize
+        # to MAX_STATS to mirror ROM's fixed-length array. (Resolved-by-INV: the
+        # upstream root is bare-row persistence; a model-default of length
+        # MAX_STATS would make this guard redundant — see ACT_MOVE audit row.)
+        from mud.models.constants import MAX_STATS
+
+        if len(char.perm_stat) < MAX_STATS:
+            char.perm_stat = list(char.perm_stat) + [0] * (MAX_STATS - len(char.perm_stat))
+
         # Get current stat value from perm_stat array
         current_value = char.perm_stat[stat_index]
 

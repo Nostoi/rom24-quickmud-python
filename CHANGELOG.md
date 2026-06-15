@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **TRAIN-006 — `do_train` no longer crashes on a malformed (short/empty)
+  `perm_stat`** — ROM `do_train` (`src/act_move.c:1781,1791`) reads and
+  increments `ch->perm_stat[stat]`, always safe because ROM's `perm_stat` is a
+  fixed `sh_int[MAX_STATS]`. A malformed Python save could leave `perm_stat ==
+  []` (most readily an abandoned mid-creation level-0 character row), so
+  `train str` raised `IndexError` — the traceback a player reported training
+  with no sessions on such a character. Fix normalizes `perm_stat` to
+  `MAX_STATS` length in the stat-train branch (mirroring ROM's fixed-length
+  array); the player now sees ROM's "You don't have enough training sessions."
+  Resolved-by-INV — the upstream root (bare-row persistence) is tracked as
+  INV-051. Test:
+  `tests/integration/test_recall_train_commands.py::test_train_stat_with_empty_perm_stat_does_not_crash`.
+
 ## [2.14.113] — 2026-06-14
 
 ### Changed

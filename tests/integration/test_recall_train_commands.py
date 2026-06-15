@@ -258,6 +258,34 @@ def test_train_int_increases_stat(train_test_setup):
     assert "intelligence" in result.lower(), "Should mention intelligence increases"
 
 
+def test_train_stat_with_empty_perm_stat_does_not_crash(train_test_setup):
+    """TRAIN-006 — do_train must not raise IndexError on a short/empty perm_stat.
+
+    ROM `do_train` (src/act_move.c) reads `ch->perm_stat[stat]` before the
+    cost check, but ROM's perm_stat is a fixed `sh_int[MAX_STATS]`, so the read
+    is always valid. A malformed Python save (e.g. an abandoned mid-creation
+    level-0 row, see INV cross-file lifecycle bug) can leave `perm_stat == []`,
+    and the direct index `char.perm_stat[stat_index]` raised IndexError —
+    exactly the crash a player hit training with no sessions on such a
+    character. Fix normalizes perm_stat to MAX_STATS length, mirroring ROM's
+    fixed-length array; with stat 0 < max and train==0 the player then sees the
+    ROM "not enough sessions" message instead of a traceback.
+    """
+    char, room = train_test_setup
+
+    char.perm_stat = []  # malformed save artifact
+    char.train = 0
+
+    # Must not raise IndexError; mirrors ROM src/act_move.c do_train cost gate.
+    result = do_train(char, "str")
+
+    assert "enough" in result.lower(), result
+    # perm_stat normalized to MAX_STATS length (ROM sh_int[MAX_STATS]).
+    assert len(char.perm_stat) == 5, char.perm_stat
+    # Insufficient sessions: stat unchanged.
+    assert char.perm_stat[0] == 0, char.perm_stat
+
+
 def test_train_shows_sessions_count(train_test_setup):
     """Test that train with no args shows training sessions
 
