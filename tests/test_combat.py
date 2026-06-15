@@ -197,9 +197,18 @@ def test_kill_blocks_stealing_existing_fight() -> None:
 
 
 def test_kill_blocks_charmed_player_attacking_master() -> None:
+    # ROM do_kill (src/fight.c:2793) runs is_safe BEFORE the charm "beloved
+    # master" gate (:2803). For the charm gate to be the observable result the
+    # victim must first pass is_safe — a PC victim would be blocked earlier by
+    # the PC clan ladder ("Join a clan if you want to kill players."), never
+    # reaching the charm gate. The realistic charm scenario (and the FIGHT-064
+    # sibling below) is a charmed thrall whose master is an NPC, which passes
+    # is_safe; the master keyword/short_descr renders via PERS ($N).
     initialize_world("area/area.lst")
     thrall = create_test_character("Thrall", 3001)
     master = create_test_character("Master", 3001)
+    master.is_npc = True
+    master.short_descr = "Master"
 
     thrall.add_affect(AffectFlag.CHARM)
     thrall.master = master
