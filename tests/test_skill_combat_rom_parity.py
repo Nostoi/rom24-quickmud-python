@@ -794,9 +794,16 @@ class TestBashRomParity:
         attacker.size = 0
         attacker.level = 0
         attacker.off_flags = 0
+        # FIGHT-070: do_bash now routes its entry gate through ROM's faithful
+        # is_safe() mirror (src/fight.c:1096-1120), which gates PC-vs-PC combat
+        # behind the clan PK ladder. Both combatants must be PCs here for the
+        # STR/DEX flooring this test exercises, so put them in a clan (and keep
+        # the level diff ≤ 8) to clear the safety gate and reach the bash math.
+        attacker.clan = 1
 
         victim = movable_char_factory("victim", 3001)
         victim.name = "victim"
+        victim.clan = 1
         victim.skills["dodge"] = 75
         victim.carry_weight = 0
         victim.perm_stat = [0, 0, 0, 0, 0]

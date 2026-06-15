@@ -451,8 +451,18 @@ def do_bash(char: Character, args: str) -> str:
     # skill (it sends its own context message: "Not in this room.", shopkeeper, pet,
     # …). FIGHT-002's apply_damage re-check is downstream and silent — it suppresses
     # only HP damage, not the lag/daze/knockdown/"sends you sprawling" broadcast.
-    if is_safe(char, victim):  # mirroring ROM src/fight.c:2405
-        return ""
+    # FIGHT-070: route through `_kill_safety_message` — the faithful ROM is_safe()
+    # mirror (src/fight.c:1018-1124) — rather than the silent bool
+    # `mud.combat.safety.is_safe`. ROM's is_safe writes the rejection line via
+    # send_to_char *before* returning TRUE (src/fight.c:1036 etc.); the bool dropped
+    # that line (returned ""). The mirror also corrects WHICH cases block: the bool
+    # over-blocks (is_ghost, ACT_GAIN — neither in ROM is_safe) and under-blocks
+    # (no immortal/victim-fighting-you bypass, no PC-vs-PC clan ladder). The bool's
+    # bidirectional divergence is tracked as INV-050; do_bash is the first gate
+    # converged onto the faithful mirror.
+    safety_message = _kill_safety_message(char, victim)
+    if safety_message:  # mirroring ROM src/fight.c:2405
+        return safety_message
     if (
         getattr(victim, "is_npc", False)
         and getattr(victim, "fighting", None) is not None

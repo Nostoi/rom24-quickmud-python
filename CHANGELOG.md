@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.14.104] — 2026-06-14
+
+### Fixed
+
+- **FIGHT-070 — `do_bash` now surfaces ROM `is_safe()`'s context message instead
+  of silently swallowing it** — `do_bash`'s entry gate called the silent bool
+  `mud/combat/safety.py:is_safe` and `return ""`, so bashing (e.g.) an NPC in a
+  ROOM_SAFE room correctly aborted the skill but showed the player *nothing*,
+  where ROM's `is_safe` (`src/fight.c:1018-1124`) writes a specific line ("Not in
+  this room.", "The shopkeeper wouldn't like that.", "But $N looks so cute and
+  cuddly…", clan lines, …) before returning TRUE. **Fix:** routed `do_bash`
+  through `_kill_safety_message` — the faithful ROM `is_safe()` mirror — which
+  emits the reason string and also corrects *which* cases block (the silent bool
+  both over-blocks `is_ghost`/`ActFlag.GAIN`, neither in ROM, and under-blocks: no
+  immortal/victim-fighting-back bypass, no PC-vs-PC clan ladder). That
+  bidirectional divergence of the silent bool, plus its ~8 remaining callers, is
+  now tracked as **INV-050**. Test:
+  `tests/integration/test_fight070_bash_is_safe_message.py`.
+
 ## [2.14.103] — 2026-06-14
 
 ### Fixed
