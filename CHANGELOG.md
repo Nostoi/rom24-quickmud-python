@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Layer-A grep-guard for message-delivery (INV-001 SINGLE-DELIVERY ratchet)** —
+  `tests/test_message_delivery_convention.py` is a new static scanner (same idiom
+  as `test_rng_determinism.py` / `test_equipment_key_convention.py`) that forbids
+  delivering to a connected character via `<entity>.messages.append(...)` or the
+  two-step `m = getattr(x, "messages"); m.append(...)` bypass anywhere in `mud/`.
+  Connected PCs must receive output through the single-delivery chokepoint
+  `mud.utils.messaging.push_message` (async socket xor mailbox); mailbox-only
+  delivery is invisible to an idle PC until their next command (the SPEC-017 /
+  tick-aggression class), and dual delivery replays on the next prompt. Genuine
+  chokepoints are allowlisted; eleven not-yet-migrated bypasses are frozen as
+  tracked INV-001 debt and burned down over time, with an orphan check that fails
+  if a closed entry isn't removed. AGENTS.md "Message Delivery" now cites the
+  guard.
+
 ### Fixed
 
 - **SPEC-017 — spec-fun flavor now reaches idle connected players on the socket

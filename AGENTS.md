@@ -128,6 +128,16 @@ immediately.**  The `char.messages` list is a test fallback only — it must NOT
 be the primary delivery mechanism for combat output.  Use `_push_message()` from
 `engine.py` or `broadcast_room()` from `protocol.py`.
 
+**NEVER deliver to a connected character via `<entity>.messages.append(...)` (or
+the two-step `m = getattr(x, "messages"); m.append(...)`) directly — route through
+the single-delivery chokepoint `mud.utils.messaging.push_message` (async socket
+xor mailbox).** Mailbox-only delivery is invisible to an idle PC until their next
+command (the SPEC-017 / tick-aggression class); dual delivery replays on the next
+prompt. Enforced as a Layer-A grep-guard by
+`tests/test_message_delivery_convention.py` (same pattern as
+`test_equipment_key_convention.py`): genuine chokepoints are allowlisted, known
+unmigrated bypasses are frozen as INV-001 debt and burned down over time.
+
 Full rationale: [`docs/divergences/MESSAGE_DELIVERY.md`](docs/divergences/MESSAGE_DELIVERY.md).
 
 ### Cross-File Invariants
