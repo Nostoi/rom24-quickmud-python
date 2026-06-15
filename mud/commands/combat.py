@@ -4,7 +4,7 @@ from mud.advancement import gain_exp
 from mud.characters import is_clan_member, is_same_group
 from mud.combat import multi_hit
 from mud.combat.engine import apply_damage, check_killer, get_wielded_weapon, stop_fighting
-from mud.combat.safety import is_safe, is_safe_spell
+from mud.combat.safety import is_safe_spell
 from mud.config import get_pulse_violence
 from mud.math.c_compat import c_div
 from mud.models.character import Character
@@ -1014,9 +1014,20 @@ def do_cast(char: Character, args: str) -> str:
             # ROM src/magic.c:400-404 (TAR_CHAR_OFFENSIVE) uses is_safe;
             # src/magic.c:484-488 (TAR_OBJ_CHAR_OFF) uses is_safe_spell.
             if skill_target_type == "victim":
-                if is_safe(char, target) and target is not char:
-                    return "Not on that target."
+                # INV-050: route through the faithful ROM is_safe() mirror
+                # (_kill_safety_message, src/fight.c:1018-1124) — ROM is_safe writes
+                # its OWN context line via send_to_char/act BEFORE returning TRUE,
+                # then do_cast appends "Not on that target." (src/magic.c:398-402).
+                # The silent bool combat.safety.is_safe dropped that context line.
+                # A non-None return == ROM is_safe TRUE; target is char → None (ROM's
+                # `&& victim != ch` is redundant since is_safe(ch,ch) is FALSE).
+                if target is not char:
+                    safety_message = _kill_safety_message(char, target)
+                    if safety_message is not None:
+                        return f"{safety_message}\nNot on that target."
             else:
+                # is_safe_spell (TAR_OBJ_CHAR_OFF, src/magic.c:484) is SILENT in ROM
+                # (src/fight.c:1126-1218 sends no messages) — keep the bare override.
                 if is_safe_spell(char, target, area=False) and target is not char:
                     return "Not on that target."
             # mirroring ROM src/magic.c:406 and :490 (check_killer after

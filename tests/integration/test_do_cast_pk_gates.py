@@ -21,6 +21,7 @@ import pytest
 from mud.commands.combat import do_cast
 from mud.models.character import Character
 from mud.models.constants import (
+    ActFlag,
     AffectFlag,
     PlayerFlag,
     Position,
@@ -75,12 +76,18 @@ class TestCastOffensiveSafeRoomBlock:
     """TAR_CHAR_OFFENSIVE: is_safe(ch, victim) blocks the cast. ROM magic.c:400-404."""
 
     def test_cast_offensive_blocked_in_safe_room(self):
+        # ROM is_safe (src/fight.c:1033-1035) checks ROOM_SAFE only for NPC
+        # victims — so the victim must be an NPC for the ROOM_SAFE gate this test
+        # names to actually fire. (A PC victim would be blocked by the PC clan
+        # ladder instead, a different gate.) is_safe emits "Not in this room."
+        # then do_cast appends "Not on that target." (INV-050 two-line surface).
         caster = _make_pc()
         victim = Character(
             name="Victim",
+            short_descr="a goblin",
             level=5,
             ch_class=0,
-            is_npc=False,
+            is_npc=True,
             hit=100,
             max_hit=100,
             position=Position.STANDING,
@@ -92,6 +99,7 @@ class TestCastOffensiveSafeRoomBlock:
         victim.room = safe_room
 
         result = do_cast(caster, "'magic missile' victim")
+        assert "Not in this room" in result, f"expected ROM ROOM_SAFE context line, got {result!r}"
         assert "Not on that target" in result
 
     def test_cast_offensive_allowed_in_unsafe_room(self):
@@ -126,18 +134,72 @@ class TestCastOffensiveSafeRoomBlock:
         assert "Not on that target" not in result
 
 
+class TestCastOffensiveIsSafeContextMessage:
+    """CAST-012 / INV-050: do_cast surfaces ROM is_safe's own context line.
+
+    ROM magic.c:398-402::
+
+        if (is_safe (ch, victim) && victim != ch)
+        {
+            send_to_char ("Not on that target.\\n\\r", ch);
+            return;
+        }
+
+    ROM ``is_safe`` (src/fight.c:1018-1124) writes its OWN rejection line via
+    ``send_to_char``/``act`` *before* returning TRUE — so a blocked offensive
+    cast shows TWO lines: the is_safe context line, then "Not on that target.".
+    Python routed through the silent bool ``combat.safety.is_safe`` and printed
+    only "Not on that target.".  Converged onto the faithful mirror
+    ``_kill_safety_message`` (the do_bash FIGHT-070 / do_consider CONSIDER-002
+    pattern).  This is the is_safe ("victim") branch only — the is_safe_spell
+    branch (TAR_OBJ_CHAR_OFF) is silent in ROM and stays as-is.
+    """
+
+    def test_cast_offensive_healer_shows_context_line(self):
+        # mirrors ROM src/magic.c:398 + src/fight.c:1046 — is_safe sends
+        # "I don't think Mota would approve." THEN do_cast sends the override.
+        caster = _make_pc()
+        healer = Character(
+            name="healer",
+            short_descr="a healer",
+            level=10,
+            ch_class=0,
+            is_npc=True,
+            act=int(ActFlag.IS_HEALER),
+            hit=500,
+            max_hit=500,
+            position=Position.STANDING,
+            perm_stat=[0, 18, 0, 0, 0],
+        )
+        unsafe_room = _make_room(safe=False)
+        unsafe_room.people = [caster, healer]
+        caster.room = unsafe_room
+        healer.room = unsafe_room
+
+        result = do_cast(caster, "'magic missile' healer")
+        assert "Mota would approve" in result, f"expected ROM is_safe context line, got {result!r}"
+        assert "Not on that target" in result, f"expected ROM override line, got {result!r}"
+
+
 class TestCastOffensiveCheckKiller:
     """TAR_CHAR_OFFENSIVE: check_killer(ch, victim) flags PLR_KILLER.
     ROM magic.c:406. Only flags for PC casters attacking innocent PC victims
     who are clan members — ROM src/fight.c:1298 requires is_clan(ch)."""
 
     def test_cast_offensive_sets_killer_flag(self):
+        # INV-050: the victim must be a CLAN member within 8 levels — that is the
+        # ONLY PC-victim case ROM is_safe (src/fight.c:1096-1119) lets through to
+        # check_killer. A non-clan PC victim is blocked at `!is_clan(victim)` →
+        # "They aren't in a clan, leave them alone." BEFORE check_killer runs, so
+        # the flag would never set (this test previously asserted that divergence,
+        # passing only because the silent bool skipped the whole PC clan ladder).
         caster = _make_pc(clan=1)
         victim = Character(
             name="Victim",
-            level=5,
+            level=30,  # within 8 of caster (level 30) — else "Pick on someone your own size."
             ch_class=0,
             is_npc=False,
+            clan=1,  # clan member — else is_safe blocks before check_killer
             hit=100,
             max_hit=100,
             position=Position.STANDING,
@@ -362,11 +424,16 @@ class TestCastOffensiveCharmGate:
         AFF_CHARM branch → stop_follower strips charm. The charm gate at
         magic.c:408 then sees IS_AFFECTED(ch, AFF_CHARM) = False."""
         caster = _make_pc(clan=1)
+        # INV-050: Bystander must be a CLAN member within 8 levels so faithful
+        # ROM is_safe (src/fight.c:1096-1119) lets the cast through to
+        # check_killer — a non-clan PC victim is blocked at `!is_clan(victim)`
+        # before check_killer's charm-strip branch can fire.
         other_pc = Character(
             name="Bystander",
-            level=10,
+            level=30,
             ch_class=0,
             is_npc=False,
+            clan=1,
             hit=100,
             max_hit=100,
             position=Position.STANDING,
