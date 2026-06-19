@@ -26,6 +26,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **STEAL-015 — steal *skill handler* now applies ROM `is_safe`
+  (`mud/skills/handlers.py:steal`, `src/act_obj.c:2191`)** — the `steal` skill
+  function (reachable via the skill system, registered at `data/skills.json`)
+  had no safety gate at all, so a steal routed through the skill path — rather
+  than the `do_steal` command (gated since STEAL-003) — could rob
+  shopkeepers/healers/pets/safe-room mobs and bypass the PC clan PK ladder. It
+  now gates on `combat._kill_safety_message` (the faithful `is_safe` mirror,
+  `src/fight.c:1018-1124`) immediately after the self-steal check and before the
+  kill-stealing check, mirroring ROM `do_steal`'s L2191→L2194 order; the is_safe
+  context line is surfaced in the result dict's `message`. Converges the skill
+  path onto the same mirror INV-050 tracks for `do_steal`.
+
 - **INV-001 debt burndown — "still recovering" registry line single-delivery
   (`mud/skills/registry.py`)** — `SkillRegistry.use` appended "You are still
   recovering." straight to `caster.messages` on its `wait > 0` guard before

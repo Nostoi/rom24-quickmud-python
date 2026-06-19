@@ -7758,7 +7758,20 @@ def steal(
     if target is caster:
         return {"success": False, "message": "That's pointless."}
 
-    # ROM L2191-2192: safety check (simplified - no is_safe implemented yet)
+    # ROM L2191-2192: if (is_safe(ch, victim)) return;
+    # STEAL-015: the skill handler previously had no is_safe gate, so a steal routed
+    # through the skill system (rather than do_steal) could rob shopkeepers/healers/
+    # pets/safe-room mobs and bypass the PC clan ladder. Converge onto the faithful
+    # is_safe mirror combat._kill_safety_message (src/fight.c:1018-1124), exactly as
+    # do_steal did for STEAL-003 — a non-None return == ROM is_safe TRUE, and the
+    # returned string is is_safe's own context line (which ROM writes via
+    # send_to_char before do_steal returns). Surfaced in the result dict's "message".
+    from mud.commands.combat import _kill_safety_message
+
+    safety_message = _kill_safety_message(caster, target)
+    if safety_message is not None:
+        return {"success": False, "message": safety_message}
+
     # ROM L2194-2199: can't steal from fighting mob
     if getattr(target, "is_npc", True) and getattr(target, "position", Position.STANDING) == Position.FIGHTING:
         return {"success": False, "message": "Kill stealing is not permitted.\\nYou'd better not -- you might get hit."}
