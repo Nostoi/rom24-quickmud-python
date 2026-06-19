@@ -1,47 +1,47 @@
-# Session Status — 2026-06-19 — /loop gap-closer: give/drink/value + group PERS (5/5)
+# Session Status — 2026-06-19 — /loop gap-closer: shop visibility + runtime cost (5/5)
 
 ## Current State
 
 - **Active focus**: Cross-file / divergence-class sweep (Layer C) — per-file audit
-  tracker exhausted of actionable rows. This `/loop` session closed 1 documented
-  gap (GROUP-005) + 4 **probe-surfaced** gaps from parallel C-vs-Python probes of
-  `do_give`, `do_drink`, and the shop `value` command, each re-verified against ROM C.
-- **Last completed** (this `/loop` session, target 5/5 met, master, **pushed**):
-  - `55ae5626` v2.14.149 — **GROUP-005**: do_group display/broadcasts PERS-mask names ($n/$N/$s via act_format).
-  - `a6bc1878` v2.14.150 — **GIVE-004**: money-changer gold exchange drops spurious `/100` (`95*amount`).
-  - `8bb85e65` v2.14.151 — **GIVE-005**: give-to-shopkeeper refusal sets `ch->reply`.
-  - `6d24b5c6` v2.14.152 — **DRINK-011**: drink condition deltas use `c_div` (negative liq_affect).
-  - `02dcb93b` v2.14.153 — **VAL-005**: do_value keeper messages render `$n`/`$p` (not "The shopkeeper").
+  tracker exhausted of actionable rows. This `/loop` session closed 5 shop-pricing
+  / visibility gaps in `do_buy`/`do_list`/`do_sell`/`get_cost`, each verified
+  against ROM C `src/act_obj.c` (two were stale-✅ audit claims).
+- **Last completed** (this `/loop` session, target 5/5 met, master, **committed** — not yet pushed):
+  - `ee7a325d` v2.14.154 — **BUY-007**: `do_buy` applies `can_see_obj(keeper)&&can_see_obj(ch)` in the candidate loop.
+  - `47f3e4cb` v2.14.155 — **LIST-004**: `do_list` hides items the buyer can't see (buyer-only filter).
+  - `6470150a` v2.14.156 — **GETCOST-001**: `_get_cost` uses runtime `obj.cost` (closes haggle-resell exploit; room-reset objects resell for 0).
+  - `0e31d009` v2.14.157 — **BUY-009**: buy-haggle discount base uses runtime `obj.cost`.
+  - `fdaddbe2` v2.14.158 — **SELL-005**: sell-haggle 95% cap applied unconditionally.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-19_LOOP_GAPCLOSER_GIVE_DRINK_VALUE.md](SESSION_SUMMARY_2026-06-19_LOOP_GAPCLOSER_GIVE_DRINK_VALUE.md)
+  [SESSION_SUMMARY_2026-06-19_LOOP_GAPCLOSER_SHOP_VISIBILITY_COST.md](SESSION_SUMMARY_2026-06-19_LOOP_GAPCLOSER_SHOP_VISIBILITY_COST.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.153 |
-| Tests | 5867 passed, 4 skipped (full suite, `PYTEST_EXIT=0`, captured directly) |
+| Version | 2.14.158 |
+| Tests | 5872 passed, 4 skipped (full suite, `PYTEST_EXIT=0`, captured directly) |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
 | Active focus | Cross-file invariants / divergence-class sweep (Layer C) |
-| Open findings | None tracked OPEN; unmined probe candidates listed under Next Intended Task |
+| Open findings | SELL-006 (🔄 OPEN, `ACT_OBJ_C_AUDIT.md`) — sell-haggle bonus base proto→obj |
 
 ## Next Intended Task
 
-Per-file audit tracker remains exhausted → keep probing fresh surfaces with
-throwaway C-oracle-vs-pyreplay reads. **Unmined probe candidates surfaced this
-session but NOT yet closed (verify against ROM C before treating as gaps):**
-shop `do_buy`/`do_list` buyer + keeper `can_see_obj` filters (ROM `get_obj_keeper`,
-`src/act_obj.c:2459-2460`); `get_cost` using `proto.cost` vs runtime `obj->cost`
-after a haggle; `do_sell` 95% cap skipped when `buy_price == 0` (ROM clamps to 0).
-Also flip the stale MOB_CMDS Phase-1 "⚠️ DIVERGENT" inventory labels to ✅ (the
-Phase-3 gaps MOBCMD-001..021 are all closed — labels never updated).
+Close **SELL-006** (`docs/parity/ACT_OBJ_C_AUDIT.md`, 🔄 OPEN): `do_sell`
+sell-haggle bonus base reads `proto.cost` (`shop.py:954`) where ROM uses runtime
+`obj->cost` (`src/act_obj.c:2930`) — the sell-side mirror of BUY-009/GETCOST-001.
+Close failing-test-first; choose `profit_buy` high enough that the 95% cap
+(:2931) doesn't bind and mask the difference.
+
+Then continue the shop / `act_obj.c` probe sweep: flip the stale MOB_CMDS Phase-1
+"⚠️ DIVERGENT" inventory labels to ✅ (MOBCMD-001..021 all closed — doc hygiene
+only), and probe `get_cost` ITEM_INVENTORY dupe-discount interactions.
 
 **Durable lessons (reinforced this session):** (1) the per-gap `-k` suite is NOT
-sufficient — run the FULL suite before pushing; VAL-005 broke a stale assertion in
-`tests/test_shops.py`, a file the `-k` filter never touched. (2) Re-verify every
-probe candidate against ROM C source before treating it as a gap — several
-candidates (weather `\n\r` byte-order, `do_split` keyword parsing, changer
-`IS_NPC`/`can_see`) were correctly rejected as non-divergences (delivery-layer
-normalization / intentional legacy / non-observable). (3) Stale-✅ audit notes are
-real: GIVE-004, DRINK-011, and VAL-005 each contradicted a prior "verified ✅".
-Commits 55ae5626..02dcb93b on master.
+sufficient — GETCOST-001 broke 5 sibling tests across 3 files (shop + arith) that
+only the FULL suite surfaced. (2) Test fixtures that `spawn_object` then mutate
+the SHARED prototype leak into the keeper's default stock of the same vnum — sync
+each live object's runtime cost to the proto cost (the ROM spawn invariant).
+(3) Re-verify every ✅ before relying on it: BUY-007 was a stale "visibility
+filter applied" claim. (4) When you forward-reference a not-yet-closed sibling
+gap, file it 🔄 OPEN — do NOT pre-write its ✅ (caught mid-session for BUY-009).
