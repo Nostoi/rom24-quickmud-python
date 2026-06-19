@@ -3492,7 +3492,9 @@ def dispel_good(caster: Character, target: Character | None = None) -> int:
         )
         return 0
 
-    level = max(1, int(getattr(caster, "level", 0) or 0))
+    # ARITH-019: ROM spell_dispel_good (src/magic.c:2063-2068) uses `level` raw
+    # for `dice(level, 4)` and the threshold — no floor. level-0 → dice(0,4)==0.
+    level = max(0, int(getattr(caster, "level", 0) or 0))
     victim_hit = max(0, int(getattr(victim, "hit", 0) or 0))
     if victim_hit > level * 4:
         damage = rng_mm.dice(level, 4)
