@@ -25,6 +25,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to `c_div`, fixing a latent floor-vs-truncation bug on negative operands), and
   `combat/engine.py` `max_hit/4` injury-feedback thresholds (`//` → `c_div`). Test:
   `tests/test_arith_208_dice_no_floor.py`.
+- **ARITH-211: `look` health condition for a non-positive `max_hit`.** ROM
+  `show_char_to_char` (`src/act_info.c:456-459`) computes `percent = max_hit > 0 ?
+  100*hit/max_hit : -1`; the `-1` buckets to the worst tier. Python used `else 100`,
+  rendering "in excellent condition" for a victim with `max_hit <= 0` — latent before,
+  but made reachable by ARITH-208 (a mob can now spawn with negative `max_hit`). Fixed
+  `mud/world/look.py` `else 100` → `else -1` (and `//` → `c_div`). Test:
+  `tests/test_arith_211_look_condition_negative_max_hit.py`.
 - **DB-003: O-resets now match ROM's per-room one-copy / no-global-cap semantics.**
   ROM `reset_room` O-case (`src/db.c:1773-1784`) places at most one instance of an
   object **per room** (skip on `count_obj_list(pObjIndex, pRoom->contents) > 0`) and

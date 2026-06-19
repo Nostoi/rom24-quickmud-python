@@ -75,6 +75,29 @@ to a zero-only guard.
 - `gitnexus_detect_changes` — low risk, scope confined to the 6 expected symbols + docs
 - Full suite: **5894 passed, 4 skipped** (0:07:58)
 
+### `ARITH-211` — ✅ FIXED (same session, surfaced by ARITH-208)
+
+- **ROM C**: `show_char_to_char` `src/act_info.c:456-459` —
+  `percent = max_hit > 0 ? 100*hit/max_hit : -1` (the `-1` buckets to the worst
+  health tier "is bleeding to death").
+- **Root cause**: `mud/world/look.py` `_look_char` used `else 100`, rendering "in
+  excellent condition" for a non-positive `max_hit`. Latent for `max_hit == 0`
+  (masked by `getattr(...,100) or 100`) but ARITH-208 made it reachable for a
+  **negative** `max_hit`.
+- **Fix**: `else 100` → `else -1`; `//` → `c_div`.
+- **Tests**: `tests/test_arith_211_look_condition_negative_max_hit.py` (1 new).
+
+## Outstanding (filed durably this session)
+
+- **ARITH-210** ❌ MISSING — `mud/spawning/templates.py` `from_prototype` sets
+  `current_hp = max_hit if max_hit else max(proto.hit[1]+proto.hit[2], 1)`. ROM
+  `mob->hit = mob->max_hit` raw (`src/db.c:2077`) → a `max_hit == 0` proto should
+  give `hit == 0`, but Python floors to ≥ 1. Negative already propagates (truthy);
+  only the **zero** case diverges. Same defensive-floor class as ARITH-205/207/209.
+  Needs a reachability probe (does a 0-hp spawn → immediate mortal-wound on first
+  `update_pos`?) before removing the floor — small coordinated change, not a blind
+  delete. Filed in `docs/parity/audits/ARITHMETIC_BOUNDARY.md`.
+
 ## Next Steps
 
 The reset/spawn divergence surface is now **fully drained** (DB-003 + ARITH-208

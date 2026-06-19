@@ -23,15 +23,18 @@
 | Metric | Value |
 |--------|-------|
 | Version | 2.14.173 |
-| Tests | 5894 passed, 4 skipped (full suite) |
+| Tests | 5895 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
 | Active focus | Cross-file invariants / divergence-class sweep |
-| Open findings | **ARITH-114** (get_curr_stat per-race/class ceiling) |
+| Open findings | **ARITH-114** (get_curr_stat ceiling), **ARITH-210** (templates `current_hp` zero floor) |
 
 ## Next Intended Task
 
 The reset/spawn divergence surface is fully drained. The ARITH backlog is down to
-the single **ARITH-114** follow-on (`get_curr_stat` per-race/class ceiling).
+two ❌: **ARITH-114** (`get_curr_stat` per-race/class ceiling) and **ARITH-210**
+(`templates.py` `current_hp` floors the `max_hit == 0` spawn case to ≥ 1 where ROM
+sets `hit = max_hit = 0`; surfaced this session, needs a reachability probe before
+the floor is removed — see `docs/parity/audits/ARITHMETIC_BOUNDARY.md`).
 
 Cross-file / divergence-class sweep is the primary pass. Candidate areas with no
 INV row yet: **affect ticks**, **position transitions**, **mob script triggers**,

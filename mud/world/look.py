@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from mud.math.c_compat import c_div
 from mud.models.character import Character
 from mud.models.constants import AffectFlag, Direction, Position
 from mud.world.vision import can_see_character, describe_character
@@ -278,7 +279,10 @@ def _look_char(char: Character, victim: Character) -> str:
     # Show health condition - ROM health_str equivalent
     max_hit = getattr(victim, "max_hit", 100) or 100
     hit = getattr(victim, "hit", max_hit)
-    percent = (hit * 100) // max_hit if max_hit > 0 else 100
+    # ROM src/act_info.c:456-459 — `percent = max_hit > 0 ? 100*hit/max_hit : -1`.
+    # The -1 (NOT 100) buckets a non-positive max_hit to the worst tier. Reachable
+    # for negative max_hit since ARITH-208 (a mob can spawn with dice()+bonus < 0).
+    percent = c_div(hit * 100, max_hit) if max_hit > 0 else -1
 
     short = getattr(victim, "short_descr", None) or getattr(victim, "name", "Someone")
     if percent >= 100:
