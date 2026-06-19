@@ -944,6 +944,47 @@ def test_get_cost_sell_extract_skips_dupe_discount():
     assert _get_cost(keeper, obj, buy=False) == base
 
 
+def test_get_cost_dupe_discount_requires_matching_short_descr():
+    # GETCOST-004: mirrors ROM src/act_obj.c:2507-2508 — a keeper duplicate matches
+    # only when `obj->pIndexData == obj2->pIndexData && !str_cmp(short_descr)`, i.e.
+    # BOTH prototype AND short_descr. Python's predicate short-circuited on
+    # `op is proto`, discounting a same-prototype copy with a different runtime descr.
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Renamer", 3010)
+    char.gold = 0
+    char.silver = 0
+    keeper = _clean_keeper_for_lantern(char)
+
+    obj = spawn_object(3031)
+    assert obj is not None
+    obj.prototype.item_type = int(ItemType.LIGHT)
+    obj.extra_flags = 0
+    obj.cost = 100
+    obj.short_descr = "a glowing blue lantern"
+    base = _get_cost(keeper, obj, buy=False)
+    assert base > 0
+
+    # A matching-descr copy DOES discount (proves the match path still works).
+    same = spawn_object(3031)
+    assert same is not None
+    same.extra_flags = 0
+    same.cost = 100
+    same.short_descr = "a glowing blue lantern"
+    keeper.inventory.append(same)
+    assert _get_cost(keeper, obj, buy=False) < base
+
+    # A same-prototype copy with a DIFFERENT runtime short_descr must NOT match.
+    keeper.inventory.remove(same)
+    diff = spawn_object(3031)
+    assert diff is not None
+    diff.extra_flags = 0
+    diff.cost = 100
+    diff.short_descr = "a rusty red lantern"
+    assert diff.prototype is obj.prototype  # same pIndexData
+    keeper.inventory.append(diff)
+    assert _get_cost(keeper, obj, buy=False) == base  # ROM: descr differs → no discount
+
+
 def test_get_cost_dupe_discount_compounds_per_copy():
     # GETCOST-002: mirrors ROM src/act_obj.c:2505-2515 — the same-item discount loop
     # has NO break; it applies the discount once per matching copy in keeper->carrying,

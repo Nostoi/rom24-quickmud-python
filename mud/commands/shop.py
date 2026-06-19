@@ -483,7 +483,11 @@ def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
             if not op:
                 continue
             other_descr = (getattr(other, "short_descr", None) or "").strip().lower()
-            if op is proto or (getattr(op, "vnum", None) == getattr(proto, "vnum", None) and other_descr == obj_descr):
+            # GETCOST-004: ROM src/act_obj.c:2507-2508 matches on
+            # `pIndexData == AND !str_cmp(short_descr)` — BOTH must hold. The descr
+            # check is never skipped, even for the same prototype object.
+            same_proto = op is proto or getattr(op, "vnum", None) == getattr(proto, "vnum", None)
+            if same_proto and other_descr == obj_descr:
                 # GETCOST-002: ROM src/act_obj.c:2505-2515 has NO break — the discount
                 # applies once per matching copy in keeper->carrying, so non-inventory
                 # duplicates compound. (ITEM_INVENTORY dupes are destroyed on intake

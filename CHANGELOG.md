@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GETCOST-004: the keeper same-item discount now requires a matching short_descr.**
+  ROM `get_cost` matches a duplicate on `pIndexData == AND !str_cmp(short_descr)`
+  (`src/act_obj.c:2507-2508`) — both must hold. Python's predicate short-circuited
+  on prototype identity, so a same-prototype copy with a different runtime
+  `short_descr` wrongly received the discount. The descr check is now always
+  applied. Test:
+  `tests/test_shops.py::test_get_cost_dupe_discount_requires_matching_short_descr`.
 - **GETCOST-002: the keeper same-item discount now compounds per matching copy.**
   ROM `get_cost` (`src/act_obj.c:2505-2515`) loops over all of `keeper->carrying`
   with no `break`, applying the discount once per matching duplicate — so
