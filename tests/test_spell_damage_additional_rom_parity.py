@@ -923,6 +923,24 @@ def test_dispel_evil_damage_formula_and_save_type(monkeypatch):
     assert observed == [int(DamageType.HOLY)]
 
 
+def test_dispel_evil_level_zero_caster_deals_zero_damage(monkeypatch):
+    """ARITH-018: ROM spell_dispel_evil uses `dice(level, 4)` raw (src/magic.c:2032).
+
+    A level-0 caster yields `dice(0, 4) == 0`; Python floored caster level to 1
+    (`max(1, ...)`), wrongly dealing dice(1, 4) >= 1.
+    """
+    caster = make_character(level=0, is_npc=True)
+    victim = make_character(level=20, hit=100, max_hit=100, alignment=-1000)
+
+    monkeypatch.setattr(spell_handlers, "saves_spell", lambda level, target, dam_type: False)
+
+    rng_mm.seed_mm(42)
+    dealt = dispel_evil(caster, victim)
+
+    assert dealt == 0
+    assert victim.hit == 100
+
+
 def test_dispel_good_damage_formula_and_save_type(monkeypatch):
     rng_mm.seed_mm(42)
 

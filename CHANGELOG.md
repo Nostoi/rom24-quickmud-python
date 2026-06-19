@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ARITH-018: `dispel_evil` no longer floors caster level to 1 — a level-0 caster deals 0 damage.**
+  ROM `spell_dispel_evil` (`src/magic.c:2032`) rolls `dice(level, 4)` with the level
+  raw, so a degenerate level-0 NPC caster deals 0. Python floored to `max(1, …)`,
+  wrongly dealing `dice(1,4) ≥ 1`. Changed to `max(0, …)` (same class as ARITH-017).
 - **ARITH-017: `demonfire` no longer floors caster level to 1 — a level-0 caster deals 0 damage.**
   ROM `spell_demonfire` (`src/magic.c:1828`) rolls `dice(level, 10)` with the spell
   level raw, so a degenerate level-0 NPC caster deals `dice(0,10) == 0`. Python floored
