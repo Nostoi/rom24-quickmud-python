@@ -2911,7 +2911,9 @@ def demonfire(caster: Character, target: Character | None = None) -> int:
         )
         _send_to_char(caster, "You conjure forth the demons of hell!")
 
-    level = max(1, int(getattr(caster, "level", 0) or 0))
+    # ARITH-017: ROM spell_demonfire (src/magic.c:1828) uses `dice(level, 10)`
+    # with the spell level raw — no floor. A level-0 caster deals dice(0,10)==0.
+    level = max(0, int(getattr(caster, "level", 0) or 0))
     damage = rng_mm.dice(level, 10)
     if saves_spell(level, victim, DamageType.NEGATIVE):
         damage = c_div(damage, 2)

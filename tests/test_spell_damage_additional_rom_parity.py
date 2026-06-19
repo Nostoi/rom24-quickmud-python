@@ -836,22 +836,27 @@ def test_demonfire_save_for_half_and_damage_type(monkeypatch):
     assert observed[0] == int(DamageType.NEGATIVE)
 
 
-def test_demonfire_validation_requires_caster_and_level_zero_minimum_one(monkeypatch):
+def test_demonfire_validation_requires_caster(monkeypatch):
     with pytest.raises(ValueError):
         demonfire(None, make_character())
 
+
+def test_demonfire_level_zero_caster_deals_zero_damage(monkeypatch):
+    """ARITH-017: ROM spell_demonfire uses `dice(level, 10)` raw (src/magic.c:1828).
+
+    A level-0 caster (degenerate NPC) yields `dice(0, 10) == 0` in ROM. Python
+    floored caster level to 1 (`max(1, ...)`), wrongly dealing dice(1, 10) >= 1.
+    """
     caster = make_character(level=0, hit=100, max_hit=100, is_npc=True)
-    victim = make_character(level=10, hit=100, max_hit=100)
+    victim = make_character(level=10, hit=100, max_hit=100, alignment=-1000)
 
     monkeypatch.setattr(spell_handlers, "saves_spell", lambda level, target, dam_type: False)
 
     rng_mm.seed_mm(42)
-    expected = rng_mm.dice(1, 10)
-
-    rng_mm.seed_mm(42)
     dealt = demonfire(caster, victim)
 
-    assert dealt == expected
+    assert dealt == 0
+    assert victim.hit == 100
 
 
 # ==============================================================================

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ARITH-017: `demonfire` no longer floors caster level to 1 — a level-0 caster deals 0 damage.**
+  ROM `spell_demonfire` (`src/magic.c:1828`) rolls `dice(level, 10)` with the spell
+  level raw, so a degenerate level-0 NPC caster deals `dice(0,10) == 0`. Python floored
+  the level (`max(1, …)`), wrongly dealing `dice(1,10) ≥ 1`. Changed to `max(0, …)`;
+  the `3*level/4` curse side-effect already used `c_div` + a `> 0` guard and is
+  unaffected. (A pre-existing test that asserted the buggy floor was corrected.)
 - **ARITH-207 / ARITH-209: P-reset `arg4 == 0` no longer floored to 1 — places zero items.**
   ROM `reset_room` runs `while (count < pReset->arg4)` (`src/db.c:1822`) with arg4
   raw, and `load_resets` (`src/db.c:1040-1044`) reads it without a floor, so a P
