@@ -71,8 +71,9 @@ test, not a static-guard assertion.
   once; re-staged)
 - `gitnexus_detect_changes` — low risk on all three commits; only the target
   function touched in production each time
-- Full suite not re-run end-to-end (three single-line delivery-channel changes,
-  all area suites green); baseline remains 5812 passing (v2.14.115).
+- Full suite (`pytest`, parallel) re-run at session end: **5823 passed, 4
+  skipped** in 411s (v2.14.122). Confirms no connected+loop test elsewhere
+  asserted mailbox delivery of the three migrated lines.
 
 ## Next Steps
 

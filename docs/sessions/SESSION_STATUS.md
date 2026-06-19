@@ -29,7 +29,7 @@
 | Metric | Value |
 |--------|-------|
 | Version | 2.14.122 |
-| Tests | 5812 passed (v2.14.115 baseline) + 4 new connected-socket delivery tests + message-delivery guard green |
+| Tests | 5823 passed, 4 skipped (full suite, v2.14.122, 411s) — incl. 4 new connected-socket delivery tests |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
 | Active focus | Cross-file invariants — INV-001 debt burndown (10 frozen sites left) |
 
