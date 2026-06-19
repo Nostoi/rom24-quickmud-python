@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **DRINK-011: drinking negative-affect liquids now uses C truncating division.**
+  `do_drink` (`src/act_obj.c:1243-1250`) scales each condition gain as
+  `amount * liq_affect[X] / divisor` with C integer division (truncates toward
+  zero). Several liquids have negative affects (slime mold juice thirst −8, blood
+  −1, salt water −2), so Python's bare `//` (floors toward −∞) diverged: drinking
+  slime mold juice applied a −2 thirst delta where ROM applies −1, making the
+  player get thirsty twice as fast. Switched all four deltas to `c_div`. Test:
+  `tests/integration/test_consumables.py::test_drink_negative_thirst_affect_truncates_toward_zero`.
 - **GIVE-005: giving an item to a shopkeeper now sets the reply target.** ROM
   `do_give` (`src/act_obj.c:801`) sets `ch->reply = victim` on the shop-refusal
   branch so the giver can `reply` to the keeper afterward. Python returned the

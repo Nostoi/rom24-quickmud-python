@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from mud.math.c_compat import c_div
 from mud.models.constants import AffectFlag, ItemType
 from mud.utils.act import act_to_room
 from mud.utils.rng_mm import number_fuzzy
@@ -259,12 +260,15 @@ def do_drink(ch: Character, args: str) -> str:
 
     messages = [f"You drink {liq.name} from {obj_short}."]
 
-    # DRINK-005: gain_condition using liq_table affect values
-    # ROM src/act_obj.c:1243-1250
-    gain_condition(ch, Condition.DRUNK, amount * liq.proof // 36)
-    gain_condition(ch, Condition.FULL, amount * liq.full // 4)
-    gain_condition(ch, Condition.THIRST, amount * liq.thirst // 10)
-    gain_condition(ch, Condition.HUNGER, amount * liq.food // 2)
+    # DRINK-005 / DRINK-011: gain_condition using liq_table affect values.
+    # ROM src/act_obj.c:1243-1250 uses C integer division (truncates toward zero).
+    # The liq_affect columns CAN be negative (slime mold juice thirst=-8, blood=-1,
+    # salt water=-2), so bare `//` (floors toward -inf) diverges from C — e.g.
+    # `2 * -8 // 10 == -2` vs C `-16 / 10 == -1`. Use c_div per AGENTS.md signed-math.
+    gain_condition(ch, Condition.DRUNK, c_div(amount * liq.proof, 36))
+    gain_condition(ch, Condition.FULL, c_div(amount * liq.full, 4))
+    gain_condition(ch, Condition.THIRST, c_div(amount * liq.thirst, 10))
+    gain_condition(ch, Condition.HUNGER, c_div(amount * liq.food, 2))
 
     # DRINK-006: post-condition feedback messages
     # ROM src/act_obj.c:1252-1257

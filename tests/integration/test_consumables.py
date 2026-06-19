@@ -286,6 +286,40 @@ def test_drink_from_drink_container_decrements_value(test_character, object_fact
     assert flask.value[1] < 5, f"Drink container should decrement value[1]; got {flask.value[1]}"
 
 
+def test_drink_negative_thirst_affect_truncates_toward_zero(test_character, object_factory):
+    """DRINK-011 — gain_condition delta must use C truncation, not Python floor.
+
+    ROM act_obj.c:1248 computes `amount * liq_affect[COND_THIRST] / 10` with C
+    integer division (truncates toward zero). For a liquid with a NEGATIVE thirst
+    affect (slime mold juice = -8, blood = -1, salt water = -2) the operand is
+    negative, so Python `//` (floors toward -inf) diverges from C `/`.
+
+    slime mold juice (liquid idx 9): ssize=2, thirst=-8. amount = min(2, value[1])
+    = 2. delta = 2 * -8 / 10:
+        C  : -16 /  10 = -1   (truncate toward zero)
+        // : -16 // 10 = -2   (floor toward -inf)  ← pre-fix Python
+    Starting THIRST=20, ROM lands at 19; the buggy floor lands at 18.
+    """
+    # Empty stomach so DRINK-009 (FULL>45) doesn't block; THIRST set to a known value.
+    test_character.pcdata.condition = [0, 0, 20, 0]  # [DRUNK, FULL, THIRST, HUNGER]
+    flask = _make_obj(
+        object_factory,
+        item_type=ItemType.DRINK_CON,
+        name="flask",
+        short_descr="a flask of slime",
+        value=[10, 5, 9, 0, 0],  # cap=10, current=5, liquid idx 9 (slime mold juice), not poisoned
+    )
+    test_character.add_object(flask)
+
+    do_drink(test_character, "flask")
+
+    # COND_THIRST index = 2. ROM truncation gives 20 + (-1) = 19, not 20 + (-2) = 18.
+    assert test_character.pcdata.condition[2] == 19, (
+        f"THIRST delta must use C truncation (c_div), not Python floor "
+        f"(ROM src/act_obj.c:1248); got {test_character.pcdata.condition[2]} (expected 19)"
+    )
+
+
 def test_drink_empty_container_message(test_character, object_factory):
     """ROM: 'It is already empty.' when value[1] == 0."""
     empty = _make_obj(
