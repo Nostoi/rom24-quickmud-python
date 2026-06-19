@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **INV-001 debt burndown COMPLETE — `_queue_personal_message` resolved as
+  legitimate, `_INV001_DEBT` allowlist now empty
+  (`tests/test_message_delivery_convention.py`)** — the last frozen mailbox
+  bypass is not a bug: `mud/commands/communication.py:_queue_personal_message`
+  is the Python analog of ROM's deferred tell-buffer
+  `add_buf(victim->pcdata->buffer, …)` (`src/act_comm.c:50`/`83`/`93`) for
+  linkdead / AFK / note-writing targets — flushed when they return, never
+  written to the live descriptor. Routing it through `push_message` would push
+  to the live socket for AFK / note-writing players (who are connected),
+  breaking ROM's deferral, so it stays mailbox-only by design. Reclassified from
+  `_INV001_DEBT` to `_LEGITIMATE` (with a why-comment so the guard still catches
+  a genuinely-buggy connected-PC use), and an INV-001 comment added at the
+  function. With this the `_INV001_DEBT` set is empty — the static delivery
+  scanner now forbids any new unsanctioned `*.messages.append` outright.
+
 ### Fixed
 
 - **INV-001 debt burndown — "still recovering" registry line single-delivery

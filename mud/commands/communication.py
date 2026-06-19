@@ -25,6 +25,16 @@ def _get_session(char: Character) -> Session | None:
 
 
 def _queue_personal_message(target: Character, message: str) -> None:
+    # INV-001 — intentionally mailbox-only; NOT a single-delivery chokepoint.
+    # This mirrors ROM's deferred tell-buffer ``add_buf(victim->pcdata->buffer,
+    # …)`` (src/act_comm.c:50/83/93), used for linkdead / AFK / note-writing
+    # targets whose tells are flushed when they return — NOT ``write_to_buffer``
+    # (the live socket). do_yell also reaches this only on the disconnected leg
+    # (connected occupants get the async send before the ``continue``). Routing
+    # it through ``push_message`` would push to the live socket for AFK /
+    # note-writing players (who ARE connected), breaking that ROM deferral, so
+    # this stays mailbox-only by design. Callers that deliver to an *actively
+    # receiving* connected PC must use ``push_message``/``send_to_char``, not this.
     if hasattr(target, "messages"):
         target.messages.append(message)
 

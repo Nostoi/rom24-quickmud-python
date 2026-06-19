@@ -74,14 +74,22 @@ _LEGITIMATE: set[tuple[str, str]] = {
     # healer "before/after" diff — READS the mailbox, never writes.
     ("mud/commands/healer.py", 'messages = getattr(char, "messages", None)'),
     ("mud/commands/healer.py", 'start_index = len(getattr(char, "messages", []) or [])'),
+    # _queue_personal_message — ROM's deferred tell-buffer analog
+    # (add_buf(victim->pcdata->buffer), src/act_comm.c:50/83/93): linkdead /
+    # AFK / note-writing tells flushed on return, NOT write_to_buffer (live
+    # socket). do_yell reaches it only on the disconnected leg. Intentionally
+    # mailbox-only — NOT a chokepoint; see the function's INV-001 comment.
+    ("mud/commands/communication.py", "target.messages.append(message)"),
 }
 
 # Known INV-001 mailbox bypasses awaiting migration to push_message.
 # Each is an INV-001 "Touched by" site in CROSS_FILE_INVARIANTS_TRACKER.md.
 # Fix = route through push_message + delete its line here.
-_INV001_DEBT: set[tuple[str, str]] = {
-    ("mud/commands/communication.py", "target.messages.append(message)"),
-}
+# All previously-frozen mailbox bypasses have been migrated to the chokepoint or
+# reclassified as legitimate (the snoop-forward, skill-registry, charm/colour
+# spell lines, etc. — see CROSS_FILE_INVARIANTS_TRACKER.md INV-001). The set is
+# empty: any NEW unsanctioned mailbox write now fails the scanner immediately.
+_INV001_DEBT: set[tuple[str, str]] = set()
 
 _ALLOWED = _LEGITIMATE | _INV001_DEBT
 
