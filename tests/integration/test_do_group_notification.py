@@ -98,4 +98,44 @@ def test_do_group_add_notifies_victim_and_room():
     finally:
         character_registry.clear()
         character_registry.extend(snapshot)
+
+
+def test_do_group_display_includes_cross_room_members():
+    """GROUP-003 — `group` display iterates the world char list (ROM char_list).
+
+    ROM ``src/act_comm.c:1787`` shows every char where ``is_same_group(gch, ch)``
+    by scanning the global ``char_list`` — group members in *other* rooms appear.
+    Python scanned only ``room.people`` + a nonexistent ``leader.followers``, so a
+    same-group member standing in a different room was silently dropped from the
+    listing.
+    """
+    snapshot = list(character_registry)
+    character_registry.clear()
+    try:
+        room_a = _make_room(9420)
+        room_b = _make_room(9421)
+
+        leader = Character(name="leader", is_npc=False, level=10, room=room_a, position=int(Position.STANDING))
+        leader.messages = []
+        room_a.people.append(leader)
+        character_registry.append(leader)
+
+        # Same group (shares leader pointer) but standing in a different room.
+        faraway = Character(name="faraway", is_npc=False, level=8, room=room_b, position=int(Position.STANDING))
+        faraway.messages = []
+        faraway.master = leader
+        faraway.leader = leader
+        room_b.people.append(faraway)
+        character_registry.append(faraway)
+
+        listing = process_command(leader, "group") or ""
+
+        assert "faraway" in listing.lower(), (
+            f"cross-room group member must appear in `group` display "
+            f"(ROM src/act_comm.c:1787 iterates char_list); got {listing!r}"
+        )
+    finally:
+        character_registry.clear()
+        character_registry.extend(snapshot)
+        character_registry.extend(snapshot)
         room_registry.pop(9411, None)

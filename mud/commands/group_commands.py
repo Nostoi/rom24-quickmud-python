@@ -164,25 +164,15 @@ def do_group(char: Character, args: str) -> str:
                 members_found.append(gch)
                 seen_ids.add(id(gch))
 
-        # Always include self
-        if is_same_group(char, char):
-            add_member(char)
+        # GROUP-003: ROM src/act_comm.c:1787 scans the global char_list and shows
+        # every char where is_same_group(gch, ch) — group members in *other* rooms
+        # appear too. Iterate character_registry (the char_list equivalent) rather
+        # than only room.people, which dropped cross-room members.
+        from mud.models.character import character_registry
 
-        # Check room for group members
-        room = getattr(char, "room", None)
-        if room:
-            for occupant in getattr(room, "people", []):
-                if is_same_group(occupant, char):
-                    add_member(occupant)
-
-        # Check followers
-        if hasattr(leader, "followers"):
-            for follower in leader.followers:
-                if is_same_group(follower, char):
-                    add_member(follower)
-
-        # Also include leader
-        add_member(leader)
+        for gch in character_registry:
+            if is_same_group(gch, char):
+                add_member(gch)
 
         for gch in members_found:
             gch_name = getattr(gch, "short_descr", None) or getattr(gch, "name", "someone")

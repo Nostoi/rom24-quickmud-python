@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GROUP-003: `group` display now lists cross-room group members.** ROM
+  `do_group` (`src/act_comm.c:1787`) shows every character where
+  `is_same_group(gch, ch)` by scanning the global `char_list`, so a grouped
+  follower standing in another room still appears. Python scanned only
+  `char.room.people` plus a nonexistent `leader.followers` attribute, silently
+  dropping any group member not in the leader's room. Fixed to iterate
+  `character_registry` (the `char_list` equivalent). The audit's "iterates
+  character_registry equivalent" note was stale — the code never did. Test:
+  `tests/integration/test_do_group_notification.py::test_do_group_display_includes_cross_room_members`.
 - **GROUP-002: `group <victim>` by a charmed character now notifies the victim
   with the right pronoun.** ROM `do_group` (`src/act_comm.c:1833-1835`) rejects a
   charmed `ch`'s group attempt with `act_new("You like your master too much to
