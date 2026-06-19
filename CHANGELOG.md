@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-001 debt burndown — skill-registry caster lines single-delivery
+  (`mud/skills/registry.py`)** — `SkillRegistry.use` (failed cast) and
+  `_check_improve` (the "You have become better at…" / "You learn from your
+  mistakes…" improvement lines) delivered each caster-facing line via a local
+  `_deliver_message` copy (socket-only, no mailbox fallback) *and* a paired
+  `caster.messages.append(...)`. For a connected PC that is dual delivery: the
+  async socket task delivers once, then the connection read loop replays the
+  mailbox copy on the player's *next* prompt (INV-001 SINGLE-DELIVERY class).
+  All three now route through the canonical `push_message` chokepoint (async
+  socket *xor* mailbox), mirroring ROM `src/magic.c:551` and
+  `src/skills.c:951-967` `send_to_char(buf, ch)`; the divergent `_deliver_message`
+  helper (a DUPL-style third copy of the chokepoint) is deleted. Closes three
+  `_INV001_DEBT` sites in one root-cause refactor (10 → 7 frozen); their
+  allowlist lines in `tests/test_message_delivery_convention.py` are deleted.
+  Test: `tests/integration/test_skill_registry_delivery_channel.py`.
+
 - **INV-001 debt burndown — wand zap TO_VICT single-delivery
   (`mud/commands/magic_items.py`)** — `do_zap` appended the
   "$n zaps you with $p." TO_VICT line straight to `victim.messages`, the mailbox

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import json
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -15,6 +14,7 @@ from mud.models.constants import AffectFlag
 from mud.models.json_io import dataclass_from_dict
 from mud.skills.metadata import ROM_SKILL_METADATA
 from mud.utils import rng_mm
+from mud.utils.messaging import push_message
 
 if TYPE_CHECKING:
     from mud.models.character import Character
@@ -193,9 +193,10 @@ class SkillRegistry:
             result = self._normalize_success_result(skill, handler_result, lag)
         else:
             failure_message = self._failure_message(skill)
-            if hasattr(caster, "messages") and isinstance(caster.messages, list):
-                caster.messages.append(failure_message)
-            _deliver_message(caster, failure_message)
+            # ROM src/magic.c:551 send_to_char("You lost your concentration.", ch)
+            # — single delivery to the caster's descriptor. INV-001: push_message
+            # routes a connected PC to the async socket xor the mailbox fallback.
+            push_message(caster, failure_message)
             result = SkillUseResult(
                 success=False,
                 message=failure_message,
@@ -341,16 +342,16 @@ class SkillRegistry:
             improve_chance = max(5, min(95, 100 - learned))
             if rng_mm.number_percent() < improve_chance:
                 caster.skills[name] = min(100, learned + 1)
-                _deliver_message(caster, f"You have become better at {skill.name}!")
-                caster.messages.append(f"You have become better at {skill.name}!")
+                # ROM src/skills.c:951-953 send_to_char(buf, ch) — single delivery.
+                push_message(caster, f"You have become better at {skill.name}!")
                 gain_exp(caster, 2 * rating)
         else:
             improve_chance = max(5, min(30, learned // 2))
             if rng_mm.number_percent() < improve_chance:
                 increment = rng_mm.number_range(1, 3)
                 caster.skills[name] = min(100, learned + increment)
-                _deliver_message(caster, f"You learn from your mistakes, and your {skill.name} skill improves.")
-                caster.messages.append(f"You learn from your mistakes, and your {skill.name} skill improves.")
+                # ROM src/skills.c:964-967 send_to_char(buf, ch) — single delivery.
+                push_message(caster, f"You learn from your mistakes, and your {skill.name} skill improves.")
                 gain_exp(caster, 2 * rating)
 
     def tick(self, character) -> None:
@@ -385,14 +386,3 @@ def check_improve(caster, name: str, success: bool, multiplier: int = 1) -> None
     """Convenience wrapper delegating to the global skill registry."""
 
     skill_registry.check_improve(caster, name, success, multiplier)
-
-
-def _deliver_message(character, message: str) -> None:
-    """Deliver a message to a character, mirroring ROM C write_to_buffer."""
-    if character is None:
-        return
-    writer = getattr(character, "connection", None)
-    if writer is not None:
-        from mud.net.protocol import send_to_char as _send
-
-        asyncio.create_task(_send(character, str(message)))

@@ -87,12 +87,6 @@ _INV001_DEBT: set[tuple[str, str]] = {
     ("mud/skills/handlers.py", 'caster_messages = getattr(caster, "messages", None)'),
     ("mud/skills/handlers.py", "caster.messages.append(caster_msg)"),
     ("mud/skills/registry.py", 'messages = getattr(caster, "messages", None)'),
-    ("mud/skills/registry.py", "caster.messages.append(failure_message)"),
-    ("mud/skills/registry.py", 'caster.messages.append(f"You have become better at {skill.name}!")'),
-    (
-        "mud/skills/registry.py",
-        'caster.messages.append(f"You learn from your mistakes, and your {skill.name} skill improves.")',
-    ),
 }
 
 _ALLOWED = _LEGITIMATE | _INV001_DEBT
