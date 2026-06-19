@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-001 debt burndown — snoop-forward single-delivery
+  (`mud/commands/dispatcher.py`)** — `process_command` forwarded the snooped
+  character's logline (`% <cmd>`) straight to the snooper's `messages` mailbox.
+  A snooper actively watching is a connected PC, so the forwarded line sat in
+  the mailbox until the snooper's *next* command instead of arriving at action
+  time (INV-001 SINGLE-DELIVERY wrong-channel/late class, same shape as
+  SPEC-017). ROM `src/interp.c:491-496` does `write_to_buffer(ch->desc->snoop_by,
+  …)` — an immediate descriptor write. The forward now routes through
+  `push_message` (async socket for a connected snooper *xor* mailbox fallback
+  for disconnected/test). Closes a `_INV001_DEBT` site (3 → 2 frozen); its
+  allowlist line in `tests/test_message_delivery_convention.py` is deleted.
+  Test: `tests/integration/test_interp_dispatcher.py::test_interp_002_snoop_forward_reaches_connected_snooper_on_socket`.
+
 - **INV-001 debt burndown — colour_spray caster line single-delivery
   (`mud/skills/handlers.py`)** — `colour_spray` appended the caster's spray
   flavor line ("You spray red, blue, and yellow light at X!") straight to

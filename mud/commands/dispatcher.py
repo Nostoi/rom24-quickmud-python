@@ -10,6 +10,7 @@ from mud.models.constants import LEVEL_HERO, LEVEL_IMMORTAL, MAX_LEVEL, AffectFl
 from mud.models.social import find_social
 from mud.net.session import Session
 from mud.olc.editor_state import DescriptorRoute, EditorMode, route_descriptor_input
+from mud.utils.messaging import push_message
 from mud.utils.string_editor import string_add
 from mud.wiznet import cmd_wiznet
 
@@ -1198,9 +1199,12 @@ def process_command(char: Character, input_str: str) -> str:
     snoop_desc = getattr(desc, "snoop_by", None) if desc is not None else None
     snooper = getattr(snoop_desc, "character", None) if snoop_desc is not None else None
     if snooper is not None and trimmed:
-        snooper_messages = getattr(snooper, "messages", None)
-        if snooper_messages is not None:
-            snooper_messages.append(f"% {trimmed.rstrip()}")
+        # INV-001 SINGLE-DELIVERY — the snooper is a connected PC actively
+        # watching; ROM src/interp.c:493 write_to_buffer(ch->desc->snoop_by, …)
+        # is an immediate socket write. push_message routes a connected snooper
+        # to the async send (xor the mailbox for disconnected/test), so the
+        # logline isn't stranded until the snooper's next command.
+        push_message(snooper, f"% {trimmed.rstrip()}")
     # mirroring ROM src/interp.c — interpret() only strips line-ending
     # whitespace, not visible trailing spaces, so commands like
     # `prompt MYTAG> ` keep the trailing space the player typed.

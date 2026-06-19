@@ -6,6 +6,7 @@ wiznet log mirror, punctuation aliases, prefix-match table order.
 
 from __future__ import annotations
 
+import asyncio
 from types import SimpleNamespace
 
 import pytest
@@ -92,6 +93,48 @@ def test_interp_002_snoop_forwards_logline_to_snooper(test_room):
 
     test_room.people.remove(snooper)
     test_room.people.remove(victim)
+
+
+class _RecordingConn:
+    """Connection stub matching the duck-typed interface ``send_to_char`` uses."""
+
+    def __init__(self) -> None:
+        self.sent: list[str] = []
+
+    async def send_line(self, msg: str) -> None:
+        self.sent.append(msg)
+
+    async def send(self, msg: str) -> None:
+        self.sent.append(msg)
+
+
+def test_interp_002_snoop_forward_reaches_connected_snooper_on_socket(test_room):
+    # INV-001 SINGLE-DELIVERY — a snooper actively watching is a connected PC.
+    # ROM src/interp.c:491-496 forwards the logline via write_to_buffer() to the
+    # snooping descriptor: an immediate socket write. Mailbox-only delivery is
+    # invisible until the snooper's NEXT command (the SPEC-017 late-delivery
+    # class). The forwarded line must reach the snooper's SOCKET, not just the
+    # mailbox.
+    async def scenario():
+        snooper = Character(name="Snooper", level=60, room=test_room, hit=100, max_hit=100, is_npc=False)
+        victim = Character(name="Victim", level=5, room=test_room, hit=100, max_hit=100, is_npc=False)
+        test_room.people.extend([snooper, victim])
+        conn = _RecordingConn()
+        snooper.connection = conn
+        snooper.desc = SimpleNamespace(character=snooper, snoop_by=None)
+        victim.desc = SimpleNamespace(character=victim, snoop_by=snooper.desc)
+
+        process_command(victim, "look")
+        for _ in range(5):
+            await asyncio.sleep(0)
+
+        test_room.people.remove(snooper)
+        test_room.people.remove(victim)
+        return conn.sent, list(snooper.messages)
+
+    sent, mailbox = asyncio.run(scenario())
+    assert "% look" in sent, f"snoop logline must reach connected snooper's socket; sent={sent}"
+    assert "% look" not in mailbox, f"snoop logline stranded in mailbox for a connected PC: {mailbox}"
 
 
 def test_interp_002_snoop_inactive_when_no_snooper(test_room):
