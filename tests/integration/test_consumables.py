@@ -855,6 +855,59 @@ def test_zap_destroys_wand_at_zero_charges(test_character, object_factory):
     assert any("explodes into fragments" in m.lower() for m in observer.messages), observer.messages
 
 
+class _RecordingConn:
+    def __init__(self) -> None:
+        self.sent: list[str] = []
+
+    async def send_line(self, msg: str) -> None:
+        self.sent.append(msg)
+
+    async def send(self, msg: str) -> None:
+        self.sent.append(msg)
+
+
+def test_zap_victim_message_reaches_connected_victim_on_socket(test_character, object_factory):
+    """INV-001 — the TO_VICT "$n zaps you with $p." line must reach a *connected*
+    victim on the socket, not the mailbox alone.
+
+    ROM C: src/act_obj.c:2125 — `act("$n zaps you with $p.", ch, wand, victim,
+    TO_VICT)` writes to the victim's descriptor via `write_to_buffer` (single
+    socket channel). The Python port appended straight to `victim.messages`, the
+    mailbox the connection read loop only drains after the victim's NEXT command
+    — an idle connected target would not see the zap until they typed something
+    (INV-001 SINGLE-DELIVERY wrong-channel class). Fix routes it through
+    `push_message` (async socket for connected PCs, mailbox fallback otherwise).
+    """
+    import asyncio
+
+    wand = _make_obj(
+        object_factory,
+        item_type=ItemType.WAND,
+        name="wand",
+        short_descr="a magic wand",
+        value=[10, 0, 5, "armor", 0],
+        level=1,
+    )
+    _hold_wand(test_character, wand)
+    victim = create_test_character("Victim", room_vnum=3001)
+    victim.is_npc = False
+    victim.messages = []
+    conn = _RecordingConn()
+    victim.connection = conn
+
+    async def scenario():
+        do_zap(test_character, "victim")
+        for _ in range(5):
+            await asyncio.sleep(0)
+        return conn.sent, list(victim.messages)
+
+    sent, mailbox = asyncio.run(scenario())
+    assert any("zaps you with" in m for m in sent), f"zap TO_VICT must reach the connected victim's socket; sent={sent}"
+    assert all("zaps you with" not in m for m in mailbox), (
+        f"zap TO_VICT stranded in mailbox for a connected PC: {mailbox}"
+    )
+
+
 # --------------------------------------------------------------------------- #
 # do_fill / do_pour smoke (covered separately, but exercise dispatcher path)   #
 # --------------------------------------------------------------------------- #

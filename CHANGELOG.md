@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-001 debt burndown — wand zap TO_VICT single-delivery
+  (`mud/commands/magic_items.py`)** — `do_zap` appended the
+  "$n zaps you with $p." TO_VICT line straight to `victim.messages`, the mailbox
+  the connection read loop only drains after the victim's *next* command. A
+  connected zap target therefore would not see the zap until they typed something
+  (INV-001 SINGLE-DELIVERY wrong-channel class). It now routes through
+  `push_message` (async socket for connected PCs, mailbox fallback for
+  tests/disconnected), mirroring ROM `src/act_obj.c:2125` `act(..., TO_VICT)`;
+  the sibling TO_ROOM/TO_NOTVICT legs already used the correct
+  `_broadcast`→`act_to_room` chokepoint. Third `_INV001_DEBT` site burned down
+  (11 → 10); its allowlist line in `tests/test_message_delivery_convention.py` is
+  deleted. Test:
+  `tests/integration/test_consumables.py::test_zap_victim_message_reaches_connected_victim_on_socket`.
+
 - **INV-001 debt burndown — login enter-game broadcast single-delivery
   (`mud/net/connection.py`)** — `broadcast_entry_to_room` appended the
   "$n has entered the game." TO_ROOM line (and the pet's) straight to each room

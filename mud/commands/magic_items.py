@@ -23,6 +23,7 @@ from mud.models.constants import ItemType, WearLocation
 from mud.skills.registry import check_improve, skill_registry
 from mud.utils import rng_mm
 from mud.utils.act import act_format, act_to_room
+from mud.utils.messaging import push_message
 from mud.world.char_find import get_char_room as _get_char_room
 from mud.world.obj_find import get_obj_carry
 from mud.world.obj_find import get_obj_here as _get_obj_here
@@ -316,9 +317,11 @@ def do_zap(ch: Character, args: str) -> str:
             out_lines.append(act_format("You zap $N with $p.", recipient=ch, actor=ch, arg1=wand, arg2=victim))
             if victim is not ch:
                 vict_msg = act_format("$n zaps you with $p.", recipient=victim, actor=ch, arg1=wand, arg2=victim)
-                msgs = getattr(victim, "messages", None)
-                if msgs is not None and vict_msg:
-                    msgs.append(vict_msg)
+                if vict_msg:
+                    # mirroring ROM src/act_obj.c:2125 act(..., TO_VICT) —
+                    # single-channel delivery (INV-001): async socket for a
+                    # connected victim, mailbox fallback for tests/disconnected.
+                    push_message(victim, vict_msg)
         else:
             _broadcast(room, "$n zaps $P with $p.", actor=ch, arg1=wand, arg2=target_obj, exclude=ch)
             out_lines.append(act_format("You zap $P with $p.", recipient=ch, actor=ch, arg1=wand, arg2=target_obj))
