@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **SELL-006: the sell-haggle bonus now scales from the runtime object cost.**
+  ROM `do_sell` computes `cost += obj->cost / 2 * roll / 100`
+  (`src/act_obj.c:2930`), using the runtime `obj->cost`. Python's bonus base read
+  `proto.cost`, diverging once an object's runtime cost differed from its
+  prototype (the buy-side mirror of BUY-009 / GETCOST-001). The bonus base now
+  reads `obj.cost`. Test:
+  `tests/test_shops.py::test_sell_haggle_bonus_uses_runtime_cost`.
 - **SELL-005: the sell-haggle 95%-of-buy-price cap now applies unconditionally.**
   ROM `do_sell` caps the haggled-up sale at `95 * get_cost(keeper, obj, TRUE) / 100`
   (`src/act_obj.c:2931`) with no guard, so a zero buy price clamps the sale to 0.

@@ -1428,6 +1428,53 @@ def test_buy_haggle_discount_uses_runtime_cost():
     assert paid == 100
 
 
+def test_sell_haggle_bonus_uses_runtime_cost():
+    # SELL-006: mirrors ROM src/act_obj.c:2930 — the sell-haggle bonus is
+    # `cost += obj->cost / 2 * roll / 100`, using the RUNTIME obj->cost, not the
+    # prototype cost. Diverges when obj.cost != proto.cost (e.g. a haggle-bought
+    # cheap item, the buy-side mirror of BUY-009 / GETCOST-001). profit_buy is
+    # raised so the 95% cap (:2931) does not bind and mask the wrong base.
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Haggler", 3001)
+    char.gold = 0
+    char.silver = 0
+    char.skills = {"haggle": 95}
+    keeper = spawn_mob(3006)
+    assert keeper is not None
+    keeper.move_to_room(char.room)
+    keeper.gold = 1000
+    keeper.silver = 0
+
+    raft = spawn_object(3050)
+    assert raft is not None
+    raft.prototype.short_descr = "a small river raft"
+    raft.prototype.item_type = int(ItemType.BOAT)
+    raft.prototype.cost = 200
+    # Runtime cost below the prototype (post-haggle resale state).
+    raft.cost = 100
+    char.add_object(raft)
+
+    shop = shop_registry.get(3006)
+    saved_profit_buy = shop.profit_buy
+    previous_hour = time_info.hour
+    original_roll = rng_mm.number_percent
+    try:
+        time_info.hour = 10
+        # profit_buy 300 → buy_price = c_div(100*300, 100) = 300, cap = 95*300//100
+        # = 285, well above either candidate price, so the cap does not bind.
+        shop.profit_buy = 300
+        rng_mm.number_percent = lambda: 40  # roll 40 < haggle 95 → bonus applies
+        process_command(char, "sell raft")
+        # base sell price = c_div(100*90, 100) = 90.
+        # bonus via RUNTIME cost = (100 // 2) * 40 // 100 = 20 → 110.
+        # (Prototype cost 200 would give bonus (200//2)*40//100 = 40 → 130.)
+        assert _total_wealth(char) == 110
+    finally:
+        shop.profit_buy = saved_profit_buy
+        rng_mm.number_percent = original_roll
+        time_info.hour = previous_hour
+
+
 def test_sell_uses_runtime_cost_not_prototype():
     # GETCOST-001: mirrors ROM src/act_obj.c:2499 get_cost — sell price is
     # obj->cost * profit_sell / 100, using the RUNTIME object cost (which
