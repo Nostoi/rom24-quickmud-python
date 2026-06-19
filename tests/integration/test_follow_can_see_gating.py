@@ -119,6 +119,89 @@ def test_follow_002_stop_follower_gates_both_messages_on_can_see_and_in_room():
         room_registry.pop(9420, None)
 
 
+def test_follow_004_add_follower_to_char_masks_invisible_master_name():
+    """FOLLOW-004 — TO_CHAR `You now follow $N.` masks an unseen master as "someone".
+
+    ROM src/act_comm.c:1605: `act("You now follow $N.", ch, NULL, master, TO_CHAR)`
+    — `$N` = `PERS(master, ch)`, gated on `can_see(ch, master)`. When the follower
+    cannot see the master (master invisible, follower lacks DETECT_INVIS), ROM
+    renders "someone". Pre-fix Python baked `_display_name(master)` (always the
+    real name), leaking the invisible master's identity to its follower.
+    """
+    snapshot = list(character_registry)
+    character_registry.clear()
+    try:
+        room = _make_room()
+        follower = _make_char("follower", room)
+        master = _make_char("hiddenmaster", room)
+
+        # Master is invisible; follower lacks DETECT_INVIS → follower can't see master.
+        master.add_affect(AffectFlag.INVISIBLE)
+
+        add_follower(follower, master)
+
+        joined_follower = "\n".join(follower.messages).lower()
+        assert "you now follow" in joined_follower, (
+            f"follower must still receive the TO_CHAR line (ROM line 1605, unconditional); "
+            f"follower.messages = {follower.messages!r}"
+        )
+        assert "hiddenmaster" not in joined_follower, (
+            f"`$N` must mask the unseen master's name (ROM PERS gating); follower.messages = {follower.messages!r}"
+        )
+        assert "someone" in joined_follower, (
+            f"`$N` must render 'someone' when can_see(follower, master) is False "
+            f"(ROM src/act_comm.c:1605); follower.messages = {follower.messages!r}"
+        )
+    finally:
+        character_registry.clear()
+        character_registry.extend(snapshot)
+        room_registry.pop(9420, None)
+
+
+def test_follow_004_stop_follower_to_char_masks_invisible_master_name():
+    """FOLLOW-004 — TO_CHAR `You stop following $N.` masks an unseen master.
+
+    ROM src/act_comm.c:1627: `act("You stop following $N.", ch, NULL, ch->master,
+    TO_CHAR)`. The whole block is gated on `can_see(master, ch) && in_room`, so to
+    reach the line the *master* must see the *follower*; the `$N` rendering is
+    separately gated on `can_see(ch, master)`. A blind follower (cannot see the
+    master) who is still visible to the master gets "You stop following someone."
+    """
+    snapshot = list(character_registry)
+    character_registry.clear()
+    try:
+        room = _make_room()
+        follower = _make_char("follower", room)
+        master = _make_char("hiddenmaster", room)
+
+        add_follower(follower, master)
+        follower.messages.clear()
+        master.messages.clear()
+
+        # Follower is blind → cannot see master, but master still sees follower
+        # (so the can_see(master, ch) && in_room block fires and the line is sent).
+        follower.add_affect(AffectFlag.BLIND)
+
+        stop_follower(follower)
+
+        joined_follower = "\n".join(follower.messages).lower()
+        assert "you stop following" in joined_follower, (
+            f"follower must receive the TO_CHAR line (master can still see follower); "
+            f"follower.messages = {follower.messages!r}"
+        )
+        assert "hiddenmaster" not in joined_follower, (
+            f"`$N` must mask the master a blind follower can't see; follower.messages = {follower.messages!r}"
+        )
+        assert "someone" in joined_follower, (
+            f"`$N` must render 'someone' when can_see(follower, master) is False; "
+            f"follower.messages = {follower.messages!r}"
+        )
+    finally:
+        character_registry.clear()
+        character_registry.extend(snapshot)
+        room_registry.pop(9420, None)
+
+
 def test_follow_002_stop_follower_skips_messages_when_in_room_is_none():
     """ROM src/act_comm.c:1625 — also gated on ch->in_room != NULL."""
     snapshot = list(character_registry)

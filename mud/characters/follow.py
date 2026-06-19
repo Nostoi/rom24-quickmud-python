@@ -10,18 +10,6 @@ if TYPE_CHECKING:  # pragma: no cover - import for type checkers only
     from mud.models.character import Character
 
 
-def _display_name(character: Character | None) -> str:
-    if character is None:
-        return "Someone"
-    name = getattr(character, "name", None)
-    if isinstance(name, str) and name:
-        return name
-    short_descr = getattr(character, "short_descr", None)
-    if isinstance(short_descr, str) and short_descr:
-        return short_descr
-    return "Someone"
-
-
 def add_follower(follower: Character, master: Character) -> None:
     """Attach ``follower`` to ``master`` mirroring ROM ``add_follower``."""
     # mirroring ROM src/act_comm.c:1591-1607
@@ -43,8 +31,9 @@ def add_follower(follower: Character, master: Character) -> None:
         # $n = PERS(follower, master) = NPC short_descr (cap), not the keyword name.
         push_message(master, act_format("$n now follows you.", recipient=master, actor=follower))
 
-    # ROM line 1605: TO_CHAR is unconditional.
-    push_message(follower, f"You now follow {_display_name(master)}.")
+    # ROM line 1605: TO_CHAR is unconditional. FOLLOW-004: $N = PERS(master, ch)
+    # is gated on can_see(ch, master) — an unseen master renders "someone".
+    push_message(follower, act_format("You now follow $N.", recipient=follower, arg2=master))
 
 
 def stop_follower(follower: Character) -> None:
@@ -71,7 +60,9 @@ def stop_follower(follower: Character) -> None:
         # FOLLOW-003: ROM act("$n stops following you.", ch, NULL, ch->master,
         # TO_VICT) — $n = PERS(follower, master) = NPC short_descr (cap).
         push_message(master, act_format("$n stops following you.", recipient=master, actor=follower))
-        push_message(follower, f"You stop following {_display_name(master)}.")
+        # FOLLOW-004: $N = PERS(master, ch) — gated on can_see(ch, master); an
+        # unseen master (e.g. blind follower) renders "someone".
+        push_message(follower, act_format("You stop following $N.", recipient=follower, arg2=master))
 
     if getattr(master, "pet", None) is follower:
         master.pet = None

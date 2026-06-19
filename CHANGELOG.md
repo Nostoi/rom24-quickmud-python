@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FOLLOW-004: follow/unfollow messages now mask an unseen master's name.** ROM
+  `add_follower`/`stop_follower` (`src/act_comm.c:1605`, `:1627`) render the
+  follower-facing `You now follow $N.` / `You stop following $N.` with `$N` =
+  `PERS(master, ch)`, gated on `can_see(ch, master)` — an invisible master, or a
+  blind follower, sees "someone". Python baked the master's real name, leaking an
+  invisible master's identity to its (often charmed) follower. The deferred
+  `$N`-masking concern noted in FOLLOW-003. Fixed by rendering both lines through
+  `act_format` (PERS-masking `$N`). Tests:
+  `tests/integration/test_follow_can_see_gating.py::test_follow_004_add_follower_to_char_masks_invisible_master_name`,
+  `::test_follow_004_stop_follower_to_char_masks_invisible_master_name`.
 - **GROUP-003: `group` display now lists cross-room group members.** ROM
   `do_group` (`src/act_comm.c:1787`) shows every character where
   `is_same_group(gch, ch)` by scanning the global `char_list`, so a grouped
