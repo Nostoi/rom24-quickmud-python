@@ -647,7 +647,26 @@ act_info.c is **100% complete** when:
 **ROM C Implementation**: 235 lines (`src/act_info.c:1477-1712`)  
 **QuickMUD Implementation**: 96 Python lines (`mud/commands/session.py:62-158`)
 
-**Status**: ✅ **100% COMPLETE!** - All 6 optional gaps FIXED! (January 6, 2026) 🎉
+**Status**: ⚠️ The "100% COMPLETE" claim below was a per-line content audit that
+**missed the line EMISSION ORDER and the unconditional Wimpy line** — both caught
+later by the differential harness (a worked example of the AGENTS.md "re-verify
+✅ claims against ROM C" rule). See SCORE-001.
+
+- **SCORE-001** ✅ FIXED (2026-06-19, 2.14.142): `do_score` emitted lines in the
+  wrong order vs ROM (`src/act_info.c:1503-1690`) — the carrying / Wimpy /
+  conditions / position / alignment lines were grouped at the END — and gated
+  the Wimpy line on `wimpy > 0`, so a char with `wimpy == 0` dropped "Wimpy set
+  to 0 hit points." entirely (ROM line 1548 prints it unconditionally). **Fix**:
+  reordered `do_score` to ROM's exact emission order (… practices → carrying →
+  Str → exp → need-exp → Wimpy → conditions → position → AC/defenseless →
+  immortal → hitroll → alignment-last) and made the Wimpy line unconditional
+  (`mud/commands/session.py`). Surfaced by the diff harness (`score` line-by-line
+  vs the live C oracle); the residual harness diffs are char-init value artifacts
+  (practices/exp set by the C `make_test_char`, carry-max → see the can_carry_n
+  gap), not order. Test:
+  `tests/test_player_info_commands.py::TestScoreCommand::test_score_rom_line_order_and_wimpy_always_shown`.
+
+**Status (historical)**: ✅ **100% COMPLETE!** - All 6 optional gaps FIXED! (January 6, 2026) 🎉
 
 **All Gaps Fixed** (6/6 optional):
 1. ✅ **FIXED** - Immortal Info Display (ROM C lines 1654-1675) - Holy light/invis/incog status

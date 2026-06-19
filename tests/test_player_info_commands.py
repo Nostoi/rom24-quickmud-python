@@ -81,6 +81,42 @@ class TestScoreCommand:
 
         assert "wimpy" in output.lower() or "50" in output
 
+    def test_score_rom_line_order_and_wimpy_always_shown(self):
+        """SCORE-001: do_score must emit lines in ROM order
+        (src/act_info.c:1477-1690) and ALWAYS print the Wimpy line (even at 0).
+
+        ROM `do_score` order: ... practices, carrying, Str, exp, need-exp, Wimpy,
+        conditions, position, AC/defenseless block, ..., alignment-desc (last).
+        Python emitted carrying/Wimpy/conditions/position at the END and gated
+        Wimpy on `wimpy > 0`, so the line order diverged and the Wimpy line
+        vanished at 0.
+        """
+        player = create_test_character("Ordered", 3001)
+        player.level = 5
+        player.wimpy = 0  # ROM prints "Wimpy set to 0 hit points." regardless.
+        player.alignment = 0
+
+        output = do_score(player, "")
+        lines = output.split("\n")
+
+        # ROM src/act_info.c:1548 — Wimpy line is unconditional (no wimpy>0 guard).
+        assert "Wimpy set to 0 hit points." in output, output
+
+        def idx(substr: str) -> int:
+            for i, line in enumerate(lines):
+                if substr in line:
+                    return i
+            raise AssertionError(f"{substr!r} not in score output:\n{output}")
+
+        # ROM order: carrying (1514) before Str (1520).
+        assert idx("carrying") < idx("Str:"), output
+        # ROM order: Wimpy (1548) before the position line (1558).
+        assert idx("Wimpy set to") < idx("You are standing."), output
+        # ROM order: position (1558) before the AC/defenseless block (1600).
+        assert idx("You are standing.") < idx("defenseless against piercing"), output
+        # ROM order: alignment description (1690) is last — after the AC block.
+        assert idx("defenseless against magic") < idx("You are neutral."), output
+
     def test_score_shows_hitroll_damroll(self):
         player = create_test_character("Fighter", 3001)
         # ROM C `do_score` only displays hitroll/damroll at level 15+

@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **SCORE-001: `score` now lists lines in ROM order and always shows the Wimpy
+  line.** ROM `do_score` (`src/act_info.c:1503-1690`) emits the carrying line
+  right after practices, the Wimpy line after the exp-to-level line (printed
+  unconditionally, even at 0), conditions/position before the armor block, and
+  the alignment description last. Python grouped carrying/Wimpy/conditions/
+  position/alignment at the end and gated Wimpy on `wimpy > 0`, so the sheet
+  diverged in order and dropped "Wimpy set to 0 hit points." for non-wimpy
+  characters. Surfaced by the differential harness; reordered to match ROM and
+  made the Wimpy line unconditional. (The per-line content audit had marked
+  do_score "100% complete" — the harness caught the ordering it missed.)
 - **LOOK-009 / FINDING-036: `look <character>` with no description now renders
   the objective pronoun, not the name.** ROM `show_char_to_char_1`
   (`src/act_info.c:453`) shows a description-less character via

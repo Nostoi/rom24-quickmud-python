@@ -128,40 +128,51 @@ def do_score(ch: Character, args: str) -> str:
     class_label = "mobile" if getattr(ch, "is_npc", False) else class_name(getattr(ch, "ch_class", 0))
     lines.append(f"Race: {race_name(race)}  Sex: {sex_name}  Class: {class_label}")
 
-    # HP, Mana, Movement
+    # SCORE-001: emit lines in ROM `do_score` order (src/act_info.c:1503-1690).
+    # The prior implementation grouped carrying / Wimpy / conditions / position /
+    # alignment at the END and gated the Wimpy line on `wimpy > 0`, diverging
+    # from ROM's line order and dropping the Wimpy line at 0.
+
+    # HP, Mana, Movement - ROM src/act_info.c:1503-1507
     hp = getattr(ch, "hit", 0)
     max_hp = getattr(ch, "max_hit", 0)
     mana = getattr(ch, "mana", 0)
     max_mana = getattr(ch, "max_mana", 0)
     move = getattr(ch, "move", 0)
     max_move = getattr(ch, "max_move", 0)
-
     lines.append(f"You have {hp}/{max_hp} hit, {mana}/{max_mana} mana, {move}/{max_move} movement.")
 
-    # Practice and training sessions - ROM src/act_info.c lines 1509-1512
+    # Practice and training sessions - ROM src/act_info.c:1509-1512
     if not getattr(ch, "is_npc", False):
         practice = getattr(ch, "practice", 0)
         train = getattr(ch, "train", 0)
         lines.append(f"You have {practice} practices and {train} training sessions.")
 
-    # Stats - mirroring ROM perm_stat[STAT_STR] through perm_stat[STAT_CON]
-    # ROM defines: STAT_STR=0, STAT_INT=1, STAT_WIS=2, STAT_DEX=3, STAT_CON=4
-    # ROM src/act_info.c lines 1520-1531 - shows both perm and current stats
+    # Carrying - ROM src/act_info.c:1514-1518 (immediately after practices)
+    carry_weight = getattr(ch, "carry_weight", 0)
+    carry_number = getattr(ch, "carry_number", 0)
+    from mud.world.movement import can_carry_n, can_carry_w
+
+    max_carry_number = can_carry_n(ch)
+    max_carry_weight = can_carry_w(ch) // 10  # ROM divides by 10 for display
+    lines.append(
+        f"You are carrying {carry_number}/{max_carry_number} items "
+        f"with weight {carry_weight // 10}/{max_carry_weight} pounds."
+    )
+
+    # Stats - ROM src/act_info.c:1520-1531 (perm(current) per stat).
+    # STAT_STR=0, STAT_INT=1, STAT_WIS=2, STAT_DEX=3, STAT_CON=4.
     perm_stat = getattr(ch, "perm_stat", [13, 13, 13, 13, 13])
     perm_str = perm_stat[0] if len(perm_stat) > 0 else 13
     perm_int = perm_stat[1] if len(perm_stat) > 1 else 13
     perm_wis = perm_stat[2] if len(perm_stat) > 2 else 13
     perm_dex = perm_stat[3] if len(perm_stat) > 3 else 13
     perm_con = perm_stat[4] if len(perm_stat) > 4 else 13
-
-    # Get current (buffed) stats using get_curr_stat
     curr_str = ch.get_curr_stat(0) if hasattr(ch, "get_curr_stat") else perm_str
     curr_int = ch.get_curr_stat(1) if hasattr(ch, "get_curr_stat") else perm_int
     curr_wis = ch.get_curr_stat(2) if hasattr(ch, "get_curr_stat") else perm_wis
     curr_dex = ch.get_curr_stat(3) if hasattr(ch, "get_curr_stat") else perm_dex
     curr_con = ch.get_curr_stat(4) if hasattr(ch, "get_curr_stat") else perm_con
-
-    # Display format: "Str: perm(current)" - matches ROM C format
     lines.append(
         f"Str: {perm_str}({curr_str})  "
         f"Int: {perm_int}({curr_int})  "
@@ -170,18 +181,41 @@ def do_score(ch: Character, args: str) -> str:
         f"Con: {perm_con}({curr_con})"
     )
 
-    # Experience and gold - ROM src/act_info.c lines 1533-1536
+    # Experience and gold - ROM src/act_info.c:1533-1536
     exp = getattr(ch, "exp", 0)
     gold = getattr(ch, "gold", 0)
     silver = getattr(ch, "silver", 0)
     lines.append(f"You have scored {exp} exp, and have {gold} gold and {silver} silver coins.")
 
-    # Experience to level - ROM src/act_info.c lines 1538-1546
+    # Experience to level - ROM src/act_info.c:1538-1546
     if not getattr(ch, "is_npc", False) and level < 51:  # LEVEL_HERO = 51
         from mud.advancement import exp_per_level
 
         exp_needed = ((level + 1) * exp_per_level(ch)) - exp
         lines.append(f"You need {exp_needed} exp to level.")
+
+    # Wimpy - ROM src/act_info.c:1548-1549 — printed UNCONDITIONALLY (even at 0).
+    wimpy = getattr(ch, "wimpy", 0)
+    lines.append(f"Wimpy set to {wimpy} hit points.")
+
+    # Conditions - ROM src/act_info.c:1551-1556 (before the position line)
+    if not getattr(ch, "is_npc", False):
+        # COND_DRUNK = 0, COND_FULL = 1, COND_THIRST = 2, COND_HUNGER = 3
+        condition = getattr(ch, "condition", [0, 48, 48, 48])
+        if len(condition) > 0 and condition[0] > 10:  # COND_DRUNK
+            lines.append("You are drunk.")
+        if len(condition) > 2 and condition[2] == 0:  # COND_THIRST
+            lines.append("You are thirsty.")
+        if len(condition) > 3 and condition[3] == 0:  # COND_HUNGER
+            lines.append("You are hungry.")
+
+    # Position - ROM src/act_info.c:1558-1587 (before the AC block)
+    position = ch.position
+    try:
+        pos_enum = Position(position)
+        lines.append(f"You are {pos_enum.name.lower()}.")
+    except ValueError:
+        lines.append("You are standing.")
 
     # Armor class - ROM displays individual ACs at level 25+ (src/act_info.c:1591-1650).
     # ROM uses GET_AC (src/merc.h:2104-2106) which adds dex_app[DEX].defensive when IS_AWAKE.
@@ -196,88 +230,39 @@ def do_score(ch: Character, args: str) -> str:
     for ac_type, damage_name in enumerate(("piercing", "bashing", "slashing", "magic")):
         lines.append(f"You are {_armor_class_description(get_ac(ch, ac_type), damage_name)}")
 
-    # Immortal info - ROM src/act_info.c lines 1654-1675
+    # Immortal info - ROM src/act_info.c:1654-1675
     from mud.models.constants import LEVEL_IMMORTAL, PlayerFlag
 
     if level >= LEVEL_IMMORTAL:
         imm_parts = []
-
-        # Holy light status
         act_flags = getattr(ch, "act", 0)
         if act_flags & PlayerFlag.HOLYLIGHT:
             imm_parts.append("Holy Light: on")
         else:
             imm_parts.append("Holy Light: off")
-
-        # Invisible level
         invis_level = getattr(ch, "invis_level", 0)
         if invis_level:
             imm_parts.append(f"Invisible: level {invis_level}")
-
-        # Incognito level
         incog_level = getattr(ch, "incog_level", 0)
         if incog_level:
             imm_parts.append(f"Incognito: level {incog_level}")
-
         if imm_parts:
             lines.append("  ".join(imm_parts))
 
-    # Hitroll and damroll - ROM src/act_info.c lines 1677-1682
-    # Only display at level 15+
+    # Hitroll and damroll - ROM src/act_info.c:1677-1682 (level 15+)
     if level >= 15:
         hitroll = getattr(ch, "hitroll", 0)
         damroll = getattr(ch, "damroll", 0)
         lines.append(f"Hitroll: {hitroll}  Damroll: {damroll}")
 
-    # Alignment - ROM src/act_info.c lines 1684-1708
+    # Alignment - ROM src/act_info.c:1684-1708 (LAST line). At level 10+ ROM
+    # prefixes "Alignment: %d.  " (no newline) then always prints "You are <desc>."
     alignment = getattr(ch, "alignment", 0)
+    alignment_desc = _get_alignment_description(alignment)
     if level >= 10:
-        # Show numeric alignment at level 10+
-        alignment_desc = _get_alignment_description(alignment)
         lines.append(f"Alignment: {alignment}.  You are {alignment_desc}")
     else:
-        # Show only description for low level
-        alignment_desc = _get_alignment_description(alignment)
         lines.append(f"You are {alignment_desc}")
-
-    # Position
-    position = ch.position
-    try:
-        pos_enum = Position(position)
-        lines.append(f"You are {pos_enum.name.lower()}.")
-    except ValueError:
-        lines.append("You are standing.")
-
-    # Carrying - ROM src/act_info.c lines 1514-1518
-    carry_weight = getattr(ch, "carry_weight", 0)
-    carry_number = getattr(ch, "carry_number", 0)
-
-    # Get max carrying capacity
-    from mud.world.movement import can_carry_n, can_carry_w
-
-    max_carry_number = can_carry_n(ch)
-    max_carry_weight = can_carry_w(ch) // 10  # ROM divides by 10 for display
-
-    lines.append(
-        f"You are carrying {carry_number}/{max_carry_number} items "
-        f"with weight {carry_weight // 10}/{max_carry_weight} pounds."
-    )
-
-    # Wimpy - ROM src/act_info.c lines 1548-1549
-    wimpy = getattr(ch, "wimpy", 0)
-    if wimpy > 0:
-        lines.append(f"Wimpy set to {wimpy} hit points.")
-
-    # Conditions - ROM src/act_info.c lines 1551-1556
-    if not getattr(ch, "is_npc", False):
-        # COND_DRUNK = 0, COND_FULL = 1, COND_THIRST = 2, COND_HUNGER = 3
-        condition = getattr(ch, "condition", [0, 48, 48, 48])
-        if len(condition) > 0 and condition[0] > 10:  # COND_DRUNK
-            lines.append("You are drunk.")
-        if len(condition) > 2 and condition[2] == 0:  # COND_THIRST
-            lines.append("You are thirsty.")
-        if len(condition) > 3 and condition[3] == 0:  # COND_HUNGER
-            lines.append("You are hungry.")
 
     result = "\n".join(lines)
 
