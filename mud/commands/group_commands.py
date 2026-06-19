@@ -56,6 +56,20 @@ def _display_name(character: Character | None) -> str:
     return "Someone"
 
 
+def _class_who_name(character: Character) -> str:
+    """ROM ``class_table[ch->class].who_name`` — the 3-char class tag for `who`/`group`.
+
+    Mirrors ROM ``src/act_comm.c:1795`` (and the ``do_who`` lookup in
+    ``info_extended.py``). Returns "???" for an out-of-range class index.
+    """
+    from mud.models.classes import CLASS_TABLE
+
+    ch_class = getattr(character, "ch_class", 0)
+    if isinstance(ch_class, int) and 0 <= ch_class < len(CLASS_TABLE):
+        return CLASS_TABLE[ch_class].who_name
+    return "???"
+
+
 def is_same_group(ach: Character, bch: Character) -> bool:
     """
     Check if two characters are in the same group.
@@ -186,7 +200,7 @@ def do_group(char: Character, args: str) -> str:
             gch_name = getattr(gch, "short_descr", None) or getattr(gch, "name", "someone")
             gch_level = getattr(gch, "level", 1)
             is_npc = getattr(gch, "is_npc", False)
-            class_name = "Mob" if is_npc else getattr(gch, "class_name", "???")[:3]
+            class_name = "Mob" if is_npc else _class_who_name(gch)
 
             hit = getattr(gch, "hit", 100)
             max_hit = getattr(gch, "max_hit", 100)

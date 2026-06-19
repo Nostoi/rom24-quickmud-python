@@ -100,6 +100,34 @@ def test_do_group_add_notifies_victim_and_room():
         character_registry.extend(snapshot)
 
 
+def test_do_group_display_uses_class_who_name():
+    """GROUP-004 — `group` display shows the class who_name, not class_name[:3].
+
+    ROM src/act_comm.c:1794-1795 prints `class_table[gch->class].who_name` (the
+    dedicated 3-char field — "Mag"/"Cle"/"Thi"/"War"). Python sliced a
+    nonexistent `class_name` attribute to 3 chars, so every PC rendered "???".
+    """
+    snapshot = list(character_registry)
+    character_registry.clear()
+    try:
+        room = _make_room(9422)
+        leader = Character(name="cleric", is_npc=False, level=10, room=room, position=int(Position.STANDING))
+        leader.messages = []
+        leader.ch_class = 1  # index 1 in CLASS_TABLE → who_name "Cle"
+        room.people.append(leader)
+        character_registry.append(leader)
+
+        listing = process_command(leader, "group") or ""
+
+        assert "Cle" in listing, (
+            f"group display must show class who_name 'Cle' for a Cleric (ROM src/act_comm.c:1795); got {listing!r}"
+        )
+        assert "???" not in listing, f"class column should not be '???'; got {listing!r}"
+    finally:
+        character_registry.clear()
+        character_registry.extend(snapshot)
+
+
 def test_do_group_display_includes_cross_room_members():
     """GROUP-003 — `group` display iterates the world char list (ROM char_list).
 
@@ -137,5 +165,5 @@ def test_do_group_display_includes_cross_room_members():
     finally:
         character_registry.clear()
         character_registry.extend(snapshot)
-        character_registry.extend(snapshot)
-        room_registry.pop(9411, None)
+        room_registry.pop(9420, None)
+        room_registry.pop(9421, None)

@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GROUP-004: `group` display shows the class who_name, not "???".** ROM
+  `do_group` (`src/act_comm.c:1795`) prints `class_table[gch->class].who_name`
+  (the 3-char tag "Mag"/"Cle"/"Thi"/"War"). Python sliced a nonexistent
+  `class_name` attribute, so every player's class column rendered "???". Fixed
+  with a `_class_who_name` helper that resolves `CLASS_TABLE[ch_class].who_name`
+  (the same lookup `do_who` uses). Test:
+  `tests/integration/test_do_group_notification.py::test_do_group_display_uses_class_who_name`.
 - **FOLLOW-005: `follow`'s charm/NOFOLLOW rejections now PERS-mask the name.** ROM
   `do_follow` (`src/act_comm.c:1558`, `:1576`) emits both rejection lines via
   `act(..., TO_CHAR)` with `$N` = `PERS(target, ch)`. The charm branch ("But you'd
