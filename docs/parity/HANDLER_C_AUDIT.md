@@ -81,7 +81,7 @@ Create tests for end-to-end handler workflows
 
 | ROM C Function | QuickMUD Location | Status | Notes |
 |----------------|-------------------|--------|-------|\
-| `can_carry_n()` | ✅ `mud/world/movement.py:can_carry_n()` (lines 175-191) | ✅ **Audited** | Max item count: `MAX_WEAR + 2*DEX + level` (ROM ref: handler.c:899-908) - **VERIFIED Jan 3, 2026** |
+| `can_carry_n()` | ✅ `mud/world/movement.py:can_carry_n()` | ✅ **Audited** (HANDLER-007 FIXED 2026-06-19) | Max item count: `MAX_WEAR + 2*DEX + level` (ROM ref: handler.c:899-908). ⚠️ The "VERIFIED Jan 3" claim was stale — the code read `perm_stat` index **1 (STAT_INT)** under a mislabeled `# STAT_DEX` comment; fixed to index 3 (`Stat.DEX`). See HANDLER-007 below. |
 | `can_carry_w()` | ✅ `mud/world/movement.py:can_carry_w()` (lines 156-172) | ✅ **Audited** | Max weight: `str_app[STR].carry * 10 + level * 25` (ROM ref: handler.c:915-924) - **VERIFIED Jan 3, 2026** |
 
 ### Affect Functions (11 functions)
@@ -322,6 +322,25 @@ not needed — the scan does not extract). Filed and fixed 2026-06-12 from the
 INV-045 offender inventory. Test:
 `tests/integration/test_handler006_get_char_world_newest_match.py` (two
 same-named mobs: unnumbered lookup resolves the newest, `2.name` the older).
+
+#### HANDLER-007 — `can_carry_n` used STAT_INT instead of STAT_DEX
+
+| Field | Value |
+|-------|-------|
+| Severity | MODERATE (carry-item cap diverges for any char whose INT ≠ DEX — i.e. nearly every PC; visible on `score` and on `get`/`pickup` item-count limits) |
+| ROM C | `src/handler.c:907` — `return MAX_WEAR + 2 * get_curr_stat(ch, STAT_DEX) + ch->level;` with `STAT_DEX = 3` (`src/merc.h:541`). |
+| Python | `mud/world/movement.py:can_carry_n` — read `_get_curr_stat(ch, 1)` (STAT_INT) under a mislabeled `# STAT_DEX` comment, computing `MAX_WEAR + 2*INT + level`. |
+| Status | ✅ FIXED (2.14.143) — now `_get_curr_stat(ch, int(Stat.DEX))`. |
+
+Surfaced by the differential harness while fixing SCORE-001: the `score` sheet's
+"You are carrying N/M items" line showed `0/56` (Python) vs `0/50` (C) for the
+level-5 sexless mage test char (INT 16, DEX 13): `19 + 2*16 + 5 = 56` vs the
+correct `19 + 2*13 + 5 = 50`. The per-file audit row had claimed `2*DEX`
+"VERIFIED Jan 3" while the code used INT — a stale-✅ caught by reading ROM C, per
+the AGENTS.md re-verify rule. Tests:
+`tests/test_encumbrance.py::test_can_carry_n_uses_dex_not_int` (INT≠DEX asserts
+the DEX-based cap) + the corrected `test_stat_based_carry_caps_monotonic` (which
+had encoded the same index-1-is-DEX error).
 
 #### HANDLER-DEAD-001 — dead `is_friend()` duplicate with wrong assist-bit values (removed)
 

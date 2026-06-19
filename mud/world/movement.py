@@ -20,6 +20,7 @@ from mud.models.constants import (
     Position,
     RoomFlag,
     Sector,
+    Stat,
 )
 from mud.models.room import Exit, Room
 from mud.registry import room_registry
@@ -204,7 +205,10 @@ def can_carry_n(ch: Character) -> int:
     if _is_pet(ch):
         return 0
 
-    d = _get_curr_stat(ch, 1)  # STAT_DEX
+    # HANDLER-007: ROM can_carry_n uses STAT_DEX (src/handler.c:907, STAT_DEX=3),
+    # not STAT_INT. perm_stat ROM order is STR=0, INT=1, WIS=2, DEX=3, CON=4 —
+    # the prior code read index 1 (INT) under a mislabeled "STAT_DEX" comment.
+    d = _get_curr_stat(ch, int(Stat.DEX))
     if d is None:
         return 30
     MAX_WEAR = 19

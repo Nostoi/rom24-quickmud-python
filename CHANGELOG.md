@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **HANDLER-007: `can_carry_n` now uses DEX, not INT.** ROM
+  (`src/handler.c:907`) computes the carry-item cap as
+  `MAX_WEAR + 2*get_curr_stat(STAT_DEX) + level`; the Python port read `perm_stat`
+  index 1 (STAT_INT) instead of index 3 (STAT_DEX) under a mislabeled comment, so
+  the cap was wrong for any character whose INT differed from DEX (most PCs) —
+  visible on the `score` sheet and on `get`/pickup item-count limits. Surfaced by
+  the differential harness while fixing SCORE-001 (carry line `0/56` vs C `0/50`).
 - **SCORE-001: `score` now lists lines in ROM order and always shows the Wimpy
   line.** ROM `do_score` (`src/act_info.c:1503-1690`) emits the carrying line
   right after practices, the Wimpy line after the exp-to-level line (printed

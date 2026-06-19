@@ -81,15 +81,32 @@ def test_stat_based_carry_caps_monotonic():
     assert can_carry_w(ch) == 100
     assert can_carry_n(ch) == 30
 
-    # Provide STR/DEX; ensure monotonic increase as stats rise
-    # perm_stat index 0: STR, 1: DEX (ROM order)
-    ch.perm_stat = [10, 10]
+    # Provide stats; ensure monotonic increase as the relevant stat rises.
+    # perm_stat ROM order: STR=0, INT=1, WIS=2, DEX=3, CON=4. can_carry_w keys
+    # off STR (index 0); can_carry_n keys off DEX (index 3) — CARRY-001.
+    ch.perm_stat = [10, 10, 10, 10, 10]
     base_w = can_carry_w(ch)
     base_n = can_carry_n(ch)
-    ch.perm_stat = [15, 10]
+    ch.perm_stat = [15, 10, 10, 10, 10]  # raise STR → carry weight up
     assert can_carry_w(ch) > base_w
-    ch.perm_stat = [15, 12]
+    ch.perm_stat = [10, 10, 10, 12, 10]  # raise DEX → carry number up
     assert can_carry_n(ch) > base_n
+
+
+def test_can_carry_n_uses_dex_not_int():
+    """HANDLER-007: ROM can_carry_n = MAX_WEAR + 2*get_curr_stat(STAT_DEX) + level
+    (src/handler.c:907, STAT_DEX=3). The Python port read perm_stat index 1
+    (STAT_INT) instead of 3 (STAT_DEX), inflating the cap for high-INT chars.
+
+    perm_stat ROM order: STR=0, INT=1, WIS=2, DEX=3, CON=4.
+    """
+    ch = Character(name="Carrier", level=5)
+    # INT (idx 1) = 25, DEX (idx 3) = 13 — deliberately divergent.
+    ch.perm_stat = [13, 25, 13, 13, 13]
+
+    # ROM: MAX_WEAR(19) + 2*DEX(13) + level(5) = 50. The INT-reading bug gave
+    # 19 + 2*25 + 5 = 74.
+    assert can_carry_n(ch) == 19 + 2 * 13 + 5
 
 
 def test_immortal_and_pet_caps():
