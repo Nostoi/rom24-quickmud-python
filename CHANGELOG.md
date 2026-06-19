@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **VAL-005: `value` command's keeper messages now name the shopkeeper and item.**
+  ROM `do_value` (`src/act_obj.c:2994`, `:3007`) renders its can't-see and
+  "uninterested" lines via `act("$n …"/"$n looks uninterested in $p.", keeper,
+  obj, ch, TO_VICT)`, so a named keeper appears and the uninterested line includes
+  the item. Python hardcoded "The shopkeeper doesn't see what you are offering." /
+  "The shopkeeper looks uninterested in that." — dropping the keeper name and the
+  item name — even though the sibling `do_sell` already did it correctly. Both
+  branches now use `_act_to_char`. Test:
+  `tests/integration/test_shop_error_paths.py::test_value_uninterested_uses_keeper_name_and_item`.
 - **DRINK-011: drinking negative-affect liquids now uses C truncating division.**
   `do_drink` (`src/act_obj.c:1243-1250`) scales each condition gain as
   `amount * liq_affect[X] / divisor` with C integer division (truncates toward

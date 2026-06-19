@@ -1071,14 +1071,18 @@ def do_value(char: Character, args: str) -> str:
         return _keeper_says(keeper, char, "You don't have that item'.")
 
     if not _keeper_can_see_object(keeper, selected_obj):
-        return "The shopkeeper doesn't see what you are offering."
+        # VAL-005: ROM src/act_obj.c:2994 — act("$n doesn't see what you are offering.",
+        # keeper, NULL, ch, TO_VICT); $n = keeper name (mirrors do_sell SELL-002).
+        return _act_to_char(keeper, "$n doesn't see what you are offering.")
 
     if not _can_drop_object(char, selected_obj):
         return "You can't let go of it."
 
     price = _get_cost(keeper, selected_obj, buy=False)
     if price <= 0:
-        return "The shopkeeper looks uninterested in that."
+        # VAL-005: ROM src/act_obj.c:3007 — act("$n looks uninterested in $p.", keeper,
+        # obj, ch, TO_VICT); $n = keeper name, $p = item name (mirrors do_sell SELL-003).
+        return _act_to_char(keeper, "$n looks uninterested in $p.", obj=selected_obj)
 
     # VAL-004: price quote via keeper voice with $p substitution (ROM line 3011-3015)
     silver = price % 100

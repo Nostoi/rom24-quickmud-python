@@ -7,7 +7,7 @@ SELL-003: ROM src/act_obj.c:2913 — "looks uninterested" message must use keepe
 
 from __future__ import annotations
 
-from mud.commands.shop import do_buy, do_sell
+from mud.commands.shop import do_buy, do_sell, do_value
 from mud.models.constants import ExtraFlag
 from mud.spawning.mob_spawner import spawn_mob
 from mud.spawning.obj_spawner import spawn_object
@@ -136,4 +136,48 @@ def test_sell_uninterested_uses_keeper_name():
     )
     assert "uninterested" in result_lower or "interested" in result_lower, (
         f"ROM src/act_obj.c:2913 — message must contain 'uninterested' (not 'doesn't buy'); got: {result!r}"
+    )
+
+
+def test_value_uninterested_uses_keeper_name_and_item():
+    """VAL-005: ROM src/act_obj.c:3007 — do_value's get_cost<=0 branch must $n/$p expand.
+
+    ROM C: act("$n looks uninterested in $p.", keeper, obj, ch, TO_VICT)
+    Expands to e.g. "the weaponsmith looks uninterested in a torch." do_value
+    (the registered `value` command) hardcoded "The shopkeeper looks uninterested
+    in that." — dropping both the keeper name and the item name — even though its
+    sibling do_sell (SELL-003) already renders this branch via `_act_to_char`.
+    """
+    initialize_world("area/area.lst")
+    char = create_test_character("Tester", 3001)
+    char.level = 20
+    char.gold = 50
+
+    keeper = _setup_weaponsmith(char)
+
+    # Torch (vnum 3030, item_type=light) is not in the weaponsmith's buy list →
+    # get_cost(keeper, torch, buy=False) == 0 → ROM line 3005-3008 branch.
+    torch = spawn_object(3030)
+    assert torch is not None, "spawn_object(3030) must succeed"
+    char.inventory.append(torch)
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 12
+        result = do_value(char, "torch")
+    finally:
+        time_info.hour = previous_hour
+
+    result_lower = (result or "").lower()
+    keeper_name = (getattr(keeper, "short_descr", None) or "the weaponsmith").lower()
+    assert keeper_name.split()[-1] in result_lower, (
+        f"ROM src/act_obj.c:3007 — keeper name must appear in do_value 'uninterested' "
+        f"message (not 'The shopkeeper'); got: {result!r}"
+    )
+    torch_name = (getattr(torch, "short_descr", None) or "torch").lower()
+    assert torch_name.split()[-1] in result_lower, (
+        f"ROM src/act_obj.c:3007 — $p must render the item name (not 'that'); got: {result!r}"
+    )
+    assert "uninterested" in result_lower, (
+        f"ROM src/act_obj.c:3007 — message must contain 'uninterested'; got: {result!r}"
     )

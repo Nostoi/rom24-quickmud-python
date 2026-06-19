@@ -931,7 +931,14 @@ def test_value_respects_drop_and_visibility_gates():
             invis_obj.value[2] = 0
         char.add_object(invis_obj)
         response = process_command(char, "value lantern")
-        assert response == "The shopkeeper doesn't see what you are offering."
+        # VAL-005: ROM src/act_obj.c:2994 renders this via act("$n doesn't see what
+        # you are offering.", keeper, …) — $n is the keeper's name (e.g. "The grocer"),
+        # NOT a hardcoded "The shopkeeper". (Previously this test pinned the pre-fix
+        # buggy placeholder string.)
+        assert "doesn't see what you are offering" in response, response
+        assert "the shopkeeper" not in response.lower(), (
+            f"VAL-005: keeper name must render via $n, not hardcoded 'The shopkeeper'; got {response!r}"
+        )
     finally:
         time_info.hour = previous_hour
         if nodrop_obj and nodrop_obj in char.inventory:
