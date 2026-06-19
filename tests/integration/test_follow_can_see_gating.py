@@ -202,6 +202,46 @@ def test_follow_004_stop_follower_to_char_masks_invisible_master_name():
         room_registry.pop(9420, None)
 
 
+def test_follow_005_do_follow_charm_rejection_masks_invisible_master():
+    """FOLLOW-005 — `follow <x>` by a charmed char masks an unseen master's name.
+
+    ROM src/act_comm.c:1558: `act("But you'd rather follow $N!", ch, NULL,
+    ch->master, TO_CHAR)` — `$N` = `PERS(master, ch)`, gated on can_see(ch, master).
+    A charmed char whose master is invisible should see "But you'd rather follow
+    someone!" Pre-fix Python baked `char.master.short_descr/name`, leaking the
+    invisible master's identity. (The sibling NOFOLLOW line at :1576 takes the
+    same `act_format` fix; it is practically unreachable because get_char_room
+    won't target an unseen victim.)
+    """
+    from mud.commands.group_commands import do_follow
+    from mud.models.constants import AffectFlag as AF
+
+    snapshot = list(character_registry)
+    character_registry.clear()
+    try:
+        room = _make_room()
+        charmed = _make_char("charmed", room)
+        master = _make_char("hiddenmaster", room)
+        _make_char("bystander", room)  # a visible follow target
+
+        master.add_affect(AffectFlag.INVISIBLE)  # charmed can't see its master
+        charmed.master = master
+        charmed.affected_by = int(AF.CHARM)
+
+        result = do_follow(charmed, "bystander")
+
+        assert "hiddenmaster" not in result.lower(), (
+            f"`$N` must mask the unseen master's name (ROM src/act_comm.c:1558); got {result!r}"
+        )
+        assert "someone" in result.lower() and "rather follow" in result.lower(), (
+            f"expected masked 'But you'd rather follow someone!'; got {result!r}"
+        )
+    finally:
+        character_registry.clear()
+        character_registry.extend(snapshot)
+        room_registry.pop(9420, None)
+
+
 def test_follow_002_stop_follower_skips_messages_when_in_room_is_none():
     """ROM src/act_comm.c:1625 — also gated on ch->in_room != NULL."""
     snapshot = list(character_registry)

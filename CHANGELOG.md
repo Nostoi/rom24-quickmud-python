@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FOLLOW-005: `follow`'s charm/NOFOLLOW rejections now PERS-mask the name.** ROM
+  `do_follow` (`src/act_comm.c:1558`, `:1576`) emits both rejection lines via
+  `act(..., TO_CHAR)` with `$N` = `PERS(target, ch)`. The charm branch ("But you'd
+  rather follow $N!", $N = master) leaked an invisible master's real name to its
+  charmed follower; Python baked the name with no visibility masking or
+  sentence-start capitalization. Fixed by rendering both lines through
+  `act_format`. Test:
+  `tests/integration/test_follow_can_see_gating.py::test_follow_005_do_follow_charm_rejection_masks_invisible_master`.
 - **FOLLOW-004: follow/unfollow messages now mask an unseen master's name.** ROM
   `add_follower`/`stop_follower` (`src/act_comm.c:1605`, `:1627`) render the
   follower-facing `You now follow $N.` / `You stop following $N.` with `$N` =

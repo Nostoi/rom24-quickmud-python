@@ -95,8 +95,12 @@ def do_follow(char: Character, args: str) -> str:
     # Check if charmed - can't change who you follow
     affected_by = getattr(char, "affected_by", 0)
     if affected_by & AffectFlag.CHARM and char.master is not None:
-        master_name = getattr(char.master, "short_descr", None) or getattr(char.master, "name", "your master")
-        return f"But you'd rather follow {master_name}!"
+        # FOLLOW-005: ROM src/act_comm.c:1558 act("But you'd rather follow $N!",
+        # ch, NULL, ch->master, TO_CHAR) — $N = PERS(master, ch), masked when the
+        # charmed char can't see its (e.g. invisible) master.
+        from mud.utils.act import act_format
+
+        return act_format("But you'd rather follow $N!", recipient=char, arg2=char.master)
 
     # Following self = stop following
     if victim is char:
@@ -114,8 +118,12 @@ def do_follow(char: Character, args: str) -> str:
     if not is_npc:
         act_flags = getattr(victim, "act", 0)
         if act_flags & PlayerFlag.NOFOLLOW:
-            victim_name = getattr(victim, "short_descr", None) or getattr(victim, "name", "They")
-            return f"{victim_name} doesn't seem to want any followers."
+            # FOLLOW-005: ROM src/act_comm.c:1576-1577 act("$N doesn't seem to want
+            # any followers.", ch, NULL, victim, TO_CHAR) — $N = PERS(victim, ch),
+            # capitalized at sentence start (act_format handles INV-029 cap).
+            from mud.utils.act import act_format
+
+            return act_format("$N doesn't seem to want any followers.", recipient=char, arg2=victim)
 
     # Remove NOFOLLOW from self
     if not getattr(char, "is_npc", True):
