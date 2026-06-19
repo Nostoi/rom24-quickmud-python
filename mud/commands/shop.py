@@ -873,8 +873,14 @@ def do_buy(char: Character, args: str) -> str:
     deduct_cost(char, total_cost)
     # mirroring ROM src/act_obj.c:2747-2748 — keeper gold/silver incremented
     # independently, NOT via a total-wealth rebalance.
-    keeper.gold = int(getattr(keeper, "gold", 0)) + total_cost // 100
-    keeper.silver = int(getattr(keeper, "silver", 0)) + total_cost % 100
+    # BUY-010: total_cost can be NEGATIVE (profit_buy < 50 + winning haggle drives
+    # cost*number below 0; the player is refunded via deduct_cost). ROM uses C
+    # integer division (`cost*number/100` truncates toward zero) and the
+    # dividend-signed modulo `cost*number - (cost*number/100)*100`. Bare Python
+    # `//`/`%` floor toward -inf and take the divisor's sign, splitting a negative
+    # total wrongly across gold/silver. Use c_div/c_mod for signed parity.
+    keeper.gold = int(getattr(keeper, "gold", 0)) + c_div(total_cost, 100)
+    keeper.silver = int(getattr(keeper, "silver", 0)) + c_mod(total_cost, 100)
 
     purchased_items: list[Object] = []
     if infinite_stock:

@@ -2,7 +2,7 @@ import re
 
 from mud.commands.dispatcher import process_command
 from mud.commands.shop import _get_cost, do_buy
-from mud.math.c_compat import c_div
+from mud.math.c_compat import c_div, c_mod
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     ITEM_HAD_TIMER,
@@ -1601,6 +1601,63 @@ def test_buy_haggle_discount_uses_runtime_cost():
     # discount via RUNTIME cost = c_div(c_div(100, 2)*40, 100) = 20 → paid 100.
     # (Prototype cost 200 would give discount 40 → paid 80.)
     assert paid == 100
+
+
+def test_buy_negative_total_cost_keeper_split_uses_c_truncation():
+    # BUY-010: mirrors ROM src/act_obj.c:2747-2748 — the keeper's coin split is
+    #   keeper->gold   += cost * number / 100;
+    #   keeper->silver += cost * number - (cost * number / 100) * 100;
+    # When a shop's profit_buy < 50, a winning haggle discount (up to obj->cost/2)
+    # can drive the per-unit cost — and thus cost*number — NEGATIVE (the player is
+    # refunded via deduct_cost, ROM src/handler.c:2410). On a negative dividend C
+    # integer division truncates toward zero and `%` takes the dividend's sign,
+    # whereas Python `//`/`%` floor toward -inf and take the divisor's sign. Bare
+    # `//`/`%` therefore split the (negative) total wrongly across keeper gold/
+    # silver even though the net matches. ROM truncation must be reproduced.
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Haggler", 3001)
+    char.gold = 500
+    char.silver = 0
+    char.skills = {"haggle": 100}
+    keeper = spawn_mob(3006)
+    assert keeper is not None
+    keeper.move_to_room(char.room)
+    keeper.gold = 0
+    keeper.silver = 0
+
+    raft = spawn_object(3050)
+    assert raft is not None
+    raft.prototype.short_descr = "a small river raft"
+    raft.prototype.item_type = int(ItemType.BOAT)
+    raft.prototype.cost = 100
+    for stock in keeper.inventory:
+        if getattr(stock.prototype, "vnum", None) == 3050:
+            stock.cost = 100
+    raft.cost = 100
+    keeper.inventory.append(raft)
+
+    shop = shop_registry.get(3006)
+    saved_profit_buy = shop.profit_buy
+    previous_hour = time_info.hour
+    original_roll = rng_mm.number_percent
+    try:
+        time_info.hour = 10
+        # profit_buy 40 → unit_price = c_div(100*40, 100) = 40.
+        shop.profit_buy = 40
+        # roll 99 < haggle 100 → discount = c_div(c_div(100, 2) * 99, 100) = 49.
+        # unit_price = 40 - 49 = -9 → total_cost = -9 (qty 1).
+        rng_mm.number_percent = lambda: 99
+        process_command(char, "buy raft")
+    finally:
+        shop.profit_buy = saved_profit_buy
+        rng_mm.number_percent = original_roll
+        time_info.hour = previous_hour
+
+    total_cost = -9
+    # ROM split: gold += -9/100 = 0 (trunc toward 0); silver += -9 - 0 = -9.
+    assert keeper.gold == c_div(total_cost, 100) == 0
+    assert keeper.silver == c_mod(total_cost, 100) == -9
+    # The bug (Python //,%) would yield gold -1, silver 91 — same net, wrong split.
 
 
 def test_sell_haggle_bonus_uses_runtime_cost():

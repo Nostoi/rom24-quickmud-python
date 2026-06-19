@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **BUY-010: keeper coin split on a negative-total buy now uses C truncation.**
+  ROM `do_buy` increments the keeper's gold/silver independently
+  (`keeper->gold += cost*number/100; keeper->silver += cost*number -
+  (cost*number/100)*100`, `src/act_obj.c:2747-2748`). When a shop's `profit_buy`
+  is below 50, a winning haggle can drive `cost*number` negative (the buyer is
+  refunded via `deduct_cost`); on a negative dividend C integer division
+  truncates toward zero while Python `//`/`%` floor toward −∞. The net wealth
+  matched but the gold/silver split diverged (total −9 → ROM gold 0/silver −9,
+  Python gold −1/silver +91). Now split with `c_div`/`c_mod`.
 - **GETCOST-005: wand/staff charge pricing now uses the runtime remaining charges.**
   ROM `get_cost` scales a wand/staff price by `obj->value[2] / obj->value[1]`
   (`src/act_obj.c:2520-2523`) using the runtime object value, which depletes as
