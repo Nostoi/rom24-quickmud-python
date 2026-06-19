@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GIVE-004: money-changer gold exchange no longer divides by an extra 100.**
+  ROM `do_give` (`src/act_obj.c:741`) computes a changer's payout as
+  `silver ? 95*amount/100/100 : 95*amount` — the **gold** branch has no division,
+  so giving N gold to a money-changer returns `95 * N` silver (1 gold = 100
+  silver, so the 5% fee already lands in silver units). Python's gold branch used
+  `95 * amount // 100`, returning 9 silver for 10 gold instead of 950 and tripping
+  the "not enough to change" path on any gold gift ≤ 1. Fixed the gold branch to
+  `95 * amount` (the silver branch was already correct). Test:
+  `tests/integration/test_give_command.py::test_give_gold_to_changer_returns_silver_minus_fee`.
 - **GROUP-005: `do_group` display + add/remove broadcasts PERS-mask names.** ROM
   `do_group` (`src/act_comm.c:1784`, `:1796`, `:1841-1854`) routes every printed
   name through `PERS(x, ch)` / `act()`, so an invisible group member's identity is

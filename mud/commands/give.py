@@ -217,7 +217,12 @@ def _is_changer(victim: Character) -> bool:
 
 def _handle_changer_exchange(victim: Character, char: Character, amount: int, is_silver: bool) -> None:
     """Mirror ROM changer logic by giving converted currency back through do_give()."""
-    change = (95 * amount // 100 // 100) if is_silver else (95 * amount // 100)
+    # GIVE-004: ROM src/act_obj.c:741 — `change = silver ? 95 * amount / 100 / 100 : 95 * amount`.
+    # The gold branch has NO division: giving N gold returns `95 * N` *silver*
+    # (1 gold == 100 silver, so the 5% fee already lands in silver units). The
+    # prior `95 * amount // 100` divided by an extra 100, so 10 gold returned 9
+    # silver instead of 950 and small gifts wrongly hit "not enough to change".
+    change = (95 * amount // 100 // 100) if is_silver else (95 * amount)
 
     if not is_silver and change > int(getattr(victim, "silver", 0) or 0):
         victim.silver = int(getattr(victim, "silver", 0) or 0) + change

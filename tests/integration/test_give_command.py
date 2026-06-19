@@ -371,3 +371,35 @@ def test_give_silver_to_changer_returns_gold_minus_fee(movable_char_factory, tes
     assert changer.gold == 0
     assert changer.silver == 110
     assert "thank you, come again" in giver_text
+
+
+def test_give_gold_to_changer_returns_silver_minus_fee(movable_char_factory, test_room_3001):
+    """GIVE-004 — ROM act_obj.c:741 gold branch is `95 * amount` (NO /100).
+
+    Giving N gold to a changer returns ``95 * N`` *silver* (a 5% fee on the
+    100-silver-per-gold value). Python computed ``95 * amount // 100`` for the
+    gold branch — an extra /100 — so 10 gold returned 9 silver instead of 950,
+    and small gold gifts wrongly tripped the "not enough to change" path.
+    """
+    giver = movable_char_factory("Giver", 3001)
+    changer = movable_char_factory("Changer", 3001)
+    giver.messages = []
+    changer.messages = []
+    changer.is_npc = True
+    changer.act = int(ActFlag.IS_NPC | ActFlag.IS_CHANGER)
+    changer.gold = 0
+    changer.silver = 0
+
+    giver.gold = 20
+    giver.silver = 0
+
+    result = process_command(giver, "give 10 gold changer")
+
+    giver_text = " ".join(giver.messages).lower()
+    assert result == "You give Changer 10 gold."
+    # change = 95 * 10 = 950 silver (ROM src/act_obj.c:741 gold branch, no /100).
+    assert giver.gold == 10  # 20 given - 10 to changer
+    assert giver.silver == 950
+    assert changer.gold == 10
+    assert changer.silver == 0
+    assert "thank you, come again" in giver_text
