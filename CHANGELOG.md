@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ARITH-208: mob hp/mana spawn roll is no longer floored at 0; coupled UB-divisor
+  floors narrowed to a zero-only guard.** ROM `create_mobile` (`src/db.c:2074-2077`)
+  stores `max_hit = dice(number, size) + bonus` **raw** (can be negative) and sets
+  `mob->hit = max_hit`. The Python port floored the roll at 0 (`templates._roll_dice`)
+  *and* floored every `100 * hit / max_hit` divisor at 1 (`max(1, max_hit)`). Removing
+  only the source floor would have unmasked the divisor floor as a new sign divergence
+  (`100 * neg / 1`). The coordinated fix removes the source floor and narrows the
+  divisor floors from `max(1, x)` to a **zero-only guard** (`x or 1`) so a negative
+  `max_hit` flows through both sides — reproducing ROM's `neg/neg = positive` — while
+  still guarding the exact-zero divisor (the `docs/divergences/UB_DIVISORS.md` crash
+  policy). Sites: `templates._roll_dice` (source), `commands/combat.py` do_berserk
+  (divisor zero-guard; the `UMIN` heal cap now uses the raw `max_hit`),
+  `combat/messages.py` dam_message, `mobprog.py` hpcnt/HPCT (also moved from bare `//`
+  to `c_div`, fixing a latent floor-vs-truncation bug on negative operands), and
+  `combat/engine.py` `max_hit/4` injury-feedback thresholds (`//` → `c_div`). Test:
+  `tests/test_arith_208_dice_no_floor.py`.
 - **DB-003: O-resets now match ROM's per-room one-copy / no-global-cap semantics.**
   ROM `reset_room` O-case (`src/db.c:1773-1784`) places at most one instance of an
   object **per room** (skip on `count_obj_list(pObjIndex, pRoom->contents) > 0`) and

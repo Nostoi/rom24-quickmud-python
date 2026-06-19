@@ -621,12 +621,14 @@ def do_berserk(char: Character, args: str) -> str:
         return "You are still recovering."
 
     roll = rng_mm.number_percent()
-    # ARITH-011: ROM src/fight.c:2310 divides `100 * ch->hit / ch->max_hit`
-    # raw (SIGFPE if max_hit == 0). Python floors to prevent a single
-    # corrupt-state character from crashing the game loop. See
+    # ARITH-011 / ARITH-208: ROM src/fight.c:2310 divides `100 * ch->hit /
+    # ch->max_hit` raw (SIGFPE if max_hit == 0). Python applies a zero-ONLY guard
+    # (`x or 1`) — a negative max_hit flows through so ROM's neg/neg = positive is
+    # reproduced; only the exact-zero divisor diverges (no crash). See
     # docs/divergences/UB_DIVISORS.md.
-    hp_max = max(1, int(getattr(char, "max_hit", 1) or 1))
-    hp_percent = c_div(int(getattr(char, "hit", 0) or 0) * 100, hp_max)
+    raw_max_hit = int(getattr(char, "max_hit", 0) or 0)
+    hp_divisor = raw_max_hit or 1
+    hp_percent = c_div(int(getattr(char, "hit", 0) or 0) * 100, hp_divisor)
     chance = learned
     if getattr(char, "position", Position.STANDING) == Position.FIGHTING:
         chance += 10
@@ -642,7 +644,9 @@ def do_berserk(char: Character, args: str) -> str:
         skill_registry._apply_wait_state(char, wait)
         char.mana -= 50
         char.move = c_div(int(getattr(char, "move", 0) or 0), 2)
-        char.hit = min(hp_max, int(getattr(char, "hit", 0) or 0) + 2 * int(getattr(char, "level", 0) or 0))
+        # ROM src/fight.c: `ch->hit = UMIN(ch->hit + 2*ch->level, ch->max_hit)` —
+        # caps at the RAW max_hit, not the zero-guarded divisor (ARITH-208).
+        char.hit = min(raw_max_hit, int(getattr(char, "hit", 0) or 0) + 2 * int(getattr(char, "level", 0) or 0))
         applied = skill_handlers.berserk(char)
         if not applied:
             # Already berserk somehow; treat as failure state.

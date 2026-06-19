@@ -165,10 +165,15 @@ def _parse_dice(primary: object, fallback: object) -> tuple[int, int, int]:
 
 
 def _roll_dice(dice_tuple: tuple[int, int, int]) -> int:
+    # ROM create_mobile stores max_hit/max_mana = dice(number, size) + bonus RAW
+    # (src/db.c:2074-2080); dice() returns 0 for size 0, `number` for size 1, and
+    # a 0-iteration sum (== 0) for number <= 0 (src/db.c:3628-3645). The result is
+    # NOT floored — a negative bonus can yield a negative roll. rng_mm.dice already
+    # mirrors dice() exactly, so no special-casing is needed here. The prior
+    # max(0, ...) source floor was ARITH-208; removing it is coupled with the
+    # divisor zero-guards (see docs/divergences/UB_DIVISORS.md).
     number, size, bonus = dice_tuple
-    if number <= 0 or size <= 0:
-        return max(0, bonus)
-    return max(0, rng_mm.dice(number, size) + bonus)
+    return rng_mm.dice(number, size) + bonus
 
 
 def _resolve_damage_type(value: object) -> int | None:

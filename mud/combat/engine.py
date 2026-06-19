@@ -760,9 +760,12 @@ def apply_damage(
     # when position stays in a non-critical state (SLEEPING/RESTING/STANDING/FIGHTING),
     # deliver optional injury-feedback messages to the victim.
     if victim.position > Position.STUNNED:
-        if damage > victim.max_hit // 4:
+        # ROM src/fight.c:865-867 compares against `victim->max_hit / 4` (C
+        # truncation toward zero). Use c_div, not `//`: a degenerate negative
+        # max_hit (ARITH-208) would floor toward -inf under `//` and diverge.
+        if damage > c_div(victim.max_hit, 4):
             _push_message(victim, "{RThat really did HURT!{x")
-        if victim.hit < victim.max_hit // 4:
+        if victim.hit < c_div(victim.max_hit, 4):
             _push_message(victim, "{RYou sure are BLEEDING!{x")
 
     # Stop fighting if unconscious

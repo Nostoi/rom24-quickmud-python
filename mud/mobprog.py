@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from enum import IntFlag
 from typing import TYPE_CHECKING
 
+from mud.math.c_compat import c_div
 from mud.models.constants import ActFlag, AffectFlag, Direction, ImmFlag, ItemType, OffFlag, Position
 from mud.models.mob import MobProgram
 from mud.utils import rng_mm
@@ -1151,11 +1152,13 @@ def _cmd_eval(
         if target_char is None:
             return False
         # ROM src/mob_cmds.c hpcnt divides current*100/max_hit raw (SIGFPE if 0).
-        # Python floor kept as deliberate divergence — see docs/divergences/UB_DIVISORS.md
-        # (NPC target with degenerate hit_dice can spawn with max_hit == 0).
-        max_hit = max(1, int(getattr(target_char, "max_hit", 1)))
+        # Zero-ONLY guard (`x or 1`) + c_div: a negative max_hit flows through so
+        # ROM's neg/neg = positive is reproduced, and c_div truncates toward zero
+        # like C (bare `//` floored toward -inf, diverging on a negative current
+        # OR a negative max_hit). See docs/divergences/UB_DIVISORS.md (ARITH-001/208).
+        max_hit = int(getattr(target_char, "max_hit", 1)) or 1
         current = int(getattr(target_char, "hit", max_hit))
-        percent = current * 100 // max_hit
+        percent = c_div(current * 100, max_hit)
         return _compare_numbers(percent, oper, rval)
 
     if check == "room":
@@ -1742,10 +1745,12 @@ def mp_hprct_trigger(mob: Character, ch: object | None) -> bool:
         except ValueError:
             continue
         # ROM src/mob_cmds.c HPCT trigger divides current*100/max_hit raw (SIGFPE if 0).
-        # Python floor kept as deliberate divergence — see docs/divergences/UB_DIVISORS.md.
-        max_hit = max(1, int(getattr(mob, "max_hit", 1)))
+        # Zero-ONLY guard (`x or 1`) + c_div: negative max_hit flows through
+        # (ROM neg/neg = positive) and c_div truncates toward zero like C — bare
+        # `//` floored toward -inf. See docs/divergences/UB_DIVISORS.md (ARITH-002/208).
+        max_hit = int(getattr(mob, "max_hit", 1)) or 1
         current = int(getattr(mob, "hit", max_hit))
-        percent = current * 100 // max_hit
+        percent = c_div(current * 100, max_hit)
         if percent >= threshold:
             continue
         _register_program(prog)
