@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **LIST-004: `list` now hides items the buyer cannot see.**
+  ROM `do_list` (`src/act_obj.c:2831`) gates each listed item on
+  `can_see_obj(ch, obj)` — the buyer's visibility (and only the buyer's, unlike
+  `get_obj_keeper`). Python's listing loop had no visibility filter, so a blind
+  buyer (or an `ITEM_INVIS` item without detect-invis) saw items they cannot see.
+  Test: `tests/test_shops.py::test_list_hides_items_blind_buyer_cannot_see`.
 - **BUY-007: `buy` now applies the ROM `can_see_obj` visibility filter.**
   ROM `do_buy` selects the item via `get_obj_keeper`
   (`src/act_obj.c:2459-2460`), which requires both

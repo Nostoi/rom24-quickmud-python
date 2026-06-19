@@ -679,6 +679,10 @@ def do_list(char: Character, args: str = "") -> str:
         # LIST-003: skip items the keeper is wearing/wielding (ROM line 2831: obj->wear_loc == WEAR_NONE)
         if int(getattr(obj, "wear_loc", int(WearLocation.NONE))) != int(WearLocation.NONE):
             continue
+        # LIST-004: ROM line 2831 also gates on can_see_obj(ch, obj) — buyer only
+        # (do_list, unlike get_obj_keeper, does NOT check the keeper's visibility).
+        if not can_see_object(char, obj):
+            continue
         proto = getattr(obj, "prototype", None)
         if proto is None:
             continue

@@ -1274,6 +1274,38 @@ def test_shop_refuses_invisible_customers():
         time_info.hour = previous_hour
 
 
+def test_list_hides_items_blind_buyer_cannot_see():
+    # LIST-004: mirrors ROM src/act_obj.c:2831 — do_list filters on
+    # can_see_obj(ch, obj) (buyer only; no keeper visibility check).
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Blind browser", 3001)
+    char.gold = 500
+    keeper = spawn_mob(3006)
+    assert keeper is not None
+    keeper.move_to_room(char.room)
+
+    raft = spawn_object(3050)
+    assert raft is not None
+    raft.prototype.short_descr = "a small river raft"
+    raft.prototype.item_type = int(ItemType.BOAT)
+    raft.prototype.cost = 200
+    keeper.inventory.append(raft)
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+        # Sighted: the raft appears in the listing.
+        sighted = process_command(char, "list")
+        assert "small river raft" in sighted
+
+        # Blind: a non-potion item is invisible to the buyer and is omitted.
+        char.add_affect(AffectFlag.BLIND)
+        blind = process_command(char, "list")
+        assert "small river raft" not in blind
+    finally:
+        time_info.hour = previous_hour
+
+
 def test_buy_blind_buyer_cannot_see_item():
     # BUY-007: mirrors ROM src/act_obj.c:2459-2460,2659 — get_obj_keeper requires
     # can_see_obj(ch, obj), so a blind buyer cannot see (or buy) a non-potion item.
