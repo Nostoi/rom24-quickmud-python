@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **DB-003: O-resets now match ROM's per-room one-copy / no-global-cap semantics.**
+  ROM `reset_room` O-case (`src/db.c:1773-1784`) places at most one instance of an
+  object **per room** (skip on `count_obj_list(pObjIndex, pRoom->contents) > 0`) and
+  applies **no global count limit** — `arg2`/`arg4` are unused for O. The Python port
+  (`mud/spawning/reset_handler.py`) had two divergences: (a) a `room_obj_targets`
+  precompute that allowed one copy per O-reset *command*, over-placing in rooms with
+  multiple same-obj O-resets (reachable: room 1333/obj 1307, room 8915/obj 8902 each
+  spawned 2 → now 1); and (b) a synthetic `_resolve_reset_limit(arg2)` global cap that
+  under-placed objects whose O-reset room-count exceeded arg2 (obj 3200 has 15
+  O-resets; the cap, seeded from the existing world count, suppressed copies → now all
+  15 rooms get one). Both removed; the O-branch mirrors ROM exactly. The P
+  key-refill-into-existing-container path is preserved (skip still points `last_obj` at
+  the resident instance). Verified on shipped areas
+  (`test_o_reset_population_matches_rom_on_shipped_areas`).
 - **ARITH-019: `dispel_good` no longer floors caster level to 1 — a level-0 caster deals 0 damage.**
   ROM `spell_dispel_good` (`src/magic.c:2064`) rolls `dice(level, 4)` with the level
   raw. Python floored to `max(1, …)`; changed to `max(0, …)` (same class as

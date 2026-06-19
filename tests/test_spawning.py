@@ -680,37 +680,53 @@ def test_reset_R_randomizes_exit_order(monkeypatch):
     assert after != original
 
 
-def test_reset_P_uses_last_container_instance_when_multiple():
-    # Build a controlled sequence: two desks (3130) into Captain's Office (3142),
-    # then put a key (3123) into each using P after each O.
+def test_reset_P_targets_most_recent_container_instance():
+    # DB-003 redesign: the original setup placed TWO desks (3130) in ONE room from
+    # two O-resets — a scenario ROM can never produce (its O-case skips on
+    # `count_obj_list(pObjIndex, pRoom->contents) > 0`, src/db.c:1773). The real
+    # behavior worth protecting is that P refills into the *most-recently-created*
+    # container instance when several exist (ROM `LastObj = get_obj_type(...)`,
+    # src/db.c:1809). Exercise it ROM-valid: one desk per room across TWO rooms,
+    # then a single P — the key (3123) must land in the desk the SECOND O created.
     room_registry.clear()
     area_registry.clear()
     mob_registry.clear()
     obj_registry.clear()
     initialize_world("area/area.lst")
-    office = room_registry[3142]
-    area = office.area
+    room_a = room_registry[3142]
+    room_b = room_registry[3001]
+    area = room_a.area
     assert area is not None
+    assert room_b.area is area
     area.resets = []
-    office.contents.clear()
-    area.resets.append(ResetJson(command="O", arg1=3130, arg2=2, arg3=office.vnum))
-    area.resets.append(ResetJson(command="P", arg1=3123, arg2=2, arg3=3130, arg4=1))
-    area.resets.append(ResetJson(command="O", arg1=3130, arg2=2, arg3=office.vnum))
+    room_a.contents.clear()
+    room_b.contents.clear()
+    if 3130 in obj_registry:
+        obj_registry[3130].count = 0
+    if 3123 in obj_registry:
+        obj_registry[3123].count = 0
+    area.resets.append(ResetJson(command="O", arg1=3130, arg2=2, arg3=room_a.vnum))
+    area.resets.append(ResetJson(command="O", arg1=3130, arg2=2, arg3=room_b.vnum))
     area.resets.append(ResetJson(command="P", arg1=3123, arg2=2, arg3=3130, arg4=1))
     from mud.spawning.reset_handler import apply_resets
 
     apply_resets(area)
-    desks = [o for o in office.contents if getattr(o.prototype, "vnum", None) == 3130]
-    assert len(desks) == 2
-    counts = [
-        sum(
+    desks_a = [o for o in room_a.contents if getattr(o.prototype, "vnum", None) == 3130]
+    desks_b = [o for o in room_b.contents if getattr(o.prototype, "vnum", None) == 3130]
+    # ROM places exactly one desk per room.
+    assert len(desks_a) == 1
+    assert len(desks_b) == 1
+
+    def key_count(desk):
+        return sum(
             1
-            for it in getattr(d, "contained_items", [])
+            for it in getattr(desk, "contained_items", [])
             if getattr(getattr(it, "prototype", None), "vnum", None) == 3123
         )
-        for d in desks
-    ]
-    assert counts == [1, 1]
+
+    # The P targets the last-created container (room_b's desk), not the first.
+    assert key_count(desks_b[0]) == 1
+    assert key_count(desks_a[0]) == 0
 
 
 def test_reset_P_limit_enforced():

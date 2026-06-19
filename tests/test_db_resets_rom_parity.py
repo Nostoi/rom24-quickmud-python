@@ -325,6 +325,102 @@ def test_o_reset_nplayer_check():
     assert not any(getattr(o.prototype, "vnum", None) == 3010 for o in room.contents)
 
 
+def test_o_reset_same_room_duplicate_places_one():
+    """DB-003(a): two O-resets of the SAME obj into the SAME room place exactly one.
+
+    ROM `reset_room` O-case (src/db.c:1773-1784) skips on
+    `count_obj_list(pObjIndex, pRoom->contents) > 0` — at most one instance of a
+    given object vnum is ever placed in a room, regardless of how many O-reset
+    commands target that (room, obj) pair. The Python port previously precomputed
+    `room_obj_targets` and allowed one copy per O-reset command, over-placing.
+    Reachable in shipped data: (room 1333, obj 1307) and (room 8915, obj 8902)
+    each have two same-room O-resets.
+    """
+    initialize_world("area/area.lst")
+
+    room = room_registry[3001]
+    area = room.area
+    assert area is not None
+    room.contents.clear()
+
+    # Two O-resets, same object (3010), same room (3001).
+    area.resets = [
+        ResetJson(command="O", arg1=3010, arg2=5, arg3=3001, arg4=0),
+        ResetJson(command="O", arg1=3010, arg2=5, arg3=3001, arg4=0),
+    ]
+
+    apply_resets(area)
+    count = sum(1 for o in room.contents if getattr(o.prototype, "vnum", None) == 3010)
+    assert count == 1, f"ROM places at most one per room; got {count}"
+
+
+def test_o_reset_ignores_global_arg2_cap():
+    """DB-003(b): O-resets ignore the arg2 'limit' — there is no global cap.
+
+    ROM `reset_room` O-case never inspects `pReset->arg2`; the only gates are
+    `nplayer > 0` and `count_obj_list(...) > 0` (per-room). The Python port
+    previously applied `_resolve_reset_limit(arg2)` as a synthetic global count
+    cap, under-placing objects whose O-reset room-count exceeded arg2 (e.g. obj
+    3200 has 15 O-resets). ROM places one per room regardless of world total.
+    """
+    initialize_world("area/area.lst")
+
+    room_a = room_registry[3001]
+    room_b = room_registry[3002]
+    area = room_a.area
+    assert area is not None
+    assert room_b.area is area
+    room_a.contents.clear()
+    room_b.contents.clear()
+
+    # arg2=1 would, under the old synthetic cap, allow only ONE copy world-wide.
+    # ROM ignores arg2 for O and places one per distinct room → two copies.
+    area.resets = [
+        ResetJson(command="O", arg1=3010, arg2=1, arg3=3001, arg4=0),
+        ResetJson(command="O", arg1=3010, arg2=1, arg3=3002, arg4=0),
+    ]
+
+    apply_resets(area)
+    in_a = sum(1 for o in room_a.contents if getattr(o.prototype, "vnum", None) == 3010)
+    in_b = sum(1 for o in room_b.contents if getattr(o.prototype, "vnum", None) == 3010)
+    assert in_a == 1, f"room 3001 should hold one copy; got {in_a}"
+    assert in_b == 1, f"ROM ignores arg2 cap for O — room 3002 should also get a copy; got {in_b}"
+
+
+def test_o_reset_population_matches_rom_on_shipped_areas():
+    """DB-003 differential MUST: real shipped-world object population after a full
+    reset cycle matches ROM's per-room one-copy / no-global-cap semantics.
+
+    A synthetic fixture proves the mechanism flipped; this asserts the actual
+    Midgaard-and-beyond population the engine ships with. Anchored on the two
+    reachable divergence sites found in `area/*.are`:
+      (a) rooms with two same-obj O-resets — 1333/obj 1307, 8915/obj 8902 —
+          must hold exactly ONE (ROM `count_obj_list > 0` skip), not two.
+      (b) obj 3200 has 15 O-resets across distinct rooms; with arg2's synthetic
+          global cap removed, ROM places one per room → 15 rooms, one each.
+    """
+    initialize_world("area/area.lst")
+
+    def count_in_room(room_vnum: int, obj_vnum: int) -> int:
+        room = room_registry.get(room_vnum)
+        assert room is not None, f"expected room {room_vnum} to load"
+        return sum(1 for o in room.contents if getattr(o.prototype, "vnum", None) == obj_vnum)
+
+    # (a) per-room one-copy at the two real duplicate sites.
+    assert count_in_room(1333, 1307) == 1
+    assert count_in_room(8915, 8902) == 1
+
+    # (b) no global cap: obj 3200 reaches every one of its O-reset rooms, one each.
+    rooms_3200 = [
+        room_vnum
+        for room_vnum, room in room_registry.items()
+        if any(getattr(o.prototype, "vnum", None) == 3200 for o in room.contents)
+    ]
+    assert len(rooms_3200) == 15, f"obj 3200 should populate all 15 O-reset rooms; got {len(rooms_3200)}"
+    for room_vnum in rooms_3200:
+        assert count_in_room(room_vnum, 3200) == 1, f"room {room_vnum} over-placed obj 3200"
+
+
 def test_o_reset_level_fuzzing():
     """Test O reset level: UMIN(number_fuzzy(level), LEVEL_HERO - 1)"""
     initialize_world("area/area.lst")

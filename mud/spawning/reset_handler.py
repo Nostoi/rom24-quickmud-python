@@ -382,12 +382,6 @@ def apply_resets(area: Area) -> None:
 
     _restore_exit_states(area)
 
-    room_obj_targets: dict[tuple[int, int], int] = {}
-    for reset in area.resets:
-        if (reset.command or "").upper() == "O":
-            key = (reset.arg3 or 0, reset.arg1 or 0)
-            room_obj_targets[key] = room_obj_targets.get(key, 0) + 1
-
     for reset in area.resets:
         cmd = (reset.command or "").upper()
         if cmd == "M":
@@ -513,19 +507,26 @@ def apply_resets(area: Area) -> None:
                 last_obj = None
                 last_reset_succeeded = False
                 continue
+            # DB-003: ROM `reset_room` O-case (src/db.c:1773-1784) places at most
+            # ONE instance of the object per room and applies NO global count cap —
+            # the only gates are `nplayer > 0` and `count_obj_list(pObjIndex,
+            # pRoom->contents) > 0`. `arg2`/`arg4` are unused for O. The previous
+            # `room_obj_targets`/`desired_total` per-command machinery over-placed
+            # in rooms with multiple same-obj O-resets (reachable: rooms 1333/8915),
+            # and the synthetic `_resolve_reset_limit(arg2)` global cap under-placed
+            # objects whose O-reset room-count exceeded arg2 (e.g. obj 3200, 15
+            # rooms). Mirror ROM: skip iff an instance already sits in this room.
             existing_in_room = [
                 obj
                 for obj in getattr(room, "contents", [])
                 if getattr(getattr(obj, "prototype", None), "vnum", None) == obj_vnum
             ]
-            desired_total = room_obj_targets.get((room_vnum, obj_vnum), 1)
-            if len(existing_in_room) >= desired_total:
-                last_obj = existing_in_room[-1] if existing_in_room else None
-                last_reset_succeeded = False
-                continue
-            limit = _resolve_reset_limit(reset.arg2)
-            if limit != 999 and object_counts.get(obj_vnum, 0) >= limit:
-                last_obj = None
+            if existing_in_room:
+                # ROM sets `last = FALSE` here but leaves LastObj untouched; the
+                # following P re-finds the container via get_obj_type. Pointing
+                # last_obj at the resident instance preserves P key-refill into an
+                # existing container on a reset tick (advisor-flagged refill path).
+                last_obj = existing_in_room[-1]
                 last_reset_succeeded = False
                 continue
             obj = spawn_object(obj_vnum)
