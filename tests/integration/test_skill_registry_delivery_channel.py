@@ -107,3 +107,34 @@ def test_improve_message_reaches_connected_caster_once(monkeypatch: pytest.Monke
     assert improve is not None, f"improve line must reach connected caster's socket; sent={sent}"
     assert sent.count(improve) == 1, f"improve line duplicated on socket; sent={sent}"
     assert not any("become better" in m for m in mailbox), f"improve line stranded/duplicated in mailbox: {mailbox}"
+
+
+def test_recovering_line_reaches_connected_caster_on_socket() -> None:
+    """The wait-state "You are still recovering." line must hit the socket, not
+    the mailbox, for a connected caster.
+
+    ``SkillRegistry.use`` gates on ``caster.wait > 0`` and (previously) appended
+    the recovery line straight to ``caster.messages`` before ``raise``-ing.  It
+    has no production callers (only tests invoke ``use``), so this was a single
+    mailbox delivery — not a double — but for a connected PC it is still the
+    wrong channel (late: the mailbox drains only on the next command).  Routed
+    through ``push_message`` so a connected caster sees it at action time; the
+    disconnected/test path (``test_skills.py:225``) keeps the mailbox fallback.
+    """
+
+    async def scenario():
+        reg = load_registry()
+        caster, conn = _connected_caster()
+        caster.wait = 10  # already recovering → the wait-state guard fires first
+        target = Character()
+        with pytest.raises(ValueError):
+            reg.use(caster, "fireball", target)
+        for _ in range(5):
+            await asyncio.sleep(0)
+        return conn.sent, list(caster.messages)
+
+    sent, mailbox = asyncio.run(scenario())
+    assert "You are still recovering." in sent, f"recovery line must reach connected caster's socket; sent={sent}"
+    assert "You are still recovering." not in mailbox, (
+        f"recovery line stranded in mailbox for a connected PC: {mailbox}"
+    )

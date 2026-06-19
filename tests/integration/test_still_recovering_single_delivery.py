@@ -15,14 +15,20 @@ The message itself is NOT a ROM line — ROM gates wait at the interpreter level
 single canonical delivery) and drops the mailbox append. The message-existence
 divergence is out of scope here.
 
-NOTE on `mud/skills/registry.py:163`: it also appends "You are still
-recovering." but is deliberately EXCLUDED from this sweep — it `raise`s
+NOTE on `mud/skills/registry.py`: ``SkillRegistry.use`` also emits "You are
+still recovering." on its ``wait > 0`` guard — but it `raise`s
 ``ValueError("still recovering")`` rather than returning the line, has no
 production callers (only tests call ``SkillRegistry.use``), and the connection
-loop sends a generic error string on exception, never the exception text. So its
-append is a single mailbox delivery in a test-only path, not a double. The
-"drop append, keep return" fix structurally does not apply (there is no return).
-See `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-001 (d).
+loop sends a generic error string on exception, never the exception text. So it
+was never a double delivery and the "drop append, keep return" fix above does
+not apply (there is no return). It WAS originally excluded from this sweep on
+that basis; as of 2.14.127 it is nonetheless migrated to ``push_message`` (the
+INV-001 burndown goal is an empty `_INV001_DEBT`), so a connected caster gets
+the line on the socket at action time while the disconnected/test path keeps the
+mailbox fallback. Its dedicated connected-socket test lives in
+`tests/integration/test_skill_registry_delivery_channel.py`.
+See `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` INV-001 (d) + the 2.14.127
+closure note.
 
 This file follows the grep-guard idiom (`tests/test_rng_determinism.py`,
 `tests/test_equipment_key_convention.py`): the scanner locks every site —

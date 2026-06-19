@@ -158,9 +158,12 @@ class SkillRegistry:
 
         skill = self.get(name)
         if int(getattr(caster, "wait", 0)) > 0:
-            messages = getattr(caster, "messages", None)
-            if isinstance(messages, list):
-                messages.append("You are still recovering.")
+            # INV-001 SINGLE-DELIVERY — route the wait-state line through the
+            # chokepoint (async socket for a connected caster xor mailbox for
+            # disconnected/test) instead of the raw mailbox, so a connected PC
+            # sees it at action time rather than on their next command. The
+            # raise carries no return-value channel, so there is no double.
+            push_message(caster, "You are still recovering.")
             raise ValueError("still recovering")
         if caster.mana < skill.mana_cost:
             raise ValueError("not enough mana")

@@ -81,7 +81,6 @@ _LEGITIMATE: set[tuple[str, str]] = {
 # Fix = route through push_message + delete its line here.
 _INV001_DEBT: set[tuple[str, str]] = {
     ("mud/commands/communication.py", "target.messages.append(message)"),
-    ("mud/skills/registry.py", 'messages = getattr(caster, "messages", None)'),
 }
 
 _ALLOWED = _LEGITIMATE | _INV001_DEBT

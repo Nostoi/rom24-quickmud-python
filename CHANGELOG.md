@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-001 debt burndown — "still recovering" registry line single-delivery
+  (`mud/skills/registry.py`)** — `SkillRegistry.use` appended "You are still
+  recovering." straight to `caster.messages` on its `wait > 0` guard before
+  `raise`-ing. This was never a double delivery (the raise carries no
+  return-value channel) and `use` has no production callers, so it was
+  originally excluded from the INV-001 sweep — but for a connected caster it is
+  still the wrong channel (late: the mailbox drains only on the next command).
+  Migrated to `push_message` anyway so the line arrives at action time; the
+  disconnected/test path keeps the mailbox fallback via `push_message`'s
+  loop-aware probe, so `tests/test_skills.py` and the
+  `test_still_recovering_single_delivery.py` grep-guard stay green. Closes the
+  `_INV001_DEBT` site (2 → 1 frozen). Test:
+  `tests/integration/test_skill_registry_delivery_channel.py::test_recovering_line_reaches_connected_caster_on_socket`.
+
 - **INV-001 debt burndown — snoop-forward single-delivery
   (`mud/commands/dispatcher.py`)** — `process_command` forwarded the snooped
   character's logline (`% <cmd>`) straight to the snooper's `messages` mailbox.
