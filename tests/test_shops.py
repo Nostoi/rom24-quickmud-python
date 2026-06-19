@@ -888,6 +888,61 @@ def test_sell_haggle_applies_discount():
     assert "You haggle with the shopkeeper." in getattr(char, "messages", [])
 
 
+def _clean_keeper_for_lantern(char):
+    keeper = next(
+        (p for p in char.room.people if getattr(p, "prototype", None) and p.prototype.vnum in shop_registry),
+        None,
+    )
+    if keeper is None:
+        keeper = spawn_mob(3002)
+        assert keeper is not None
+        keeper.move_to_room(char.room)
+    keeper.gold = 500
+    keeper.silver = 0
+    keeper.inventory = [
+        obj
+        for obj in getattr(keeper, "inventory", [])
+        if "lantern" not in (getattr(obj.prototype, "short_descr", "") or "").lower()
+    ]
+    return keeper
+
+
+def test_get_cost_sell_extract_skips_dupe_discount():
+    # GETCOST-003: mirrors ROM src/act_obj.c:2504 — the keeper's duplicate-stock
+    # discount loop is guarded by `if (!IS_OBJ_STAT(obj, ITEM_SELL_EXTRACT))`. An
+    # object flagged ITEM_SELL_EXTRACT must NOT receive the same-item discount;
+    # Python applied it unconditionally. Self-validating: derives the no-dupe base,
+    # proves the dupe match discounts a plain object, then asserts SELL_EXTRACT skips it.
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Extractor", 3010)
+    char.gold = 0
+    char.silver = 0
+    keeper = _clean_keeper_for_lantern(char)
+
+    obj = spawn_object(3031)
+    assert obj is not None
+    obj.prototype.item_type = int(ItemType.LIGHT)
+    obj.extra_flags = 0
+    obj.cost = 100
+    # Base price with NO matching dupe in the keeper's stock.
+    base = _get_cost(keeper, obj, buy=False)
+    assert base > 0
+
+    # Keeper now carries one matching, non-inventory duplicate.
+    dupe = spawn_object(3031)
+    assert dupe is not None
+    dupe.extra_flags = 0  # non-inventory → ROM cost*3/4 branch
+    dupe.cost = 100
+    keeper.inventory.append(dupe)
+
+    # Sanity: a plain object DOES get the same-item discount (proves the match works).
+    assert _get_cost(keeper, obj, buy=False) < base
+
+    # ROM: ITEM_SELL_EXTRACT on the sold object skips the dupe-discount loop entirely.
+    obj.extra_flags = int(ITEM_SELL_EXTRACT)
+    assert _get_cost(keeper, obj, buy=False) == base
+
+
 def test_value_respects_drop_and_visibility_gates():
     initialize_world("area/area.lst")
     char = _create_shop_character("Appraiser", 3010)

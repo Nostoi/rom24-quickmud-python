@@ -473,8 +473,12 @@ def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
             return 0
         cost = c_div(obj_cost * shop.profit_sell, 100)
         # inventory discount if keeper already has same item
+        # GETCOST-003: ROM src/act_obj.c:2504 guards this whole loop with
+        # `if (!IS_OBJ_STAT(obj, ITEM_SELL_EXTRACT))` — a SELL_EXTRACT object never
+        # gets the same-item discount.
+        obj_flags = int(getattr(obj, "extra_flags", 0) or 0) | int(getattr(proto, "extra_flags", 0) or 0)
         obj_descr = (getattr(obj, "short_descr", None) or "").strip().lower()
-        for other in getattr(keeper, "inventory", []) or []:
+        for other in (getattr(keeper, "inventory", []) or []) if not (obj_flags & int(ITEM_SELL_EXTRACT)) else []:
             op = getattr(other, "prototype", None)
             if not op:
                 continue

@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GETCOST-003: SELL_EXTRACT objects no longer receive the same-item discount.**
+  ROM `get_cost` guards its keeper duplicate-stock discount loop with
+  `if (!IS_OBJ_STAT(obj, ITEM_SELL_EXTRACT))` (`src/act_obj.c:2504`). Python's
+  `_get_cost` applied the dupe discount unconditionally, underpricing the sale of
+  a SELL_EXTRACT item when the keeper stocked a matching copy. The loop now
+  short-circuits for SELL_EXTRACT objects. Test:
+  `tests/test_shops.py::test_get_cost_sell_extract_skips_dupe_discount`.
 - **SELL-006: the sell-haggle bonus now scales from the runtime object cost.**
   ROM `do_sell` computes `cost += obj->cost / 2 * roll / 100`
   (`src/act_obj.c:2930`), using the runtime `obj->cost`. Python's bonus base read
