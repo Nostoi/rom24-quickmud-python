@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GROUP-005: `do_group` display + add/remove broadcasts PERS-mask names.** ROM
+  `do_group` (`src/act_comm.c:1784`, `:1796`, `:1841-1854`) routes every printed
+  name through `PERS(x, ch)` / `act()`, so an invisible group member's identity is
+  masked to the viewer ("someone"/"Someone") and the broadcasts resolve `$n`/`$N`
+  per recipient with `$s` as the possessive pronoun. Python baked `short_descr`/
+  `name` into the header, member line, and join/remove broadcasts — leaking an
+  unseen member and repeating the leader's name instead of "his/her". Fixed by
+  masking the header via `_pers_gated(leader, char)` (lowercase), the member line
+  via `capitalize_act_line(_pers_gated(gch, char))` (capitalized, mirroring ROM
+  `capitalize()`), and rendering the broadcasts through `act_format` (delivery
+  still via `_send_to_char_sync`, preserving GROUP-001's socket path). Removed the
+  now-dead `_display_name` helper. Test:
+  `tests/integration/test_group_005_pers_masking.py`.
 - **GROUP-004: `group` display shows the class who_name, not "???".** ROM
   `do_group` (`src/act_comm.c:1795`) prints `class_table[gch->class].who_name`
   (the 3-char tag "Mag"/"Cle"/"Thi"/"War"). Python sliced a nonexistent

@@ -44,18 +44,6 @@ def _pers_gated(actor: Character, viewer: Character) -> str:
     return "someone"
 
 
-def _display_name(character: Character | None) -> str:
-    if character is None:
-        return "Someone"
-    name = getattr(character, "name", None)
-    if isinstance(name, str) and name:
-        return name
-    short_descr = getattr(character, "short_descr", None)
-    if isinstance(short_descr, str) and short_descr:
-        return short_descr
-    return "Someone"
-
-
 def _class_who_name(character: Character) -> str:
     """ROM ``class_table[ch->class].who_name`` — the 3-char class tag for `who`/`group`.
 
@@ -173,7 +161,10 @@ def do_group(char: Character, args: str) -> str:
     if not args:
         # Determine leader
         leader = char.leader if char.leader else char
-        leader_name = getattr(leader, "short_descr", None) or getattr(leader, "name", "Someone")
+        # GROUP-005: ROM src/act_comm.c:1784 — `PERS(leader, ch)`; the leader's
+        # name is masked to "someone" (lowercase, NOT capitalized) for a viewer
+        # who can't see them. Baking short_descr/name leaked an invisible leader.
+        leader_name = _pers_gated(leader, char)
 
         lines = [f"{leader_name}'s group:"]
 
@@ -196,8 +187,14 @@ def do_group(char: Character, args: str) -> str:
             if is_same_group(gch, char):
                 add_member(gch)
 
+        from mud.utils.act import capitalize_act_line
+
         for gch in members_found:
-            gch_name = getattr(gch, "short_descr", None) or getattr(gch, "name", "someone")
+            # GROUP-005: ROM src/act_comm.c:1796 — `capitalize(PERS(gch, ch))`;
+            # mask the member to "someone" for a viewer who can't see them, then
+            # capitalize the first letter ("Someone"). Baking the name leaked an
+            # invisible group member's identity.
+            gch_name = capitalize_act_line(_pers_gated(gch, char))
             gch_level = getattr(gch, "level", 1)
             is_npc = getattr(gch, "is_npc", False)
             class_name = "Mob" if is_npc else _class_who_name(gch)
@@ -249,35 +246,38 @@ def do_group(char: Character, args: str) -> str:
         _send_to_char_sync(victim, f"You like your master too much to leave {pronoun}!")
         return ""
 
-    leader_name = _display_name(char)
-    victim_name_str = _display_name(victim)
+    # GROUP-005: ROM src/act_comm.c:1841-1854 renders these via act_new, so $n/$N
+    # resolve through PERS(actor/victim, recipient) PER RECIPIENT and $s is the
+    # possessive pronoun (his/her) — not a baked name. act_format applies the same
+    # per-recipient masking + first-letter capitalize (INV-029). Delivery still
+    # routes through _send_to_char_sync (push_message XOR), preserving GROUP-001.
+    from mud.utils.act import act_format
+
+    def _broadcast_notvict(fmt: str) -> None:
+        room = getattr(char, "room", None)
+        if room is None:
+            return
+        for occupant in list(getattr(room, "people", []) or []):
+            if occupant is char or occupant is victim:
+                continue
+            _send_to_char_sync(occupant, act_format(fmt, recipient=occupant, actor=char, arg2=victim))
 
     # Already in group - remove (ROM src/act_comm.c:1838-1847)
     if is_same_group(victim, char) and char is not victim:
         victim.leader = None
-        # mirroring ROM src/act_comm.c:1842-1846 — TO_VICT and TO_NOTVICT via act()
-        _send_to_char_sync(victim, f"{leader_name} removes you from {leader_name}'s group.")
-        room = getattr(char, "room", None)
-        if room is not None:
-            notvict_msg = f"{leader_name} removes {victim_name_str} from {leader_name}'s group."
-            for occupant in list(getattr(room, "people", []) or []):
-                if occupant is char or occupant is victim:
-                    continue
-                _send_to_char_sync(occupant, notvict_msg)
-        return f"You remove {victim_name_str} from your group."
+        # mirroring ROM src/act_comm.c:1841-1846 — TO_NOTVICT/TO_VICT/TO_CHAR via act()
+        _broadcast_notvict("$n removes $N from $s group.")
+        _send_to_char_sync(
+            victim, act_format("$n removes you from $s group.", recipient=victim, actor=char, arg2=victim)
+        )
+        return act_format("You remove $N from your group.", recipient=char, actor=char, arg2=victim)
 
     # Add to group (ROM src/act_comm.c:1850-1854)
     victim.leader = char
-    # mirroring ROM src/act_comm.c:1850-1854 — TO_VICT and TO_NOTVICT via act()
-    _send_to_char_sync(victim, f"You join {leader_name}'s group.")
-    room = getattr(char, "room", None)
-    if room is not None:
-        notvict_msg = f"{victim_name_str} joins {leader_name}'s group."
-        for occupant in list(getattr(room, "people", []) or []):
-            if occupant is char or occupant is victim:
-                continue
-            _send_to_char_sync(occupant, notvict_msg)
-    return f"{victim_name_str} joins your group."
+    # mirroring ROM src/act_comm.c:1851-1854 — TO_NOTVICT/TO_VICT/TO_CHAR via act()
+    _broadcast_notvict("$N joins $n's group.")
+    _send_to_char_sync(victim, act_format("You join $n's group.", recipient=victim, actor=char, arg2=victim))
+    return act_format("$N joins your group.", recipient=char, actor=char, arg2=victim)
 
 
 def do_gtell(char: Character, args: str) -> str:
