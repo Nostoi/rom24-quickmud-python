@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`do_yell` now delivers through the canonical `push_message` chokepoint
+  (`mud/commands/communication.py`)** — its per-listener loop previously
+  hand-rolled the async-socket-XOR-mailbox delivery (`if writer:
+  create_task(send_to_char) else _queue_personal_message`). Behaviorally
+  identical (connected listener → immediate async send; disconnected → mailbox),
+  but `push_message` is loop-aware (falls back to the mailbox instead of raising
+  when no event loop runs) and collapses the last hand-rolled async-delivery loop
+  that `docs/parity/DIVERGENCE_CLASS_ROSTER.md` (Class 4) cited as a blocker for a
+  Layer-A static delivery guard. Characterization test:
+  `tests/integration/test_inv001_comm_delivery_channel.py::test_yell_single_delivers_to_connected_listener`
+  (socket once, mailbox empty). Removed the now-dead `asyncio` / `send_to_char`
+  imports from the module.
+
 - **INV-001 debt burndown COMPLETE — `_queue_personal_message` resolved as
   legitimate, `_INV001_DEBT` allowlist now empty
   (`tests/test_message_delivery_convention.py`)** — the last frozen mailbox

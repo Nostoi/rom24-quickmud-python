@@ -29,6 +29,7 @@ from __future__ import annotations
 import asyncio
 
 from mud.commands.dispatcher import process_command
+from mud.models.area import Area
 from mud.models.character import Character, character_registry
 from mud.models.constants import Position
 from mud.models.room import Room
@@ -146,3 +147,30 @@ def test_emote_single_delivers_to_connected_listener() -> None:
     emoted = [s for s in sent if "waves happily" in s.lower()]
     assert len(emoted) == 1, f"emote delivered {len(emoted)}x on async channel; sent={sent}"
     assert mailbox == [], f"emote line stranded in mailbox (double-delivery): {mailbox}"
+
+
+def test_yell_single_delivers_to_connected_listener() -> None:
+    """do_yell's per-listener loop must single-deliver to a CONNECTED listener.
+
+    Characterization lock for the YELL hand-rolled `create_task(send_to_char)` /
+    `_queue_personal_message` XOR (the last delivery site that
+    `docs/parity/DIVERGENCE_CLASS_ROSTER.md` cites as blocking a Layer-A static
+    guard for the async-delivery class). Collapsing it onto the canonical
+    `push_message` chokepoint must preserve this contract: socket once, mailbox
+    empty. yell is area-gated, so the listener must share the yeller's area.
+    """
+
+    async def scenario():
+        room = _make_room()
+        room.area = Area(name="Comm Area")  # do_yell requires char.room.area and area-match
+        speaker, _ = _connected_pc("Speaker", room)
+        listener, listener_conn = _connected_pc("Listener", room)
+        process_command(speaker, "yell hello there")
+        for _ in range(5):
+            await asyncio.sleep(0)
+        return listener_conn.sent, list(listener.messages)
+
+    sent, mailbox = _run_with_registry(scenario)
+    yelled = [s for s in sent if "yells" in s.lower() and "hello there" in s.lower()]
+    assert len(yelled) == 1, f"yell delivered {len(yelled)}x on async channel; sent={sent}"
+    assert mailbox == [], f"yell line stranded in mailbox (double-delivery): {mailbox}"

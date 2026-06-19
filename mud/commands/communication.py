@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING, cast
 
 from mud import mobprog
 from mud.characters import is_clan_member, is_same_clan
 from mud.models.character import Character, character_registry
 from mud.models.constants import CommFlag, Position
-from mud.net.protocol import broadcast_global, send_to_char
+from mud.net.protocol import broadcast_global
 from mud.utils.act import act_format, capitalize_act_line
 from mud.utils.messaging import push_message
 
@@ -823,11 +822,14 @@ def do_yell(char: Character, args: str) -> str:
 
             yeller_name = _pers(char, victim)
             victim_message = capitalize_act_line(f"{yeller_name} yells '{args}'")
-            writer = getattr(victim, "connection", None)
-            if writer is not None:
-                asyncio.create_task(send_to_char(victim, victim_message))
-                continue
-            _queue_personal_message(victim, victim_message)
+            # INV-001 single-delivery: route through the canonical push_message
+            # chokepoint (async socket XOR mailbox, loop-aware) rather than a
+            # hand-rolled create_task/_queue_personal_message XOR. Behaviorally
+            # identical here — a connected listener gets the immediate async send,
+            # a disconnected one falls back to the mailbox — but it collapses the
+            # last hand-rolled async-delivery loop the DIVERGENCE_CLASS_ROSTER
+            # (Class 4) cited as blocking a Layer-A static guard.
+            push_message(victim, victim_message)
 
     return capitalize_act_line(f"You yell '{args}'")
 
