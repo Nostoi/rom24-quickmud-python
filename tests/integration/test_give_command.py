@@ -110,6 +110,28 @@ def test_give_item_to_shopkeeper_is_rejected(movable_char_factory, object_factor
     assert gem not in shopkeeper.inventory
 
 
+def test_give_item_to_shopkeeper_sets_reply_target(movable_char_factory, object_factory, test_room_3001):
+    """GIVE-005 — ROM act_obj.c:801 sets `ch->reply = victim` on the shop refusal.
+
+    After `give <item> <shopkeeper>`, ROM points the giver's reply target at the
+    keeper so a follow-up `reply` reaches them. Python returned the refusal line
+    without updating `char.reply`, so the giver could not reply to the keeper.
+    """
+    giver = movable_char_factory("Giver", 3001)
+    shopkeeper = movable_char_factory("Shopkeep", 3001)
+    shopkeeper.pShop = Shop(keeper=9202)
+    giver.reply = None
+
+    gem = object_factory({"vnum": 9202, "name": "gem", "short_descr": "a shiny gem"})
+    giver.add_object(gem)
+
+    process_command(giver, "give gem shopkeep")
+
+    assert giver.reply is shopkeeper, (
+        f"giver.reply must point at the shopkeeper after a give-refusal (ROM src/act_obj.c:801); got {giver.reply!r}"
+    )
+
+
 def test_give_equipped_item_requires_removing_it_first(movable_char_factory, object_factory, test_room_3001):
     """ROM act_obj.c:794-799: equipped items must be removed before they can be given."""
     giver = movable_char_factory("Giver", 3001)

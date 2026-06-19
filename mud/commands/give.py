@@ -63,6 +63,9 @@ def do_give(char: Character, args: str) -> str:
 
     if _has_shop(victim):
         # GIVE-002: ROM src/act_obj.c — act("$N tells you 'Sorry, you'll have to sell that.'", ...).
+        # GIVE-005: ROM src/act_obj.c:801 also sets `ch->reply = victim` so the giver
+        # can `reply` to the keeper after the refusal.
+        char.reply = victim
         return act_format("$N tells you 'Sorry, you'll have to sell that.'", recipient=char, actor=char, arg2=victim)
 
     if not _can_drop_obj(char, obj):

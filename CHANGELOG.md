@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GIVE-005: giving an item to a shopkeeper now sets the reply target.** ROM
+  `do_give` (`src/act_obj.c:801`) sets `ch->reply = victim` on the shop-refusal
+  branch so the giver can `reply` to the keeper afterward. Python returned the
+  "Sorry, you'll have to sell that." line without updating `char.reply`. Fixed.
+  Test: `tests/integration/test_give_command.py::test_give_item_to_shopkeeper_sets_reply_target`.
 - **GIVE-004: money-changer gold exchange no longer divides by an extra 100.**
   ROM `do_give` (`src/act_obj.c:741`) computes a changer's payout as
   `silver ? 95*amount/100/100 : 95*amount` — the **gold** branch has no division,
