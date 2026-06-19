@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Differential-harness widening: `examine` and `compare` command coverage**
+  (`tools/diff_harness/generated.py`, `tests/test_diff_harness_generated.py`).
+  Read-only `examine_*`/`compare_sword_to_jacket` rules added to
+  `DeterministicNoRngDiffMachine` (exercised opportunistically across the
+  reachable state space), backed by two fixed scenarios that guarantee coverage
+  every run: `examine` across its ITEM_CONTAINER / ITEM_DRINK_CON / weapon
+  branches, and `compare` across its item-type-mismatch, value-comparison, and
+  same-object branches. Both converge against the live ROM C oracle on the first
+  pass — no divergence — locking the `do_examine`/`do_compare` output rendering
+  (incl. ROM's verbatim `"with  a amber liquid"` drink-level wording and the
+  `$p`/`$P` act-substitution + first-letter cap). Layer-C / Class-13 enumeration-
+  independent widening per `DIVERGENCE_CLASS_ROSTER.md`.
+
 ### Fixed
 
 - **INV-050 (convergence complete): `is_safe` is now a thin wrapper over the

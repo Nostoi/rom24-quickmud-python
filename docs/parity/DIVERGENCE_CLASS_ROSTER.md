@@ -281,7 +281,20 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    `TRIG_DELAY` fires when `mprog_delay` reaches 0
    (`src/mob_prog.c:mp_delay_trigger`). Python and C agree on first try.
    **Class 11 is now COMPLETE** — all 15 mobprog dispatch paths have
-   diff-harness C-oracle ground truth (2.13.59).
+   diff-harness C-oracle ground truth (2.13.59). **Non-mobprog command
+   widening (2.14.134):** added read-only `examine`/`compare` coverage to
+   `DeterministicNoRngDiffMachine` (`examine_bag`/`examine_bottle`/`examine_sword`
+   rules + a `compare_sword_to_jacket` mismatch rule) plus two fixed scenarios
+   (`test_generated_examine_object_branches_matches_live_c`,
+   `test_generated_compare_objects_matches_live_c`) that deterministically drive
+   every branch each run (the rule preconditions fire rarely — recall-checked by
+   instrumenting a 40×14 exploration: only `examine bag`/`examine bottle` fired,
+   so the fixed scenarios are the guaranteed lock). `do_examine`
+   (ITEM_CONTAINER/ITEM_DRINK_CON/weapon) and `do_compare`
+   (mismatch/value/same-object) both **converge against the live C oracle on the
+   first pass** — no divergence — locking the act-rendered output (incl. ROM's
+   verbatim `"with  a amber liquid"` drink-level wording, FINDING-021/022/033
+   class).
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

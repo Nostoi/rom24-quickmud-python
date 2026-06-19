@@ -704,6 +704,47 @@ class DeterministicNoRngDiffMachine(RuleBasedStateMachine):
         self.steps.append("__char_update")
         self.char_update_count += 1
 
+    # ── examine / compare rules (read-only) ───────────────────────
+    # do_examine (src/act_info.c) runs do_look on the object, then for
+    # ITEM_CONTAINER / ITEM_DRINK_CON / ITEM_MONEY / ITEM_CORPSE_* it peeks
+    # inside (a `look in <obj>` for containers). do_compare (src/act_info.c) is
+    # fully deterministic — it compares weapon dice or armor AC and, on an
+    # item-type mismatch, emits the act-substituted "You can't compare $p and
+    # $P." line. Both are read-only: they mutate no _ObjectState, so they
+    # compose with every reachable inventory/equipment/position state.
+
+    @precondition(lambda self: self.bag.inventory or self.bag.room == self.current_room)
+    @rule()
+    def examine_bag(self) -> None:
+        # ITEM_CONTAINER branch: do_look <obj> then `look in bag`.
+        self.steps.append("examine bag")
+
+    @precondition(lambda self: self.bottle_beer.inventory and not self.bottle_beer.drank)
+    @rule()
+    def examine_bottle(self) -> None:
+        # ITEM_DRINK_CON branch: do_look <obj> then `look in bottle`.
+        self.steps.append("examine bottle")
+
+    @precondition(lambda self: self.small_sword.inventory or self.small_sword.equipped)
+    @rule()
+    def examine_sword(self) -> None:
+        # default branch: do_look <obj> only (no inner peek).
+        self.steps.append("examine sword")
+
+    @precondition(
+        lambda self: self.small_sword.inventory
+        and not self.small_sword.equipped
+        and self.scale_jacket.inventory
+        and not self.scale_jacket.equipped
+    )
+    @rule()
+    def compare_sword_to_jacket(self) -> None:
+        # item-type mismatch (ITEM_WEAPON vs ITEM_ARMOR) → "You can't compare
+        # $p and $P." Both operands gated to carried-not-equipped so this stays
+        # the clean inventory case (ROM get_obj_carry would also see equipped
+        # items; that wider case is a separate probe).
+        self.steps.append("compare sword jacket")
+
     @staticmethod
     def _object_exists(obj: _ObjectState) -> bool:
         return obj.room is not None or obj.inventory or obj.equipped or obj.in_container or obj.consumed

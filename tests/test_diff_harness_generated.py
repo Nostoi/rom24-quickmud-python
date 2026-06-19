@@ -520,6 +520,93 @@ def test_generated_pour_into_held_container_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+def test_generated_examine_object_branches_matches_live_c():
+    """``examine`` across its item-type branches against the live C oracle.
+
+    ROM ``do_examine`` (src/act_info.c) runs ``do_look <obj>`` then, for
+    ITEM_CONTAINER / ITEM_DRINK_CON / ITEM_MONEY / ITEM_CORPSE_*, peeks inside
+    (a ``look in <obj>``).  This pins three branches:
+
+    - container (bag 3032)  → object description + ``A bag holds:`` / ``Nothing.``
+    - drink-con (bottle 3001) → object description + fill-level line
+    - weapon (sword 3021)   → default branch, object description only
+
+    The drink-con line reproduces ROM's verbatim ``"with  a amber liquid"``
+    double-space/"a amber" wording (src/act_info.c:1143 + liq_table), so it also
+    locks the act-rendering for the DRINK_CON peek path.  The state-machine
+    ``examine_*`` rules exercise these opportunistically; this scenario
+    guarantees coverage every run (the rule preconditions fire rarely).
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_examine_branches",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3032",  # bag (container)
+            "__oload=3001",  # bottle beer (drink-con)
+            "__oload=3021",  # small sword (weapon)
+            "get bag",
+            "get bottle",
+            "get sword",
+            "examine bag",
+            "examine bottle",
+            "examine sword",
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
+def test_generated_compare_objects_matches_live_c():
+    """``compare`` across its branches against the live C oracle.
+
+    ROM ``do_compare`` (src/act_info.c) is fully deterministic.  This pins:
+
+    - item-type mismatch (weapon vs armor) → ``You can't compare $p and $P.``
+    - value comparison (small sword value (1+5)*1=6 > dagger (1+4)*1=5) →
+      ``$p looks better than $P.``
+    - same object (``compare sword sword`` matches obj1==obj2) →
+      ``You compare $p to itself.  It looks about the same.``
+
+    Exercises the ``$p``/``$P`` act-substitution + first-letter cap (the
+    FINDING-021/022/033 output-rendering class).  The dagger (3020) and small
+    sword (3021) have distinct keywords (``dagger`` / ``sword``) so the
+    selectors are unambiguous.
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_compare_objects",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3021",  # small sword (weapon, value 6)
+            "__oload=3020",  # dagger (weapon, value 5)
+            "__oload=3045",  # scale mail jacket (armor)
+            "get sword",
+            "get dagger",
+            "get jacket",
+            "compare sword jacket",  # mismatch: weapon vs armor
+            "compare sword dagger",  # value: sword > dagger
+            "compare sword sword",  # itself
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_shop_sell_keeper_broke_matches_live_c():
     """``sell`` to a keeper with zero treasury — exercises the wealth-check early exit.
 
