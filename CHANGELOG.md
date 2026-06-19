@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **LOOK-008 / FINDING-035: `look`/`examine` on an object no longer shows the
+  description and an extra description together.** ROM `do_look`
+  (`src/act_info.c:1183-1212`) is keyword-gated and mutually exclusive — an extra
+  description whose keyword matches the lookup argument is shown alone; only a
+  bare name match (no ED match) shows the object's `description`. Python's
+  `_look_obj` ignored the keyword and appended the first ED to the description
+  unconditionally, so e.g. `examine coins` on a money pile emitted both "A lot of
+  silver is here." and the "silver" ED. Surfaced by the differential harness;
+  fixed by threading the lookup keyword into `_look_obj` and applying ROM's
+  instance-ED → prototype-ED → name(description) priority. Verified against the
+  live ROM C oracle.
 - **WEAR-012 / FINDING-034: `wear all` now equips lights, weapons, and HOLD
   items.** ROM `wear all` (`src/act_obj.c:1712-1723`) calls
   `wear_obj(ch, obj, FALSE)` over every carried `WEAR_NONE` item — lighting+holding

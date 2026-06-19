@@ -110,6 +110,47 @@ def test_examine_money_pile_mixed(test_character, temple_room, place_object_fact
     assert "pile" in result.lower()
 
 
+def test_examine_object_extra_descr_is_keyword_gated(test_character, temple_room, place_object_factory):
+    """LOOK-008 / FINDING-034-class: ``do_look`` must show an extra description
+    ONLY when the lookup keyword matches it, and never alongside the object
+    ``description`` — they are mutually exclusive (ROM act_info.c:1183-1212).
+
+    Surfaced by the diff harness: ``examine`` on a money pile emitted the
+    object's ``silver`` extra-description in addition to its description, where
+    ROM shows the description alone (the keyword ``coins`` matches the name, not
+    the ED keyword ``silver``). The pre-fix ``_look_obj`` appended the first ED
+    unconditionally. This pins both branches via name-resolvable keywords.
+    """
+    obj = place_object_factory(
+        room_vnum=3001,
+        proto_kwargs={
+            "vnum": 10009,
+            "name": "silver coins pile",
+            "short_descr": "a pile of coins",
+            "description": "A lot of silver is here.",
+            "item_type": int(ItemType.MONEY),
+            "value": [1000, 0, 0, 0, 0],
+            "extra_descr": [{"keyword": "silver", "description": "Looks like at least a thousand coins."}],
+        },
+    )
+    obj.value = [1000, 0, 0, 0, 0]
+    test_character.room = temple_room
+
+    # `examine coins` — keyword matches the NAME, not the ED → description only,
+    # plus the money peek. The ED text must NOT appear.
+    by_name = do_examine(test_character, "coins")
+    assert "A lot of silver is here." in by_name
+    assert "Looks like at least a thousand coins." not in by_name
+    assert "1000 silver coins in the pile" in by_name
+
+    # `examine silver` — keyword matches the ED → ED shown ALONE (no description),
+    # plus the money peek.
+    by_ed = do_examine(test_character, "silver")
+    assert "Looks like at least a thousand coins." in by_ed
+    assert "A lot of silver is here." not in by_ed
+    assert "1000 silver coins in the pile" in by_ed
+
+
 # ============================================================================
 # P1 Tests (Important Features)
 # ============================================================================

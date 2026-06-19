@@ -478,6 +478,20 @@ act_info.c is **100% complete** when:
      dual-exclude of actor+victim). `$mself` renders the actor's reflexive pronoun
      (sexless → "itself"). Found extending the act()-lens to `act_info.c` broadcast
      sites. Test: `tests/integration/test_look007_look_at_char_broadcast.py`.
+   - **LOOK-008** ✅ FIXED (2026-06-19, 2.14.140): `do_look` on an object showed
+     the object `description` AND its first extra description unconditionally,
+     regardless of whether the lookup keyword matched the ED. ROM
+     (src/act_info.c:1183-1212) is mutually exclusive and ED-keyword-gated: an ED
+     whose keyword matches the argument is shown ALONE; only a bare name match
+     (no ED match) shows `obj->description`. Surfaced by the diff harness —
+     `examine coins` on a money pile (vnum 3132) emitted both `A lot of silver is
+     here.` (description, name match) and `Looks like at least a thousand coins.`
+     (the `silver` ED). **Fix**: `_look_obj` now takes the lookup keyword and
+     applies ROM's instance-ED → prototype-ED → name (description) priority
+     (`mud/world/look.py`); the two `look()` callers thread `args`. Tests:
+     `tests/integration/test_do_examine_command.py::test_examine_object_extra_descr_is_keyword_gated`
+     + `tests/test_diff_harness_generated.py::test_generated_examine_money_pile_matches_live_c`
+     (converges vs live C oracle). Tracked as FINDING-035.
 
 **IMPORTANT Gaps** (P1 - SHOULD FIX):
 

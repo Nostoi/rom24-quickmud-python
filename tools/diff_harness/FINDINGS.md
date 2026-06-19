@@ -8,6 +8,36 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-035 — `do_look`/`examine` on an object shows the description AND an extra description (ROM shows one or the other) — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-19 (v2.14.140). Fixed under **LOOK-008**
+(`docs/parity/ACT_INFO_C_AUDIT.md`).
+
+**Scenario:** `test_generated_examine_money_pile_matches_live_c` —
+`['__oload=3132', 'examine coins', 'examine silver']` (silver coins on the
+ground; absorbed into the wearer's silver if picked up, so examined in-room).
+
+**Divergence (step `examine coins` · output):**
+- **C:** `['A lot of silver is here.', 'There are 1000 silver coins in the pile.']`
+- **Python:** `['A lot of silver is here.', 'Looks like at least a thousand coins.',
+  'There are 1000 silver coins in the pile.']` — the extra line is the `silver` ED.
+
+**Root cause:** ROM `do_look` (src/act_info.c:1183-1212) resolves an object look
+keyword-first and mutually exclusively: an extra description whose keyword
+matches the argument is shown ALONE; only when no ED matches does a name match
+show `obj->description`. Python's `_look_obj` (`mud/world/look.py`) ignored the
+keyword and appended the first ED to the description unconditionally. For
+`examine coins`, "coins" matches the name (→ description) but not the ED keyword
+"silver", so ROM shows the description only; Python showed both.
+
+**Fix:** `_look_obj` now takes the lookup keyword and applies ROM's instance-ED →
+prototype-ED → name(description) priority; the `look()` callers thread `args`.
+`examine silver` (ED keyword) correctly shows the ED alone. Regression tests:
+`test_examine_object_extra_descr_is_keyword_gated` (integration) +
+`test_generated_examine_money_pile_matches_live_c` (live C oracle).
+
+---
+
 ## FINDING-034 — `wear all` silently skips lights, weapons, and HOLD items that ROM equips — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-19 (v2.14.139). Fixed under **WEAR-012**: extracted

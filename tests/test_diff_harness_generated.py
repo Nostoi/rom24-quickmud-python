@@ -699,6 +699,44 @@ def test_generated_sacrifice_lifecycle_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+def test_generated_examine_money_pile_matches_live_c():
+    """``examine`` / ``look`` a money pile — locks LOOK-008 against the C oracle.
+
+    Surfaced FINDING (LOOK-008): ROM ``do_look`` (src/act_info.c:1183-1212) shows
+    an extra description ONLY when the lookup keyword matches it, mutually
+    exclusive with the object ``description``. Python's ``_look_obj`` appended the
+    first ED unconditionally, so ``examine coins`` on the silver pile (3132)
+    wrongly emitted both ``A lot of silver is here.`` (description, name match)
+    AND ``Looks like at least a thousand coins.`` (the ``silver`` ED). This pins:
+
+    - ``examine coins`` (name keyword) → description + ``do_examine`` money peek,
+      no ED line
+    - ``examine silver`` (ED keyword)  → the ED alone + money peek
+
+    Money is absorbed into the wearer's silver on ``get``, so the pile is
+    examined on the ground (never picked up).
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_examine_money",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3132",  # silver coins (ITEM_MONEY, 1000 silver), left on ground
+            "examine coins",  # name keyword → description, not the ED
+            "examine silver",  # ED keyword → the ED alone
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_get_all_drop_all_matches_live_c():
     """``get all`` / ``drop all`` bulk-loop forms against the live C oracle.
 

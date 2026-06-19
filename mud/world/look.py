@@ -165,12 +165,12 @@ def look(char: Character, args: str = "") -> str:
     # Try to find an object in the room or inventory
     obj = get_obj_here(char, args)
     if obj:
-        return _look_obj(char, obj)
+        return _look_obj(char, obj, args)
 
     # Check inventory
     obj = get_obj_carry(char, args)
     if obj:
-        return _look_obj(char, obj)
+        return _look_obj(char, obj, args)
 
     # Check extra descriptions in room
     for ed in getattr(room, "extra_descr", []):
@@ -341,36 +341,46 @@ def _show_equipment(char: Character) -> str:
     return "\n".join(lines)
 
 
-def _look_obj(char: Character, obj) -> str:
-    """Show object description - ROM src/act_info.c lines 1217-1245"""
-    lines = []
+def _look_obj(char: Character, obj, keyword: str = "") -> str:
+    """ROM ``do_look`` object resolution — src/act_info.c:1179-1213.
 
+    For the looked-at object, an extra description whose keyword matches the
+    lookup argument is shown **alone** (ED-priority, mutually exclusive with the
+    object's ``description``); only when *no* ED matches does a bare name match
+    show ``obj->description``. ROM never shows the description AND an extra
+    description together — the prior implementation appended the first ED
+    unconditionally (regardless of the lookup keyword), which is the
+    LOOK / FINDING-021/022/033 act-rendering divergence surfaced by
+    ``examine`` on a money pile (LOOK-008). Instance ``extra_descr`` take
+    priority over the prototype's, mirroring ROM's two `get_extra_descr` calls.
+    """
+    from mud.world.char_find import is_name
+
+    # ROM matches against arg3 — the single keyword `one_argument` yields after
+    # `number_argument` strips any leading "N." selector.
+    key = (keyword or "").strip()
+    if key:
+        key = key.split()[0]
+        if "." in key and key.split(".", 1)[0].lstrip("-").isdigit():
+            key = key.split(".", 1)[1]
+
+    if key:
+        instance_eds = getattr(obj, "extra_descr", []) or []
+        prototype = getattr(obj, "prototype", None)
+        proto_eds = (getattr(prototype, "extra_descr", []) or []) if prototype else []
+        # ROM src/act_info.c:1183-1205 — instance EDs, then prototype EDs; the
+        # first whose keyword matches the argument is shown and resolution stops.
+        for ed in (*instance_eds, *proto_eds):
+            ed_keyword, description = _ed_fields(ed)
+            if ed_keyword and description and is_name(key, ed_keyword):
+                return description
+
+    # ROM src/act_info.c:1207-1212 — name match (no ED match): show description.
     desc = getattr(obj, "description", None)
     if desc:
-        lines.append(desc)
-    else:
-        short = getattr(obj, "short_descr", None) or getattr(obj, "name", "something")
-        lines.append(f"You see nothing special about {short}.")
-
-    # Show extra descriptions - check both object and prototype
-    # ROM src/act_info.c lines 1221-1235
-    # First check object's own extra_descr
-    for ed in getattr(obj, "extra_descr", []):
-        _, description = _ed_fields(ed)
-        if description:
-            lines.append(description)
-            break
-    else:
-        # If no extra_descr found, check prototype (pIndexData->extra_descr)
-        prototype = getattr(obj, "prototype", None)
-        if prototype:
-            for ed in getattr(prototype, "extra_descr", []):
-                _, description = _ed_fields(ed)
-                if description:
-                    lines.append(description)
-                    break
-
-    return "\n".join(lines)
+        return desc
+    short = getattr(obj, "short_descr", None) or getattr(obj, "name", "something")
+    return f"You see nothing special about {short}."
 
 
 def _look_in(char: Character, args: str) -> str:
