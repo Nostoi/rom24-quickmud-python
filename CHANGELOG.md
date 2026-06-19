@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **DB-002: M-reset global-limit check is now unconditional, matching ROM.**
+  ROM `reset_room` skips a mob spawn via `if (pMobIndex->count >= pReset->arg2)`
+  (`src/db.c:1703`) with no `arg2 > 0` guard, so a global limit of 0 means the mob
+  is never spawned (`count(0) >= 0`). Python guarded the comparison with
+  `global_limit > 0`, so a `global_limit == 0` reset wrongly spawned. Reachable in
+  shipped data: `canyon.are`'s `M 0 9202 0 9204 0` (the deliberately disabled
+  cyclops) spawned a cyclops in room 9204 that ROM never creates.
 - **ARITH-114: `get_curr_stat` ceiling is now race/class-aware, not a flat 25.**
   ROM `get_curr_stat` (`src/handler.c:872`) caps a PC's effective stat at
   `pc_race_table[race].max_stats[stat] + 4` (`+2` if the class's prime stat,

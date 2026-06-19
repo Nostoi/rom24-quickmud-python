@@ -418,7 +418,11 @@ def apply_resets(area: Area) -> None:
             logging.debug(
                 f"M reset global limit check: mob_vnum={mob_vnum}, proto_count={proto_count}, global_limit={global_limit}"
             )
-            if global_limit > 0 and proto_count >= global_limit:
+            # DB-002: ROM src/db.c:1703 — `if (pMobIndex->count >= pReset->arg2) break;`
+            # is UNCONDITIONAL. A `global_limit > 0` guard wrongly let an arg2==0
+            # reset spawn (ROM: count(0) >= 0 → never spawns; the disabled cyclops
+            # reset `M 0 9202 0 9204 0` in canyon.are).
+            if proto_count >= global_limit:
                 logging.debug(f"M reset SKIPPED due to global limit: {proto_count} >= {global_limit}")
                 last_mob = None
                 last_obj = None

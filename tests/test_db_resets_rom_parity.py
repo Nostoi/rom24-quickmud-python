@@ -82,6 +82,34 @@ def test_m_reset_global_limit():
     assert mob_3003_count == 1, f"Expected 1 mob 3003, found {mob_3003_count}"
 
 
+def test_m_reset_global_limit_zero_never_spawns():
+    """DB-002: ROM M-reset global check `if (count >= arg2) break` is unconditional.
+
+    Mirrors ROM src/db.c:1703 — the global-limit comparison uses `>=` with no
+    `arg2 > 0` guard. When `arg2 == 0`, `count(0) >= 0` is always true, so the mob
+    is NEVER spawned (e.g. the disabled cyclops reset `M 0 9202 0 9204 0` in
+    canyon.are). Python guarded the check with `global_limit > 0`, so a
+    `global_limit == 0` reset wrongly spawned a mob ROM never spawns.
+    """
+    initialize_world("area/area.lst")
+
+    room = room_registry[3001]
+    area = room.area
+    assert area is not None
+
+    # Start from a clean world: no instances of 3003 anywhere, proto count 0.
+    for r in room_registry.values():
+        r.people = [p for p in r.people if not (isinstance(p, MobInstance) and p.prototype.vnum == 3003)]
+    mob_registry[3003].count = 0
+
+    # global_limit (arg2) = 0 → ROM count(0) >= 0 → never spawns, even into an empty room.
+    area.resets = [ResetJson(command="M", arg1=3003, arg2=0, arg3=3001, arg4=5)]
+    apply_resets(area)
+
+    count = sum(1 for p in room.people if isinstance(p, MobInstance) and p.prototype.vnum == 3003)
+    assert count == 0, f"global_limit=0 must never spawn (ROM count>=arg2 with arg2=0); found {count}"
+
+
 def test_m_reset_room_limit():
     """Test M reset respects room limit: count mobs in room matching vnum"""
     initialize_world("area/area.lst")
