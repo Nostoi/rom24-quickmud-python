@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **BUY-009: buy-haggle discount now scales from the runtime object cost.**
+  ROM `do_buy` computes `cost -= obj->cost / 2 * roll / 100`
+  (`src/act_obj.c:2727`), using the runtime `obj->cost`. Python's discount base
+  read `proto.cost`, diverging once an object's runtime cost had been clamped by
+  a prior haggle (the GETCOST-001 sibling). The discount base now reads
+  `obj.cost` (prototype fallback). Test:
+  `tests/test_shops.py::test_buy_haggle_discount_uses_runtime_cost`.
 - **GETCOST-001: shop prices now use the runtime object cost, not the prototype.**
   ROM `get_cost` (`src/act_obj.c:2487,2499`) prices buy and sell from the
   runtime `obj->cost`. `do_buy` clamps a purchased item's `obj.cost` down to the

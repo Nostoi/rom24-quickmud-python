@@ -1342,6 +1342,51 @@ def test_buy_blind_buyer_cannot_see_item():
         time_info.hour = previous_hour
 
 
+def test_buy_haggle_discount_uses_runtime_cost():
+    # BUY-009: mirrors ROM src/act_obj.c:2727 — the buy-haggle discount is
+    # `cost -= obj->cost / 2 * roll / 100`, using the RUNTIME obj->cost, not the
+    # prototype cost. Diverges when obj.cost != proto.cost.
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Haggler", 3001)
+    char.gold = 500
+    char.silver = 0
+    char.skills = {"haggle": 95}
+    keeper = spawn_mob(3006)
+    assert keeper is not None
+    keeper.move_to_room(char.room)
+
+    raft = spawn_object(3050)
+    assert raft is not None
+    raft.prototype.short_descr = "a small river raft"
+    raft.prototype.item_type = int(ItemType.BOAT)
+    raft.prototype.cost = 200
+    # Runtime cost below the prototype (e.g. a haggle-clamped resale). Sync all
+    # live 3050 copies so whichever the buy matches carries this runtime cost.
+    for stock in keeper.inventory:
+        if getattr(stock.prototype, "vnum", None) == 3050:
+            stock.cost = 100
+    raft.cost = 100
+    keeper.inventory.append(raft)
+
+    previous_hour = time_info.hour
+    original_roll = rng_mm.number_percent
+    try:
+        time_info.hour = 10
+        rng_mm.number_percent = lambda: 40  # roll 40 < haggle 95 → succeeds
+        response = process_command(char, "buy raft")
+    finally:
+        rng_mm.number_percent = original_roll
+        time_info.hour = previous_hour
+
+    match = re.search(r"for (\d+) silver", response)
+    assert match is not None
+    paid = int(match.group(1))
+    # shop 3006 profit_buy = 120 → unit_price = c_div(100*120, 100) = 120.
+    # discount via RUNTIME cost = c_div(c_div(100, 2)*40, 100) = 20 → paid 100.
+    # (Prototype cost 200 would give discount 40 → paid 80.)
+    assert paid == 100
+
+
 def test_sell_uses_runtime_cost_not_prototype():
     # GETCOST-001: mirrors ROM src/act_obj.c:2499 get_cost — sell price is
     # obj->cost * profit_sell / 100, using the RUNTIME object cost (which
