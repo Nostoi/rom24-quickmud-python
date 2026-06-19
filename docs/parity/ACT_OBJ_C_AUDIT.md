@@ -167,7 +167,7 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 | `obj_to_keeper()` | 2406-2529 | ✅ Integrated into `shop.py::_obj_to_keeper()` (line 53) | ✅ **AUDITED** | Verified vs ROM 2406-2444: ITEM_INVENTORY dedup destroys new obj; non-inventory dupe inherits cost from existing; `carry_number`/`carry_weight` updated; `in_room`/`in_obj` cleared. SELL-006 covers this path. |
 | `find_keeper()` | Forward ref | ✅ `shop.py::_find_keeper()` | ✅ **AUDITED** | Locates ROM-flagged ACT_IS_NPC + shopkeeper in room; refusal messages and `ch.reply` handling verified. |
 | `get_cost()` | Forward ref | ✅ `shop.py::_get_cost()` (line 487) | ✅ **AUDITED** | Verified profit_buy/profit_sell percent multipliers, ITEM_INVENTORY half-price discount on dupe sells, integer-division via `c_div`. BUY-005 buy-haggle gap closed in shop audit. |
-| `get_obj_keeper()` | Forward ref | ✅ Integrated into `shop.py::do_buy()` | ✅ **AUDITED** | `number_argument()` parsing (`_parse_number_argument`, line 391) honors ROM `<n>.<name>` syntax; visibility filter applied; ITEM_INVENTORY infinite-stock branch (line 705). |
+| `get_obj_keeper()` | Forward ref | ✅ Integrated into `shop.py::do_buy()` | ✅ **AUDITED** | `number_argument()` parsing (`_parse_number_argument`, line 391) honors ROM `<n>.<name>` syntax; `can_see_obj(keeper, obj) && can_see_obj(ch, obj)` filter applied inside the candidate loop (BUY-007, was missing despite this note's prior claim); ITEM_INVENTORY infinite-stock branch (line 705). |
 
 **Estimated Complexity**: MEDIUM  
 **ROM C Lines**: ~300 lines estimated  
@@ -1444,6 +1444,7 @@ Three divergences found while probing shop error-exit paths via diff-harness pla
 | **BUY-006** | `do_buy()` | 2688 vs 2702 | Check ordering: Python runs level check (ROM line 2702) before afford check (ROM line 2688); ROM C runs afford first | ✅ **FIXED** — `shop.py` reordered; `test_buy_afford_checked_before_level` |
 | **SELL-002** | `do_sell()` | 2905-2908 | `!can_see_obj(keeper, obj)` branch emits hardcoded `"The shopkeeper doesn't see what you are offering."` — ROM C uses `act("$n doesn't see what you are offering.", keeper, NULL, ch, TO_VICT)` which expands `$n` to the keeper's name | ✅ **FIXED** — `_act_to_char` helper; `test_sell_cant_see_uses_keeper_name` |
 | **SELL-003** | `do_sell()` | 2911-2914 | `get_cost <= 0` branch emits `"The shopkeeper doesn't buy that."` — ROM C uses `act("$n looks uninterested in $p.", keeper, obj, ch, TO_VICT)` (keeper name + item name) | ✅ **FIXED** — `_act_to_char` helper; `test_sell_uninterested_uses_keeper_name` |
+| **BUY-007** | `do_buy()` / `get_obj_keeper()` | 2459-2460, 2659 | `get_obj_keeper` candidate loop lacked the ROM `can_see_obj(keeper, obj) && can_see_obj(ch, obj)` filters — a blind buyer (or an `ITEM_INVIS` item without detect-invis, or an item the keeper can't see) could be bought. The `get_obj_keeper` audit row (line 170) falsely claimed "visibility filter applied" (stale ✅). | ✅ **FIXED** — both checks gated inside the candidate loop (so the `N.name` index only counts visible items); `test_buy_blind_buyer_cannot_see_item` |
 
 ---
 

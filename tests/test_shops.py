@@ -1274,6 +1274,38 @@ def test_shop_refuses_invisible_customers():
         time_info.hour = previous_hour
 
 
+def test_buy_blind_buyer_cannot_see_item():
+    # BUY-007: mirrors ROM src/act_obj.c:2459-2460,2659 — get_obj_keeper requires
+    # can_see_obj(ch, obj), so a blind buyer cannot see (or buy) a non-potion item.
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Blind patron", 3001)
+    char.gold = 500
+    keeper = spawn_mob(3006)
+    assert keeper is not None
+    keeper.move_to_room(char.room)
+
+    raft = spawn_object(3050)
+    assert raft is not None
+    raft.prototype.short_descr = "a small river raft"
+    raft.prototype.item_type = int(ItemType.BOAT)
+    raft.prototype.cost = 200
+    keeper.inventory.append(raft)
+
+    char.add_affect(AffectFlag.BLIND)
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+        keeper_name = getattr(keeper, "short_descr", None) or getattr(keeper, "name", None) or "The shopkeeper"
+        denied = process_command(char, "buy raft")
+        # ROM line 2659-2664: get_obj_keeper returns NULL → keeper voice refusal + ch.reply
+        assert denied == capitalize_act_line(f"{keeper_name} tells you 'I don't sell that -- try 'list''.")
+        assert raft in keeper.inventory
+        assert raft not in char.inventory
+        assert char.gold == 500
+    finally:
+        time_info.hour = previous_hour
+
+
 def test_shop_respects_keeper_wealth():
     initialize_world("area/area.lst")
     char = _create_shop_character("Consigner", 3001)

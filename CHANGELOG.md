@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **BUY-007: `buy` now applies the ROM `can_see_obj` visibility filter.**
+  ROM `do_buy` selects the item via `get_obj_keeper`
+  (`src/act_obj.c:2459-2460`), which requires both
+  `can_see_obj(keeper, obj)` **and** `can_see_obj(ch, obj)` during the candidate
+  loop, and `do_buy` re-checks `can_see_obj(ch, obj)` at `:2659`. Python's
+  candidate loop had no visibility gate, so a blind buyer (or an `ITEM_INVIS`
+  item without detect-invis, or an item the keeper couldn't see) could be
+  bought. The fix gates both checks inside the loop so the `N.name` index only
+  counts visible items; an all-invisible match falls through to the keeper-voiced
+  "I don't sell that -- try 'list'." refusal. The `get_obj_keeper` audit row had
+  falsely claimed the filter was applied (stale ✅). Test:
+  `tests/test_shops.py::test_buy_blind_buyer_cannot_see_item`.
 - **VAL-005: `value` command's keeper messages now name the shopkeeper and item.**
   ROM `do_value` (`src/act_obj.c:2994`, `:3007`) renders its can't-see and
   "uninterested" lines via `act("$n …"/"$n looks uninterested in $p.", keeper,

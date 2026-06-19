@@ -30,7 +30,7 @@ from mud.utils import rng_mm
 from mud.utils.act import act_to_room, capitalize_act_line
 from mud.utils.messaging import push_message
 from mud.world.movement import can_carry_n, can_carry_w, get_carry_weight
-from mud.world.vision import room_is_dark
+from mud.world.vision import can_see_object, room_is_dark
 
 _CLOSED_EARLY = "Sorry, I am closed. Come back later."
 _CLOSED_LATE = "Sorry, I am closed. Come back tomorrow."
@@ -739,6 +739,11 @@ def do_buy(char: Character, args: str) -> str:
     selected_obj: Object | None = None
     selected_position = 0
     for idx, candidate in enumerate(inventory):
+        # BUY-007: mirror ROM src/act_obj.c:2459-2460 get_obj_keeper — both the
+        # keeper and the buyer must be able to see the object, gated during
+        # iteration so the N.name index only counts visible items.
+        if not _keeper_can_see_object(keeper, candidate) or not can_see_object(char, candidate):
+            continue
         if not _purchase_matches(name, candidate):
             continue
         match_count += 1
