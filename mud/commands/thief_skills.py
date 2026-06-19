@@ -249,8 +249,10 @@ def _steal_failure(char: Character, victim: Character) -> str:
             current_act = int(getattr(char, "act", 0) or 0)
             if not (current_act & int(PlayerFlag.THIEF)):
                 char.act = current_act | int(PlayerFlag.THIEF)
-                if hasattr(char, "messages"):
-                    char.messages.append("*** You are now a THIEF!! ***\n")
+                # mirroring ROM src/act_obj.c:2259 send_to_char — single-channel
+                # delivery (INV-001): async socket for a connected thief, mailbox
+                # fallback for tests/disconnected. Never the mailbox alone.
+                _send_to_char_sync(char, "*** You are now a THIEF!! ***\n")
 
     return "Oops.\n"
 

@@ -80,7 +80,6 @@ _LEGITIMATE: set[tuple[str, str]] = {
 # Each is an INV-001 "Touched by" site in CROSS_FILE_INVARIANTS_TRACKER.md.
 # Fix = route through push_message + delete its line here.
 _INV001_DEBT: set[tuple[str, str]] = {
-    ("mud/commands/thief_skills.py", 'char.messages.append("*** You are now a THIEF!! ***\\n")'),
     ("mud/net/connection.py", 'messages = getattr(occupant, "messages", None)'),
     ("mud/commands/dispatcher.py", 'snooper_messages = getattr(snooper, "messages", None)'),
     ("mud/commands/communication.py", "target.messages.append(message)"),

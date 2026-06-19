@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **INV-001 debt burndown — THIEF promotion line single-delivery
+  (`mud/commands/thief_skills.py`)** — the "*** You are now a THIEF!! ***"
+  message a PC earns when caught stealing from another PC was appended straight
+  to `char.messages`, the mailbox the connection read loop only drains after the
+  player's *next* command. A connected thief therefore would not see the
+  promotion until they typed something (INV-001 SINGLE-DELIVERY wrong-channel
+  class, same shape as SPEC-017). It now routes through the file's existing
+  `_send_to_char_sync` → `push_message` chokepoint (async socket for connected
+  PCs, mailbox fallback for tests/disconnected), mirroring ROM
+  `src/act_obj.c:2259` `send_to_char`. First frozen `_INV001_DEBT` site burned
+  down (13 → 12); its allowlist line in `tests/test_message_delivery_convention.py`
+  is deleted. Test: `tests/integration/test_steal_thief_flag_delivery.py`.
+
 ### Added
 
 - **diff_harness `aggression_onset` scenario — C-oracle lock on tick-time
