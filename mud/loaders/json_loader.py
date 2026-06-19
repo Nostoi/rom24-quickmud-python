@@ -353,18 +353,12 @@ def load_area_from_json(json_file_path: str) -> Area:
             # Missing room limit defaults to global limit (or 1) in ROM.
             if arg4 == 0:
                 arg4 = arg2 if arg2 > 0 else 1
-        elif command == "P":
-            # ARITH-209: ROM `src/db.c:1040-1044 load_resets` and
-            # `src/db.c:1788 reset_room` use `arg4` raw — no `max(1, arg4)`
-            # floor.  Shipped ROM area files (`area/*.are`) never use
-            # `arg4 == 0` for a P reset (77 occurrences, all `arg4 == 1`),
-            # so this defensive floor is unreachable on shipped data.
-            # Kept to preserve current behavior on degenerate custom areas
-            # that explicitly request `arg4 == 0` (which ROM would treat
-            # as "spawn 0 contained items" via `while (count < 0)` no-op).
-            # See docs/parity/audits/ARITHMETIC_BOUNDARY.md row 50 (⛔ N/A).
-            if arg4 == 0:
-                arg4 = 1
+        # ARITH-207/209: P resets use arg4 raw. ROM `src/db.c:1040-1044
+        # load_resets` reads arg4 via fread_number with no floor, and
+        # `src/db.c:1822 reset_room` runs `while (count < pReset->arg4)`,
+        # so `arg4 == 0` legitimately spawns zero contained items. The old
+        # `if arg4 == 0: arg4 = 1` floor invented a guarantee ROM never
+        # makes; removed for byte-faithful parity on custom areas.
 
         reset = ResetJson(command=command, arg1=arg1, arg2=arg2, arg3=arg3, arg4=arg4)
         room_vnum, last_room_vnum = _resolve_room_target(command, reset, last_room_vnum)

@@ -437,6 +437,72 @@ def test_p_reset_limit_formula():
     assert any(getattr(o.prototype, "vnum", None) == 9998 for o in container.contained_items)
 
 
+def test_p_reset_arg4_zero_places_no_items():
+    """ARITH-207/209: P reset with arg4 == 0 places ZERO contained items.
+
+    ROM src/db.c:1822 `while (count < pReset->arg4)` uses arg4 raw, so
+    arg4 == 0 is a legitimate no-op (zero iterations). Python floored
+    arg4 to 1 (`target_count = max(1, ...)` at reset_handler.py), wrongly
+    spawning one item. Mirrors ROM reset_room O/P handling with no floor.
+    """
+    initialize_world("area/area.lst")
+
+    room = room_registry[3001]
+    area = room.area
+    assert area is not None
+
+    room.contents.clear()
+
+    container_proto = ObjIndex(
+        vnum=9999, short_descr="a container", item_type=int(ItemType.CONTAINER), value=[100, 0, 0, 0, 0]
+    )
+    obj_registry[9999] = container_proto
+    item_proto = ObjIndex(vnum=9998, short_descr="an item", item_type=int(ItemType.TRASH))
+    obj_registry[9998] = item_proto
+
+    # P reset with arg4 == 0 → ROM `while (count < 0)` spawns nothing.
+    area.resets = [
+        ResetJson(command="O", arg1=9999, arg2=1, arg3=3001, arg4=0),
+        ResetJson(command="P", arg1=9998, arg2=999, arg3=9999, arg4=0),
+    ]
+    obj_registry[9998].count = 0
+    apply_resets(area)
+
+    container = next((o for o in room.contents if getattr(o.prototype, "vnum", None) == 9999), None)
+    assert container is not None
+    item_count = sum(1 for o in container.contained_items if getattr(o.prototype, "vnum", None) == 9998)
+    assert item_count == 0
+
+
+def test_p_reset_loader_preserves_arg4_zero(tmp_path):
+    """ARITH-209: JSON loader must NOT floor a P reset's arg4 == 0 up to 1.
+
+    ROM src/db.c:1040-1044 `load_resets` reads arg4 raw via fread_number
+    with no floor; the Python loader previously coerced `arg4 == 0 -> 1`.
+    """
+    import json
+
+    from mud.loaders.json_loader import load_area_from_json
+
+    area_json = {
+        "name": "Arg4 Zero Area",
+        "vnum": 9990,
+        "min_vnum": 9990,
+        "max_vnum": 9990,
+        "rooms": [],
+        "resets": [
+            {"command": "P", "arg1": 9998, "arg2": 999, "arg3": 9999, "arg4": 0},
+        ],
+    }
+    path = tmp_path / "arg4zero.json"
+    path.write_text(json.dumps(area_json))
+
+    area = load_area_from_json(str(path))
+    p_resets = [r for r in area.resets if r.command == "P"]
+    assert len(p_resets) == 1
+    assert p_resets[0].arg4 == 0
+
+
 def test_p_reset_arg4_count_formula():
     """Test P reset creates objects until count reaches arg4"""
     initialize_world("area/area.lst")

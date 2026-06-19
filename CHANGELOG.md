@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ARITH-207 / ARITH-209: P-reset `arg4 == 0` no longer floored to 1 — places zero items.**
+  ROM `reset_room` runs `while (count < pReset->arg4)` (`src/db.c:1822`) with arg4
+  raw, and `load_resets` (`src/db.c:1040-1044`) reads it without a floor, so a P
+  reset with `arg4 == 0` legitimately puts zero objects in the container. Python
+  floored arg4 at both the JSON loader (`arg4 == 0 → 1`) and the runtime
+  (`target_count = max(1, …)`), wrongly spawning one item on custom OLC areas that
+  request `arg4 == 0`. Both floors removed; the two sites now use raw `arg4`. This
+  also resolves the stale ARITH-207 (❌ MISSING) / ARITH-209 (⛔ N/A) doc
+  contradiction — the floor was reachable on degenerate custom data, not dead.
 - **ARITH-206: M-reset room limit no longer floored to 1.**
   ROM's M-reset room check is `if (count >= pReset->arg4) break` (`src/db.c:1715`)
   with arg4 used raw, so `arg4 == 0` means the mob is never placed in that room.

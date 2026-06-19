@@ -668,12 +668,11 @@ def apply_resets(area: Area) -> None:
             # Only set last=FALSE on failure, last=TRUE on success (mirroring ROM line 1817, 1835)
             obj_vnum, _ = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, obj_registry)
             container_vnum = reset.arg3 or 0
-            # ARITH-209: ROM `src/db.c:1788 reset_room` uses `pReset->arg4`
-            # raw in `while (count < pReset->arg4)` — no floor.  Shipped ROM
-            # areas never use `arg4 == 0` (77 P resets, all `arg4 == 1`),
-            # so the `max(1, ...)` floor is unreachable on shipped data.
-            # See docs/parity/audits/ARITHMETIC_BOUNDARY.md row 50 (⛔ N/A).
-            target_count = max(1, int(reset.arg4 or 1))
+            # ARITH-207/209: ROM `src/db.c:1822 reset_room` uses `pReset->arg4`
+            # raw in `while (count < pReset->arg4)` — no floor. `arg4 == 0`
+            # is a legitimate no-op (zero iterations); the old `max(1, ...)`
+            # floor wrongly spawned one item. Mirror ROM's raw arg4.
+            target_count = int(reset.arg4 or 0)
             limit_raw = reset.arg2 if reset.arg2 is not None else 0
             limit = _resolve_reset_limit(limit_raw)
             if obj_vnum <= 0 or container_vnum <= 0:
