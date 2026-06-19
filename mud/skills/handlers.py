@@ -2244,8 +2244,8 @@ def charm_person(caster: Character, target: Character | None = None) -> bool:
         raise ValueError("charm_person requires a target")
 
     if target is caster:
-        if hasattr(caster, "messages") and isinstance(caster.messages, list):
-            caster.messages.append("You like yourself even better!")
+        # ROM src/magic.c:1358 send_to_char(..., ch) — single delivery. INV-001.
+        _send_to_char(caster, "You like yourself even better!")
         return False
 
     if target.has_affect(AffectFlag.CHARM) or target.has_spell_effect("charm person"):
@@ -2267,8 +2267,8 @@ def charm_person(caster: Character, target: Character | None = None) -> bool:
     if room is not None:
         flags = int(getattr(room, "room_flags", 0) or 0)
         if flags & int(RoomFlag.ROOM_LAW):
-            if hasattr(caster, "messages") and isinstance(caster.messages, list):
-                caster.messages.append("The mayor does not allow charming in the city limits.")
+            # ROM src/magic.c:1371 send_to_char(..., ch) — single delivery. INV-001.
+            _send_to_char(caster, "The mayor does not allow charming in the city limits.")
             return False
 
     if saves_spell(level, target, DamageType.CHARM):
@@ -2306,12 +2306,10 @@ def charm_person(caster: Character, target: Character | None = None) -> bool:
 
     if caster is not target:
         # MAGIC-039: ROM act("$N looks at you with adoring eyes.", ch, NULL, victim,
-        # TO_CHAR) (magic.c:1390) — $N = PERS(victim), cap.
-        caster_messages = getattr(caster, "messages", None)
-        if isinstance(caster_messages, list):
-            caster_messages.append(
-                act_format("$N looks at you with adoring eyes.", recipient=caster, actor=caster, arg2=target)
-            )
+        # TO_CHAR) (magic.c:1390) — $N = PERS(victim), cap. INV-001 single delivery.
+        _send_to_char(
+            caster, act_format("$N looks at you with adoring eyes.", recipient=caster, actor=caster, arg2=target)
+        )
 
     return True
 

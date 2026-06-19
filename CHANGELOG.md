@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-001 debt burndown — charm_person caster lines single-delivery
+  (`mud/skills/handlers.py`)** — `charm_person` appended all three
+  caster-facing lines straight to `caster.messages`: "You like yourself even
+  better!" (self-charm), "The mayor does not allow charming in the city
+  limits." (ROOM_LAW), and the "$N looks at you with adoring eyes." TO_CHAR
+  success line. The mailbox is only drained after the caster's *next* command,
+  so an idle connected PC would not see the line at cast time (INV-001
+  SINGLE-DELIVERY wrong-channel class, same shape as SPEC-017). All three now
+  route through `_send_to_char` (`push_message`: async socket for connected PCs
+  *xor* mailbox fallback), mirroring ROM `src/magic.c:1358`/`1371`/`1390`
+  (`send_to_char(..., ch)` / `act(..., TO_CHAR)`). Closes three `_INV001_DEBT`
+  sites (7 → 4 frozen); their allowlist lines in
+  `tests/test_message_delivery_convention.py` are deleted. Test:
+  `tests/integration/test_charm_person_delivery_channel.py`.
+
 - **INV-001 debt burndown — skill-registry caster lines single-delivery
   (`mud/skills/registry.py`)** — `SkillRegistry.use` (failed cast) and
   `_check_improve` (the "You have become better at…" / "You learn from your

@@ -82,9 +82,6 @@ _LEGITIMATE: set[tuple[str, str]] = {
 _INV001_DEBT: set[tuple[str, str]] = {
     ("mud/commands/dispatcher.py", 'snooper_messages = getattr(snooper, "messages", None)'),
     ("mud/commands/communication.py", "target.messages.append(message)"),
-    ("mud/skills/handlers.py", 'caster.messages.append("You like yourself even better!")'),
-    ("mud/skills/handlers.py", 'caster.messages.append("The mayor does not allow charming in the city limits.")'),
-    ("mud/skills/handlers.py", 'caster_messages = getattr(caster, "messages", None)'),
     ("mud/skills/handlers.py", "caster.messages.append(caster_msg)"),
     ("mud/skills/registry.py", 'messages = getattr(caster, "messages", None)'),
 }
