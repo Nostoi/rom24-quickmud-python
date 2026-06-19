@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-001 debt burndown — login enter-game broadcast single-delivery
+  (`mud/net/connection.py`)** — `broadcast_entry_to_room` appended the
+  "$n has entered the game." TO_ROOM line (and the pet's) straight to each room
+  occupant's `messages` mailbox, which the connection read loop only drains after
+  the onlooker's *next* command. An idle connected player therefore would not see
+  an arrival announcement until they typed something (INV-001 SINGLE-DELIVERY
+  wrong-channel class). Both per-recipient `act_format` legs now route through
+  `push_message` (async socket for connected PCs, mailbox fallback for
+  tests/disconnected), mirroring ROM `src/nanny.c:804`/`813-814`
+  `act(..., TO_ROOM)`. The per-occupant loop is kept (ROM's `act` masks `$n`
+  per-recipient via `can_see`). Second `_INV001_DEBT` site burned down (12 → 11);
+  its allowlist line in `tests/test_message_delivery_convention.py` is deleted.
+  Test: `tests/integration/test_nanny_login_parity.py::test_login_entry_reaches_connected_onlooker_on_socket`.
+
 - **INV-001 debt burndown — THIEF promotion line single-delivery
   (`mud/commands/thief_skills.py`)** — the "*** You are now a THIEF!! ***"
   message a PC earns when caught stealing from another PC was appended straight

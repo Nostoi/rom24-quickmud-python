@@ -58,6 +58,7 @@ from mud.security.bans import BanFlag
 from mud.security.hash_utils import hash_password
 from mud.skills.groups import get_group, list_groups
 from mud.utils.act import act_format
+from mud.utils.messaging import push_message
 from mud.utils.prompt import bust_a_prompt
 from mud.wiznet import WiznetFlag, wiznet
 
@@ -763,9 +764,10 @@ def broadcast_entry_to_room(char: Character) -> None:
             message = act_format("$n has entered the game.", recipient=occupant, actor=char)
             if not message:
                 continue
-            messages = getattr(occupant, "messages", None)
-            if isinstance(messages, list):
-                messages.append(message)
+            # mirroring ROM src/nanny.c:804 act(..., TO_ROOM) — single-channel
+            # delivery (INV-001): async socket for a connected onlooker, mailbox
+            # fallback for tests/disconnected. Never the mailbox alone.
+            push_message(occupant, message)
 
     # mirroring ROM src/nanny.c:810-815 — pet follows owner into room and emits TO_ROOM
     pet = getattr(char, "pet", None)
@@ -784,9 +786,9 @@ def broadcast_entry_to_room(char: Character) -> None:
         message = act_format("$n has entered the game.", recipient=occupant, actor=pet)
         if not message:
             continue
-        messages = getattr(occupant, "messages", None)
-        if isinstance(messages, list):
-            messages.append(message)
+        # mirroring ROM src/nanny.c:813-814 act(..., TO_ROOM) — single-channel
+        # delivery (INV-001), as above.
+        push_message(occupant, message)
 
 
 def apply_login_state_refresh(char: Character) -> None:

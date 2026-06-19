@@ -157,6 +157,64 @@ def test_login_pet_follows_owner_into_room():
     assert all("entered the game" not in m for m in (pet.messages or []))
 
 
+class _RecordingConn:
+    def __init__(self) -> None:
+        self.sent: list[str] = []
+
+    async def send_line(self, msg: str) -> None:
+        self.sent.append(msg)
+
+    async def send(self, msg: str) -> None:
+        self.sent.append(msg)
+
+
+@pytest.mark.p1
+def test_login_entry_reaches_connected_onlooker_on_socket():
+    """INV-001 — the "$n has entered the game." TO_ROOM broadcast must reach a
+    *connected* onlooker on the socket, not the mailbox alone.
+
+    ROM C: src/nanny.c:804 — `act("$n has entered the game.", ch, NULL, NULL,
+    TO_ROOM)` writes to each room occupant's descriptor via `write_to_buffer` (a
+    single socket channel). The Python port appended straight to
+    `occupant.messages`, the mailbox the connection read loop only drains after
+    the onlooker's NEXT command — so an idle connected player would not see the
+    arrival until they typed something (INV-001 SINGLE-DELIVERY wrong-channel
+    class). Fix routes the per-recipient line through `push_message` (async
+    socket for connected PCs, mailbox fallback for tests/disconnected).
+    """
+    import asyncio
+
+    from mud.models.room import Room
+    from mud.net.connection import broadcast_entry_to_room
+
+    async def scenario():
+        room = Room(vnum=9003, name="Connected Login Room", description="", room_flags=0, sector_type=0)
+        room.people = []
+
+        arriver = Character(name="Arriver", level=10, is_npc=False)
+        onlooker = Character(name="Onlooker", level=10, is_npc=False)
+        onlooker.messages = []
+        conn = _RecordingConn()
+        onlooker.connection = conn
+
+        for occupant in (arriver, onlooker):
+            room.people.append(occupant)
+            occupant.room = room
+
+        broadcast_entry_to_room(arriver)
+        for _ in range(5):
+            await asyncio.sleep(0)
+        return conn.sent, list(onlooker.messages)
+
+    sent, mailbox = asyncio.run(scenario())
+    assert sent.count("Arriver has entered the game.") == 1, (
+        f"login arrival must reach the connected onlooker's socket; sent={sent}"
+    )
+    assert all("entered the game" not in m for m in mailbox), (
+        f"login arrival stranded in mailbox for a connected onlooker: {mailbox}"
+    )
+
+
 @pytest.mark.p1
 def test_denied_character_is_blocked_from_login():
     """NANNY-002 — characters with PLR_DENY must be denied access.
