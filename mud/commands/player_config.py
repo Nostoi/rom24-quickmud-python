@@ -127,6 +127,14 @@ def do_delete(char: Character, args: str) -> str:
             # Confirmed - delete the character
             char_name = getattr(char, "name", "Unknown")
 
+            # DELETE-002 — ROM src/act_comm.c:62 broadcasts the confirm pass to
+            # staff BEFORE the quit + unlink (`wiznet("$N turns $Mself into line
+            # noise.", ch, NULL, 0, 0, 0)`). Fire it here while `char` is still
+            # valid; flag=0/flag_skip=0/min_level=0 → every WIZ_ON immortal sees it.
+            from mud.wiznet import wiznet
+
+            wiznet("$N turns $Mself into line noise.", char, None, None, None, 0)
+
             # Stop fighting
             if hasattr(char, "fighting") and char.fighting:
                 char.fighting = None
@@ -153,6 +161,14 @@ def do_delete(char: Character, args: str) -> str:
         return "Just type delete. No argument."
 
     pcdata.confirm_delete = True
+
+    # DELETE-002 — ROM src/act_comm.c:92 broadcasts the request pass to staff at
+    # the deleter's own trust level (`wiznet("$N is contemplating deletion.", ch,
+    # NULL, 0, 0, get_trust(ch))`) — only immortals trusted >= the deleter see it.
+    from mud.commands.imm_commands import get_trust
+    from mud.wiznet import wiznet
+
+    wiznet("$N is contemplating deletion.", char, None, None, None, get_trust(char))
 
     return (
         "Type delete again to confirm this command.\n"

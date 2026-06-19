@@ -26,6 +26,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **DELETE-002 — `do_delete` now emits the two ROM staff wiznet lines
+  (`mud/commands/player_config.py`, `src/act_comm.c:62`/`:92`)** — ROM's
+  `do_delete` broadcasts `"$N is contemplating deletion."` on the request pass
+  (`min_level = get_trust(ch)`) and `"$N turns $Mself into line noise."` on the
+  confirm pass (`min_level = 0`, fired before the quit + unlink). The Python port
+  emitted neither, so immortals got no notice when a character armed or completed
+  self-deletion. Both calls route through the existing `mud.wiznet.wiznet`
+  chokepoint (act-format `$N`/`$M`, single-delivery via `push_message`). Tests:
+  `tests/test_wiznet.py::test_do_delete_request_broadcasts_contemplating_deletion_wiznet`,
+  `::test_do_delete_confirm_broadcasts_line_noise_wiznet`.
 - **STEAL-015 — steal *skill handler* now applies ROM `is_safe`
   (`mud/skills/handlers.py:steal`, `src/act_obj.c:2191`)** — the `steal` skill
   function (reachable via the skill system, registered at `data/skills.json`)

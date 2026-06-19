@@ -3,7 +3,7 @@ from types import SimpleNamespace
 import mud.net.connection as net_connection
 from mud import registry as global_registry
 from mud.commands.dispatcher import process_command
-from mud.models.character import Character, character_registry
+from mud.models.character import Character, PCData, character_registry
 from mud.models.constants import LEVEL_IMMORTAL, Sector, Sex
 from mud.models.room import Room
 from mud.net.connection import announce_wiznet_login, announce_wiznet_logout
@@ -966,3 +966,65 @@ def test_announce_wiznet_new_player_without_host_broadcasts_sites(capsys):
     expected = _wiznet_payload("Lyra@(unknown) new player.")
     assert plain_listener.messages == [expected]
     assert _wiznet_payload("Lyra@(unknown) new player.", prefix=True) in prefix_listener.messages
+
+
+def _deleter_character(name: str) -> Character:
+    """A connected mortal PC with pcdata, the subject of a do_delete call."""
+    char = _connected_character(name=name, is_admin=False, is_npc=False, level=10, trust=10)
+    char.pcdata = PCData()
+    return char
+
+
+def test_do_delete_request_broadcasts_contemplating_deletion_wiznet():
+    # DELETE-002 — ROM src/act_comm.c:92: the first (request) pass of do_delete
+    # emits `wiznet("$N is contemplating deletion.", ch, NULL, 0, 0, get_trust(ch))`.
+    # Immortals with WIZ_ON (and trust >= the deleter's trust) must see it.
+    deleter = _deleter_character("Doomed")
+    watcher = _connected_character(
+        name="Watcher",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        trust=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
+    character_registry.extend([deleter, watcher])
+
+    from mud.commands.player_config import do_delete
+
+    do_delete(deleter, "")
+
+    assert deleter.pcdata.confirm_delete is True
+    # INV-029: act_new caps the first visible letter of the rendered line.
+    assert _wiznet_payload("Doomed is contemplating deletion.") in watcher.messages
+
+
+def test_do_delete_confirm_broadcasts_line_noise_wiznet(monkeypatch):
+    # DELETE-002 — ROM src/act_comm.c:62: the confirm pass emits
+    # `wiznet("$N turns $Mself into line noise.", ch, NULL, 0, 0, 0)` BEFORE the
+    # quit + unlink. Stub the heavy quit/delete tail so the test isolates the
+    # broadcast; the $M reflexive must resolve from the deleter's sex (male here).
+    deleter = _deleter_character("Doomed")
+    deleter.sex = Sex.MALE
+    deleter.pcdata.confirm_delete = True
+    watcher = _connected_character(
+        name="Watcher",
+        is_admin=True,
+        is_npc=False,
+        level=LEVEL_IMMORTAL,
+        trust=LEVEL_IMMORTAL,
+        wiznet=int(WiznetFlag.WIZ_ON),
+    )
+    character_registry.extend([deleter, watcher])
+
+    import mud.account.account_manager as account_manager
+    import mud.commands.session as session_mod
+
+    monkeypatch.setattr(session_mod, "do_quit", lambda *a, **k: "")
+    monkeypatch.setattr(account_manager, "delete_character", lambda *a, **k: None)
+
+    from mud.commands.player_config import do_delete
+
+    do_delete(deleter, "")
+
+    assert _wiznet_payload("Doomed turns himself into line noise.") in watcher.messages
