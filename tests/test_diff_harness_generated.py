@@ -607,6 +607,58 @@ def test_generated_compare_objects_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+@pytest.mark.xfail(
+    strict=True,
+    reason="FINDING-034 / WEAR-012: Python _wear_all skips lights, weapons, and "
+    "HOLD items that ROM's `wear all` equips. Auto-flips to a hard failure when "
+    "the shared wear_obj(ch, obj, fReplace) refactor lands.",
+)
+def test_generated_wear_all_matches_live_c():
+    """``wear all`` bulk-loop form against the live C oracle.
+
+    NOTE: currently ``xfail(strict=True)`` — this scenario SURFACED FINDING-034:
+    ROM ``wear all`` (`src/act_obj.c:1712-1723`) calls ``wear_obj(ch, obj,
+    FALSE)`` unconditionally, lighting+holding the torch (and wielding weapons /
+    holding HOLD items), whereas Python's ``_wear_all`` skips all three classes.
+    The fix is tracked as WEAR-012; the decorator will auto-flip to a hard
+    failure once the shared ``wear_obj`` dispatch lands.
+
+    ROM ``do_wear`` (src/act_obj.c:1712-1723) loops ``ch->carrying`` and calls
+    ``wear_obj(ch, obj, FALSE)`` for every item with ``wear_loc == WEAR_NONE``.
+    This pins that loop with two items that land in *distinct* slots — a scale
+    mail jacket (3045, WEAR_BODY) and a torch (3030, WEAR_LIGHT) — so there is no
+    slot contention and ``fReplace == FALSE`` never has to skip an occupied slot.
+    (``wear all`` over two weapons is the dual-wield arm — a separate probe.)
+
+    Carry list is head-insert LIFO: ``get jacket`` then ``get torch`` ⇒ carry
+    ``[torch, jacket]``, so ``wear all`` holds the torch first, then wears the
+    jacket; ``look`` confirms both moved to equipment.  No RNG on the wear path,
+    so no ``__seed`` bracket.
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_wear_all",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3045",  # scale mail jacket (WEAR_BODY)
+            "__oload=3030",  # torch (WEAR_LIGHT)
+            "get jacket",
+            "get torch",  # carry [torch, jacket]
+            "wear all",  # hold torch, wear jacket
+            "look",  # equipment populated, carry empty
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_sacrifice_lifecycle_matches_live_c():
     """``sacrifice`` an object to Mota — ``do_sacrifice`` (Class-10 lifecycle).
 

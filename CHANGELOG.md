@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Found (open, gated `xfail`)
+
+- **FINDING-034 / WEAR-012: `wear all` silently skips lights, weapons, and HOLD
+  items that ROM equips.** The differential harness's new `wear all` scenario
+  surfaced a real parity divergence — ROM `wear all` (`src/act_obj.c`) calls
+  `wear_obj(ch, obj, FALSE)` over every carried `WEAR_NONE` item (lighting+holding
+  lights, wielding weapons, holding HOLD items), whereas Python's `_wear_all`
+  reimplements the loop and `continue`s past all three. Filed in
+  `tools/diff_harness/FINDINGS.md` (FINDING-034) and `ACT_OBJ_C_AUDIT.md`
+  (WEAR-012); the scenario `test_generated_wear_all_matches_live_c` is committed
+  as `xfail(strict=True)` so it auto-flips to a hard failure when the fix lands.
+  Fix design (extract a shared `wear_obj(ch, obj, fReplace)`) is recorded in the
+  finding for the gap-closer.
+
 ### Added
 
 - **Differential-harness widening: `sacrifice` object-extraction lifecycle**

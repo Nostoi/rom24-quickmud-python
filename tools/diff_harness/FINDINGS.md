@@ -8,6 +8,61 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-034 — `wear all` silently skips lights, weapons, and HOLD items that ROM equips — ❌ OPEN
+
+**Status:** ❌ OPEN (surfaced 2026-06-19, v2.14.138). Gated as
+`@pytest.mark.xfail(strict=True)` on
+`test_generated_wear_all_matches_live_c` in
+`tests/test_diff_harness_generated.py`; the decorator auto-flips to a hard
+failure the moment the fix lands. Fix-gap filed as **WEAR-012** in
+`docs/parity/ACT_OBJ_C_AUDIT.md`.
+
+**Scenario:** `test_generated_wear_all_matches_live_c` —
+`['__oload=3045', '__oload=3030', 'get jacket', 'get torch', 'wear all', 'look']`.
+Carry list (head-insert LIFO) is `[torch, jacket]` entering `wear all`.
+
+**Divergence (step `wear all` · output):**
+- **C:** `['You light a torch and hold it.', 'You wear a scale mail jacket on your torso.']`
+- **Python:** `['You wear a scale mail jacket on your torso.']` — the torch is
+  never held; only the body-slot jacket is worn.
+
+**Root cause:** ROM `do_wear` (`src/act_obj.c:1712-1723`) implements `wear all`
+as an *unconditional* `wear_obj(ch, obj, FALSE)` over every carried object with
+`wear_loc == WEAR_NONE` — and `wear_obj` dispatches ITEM_LIGHT → WEAR_LIGHT,
+ITEM_WEAPON → wield, and HOLD-flag items → WEAR_HOLD. The Python port's
+`_wear_all` (`mud/commands/equipment.py:452-514`) is a **parallel
+reimplementation** that explicitly skips three classes ROM equips:
+- `if item_type == ItemType.WEAPON: continue` (line 479) — ROM wields it.
+- `if wear_flags & WearFlag.HOLD: continue` (line 481) — ROM holds it.
+- `_get_wear_location(...)` returns `None` for ITEM_LIGHT (no wear-flag bit maps
+  to the LIGHT slot), so the light hits `if not wear_loc: continue` (486) — ROM
+  lights+holds it.
+
+The single-item path (`do_wear <item>`) handles all three correctly (the
+ITEM_LIGHT branch at `equipment.py:195-226` produces the exact C message), so the
+divergence is **`wear all`-only** — the bulk loop bypasses the single-item
+dispatch instead of calling it per object.
+
+**Blast radius:** any `wear all` where the carry list holds a light, a weapon, or
+a HOLD-flag item. The jacket+torch scenario only catches the light skip; weapons
+and hold-items diverge identically (verified by source reading of both loops).
+
+**Severity:** MEDIUM — `wear all` is a common player convenience verb; a player
+who `wear all`s after looting silently fails to wield their weapon / ready their
+light, diverging from ROM in observable gameplay (not cosmetic).
+
+**Fix design (for the closer — do NOT call `do_wear` in a loop):** ROM's
+`wear all` passes `fReplace = FALSE`, which **skips** occupied slots silently;
+`do_wear <item>` passes `fReplace = TRUE`, which force-replaces. Calling the
+single-item `do_wear` in a loop would wrongly force-replace. The faithful port is
+to extract a shared `wear_obj(ch, obj, fReplace)` mirroring `src/act_obj.c`
+(ITEM_LIGHT-first dispatch, then weapon/wear-flag/HOLD branches, honoring
+`fReplace`), then have `do_wear <item>` call it with `True` and `_wear_all` call
+it with `False`. `_wear_all` has a single caller (`do_wear`); the real surface is
+the not-yet-existing shared `wear_obj`. Route via `/rom-gap-closer` on WEAR-012.
+
+---
+
 ## FINDING-033 — `look` output: identical objects grouped with `( N)` prefix in C, listed individually in Python — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-10 (v2.13.65)
