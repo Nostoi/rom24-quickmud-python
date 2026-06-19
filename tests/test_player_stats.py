@@ -200,6 +200,26 @@ class TestStatBoundsAndClamping:
         assert player.get_curr_stat(Stat.WIS) == 18
         assert player.get_curr_stat(Stat.DEX) == 25
 
+    def test_get_curr_stat_caps_at_race_class_ceiling_not_flat_25(self):
+        """get_curr_stat() ceiling is race/class-aware, not a flat 25.
+
+        ARITH-114: mirrors ROM src/handler.c:872 get_curr_stat — for a PC the
+        effective-stat ceiling is ``pc_race_table[race].max_stats[stat] + 4``
+        (``+2`` if the class's prime stat, ``+1`` if human), capped at 25. The
+        prior Python clamp used a flat 25, so equipment/spell ``mod_stat`` buffs
+        on a low-cap race could push the effective stat above ROM's soft cap.
+        """
+        from mud.models.races import race_lookup
+
+        # elf STR max_stats = 16 → ceiling = 16 + 4 = 20 (non-prime, non-human).
+        player = create_player_with_initialized_stat_arrays(
+            "ElfCap", perm_stats=[16, 13, 13, 13, 13], mod_stats=[8, 0, 0, 0, 0]
+        )
+        player.race = race_lookup("elf")
+        player.ch_class = 0  # mage (prime INT) → STR is NOT the prime stat
+        # total = 16 + 8 = 24; ROM caps at 20, the flat-25 bug returned 24.
+        assert player.get_curr_stat(Stat.STR) == 20
+
     def test_get_curr_stat_clamps_to_minimum_3(self):
         """get_curr_stat() should clamp total to 3 (ROM URANGE(3,...,25), src/handler.c:872).
 

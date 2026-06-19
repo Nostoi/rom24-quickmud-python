@@ -822,6 +822,52 @@ def get_max_train(ch: Character, stat: int) -> int:
     return min(max_stat, 25)  # ROM UMIN(max, 25)
 
 
+def get_curr_stat_max(ch: Character, stat: int) -> int:
+    """Return the effective-stat ceiling used by ``get_curr_stat``.
+
+    ROM C: src/handler.c:872 (``get_curr_stat``) — distinct from ``get_max_train``
+    (the *trainable* cap). The effective ceiling lets equipment/spell ``mod_stat``
+    buffs push a stat up to::
+
+        max = pc_race_table[race].max_stats[stat] + 4   // +4 headroom over trainable
+        if class_table[class].attr_prime == stat: max += 2
+        if race == human:                          max += 1
+        max = UMIN(max, 25)
+
+    NPCs and immortals (``level > LEVEL_IMMORTAL``) always cap at 25.
+    """
+    from mud.models.classes import CLASS_TABLE
+    from mud.models.constants import LEVEL_IMMORTAL
+    from mud.models.races import get_pc_race, get_race_by_index
+
+    is_npc = getattr(ch, "is_npc", False)
+    level = getattr(ch, "level", 1)
+    # ROM: IS_NPC(ch) || ch->level > LEVEL_IMMORTAL -> 25 (strict >).
+    if is_npc or level > LEVEL_IMMORTAL:
+        return 25
+
+    # ch.race is an int index into the full RACE_TABLE (sentinel-offset); bridge
+    # to the pc_race_table by name as get_max_train does (TRAIN-004).
+    race = get_race_by_index(getattr(ch, "race", 0))
+    if race is None:
+        return 25
+    pc_race = get_pc_race(race.name)
+    if pc_race is None or stat < 0 or stat >= len(pc_race.max_stats):
+        # No pc_race row (e.g. an NPC/sentinel race) → ROM's 25, not a race cap.
+        return 25
+
+    max_stat = pc_race.max_stats[stat] + 4  # ROM src/handler.c — +4 headroom
+    class_index = getattr(ch, "ch_class", 0)
+    if 0 <= class_index < len(CLASS_TABLE):
+        prime_stat = int(CLASS_TABLE[class_index].prime_stat)
+        if stat == prime_stat:
+            max_stat += 2  # ROM: class prime stat → +2 (NOT the +3/+2 of get_max_train)
+    if race.name == "human":
+        max_stat += 1  # ROM: race == race_lookup("human") → +1
+
+    return min(max_stat, 25)  # ROM UMIN(max, 25)
+
+
 # ==============================================================================
 # Money Functions (ROM C handler.c)
 # ==============================================================================

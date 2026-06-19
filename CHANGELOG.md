@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ARITH-114: `get_curr_stat` ceiling is now race/class-aware, not a flat 25.**
+  ROM `get_curr_stat` (`src/handler.c:872`) caps a PC's effective stat at
+  `pc_race_table[race].max_stats[stat] + 4` (`+2` if the class's prime stat,
+  `+1` if human), `UMIN(., 25)`; only NPCs/immortals use a flat 25. Python had
+  clamped every character to 25, so equipment/spell `mod_stat` buffs could push
+  a low-cap race above ROM's soft cap (e.g. an elf with STR 16 + 8 from gear
+  read 24 instead of ROM's 20 — inflating combat, regen, and carry capacity).
+  Added a `get_curr_stat_max` helper (distinct from `get_max_train`, the
+  trainable cap) and routed the model accessor through it.
 - **BUY-010: keeper coin split on a negative-total buy now uses C truncation.**
   ROM `do_buy` increments the keeper's gold/silver independently
   (`keeper->gold += cost*number/100; keeper->silver += cost*number -

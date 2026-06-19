@@ -660,10 +660,11 @@ class Character:
     def get_curr_stat(self, stat: int | Stat) -> int | None:
         """Compute current stat (perm + mod) clamped to ROM 3..max.
 
-        Mirrors ROM `src/handler.c:872` — `URANGE(3, perm+mod, max)`.
-        Minimum stat is 3, never 0. The ceiling divergence (Python uses
-        a flat 25; ROM uses race/class-specific `max_stat` for PCs and
-        only 25 for NPCs/immortals) is tracked as ARITH-114.
+        Mirrors ROM `src/handler.c:872` — `URANGE(3, perm+mod, max)` where
+        `max` is the race/class-specific ceiling (`get_curr_stat_max`): for a
+        PC, `pc_race_table[race].max_stats[stat] + 4` (+2 prime, +1 human),
+        capped at 25; NPCs/immortals use a flat 25. ARITH-114 closed the prior
+        flat-25 divergence that let gear push a low-cap race past ROM's ceiling.
         """
 
         idx = int(stat)
@@ -672,7 +673,11 @@ class Character:
         if base_val is None and mod_val is None:
             return None
         total = (base_val or 0) + (mod_val or 0)
-        return max(3, min(25, total))
+        # ARITH-114: mirroring ROM src/handler.c:872 — URANGE(3, perm+mod, max).
+        from mud.handler import get_curr_stat_max
+
+        ceiling = get_curr_stat_max(self, idx)
+        return max(3, min(ceiling, total))
 
     def get_int_learn_rate(self) -> int:
         """Return int_app.learn value for the character's current INT."""
