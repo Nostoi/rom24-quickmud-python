@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **SELL-005: the sell-haggle 95%-of-buy-price cap now applies unconditionally.**
+  ROM `do_sell` caps the haggled-up sale at `95 * get_cost(keeper, obj, TRUE) / 100`
+  (`src/act_obj.c:2931`) with no guard, so a zero buy price clamps the sale to 0.
+  Python skipped the cap when the buy price was 0, paying the full haggled price.
+  Test: `tests/test_shops.py::test_sell_haggle_cap_applies_when_buy_price_zero`.
 - **BUY-009: buy-haggle discount now scales from the runtime object cost.**
   ROM `do_buy` computes `cost -= obj->cost / 2 * roll / 100`
   (`src/act_obj.c:2727`), using the runtime `obj->cost`. Python's discount base

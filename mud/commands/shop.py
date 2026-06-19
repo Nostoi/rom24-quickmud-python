@@ -954,9 +954,11 @@ def do_sell(char: Character, args: str) -> str:
         base_cost = int(getattr(proto, "cost", getattr(selected_obj, "cost", 0)) or 0)
         bonus = (base_cost // 2) * roll // 100
         price += bonus
+        # SELL-005: ROM src/act_obj.c:2931 — `cost = UMIN(cost, 95 * get_cost(keeper,
+        # obj, TRUE) / 100)` is unconditional; when the buy price is 0 this clamps the
+        # sale to 0. Python had guarded the cap behind `if buy_price > 0`.
         buy_price = _get_cost(keeper, selected_obj, buy=True)
-        if buy_price > 0:
-            price = min(price, (95 * buy_price) // 100)
+        price = min(price, (95 * buy_price) // 100)
         price = min(price, total_wealth)
         # INV-001 wrong-channel cousin: ROM src/act_obj.c:2929 sends this
         # directly to the descriptor.

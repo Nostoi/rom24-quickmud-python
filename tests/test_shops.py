@@ -1342,6 +1342,47 @@ def test_buy_blind_buyer_cannot_see_item():
         time_info.hour = previous_hour
 
 
+def test_sell_haggle_cap_applies_when_buy_price_zero():
+    # SELL-005: mirrors ROM src/act_obj.c:2931 — the sell-haggle cap
+    # `cost = UMIN(cost, 95 * get_cost(keeper, obj, TRUE) / 100)` is UNCONDITIONAL.
+    # When the buy price is 0 (profit_buy == 0), 95*0/100 = 0 clamps the sale to 0.
+    # Python guarded the cap behind `if buy_price > 0`, leaving the full price.
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Haggler", 3001)
+    char.gold = 0
+    char.silver = 0
+    char.skills = {"haggle": 95}
+    keeper = spawn_mob(3006)
+    assert keeper is not None
+    keeper.move_to_room(char.room)
+    keeper.gold = 100
+    keeper.silver = 0
+
+    raft = spawn_object(3050)
+    assert raft is not None
+    raft.prototype.short_descr = "a small river raft"
+    raft.prototype.item_type = int(ItemType.BOAT)
+    raft.prototype.cost = 100
+    raft.cost = 100
+    char.add_object(raft)
+
+    shop = shop_registry.get(3006)
+    saved_profit_buy = shop.profit_buy
+    previous_hour = time_info.hour
+    original_roll = rng_mm.number_percent
+    try:
+        time_info.hour = 10
+        shop.profit_buy = 0  # buy price → 0, so ROM's 95% cap clamps the sale to 0
+        rng_mm.number_percent = lambda: 40  # roll 40 < haggle 95 → succeeds
+        process_command(char, "sell raft")
+        # ROM: cost capped at 95 * 0 / 100 = 0 → player gains nothing.
+        assert _total_wealth(char) == 0
+    finally:
+        shop.profit_buy = saved_profit_buy
+        rng_mm.number_percent = original_roll
+        time_info.hour = previous_hour
+
+
 def test_buy_haggle_discount_uses_runtime_cost():
     # BUY-009: mirrors ROM src/act_obj.c:2727 — the buy-haggle discount is
     # `cost -= obj->cost / 2 * roll / 100`, using the RUNTIME obj->cost, not the
