@@ -76,7 +76,13 @@ def test_get_obj_carry_handles_prototype_name_none(crash_char):
 
 
 def test_look_obj_handles_dict_extra_descr(crash_char):
-    """BUG-EDDICT: prototype.extra_descr stored as list-of-dicts must work."""
+    """BUG-EDDICT: prototype.extra_descr stored as list-of-dicts must work.
+
+    Updated for LOOK-008: ``_look_obj`` is now keyword-gated per ROM
+    (src/act_info.c:1183-1212) — an extra description is shown only when the
+    lookup keyword matches it, not unconditionally. The dict-format ED parsing
+    this guards is still exercised by looking up the ED keyword "marble".
+    """
     proto = ObjIndex(
         vnum=99101,
         name="fountain",
@@ -86,7 +92,8 @@ def test_look_obj_handles_dict_extra_descr(crash_char):
     proto.extra_descr = [{"keyword": "fountain marble", "description": "Sparkling water."}]
     obj = Object(instance_id=None, prototype=proto)
 
-    result = _look_obj(crash_char, obj)
+    # "marble" matches the ED keyword → the dict-format ED is parsed and shown.
+    result = _look_obj(crash_char, obj, "marble")
     assert "Sparkling water." in result
 
 

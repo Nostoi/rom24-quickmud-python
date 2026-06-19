@@ -8,6 +8,32 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-036 — `look <character>` with no description renders the name, not the objective pronoun — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-19 (v2.14.141). Fixed under **LOOK-009**
+(`docs/parity/ACT_INFO_C_AUDIT.md`).
+
+**Scenario:** `test_generated_look_at_self_no_descr_matches_live_c` — `['look Tester']`
+(the sexless test char looking at itself; no character description set).
+
+**Divergence (step `look Tester` · output):**
+- **C:** `['You see nothing special about it.', 'Tester is in excellent condition.']`
+- **Python:** `['You see nothing special about Tester.', ...]`
+
+**Root cause:** ROM `show_char_to_char_1` (src/act_info.c:447-454) shows the
+victim's `description` if set, else `act("You see nothing special about $M.", ch,
+NULL, victim, TO_CHAR)`. `$M` renders the victim's OBJECTIVE PRONOUN (him/her/it
+— "it" for a sexless char). Python's `_look_char` (`mud/world/look.py`)
+substituted `short_descr`/`name`.
+
+**Fix:** render the line via `act_format("You see nothing special about $M.",
+recipient=char, actor=char, arg2=victim)`. Regression tests:
+`test_look009_no_descr_renders_objective_pronoun_not_name` (integration; sexless
+→ "it", male → "him") + `test_generated_look_at_self_no_descr_matches_live_c`
+(live C oracle).
+
+---
+
 ## FINDING-035 — `do_look`/`examine` on an object shows the description AND an extra description (ROM shows one or the other) — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-19 (v2.14.140). Fixed under **LOOK-008**

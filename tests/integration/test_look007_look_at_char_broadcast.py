@@ -52,3 +52,34 @@ def test_look007_look_at_self_broadcasts_to_room():
     look(char, "Bob")
 
     assert any("Bob looks at himself." in m for m in witness.messages), witness.messages
+
+
+def test_look009_no_descr_renders_objective_pronoun_not_name():
+    """LOOK-009: ROM ``show_char_to_char_1`` (src/act_info.c:453) shows the
+    description-less line as ``act("You see nothing special about $M.")`` — the
+    victim's OBJECTIVE PRONOUN (him/her/it), never the name/short_descr.
+
+    A sexless target renders "it"; a male target renders "him". Surfaced by the
+    diff harness (``look <self>`` on the sexless test char emitted the name).
+    """
+    room = Room(vnum=99224, name="Plaza")
+    looker = Character(name="Bob", is_npc=False, sex=int(Sex.MALE), position=int(Position.STANDING))
+    room.add_character(looker)
+
+    # Sexless target with no description → objective pronoun "it".
+    thing = Character(
+        name="Grumble", is_npc=True, short_descr="a grumble", sex=int(Sex.NONE), position=int(Position.STANDING)
+    )
+    room.add_character(thing)
+    thing.description = ""
+
+    result = look(looker, "Grumble")
+    assert "You see nothing special about it." in result, result
+    assert "You see nothing special about Grumble." not in result
+    assert "You see nothing special about a grumble." not in result
+
+    # Male target → "him".
+    guy = Character(name="Hank", is_npc=False, sex=int(Sex.MALE), position=int(Position.STANDING))
+    room.add_character(guy)
+    guy.description = ""
+    assert "You see nothing special about him." in look(looker, "Hank")

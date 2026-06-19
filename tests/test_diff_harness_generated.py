@@ -699,6 +699,34 @@ def test_generated_sacrifice_lifecycle_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+def test_generated_look_at_self_no_descr_matches_live_c():
+    """``look <self>`` with no character description — locks LOOK-009 vs the C oracle.
+
+    ROM ``show_char_to_char_1`` (src/act_info.c:447-454) shows the victim's
+    ``description`` if set, else ``act("You see nothing special about $M.")`` —
+    where ``$M`` renders the victim's OBJECTIVE PRONOUN (him/her/it). Python's
+    ``_look_char`` substituted the name/short_descr instead, so ``look Tester``
+    (the sexless test char looking at itself) emitted "You see nothing special
+    about Tester." where ROM emits "...about it." Fixed by rendering ``$M`` via
+    ``act_format``.
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_look_self",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["look Tester"],  # self-look, no description → "...about it."
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_examine_money_pile_matches_live_c():
     """``examine`` / ``look`` a money pile — locks LOOK-008 against the C oracle.
 

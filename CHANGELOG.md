@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **LOOK-009 / FINDING-036: `look <character>` with no description now renders
+  the objective pronoun, not the name.** ROM `show_char_to_char_1`
+  (`src/act_info.c:453`) shows a description-less character via
+  `act("You see nothing special about $M.")` — `$M` is the victim's objective
+  pronoun (him/her/it). Python's `_look_char` substituted the name/short_descr,
+  so `look` at a sexless character emitted "...about <name>." where ROM emits
+  "...about it." Surfaced by the differential harness; fixed by rendering the
+  line through `act_format`. Verified against the live ROM C oracle.
 - **LOOK-008 / FINDING-035: `look`/`examine` on an object no longer shows the
   description and an extra description together.** ROM `do_look`
   (`src/act_info.c:1183-1212`) is keyword-gated and mutually exclusive — an extra

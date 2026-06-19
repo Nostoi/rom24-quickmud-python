@@ -267,8 +267,13 @@ def _look_char(char: Character, victim: Character) -> str:
     if desc:
         lines.append(desc)
     else:
-        short = getattr(victim, "short_descr", None) or getattr(victim, "name", "someone")
-        lines.append(f"You see nothing special about {short}.")
+        # ROM src/act_info.c:453 — act("You see nothing special about $M.", ch,
+        # NULL, victim, TO_CHAR): $M renders the victim's OBJECTIVE PRONOUN
+        # (him/her/it), NOT the name/short_descr (LOOK-009). A sexless char — and
+        # any self-look on one — renders "it".
+        from mud.utils.act import act_format
+
+        lines.append(act_format("You see nothing special about $M.", recipient=char, actor=char, arg2=victim))
 
     # Show health condition - ROM health_str equivalent
     max_hit = getattr(victim, "max_hit", 100) or 100

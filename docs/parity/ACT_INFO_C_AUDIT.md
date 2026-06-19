@@ -492,6 +492,18 @@ act_info.c is **100% complete** when:
      `tests/integration/test_do_examine_command.py::test_examine_object_extra_descr_is_keyword_gated`
      + `tests/test_diff_harness_generated.py::test_generated_examine_money_pile_matches_live_c`
      (converges vs live C oracle). Tracked as FINDING-035.
+   - **LOOK-009** ✅ FIXED (2026-06-19, 2.14.141): `show_char_to_char_1`'s
+     description-less line. ROM (src/act_info.c:447-454) shows the victim's
+     `description` if set, else `act("You see nothing special about $M.", ch,
+     NULL, victim, TO_CHAR)` — `$M` renders the victim's OBJECTIVE PRONOUN
+     (him/her/it). Python's `_look_char` (`mud/world/look.py`) substituted the
+     name/short_descr, so `look <sexless char>` emitted "You see nothing special
+     about Tester." where ROM emits "...about it." **Fix**: render the line via
+     `act_format("You see nothing special about $M.", recipient=char,
+     actor=char, arg2=victim)`. Surfaced by the diff harness. Tests:
+     `tests/integration/test_look007_look_at_char_broadcast.py::test_look009_no_descr_renders_objective_pronoun_not_name`
+     + `tests/test_diff_harness_generated.py::test_generated_look_at_self_no_descr_matches_live_c`
+     (converges vs live C oracle). Tracked as FINDING-036.
 
 **IMPORTANT Gaps** (P1 - SHOULD FIX):
 
