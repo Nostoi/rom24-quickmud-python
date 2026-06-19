@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **INV-050 (gate): `is_safe_spell` is now a faithful standalone port of ROM
+  `src/fight.c:1126-1218`** (`mud/combat/safety.py`). It previously delegated to
+  the silent `is_safe` bool, which is bidirectionally divergent from ROM's
+  *separate* `is_safe_spell` function. The faithful port restores ROM's check
+  order and clauses that `is_safe` lacks: the `victim->fighting == ch`
+  retaliation bypass (evaluated **before** the NPC ROOM_SAFE branch), the
+  immortal/area bypasses, the legal-kill `is_same_group` clauses, and the full
+  PC-vs-PC clan PK ladder (non-clan attacker/victim, PLR_KILLER/THIEF open
+  season, the >8-level gap). This fixes `do_cast`'s offensive object-target
+  branch (TAR_OBJ_CHAR_OFF, `src/magic.c:484`), which gates on `is_safe_spell`.
+  `mud/skills/handlers.py:_is_safe_spell` (area spells) now delegates to the one
+  canonical implementation. Clears the gate that blocked the broader INV-050
+  bool-retirement. Tests:
+  `tests/integration/test_inv050_is_safe_spell_standalone.py`. Note: corrected
+  one stale test (`test_cast_curse_sets_killer_flag`) that had asserted the
+  pre-fix divergence (a clan PC was wrongly allowed to strike a non-clan PC >8
+  levels below before `check_killer`).
+
 ### Changed
 
 - **`do_yell` now delivers through the canonical `push_message` chokepoint

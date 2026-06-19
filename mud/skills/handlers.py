@@ -1172,89 +1172,16 @@ def _is_charmed(character: Character) -> bool:
 
 
 def _is_safe_spell(caster: Character, victim: Character, *, area: bool) -> bool:
-    """Mirror ROM ``is_safe_spell`` safeguards for area spells."""
+    """Mirror ROM ``is_safe_spell`` safeguards for area spells.
 
-    if caster is None or victim is None:
-        return True
+    Delegates to the canonical port in :func:`mud.combat.safety.is_safe_spell`
+    (a faithful standalone mirror of ``src/fight.c:1126-1218``). Kept as a thin
+    wrapper so the area-spell call sites read naturally; the decision logic lives
+    in one place (INV-050).
+    """
+    from mud.combat.safety import is_safe_spell
 
-    victim_room = getattr(victim, "room", None)
-    caster_room = getattr(caster, "room", None)
-    if victim_room is None or caster_room is None:
-        return True
-
-    if area and victim is caster:
-        return True
-
-    if getattr(victim, "fighting", None) is caster or victim is caster:
-        return False
-
-    if (
-        hasattr(caster, "is_immortal")
-        and caster.is_immortal()
-        and getattr(caster, "level", 0) > LEVEL_IMMORTAL
-        and not area
-    ):
-        return False
-
-    victim_is_npc = bool(getattr(victim, "is_npc", True))
-    caster_is_npc = bool(getattr(caster, "is_npc", True))
-
-    if victim_is_npc:
-        if _get_room_flags(victim_room) & int(RoomFlag.ROOM_SAFE):
-            return True
-        if _has_shop(victim):
-            return True
-
-        act_flags = _get_act_flags(victim)
-        if act_flags & (ActFlag.TRAIN | ActFlag.PRACTICE | ActFlag.IS_HEALER | ActFlag.IS_CHANGER):
-            return True
-
-        if not caster_is_npc:
-            if act_flags & ActFlag.PET:
-                return True
-            if _is_charmed(victim) and (area or getattr(victim, "master", None) is not caster):
-                return True
-            victim_fighting = getattr(victim, "fighting", None)
-            if victim_fighting is not None and not is_same_group(caster, victim_fighting):
-                return True
-        else:
-            if area:
-                caster_fighting = getattr(caster, "fighting", None)
-                if not is_same_group(victim, caster_fighting):
-                    return True
-    else:
-        if (
-            area
-            and hasattr(victim, "is_immortal")
-            and victim.is_immortal()
-            and getattr(victim, "level", 0) > LEVEL_IMMORTAL
-        ):
-            return True
-
-        if caster_is_npc:
-            if _is_charmed(caster):
-                master = getattr(caster, "master", None)
-                if master is not None and getattr(master, "fighting", None) is not victim:
-                    return True
-            if _get_room_flags(victim_room) & int(RoomFlag.ROOM_SAFE):
-                return True
-            caster_fighting = getattr(caster, "fighting", None)
-            if caster_fighting is not None and not is_same_group(caster_fighting, victim):
-                return True
-        else:
-            if not is_clan_member(caster):
-                return True
-            player_flags = _get_player_flags(victim)
-            if player_flags & (PlayerFlag.KILLER | PlayerFlag.THIEF):
-                return False
-            if not is_clan_member(victim):
-                return True
-            caster_level = _coerce_int(getattr(caster, "level", 0))
-            victim_level = _coerce_int(getattr(victim, "level", 0))
-            if caster_level > victim_level + 8:
-                return True
-
-    return False
+    return is_safe_spell(caster, victim, area=area)
 
 
 def _breath_damage(

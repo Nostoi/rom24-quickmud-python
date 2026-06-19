@@ -522,12 +522,18 @@ class TestCastOffensiveObjCharCheckKiller:
     ROM magic.c:490."""
 
     def test_cast_curse_sets_killer_flag(self):
+        # The cast must first PASS is_safe_spell (ROM src/fight.c:1126-1218) before
+        # check_killer (magic.c:498) runs. ROM's PC-vs-PC clan ladder blocks a clan
+        # PC from striking a NON-clan PC (:1212 "leave them alone") and one >8 levels
+        # below (:1215). So the victim is given a clan and an equal level — the
+        # legal-PK case — then check_killer flags the attacker. (INV-050.)
         caster = _make_pc(skills={"curse": 100}, clan=1)
         victim = Character(
             name="Victim",
-            level=5,
+            level=30,
             ch_class=0,
             is_npc=False,
+            clan=1,
             hit=100,
             max_hit=100,
             position=Position.STANDING,
