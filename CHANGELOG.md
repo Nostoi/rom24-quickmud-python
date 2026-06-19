@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GETCOST-001: shop prices now use the runtime object cost, not the prototype.**
+  ROM `get_cost` (`src/act_obj.c:2487,2499`) prices buy and sell from the
+  runtime `obj->cost`. `do_buy` clamps a purchased item's `obj.cost` down to the
+  haggled price (`:2765-2766`), so a player could haggle-buy an item cheap and
+  resell it at the full prototype price — Python's `_get_cost` read `proto.cost`,
+  ignoring the clamp. `_get_cost` now reads `obj.cost` (prototype fallback) for
+  both directions, closing the exploit. This also makes room-reset objects
+  (`reset_room` 'O' zeroes `obj->cost`, `src/db.c:1783`, mirrored at
+  `reset_handler.py:537`) correctly resell for 0 as in ROM, instead of the
+  prototype price. Test:
+  `tests/test_shops.py::test_sell_uses_runtime_cost_not_prototype`.
 - **LIST-004: `list` now hides items the buyer cannot see.**
   ROM `do_list` (`src/act_obj.c:2831`) gates each listed item on
   `can_see_obj(ch, obj)` — the buyer's visibility (and only the buyer's, unlike

@@ -88,6 +88,12 @@ def test_buy_haggle_negative_cost_drives_keeper_wealth_below_zero():
         ration.prototype.extra_flags = proto_extra | int(ITEM_INVENTORY)
         ration.extra_flags = int(getattr(ration, "extra_flags", 0) or 0) | int(ITEM_INVENTORY)
         keeper.inventory.append(ration)
+        # GETCOST-001: get_cost uses the RUNTIME obj.cost; spawn_object(3031) shares
+        # its proto with the grocer's default 3031 stock, so sync every live 3031's
+        # runtime cost to the mutated proto cost (the ROM spawn invariant).
+        for stock in keeper.inventory:
+            if getattr(stock.prototype, "vnum", None) == 3031:
+                stock.cost = 100
 
         keeper_before = _total_wealth(keeper)
         assert keeper_before == 0

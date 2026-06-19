@@ -460,14 +460,18 @@ def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
     if not shop:
         return 0
     cost = 0
+    # GETCOST-001: ROM get_cost (src/act_obj.c:2487,2499) uses the RUNTIME
+    # obj->cost, NOT the prototype cost — do_buy clamps obj->cost down to the
+    # haggled purchase price (:2765-2766), so resale must price from it.
+    obj_cost = int(getattr(obj, "cost", getattr(proto, "cost", 0)) or 0)
     if buy:
-        cost = c_div(int(getattr(proto, "cost", getattr(obj, "cost", 0)) or 0) * shop.profit_buy, 100)
+        cost = c_div(obj_cost * shop.profit_buy, 100)
     else:
         # ensure shop buys this type
         item_type = int(getattr(proto, "item_type", getattr(obj, "item_type", 0)) or 0)
         if shop.buy_types and item_type not in shop.buy_types:
             return 0
-        cost = c_div(int(getattr(proto, "cost", getattr(obj, "cost", 0)) or 0) * shop.profit_sell, 100)
+        cost = c_div(obj_cost * shop.profit_sell, 100)
         # inventory discount if keeper already has same item
         obj_descr = (getattr(obj, "short_descr", None) or "").strip().lower()
         for other in getattr(keeper, "inventory", []) or []:

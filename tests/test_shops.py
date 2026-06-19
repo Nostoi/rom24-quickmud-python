@@ -1072,6 +1072,7 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
     wand.prototype.short_descr = "a test wand"
     wand.prototype.item_type = int(ItemType.WAND)
     wand.prototype.cost = 100
+    wand.cost = 100  # GETCOST-001: runtime cost is the source of truth (spawn invariant)
     vals = wand.prototype.value
     vals[1] = 10  # total
     vals[2] = 5  # remaining
@@ -1091,6 +1092,7 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
         copy.prototype.short_descr = "a test wand"
         copy.prototype.item_type = int(ItemType.WAND)
         copy.prototype.cost = 100
+        copy.cost = 100  # GETCOST-001: runtime cost is the source of truth
         copy.prototype.value[1] = 10
         copy.prototype.value[2] = 5
         # Mark as ITEM_INVENTORY using the port's bit (1<<18)
@@ -1101,6 +1103,7 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
         wand2.prototype.short_descr = "a test wand"
         wand2.prototype.item_type = int(ItemType.WAND)
         wand2.prototype.cost = 100
+        wand2.cost = 100  # GETCOST-001: runtime cost is the source of truth
         wand2.prototype.value[1] = 10
         wand2.prototype.value[2] = 5
         ch.add_object(wand2)
@@ -1133,6 +1136,7 @@ def test_shop_respects_open_hours():
     canoe.prototype.short_descr = "a spare canoe"
     canoe.prototype.item_type = int(ItemType.BOAT)
     canoe.prototype.cost = 180
+    canoe.cost = 180  # GETCOST-001: runtime cost is the source of truth
     char.add_object(canoe)
 
     previous_hour = time_info.hour
@@ -1338,6 +1342,45 @@ def test_buy_blind_buyer_cannot_see_item():
         time_info.hour = previous_hour
 
 
+def test_sell_uses_runtime_cost_not_prototype():
+    # GETCOST-001: mirrors ROM src/act_obj.c:2499 get_cost — sell price is
+    # obj->cost * profit_sell / 100, using the RUNTIME object cost (which
+    # do_buy clamps to the haggled price at :2765-2766), NOT the prototype's
+    # cost. Python read proto.cost, letting a haggle-bought-cheap item resell
+    # at full prototype price (an exploit ROM closes).
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Reseller", 3001)
+    char.gold = 0
+    char.silver = 0
+    keeper = spawn_mob(3006)
+    assert keeper is not None
+    keeper.move_to_room(char.room)
+    keeper.gold = 100
+    keeper.silver = 0
+
+    raft = spawn_object(3050)
+    assert raft is not None
+    raft.prototype.short_descr = "a small river raft"
+    raft.prototype.item_type = int(ItemType.BOAT)
+    raft.prototype.cost = 200
+    # Simulate the post-haggle state do_buy produces: runtime cost clamped below
+    # the prototype cost.
+    raft.cost = 40
+    char.add_object(raft)
+
+    previous_hour = time_info.hour
+    try:
+        time_info.hour = 10
+        process_command(char, "sell raft")
+        # shop 3006 profit_sell = 90 → c_div(40*90, 100) = 36 (runtime cost),
+        # NOT c_div(200*90, 100) = 180 (prototype cost).
+        assert _total_wealth(char) == 36
+        assert raft in keeper.inventory
+        assert raft not in char.inventory
+    finally:
+        time_info.hour = previous_hour
+
+
 def test_shop_respects_keeper_wealth():
     initialize_world("area/area.lst")
     char = _create_shop_character("Consigner", 3001)
@@ -1351,6 +1394,7 @@ def test_shop_respects_keeper_wealth():
     canoe.prototype.short_descr = "a spare canoe"
     canoe.prototype.item_type = int(ItemType.BOAT)
     canoe.prototype.cost = 180
+    canoe.cost = 180  # GETCOST-001: runtime cost is the source of truth
     char.add_object(canoe)
 
     previous_hour = time_info.hour
@@ -1515,6 +1559,13 @@ def test_buy_haggle_reduces_cost_on_success():
         ration.prototype.extra_flags = proto_extra | int(ITEM_INVENTORY)
         ration.extra_flags = int(getattr(ration, "extra_flags", 0) or 0) | int(ITEM_INVENTORY)
         keeper.inventory.append(ration)
+        # GETCOST-001: get_cost uses the RUNTIME obj.cost. spawn_object(3031)
+        # shares its prototype with the grocer's default 3031 stock, so mutating
+        # the proto here also renames that pre-existing object — sync every live
+        # 3031's runtime cost to the new proto cost (the ROM spawn invariant).
+        for stock in keeper.inventory:
+            if getattr(stock.prototype, "vnum", None) == 3031:
+                stock.cost = 100
 
         shop = shop_registry.get(3002)
         base_unit_price = (ration.prototype.cost * shop.profit_buy) // 100
