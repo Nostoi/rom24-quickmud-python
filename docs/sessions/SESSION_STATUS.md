@@ -1,61 +1,50 @@
-# Session Status — 2026-06-19 — /loop gap-closer: reset arg4 + spell-level `max(1)` floors
+# Session Status — 2026-06-19 — DB-003 O-reset population audit (CLOSED)
 
 ## Current State
 
-- **Active focus**: Cross-file / divergence-class sweep (Layer B "invented floor"
-  removals) — per-file audit tracker remains exhausted. This `/loop` session closed
-  **4 commits resolving 5 tracked ARITH gap IDs** (all `max(1)` floors ROM uses raw),
-  plus one stale-row doc correction. Stopped at 4 (target 5) rather than force the
-  remaining gaps — every open row is either feature-sized or entangled (verified by
-  grep, not assumed). DB-003 correctly left for a dedicated audit (not deferred — it
-  is audit-sized).
-- **Last completed** (this `/loop` session, master, **committed — not yet pushed**):
-  - `2d508be6` v2.14.168 — **ARITH-207/209**: P-reset `arg4==0` places zero items (both loader + runtime floors removed; resolves the ❌/⛔ doc contradiction).
-  - `6d3211fb` v2.14.169 — **ARITH-017**: `demonfire` uses raw caster level (`dice(0,10)==0`).
-  - `ea728f0a` v2.14.170 — **ARITH-018**: `dispel_evil` uses raw caster level.
-  - `f02b6cfc` v2.14.171 — **ARITH-019**: `dispel_good` uses raw caster level.
-  - `62f1b172` — **BOARD-005** stale audit row corrected to ✅ FIXED (already closed in `4d636235`; no code change).
+- **Active focus**: Cross-file / divergence-class sweep (reset/spawn path). The
+  per-file audit tracker remains exhausted. This session executed the dedicated
+  reset-path audit the prior `/loop` deferred and **closed DB-003** — the last
+  audit-sized reset divergence — in one commit (probe → TDD → implement →
+  differential gate → fallout triage → full suite).
+- **Last completed** (master, **committed — not yet pushed**):
+  - `f99fc78d` v2.14.172 — **DB-003**: O-reset now matches ROM per-room one-copy /
+    no-global-arg2-cap semantics. Removed `room_obj_targets` over-placement
+    (divergence a) and the synthetic `_resolve_reset_limit(arg2)` global cap
+    (divergence b); preserved the P key-refill path; confirmed divergence (c)
+    non-existent (`load_resets:1050` → `pRoom == arg3's room`). 3 new tests + 1
+    redesigned (ROM-impossible 2-desks-one-room premise → ROM-valid). Full suite
+    5889 passed / 4 skipped.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-19_LOOP_GAPCLOSER_ARG4_SPELL_LEVEL_FLOORS.md](SESSION_SUMMARY_2026-06-19_LOOP_GAPCLOSER_ARG4_SPELL_LEVEL_FLOORS.md)
+  [SESSION_SUMMARY_2026-06-19_DB-003_RESET_O_AUDIT.md](SESSION_SUMMARY_2026-06-19_DB-003_RESET_O_AUDIT.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.171 |
-| Tests | 5886 passed, 4 skipped (full suite) |
+| Version | 2.14.172 |
+| Tests | 5889 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
-| Active focus | Cross-file invariants / divergence-class sweep (Layer B floors) |
-| Open findings | **DB-003** (O-reset semantics) + **ARITH-208** (mob-hp source floor) — both need a dedicated reset/templates audit |
+| Active focus | Cross-file invariants / divergence-class sweep (reset/spawn path) |
+| Open findings | **ARITH-208** (mob-hp source floor, coupled to UB-divisor floors) |
 
 ## Next Intended Task
 
-The clean single-commit ARITH backlog is nearly drained (effective open ❌ MISSING
-down to **2**: ARITH-208 + the ARITH-114 follow-on). Two entangled, audit-sized
-items remain and are the highest-value next work:
+The reset/spawn divergence surface is nearly drained. The one remaining entangled
+item is **ARITH-208** (`mud/spawning/templates.py:172` — `max(0, dice+bonus)`
+mob-hp source floor). It is **coupled** to the policy-mandated UB-divisor floors
+(`docs/divergences/UB_DIVISORS.md`): removing the source floor alone yields a new
+sign divergence (`100*neg/1` = large negative `hp_percent` where ROM gets
+neg/neg = positive). It needs a **coordinated source+divisor** treatment, not a
+gap-closer single commit — file as an audit-sized item and treat it like DB-003.
 
-1. **DB-003** — O-reset (`reset_handler.py:514-528` vs `src/db.c:1773-1796`): Python
-   allows `desired_total` copies per room (ROM: one per room via `count_obj_list > 0`)
-   and imposes a synthetic `arg2` global cap (ROM: arg2 unused for O). Whole-world
-   population change; redesign the unreachable-premise test
-   `test_reset_P_uses_last_container_instance_when_multiple`. Capture the possible
-   **third** divergence: ROM's O-case validates `pRoomIndex` from arg3 but places into
-   `pRoom`.
-2. **ARITH-208** (`templates.py:172`) — `max(0, dice+bonus)` mob-hp floor is **coupled**
-   to the kept UB-divisor floors. Removing only the source creates a new sign divergence
-   (`100*neg/1`). Needs coordinated source+divisor treatment, not a gap-closer commit.
+Alternatives for fresh gap IDs: a feature-sized subsystem (BOARD-001 default board
+seeding, OLC save paths), or a new cross-file invariant probe (affect ticks,
+position transitions, mob script triggers — none yet covered by an INV row).
 
-Both should go through `/rom-parity-audit` on the reset/spawning path, not
-`/rom-gap-closer`. **A consolidated, actionable handoff for this work exists:**
-[HANDOFF_2026-06-19_DB-003_RESET_O_AUDIT.md](HANDOFF_2026-06-19_DB-003_RESET_O_AUDIT.md)
-(ROM/Python line refs, the unreachable-premise test to redesign, the possible third
-divergence to confirm, ARITH-208 coupling, and the MCP-reconnect prerequisite). Start
-there. Alternatively, pick up a feature-sized subsystem (BOARD-001 default board
-seeding, OLC save paths) for fresh gap IDs.
-
-**Infra note:** GitNexus MCP query tools (`gitnexus_impact` / `detect_changes`) were
-**unavailable this session** (server connection closed); blast radius was verified via
-grep + full suite instead. The CLI reindex works fine (ran clean post-session, exit 0,
-incremental — only the 5 changed files, no Python scope-extraction failures; the only
-2 failures are the known C reference headers `recycle.h`/`olc.h`). A fresh session
-should confirm the **MCP server** reconnects before relying on `gitnexus_*` tools.
+**Infra note:** GitNexus MCP query tools (`gitnexus_impact` / `detect_changes` /
+`context`) were **confirmed live this session** (the prior-day outage cleared) —
+used for the `apply_resets` blast-radius (CRITICAL, expected for world population)
+and the pre-commit `detect_changes` (low risk, scope confined to expected files).
+A post-commit CLI reindex ran (the PostToolUse stale-index hook fired after the
+DB-003 commit); confirm it completed clean before relying on `gitnexus_*` again.
