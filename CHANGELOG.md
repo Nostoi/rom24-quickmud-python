@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Differential-harness widening: `sacrifice` object-extraction lifecycle**
+  (`tests/test_diff_harness_generated.py`). New fixed scenario
+  `test_generated_sacrifice_lifecycle_matches_live_c` pins ROM `do_sacrifice`
+  (`src/act_obj.c`, divergence class 10 — object extraction): self-sacrifice
+  decline, not-found, a successful room-target sacrifice (deterministic
+  `silver = UMAX(1, level*3)` capped at cost — no RNG, so no `__seed` bracket),
+  the `extract_obj` removal observed via a follow-up `look`, and the
+  post-extraction not-found. Converges against the live ROM C oracle on the
+  first pass — no divergence.
 - **Differential-harness widening: `get all` / `drop all` bulk-loop forms**
   (`tests/test_diff_harness_generated.py`). New fixed scenario
   `test_generated_get_all_drop_all_matches_live_c` pins ROM's bulk room-loop

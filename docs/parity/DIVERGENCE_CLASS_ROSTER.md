@@ -319,6 +319,18 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    oracle confirmed the loop output order (`get`: dagger then small sword;
    `drop`: small sword then dagger); Python converges on the first pass — no
    divergence. `wear all`'s dual-wield arm left as a separate probe.
+   **Non-mobprog command widening, sacrifice lifecycle (2.14.137):** added
+   `test_generated_sacrifice_lifecycle_matches_live_c`, pinning ROM
+   `do_sacrifice` (`src/act_obj.c:1765-1862`) — divergence **class 10** (object
+   extraction). Deterministic reward `silver = UMAX(1, level*3)` capped at cost,
+   **no** `number_*` on any branch (verified against C source — so no `__seed`
+   bracket; this is the RNG check the prior handoff flagged before bracketing).
+   Scenario walks self-sac decline → not-found → successful room-target
+   sacrifice (small sword 3021, whose low cost caps the reward at 1, also
+   exercising the singular `one silver coin` message branch) → `look`
+   confirming the `extract_obj` removal → post-extraction not-found. C oracle
+   confirmed each branch + the extraction; Python converges on the first pass —
+   no divergence.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

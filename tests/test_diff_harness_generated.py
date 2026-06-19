@@ -607,6 +607,52 @@ def test_generated_compare_objects_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+def test_generated_sacrifice_lifecycle_matches_live_c():
+    """``sacrifice`` an object to Mota — ``do_sacrifice`` (Class-10 lifecycle).
+
+    ROM ``do_sacrifice`` (src/act_obj.c:1765-1862) is fully deterministic — the
+    reward is ``silver = UMAX(1, obj->level * 3)`` capped at ``obj->cost`` for
+    non-corpses, with **no** ``number_*`` call on any branch — so no ``__seed``
+    bracket is needed (verified against the C source before writing this).  The
+    target must be in the room, not carried (``get_obj_list(ch, arg,
+    ch->in_room->contents)``), and a successful sacrifice ``extract_obj``s it —
+    the object-extraction lifecycle (divergence class 10).  This pins:
+
+    - bare ``sacrifice`` (self / no arg) → ``Mota appreciates your offer and may
+      accept it later.`` (TO_CHAR; the TO_ROOM act needs another watcher)
+    - ``sacrifice <missing>``           → ``You can't find it.``
+    - ``sacrifice sword`` (small sword 3021 in room) → ``Mota gives you N silver
+      coins for your sacrifice.`` + ``ch->silver += N`` + object extracted
+    - ``look`` confirms the room no longer holds the sword (extraction observed)
+    - ``sacrifice sword`` again         → ``You can't find it.`` (already gone)
+
+    The C oracle computes the silver reward; the test asserts only that C and
+    Python agree (a divergence here would be a finding, not a golden to edit).
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_sacrifice",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "sacrifice",  # self / no arg → Mota declines
+            "sacrifice nothinghere",  # not found
+            "__oload=3021",  # small sword into the room (sacrifice targets room)
+            "sacrifice sword",  # reward + extract_obj
+            "look",  # sword gone from room
+            "sacrifice sword",  # not found (extracted)
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_get_all_drop_all_matches_live_c():
     """``get all`` / ``drop all`` bulk-loop forms against the live C oracle.
 
