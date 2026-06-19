@@ -1,42 +1,44 @@
-# Session Status — 2026-06-19 — diff-harness non-mobprog widening + FINDING-034
+# Session Status — 2026-06-19 — /loop gap-closer: WEAR-012 + LOOK-008 + LOOK-009
 
 ## Current State
 
 - **Active focus**: Cross-file / divergence-class sweep, **Layer C** (per-file
-  audit tracker exhausted). Enumeration-independent `tools/diff_harness/`
-  widening against the live ROM C oracle (`DIVERGENCE_CLASS_ROSTER.md`
-  guardrail 3). This session widened the **non-mobprog command** frontier with
-  container open/close/lock/unlock (OBJECT branch), `get all`/`drop all`, and
-  `sacrifice` — and surfaced a real divergence on `wear all`.
-- **Last completed** (this session, 4 commits, master, **not pushed**):
-  - `a60fc400` v2.14.135 — container lock cycle (OBJECT branch), clean lock.
-  - `2a02c8fe` v2.14.136 — `get all` / `drop all` bulk loops, clean lock.
-  - `4764d454` v2.14.137 — `sacrifice` object-extraction lifecycle, clean lock.
-  - `8215cd1d` v2.14.138 — `wear all` scenario surfaced **FINDING-034 /
-    WEAR-012** (Python `_wear_all` skips lights/weapons/HOLD items ROM equips);
-    filed durably, scenario committed `xfail(strict=True)`.
+  audit tracker exhausted). Differential harness (`tools/diff_harness/`) vs. the
+  live ROM C oracle is the enumeration-independent finder. This `/loop`
+  gap-closer session surfaced-and-closed 3 genuine divergences on the
+  look/examine/wear surfaces.
+- **Last completed** (this session, 4 commits incl. handoff, master, **not
+  pushed**):
+  - `25e1829c` v2.14.139 — **WEAR-012**: `wear all` equips lights/weapons/hold
+    via a shared `_wear_obj(ch, obj, fReplace)` (FINDING-034).
+  - `f748a821` v2.14.140 — **LOOK-008**: `look`/`examine` on an object shows the
+    description XOR a keyword-matching extra-description, not both (FINDING-035).
+  - `10327a59` v2.14.141 — **LOOK-009**: looking at a description-less character
+    renders the objective pronoun ($M), not the name (FINDING-036). Also
+    corrected a `pytest | tail` exit-masking flaw from gap 2 (see summary).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-19_DIFF_HARNESS_CONTAINER_BULK_SACRIFICE_WEARALL.md](SESSION_SUMMARY_2026-06-19_DIFF_HARNESS_CONTAINER_BULK_SACRIFICE_WEARALL.md)
+  [SESSION_SUMMARY_2026-06-19_LOOP_GAPCLOSER_WEAR012_LOOK008_LOOK009.md](SESSION_SUMMARY_2026-06-19_LOOP_GAPCLOSER_WEAR012_LOOK008_LOOK009.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.138 |
-| Tests | diff-harness generated: 23 passed, 1 xfailed (FINDING-034) |
+| Version | 2.14.141 |
+| Tests | 5852 passed, 4 skipped (full suite, exit verified directly) |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
 | Active focus | Cross-file invariants / divergence-class sweep (Layer C) |
-| Open findings | **FINDING-034 / WEAR-012** (`wear all` skip — fix design recorded) |
+| Open findings | none (FINDING-034/035/036 all RESOLVED this session) |
 
 ## Next Intended Task
 
-**Close WEAR-012 / FINDING-034 via `/rom-gap-closer`** (the session's surfaced
-gap). The faithful fix extracts a shared `wear_obj(ch, obj, fReplace)` mirroring
-`src/act_obj.c` and routes both `do_wear <item>` (`fReplace=True`) and
-`_wear_all` (`fReplace=False`, skip occupied slots silently) through it — do NOT
-loop `do_wear`, which force-replaces. When it lands,
-`test_generated_wear_all_matches_live_c` auto-flips from xfail to pass. Then
-resume non-mobprog widening (`wear all` dual-wield, `examine` MONEY/CORPSE,
-`look in` closed container). Guardrail 3: a clean sweep = "known surface
-locked," never "close to ROM parity." 4 commits not pushed; `git push` if
-sharing (version/CHANGELOG already current).
+The `/loop` (target 5 gaps) stopped at **3/5** by deliberate choice — genuine
+harness-findable divergences on the probed surfaces (look/examine/wear/get/drop/
+sacrifice/container/money) are largely closed; most new probes converge clean,
+and guardrail 3 forbids manufacturing gaps. To resume hunting gaps 4–5, probe
+**fresh, unexamined command surfaces** — `score`/`who`/`where`/`weather`/`time`,
+social commands, combat/death output, group/follow messaging, `give`/`put`-to-mob
+edge cases — with a throwaway C-oracle-vs-pyreplay probe per surface; close any
+real divergence via `/rom-gap-closer`, file cross-file root causes as the next
+INV-NNN. **Verification note (durable lesson): never read a `pytest | tail` exit
+code as the result — capture pytest's exit directly.** 6 commits v2.14.139-141 on
+master, not pushed; `git push` if sharing (versions/CHANGELOG current).
