@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Differential-harness widening: container lock cycle (`open`/`close`/`lock`/`unlock`
+  OBJECT branch)** (`tests/test_diff_harness_generated.py`). New fixed scenario
+  `test_generated_container_lock_cycle_matches_live_c` pins the ITEM_CONTAINER
+  arm of all four door verbs (`src/act_move.c`), structurally distinct from the
+  already-covered door (EXIT) arm — the container arm keys off `value[1]` CONT_*
+  flags + `value[2]` (key vnum) rather than `exit_info` + `pexit->key`. Uses the
+  Midgaard desk drawer (vnum 3130, protos closed-and-locked, not takeable) and
+  its wooden key (3122) to deterministically sweep seven branches — lack-key,
+  locked-open guard, unlock, open, not-closed guard, close, lock. Converges
+  against the live ROM C oracle on the first pass — no divergence. Layer-C /
+  Class-13 enumeration-independent widening per `DIVERGENCE_CLASS_ROSTER.md`.
 - **Differential-harness widening: `examine` and `compare` command coverage**
   (`tools/diff_harness/generated.py`, `tests/test_diff_harness_generated.py`).
   Read-only `examine_*`/`compare_sword_to_jacket` rules added to

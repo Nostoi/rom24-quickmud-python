@@ -607,6 +607,62 @@ def test_generated_compare_objects_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+def test_generated_container_lock_cycle_matches_live_c():
+    """``unlock`` / ``open`` / ``close`` / ``lock`` a keyed container — the
+    ``do_open``/``do_close``/``do_lock``/``do_unlock`` OBJECT branch.
+
+    Distinct from ``test_generated_keyed_door_cycle`` (the EXIT branch): this
+    pins the ITEM_CONTAINER arm of all four handlers (src/act_move.c:388-413,
+    496-516, 626-656, 761-791), which keys off ``value[1]`` CONT_* flags and
+    ``value[2]`` (key vnum), where the door arm uses ``exit_info`` + ``key``.
+
+    The desk drawer (vnum 3130) protos as ``ABCD`` = CLOSEABLE | PICKPROOF |
+    CLOSED | LOCKED, so a freshly loaded one starts closed-and-locked; its key
+    is the wooden key (vnum 3122).  The drawer has no ITEM_TAKE wear flag
+    (``container 0 0``) so it cannot be picked up — it is referenced in the room
+    via ``get_obj_here``'s room fallback.  The sequence walks the full
+    deterministic branch set, every line of which act-renders the drawer's short
+    desc ``the desk`` via ``$p``:
+
+    - ``unlock`` before ``get key``      → ``You lack the key.`` (no key in carry)
+    - ``open`` while still locked        → ``It's locked.``
+    - ``unlock`` with key                → ``You unlock the desk.``
+    - ``open``                           → ``You open the desk.``
+    - ``lock`` while open                → ``It's not closed.``
+    - ``close``                          → ``You close the desk.``
+    - ``lock`` with key                  → ``You lock the desk.``
+
+    No RNG is drawn on any container open/close/lock/unlock path (pick lock is
+    the only door verb that rolls), so no ``__seed`` bracket is needed.
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_container_lock_cycle",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3130",  # desk drawer (container, starts CLOSED+LOCKED)
+            "__oload=3122",  # wooden key (key vnum the drawer wants)
+            "unlock drawer",  # no key carried yet → "You lack the key."
+            "open drawer",  # still locked → "It's locked."
+            "get key",
+            "unlock drawer",  # "You unlock the desk."
+            "open drawer",  # "You open the desk."
+            "lock drawer",  # open, not closed → "It's not closed."
+            "close drawer",  # "You close the desk."
+            "lock drawer",  # "You lock the desk."
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_shop_sell_keeper_broke_matches_live_c():
     """``sell`` to a keeper with zero treasury — exercises the wealth-check early exit.
 

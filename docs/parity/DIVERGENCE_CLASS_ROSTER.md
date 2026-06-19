@@ -294,7 +294,21 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    (mismatch/value/same-object) both **converge against the live C oracle on the
    first pass** — no divergence — locking the act-rendered output (incl. ROM's
    verbatim `"with  a amber liquid"` drink-level wording, FINDING-021/022/033
-   class).
+   class). **Non-mobprog command widening, container lock cycle (2.14.135):**
+   added `test_generated_container_lock_cycle_matches_live_c`, pinning the
+   ITEM_CONTAINER arm of `do_open`/`do_close`/`do_lock`/`do_unlock`
+   (`src/act_move.c:388-413,496-516,626-656,761-791`) — structurally distinct
+   from the already-covered door (EXIT) arm: the container arm keys off
+   `value[1]` CONT_* bits + `value[2]` (key vnum), the door arm off `exit_info`
+   + `pexit->key`. The desk drawer (vnum 3130, protos `ABCD` =
+   CLOSEABLE|PICKPROOF|CLOSED|LOCKED, no `ITEM_TAKE` so referenced in-room via
+   `get_obj_here`'s room fallback) + wooden key (3122) drive a deterministic
+   7-branch sweep — lack-key, locked-open-guard, unlock, open, not-closed-guard,
+   close, lock — every line act-rendering the drawer's `the desk` short desc via
+   `$p`. C oracle per-step output confirmed each branch fired (triage step,
+   guarding against a false-green where an unresolved keyword identically errors
+   on both sides); Python **converges on the first pass — no divergence**. No
+   RNG on any container open/close/lock/unlock path, so no `__seed` bracket.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,
