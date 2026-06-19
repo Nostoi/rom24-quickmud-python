@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-001 debt burndown — colour_spray caster line single-delivery
+  (`mud/skills/handlers.py`)** — `colour_spray` appended the caster's spray
+  flavor line ("You spray red, blue, and yellow light at X!") straight to
+  `caster.messages` while its target/room legs already used `_send_to_char`
+  (migrated 2.12.72). The mailbox is only drained after the caster's *next*
+  command, so an idle connected caster would not see their own spray line at
+  cast time (INV-001 SINGLE-DELIVERY wrong-channel class). The caster leg now
+  routes through `_send_to_char` too, matching its siblings (ROM
+  `src/magic.c:1437` routes spray flavor through `damage()`, a descriptor
+  write, never a deferred mailbox queue). Closes the last `_INV001_DEBT`
+  skills-handler site (4 → 3 frozen); its allowlist line in
+  `tests/test_message_delivery_convention.py` is deleted. Test:
+  `tests/integration/test_colour_spray_delivery_channel.py`.
+
 - **INV-001 debt burndown — charm_person caster lines single-delivery
   (`mud/skills/handlers.py`)** — `charm_person` appended all three
   caster-facing lines straight to `caster.messages`: "You like yourself even

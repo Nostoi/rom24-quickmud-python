@@ -2477,9 +2477,10 @@ def colour_spray(caster: Character, target: Character | None = None) -> int:
     target_msg = f"{{3{caster_name} sprays {{1red{{x, {{4blue{{x, and {{6yellow{{x light across your vision!{{x"
     room_msg = f"{{3{caster_name} sprays {{1red{{x, {{4blue{{x, and {{6yellow{{x light at {target_name}!{{x"
 
-    if hasattr(caster, "messages"):
-        caster.messages.append(caster_msg)
-    # INV-001: single-channel delivery for the cross-character target/room lines.
+    # INV-001: single-channel delivery for the caster line too, matching the
+    # already-migrated target/room legs (ROM spell_colour_spray routes flavor
+    # through damage(), a descriptor write — never a deferred mailbox queue).
+    _send_to_char(caster, caster_msg)
     _send_to_char(target, target_msg)
 
     room = getattr(caster, "room", None)
