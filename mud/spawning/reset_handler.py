@@ -402,7 +402,9 @@ def apply_resets(area: Area) -> None:
                 room_vnum = reset.arg3 or 0
                 room_limit = reset.arg4 or 0
 
-            room_limit = max(1, room_limit)
+            # ARITH-206: ROM src/db.c:1715-1723 uses arg4 raw — `if (count >= arg4)`.
+            # No `max(1, room_limit)` floor: arg4 == 0 means "never place here"
+            # (count(0) >= 0), handled by the `room_limit <= 0` skip below.
 
             room = room_registry.get(room_vnum)
             if mob_vnum <= 0 or room is None:

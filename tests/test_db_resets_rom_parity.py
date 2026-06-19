@@ -110,6 +110,34 @@ def test_m_reset_global_limit_zero_never_spawns():
     assert count == 0, f"global_limit=0 must never spawn (ROM count>=arg2 with arg2=0); found {count}"
 
 
+def test_m_reset_room_limit_zero_never_spawns():
+    """ARITH-206: ROM M-reset room check `if (count >= pReset->arg4) break` is raw.
+
+    Mirrors ROM src/db.c:1715-1723 — the room-limit comparison uses arg4 directly.
+    When `arg4 == 0`, `count(0) >= 0` is always true → the mob is never placed in
+    the room (independently of the global check). Python floored `room_limit` with
+    `max(1, room_limit)`, turning a `room_limit == 0` reset into "spawn up to 1".
+    Removing the floor lets the `room_limit <= 0` guard skip, matching ROM.
+    """
+    initialize_world("area/area.lst")
+
+    room = room_registry[3001]
+    area = room.area
+    assert area is not None
+
+    for r in room_registry.values():
+        r.people = [p for p in r.people if not (isinstance(p, MobInstance) and p.prototype.vnum == 3003)]
+    mob_registry[3003].count = 0
+
+    # global_limit (arg2) = 10 → global check passes (0 < 10); room_limit (arg4) = 0
+    # → ROM room check count(0) >= 0 → never places.
+    area.resets = [ResetJson(command="M", arg1=3003, arg2=10, arg3=3001, arg4=0)]
+    apply_resets(area)
+
+    count = sum(1 for p in room.people if isinstance(p, MobInstance) and p.prototype.vnum == 3003)
+    assert count == 0, f"room_limit=0 must never spawn (ROM count>=arg4 with arg4=0); found {count}"
+
+
 def test_m_reset_room_limit():
     """Test M reset respects room limit: count mobs in room matching vnum"""
     initialize_world("area/area.lst")

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ARITH-206: M-reset room limit no longer floored to 1.**
+  ROM's M-reset room check is `if (count >= pReset->arg4) break` (`src/db.c:1715`)
+  with arg4 used raw, so `arg4 == 0` means the mob is never placed in that room.
+  Python's `max(1, room_limit)` floor turned `arg4 == 0` into "spawn up to 1".
+  Removed the floor; the existing `room_limit <= 0` guard now skips ROM-faithfully.
 - **DB-002: M-reset global-limit check is now unconditional, matching ROM.**
   ROM `reset_room` skips a mob spawn via `if (pMobIndex->count >= pReset->arg2)`
   (`src/db.c:1703`) with no `arg2 > 0` guard, so a global limit of 0 means the mob
