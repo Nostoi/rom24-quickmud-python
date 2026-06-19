@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GROUP-002: `group <victim>` by a charmed character now notifies the victim
+  with the right pronoun.** ROM `do_group` (`src/act_comm.c:1833-1835`) rejects a
+  charmed `ch`'s group attempt with `act_new("You like your master too much to
+  leave $m!", ch, NULL, victim, TO_VICT)` — the line goes **to the victim** (the
+  grouper) and `$m` is the charmed character's objective pronoun (him/her/it); the
+  charmed `ch` itself gets no feedback. Python returned the line (minus the
+  pronoun) to `char` instead, so the grouper saw nothing. Surfaced by a
+  group-messaging probe — the per-line audit had marked do_group "100% complete"
+  but never checked this branch's recipient/pronoun. Fixed to deliver TO_VICT
+  with the objective pronoun. Test:
+  `tests/integration/test_group_broadcasts.py::test_do_group_charmed_ch_rejection_goes_to_victim_with_pronoun`.
 - **HANDLER-007: `can_carry_n` now uses DEX, not INT.** ROM
   (`src/handler.c:907`) computes the carry-item cap as
   `MAX_WEAR + 2*get_curr_stat(STAT_DEX) + level`; the Python port read `perm_stat`

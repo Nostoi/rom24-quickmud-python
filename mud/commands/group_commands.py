@@ -228,7 +228,14 @@ def do_group(char: Character, args: str) -> str:
     # Check if char is charmed
     char_affected = getattr(char, "affected_by", 0)
     if char_affected & AffectFlag.CHARM:
-        return "You like your master too much to leave!"
+        # GROUP-002: ROM src/act_comm.c:1833-1835 delivers this TO_VICT (to the
+        # grouper), with $m = the charmed ch's objective pronoun. The charmed ch
+        # itself receives nothing.
+        from mud.utils.act import _object_pronoun, _sex_of
+
+        pronoun = _object_pronoun(_sex_of(char))
+        _send_to_char_sync(victim, f"You like your master too much to leave {pronoun}!")
+        return ""
 
     leader_name = _display_name(char)
     victim_name_str = _display_name(victim)

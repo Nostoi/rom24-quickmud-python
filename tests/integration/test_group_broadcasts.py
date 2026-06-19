@@ -83,6 +83,49 @@ def test_do_group_add_emits_via_socket_path(monkeypatch):
     )
 
 
+def test_do_group_charmed_ch_rejection_goes_to_victim_with_pronoun(monkeypatch):
+    """GROUP-002 — charmed-ch rejection routes to VICTIM with $m pronoun, not to ch.
+
+    ROM src/act_comm.c:1833-1835:
+        act_new("You like your master too much to leave $m!",
+                ch, NULL, victim, TO_VICT, POS_SLEEPING);
+    TO_VICT → message goes to ``victim`` (the grouper), and ``$m`` is the
+    objective pronoun of the charmed ``ch``. Pre-fix Python returned the line
+    (sans pronoun) to ``ch``, so the victim got no feedback at all.
+    """
+    from mud.commands import group_commands as gc
+    from mud.models.constants import AffectFlag, Sex
+
+    room = _room(50800)
+    charmed = _player("Charmed", room)
+    victim = _player("Victim", room)
+
+    # Reach the charm branch: ch has no master (the guarded ROM state) but is
+    # AFF_CHARM, and victim follows ch so the "isn't following you" check passes.
+    charmed.master = None
+    charmed.leader = None
+    charmed.sex = Sex.MALE  # $m → "him"
+    charmed.affected_by = int(AffectFlag.CHARM)
+    victim.master = charmed
+
+    send_calls: list[tuple[str, str]] = []
+
+    def fake_send(char, message):
+        send_calls.append((getattr(char, "name", "?"), message))
+
+    monkeypatch.setattr(gc, "_send_to_char_sync", fake_send, raising=False)
+
+    result = gc.do_group(charmed, "Victim")
+
+    vict_msgs = [m for n, m in send_calls if n == "Victim"]
+    assert any("You like your master too much to leave him!" in m for m in vict_msgs), (
+        f"missing TO_VICT charm rejection with $m pronoun; got {send_calls!r}, result={result!r}"
+    )
+    # ch (the charmed mob) gets no feedback in ROM.
+    assert not result, f"charmed ch should receive no message; got {result!r}"
+    assert not any(n == "Charmed" for n, _ in send_calls), f"charmed ch should receive no message; got {send_calls!r}"
+
+
 def test_do_group_remove_emits_via_socket_path(monkeypatch):
     # mirrors ROM src/act_comm.c:1838-1847 — TO_VICT and TO_NOTVICT via act()
     from mud.commands import group_commands as gc
