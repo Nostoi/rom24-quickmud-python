@@ -7,19 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Found (open, gated `xfail`)
+### Fixed
 
-- **FINDING-034 / WEAR-012: `wear all` silently skips lights, weapons, and HOLD
-  items that ROM equips.** The differential harness's new `wear all` scenario
-  surfaced a real parity divergence — ROM `wear all` (`src/act_obj.c`) calls
-  `wear_obj(ch, obj, FALSE)` over every carried `WEAR_NONE` item (lighting+holding
-  lights, wielding weapons, holding HOLD items), whereas Python's `_wear_all`
-  reimplements the loop and `continue`s past all three. Filed in
-  `tools/diff_harness/FINDINGS.md` (FINDING-034) and `ACT_OBJ_C_AUDIT.md`
-  (WEAR-012); the scenario `test_generated_wear_all_matches_live_c` is committed
-  as `xfail(strict=True)` so it auto-flips to a hard failure when the fix lands.
-  Fix design (extract a shared `wear_obj(ch, obj, fReplace)`) is recorded in the
-  finding for the gap-closer.
+- **WEAR-012 / FINDING-034: `wear all` now equips lights, weapons, and HOLD
+  items.** ROM `wear all` (`src/act_obj.c:1712-1723`) calls
+  `wear_obj(ch, obj, FALSE)` over every carried `WEAR_NONE` item — lighting+holding
+  lights, wielding weapons, holding HOLD items — but Python's `_wear_all` was a
+  parallel reimplementation that skipped all three classes, so a player who typed
+  `wear all` after looting silently failed to ready their light/weapon/held item.
+  Fixed by extracting a shared `_wear_obj(ch, obj, fReplace)` (mirroring ROM
+  `wear_obj`): the single-item `do_wear <item>` path calls it with `fReplace=True`
+  (force-replace, unchanged) and `_wear_all` with `fReplace=False` (occupied slots
+  skipped silently). The differential-harness scenario
+  `test_generated_wear_all_matches_live_c` (which surfaced the divergence last
+  version as a strict `xfail`) now converges against the live ROM C oracle.
 
 ### Added
 

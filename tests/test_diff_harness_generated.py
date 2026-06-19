@@ -607,21 +607,15 @@ def test_generated_compare_objects_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="FINDING-034 / WEAR-012: Python _wear_all skips lights, weapons, and "
-    "HOLD items that ROM's `wear all` equips. Auto-flips to a hard failure when "
-    "the shared wear_obj(ch, obj, fReplace) refactor lands.",
-)
 def test_generated_wear_all_matches_live_c():
     """``wear all`` bulk-loop form against the live C oracle.
 
-    NOTE: currently ``xfail(strict=True)`` — this scenario SURFACED FINDING-034:
-    ROM ``wear all`` (`src/act_obj.c:1712-1723`) calls ``wear_obj(ch, obj,
-    FALSE)`` unconditionally, lighting+holding the torch (and wielding weapons /
-    holding HOLD items), whereas Python's ``_wear_all`` skips all three classes.
-    The fix is tracked as WEAR-012; the decorator will auto-flip to a hard
-    failure once the shared ``wear_obj`` dispatch lands.
+    This scenario SURFACED FINDING-034 and now LOCKS its fix (WEAR-012): ROM
+    ``wear all`` (`src/act_obj.c:1712-1723`) calls ``wear_obj(ch, obj, FALSE)``
+    unconditionally, lighting+holding the torch (and wielding weapons / holding
+    HOLD items). Python's ``_wear_all`` previously skipped all three classes; it
+    now routes every carried item through the shared ``_wear_obj(ch, obj,
+    fReplace=False)`` dispatch, so it converges against C.
 
     ROM ``do_wear`` (src/act_obj.c:1712-1723) loops ``ch->carrying`` and calls
     ``wear_obj(ch, obj, FALSE)`` for every item with ``wear_loc == WEAR_NONE``.

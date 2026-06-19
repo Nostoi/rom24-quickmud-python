@@ -168,6 +168,28 @@ def do_wear(ch: Character, args: str) -> str:
     if ch.position < Position.SLEEPING:
         return "You can't do that right now."
 
+    # ROM `do_wear <item>` passes fReplace=TRUE — occupied slots are force-
+    # replaced (src/act_obj.c:1699-1733 → wear_obj).
+    return _wear_obj(ch, obj, fReplace=True)
+
+
+def _wear_obj(ch: Character, obj: Object, fReplace: bool = True) -> str:
+    """ROM `wear_obj(ch, obj, fReplace)` — src/act_obj.c:1401-1695.
+
+    Shared wear/wield/hold dispatch for both `do_wear <item>` (fReplace=True,
+    force-replace occupied slots) and `wear all` (fReplace=False, skip occupied
+    slots silently). Returns the TO_CHAR message, or "" when the wear was skipped
+    — an occupied slot under fReplace=False, or an unwearable item (ROM only
+    emits "You can't wear, wield, or hold that." when fReplace is True, and
+    `wear all` always passes False).
+
+    WEAR-012 / FINDING-034: `wear all` previously reimplemented a *subset* of this
+    dispatch and silently skipped lights, weapons, and HOLD items; routing it
+    through this shared function (the same one the single-item path uses) is the
+    ROM-faithful fix. The only effect of `fReplace` is per ROM `remove_obj`: an
+    occupied slot aborts the wear (returns False) under fReplace=False instead of
+    force-removing the existing item.
+    """
     # Check level restriction (ROM src/act_obj.c:1405-1413)
     obj_level = getattr(obj.prototype, "level", 0)
     char_level = getattr(ch, "level", 1)
@@ -185,7 +207,7 @@ def do_wear(ch: Character, args: str) -> str:
     # WIELD branch. ROM cmd_table maps "wear", "wield", "hold" all to
     # `do_wear`, so `wear sword` and `wield sword` are identical.
     if item_type == ItemType.WEAPON:
-        return _dispatch_wield(ch, obj)
+        return _dispatch_wield(ch, obj, fReplace)
 
     # ROM src/act_obj.c:1415-1422 — wear_obj dispatches ITEM_LIGHT FIRST (before
     # any wear-flag branch) into the WEAR_LIGHT slot. INV-028: the worn-light slot
@@ -197,6 +219,10 @@ def do_wear(ch: Character, args: str) -> str:
         light_loc = int(WearLocation.LIGHT)
 
         if light_loc in equipment and equipment[light_loc] is not None:
+            # ROM remove_obj(ch, WEAR_LIGHT, fReplace): fReplace=False → return
+            # FALSE, wear_obj aborts silently (the wear-all skip).
+            if not fReplace:
+                return ""
             existing = equipment[light_loc]
             if not _unequip_to_inventory(ch, existing):
                 existing_name = getattr(existing, "short_descr", "it")
@@ -236,6 +262,9 @@ def do_wear(ch: Character, args: str) -> str:
         hold_loc = int(WearLocation.HOLD)
 
         if hold_loc in equipment and equipment[hold_loc] is not None:
+            # ROM remove_obj(ch, WEAR_HOLD, fReplace): fReplace=False → skip.
+            if not fReplace:
+                return ""
             existing = equipment[hold_loc]
             if not _unequip_to_inventory(ch, existing):
                 existing_name = getattr(existing, "short_descr", "it")
@@ -274,6 +303,12 @@ def do_wear(ch: Character, args: str) -> str:
     # Find appropriate wear location
     wear_loc = _get_wear_location(obj, wear_flags, ch)
     if not wear_loc:
+        # No free slot. Under fReplace=False (wear all), ROM's wear_obj skips
+        # silently — every multi-slot remove_obj returns FALSE — and an item
+        # with no recognized wear flag falls through to the final
+        # fReplace-gated "You can't wear, wield, or hold that." (no message).
+        if not fReplace:
+            return ""
         # Multi-slot items: all slots occupied. Try to make room.
         wear_loc = _try_replace_multislot(ch, wear_flags)
         if not wear_loc:
@@ -284,6 +319,9 @@ def do_wear(ch: Character, args: str) -> str:
     # Check if slot is occupied
     equipment = getattr(ch, "equipment", {})
     if wear_loc in equipment and equipment[wear_loc] is not None:
+        # ROM remove_obj(ch, wear_loc, fReplace): fReplace=False → skip silently.
+        if not fReplace:
+            return ""
         existing = equipment[wear_loc]
         if not _unequip_to_inventory(ch, existing):
             # _unequip_to_inventory already emits "You can't remove $p." via ch.send.
@@ -346,12 +384,14 @@ def do_wield(ch: Character, args: str) -> str:
     return do_wear(ch, args)
 
 
-def _dispatch_wield(ch: Character, obj: Object) -> str:
+def _dispatch_wield(ch: Character, obj: Object, fReplace: bool = True) -> str:
     """ROM `wear_obj` ITEM_WIELD branch — src/act_obj.c:1616-1668.
 
     Assumes caller has already verified position, level, and item_type.
     Handles slot-replace, STR check, alignment, two-hand/shield check,
-    equip, and weapon-skill flavor.
+    equip, and weapon-skill flavor. `fReplace` mirrors ROM `remove_obj`:
+    when False (the `wear all` path) an occupied WIELD slot aborts the wield
+    silently instead of force-removing the current weapon.
     """
     from mud.models.constants import Size, WeaponFlag
 
@@ -359,6 +399,9 @@ def _dispatch_wield(ch: Character, obj: Object) -> str:
     wear_loc = WearLocation.WIELD
 
     if wear_loc in equipment and equipment[wear_loc] is not None:
+        # ROM remove_obj(ch, WEAR_WIELD, fReplace): fReplace=False → skip silently.
+        if not fReplace:
+            return ""
         existing = equipment[wear_loc]
         if not _unequip_to_inventory(ch, existing):
             return ""
@@ -450,10 +493,16 @@ def do_hold(ch: Character, args: str) -> str:
 
 
 def _wear_all(ch: Character) -> str:
-    """Wear all wearable items in inventory.
+    """Wear/wield/hold every wearable carried item — ROM `do_wear` "all"
+    (src/act_obj.c:1712-1723).
 
-    ROM Reference: src/act_obj.c:1716-1721 — only iterate `wear_loc == WEAR_NONE`
-    items the character can see (`can_see_obj`).
+    ROM loops `ch->carrying`, and for each object with `wear_loc == WEAR_NONE`
+    the character can see, calls `wear_obj(ch, obj, FALSE)` — the SAME dispatcher
+    the single-item path uses, just with fReplace=FALSE so occupied slots are
+    skipped silently. WEAR-012 / FINDING-034: the previous `_wear_all` was a
+    parallel reimplementation that skipped lights, weapons, and HOLD items ROM
+    equips. Routing every item through the shared `_wear_obj` is the fix — lights
+    light+hold, weapons wield, HOLD items hold, exactly as `do_wear <item>` does.
     """
     from mud.world.vision import can_see_object
 
@@ -462,51 +511,19 @@ def _wear_all(ch: Character) -> str:
         return "You are not carrying anything."
 
     messages = []
-    for obj in list(inventory):  # Copy list since we modify it
-        # Skip already worn items
+    for obj in list(inventory):  # Copy: _wear_obj mutates inventory as it equips.
+        # ROM act_obj.c:1716-1721 — only WEAR_NONE (not already worn) items the
+        # character can see.
         if getattr(obj, "worn_by", None):
             continue
-        # ROM act_obj.c:1719 — skip items the character can't see.
         if not can_see_object(ch, obj):
             continue
 
-        # Skip weapons and held items (read from prototype)
-        item_type_str = getattr(obj.prototype, "item_type", None)
-        item_type = int(item_type_str) if item_type_str else ItemType.TRASH
-        wear_flags = getattr(obj.prototype, "wear_flags", 0)
-        wear_flags = int(wear_flags) if wear_flags else 0  # Convert string to int if needed
-
-        if item_type == ItemType.WEAPON:
-            continue
-        if wear_flags & WearFlag.HOLD:
-            continue
-
-        # Try to wear it
-        wear_loc = _get_wear_location(obj, wear_flags, ch)
-        if not wear_loc:
-            continue
-
-        equipment = getattr(ch, "equipment", {})
-        if wear_loc in equipment and equipment[wear_loc] is not None:
-            continue  # Slot occupied
-
-        # Wear it
-        if not equipment:
-            ch.equipment = {}
-        ch.equipment[wear_loc] = obj
-        obj.worn_by = ch
-        inventory.remove(obj)
-
-        # Apply equipment bonuses (ROM src/handler.c:equip_char)
-        equip_char(ch, obj, wear_loc)
-
-        obj_name = getattr(obj, "short_descr", "something")
-        room_template, char_template = _wear_location_messages(int(wear_loc))
-        room = getattr(ch, "room", None)
-        # INV-025: act_to_room renders $n/$s per-recipient (PERS masking) + dispatches
-        # TRIG_ACT (ROM src/act_obj.c:1435-1612, no MOBtrigger wrap).
-        act_to_room(room, room_template, ch, arg1=obj, exclude=ch)
-        messages.append(char_template.format(obj_name=obj_name))
+        # ROM `wear_obj(ch, obj, FALSE)` — fReplace=FALSE skips occupied slots
+        # silently and suppresses the "You can't wear..." line; "" means skipped.
+        message = _wear_obj(ch, obj, fReplace=False)
+        if message:
+            messages.append(message)
 
     if not messages:
         return "You have nothing else to wear."

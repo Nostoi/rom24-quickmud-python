@@ -1054,6 +1054,67 @@ def test_wear_all_does_not_replace_existing(test_character, object_factory):
     assert helm2 in char.inventory, "Second helm must remain in inventory under wear all"
 
 
+def test_wear_all_equips_light_weapon_and_hold(test_character, object_factory):
+    """WEAR-012 / FINDING-034: `wear all` must equip lights, weapons, and HOLD
+    items, not just wear-flag armor.
+
+    ROM `do_wear` "all" (src/act_obj.c:1712-1723) calls `wear_obj(ch, obj, FALSE)`
+    unconditionally over every carried `wear_loc == WEAR_NONE` item, and
+    `wear_obj` dispatches ITEM_LIGHT → WEAR_LIGHT, ITEM_WEAPON → WEAR_WIELD, and
+    ITEM_HOLD-flag → WEAR_HOLD. The pre-fix `_wear_all` reimplemented the loop and
+    skipped all three classes, so `wear all` silently failed to ready a player's
+    light/weapon/held item. The single-item path already handled them — only the
+    bulk loop diverged.
+    """
+    from mud.commands.equipment import do_wear
+
+    char = test_character
+
+    torch = object_factory(
+        {
+            "vnum": 1150,
+            "name": "torch",
+            "short_descr": "a torch",
+            "item_type": int(ItemType.LIGHT),
+            "wear_flags": int(WearFlag.TAKE),
+            "value": [0, 0, 0, 0, 0],
+        }
+    )
+    sword = object_factory(
+        {
+            "vnum": 1151,
+            "name": "sword",
+            "short_descr": "a sword",
+            "item_type": int(ItemType.WEAPON),
+            "wear_flags": int(WearFlag.TAKE) | int(WearFlag.WIELD),
+            "value": [0, 3, 6, 0, 0],
+            "weight": 1,
+        }
+    )
+    wand = object_factory(
+        {
+            "vnum": 1152,
+            "name": "wand",
+            "short_descr": "a wand",
+            "item_type": int(ItemType.WAND),
+            "wear_flags": int(WearFlag.TAKE) | int(WearFlag.HOLD),
+            "value": [0, 0, 0, 0, 0],
+        }
+    )
+    char.add_object(torch)
+    char.add_object(sword)
+    char.add_object(wand)
+
+    do_wear(char, "all")
+
+    assert char.equipment.get(int(WearLocation.LIGHT)) is torch, "wear all must light+hold the torch"
+    assert char.equipment.get(int(WearLocation.WIELD)) is sword, "wear all must wield the sword"
+    assert char.equipment.get(int(WearLocation.HOLD)) is wand, "wear all must hold the wand"
+    assert torch not in char.inventory
+    assert sword not in char.inventory
+    assert wand not in char.inventory
+
+
 def test_large_size_bypasses_two_hand_shield_block(test_character, object_factory):
     """ROM Parity: src/act_obj.c:1603, 1631 — characters of SIZE_LARGE+ ignore
     the two-handed weapon vs. shield restriction."""

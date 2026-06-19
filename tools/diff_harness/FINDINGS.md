@@ -8,14 +8,19 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
-## FINDING-034 — `wear all` silently skips lights, weapons, and HOLD items that ROM equips — ❌ OPEN
+## FINDING-034 — `wear all` silently skips lights, weapons, and HOLD items that ROM equips — ✅ RESOLVED
 
-**Status:** ❌ OPEN (surfaced 2026-06-19, v2.14.138). Gated as
-`@pytest.mark.xfail(strict=True)` on
-`test_generated_wear_all_matches_live_c` in
-`tests/test_diff_harness_generated.py`; the decorator auto-flips to a hard
-failure the moment the fix lands. Fix-gap filed as **WEAR-012** in
-`docs/parity/ACT_OBJ_C_AUDIT.md`.
+**Status:** ✅ RESOLVED 2026-06-19 (v2.14.139). Fixed under **WEAR-012**: extracted
+a shared `_wear_obj(ch, obj, fReplace)` (`mud/commands/equipment.py`) mirroring
+ROM `wear_obj`; `do_wear <item>` calls it with `fReplace=True` and `_wear_all`
+with `fReplace=False`, so `wear all` now routes every carried item through the
+same dispatch the single-item path uses — lights light+hold, weapons wield, HOLD
+items hold. `test_generated_wear_all_matches_live_c` xfail removed; it now
+converges against the live C oracle. Regression test:
+`test_wear_all_equips_light_weapon_and_hold` in
+`tests/integration/test_equipment_system.py`.
+
+(Surfaced 2026-06-19, v2.14.138; was gated `@pytest.mark.xfail(strict=True)`.)
 
 **Scenario:** `test_generated_wear_all_matches_live_c` —
 `['__oload=3045', '__oload=3030', 'get jacket', 'get torch', 'wear all', 'look']`.
