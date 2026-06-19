@@ -500,7 +500,12 @@ def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
 
     # Charge scaling for wand/staff
     if int(getattr(proto, "item_type", getattr(obj, "item_type", 0)) or 0) in (int(ItemType.WAND), int(ItemType.STAFF)):
-        vals = getattr(proto, "value", getattr(obj, "value", [0, 0, 0, 0, 0]))
+        # GETCOST-005: ROM src/act_obj.c:2520-2523 scales by the RUNTIME obj->value
+        # (remaining/max charges deplete with use), NOT the prototype. Mirrors the
+        # GETCOST-001 proto→runtime class.
+        vals = getattr(obj, "value", None)
+        if not vals:
+            vals = getattr(proto, "value", [0, 0, 0, 0, 0])
         total = vals[1]
         rem = vals[2]
         if total == 0:

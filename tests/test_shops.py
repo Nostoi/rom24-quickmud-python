@@ -944,6 +944,35 @@ def test_get_cost_sell_extract_skips_dupe_discount():
     assert _get_cost(keeper, obj, buy=False) == base
 
 
+def test_get_cost_wand_charge_scaling_uses_runtime_value():
+    # GETCOST-005: mirrors ROM src/act_obj.c:2518-2524 — wand/staff charge scaling is
+    # `cost = cost * obj->value[2] / obj->value[1]`, using the RUNTIME obj->value
+    # (remaining/max charges, depleted by use), NOT the prototype. Python read
+    # proto.value, overpricing a partially-used wand. Mirrors GETCOST-001 (proto→runtime).
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Charger", 3010)
+    char.gold = 0
+    char.silver = 0
+    keeper = spawn_mob(3000)  # alchemist — buys wands
+    assert keeper is not None
+    keeper.move_to_room(char.room)
+    keeper.inventory = []
+
+    wand = spawn_object(3031)
+    assert wand is not None
+    wand.prototype.item_type = int(ItemType.WAND)
+    wand.prototype.cost = 100
+    wand.cost = 100
+    wand.extra_flags = 0
+    # Prototype declares 5/10 charges; this instance has been used down to 2/10.
+    wand.prototype.value = [0, 10, 5, 0, 0]
+    wand.value = [0, 10, 2, 0, 0]
+
+    # base sell = c_div(100*15, 100) = 15; runtime scale 2/10 = c_div(15*2, 10) = 3.
+    # (Prototype ratio 5/10 would give c_div(15*5, 10) = 7.)
+    assert _get_cost(keeper, wand, buy=False) == 3
+
+
 def test_get_cost_dupe_discount_requires_matching_short_descr():
     # GETCOST-004: mirrors ROM src/act_obj.c:2507-2508 — a keeper duplicate matches
     # only when `obj->pIndexData == obj2->pIndexData && !str_cmp(short_descr)`, i.e.
@@ -1212,6 +1241,8 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
     vals = wand.prototype.value
     vals[1] = 10  # total
     vals[2] = 5  # remaining
+    # GETCOST-005: charge scaling reads the RUNTIME obj.value — sync it (spawn invariant).
+    wand.value = [0, 10, 5, 0, 0]
     ch.add_object(wand)
 
     # Shop profit_sell for keeper 3000 is 15%; base sell price = 100*15/100 = 15
@@ -1245,6 +1276,7 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
         wand2.cost = 100  # GETCOST-001: runtime cost is the source of truth
         wand2.prototype.value[1] = 10
         wand2.prototype.value[2] = 5
+        wand2.value = [0, 10, 5, 0, 0]  # GETCOST-005: runtime charge value
         ch.add_object(wand2)
         out2 = process_command(ch, "sell wand")
         # GETCOST-002: the loop has no break, so BOTH matching keeper copies discount

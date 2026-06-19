@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GETCOST-005: wand/staff charge pricing now uses the runtime remaining charges.**
+  ROM `get_cost` scales a wand/staff price by `obj->value[2] / obj->value[1]`
+  (`src/act_obj.c:2520-2523`) using the runtime object value, which depletes as
+  the item is used. Python read `proto.value`, overpricing a partially-used
+  wand/staff at its original full-charge ratio. Charge scaling now reads
+  `obj.value`. Test:
+  `tests/test_shops.py::test_get_cost_wand_charge_scaling_uses_runtime_value`.
 - **GETCOST-004: the keeper same-item discount now requires a matching short_descr.**
   ROM `get_cost` matches a duplicate on `pIndexData == AND !str_cmp(short_descr)`
   (`src/act_obj.c:2507-2508`) — both must hold. Python's predicate short-circuited
