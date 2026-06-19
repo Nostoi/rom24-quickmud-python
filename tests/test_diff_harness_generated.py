@@ -607,6 +607,51 @@ def test_generated_compare_objects_matches_live_c():
     assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
 
 
+def test_generated_get_all_drop_all_matches_live_c():
+    """``get all`` / ``drop all`` bulk-loop forms against the live C oracle.
+
+    ROM ``do_get`` (src/act_obj.c:233-253) and ``do_drop`` iterate the
+    room-contents / inventory list and call ``get_obj`` / ``obj_from_char`` per
+    item, so the bulk verbs are observable LIFO loops (the INV-039 / class-13
+    head-insert contract, here exercised at the bulk-loop level rather than the
+    per-item ``get <obj>`` level the existing scenarios cover):
+
+    - ``__oload`` head-inserts into the room: load sword (3021) then dagger
+      (3020) ⇒ room contents ``[dagger, sword]``.
+    - ``get all`` walks that order, each ``get_obj`` head-inserting into carry ⇒
+      output ``You get a dagger.`` then ``You get a sword.``; carry ``[sword,
+      dagger]``.
+    - ``drop all`` walks carry ``[sword, dagger]`` ⇒ ``You drop a sword.`` then
+      ``You drop a dagger.``; room back to ``[dagger, sword]``.
+
+    The interleaved ``look`` snapshots pin both list orders.  Two weapons (not
+    worn) keep this the clean carry/room case — ``wear all``'s dual-wield arm is
+    a separate probe.  No RNG on any get/drop path, so no ``__seed`` bracket.
+    """
+    if not DIFFSHIM.exists():
+        pytest.skip("src/diffshim is required for live generated differential tests")
+
+    sc = Scenario(
+        name="generated_get_all_drop_all",
+        seed=1234,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=[
+            "__oload=3021",  # small sword → room head ⇒ [sword]
+            "__oload=3020",  # dagger → room head ⇒ [dagger, sword]
+            "get all",  # You get a dagger. / You get a sword.
+            "look",  # carry order [sword, dagger]
+            "drop all",  # You drop a sword. / You drop a dagger.
+            "look",  # room order [dagger, sword]
+        ],
+    )
+
+    assert diff_traces(drive_c_oracle(sc, DIFFSHIM), drive_python_replay(sc)) is None
+
+
 def test_generated_container_lock_cycle_matches_live_c():
     """``unlock`` / ``open`` / ``close`` / ``lock`` a keyed container — the
     ``do_open``/``do_close``/``do_lock``/``do_unlock`` OBJECT branch.

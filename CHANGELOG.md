@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Differential-harness widening: `get all` / `drop all` bulk-loop forms**
+  (`tests/test_diff_harness_generated.py`). New fixed scenario
+  `test_generated_get_all_drop_all_matches_live_c` pins ROM's bulk room-loop
+  verbs (`do_get`/`do_drop`, `src/act_obj.c`) at the loop level — sword (3021) +
+  dagger (3020) `get all` then `drop all`, with interleaved `look` snapshots
+  asserting the INV-039 / class-13 head-insert LIFO ordering observably holds
+  across both directions (room `[dagger, sword]` ⇄ carry `[sword, dagger]`).
+  Converges against the live ROM C oracle on the first pass — no divergence.
 - **Differential-harness widening: container lock cycle (`open`/`close`/`lock`/`unlock`
   OBJECT branch)** (`tests/test_diff_harness_generated.py`). New fixed scenario
   `test_generated_container_lock_cycle_matches_live_c` pins the ITEM_CONTAINER

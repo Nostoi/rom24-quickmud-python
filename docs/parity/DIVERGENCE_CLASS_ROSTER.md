@@ -309,6 +309,16 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    guarding against a false-green where an unresolved keyword identically errors
    on both sides); Python **converges on the first pass — no divergence**. No
    RNG on any container open/close/lock/unlock path, so no `__seed` bracket.
+   **Non-mobprog command widening, bulk-loop forms (2.14.136):** added
+   `test_generated_get_all_drop_all_matches_live_c`, pinning ROM's `get all` /
+   `drop all` bulk room-loop verbs (`src/act_obj.c` `do_get`/`do_drop`) at the
+   loop level (the existing scenarios cover only per-item `get <obj>`). Sword
+   (3021) + dagger (3020) drive `get all` then `drop all`; interleaved `look`
+   snapshots assert the INV-039/class-13 head-insert LIFO order observably holds
+   in both directions (room `[dagger, sword]` ⇄ carry `[sword, dagger]`). C
+   oracle confirmed the loop output order (`get`: dagger then small sword;
+   `drop`: small sword then dagger); Python converges on the first pass — no
+   divergence. `wear all`'s dual-wield arm left as a separate probe.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,
