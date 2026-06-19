@@ -6,12 +6,25 @@ from mud.advancement import exp_per_level
 from mud.math.c_compat import c_div
 from mud.models.area import Area
 from mud.models.character import Character, character_registry
-from mud.models.constants import AffectFlag, DamageType, ItemType
+from mud.models.constants import AffectFlag, DamageType, ItemType, PlayerFlag
 from mud.models.obj import ObjIndex
 from mud.models.object import Object
 from mud.models.room import Room
 from mud.skills import handlers as skill_handlers
 from mud.utils import rng_mm
+
+
+def _legal_pk(caster: Character, victim: Character) -> None:
+    """Make a PC-vs-PC pair a legal kill for apply_damage's is_safe re-check.
+
+    INV-050: offensive spells route through apply_damage, which re-checks is_safe
+    (ROM src/fight.c:730). For PC-vs-PC that runs the clan PK ladder (:1096-1120):
+    the caster must be in a clan (:1098), and PLR_KILLER on the victim (:1104)
+    opens the kill regardless of clan/level. NPC victims are unaffected.
+    """
+    caster.clan = 1
+    if not getattr(victim, "is_npc", False):
+        victim.act = int(getattr(victim, "act", 0) or 0) | int(PlayerFlag.KILLER)
 
 
 def test_dispel_evil_damages_evil_targets(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -258,6 +271,7 @@ def test_cause_light_deals_level_scaled_damage(monkeypatch: pytest.MonkeyPatch) 
     room = Room(vnum=4050)
     room.add_character(caster)
     room.add_character(victim)
+    _legal_pk(caster, victim)
     caster.messages.clear()
     victim.messages.clear()
 
@@ -319,6 +333,7 @@ def test_chain_lightning_arcs_room_targets(monkeypatch: pytest.MonkeyPatch) -> N
     for character in (caster, first, second, third):
         room.add_character(character)
         character.messages.clear()
+    _legal_pk(caster, first)
 
     dice_values = iter([24, 18, 12])
     monkeypatch.setattr(rng_mm, "dice", lambda number, size: next(dice_values))
@@ -530,6 +545,7 @@ def test_fireball_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> None:
     room = Room(vnum=4101)
     room.add_character(caster)
     room.add_character(victim)
+    _legal_pk(caster, victim)
 
     monkeypatch.setattr(rng_mm, "number_range", lambda low, high: 180)
     monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, target, dtype: True)
@@ -546,6 +562,7 @@ def test_magic_missile_rolls_rom_damage_table(monkeypatch: pytest.MonkeyPatch) -
     room = Room(vnum=4102)
     room.add_character(caster)
     room.add_character(victim)
+    _legal_pk(caster, victim)
 
     ranges: list[tuple[int, int]] = []
 
@@ -576,6 +593,7 @@ def test_magic_missile_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> No
     room = Room(vnum=4103)
     room.add_character(caster)
     room.add_character(victim)
+    _legal_pk(caster, victim)
 
     monkeypatch.setattr(rng_mm, "number_range", lambda low, high: 14)
     monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, target, dtype: True)
@@ -592,6 +610,7 @@ def test_lightning_bolt_rolls_rom_damage_table(monkeypatch: pytest.MonkeyPatch) 
     room = Room(vnum=4104)
     room.add_character(caster)
     room.add_character(victim)
+    _legal_pk(caster, victim)
 
     observed: list[tuple[int, int]] = []
 
@@ -622,6 +641,7 @@ def test_lightning_bolt_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> N
     room = Room(vnum=4105)
     room.add_character(caster)
     room.add_character(victim)
+    _legal_pk(caster, victim)
 
     monkeypatch.setattr(rng_mm, "number_range", lambda low, high: 80)
     monkeypatch.setattr(skill_handlers, "saves_spell", lambda level, target, dtype: True)
@@ -647,6 +667,7 @@ def test_energy_drain_siphons_resources(monkeypatch: pytest.MonkeyPatch) -> None
     room = Room(vnum=4300)
     room.add_character(caster)
     room.add_character(victim)
+    _legal_pk(caster, victim)
 
     caster.messages.clear()
     victim.messages.clear()
@@ -715,6 +736,7 @@ def test_flamestrike_rolls_rom_dice(monkeypatch: pytest.MonkeyPatch) -> None:
     caster = Character(name="Cleric", level=28, is_npc=False)
     victim = Character(name="Cultist", level=24, is_npc=False, hit=500, max_hit=500)
     room = Room(vnum=4102)
+    _legal_pk(caster, victim)
     room.add_character(caster)
     room.add_character(victim)
 

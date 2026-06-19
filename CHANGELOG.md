@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-050 (convergence complete): `is_safe` is now a thin wrapper over the
+  faithful `_kill_safety_message` mirror** (`mud/combat/safety.py`). The Python
+  port had split ROM's single `is_safe` (`src/fight.c:1018-1124`) into a silent
+  bool and a message-returning mirror; the bool was bidirectionally divergent
+  (over-blocked `is_ghost`/`ACT_GAIN` and ROOM_SAFE for all victims; under-blocked
+  the immortal bypass, the `victim->fighting == ch` retaliation bypass, and the
+  PC-vs-PC clan PK ladder). It now delegates to the one canonical mirror
+  (`return _kill_safety_message(char, victim) is not None`), leaving only the
+  intentionally-silent `apply_damage` re-check (FIGHT-002, ROM `src/fight.c:730`)
+  as its caller — now ROM-faithful in its predicate. Production behavior is
+  unchanged (combatants always have rooms; PC-vs-PC is gated upstream by
+  do_kill/do_murder/do_cast); the only effect was on unit-test fixtures that
+  relied on the old bool's leniency — 45 tests across 12 files were updated to use
+  real rooms and legal-PK combatant pairs (test hygiene). New guard:
+  `tests/integration/test_inv050_is_safe_bool_faithful.py`. Corrected one stale
+  assertion (`test_fight_c_safe_room_damage_gate`) that asserted no-damage for a
+  retaliating victim in a safe room, contradicting ROM's retaliation bypass
+  (`src/fight.c:1023`, evaluated before the ROOM_SAFE gate).
 - **INV-050 (gate): `is_safe_spell` is now a faithful standalone port of ROM
   `src/fight.c:1126-1218`** (`mud/combat/safety.py`). It previously delegated to
   the silent `is_safe` bool, which is bidirectionally divergent from ROM's

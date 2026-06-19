@@ -12,91 +12,34 @@ if TYPE_CHECKING:
     from mud.models.character import Character
 
 
-def is_safe(char: Character, victim: Character) -> bool:  # noqa: C901
+def is_safe(char: Character, victim: Character) -> bool:
+    """ROM ``is_safe(ch, victim)`` (``src/fight.c:1018-1124``) as a silent bool.
+
+    INV-050: this is a thin wrapper over the single faithful mirror
+    :func:`mud.commands.combat._kill_safety_message` — it returns ``True`` (the
+    attack is forbidden) exactly when the mirror returns a rejection string, and
+    ``False`` (not forbidden) when the mirror returns ``None``. It discards the
+    string, so it stays *silent*: ROM's ``is_safe`` writes the rejection line via
+    ``send_to_char``/``act`` BEFORE returning TRUE, and every player-facing
+    offensive verb gate already routes through the mirror to surface that line.
+
+    The sole remaining caller is the intentionally-silent ``apply_damage``
+    re-check (``mud/combat/engine.py``, FIGHT-002, ROM ``src/fight.c:730``), where
+    ROM itself calls ``is_safe`` as a backstop. Collapsing the two objects onto
+    one source of truth removes the bool's old bidirectional divergence: it used
+    to over-block (``is_ghost``/``ACT_GAIN``; ROOM_SAFE for *all* victims) and
+    under-block (missing the immortal bypass at :1026, the retaliation bypass at
+    :1023, and the entire PC-vs-PC clan PK ladder at :1096-1120).
+
+    (Function-local import mirrors ``spec_funs._is_safe_mirror`` and avoids an
+    engine→command import cycle.)
     """
-    Check if it's safe to attack victim (i.e., shouldn't attack).
-
-    ROM Reference: src/fight.c is_safe (lines 130-230)
-
-    Returns True if:
-    - Victim is in a SAFE room
-    - Victim is a shopkeeper
-    - Victim is a healer
-    - A charmed NPC attacker would attack a PC its master is not fighting
-    """
-    from mud.models.constants import ActFlag, AffectFlag, RoomFlag
-
     if char is None or victim is None:
         return True
 
-    # Ghost can't fight
-    if getattr(char, "is_ghost", False):
-        return True
+    from mud.commands.combat import _kill_safety_message
 
-    # Can't fight yourself
-    if char is victim:
-        return True
-
-    # Check for safe room
-    room = getattr(victim, "room", None)
-    if room:
-        room_flags = getattr(room, "room_flags", 0)
-        if room_flags & RoomFlag.ROOM_SAFE:
-            return True
-
-    # Check if victim is a shopkeeper or healer
-    victim_act = getattr(victim, "act", 0)
-    if getattr(victim, "is_npc", False):
-        # Check for special mob types that shouldn't be attacked
-        if victim_act & ActFlag.IS_HEALER:
-            return True
-        if victim_act & ActFlag.IS_CHANGER:
-            return True
-        if victim_act & ActFlag.TRAIN:
-            return True
-        if victim_act & ActFlag.PRACTICE:
-            return True
-        if victim_act & ActFlag.GAIN:
-            return True
-
-        # PC-attacker-only guards — mirroring ROM src/fight.c:1056-1071
-        if not getattr(char, "is_npc", False):
-            # no attacking pets — mirroring ROM src/fight.c:1059
-            if victim_act & ActFlag.PET:
-                return True
-            # no attacking charmed creatures unless owner — mirroring ROM src/fight.c:1067
-            victim_affected = getattr(victim, "affected_by", 0)
-            if victim_affected & AffectFlag.CHARM:
-                if getattr(victim, "master", None) is not char:
-                    return True
-
-    # Check shop - if mob has a shop, it's a shopkeeper.
-    # mirroring ROM src/fight.c:1040 — victim->pIndexData->pShop != NULL.
-    # Python MobInstances carry no pShop directly; the field lives on the
-    # MobIndex prototype.  Check both to handle any edge case where pShop
-    # was set directly on the instance.
-    if getattr(victim, "pShop", None) is not None:
-        return True
-    proto = getattr(victim, "prototype", None) or getattr(victim, "pIndexData", None)
-    if proto is not None and getattr(proto, "pShop", None) is not None:
-        return True
-
-    # NPC attacking player — mirroring ROM src/fight.c:1075-1093 ("killing
-    # players", IS_NPC(ch) branch). ROM has EXACTLY two guards here: the safe-room
-    # check (handled above via victim.room ROOM_SAFE) and the charmed-pet-owner
-    # check. There is NO level-difference gate — a fabricated
-    # `victim_level < char_level - 10` over-block (FIGHT-077, INV-050) used to live
-    # here and silently stopped any mob >10 levels above a player from aggressing.
-    if getattr(char, "is_npc", False) and not getattr(victim, "is_npc", True):
-        # charmed mobs and pets cannot attack players while master is not fighting them
-        # mirroring ROM src/fight.c:1087-1093
-        char_affected = getattr(char, "affected_by", 0)
-        if char_affected & AffectFlag.CHARM:
-            master = getattr(char, "master", None)
-            if master is not None and getattr(master, "fighting", None) is not victim:
-                return True
-
-    return False
+    return _kill_safety_message(char, victim) is not None
 
 
 def _spell_room_flags(room: object) -> int:

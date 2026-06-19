@@ -7,7 +7,25 @@ ROM 2.4 C src/fight.c logic.
 from mud.combat.engine import apply_damage, is_awake, set_fighting, stop_fighting, update_pos
 from mud.models.character import Character
 from mud.models.constants import Position
+from mud.models.room import Room
 from mud.utils import rng_mm
+
+
+def _legalize_pair(attacker: Character, victim: Character, *, vnum: int = 39001) -> Room:
+    """Make ``attacker``/``victim`` a legal kill for apply_damage's is_safe re-check.
+
+    INV-050: apply_damage re-checks is_safe (ROM src/fight.c:730). The faithful
+    mirror returns "They aren't here." when either combatant's room is None
+    (ROM `in_room == NULL`, :1020) and blocks non-clan PC-vs-PC via the clan PK
+    ladder (:1096-1120). Give both a shared non-safe room and clan membership
+    (PCs only) so the re-check permits the damage under test.
+    """
+    room = Room(vnum=vnum, room_flags=0)
+    for char in (attacker, victim):
+        room.add_character(char)
+        if not getattr(char, "is_npc", False):
+            char.clan = 1
+    return room
 
 
 def test_set_fighting_basic():
@@ -184,6 +202,7 @@ def test_apply_damage_sets_fighting():
 
     attacker = Character(name="Attacker", level=20, hit=100, max_hit=100)
     victim = Character(name="Victim", level=18, hit=80, max_hit=80)
+    _legalize_pair(attacker, victim)
 
     # Start not fighting
     attacker.fighting = None
@@ -208,6 +227,7 @@ def test_apply_damage_death():
     attacker = Character(name="Attacker", level=20, hit=100, max_hit=100)
     victim = Character(name="Victim", level=5, hit=10, max_hit=50)
     victim.is_npc = True
+    _legalize_pair(attacker, victim)
 
     result = apply_damage(attacker, victim, 15)
 
@@ -227,6 +247,7 @@ def test_apply_damage_unconscious_stops_fighting():
     attacker = Character(name="Attacker", level=20, hit=100, max_hit=100)
     victim = Character(name="Victim", level=10, hit=15, max_hit=100)
     victim.is_npc = False
+    _legalize_pair(attacker, victim)
 
     # Set up fighting
     set_fighting(attacker, victim)
@@ -247,6 +268,7 @@ def test_apply_damage_immortal_survives():
     attacker = Character(name="Attacker", level=20, hit=100, max_hit=100)
     victim = Character(name="Immortal", level=110, hit=10, max_hit=100)
     victim.is_npc = False  # PC immortal
+    _legalize_pair(attacker, victim)
 
     apply_damage(attacker, victim, 50)
 

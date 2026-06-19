@@ -31,6 +31,10 @@ def setup_combat() -> tuple[Character, Character]:
     attacker.damroll = 5
     victim.hit = 50
     victim.max_hit = 50
+    # INV-050: apply_damage re-checks is_safe (ROM src/fight.c:730); same-clan
+    # equal-level PCs are a legal kill (:1096-1120) so the re-check permits damage.
+    attacker.clan = 1
+    victim.clan = 1
     return attacker, victim
 
 

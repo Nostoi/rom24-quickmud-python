@@ -41,6 +41,21 @@ def make_character(**overrides) -> Character:
     return char
 
 
+def _engage(caster: Character, victim: Character, *, vnum: int = 4400) -> None:
+    """Put both combatants in a shared non-safe room.
+
+    INV-050: these damage spells route through apply_damage, which re-checks
+    is_safe (ROM src/fight.c:730). The faithful mirror returns "They aren't here."
+    when either combatant's room is None (ROM `in_room == NULL`, :1020), so the
+    fighters need a real room. Both are NPCs here → no clan ladder.
+    """
+    from mud.models.room import Room
+
+    room = Room(vnum=vnum, name="Breath Arena")
+    room.add_character(caster)
+    room.add_character(victim)
+
+
 # ============================================================================
 # ACID_BREATH TESTS (ROM src/magic.c:4625-4652)
 # ============================================================================
@@ -160,6 +175,7 @@ def test_general_purpose_damage_range():
 
     caster = make_character(name="Caster", level=30)
     victim = make_character(name="Victim", level=20, hit=100, max_hit=100)
+    _engage(caster, victim)
 
     damage = general_purpose(caster, victim)
 
@@ -172,6 +188,7 @@ def test_general_purpose_save_halves():
 
     caster = make_character(name="Caster", level=30)
     victim = make_character(name="Victim", level=20, hit=100, max_hit=100)
+    _engage(caster, victim)
 
     damage = general_purpose(caster, victim)
 
@@ -184,6 +201,7 @@ def test_high_explosive_damage_range():
 
     caster = make_character(name="Caster", level=30)
     victim = make_character(name="Victim", level=20, hit=100, max_hit=100)
+    _engage(caster, victim)
 
     damage = high_explosive(caster, victim)
 
@@ -196,6 +214,7 @@ def test_high_explosive_save_halves():
 
     caster = make_character(name="Caster", level=30)
     victim = make_character(name="Victim", level=20, hit=100, max_hit=100)
+    _engage(caster, victim)
 
     damage = high_explosive(caster, victim)
 

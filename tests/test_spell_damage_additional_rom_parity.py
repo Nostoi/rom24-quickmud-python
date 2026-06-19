@@ -670,6 +670,12 @@ def test_magic_missile_save_for_half(monkeypatch):
 
     caster = make_character(level=30)
     victim = make_character(hit=120, max_hit=120)
+    # INV-050: magic_missile → apply_damage re-checks is_safe (ROM src/fight.c:730);
+    # both combatants need a shared non-safe room (mirror returns safe when
+    # in_room is None, :1020). NPC-vs-NPC → no clan ladder.
+    _mm_room = Room(vnum=4600, name="Missile Arena")
+    _mm_room.add_character(caster)
+    _mm_room.add_character(victim)
 
     monkeypatch.setattr(spell_handlers, "saves_spell", lambda level, target, dam_type: True)
 

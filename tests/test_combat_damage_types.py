@@ -10,20 +10,36 @@ import pytest
 from mud.combat.engine import apply_damage
 from mud.models.character import Character
 from mud.models.constants import DamageType, DefenseBit, Position
+from mud.models.room import Room
 
 
 @pytest.fixture
-def attacker(movable_char_factory) -> Character:
+def _arena() -> Room:
+    """A shared non-safe room for the combatants.
+
+    INV-050: apply_damage re-checks is_safe (ROM src/fight.c:730). The faithful
+    mirror returns "They aren't here." when either combatant has no room
+    (ROM `in_room == NULL`, :1020), so both fighters need a real (non-safe) room.
+    """
+    return Room(vnum=39001, name="Damage Arena", room_flags=0)
+
+
+@pytest.fixture
+def attacker(movable_char_factory, _arena) -> Character:
     """Create a test attacker."""
     char = movable_char_factory("Attacker", 3001, points=100)
     char.level = 10
     char.hit = 100
     char.max_hit = 100
+    # INV-050: same clan as victim (equal level → legal kill) so the is_safe
+    # PC-vs-PC clan ladder (ROM :1096-1120) permits the damage under test.
+    char.clan = 1
+    _arena.add_character(char)
     return char
 
 
 @pytest.fixture
-def victim(movable_char_factory) -> Character:
+def victim(movable_char_factory, _arena) -> Character:
     """Create a test victim with no resistances."""
     char = movable_char_factory("Victim", 3001, points=100)
     char.level = 10
@@ -33,6 +49,8 @@ def victim(movable_char_factory) -> Character:
     char.imm_flags = 0
     char.res_flags = 0
     char.vuln_flags = 0
+    char.clan = 1  # INV-050: same clan as attacker → legal kill (see attacker fixture)
+    _arena.add_character(char)
     return char
 
 

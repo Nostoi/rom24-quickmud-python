@@ -18,8 +18,16 @@ def test_learned_percent_gates_success_boundary(monkeypatch) -> None:
     reg = load_registry()
     caster = Character(mana=40, level=20)
     caster.desc = object()
-    target = Character(max_hit=200, hit=200)
+    target = Character(max_hit=200, hit=200, is_npc=True)
     caster.skills["fireball"] = 75
+    # INV-050: fireball → apply_damage re-checks is_safe (ROM src/fight.c:730),
+    # which returns safe when either combatant's room is None (:1020). Put both in
+    # a shared non-safe room; an NPC target sidesteps the PC-vs-PC clan ladder.
+    from mud.models.room import Room
+
+    room = Room(vnum=39001, room_flags=0)
+    room.add_character(caster)
+    room.add_character(target)
 
     monkeypatch.setattr(rng_mm, "number_percent", lambda: 75)
     monkeypatch.setattr(rng_mm, "number_range", lambda low, high: 42)

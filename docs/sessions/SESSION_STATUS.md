@@ -1,37 +1,37 @@
-# Session Status — 2026-06-19 — INV-050 gate cleared (`is_safe_spell` standalone)
+# Session Status — 2026-06-19 — INV-050 `is_safe` bool convergence complete
 
 ## Current State
 
 - **Active focus**: Cross-file / divergence-class sweep (per-file audit tracker
-  exhausted). This session closed the **INV-050 gate** by making
-  `is_safe_spell` a faithful standalone port of ROM `src/fight.c:1126-1218`.
-- **Last completed** (this session, 1 parity commit + handoff docs):
-  - **INV-050 gate CLEARED** (2.14.132, `d3c91e4a`) — `mud/combat/safety.py:is_safe_spell`
-    no longer delegates to the divergent silent `is_safe` bool; it is now a
-    faithful standalone port of ROM's separate `is_safe_spell` (retaliation
-    bypass before NPC ROOM_SAFE, immortal/area bypasses, legal-kill
-    `is_same_group` clauses, PC-vs-PC clan PK ladder). Fixes `do_cast`'s
-    TAR_OBJ_CHAR_OFF gate (`src/magic.c:484`). `handlers.py:_is_safe_spell` now
-    delegates to it (de-duped). 4 tests; corrected one stale KILLER test.
+  exhausted). This session closed **INV-050** end-to-end by collapsing the silent
+  `is_safe` bool onto the single faithful `_kill_safety_message` mirror.
+- **Last completed** (this session, 1 production change + 14 test files + docs):
+  - **INV-050 ✅ ENFORCED** (2.14.133) — `mud/combat/safety.py:is_safe` is now a
+    thin wrapper: `return _kill_safety_message(char, victim) is not None`. The
+    bidirectional divergence (over/under-block) is gone; the sole caller (the
+    intentionally-silent `apply_damage` re-check, FIGHT-002, ROM `src/fight.c:730`)
+    is now ROM-faithful. Production behavior unchanged (rooms always present;
+    PC-vs-PC gated upstream). 45 unit-test fixtures across 12 files legalized
+    (real rooms + clan/PLR_KILLER pairs) — test hygiene. New guard
+    `tests/integration/test_inv050_is_safe_bool_faithful.py`; corrected one stale
+    assertion (`test_fight_c_safe_room_damage_gate` — retaliation bypass).
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-19_INV050_IS_SAFE_SPELL_STANDALONE.md](SESSION_SUMMARY_2026-06-19_INV050_IS_SAFE_SPELL_STANDALONE.md)
+  [SESSION_SUMMARY_2026-06-19_INV050_IS_SAFE_BOOL_CONVERGENCE.md](SESSION_SUMMARY_2026-06-19_INV050_IS_SAFE_BOOL_CONVERGENCE.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.132 |
-| Tests | Area suites green (119 passed this turn); full suite green (exit 0) with the 4 new INV-050 tests |
+| Version | 2.14.133 |
+| Tests | 5841 passed, 4 skipped, 0 failed (full suite) |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
 | Active focus | Cross-file invariants / divergence-class sweep |
 
 ## Next Intended Task
 
-INV-050's gate is cleared, so the remaining INV-050 task is **unblocked**:
-collapse `is_safe`'s callers onto the faithful `_kill_safety_message` mirror (or
-make the silent bool a thin wrapper), leaving only the intentionally-silent
-`apply_damage` re-check (FIGHT-002, `combat/engine.py`) on the raw bool. Other
-open follow-ups: `mud/entrypoint.py` dead code. The higher-yield
-enumeration-independent lever per `docs/parity/DIVERGENCE_CLASS_ROSTER.md` is the
-Hypothesis state-machine → diff_harness widening (Class 11 mobprog paths
-complete; open frontier is non-mobprog scenario coverage).
+INV-050 is fully closed. Next candidates: (1) `mud/entrypoint.py` dead-code
+cleanup (low priority); (2) the higher-yield enumeration-independent lever per
+`docs/parity/DIVERGENCE_CLASS_ROSTER.md` — Hypothesis state-machine → diff_harness
+widening (Class 11 mobprog paths complete; open frontier is non-mobprog scenario
+coverage). Watch `test_mobprog_triggers::test_event_hooks_fire_rom_triggers` for a
+pre-existing xdist isolation flake (passes alone; unrelated to this change).

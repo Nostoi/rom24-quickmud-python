@@ -36,6 +36,20 @@ def make_character(**overrides) -> Character:
     return char
 
 
+def _engage(*chars: Character, vnum: int = 4500) -> Room:
+    """Put combatants in a shared non-safe room.
+
+    INV-050: fireball routes through apply_damage, which re-checks is_safe (ROM
+    src/fight.c:730). The faithful mirror returns "They aren't here." when a
+    combatant's room is None (ROM `in_room == NULL`, :1020). All NPCs → no clan
+    ladder; a shared room is all the re-check needs.
+    """
+    room = Room(vnum=vnum, name="Spell Arena")
+    for char in chars:
+        room.add_character(char)
+    return room
+
+
 # ============================================================================
 # FIREBALL TESTS (ROM src/magic.c:2074-2114)
 # ============================================================================
@@ -118,6 +132,7 @@ def test_fireball_damage_table():
     caster = make_character(level=20)
     victim = make_character(hit=150, max_hit=150, level=24)
     rom_victim = make_character(hit=150, max_hit=150, level=24)
+    _engage(caster, victim)
 
     rng_mm.seed_mm(0xF1)
     expected = _rom_fireball(20, rom_victim)
@@ -133,6 +148,7 @@ def test_fireball_save_for_half():
     """ROM L2111: Save reduces fireball damage by half."""
     caster = make_character(level=10)
     victim = make_character(hit=120, max_hit=120, level=50)  # High level = likely save
+    _engage(caster, victim)
 
     damages = []
     for seed in range(50):
@@ -159,6 +175,7 @@ def test_fireball_level_scaling():
     # Test at different caster levels
     low_caster = make_character(level=15)
     high_caster = make_character(level=40)
+    _engage(low_caster, high_caster, victim)
 
     low_damages = []
     high_damages = []

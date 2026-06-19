@@ -613,6 +613,10 @@ def test_player_kill_clears_pk_flags(monkeypatch: pytest.MonkeyPatch) -> None:
     victim.act = int(PlayerFlag.KILLER)
     victim.hit = 1
     victim.max_hit = 1
+    # INV-050: apply_damage re-checks is_safe (ROM src/fight.c:730). A PC attacker
+    # must be a clan member to engage another player (:1098); the victim's
+    # PLR_KILLER flag (:1104) then opens the kill regardless of clan/level.
+    attacker.clan = 1
 
     attacker.hitroll = 100
     attacker.damroll = 10
@@ -642,6 +646,11 @@ def test_player_death_dismisses_pet(monkeypatch: pytest.MonkeyPatch) -> None:
     observer = create_test_character("Observer", 3001)
     room = attacker.room
     assert room is not None
+
+    # INV-050: clan members of equal level are a legal kill for apply_damage's
+    # is_safe re-check (ROM src/fight.c:1096-1120).
+    attacker.clan = 1
+    victim.clan = 1
 
     attacker.hitroll = 100
     attacker.damroll = 10
@@ -684,6 +693,7 @@ def test_player_kill_resets_state(monkeypatch: pytest.MonkeyPatch) -> None:
 
     attacker.hitroll = 100
     attacker.damroll = 10
+    attacker.clan = 1  # INV-050: clan member → legal PK vs victim's clan 2 (ROM :1096-1120)
 
     victim.race = 2  # elf -> default INFRARED affect
     victim.hit = 1

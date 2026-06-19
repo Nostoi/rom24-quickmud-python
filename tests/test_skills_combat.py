@@ -35,6 +35,10 @@ def _make_combatant(name: str, *, level: int = 30) -> Character:
     char.hit = 200
     char.position = Position.FIGHTING
     char.messages = []
+    # INV-050: apply_damage re-checks is_safe (ROM src/fight.c:730), which now
+    # enforces the PC-vs-PC clan PK ladder. Make every combatant a clan member so
+    # roomed PC-vs-PC pairs are a legal kill (NPC victims ignore clan).
+    char.clan = 1
     return char
 
 
@@ -47,6 +51,12 @@ def test_kick_bypasses_weapon_defenses(monkeypatch: pytest.MonkeyPatch) -> None:
 
     victim = _make_combatant("Target", level=25)
     victim.is_npc = True
+
+    # INV-050: apply_damage's is_safe re-check needs both combatants in a room
+    # (ROM `in_room == NULL` → safe, src/fight.c:1020).
+    room = Room(vnum=1500, sector_type=int(Sector.FIELD))
+    room.add_character(kicker)
+    room.add_character(victim)
 
     result = skill_handlers.kick(kicker, target=victim, success=True, roll=0)
 

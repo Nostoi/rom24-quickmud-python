@@ -230,6 +230,10 @@ def test_holy_word_good_buffs_good_harms_evil_not_neutral(monkeypatch) -> None:
 
     monkeypatch.setattr(skill_handlers, "saves_spell", lambda *args, **kwargs: False)
     monkeypatch.setattr(skill_handlers, "_is_safe_spell", lambda *args, **kwargs: False)
+    # INV-050: holy_word damages each victim through apply_damage, which re-checks
+    # the separate is_safe (ROM src/fight.c:730). This test isolates alignment
+    # targeting (PC victims, non-clan), so bypass that re-check like _is_safe_spell.
+    monkeypatch.setattr("mud.combat.safety.is_safe", lambda *args, **kwargs: False)
     from mud.combat import engine
 
     monkeypatch.setattr(engine, "check_parry", lambda *args, **kwargs: False)
@@ -329,6 +333,9 @@ def test_holy_word_respects_safe_spell_and_does_not_damage_trainers(monkeypatch)
 def test_holy_word_neutral_caster_harms_non_neutral_with_half_level_curse(monkeypatch) -> None:
     monkeypatch.setattr(skill_handlers, "saves_spell", lambda *args, **kwargs: False)
     monkeypatch.setattr(skill_handlers, "_is_safe_spell", lambda *args, **kwargs: False)
+    # INV-050: bypass apply_damage's separate is_safe re-check (ROM src/fight.c:730)
+    # too — this test isolates alignment/curse logic on a non-clan PC victim.
+    monkeypatch.setattr("mud.combat.safety.is_safe", lambda *args, **kwargs: False)
     from mud.combat import engine
 
     monkeypatch.setattr(engine, "check_parry", lambda *args, **kwargs: False)

@@ -252,11 +252,16 @@ def test_apply_damage_hurt_and_bleeding_messages() -> None:
         ch.max_hit = 100
         ch.hit = hit
         ch.position = Position.FIGHTING
+        # INV-050: apply_damage re-checks is_safe (ROM src/fight.c:730), which now
+        # enforces the PC-vs-PC clan PK ladder (:1096-1120). Same clan + 0 level
+        # gap = legal kill, so the re-check lets the damage/feedback through.
+        ch.clan = 1
         return ch
 
     attacker = create_test_character("Attacker", 3001)
     attacker.hit = 200
     attacker.max_hit = 200
+    attacker.clan = 1  # INV-050: clan member so the is_safe PK ladder permits the hit
 
     def _apply(victim: Character, damage: int) -> None:
         victim.messages.clear()

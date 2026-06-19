@@ -42,6 +42,11 @@ def _pc(name: str, room: Room, *, level: int = 20, sex: Sex | None = None) -> Ch
     char.mod_stat = [0] * len(char.perm_stat)
     char.max_hit = 200
     char.hit = 200
+    # INV-050: apply_damage re-checks is_safe (ROM src/fight.c:730), which now
+    # faithfully enforces the PC-vs-PC clan PK ladder (:1096-1120). Make every
+    # combatant a clan member (same clan, <8 level gap) so the pair is a legal
+    # kill — otherwise the backstop blocks the dirt kick before any line renders.
+    char.clan = 1
     if sex is not None:
         char.sex = sex
     room.add_character(char)
