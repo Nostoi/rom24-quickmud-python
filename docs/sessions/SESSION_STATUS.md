@@ -46,8 +46,12 @@ items remain and are the highest-value next work:
    (`100*neg/1`). Needs coordinated source+divisor treatment, not a gap-closer commit.
 
 Both should go through `/rom-parity-audit` on the reset/spawning path, not
-`/rom-gap-closer`. Alternatively, pick up a feature-sized subsystem (BOARD-001 default
-board seeding, OLC save paths) for fresh gap IDs.
+`/rom-gap-closer`. **A consolidated, actionable handoff for this work exists:**
+[HANDOFF_2026-06-19_DB-003_RESET_O_AUDIT.md](HANDOFF_2026-06-19_DB-003_RESET_O_AUDIT.md)
+(ROM/Python line refs, the unreachable-premise test to redesign, the possible third
+divergence to confirm, ARITH-208 coupling, and the MCP-reconnect prerequisite). Start
+there. Alternatively, pick up a feature-sized subsystem (BOARD-001 default board
+seeding, OLC save paths) for fresh gap IDs.
 
 **Infra note:** GitNexus MCP query tools (`gitnexus_impact` / `detect_changes`) were
 **unavailable this session** (server connection closed); blast radius was verified via
