@@ -2,6 +2,7 @@ import re
 
 from mud.commands.dispatcher import process_command
 from mud.commands.shop import _get_cost, do_buy
+from mud.math.c_compat import c_div
 from mud.models.character import Character, character_registry
 from mud.models.constants import (
     ITEM_HAD_TIMER,
@@ -943,6 +944,45 @@ def test_get_cost_sell_extract_skips_dupe_discount():
     assert _get_cost(keeper, obj, buy=False) == base
 
 
+def test_get_cost_dupe_discount_compounds_per_copy():
+    # GETCOST-002: mirrors ROM src/act_obj.c:2505-2515 — the same-item discount loop
+    # has NO break; it applies the discount once per matching copy in keeper->carrying,
+    # so non-inventory duplicates compound (cost*3/4 per copy). obj_to_keeper keeps
+    # non-inventory dupes as separate nodes (:2436-2437), so ≥2 coexist. Python broke
+    # after the first match, discounting only once.
+    initialize_world("area/area.lst")
+    char = _create_shop_character("Compounder", 3010)
+    char.gold = 0
+    char.silver = 0
+    keeper = _clean_keeper_for_lantern(char)
+
+    obj = spawn_object(3031)
+    assert obj is not None
+    obj.prototype.item_type = int(ItemType.LIGHT)
+    obj.extra_flags = 0
+    obj.cost = 100
+    base = _get_cost(keeper, obj, buy=False)  # no matching dupe
+    assert base > 0
+
+    dupe1 = spawn_object(3031)
+    assert dupe1 is not None
+    dupe1.extra_flags = 0  # non-inventory → cost*3/4 branch
+    dupe1.cost = 100
+    keeper.inventory.append(dupe1)
+    one = _get_cost(keeper, obj, buy=False)
+    assert one == c_div(base * 3, 4)  # single copy discounts once
+
+    dupe2 = spawn_object(3031)
+    assert dupe2 is not None
+    dupe2.extra_flags = 0
+    dupe2.cost = 100
+    keeper.inventory.append(dupe2)
+    two = _get_cost(keeper, obj, buy=False)
+    # ROM: a second matching copy compounds the discount (cost*3/4 again).
+    assert two == c_div(one * 3, 4)
+    assert two < one
+
+
 def test_value_respects_drop_and_visibility_gates():
     initialize_world("area/area.lst")
     char = _create_shop_character("Appraiser", 3010)
@@ -1141,7 +1181,11 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
         out = process_command(ch, "sell wand")
         assert out.endswith("7 silver and 0 gold pieces.")
 
-        # If shop already has an inventory copy of the same wand, price halves
+        # If shop already has an inventory copy of the same wand, price halves.
+        # GETCOST-002 fix: use the real ITEM_INVENTORY enum (bit 13), set on the
+        # OBJECT (not the shared 3031 prototype, which would leak to every other
+        # copy). The previous hardcoded `1 << 18` was NOT ITEM_INVENTORY (8192),
+        # so this path silently exercised a second non-inventory copy instead.
         copy = spawn_object(3031)
         assert copy is not None
         copy.prototype.short_descr = "a test wand"
@@ -1150,8 +1194,7 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
         copy.cost = 100  # GETCOST-001: runtime cost is the source of truth
         copy.prototype.value[1] = 10
         copy.prototype.value[2] = 5
-        # Mark as ITEM_INVENTORY using the port's bit (1<<18)
-        copy.prototype.extra_flags |= 1 << 18
+        copy.extra_flags = int(ITEM_INVENTORY)
         keeper.inventory.append(copy)
 
         wand2 = spawn_object(3031)
@@ -1163,10 +1206,14 @@ def test_wand_staff_price_scales_with_charges_and_inventory_discount():
         wand2.prototype.value[2] = 5
         ch.add_object(wand2)
         out2 = process_command(ch, "sell wand")
-        # The first sold non-inventory copy stays with the keeper, then the
-        # ITEM_INVENTORY copy also matches. ROM compounds both duplicate
-        # discounts before charge scaling: 15 * 3 / 4 / 2 * 5 / 10 = 5.
-        assert out2.endswith("5 silver and 0 gold pieces.")
+        # GETCOST-002: the loop has no break, so BOTH matching keeper copies discount
+        # before charge scaling — the first-sold non-inventory wand (cost*3/4) and the
+        # ITEM_INVENTORY copy (cost/2). ROM src/act_obj.c:2505-2523:
+        #   base = c_div(100*15, 100)        = 15
+        #   non-inventory copy: c_div(15*3, 4) = 11
+        #   inventory copy:     c_div(11, 2)   = 5
+        #   charge scale 5/10:  c_div(5*5, 10) = 2
+        assert out2.endswith("2 silver and 0 gold pieces.")
     finally:
         time_info.hour = previous_hour
 

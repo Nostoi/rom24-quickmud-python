@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GETCOST-002: the keeper same-item discount now compounds per matching copy.**
+  ROM `get_cost` (`src/act_obj.c:2505-2515`) loops over all of `keeper->carrying`
+  with no `break`, applying the discount once per matching duplicate — so
+  non-inventory copies compound (`cost*3/4` each). Python broke after the first
+  match. Removed the `break`. Also corrected a latent test bug
+  (`test_wand_staff_price_scales_with_charges_and_inventory_discount`) that
+  hardcoded `1<<18` instead of `ITEM_INVENTORY` (8192), so it never tested the
+  inventory `/2` path. Test:
+  `tests/test_shops.py::test_get_cost_dupe_discount_compounds_per_copy`.
 - **GETCOST-003: SELL_EXTRACT objects no longer receive the same-item discount.**
   ROM `get_cost` guards its keeper duplicate-stock discount loop with
   `if (!IS_OBJ_STAT(obj, ITEM_SELL_EXTRACT))` (`src/act_obj.c:2504`). Python's

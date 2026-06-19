@@ -484,12 +484,15 @@ def _get_cost(keeper, obj: Object, *, buy: bool) -> int:
                 continue
             other_descr = (getattr(other, "short_descr", None) or "").strip().lower()
             if op is proto or (getattr(op, "vnum", None) == getattr(proto, "vnum", None) and other_descr == obj_descr):
+                # GETCOST-002: ROM src/act_obj.c:2505-2515 has NO break — the discount
+                # applies once per matching copy in keeper->carrying, so non-inventory
+                # duplicates compound. (ITEM_INVENTORY dupes are destroyed on intake
+                # at :2421, so only one ever coexists.)
                 flags = int(getattr(other, "extra_flags", 0) or 0) | int(getattr(op, "extra_flags", 0) or 0)
                 if flags & int(ITEM_INVENTORY):
                     cost = c_div(cost, 2)
                 else:
                     cost = c_div(cost * 3, 4)
-                break
 
     # Charge scaling for wand/staff
     if int(getattr(proto, "item_type", getattr(obj, "item_type", 0)) or 0) in (int(ItemType.WAND), int(ItemType.STAFF)):
