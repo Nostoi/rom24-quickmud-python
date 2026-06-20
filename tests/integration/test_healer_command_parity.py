@@ -113,3 +113,29 @@ def test_heal_spell_uses_rom_heal_amount_not_full_heal(test_room, test_player):
 
     assert result == "A warm feeling fills your body."
     assert test_player.hit == 101
+
+
+def test_heal_insufficient_funds_uses_act_says_wrapper(test_room, test_player):
+    """HEALER-005 — mirrors ROM `src/healer.c:171-176`.
+
+    On insufficient funds ROM emits ``act("$N says 'You do not have enough gold
+    for my services.'", ch, NULL, mob, TO_CHAR)`` — so the player sees the
+    healer-speech wrapper, first-letter-capitalized by ``act_new`` (INV-029):
+    ``"A healer says 'You do not have enough gold for my services.'"`` — NOT the
+    bare line. No coin is deducted and no spell fires.
+    """
+
+    _place_healer(test_room, level=30)
+    # "mana" costs 1000 silver; 999 total wealth is one short of affording it.
+    test_player.gold = 0
+    test_player.silver = 999
+    test_player.mana = 5
+    test_player.max_mana = 100
+
+    result = process_command(test_player, "heal mana")
+
+    assert result == "A healer says 'You do not have enough gold for my services.'"
+    # No payment taken, no mana restored.
+    assert test_player.gold == 0
+    assert test_player.silver == 999
+    assert test_player.mana == 5

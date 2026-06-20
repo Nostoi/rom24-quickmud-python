@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **HEALER-005: healer refusal now uses ROM's `act("$N says '...'")` wrapper.** ROM
+  `do_heal` (`src/healer.c:171-176`) refuses an unaffordable service with
+  `act("$N says 'You do not have enough gold for my services.'", ch, NULL, mob,
+  TO_CHAR)` — the player sees the healer-speech wrapper, first-letter-capitalized
+  by `act_new` (INV-029), e.g. `"The wizard says 'You do not have enough gold for
+  my services.'"`. The Python port returned the bare line, inconsistent with its
+  own no-arg / bad-service branches. Fixed via `capitalize_act_line`. Test:
+  `tests/integration/test_healer_command_parity.py::test_heal_insufficient_funds_uses_act_says_wrapper`.
 - **WIZ-053: `restore` no longer stands up resting/sitting/sleeping players.** ROM
   `do_restore` calls `update_pos(victim)` (`src/act_wiz.c:2808/2840/2861`), which —
   once HP is refilled — promotes to STANDING only when `position <= POS_STUNNED`

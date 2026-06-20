@@ -9,7 +9,7 @@ from mud.models.character import Character
 from mud.models.constants import ActFlag
 from mud.skills import handlers as spell_handlers
 from mud.utils import rng_mm
-from mud.utils.act import act_to_room
+from mud.utils.act import act_to_room, capitalize_act_line
 
 _ServiceFunc = Callable[[Character, Character | None], int | bool]
 
@@ -228,7 +228,10 @@ def do_heal(char: Character, args: str = "") -> str:
 
     total_wealth = int(getattr(char, "gold", 0) or 0) * 100 + int(getattr(char, "silver", 0) or 0)
     if service.cost_silver > total_wealth:
-        return "You do not have enough gold for my services."
+        # mirroring ROM src/healer.c:173 — act("$N says 'You do not have enough
+        # gold for my services.'", ch, NULL, mob, TO_CHAR). $N is the healer mob;
+        # act_new first-letter-capitalizes the rendered line (INV-029/ACT-CAP).
+        return capitalize_act_line(f"{_healer_name(healer)} says 'You do not have enough gold for my services.'")
 
     _apply_wait_state(char, get_pulse_violence())
     deduct_cost(char, service.cost_silver)

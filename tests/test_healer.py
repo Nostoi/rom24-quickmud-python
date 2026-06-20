@@ -50,4 +50,7 @@ def test_healer_denies_when_insufficient_gold():
     place_healer(ch)
     ch.gold = 0
     out = process_command(ch, "heal heal")
-    assert out == "You do not have enough gold for my services."
+    # HEALER-005: ROM src/healer.c:173 wraps the refusal in act("$N says '...'"),
+    # first-letter-capitalized by act_new (INV-029). Mob 3000 short_descr is
+    # "the wizard" → "The wizard says '...'".
+    assert out == "The wizard says 'You do not have enough gold for my services.'"
