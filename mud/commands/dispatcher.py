@@ -304,7 +304,7 @@ COMMANDS: list[Command] = [
     # ROM src/interp.c:88 — `hit` is a cmd_table alias for do_kill.
     Command("kill", do_kill, aliases=("attack", "hit"), min_position=Position.FIGHTING),
     Command("kick", do_kick, min_position=Position.FIGHTING),
-    Command("rescue", do_rescue, min_position=Position.FIGHTING),
+    Command("rescue", do_rescue, min_position=Position.FIGHTING, show=False),  # INTERP-032 ROM interp.c:248 show=0
     Command("flee", do_flee, min_position=Position.FIGHTING),
     # INTERP-027: ROM src/interp.c:238 — {"backstab", do_backstab, POS_FIGHTING, ...}.
     # POS_FIGHTING (not STANDING) so a fighting char passes the gate and reaches
@@ -317,7 +317,7 @@ COMMANDS: list[Command] = [
     Command("trip", do_trip, min_position=Position.FIGHTING),
     Command("surrender", do_surrender, min_position=Position.FIGHTING),
     # ROM src/interp.c:247 — murder requires trust 5.
-    Command("murder", do_murder, min_position=Position.FIGHTING, min_trust=5),
+    Command("murder", do_murder, min_position=Position.FIGHTING, min_trust=5, log_level=LogLevel.ALWAYS),
     # INTERP-031: ROM src/interp.c:79 — {"cast", do_cast, POS_FIGHTING, ...}.
     # POS_FIGHTING (not RESTING) — ROM requires standing to cast; a sitting/resting
     # caster is blocked at the gate. Python's RESTING was too permissive.
@@ -360,7 +360,7 @@ COMMANDS: list[Command] = [
     # do_recall's combat-recall branch (src/act_move.c:1593-1615 — recall-from-combat
     # skill check + exp loss); under STANDING that whole branch was unreachable.
     Command("recall", do_recall, aliases=("/",), min_position=Position.FIGHTING),
-    Command("password", do_password, min_position=Position.DEAD),
+    Command("password", do_password, min_position=Position.DEAD, log_level=LogLevel.NEVER),
     Command("title", do_title, min_position=Position.DEAD),
     Command("description", do_description, min_position=Position.DEAD, aliases=("desc",)),
     # Info
@@ -410,7 +410,7 @@ COMMANDS: list[Command] = [
     Command("socials", do_socials, min_position=Position.DEAD),
     Command("skills", do_skills, min_position=Position.DEAD),
     Command("spells", do_spells, min_position=Position.DEAD),
-    Command("rent", do_rent, min_position=Position.DEAD),
+    Command("rent", do_rent, min_position=Position.DEAD, show=False),  # INTERP-032 ROM interp.c:273 show=0
     # Player Essential - Object Manipulation
     Command("put", do_put, min_position=Position.RESTING),
     Command("remove", do_remove, min_position=Position.RESTING),
@@ -426,48 +426,54 @@ COMMANDS: list[Command] = [
     Command("noloot", do_noloot, min_position=Position.DEAD),
     Command("nofollow", do_nofollow, min_position=Position.DEAD),
     Command("nosummon", do_nosummon, min_position=Position.DEAD),
-    Command("delete", do_delete, min_position=Position.STANDING),
-    Command("delet", do_delet, min_position=Position.DEAD, show=False),
+    Command("delete", do_delete, min_position=Position.STANDING, log_level=LogLevel.ALWAYS),
+    Command("delet", do_delet, min_position=Position.DEAD, show=False, log_level=LogLevel.ALWAYS),
     # Immortal Commands - Basic
     Command("at", do_at, min_position=Position.DEAD, min_trust=MAX_LEVEL - 6),
     Command("goto", do_goto, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
-    Command("transfer", do_transfer, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
-    Command("force", do_force, min_position=Position.DEAD, min_trust=MAX_LEVEL - 7),
+    Command("transfer", do_transfer, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS),
+    Command("force", do_force, min_position=Position.DEAD, min_trust=MAX_LEVEL - 7, log_level=LogLevel.ALWAYS),
     Command("peace", do_peace, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
     # Immortal Commands - Load/Purge
-    Command("load", do_load, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
+    Command("load", do_load, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
     Command("mload", do_mload, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL, show=False),
     Command("oload", do_oload, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL, show=False),
-    Command("purge", do_purge, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
-    Command("restore", do_restore, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
-    Command("slay", do_slay, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3),
+    Command("purge", do_purge, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
+    Command("restore", do_restore, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
+    Command("slay", do_slay, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3, log_level=LogLevel.ALWAYS),
     Command("sla", do_sla, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3, show=False),
     # Immortal Commands - Admin
-    Command("advance", do_advance, min_position=Position.DEAD, min_trust=MAX_LEVEL),
-    Command("trust", do_trust, min_position=Position.DEAD, min_trust=MAX_LEVEL),
-    Command("freeze", do_freeze, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
-    Command("snoop", do_snoop, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
-    Command("switch", do_switch, min_position=Position.DEAD, min_trust=MAX_LEVEL - 6),
+    Command("advance", do_advance, min_position=Position.DEAD, min_trust=MAX_LEVEL, log_level=LogLevel.ALWAYS),
+    Command("trust", do_trust, min_position=Position.DEAD, min_trust=MAX_LEVEL, log_level=LogLevel.ALWAYS),
+    Command("freeze", do_freeze, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
+    Command("snoop", do_snoop, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS),
+    Command("switch", do_switch, min_position=Position.DEAD, min_trust=MAX_LEVEL - 6, log_level=LogLevel.ALWAYS),
     Command("return", do_return, min_position=Position.DEAD, min_trust=MAX_LEVEL - 6),
     # Immortal Commands - Display
-    Command("invis", do_invis, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
+    Command(
+        "invis", do_invis, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL, show=False
+    ),  # INTERP-032 ROM interp.c:335 show=0
     Command("wizinvis", do_wizinvis, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("incognito", do_incognito, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("poofin", do_poofin, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("poofout", do_poofout, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("bamfin", do_poofin, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),  # ROM alias
     Command("bamfout", do_poofout, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),  # ROM alias
-    Command("echo", do_echo, min_position=Position.DEAD, min_trust=MAX_LEVEL - 6),
+    Command("echo", do_echo, min_position=Position.DEAD, min_trust=MAX_LEVEL - 6, log_level=LogLevel.ALWAYS),
     Command("recho", do_recho, min_position=Position.DEAD, min_trust=MAX_LEVEL - 6),
-    Command("zecho", do_zecho, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
-    Command("pecho", do_pecho, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
+    Command("zecho", do_zecho, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
+    Command("pecho", do_pecho, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
     # Immortal Commands - Punishment
-    Command("nochannels", do_nochannels, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
-    Command("noemote", do_noemote, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
-    Command("noshout", do_noshout, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
-    Command("notell", do_notell, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
-    Command("pardon", do_pardon, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3),
-    Command("disconnect", do_disconnect, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3),
+    Command(
+        "nochannels", do_nochannels, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS
+    ),
+    Command("noemote", do_noemote, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS),
+    Command("noshout", do_noshout, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS),
+    Command("notell", do_notell, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS),
+    Command("pardon", do_pardon, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3, log_level=LogLevel.ALWAYS),
+    Command(
+        "disconnect", do_disconnect, min_position=Position.DEAD, min_trust=MAX_LEVEL - 3, log_level=LogLevel.ALWAYS
+    ),
     # Immortal Commands - Search/Info
     Command("vnum", do_vnum, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
     Command("mfind", do_mfind, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
@@ -477,26 +483,28 @@ COMMANDS: list[Command] = [
     Command("mwhere", do_mwhere, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("sockets", do_sockets, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
     Command("memory", do_memory, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
-    Command("clone", do_clone, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
+    Command("clone", do_clone, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS),
     Command("stat", do_stat, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     # Immortal Commands - Server Control
-    Command("reboot", do_reboot, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1),
-    Command("shutdown", do_shutdown, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1),
-    Command("copyover", do_copyover, min_position=Position.DEAD, min_trust=MAX_LEVEL),
-    Command("protect", do_protect, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1),
-    Command("violate", do_violate, min_position=Position.DEAD, min_trust=MAX_LEVEL),
-    Command("dump", do_dump, min_position=Position.DEAD, min_trust=MAX_LEVEL),
+    Command("reboot", do_reboot, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1, log_level=LogLevel.ALWAYS),
+    Command("shutdown", do_shutdown, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1, log_level=LogLevel.ALWAYS),
+    Command("copyover", do_copyover, min_position=Position.DEAD, min_trust=MAX_LEVEL, log_level=LogLevel.ALWAYS),
+    Command("protect", do_protect, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1, log_level=LogLevel.ALWAYS),
+    Command("violate", do_violate, min_position=Position.DEAD, min_trust=MAX_LEVEL, log_level=LogLevel.ALWAYS),
+    Command(
+        "dump", do_dump, min_position=Position.DEAD, min_trust=MAX_LEVEL, show=False, log_level=LogLevel.ALWAYS
+    ),  # INTERP-032 ROM interp.c:291 show=0; INTERP-033 LOG_ALWAYS
     # Immortal Commands - Set/String
-    Command("set", do_set, min_position=Position.DEAD, min_trust=MAX_LEVEL - 2),
+    Command("set", do_set, min_position=Position.DEAD, min_trust=MAX_LEVEL - 2, log_level=LogLevel.ALWAYS),
     Command("mset", do_mset, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("oset", do_oset, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("rset", do_rset, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("sset", do_sset, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
-    Command("string", do_string, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5),
+    Command("string", do_string, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS),
     # Immortal Commands - Emotes
     Command("smote", do_smote, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("pmote", do_pmote, min_position=Position.RESTING),
-    Command("gecho", do_gecho, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
+    Command("gecho", do_gecho, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
     # Immortal Commands - OLC
     Command("resets", do_resets, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
     Command("alist", do_alist, min_position=Position.DEAD, min_trust=LEVEL_IMMORTAL),
@@ -517,12 +525,14 @@ COMMANDS: list[Command] = [
     Command("envenom", do_envenom, min_position=Position.RESTING),
     Command("gain", do_gain, min_position=Position.STANDING),
     Command("groups", do_groups, min_position=Position.SLEEPING),
-    Command("guild", do_guild, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
-    Command("flag", do_flag, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4),
-    Command("mob", do_mob, min_position=Position.DEAD, show=False),
+    Command("guild", do_guild, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
+    Command("flag", do_flag, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
+    Command("mob", do_mob, min_position=Position.DEAD, show=False, log_level=LogLevel.NEVER),
     # Alias Commands
     Command("bs", do_bs, min_position=Position.FIGHTING, show=False),
-    Command("teleport", do_teleport, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, show=False),
+    Command(
+        "teleport", do_teleport, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS
+    ),  # INTERP-032 ROM interp.c:325 show=1; INTERP-033 LOG_ALWAYS
     # Typo Guards
     Command("qui", do_qui, min_position=Position.DEAD, show=False),
     Command("murde", do_murde, min_position=Position.FIGHTING, show=False),  # INTERP-030 ROM interp.c:246 POS_FIGHTING
@@ -606,7 +616,7 @@ COMMANDS: list[Command] = [
     Command("oedit", cmd_oedit, admin_only=True, min_trust=LEVEL_HERO),
     Command("medit", cmd_medit, admin_only=True, min_trust=LEVEL_HERO),
     Command("hedit", cmd_hedit, admin_only=True, min_trust=LEVEL_HERO),
-    Command("asave", cmd_asave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
+    Command("asave", cmd_asave, admin_only=True, log_level=LogLevel.NORMAL, min_trust=LEVEL_HERO),
     Command("hesave", cmd_hesave, admin_only=True, log_level=LogLevel.ALWAYS, min_trust=LEVEL_HERO),
     Command("rstat", cmd_rstat, admin_only=True, min_trust=LEVEL_HERO),
     Command("ostat", cmd_ostat, admin_only=True, min_trust=LEVEL_HERO),

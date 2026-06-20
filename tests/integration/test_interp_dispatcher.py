@@ -252,6 +252,71 @@ def test_interp_006_music_min_position_sleeping():
     assert cmd.min_position == Position.SLEEPING
 
 
+# INTERP-033: command-table log-flag parity. ROM's `log` column drives whether a
+# command is always logged to wiznet WIZ_SECURE + the admin log (LOG_ALWAYS),
+# never logged — even the typed line is blanked (LOG_NEVER, e.g. password so the
+# new password never lands in a log), or logged only when the actor's PLR_LOG /
+# global log-all is set (LOG_NORMAL). src/interp.c:455-490. Each tuple is
+# (command, ROM LOG_* name, src/interp.c line); standalone commands only.
+_ROM_CMD_LOG = [
+    # LOG_NEVER — security: typed line must not be logged
+    ("password", "NEVER", 167),
+    ("mob", "NEVER", 255),
+    # LOG_NORMAL (Python over-logged)
+    ("asave", "NORMAL", 367),
+    # LOG_ALWAYS — admin/security commands always logged
+    ("advance", "ALWAYS", 289),
+    ("clone", "ALWAYS", 351),
+    ("copyover", "ALWAYS", 290),
+    ("delet", "ALWAYS", 161),
+    ("delete", "ALWAYS", 162),
+    ("disconnect", "ALWAYS", 298),
+    ("dump", "ALWAYS", 291),
+    ("echo", "ALWAYS", 341),
+    ("flag", "ALWAYS", 299),
+    ("force", "ALWAYS", 311),
+    ("freeze", "ALWAYS", 300),
+    ("gecho", "ALWAYS", 331),
+    ("guild", "ALWAYS", 87),
+    ("load", "ALWAYS", 312),
+    ("murder", "ALWAYS", 247),
+    ("nochannels", "ALWAYS", 314),
+    ("noemote", "ALWAYS", 315),
+    ("noshout", "ALWAYS", 316),
+    ("notell", "ALWAYS", 317),
+    ("pardon", "ALWAYS", 319),
+    ("pecho", "ALWAYS", 318),
+    ("protect", "ALWAYS", 302),
+    ("purge", "ALWAYS", 320),
+    ("reboot", "ALWAYS", 304),
+    ("restore", "ALWAYS", 322),
+    ("set", "ALWAYS", 305),
+    ("shutdown", "ALWAYS", 307),
+    ("slay", "ALWAYS", 324),
+    ("snoop", "ALWAYS", 343),
+    ("string", "ALWAYS", 345),
+    ("switch", "ALWAYS", 346),
+    ("teleport", "ALWAYS", 325),
+    ("transfer", "ALWAYS", 326),
+    ("trust", "ALWAYS", 292),
+    ("violate", "ALWAYS", 293),
+    ("zecho", "ALWAYS", 349),
+]
+
+
+@pytest.mark.parametrize("name,rom_log,line", _ROM_CMD_LOG)
+def test_interp_033_command_log_flag_matches_rom(name, rom_log, line):
+    # mirrors ROM src/interp.c cmd_table log column. Python defaulted ~36 admin
+    # commands to LOG_NORMAL (ROM LOG_ALWAYS), logged `password`/`mob` that ROM
+    # marks LOG_NEVER, and over-logged `asave` as ALWAYS (ROM LOG_NORMAL).
+    from mud.commands.dispatcher import LogLevel
+
+    cmd = COMMAND_INDEX[name]
+    assert cmd.log_level == LogLevel[rom_log], (
+        f"{name}: src/interp.c:{line} is LOG_{rom_log}, got LOG_{cmd.log_level.name}"
+    )
+
+
 # INTERP-030: command-table min-position parity. Each tuple is (command-or-alias,
 # ROM POS_* name, src/interp.c line). Mirrors how INTERP-001 closed the trust-drift
 # cluster with one parametrized guard. The aliases "." / ";" must inherit their
@@ -276,6 +341,30 @@ _ROM_CMD_POSITIONS = [
     ("recall", "FIGHTING", 271),
     ("cast", "FIGHTING", 79),
 ]
+
+
+# INTERP-032: command-table show-flag parity. Each tuple is (command, ROM show
+# 0/1, src/interp.c line). ROM's `show` field gates whether a command appears in
+# do_commands / do_wizhelp listings (src/interp.c:803-825). Only standalone
+# command rows are checked (aliases are never listed in Python regardless).
+_ROM_CMD_SHOW = [
+    ("rescue", False, 248),
+    ("rent", False, 273),
+    ("dump", False, 291),
+    ("invis", False, 335),
+    ("teleport", True, 325),
+]
+
+
+@pytest.mark.parametrize("name,rom_show,line", _ROM_CMD_SHOW)
+def test_interp_032_command_show_flag_matches_rom(name, rom_show, line):
+    # mirrors ROM src/interp.c cmd_table show column. Python listed rescue/rent
+    # (mortal) and dump/invis (immortal) that ROM hides, and hid teleport that
+    # ROM shows.
+    cmd = COMMAND_INDEX[name]
+    assert bool(cmd.show) == rom_show, (
+        f"{name}: src/interp.c:{line} show={int(rom_show)}, got show={int(bool(cmd.show))}"
+    )
 
 
 @pytest.mark.parametrize("name,rom_pos,line", _ROM_CMD_POSITIONS)

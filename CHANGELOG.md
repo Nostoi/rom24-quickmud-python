@@ -7,8 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- **INTERP-033: the `password` command is no longer written to logs.** ROM marks
+  `password` (and `mob`) `LOG_NEVER` (`src/interp.c:167,255`), which blanks the
+  typed line so the new plaintext password never lands in the admin log or the
+  wiznet `WIZ_SECURE` mirror. Python had them at `LOG_NORMAL`, leaking the
+  password into logs whenever log-all/`PLR_LOG` was active. Now `LOG_NEVER`.
+
 ### Fixed
 
+- **INTERP-033: command-table log-flag cluster corrected (39 commands).** Besides
+  the `password`/`mob` security fix above, 36 admin/security commands (advance,
+  clone, copyover, delete, disconnect, dump, echo, flag, force, freeze, gecho,
+  guild, load, murder, nochannels, noemote, noshout, notell, pardon, pecho,
+  protect, purge, reboot, restore, set, shutdown, slay, snoop, string, switch,
+  teleport, transfer, trust, violate, zecho, …) were `LOG_NORMAL` but ROM marks
+  them `LOG_ALWAYS` (always mirrored to wiznet `WIZ_SECURE` + admin log); `asave`
+  was over-logging as `LOG_ALWAYS` (ROM `LOG_NORMAL`). All 39 corrected and locked
+  by a parametrized guard `test_interp_033_command_log_flag_matches_rom`.
+- **INTERP-032: command-table show-flag cluster corrected (5 commands).** ROM's
+  `show` column gates whether a command appears in the `commands`/`wizhelp`
+  listings. `rescue`/`rent` (mortal) and `dump`/`invis` (immortal) are hidden in
+  ROM (show=0) but were listed in Python; `teleport` is shown in ROM (show=1) but
+  was hidden in Python. All five corrected to match ROM. Locked by
+  `test_interp_032_command_show_flag_matches_rom`.
 - **INTERP-030: command-table min-position cluster corrected (10 commands).** A
   full ROM `cmd_table` ⇄ Python position diff found a cluster of drift: the comm
   channels `gossip`/`grats`/`auction`/`answer`/`question`/`quote`/`reply` were at
