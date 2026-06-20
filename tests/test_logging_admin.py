@@ -312,15 +312,21 @@ def test_log_sanitization_strips_control_edges(monkeypatch, tmp_path):
     assert entry.endswith("say hi")
 
 
-def test_log_never_skips_unless_log_all(monkeypatch, tmp_path):
+def test_log_never_blanks_line_even_with_log_all(monkeypatch, tmp_path):
+    # INTERP-034: ROM src/interp.c:460 blanks the logline for LOG_NEVER commands
+    # (`strcpy(logline, "")`) UNCONDITIONALLY — so a LOG_NEVER command's typed text
+    # (e.g. movement, or `password <newpass>`) is never written to the admin log,
+    # even when global log-all is enabled. The previous test pinned the buggy
+    # pre-INTERP-034 behavior (north logged under log-all), which leaked LOG_NEVER
+    # command text. ROM is the source of truth.
     monkeypatch.chdir(tmp_path)
 
     admin, _ = _create_admin_and_player()
 
-    process_command(admin, "north")
+    process_command(admin, "north")  # north is LOG_NEVER
 
     log_path = Path("log") / "admin.log"
-    assert not log_path.exists()
+    assert not log_path.exists()  # nothing logged without log-all
 
     set_log_all(True)
     try:
@@ -328,8 +334,9 @@ def test_log_never_skips_unless_log_all(monkeypatch, tmp_path):
     finally:
         set_log_all(False)
 
-    lines = log_path.read_text(encoding="utf-8").splitlines()
-    assert any(line.endswith("\tnorth") for line in lines)
+    # The LOG_NEVER command text must NOT appear in the log even under log-all.
+    lines = log_path.read_text(encoding="utf-8").splitlines() if log_path.exists() else []
+    assert not any("north" in line for line in lines)
 
 
 def test_log_always_logs_for_mortals(monkeypatch, tmp_path):

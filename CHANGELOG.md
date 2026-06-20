@@ -33,8 +33,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   log_all_enabled`). With log-all enabled, the `password <newpass>` line still
   leaked to the admin log + wiznet `WIZ_SECURE` (reproduced empirically). Now the
   consumer blanks the log line unconditionally for `LOG_NEVER`, mirroring ROM's
-  `strcpy(logline, "")` (`src/interp.c:460`). Test:
-  `test_interp_034_log_never_blanks_logline_even_with_log_all`.
+  `strcpy(logline, "")` (`src/interp.c:460`). Tests:
+  `test_interp_034_log_never_blanks_logline_even_with_log_all`, and
+  `test_logging_admin.py::test_log_never_blanks_line_even_with_log_all` (corrected
+  from a test that pinned the pre-fix behavior of logging LOG_NEVER under log-all).
 - **INTERP-033: the `password` command is no longer written to logs.** ROM marks
   `password` (and `mob`) `LOG_NEVER` (`src/interp.c:167,255`), which blanks the
   typed line so the new plaintext password never lands in the admin log or the
