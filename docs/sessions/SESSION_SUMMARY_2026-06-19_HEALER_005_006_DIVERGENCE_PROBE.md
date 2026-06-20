@@ -41,6 +41,60 @@ the advisor-endorsed posture, consistent with the prior loop session's stop at 2
   by `_match_service` via a `_SERVICES_BY_KEY` map — decoupled from display order.
 - **Tests**: `tests/integration/test_healer_command_parity.py::test_heal_m_matches_mana_before_refresh`.
 
+### `GAIN-002` — ✅ FIXED
+
+- **Python**: `mud/commands/remaining_rom.py:240-258` (`do_gain` points branch)
+- **ROM C**: `src/skills.c:149-172`
+- **Gap**: `gain points` was backwards on three counts — it *raised* creation
+  points by 1 (ROM lowers them; `exp_per_level` rises with points, so ROM trades
+  2 trains to make leveling *easier*), skipped the `points <= 40` gate, and never
+  recomputed `exp = exp_per_level(ch, points) * level`. Wrong message too.
+- **Fix**: added the `<= 40` gate, flipped `+= 1` → `-= 1`, recompute exp via the
+  existing `exp_per_level(char)`, message "...feel more at ease with your skills."
+- **Tests**: `test_gain_points_spends_two_trains_to_lower_points_and_recalcs_exp`
+  + `test_gain_points_refuses_when_points_at_or_below_40`.
+
+### `GROUPS-001` — ✅ FIXED
+
+- **Python**: `mud/commands/remaining_rom.py:282-300` (`do_groups` no-arg branch)
+- **ROM C**: `src/skills.c` `do_groups`
+- **Gap**: `do_groups` (no arg) **crashed** (`AttributeError: 'tuple' object has
+  no attribute 'keys'`) for any player who knew a group — `pcdata.group_known` is
+  a `tuple[str, ...]` of names but the branch treated it as a dict.
+- **Fix**: iterate the name tuple directly. Empirically reproduced + regression in
+  `tests/integration/test_do_groups_known_groups.py`.
+
+### Filed for scoping (`docs/parity/SKILLS_C_DO_GAIN_AUDIT.md`)
+
+`do_gain` is substantially un-ported; `skills.c` is tracker-✅ only for the 37
+skill **handlers**, not these trainer **commands**:
+- **GAIN-001** (CRITICAL) — `gain <skill>`/`gain <group>` not implemented; a
+  player cannot learn at a trainer. Feature work gated on a recursive `gn_add`
+  equivalent (`account_service.add_group` recursion + `learned` map unverified).
+- **GAIN-003** — `gain list` is a stub.
+- **GAIN-004** — trainer lines lack ROM `act()` capitalization (HEALER-005 class)
+  + the no-arg `do_say`-to-room nuance.
+
+### FINDING-001 correction (stale handoff claim)
+
+The handoff buffer flagged "FINDING-001 — `.are`→JSON converter field-shifts mob
+HP for 62/65 midgaard mobs" as the highest-impact **open** bug. Re-verifying
+against source: the HP field-shift bug is **FINDING-006**, **RESOLVED 2026-05-28**
+(DB2-007, commit `1857b5f8`; phantom `ac` token, all area JSONs regenerated).
+Empirically re-verified: drunk #3064 max_hit 31 (`2d6+22`), Hassan #3001 1000
+(`1d1+999`), `tests/test_mob_dice_parity.py` 2/2. FINDING-001 is an unrelated,
+also-resolved `look`/long_descr bug. Wrong ID + wrong status — corrected in
+SESSION_STATUS and here so it isn't chased again.
+
+### `board.c` Phase-1 table reconciliation
+
+`BOARD_C_AUDIT.md` Phase-3 recorded BOARD-001..014 ✅ FIXED, but the Phase-1
+function-inventory table + intro still showed ⚠️/❌ for those closed gaps, with
+two wrong gap-ID citations (do_help fallback cited BOARD-013 → really BOARD-012;
+personal_message cited phantom "BOARD-018" → really BOARD-013). Re-verified
+(board suite 36/36, default boards seed, `make_note`/`personal_message` present)
+and flipped the 8 stale rows.
+
 ### Doc reconciliation (not gaps — stale-status hygiene)
 
 - **Position Commands furniture support** (`ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`):

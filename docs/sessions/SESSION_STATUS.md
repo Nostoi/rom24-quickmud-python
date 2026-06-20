@@ -1,23 +1,32 @@
-# Session Status — 2026-06-19 — HEALER-005/006 (divergence-sweep probe)
+# Session Status — 2026-06-19 — divergence-sweep probe (HEALER + GAIN/GROUPS)
 
 ## Current State
 
 - **Active focus**: Cross-file / divergence-class sweep (per-file audit tracker
-  remains exhausted). This loop session ran probe-then-scope and closed **2 real
-  gaps in `healer.c`** — a file previously marked ✅ AUDITED — plus reconciled 2
-  stale "deferred to P2" doc rows. Weather/time and drink probes confirmed parity.
-  Stopped at the honest number of real gaps (2) rather than padding to the loop's
-  ceiling of 10 (advisor-endorsed; matches the prior loop session).
-- **Last completed** (master, committed — push pending until verified):
-  - v2.14.176 — **HEALER-005**: insufficient-funds refusal now uses ROM's
-    `act("$N says '...'")` wrapper (`src/healer.c:171-176`), capitalized via
-    `capitalize_act_line`. Was a bare line, inconsistent with sibling branches.
-  - v2.14.177 — **HEALER-006**: healer service match order now follows ROM's
-    if/else (`mana` before `refresh`, `src/healer.c:147/156`) via a new
-    `_MATCH_ORDER`, decoupled from the price-list display order. `heal m` now
-    resolves to mana (1000 silver) not refresh (500), matching ROM.
-  - Doc-hygiene: reconciled stale position-furniture and pet-persistence P2 rows
-    (both already implemented; the "deferred to P2" labels AGENTS.md forbids).
+  remains exhausted). This session ran probe-then-scope across several
+  less-traveled subsystems and **closed 4 gaps**, filed 4 more for scoping, and
+  reconciled 3 stale doc surfaces. Recurring theme: **three files marked ✅/100%
+  audited hid real gaps** (`healer.c`, `board.c` Phase-1 table, `skills.c`
+  `do_gain`/`do_groups`) — the "100% on one slice ≠ 100% on all of it" pattern.
+- **Closed this session** (master, pushed through v2.14.179):
+  - **HEALER-005** (v2.14.176) — insufficient-funds refusal uses ROM's
+    `act("$N says '...'")` wrapper (`src/healer.c:171-176`).
+  - **HEALER-006** (v2.14.177) — healer match order follows ROM if/else (`mana`
+    before `refresh`); `heal m` → mana not refresh.
+  - **GAIN-002** (v2.14.178) — `gain points` lowers creation points per ROM
+    (`src/skills.c:149-172`); was backwards (raised points, no `<=40` gate, no
+    exp recalc).
+  - **GROUPS-001** (v2.14.179) — `do_groups` no longer crashes
+    (`AttributeError` on the `group_known` tuple treated as a dict).
+- **Doc reconciliations**: position-furniture + pet-persistence stale P2 rows
+  (already implemented); `board.c` Phase-1 table flipped to match its closed
+  Phase-3 gaps (+ 2 wrong gap-ID citations corrected); corrected a **stale
+  handoff claim** that "FINDING-001" was an open mob-HP bug — it is FINDING-006,
+  **RESOLVED 2026-05-28**, empirically re-verified (drunk #3064 hp 31, Hassan 1000).
+- **Filed for scoping** (`docs/parity/SKILLS_C_DO_GAIN_AUDIT.md`):
+  **GAIN-001** (gain skill/group not implemented — feature work, gated on a
+  recursive `gn_add` equivalent), **GAIN-003** (`gain list` stub), **GAIN-004**
+  (trainer-line act-cap class).
 - **Pointer to latest summary**:
   [SESSION_SUMMARY_2026-06-19_HEALER_005_006_DIVERGENCE_PROBE.md](SESSION_SUMMARY_2026-06-19_HEALER_005_006_DIVERGENCE_PROBE.md)
 
@@ -25,40 +34,39 @@
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.177 |
-| Tests | 5901 passed, 4 skipped (full suite) |
+| Version | 2.14.179 |
+| Tests | 5905 passed, 4 skipped (full suite) |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
 | Active focus | Cross-file invariants / divergence-class sweep |
-| Open findings | `healer.c` re-closed at 6/6 gaps; documented surface drained |
+| Open findings | GAIN-001/003/004 (do_gain feature work, scoped); documented per-file surface otherwise drained |
 
 ## Next Intended Task
 
 Documented per-file + ARITH gap surface stays drained; cross-file /
-divergence-sweep is the primary pass. This session's probe-then-scope found 2
-real gaps in `healer.c`; the other surfaces probed (weather/time, drink) are
-faithful. Three paths for the next session:
+divergence-sweep is the primary pass. This session closed HEALER-005/006,
+GAIN-002, GROUPS-001 and filed GAIN-001/003/004. Paths for the next session:
 
-1. **Continue probe-then-scope on less-traveled subsystems not yet covered** —
-   OLC save round-trips, shop `do_buy` haggle/credit edges, reset edge cases,
-   mob-program trigger dispatch, bank/deposit, `do_practice`/`do_gain`. Use
-   `/rom-divergence-sweep` for the completeness lens. Healer/weather/drink are now
-   exhausted — pick a fresh surface.
-2. ~~FINDING-001 mob-HP field-shift~~ — **CORRECTED 2026-06-19: this was a stale
-   handoff claim, do not chase it.** The mob HP/mana/damage field-shift bug is
-   **FINDING-006** (not 001), and it was **RESOLVED 2026-05-28** via DB2-007
-   (commit `1857b5f8`): phantom `ac` token at stat-line index [2] in
-   `mud/loaders/mob_loader.py`, all area JSONs regenerated, regression
-   `tests/test_mob_dice_parity.py`. Re-verified empirically this session: drunk
-   #3064 → max_hit 31 (`2d6+22`), Hassan #3001 → 1000 (`1d1+999`), regression 2/2.
-   FINDING-001 itself is an unrelated, also-resolved `look`/long_descr bug. No
-   work remains here.
-3. **Doc-hygiene:** `docs/parity/BOARD_C_AUDIT.md` function-table rows (~30-48)
-   still carry stale ❌/⚠️ for gaps the gap-table records as ✅ FIXED — reconcile.
+1. **GAIN-001 / GAIN-003 (highest concrete value)** — implement `gain <skill>` /
+   `gain <group>` and `gain list` at a trainer (`src/skills.c:74-131,174-249`).
+   Currently a player **cannot learn skills/groups at a trainer** (Python returns
+   "That is not a valid option."). Feature work, **gated on infra**: verify
+   whether `mud/account/account_service.py:add_group` is a faithful recursive
+   `gn_add` (adds component skills + sub-groups) and how the `learned` skill map
+   is represented, then close both. See `docs/parity/SKILLS_C_DO_GAIN_AUDIT.md`.
+2. **GAIN-004** — trainer lines use lowercase f-strings instead of ROM's
+   `act("$N ...")` cap (the HEALER-005 act-cap class) + the no-arg
+   `do_function(trainer, &do_say, ...)` say-to-room nuance. Small.
+3. **Continue probe-then-scope on fresh subsystems** — OLC save round-trips, shop
+   `do_buy` haggle/credit edges, reset edge cases, mob-program trigger dispatch,
+   `do_practice`. Healer/weather/drink/do_gain are now exhausted. Use
+   `/rom-divergence-sweep` for the lens.
 
-**Infra note:** GitNexus MCP reconnected this session; `detect_changes` returned
-LOW risk on both healer commits (scope confined to `do_heal` + audit doc). The
-on-disk graph was reindexed cleanly twice (only the known `src/recycle.h`/`olc.h`
-C-header scope warnings). Index will show stale at session end (the handoff doc
-commit lands post-reindex) — next session's first action reindexes per
-STOP-AND-REINDEX. Three surfaces (README/SESSION_STATUS/pyproject) reconcile at
-2.14.177 once committed.
+**Recurring lesson reinforced this session:** three files marked ✅/100% audited
+hid real gaps (`healer.c`, `board.c` Phase-1 table, `skills.c` `do_gain`). A
+"100% audited" row covers the slice someone checked, not the whole file —
+re-verify against ROM C before trusting it. The stale "FINDING-001 = open mob-HP
+bug" handoff claim (actually FINDING-006, resolved 2026-05-28) was the same trap.
+
+**Infra note:** GitNexus MCP healthy; `detect_changes` returned LOW risk on every
+commit (scope confined to the touched function + its audit doc). Three surfaces
+(README/SESSION_STATUS/pyproject) reconcile at **2.14.179**.
