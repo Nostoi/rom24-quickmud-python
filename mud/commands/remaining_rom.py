@@ -253,6 +253,55 @@ def _gn_add(char: Character, group) -> None:
             learned[child] = 1
 
 
+def _gain_list(char: Character) -> str:
+    """ROM `do_gain` list branch (`src/skills.c:74-131`): two 3-column tables —
+    unknown groups, then unknown non-spell skills (`spell_fun == spell_null`) —
+    each with the player's per-class rating as the cost."""
+    from mud.skills.groups import list_groups
+    from mud.skills.registry import skill_registry
+
+    class_index = _gain_class_index(char)
+    pcdata = getattr(char, "pcdata", None)
+    known_groups = {(n or "").lower() for n in (getattr(pcdata, "group_known", ()) or ())}
+    learned = getattr(pcdata, "learned", {}) if pcdata else {}
+
+    def _columns(label: str, entries: list[tuple[str, int]]) -> list[str]:
+        out = [f"{label:<18} {'cost':<5} {label:<18} {'cost':<5} {label:<18} {'cost':<5}"]
+        row = ""
+        for col, (name, cost) in enumerate(entries):
+            row += f"{name:<18} {cost:<5} "
+            if (col + 1) % 3 == 0:
+                out.append(row.rstrip())
+                row = ""
+        if row:
+            out.append(row.rstrip())
+        return out
+
+    group_entries: list[tuple[str, int]] = []
+    for group in list_groups():
+        if (group.name or "").lower() in known_groups:
+            continue
+        cost = group.cost_for_class_index(class_index)
+        if cost and cost > 0:
+            group_entries.append((group.name, int(cost)))
+
+    skill_entries: list[tuple[str, int]] = []
+    for skill in skill_registry.skills.values():
+        name = getattr(skill, "name", "")
+        if not name or learned.get(name, 0):
+            continue
+        if str(getattr(skill, "type", "") or "").lower() == "spell":
+            continue
+        rate = _gain_skill_rate(skill, class_index)
+        if rate > 0:
+            skill_entries.append((name, rate))
+
+    lines = _columns("group", group_entries)
+    lines.append("")
+    lines.extend(_columns("skill", skill_entries))
+    return "\n".join(lines)
+
+
 def do_gain(char: Character, args: str) -> str:
     """
     Gain new skills/groups from a trainer or convert practices.
@@ -290,13 +339,8 @@ def do_gain(char: Character, args: str) -> str:
     arg = args.strip().split()[0].lower()
 
     if arg == "list":
-        lines = [f"{'group':<18s} {'cost':>5s} {'group':<18s} {'cost':>5s} {'group':<18s} {'cost':>5s}"]
-        # Would list available groups/skills here
-        lines.append("(Group listing not fully implemented)")
-        lines.append("")
-        lines.append(f"{'skill':<18s} {'cost':>5s} {'skill':<18s} {'cost':>5s} {'skill':<18s} {'cost':>5s}")
-        lines.append("(Skill listing not fully implemented)")
-        return "\n".join(lines)
+        # GAIN-003: mirroring ROM src/skills.c:74-131
+        return _gain_list(char)
 
     if arg == "convert":
         practice = getattr(char, "practice", 0)

@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **GAIN-003: `gain list` shows the real trainer price list.** ROM `do_gain`
+  (`src/skills.c:74-131`) lists, in two 3-column tables, every group / non-spell
+  skill the player does not know whose per-class rating is > 0, with its cost. The
+  Python port returned a "(listing not fully implemented)" stub. Now builds the
+  full ROM tables. Tests:
+  `tests/integration/test_do_gain_act_gain_bit.py::test_gain_list_shows_gainable_groups_and_nonspell_skills`
+  + `::test_gain_list_excludes_known_groups`.
 - **GAIN-001: players can now learn skills and groups at a trainer.** ROM `do_gain`
   (`src/skills.c:174-249`) lets a player `gain <group>` / `gain <skill>` at an
   `ACT_GAIN` trainer — validating already-known / class-rating / sufficient

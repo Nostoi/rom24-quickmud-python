@@ -223,6 +223,41 @@ def test_gain_already_known_group_refused(learner: Character, gain_room: Room) -
     assert learner.train == 10
 
 
+def test_gain_list_shows_gainable_groups_and_nonspell_skills(learner: Character, gain_room: Room) -> None:
+    """GAIN-003 — mirrors ROM `src/skills.c:74-131`.
+
+    `gain list` shows, in two sections, every group / non-spell skill the player
+    does NOT know whose per-class rating is > 0, with its cost.
+    """
+    _place_trainer(gain_room)
+    _make_learner_mage(learner)
+
+    result = do_gain(learner, "list")
+
+    assert "group" in result and "skill" in result and "cost" in result
+    # a gainable mage group + its cost
+    assert "beguiling" in result
+    assert "4" in result
+    # a gainable non-spell skill
+    assert "dagger" in result
+    # spells are NOT listed in the skill section (they are gained via groups)
+    assert "sleep" not in result
+
+
+def test_gain_list_excludes_known_groups(learner: Character, gain_room: Room) -> None:
+    """GAIN-003 — ROM lists only groups the player does NOT already know
+    (`!ch->pcdata->group_known[gn]`, `src/skills.c:89`)."""
+    _place_trainer(gain_room)
+    _make_learner_mage(learner)
+    learner.pcdata.group_known = ("beguiling",)
+
+    result = do_gain(learner, "list")
+
+    assert "beguiling" not in result
+    # another gainable group still shows
+    assert "maladictions" in result
+
+
 def test_mob_with_old_wrong_bit_is_not_a_trainer(learner: Character, gain_room: Room) -> None:
     """A mob with only the pre-fix wrong bit (0x00100000, bit 20) is NOT a trainer."""
     not_trainer = Character(name="impostor", level=10, is_npc=True, room=gain_room)
