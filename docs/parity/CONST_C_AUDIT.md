@@ -146,18 +146,7 @@ the static-data fields **mana/beats are 100% clean** (135 skills, full name-join
 |----|----------|-------|--------|-------------|--------|
 | CONST-008 | IMPORTANT | `src/const.c` skill_table — `"cancellation", … TAR_CHAR_DEFENSIVE` | `data/skills.json` cancellation `"target"` | `cancellation` was `target: "victim"` (TAR_CHAR_OFFENSIVE) but ROM is **TAR_CHAR_DEFENSIVE**. Consequence: a no-arg `cast cancellation` mid-combat targeted the *opponent* (offensive auto-target + is_safe gates) instead of defaulting to **self** (ROM `src/magic.c:419`). Exercises the already-tested `friendly` targeting path in `combat.py:989-1007`. | ✅ FIXED 2026-06-20 (2.14.195) — `target` → `"friendly"`. Test: `tests/integration/test_spell_casting.py::TestCancellationTargeting::test_skill_001_cancellation_defaults_to_self` (data guard + behavioral no-arg→self spy). |
 
-### CANDIDATE (unverified — do not treat as confirmed gap yet)
-
-- **Per-class spell levels absent from `data/skills.json`.** *Every* entry lacks a
-  levels field, so the loaded `Skill.levels` defaults to `(99,99,99,99)` — i.e.
-  no class can learn any spell by leveling per the registry. ROM `skill_table`
-  carries per-class levels (e.g. cancellation `{18,26,34,34}`). The full game's
-  mortal casting works in integration tests, so spell levels are **probably**
-  injected via another path (class spell-list) not exercised by a bare
-  `load_skills(skills.json)`. **Next agent: verify whether a fully world-initialized
-  PC sees ROM-correct per-class spell levels; if `Skill.levels` is still
-  `(99,99,99,99)` post-init, this is a real systemic gap to file. Surfaced while
-  closing CONST-008.**
+| CONST-009 | IMPORTANT | `src/const.c` skill_table — `cancellation {18,26,34,34}`, `harm {53,23,53,28}` | `mud/skills/metadata.py` (`ROM_SKILL_METADATA`) | The `const.c` → metadata converter (`mud/scripts/convert_skills_to_json.py`) **cannot parse** `cancellation` and `harm` (multi-line noun-damage array) and per its own docstring **drops** them; they must be hand-maintained in `ROM_SKILL_METADATA` but were never added. So both loaded with `Skill.levels = (99,99,99,99)` (the default), and `do_cast`'s level gate (`combat.py:908`) rejected any mortal caster (max level 60 < 99) with "You don't know any spells of that name." — i.e. **cancellation and harm were entirely uncastable by players**. (Other 132 skills carry correct levels; not systemic.) | ✅ FIXED 2026-06-20 (2.14.196) — added both entries to `ROM_SKILL_METADATA` (cancellation levels [18,26,34,34] slot 507 mana 20 beats 12; harm levels [53,23,53,28] slot 27 mana 35 beats 12). Test: `tests/integration/test_spell_casting.py::TestSkillMetadataLevels` (levels guard for both + behavioral level-25 mage casts cancellation). |
 
 ## Phase 5 — Completion summary
 

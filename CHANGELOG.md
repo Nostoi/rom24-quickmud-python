@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **CONST-009: `cancellation` and `harm` are castable again.** Both spells were
+  missing from `ROM_SKILL_METADATA` (the `const.c` parser drops them — multi-line
+  noun arrays — and they were never hand-added), so they loaded with the default
+  per-class levels `(99,99,99,99)`. `do_cast`'s level gate then rejected every
+  mortal caster (max level 60) with "You don't know any spells of that name" —
+  the two spells were effectively uncastable by players. Added their ROM levels
+  (cancellation `{18,26,34,34}`, harm `{53,23,53,28}`) plus slot/mana/beats. Test:
+  `tests/integration/test_spell_casting.py::TestSkillMetadataLevels`.
 - **CONST-008: `cancellation` is now a defensive-target spell, matching ROM.** ROM
   `skill_table` (`src/const.c`) marks `cancellation` `TAR_CHAR_DEFENSIVE`, but
   `data/skills.json` had `target: "victim"` (offensive). A no-arg `cast

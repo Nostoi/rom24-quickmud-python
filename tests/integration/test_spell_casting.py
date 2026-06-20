@@ -130,6 +130,57 @@ class TestCancellationTargeting:
         )
 
 
+class TestSkillMetadataLevels:
+    """CONST-009: cancellation/harm were absent from ROM_SKILL_METADATA, so their
+    loaded per-class levels defaulted to (99,99,99,99) — uncastable by mortals."""
+
+    @pytest.mark.parametrize(
+        "name,rom_levels",
+        [
+            ("cancellation", (18, 26, 34, 34)),  # src/const.c skill_table
+            ("harm", (53, 23, 53, 28)),
+        ],
+    )
+    def test_const_009_missing_skill_levels(self, name, rom_levels):
+        from pathlib import Path
+
+        from mud.skills.registry import load_skills, skill_registry
+
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+        load_skills(Path("data/skills.json"))
+        assert tuple(skill_registry.get(name).levels) == rom_levels, (
+            f"{name} per-class levels must match ROM skill_table, not the (99,99,99,99) default"
+        )
+
+    def test_const_009_mage_can_cast_cancellation_at_rom_level(self, mage_player, target_mob, monkeypatch):
+        # A mage learns cancellation at level 18 in ROM. With levels=(99,99,99,99)
+        # the do_cast level gate blocked it ("You don't know any spells of that name.").
+        from pathlib import Path
+
+        from mud.models.constants import Position
+        from mud.skills.registry import load_skills, skill_registry
+        from mud.utils import rng_mm
+
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+        load_skills(Path("data/skills.json"))
+
+        mage_player.skills = {"cancellation": 100}
+        mage_player.level = 25  # >= mage level 18, < the old 99 default
+        mage_player.position = Position.STANDING
+
+        called = {}
+        monkeypatch.setitem(
+            skill_registry.handlers, "cancellation", lambda c, victim=None, **k: called.setdefault("hit", True) or {}
+        )
+        monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+        result = process_command(mage_player, "cast cancellation")
+        assert "don't know any spells" not in result.lower(), result
+        assert called.get("hit") is True
+
+
 class TestCastCommandDispatch:
     """Test cast command basic functionality."""
 

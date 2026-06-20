@@ -17,6 +17,10 @@ ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
     "burning hands": {"levels": [7, 53, 10, 9], "ratings": [1, 1, 2, 2], "slot": 5, "min_mana": 15, "beats": 12},
     "call lightning": {"levels": [26, 18, 31, 22], "ratings": [1, 1, 2, 2], "slot": 6, "min_mana": 15, "beats": 12},
     "calm": {"levels": [48, 16, 50, 20], "ratings": [1, 1, 2, 2], "slot": 509, "min_mana": 30, "beats": 12},
+    # CONST-009: cancellation/harm are skipped by the const.c parser (multi-line
+    # noun-damage array), so they must be hand-maintained here. Without these
+    # entries Skill.levels defaults to (99,99,99,99) → uncastable by mortals.
+    "cancellation": {"levels": [18, 26, 34, 34], "ratings": [1, 1, 2, 2], "slot": 507, "min_mana": 20, "beats": 12},
     "cause critical": {"levels": [53, 13, 53, 19], "ratings": [1, 1, 2, 2], "slot": 63, "min_mana": 20, "beats": 12},
     "cause light": {"levels": [53, 1, 53, 3], "ratings": [1, 1, 2, 2], "slot": 62, "min_mana": 15, "beats": 12},
     "cause serious": {"levels": [53, 7, 53, 10], "ratings": [1, 1, 2, 2], "slot": 64, "min_mana": 17, "beats": 12},
@@ -77,6 +81,8 @@ ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
     "giant strength": {"levels": [11, 53, 22, 20], "ratings": [1, 1, 2, 2], "slot": 39, "min_mana": 20, "beats": 12},
     "haggle": {"levels": [7, 18, 1, 14], "ratings": [5, 8, 3, 6], "slot": 0, "min_mana": 0, "beats": 0},
     "hand to hand": {"levels": [25, 10, 15, 6], "ratings": [8, 5, 6, 4], "slot": 0, "min_mana": 0, "beats": 0},
+    # CONST-009: see cancellation note — parser-skipped, hand-maintained.
+    "harm": {"levels": [53, 23, 53, 28], "ratings": [1, 1, 2, 2], "slot": 27, "min_mana": 35, "beats": 12},
     "haste": {"levels": [21, 53, 26, 29], "ratings": [1, 1, 2, 2], "slot": 502, "min_mana": 30, "beats": 12},
     "heal": {"levels": [53, 21, 33, 30], "ratings": [1, 1, 2, 2], "slot": 28, "min_mana": 50, "beats": 12},
     "heat metal": {"levels": [53, 16, 53, 23], "ratings": [1, 1, 2, 2], "slot": 516, "min_mana": 25, "beats": 18},
