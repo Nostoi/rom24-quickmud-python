@@ -24,6 +24,15 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     char.max_move = char.move = 100
     char.ch_class = 0
     char.perm_stat = [13, 16, 13, 13, 13]
+    # Mirror the C shim's make_test_char new-player exp init (diffmain.c:496:
+    # ch->exp = exp_per_level(ch, ch->pcdata->points)). The real Python char
+    # path sets this in nanny; create_test_character (a test helper) leaves it 0,
+    # which is invisible until a `group`/`score` line prints "%5d xp". For the
+    # default human mage with 0 creation points this resolves to BASE_XP_PER_LEVEL
+    # (1000), matching the C value, so the group-listing xp column converges.
+    from mud.advancement import exp_per_level
+
+    char.exp = exp_per_level(char)
     char.hitroll = 0
     char.damroll = 0
     char.armor = [100, 100, 100, 100]
@@ -290,6 +299,12 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         key = _person_key(mob)
         if key in watch_chars:
             chars_by_name[key] = mob
+        # add_follower(mob, char) delivers "$n now follows you." to the master
+        # (char) — real game behavior also seen in spell_charm_person. The C shim's
+        # __charm_mob handler `continue;`s WITHOUT emit_output (diffmain.c), so that
+        # buffered line is discarded; mirror that by dropping the master's leaked
+        # messages here so the meta stays output-silent on both sides.
+        char.messages.clear()
         return ""
     if command.startswith("__mob_position="):
         from mud.models.constants import Position

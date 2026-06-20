@@ -1,0 +1,753 @@
+{
+  "scenario": "group_follow_cycle",
+  "c_commit": "af26612ae455543c1a011bf298c0547e2743620f",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=4321",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__mload=3007",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Temple Of Mota",
+        "\r  You are in the southern end of the temple hall in the Temple of Mota.",
+        "\rThe temple has been constructed from giant marble blocks, eternal in",
+        "\rappearance, and most of the walls are covered by ancient wall paintings",
+        "\rpicturing gods, giants and peasants.",
+        "\r   Large steps lead down through the grand temple gate, descending the huge",
+        "\rmound upon which the temple is built and ends on the temple square below.",
+        "\r   Equally large steps lead UP through a small door into the ENTRANCE to MUD ",
+        "\rSCHOOL.  (type 'up' to go to MUD SCHOOL.)  A small plaque is on this wall.",
+        "\rA sailor stands here, waiting to train you.",
+        "\rHassan is here, waiting to dispense some justice.",
+        ""
+      ]
+    },
+    {
+      "step": 4,
+      "command": "group",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rTester's group:",
+        "\r[ 5 Mag] Tester             20/  20 hp  100/ 100 mana  100/ 100 mv  1000 xp",
+        ""
+      ]
+    },
+    {
+      "step": 5,
+      "command": "follow sailor",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": "sailor"
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou now follow the sailor.",
+        ""
+      ]
+    },
+    {
+      "step": 6,
+      "command": "group sailor",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": "sailor"
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rBut you are following someone else!",
+        ""
+      ]
+    },
+    {
+      "step": 7,
+      "command": "follow Tester",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou stop following the sailor.",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "__charm_mob=24",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [
+            "charm person"
+          ],
+          "affect_flags": [
+            "charm"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": "Tester"
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 9,
+      "command": "group",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [
+            "charm person"
+          ],
+          "affect_flags": [
+            "charm"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": "Tester"
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rTester's group:",
+        "\r[23 Mob] The sailor       1000/1000 hp  100/ 100 mana  100/ 100 mv     0 xp",
+        "\r[ 5 Mag] Tester             20/  20 hp  100/ 100 mana  100/ 100 mv  1000 xp",
+        ""
+      ]
+    },
+    {
+      "step": 10,
+      "command": "group sailor",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "sailor",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 1000,
+          "max_hp": 1000,
+          "mana": 100,
+          "move": 100,
+          "level": 23,
+          "align": 900,
+          "gold": 0,
+          "silver": 32,
+          "fighting": null,
+          "affects": [
+            "charm person"
+          ],
+          "affect_flags": [
+            "charm"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 8,
+          "eff_damroll": 27,
+          "eff_ac": [
+            -180,
+            -180,
+            -180,
+            -180
+          ],
+          "master": "Tester"
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou can't remove charmed mobs from your group.",
+        ""
+      ]
+    }
+  ]
+}

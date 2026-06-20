@@ -8,6 +8,49 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-037 — `do_group` roster lists members oldest-first; ROM walks `char_list` newest-first — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-20 (v2.14.202). Fixed under **GROUP-006**
+(`docs/parity/ACT_COMM_C_AUDIT.md`); conforms the `do_group` site of **INV-045**
+(CHAR-LIST-WALK-ORDER).
+
+**Scenario:** `group_follow_cycle` — exercises `follow`/`group` end-to-end: spawn a
+sailor (3007), `group` (single member), `follow sailor` (master transition),
+`group sailor` ("following someone else"), `follow Tester` (stop_follower),
+`__charm_mob` (sailor joins the group), `group` (TWO members), `group sailor`
+(charm-protect branch).
+
+**Divergence (step 9 `group` · output):**
+- **C:** `["Tester's group:", "[23 Mob] The sailor … 0 xp", "[ 5 Mag] Tester … 1000 xp"]`
+- **Python:** `["Tester's group:", "[ 5 Mag] Tester …", "[23 Mob] The sailor …"]`
+
+The charmed sailor (created via `__mload` *after* the PC) must list **above** the
+PC; Python listed it below.
+
+**Root cause:** ROM head-inserts every char into the global `char_list`
+(`src/db.c:2256` create_mobile, `src/nanny.c` login), so a `char_list` walk visits
+the newest entity first and `do_group` (`src/act_comm.c:1787`) prints in
+reverse-creation order. Python's `character_registry` is append-order
+(oldest-first) — the reverse — and `do_group` walked it forward. This is exactly
+the observable residual INV-045 flagged ("re-open a per-site gap if a message-order
+divergence is ever observable to a scenario/golden").
+
+**Fix:** `mud/commands/group_commands.py:do_group` now iterates
+`reversed(character_registry)`. Regression tests:
+`tests/integration/test_group_006_listing_order.py::test_group_006_roster_is_newest_first`
+(C-binary-independent) + the `group_follow_cycle` differential replay.
+
+**Two harness-setup parity fixes landed alongside (not engine bugs):**
+- `pyreplay.py` now mirrors `make_test_char`'s new-player exp init
+  (`ch->exp = exp_per_level(ch, points)` → 1000 for the default human mage);
+  `create_test_character` left it 0, which was invisible until a `group`/`score`
+  line prints `%5d xp`.
+- the `__charm_mob` meta handler now drops the master's leaked `add_follower`
+  "X now follows you." message, matching the C shim's meta handler which
+  `continue;`s without `emit_output` (so the buffered line is discarded).
+
+---
+
 ## FINDING-036 — `look <character>` with no description renders the name, not the objective pronoun — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-19 (v2.14.141). Fixed under **LOOK-009**

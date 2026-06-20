@@ -181,9 +181,15 @@ def do_group(char: Character, args: str) -> str:
         # every char where is_same_group(gch, ch) — group members in *other* rooms
         # appear too. Iterate character_registry (the char_list equivalent) rather
         # than only room.people, which dropped cross-room members.
+        # GROUP-006 / INV-045: ROM head-inserts every char into char_list
+        # (src/db.c:2256 create_mobile, src/nanny.c login), so the list walk visits
+        # NEWEST-first; the displayed group order is therefore reverse-creation.
+        # character_registry is append-order (oldest-first), so iterate it reversed
+        # to match — surfaced by the group_follow_cycle differential scenario, where
+        # a charmed mob (created after the PC) must list ABOVE the PC.
         from mud.models.character import character_registry
 
-        for gch in character_registry:
+        for gch in reversed(character_registry):
             if is_same_group(gch, char):
                 add_member(gch)
 

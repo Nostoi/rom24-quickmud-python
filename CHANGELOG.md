@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Differential harness: `group_follow_cycle` scenario (group/follow surface)**
+  (`tools/diff_harness/scenarios/group_follow_cycle.json`) — exercises `follow`
+  (master-field transitions), `group` rosters (single- and two-member), and
+  `do_group` error branches ("following someone else", charm-protect) against the
+  ROM 2.4b6 C golden. **Surfaced GROUP-006** (see Fixed). Two harness-setup parity
+  fixes landed with it: `pyreplay.py` now mirrors `make_test_char`'s new-player
+  exp init (`exp_per_level` → 1000 xp in the group line) and the `__charm_mob`
+  meta now drops the master's leaked `add_follower` message to match the C shim's
+  no-output meta contract. 45 committed scenarios, all converge; `KNOWN_DIVERGENCES`
+  stays empty.
+
 - **Differential harness: three new ROM⇄Python scenarios on previously
   un-exercised surfaces** (`tools/diff_harness/scenarios/`), each capturing a C
   golden from the instrumented ROM 2.4b6 binary and converging end-to-end:
@@ -28,6 +39,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GROUP-006: `group` roster now lists members newest-first (ROM `char_list`
+  order).** ROM head-inserts every char into the global `char_list`
+  (`src/db.c:2256` create_mobile, `src/nanny.c` login), so `do_group`
+  (`src/act_comm.c:1787`) walks it newest-first and the roster is reverse-creation
+  order. Python iterated `character_registry` forward (append-order, oldest-first),
+  so a group member created after the leader (e.g. a charmed mob) listed *below*
+  the leader instead of above. Flipped to `reversed(character_registry)`. This is
+  the **first observable re-open** of the INV-045 (CHAR-LIST-WALK-ORDER) "lower-
+  stakes forward walk" residual — surfaced by the `group_follow_cycle` differential
+  scenario (FINDING-037). GROUP-003 had explicitly deferred the ordering. Tests:
+  `tests/integration/test_group_006_listing_order.py` (C-binary-independent) +
+  `group_follow_cycle` differential replay.
 - **INTERP-028: `bs` is now a clean hidden alias of `backstab` (no dual
   registration).** `bs` was registered both as an alias of `backstab` and as a
   standalone `Command("bs", do_bs, …)` (the latter overwriting the former in the

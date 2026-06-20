@@ -1,0 +1,19 @@
+{
+  "name": "group_follow_cycle",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester", "sailor"], "rooms": [3001] },
+  "steps": [
+    "__seed=4321",
+    "__mload=3007",
+    "look",
+    "group",
+    "follow sailor",
+    "group sailor",
+    "follow Tester",
+    "__charm_mob=24",
+    "group",
+    "group sailor"
+  ]
+}

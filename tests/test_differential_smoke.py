@@ -22,9 +22,10 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES: dict[str, str] = {
-    # Empty — every committed scenario (44 as of 2026-06-20: movement/get-drop,
+    # Empty — every committed scenario (45 as of 2026-06-20: movement/get-drop,
     # containers, doors, melee + spell combat, the full mob-trigger set, char_update
-    # regen variants, affects, shops, cast-position gate, …) converges end-to-end.
+    # regen variants, affects, shops, cast-position gate, group/follow cycle, …)
+    # converges end-to-end.
     # Historical notes on scenarios that once diverged are kept below for provenance.
     # spell_combat surfaced FINDING-012 (saving_throw crash) + FINDING-013 (spurious
     # "You cast" line), both fixed on master (v2.11.18/.19). The step-6 wait-state
