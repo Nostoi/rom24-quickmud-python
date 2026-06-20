@@ -383,7 +383,21 @@ player was wrongly stood up). Fixed by calling `update_pos(char)` — exact ROM
 mirror, covers all three branches via the shared helper. Surfaced during the
 position-transition divergence probe (`update_pos` call-site audit). Tests:
 `tests/integration/test_act_wiz_command_parity.py::test_restore_preserves_resting_position`
-+ `::test_restore_promotes_stunned_position`. This file now has no outstanding gaps.
++ `::test_restore_promotes_stunned_position`.
+
+WIZ-054 ✅ FIXED (2026-06-19) — `do_guild` over-delivered the victim message in the
+non-independent (member) clan branch. ROM `do_guild` (`src/act_wiz.c:238-246`)
+builds the victim's "You are now a member of clan X." buffer but **never calls
+`send_to_char(buf, victim)`** in this branch — only the *independent* branch
+(`:236`) notifies the victim. So a player assigned to a member clan is NOT
+notified in ROM (a genuine ROM quirk). The WIZ-023 port added the victim
+`_send_to_char` to **both** branches; Python therefore delivered a message ROM
+omits. Fixed by dropping the victim delivery in the non-independent branch (the
+admin/`ch` return line is unchanged). Surfaced by a divergence probe of
+`remaining_rom.py`'s under-audited commands (the same file that hid GAIN-001 /
+GROUPS-001). Test:
+`tests/integration/test_act_wiz_command_parity.py::test_guild_member_clan_does_not_notify_victim`.
+This file now has no outstanding gaps.
 
 Validation:
 - `pytest tests/integration/test_act_wiz_command_parity.py -q` — `108 passed` (+6 new tests)

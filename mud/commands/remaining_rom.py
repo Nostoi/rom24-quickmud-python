@@ -573,7 +573,11 @@ def do_guild(char: Character, args: str) -> str:
         return f"They are now a {clan_entry.name}.\n\r"
     else:
         clan_display = clan_entry.name.capitalize()
-        _send_to_char(victim, f"You are now a member of clan {clan_display}.\n\r")
+        # WIZ-054 — mirroring ROM src/act_wiz.c:238-246. ROM builds the victim's
+        # "You are now a member of clan X." buffer but never calls
+        # send_to_char(buf, victim) in this non-independent branch (only the
+        # independent branch at :236 notifies the victim). So a player assigned to
+        # a member clan is NOT notified — do not deliver the victim line here.
         return f"They are now a member of clan {clan_display}.\n\r"
 
 

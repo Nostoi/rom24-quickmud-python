@@ -1283,6 +1283,30 @@ def test_guild_member_clan_messages() -> None:
     assert result.endswith("\n\r")
 
 
+def test_guild_member_clan_does_not_notify_victim() -> None:
+    """WIZ-054 — ROM `src/act_wiz.c:238-246`: the non-independent (member) clan
+    branch builds the victim's "You are now a member of clan X." buffer but never
+    calls `send_to_char(buf, victim)`. Only the INDEPENDENT branch (line 236) has
+    `send_to_char(buf, victim)`, so a player assigned to a member clan is NOT
+    notified in ROM. Python over-delivered the victim line in both branches.
+    """
+    from mud.commands.remaining_rom import do_guild
+    from mud.models.clans import CLAN_TABLE
+
+    _room(10607, name="GuildRoom")
+    admin = _imm("Admin", 10607)
+    victim = _imm("GuildVictim5", 10607, trust=10)
+    victim.clan = 0
+    victim.messages = []
+
+    result = do_guild(admin, f"{victim.name} rom")  # 'rom' is a non-independent clan
+
+    assert not CLAN_TABLE[victim.clan].is_independent  # this branch's precondition
+    assert "member of clan" in result.lower()  # the admin (ch) IS notified
+    # ROM omits send_to_char(buf, victim) here — the victim must NOT be notified.
+    assert not any("member of clan" in str(m).lower() for m in victim.messages)
+
+
 def test_guild_no_such_clan() -> None:
     # mirrors ROM src/act_wiz.c:225-228
     from mud.commands.remaining_rom import do_guild

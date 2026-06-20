@@ -37,6 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **WIZ-054: `guild` no longer notifies a player assigned to a non-independent
+  (member) clan.** ROM `do_guild` (`src/act_wiz.c:238-246`) builds the victim's
+  "You are now a member of clan X." buffer but never `send_to_char(buf, victim)`
+  in the member-clan branch — only the *independent* branch (`:236`) notifies the
+  victim. Python over-delivered the line in both branches; now matches ROM's quirk
+  (the member-clan victim is silently assigned). Test:
+  `tests/integration/test_act_wiz_command_parity.py::test_guild_member_clan_does_not_notify_victim`.
 - **GROUPS-001: `groups` no longer crashes for a player who knows any groups.**
   `pcdata.group_known` is a `tuple[str, ...]` of known group names, but the
   no-arg branch of `do_groups` treated it as a dict (`sorted(group_known.keys())`),
