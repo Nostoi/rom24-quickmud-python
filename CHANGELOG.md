@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INTERP-031: `cast` command-gate minimum position corrected to
+  `POS_FIGHTING`.** ROM registers `cast` at `POS_FIGHTING` (`src/interp.c:79`) —
+  you must be standing (or fighting) to cast. The Python port used `POS_RESTING`,
+  wrongly letting a sitting/resting character cast. A resting mage is now blocked
+  at the dispatcher ("Nah... You feel too relaxed...") as in ROM. Part of the
+  INTERP-030 command-table position cluster. Test:
+  `tests/integration/test_spell_casting.py::TestCastCommandDispatch::test_interp_031_cast_min_position_fighting`.
 - **INTERP-029: `recall` command-gate minimum position corrected to
   `POS_FIGHTING`.** ROM registers `recall` at `POS_FIGHTING` (`src/interp.c:271`);
   the Python port used `POS_STANDING`, so a **fighting** player was blocked at the

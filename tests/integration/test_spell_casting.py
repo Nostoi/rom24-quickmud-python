@@ -84,6 +84,29 @@ def target_mob(test_room):
 class TestCastCommandDispatch:
     """Test cast command basic functionality."""
 
+    def test_interp_031_cast_min_position_fighting(self, mage_player):
+        """INTERP-031: `cast` command-gate min position must be POS_FIGHTING.
+
+        ROM src/interp.c:79 — {"cast", do_cast, POS_FIGHTING, 0, ...}. Python
+        registered POS_RESTING, which wrongly let a resting/sitting character
+        cast. ROM requires standing (POS_FIGHTING gates at position >= FIGHTING,
+        i.e. FIGHTING or STANDING), so a resting caster is blocked at the
+        dispatcher with the RESTING position message and never reaches do_cast.
+        """
+        from mud.commands.dispatcher import COMMAND_INDEX
+        from mud.models.constants import Position
+
+        assert COMMAND_INDEX["cast"].min_position == Position.FIGHTING
+
+        # A resting mage is blocked at the position gate (ROM: must stand to cast).
+        mage_player.position = Position.RESTING
+        result = process_command(mage_player, "cast 'magic missile'")
+        assert "too relaxed" in result.lower(), "resting caster must hit the RESTING position gate"
+        # Standing still works (regression guard for the common case).
+        mage_player.position = Position.STANDING
+        ok = process_command(mage_player, "cast 'magic missile'")
+        assert "too relaxed" not in ok.lower()
+
     def test_cast_command_exists(self, mage_player):
         """Verify cast command is registered."""
         result = process_command(mage_player, "cast")

@@ -318,7 +318,10 @@ COMMANDS: list[Command] = [
     Command("surrender", do_surrender, min_position=Position.FIGHTING),
     # ROM src/interp.c:247 — murder requires trust 5.
     Command("murder", do_murder, min_position=Position.FIGHTING, min_trust=5),
-    Command("cast", do_cast, min_position=Position.RESTING),
+    # INTERP-031: ROM src/interp.c:79 — {"cast", do_cast, POS_FIGHTING, ...}.
+    # POS_FIGHTING (not RESTING) — ROM requires standing to cast; a sitting/resting
+    # caster is blocked at the gate. Python's RESTING was too permissive.
+    Command("cast", do_cast, min_position=Position.FIGHTING),
     Command("consider", do_consider, aliases=("con",), min_position=Position.RESTING),
     # Group Commands
     Command("follow", do_follow, min_position=Position.RESTING),
