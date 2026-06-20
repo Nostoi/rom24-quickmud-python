@@ -276,8 +276,11 @@ equivalent Python implementation identified or documented.
   - ✅ `do_train()` (100%) - Stat training, prime stat costs, perm_stat array fix
 - ✅ **Thief Skills** (95% parity)
   - ✅ `do_sneak()`, `do_hide()`, `do_visible()`
-- ⚠️ **Position Commands** (39% parity - Deferred to P2)
-  - ⚠️ `do_stand()`, `do_rest()`, `do_sit()`, `do_sleep()`, `do_wake()` - Missing furniture support
+- ✅ **Position Commands** (100% parity - furniture support implemented)
+  - ✅ `do_stand()`, `do_rest()`, `do_sit()`, `do_sleep()`, `do_wake()` - furniture
+    resolution + `value[2]` position-bitfield gating in `mud/commands/position.py`
+    (`_resolve_furniture`, stand/rest/sit/sleep masks). Stale "39% — missing furniture"
+    status reconciled 2026-06-19; furniture support confirmed present in source.
 
 **Phase 4 Implementation Highlights**:
 - ✅ Portal support: All door commands now support ITEM_PORTAL objects
@@ -544,9 +547,12 @@ equivalent Python implementation identified or documented.
 - ✅ `fwrite_obj()` → `_write_object_data()` (100% - recursive container nesting)
 - ✅ `fread_obj()` → `_read_object_data()` (100% - object affects restored)
 
-**❌ Not Implemented (2 functions - P2 priority)**:
-- ❌ `fwrite_pet()` - Pet persistence (deferred to P2)
-- ❌ `fread_pet()` - Pet loading (deferred to P2)
+**✅ Implemented (pet persistence — stale "Not Implemented" status reconciled 2026-06-19)**:
+- ✅ `fwrite_pet()` → `_serialize_pet` (`mud/db/serializers.py`); save path writes
+  `db_char.pet_state` in `account_manager.py:335-347`.
+- ✅ `fread_pet()` → `_deserialize_pet`; load path restores the pet in
+  `mud/models/character.py:1376-1381`. Round-trip tested by
+  `tests/test_pet_save_affect_roundtrip.py`.
 
 **Key Features Verified**:
 - ✅ Atomic saves (temp file + rename pattern prevents corruption)
@@ -554,11 +560,9 @@ equivalent Python implementation identified or documented.
 - ✅ Object affects (saved and restored on load)
 - ✅ Equipment slots (all 18 slots saved/loaded)
 - ✅ Backward compatibility (`_upgrade_legacy_save()` handles old formats)
-- ⚠️ Pet persistence (NOT implemented - P2 feature)
+- ✅ Pet persistence (implemented — `pet_state` blob save/load, affect round-trip tested)
 
-**Critical Gaps** (P2 - Optional):
-- [ ] Pet/follower persistence (2 functions missing)
-- [ ] Pet affect checking (`check_pet_affected()` from db.c)
+**Critical Gaps**: none open — pet/follower persistence implemented (see above).
 
 **Integration Tests**: ✅ **9/9 tests passing** (`tests/integration/test_save_load_parity.py` - 488 lines, January 5, 2026)
 

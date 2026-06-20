@@ -1,7 +1,8 @@
 # `healer.c` Audit — ROM 2.4b6 → QuickMUD-Python Parity
 
-**Status:** ✅ AUDITED — all 4 gameplay-visible gaps closed (`HEALER-001`..`HEALER-004`); 2026-05-14 reconciled the stale tracker row
-**Date:** 2026-05-14
+**Status:** ⚠️ RE-OPENED 2026-06-19 — a divergence-sweep probe surfaced two
+gaps the 2026-05-14 audit missed (`HEALER-005`, `HEALER-006`); `HEALER-001`..`004` remain ✅ FIXED
+**Date:** 2026-05-14 (re-probed 2026-06-19)
 **ROM C:** `src/healer.c` (157 lines, 1 function)
 **Python:** `mud/commands/healer.py`
 **Priority:** P2 (service command, economy-visible and gameplay-visible)
@@ -88,6 +89,8 @@ Python now:
 | `HEALER-002` | CRITICAL | `src/healer.c:147-190` | `mud/commands/healer.py` (pre-fix) | `mana` handling ignored total wealth in silver, skipped `deduct_cost`, skipped TO_ROOM utterance, and used a flat mana restore instead of `dice(2,8) + level/3`. | ✅ FIXED — `tests/integration/test_healer_command_parity.py::test_heal_mana_uses_total_wealth_rom_formula_and_room_utterance` |
 | `HEALER-003` | IMPORTANT | `src/healer.c:156-160,196` | `mud/commands/healer.py` (pre-fix) | `refresh` used placeholder full-restore logic instead of the underlying ROM spell behavior. | ✅ FIXED — `tests/integration/test_healer_command_parity.py::test_heal_refresh_uses_spell_refresh_not_full_restore` |
 | `HEALER-004` | IMPORTANT | `src/healer.c:107-112,196` | `mud/commands/healer.py` (pre-fix) | `heal` used placeholder “fill to max” logic instead of the underlying ROM `spell_heal` fixed 100-point restoration. | ✅ FIXED — `tests/integration/test_healer_command_parity.py::test_heal_spell_uses_rom_heal_amount_not_full_heal` |
+| `HEALER-005` | IMPORTANT | `src/healer.c:171-176` | `mud/commands/healer.py:230-231` | Insufficient-funds branch returns the bare line `"You do not have enough gold for my services."`; ROM wraps it in `act("$N says '...'")` → `"<Healer> says '...'"` (the no-arg and bad-service branches already include the `<healer> says` wrapper, so this is internally inconsistent too). | ❌ OPEN |
+| `HEALER-006` | IMPORTANT | `src/healer.c:147,156` | `mud/commands/healer.py:45-128,171-176` | Service-match order diverges: ROM checks `mana`/`energize` (line 147) **before** `refresh`/`moves` (line 156), but the price-list **display** prints `refresh` before `mana` (lines 77-78). Python uses one `_SERVICES` tuple (display order) for both, so `_match_service("m")` returns `refresh` where ROM returns `mana` — wrong spell + wrong cost (500 vs 1000). Fix must decouple match-order from display-order. | ❌ OPEN |
 
 ## Phase 4 — Closures
 
