@@ -29,9 +29,57 @@
 
 ## Notes
 
-- GAIN-001 / GAIN-003 are **feature work gated on infrastructure** (`gn_add`
-  recursion, `learned` skill map, `group_known` representation). File-and-scope,
-  do not half-build in a loop. Recommended next: verify `account_service.add_group`
-  recursion + the `learned` structure, then close GAIN-001 (the core path) and
-  GAIN-003 (its `list` sibling) together.
 - GAIN-002 and GROUPS-001 are clean, self-contained units closed this session.
+
+### GAIN-001 / GAIN-003 scope (infra verified 2026-06-19 — gate PASSED)
+
+Every primitive exists; nothing new needs inventing. The only thing to **build**
+is a runtime `gn_add` on a live `Character` (the existing recursion is
+creation-session-bound).
+
+**Infra inventory:**
+
+| ROM primitive | Python equivalent | Notes |
+|---|---|---|
+| `group_lookup` + `group_table[gn].rating[class]` + `.spells[]` | `mud.skills.groups.get_group(name)` → `GroupType.ratings`, `.skills` | ✅ |
+| `skill_lookup` + `skill_table[sn].rating[class]` | `skill_registry.get(name)` → `Skill.ratings` / `Skill.rating[class_index]` | ✅ |
+| `spell_fun != spell_null` ("must learn the full group" gate + list filter) | `Skill.type == "spell"` (`mud/skills/registry.py:266`) | ✅ |
+| runtime `learned[sn]` / `group_known[gn]` | `pcdata.learned: dict[str,int]`, `pcdata.group_known: tuple[str,...]` | ✅ |
+| recursive `gn_add` / `group_add` | `account_service.AccountService.add_group` (recurses child groups + grants component skills) | ⚠️ **logic correct but bound to the creation session** (`self._known_groups` / `self.creation_points`), not a live `Character.pcdata`. Cannot be called directly from `do_gain`. |
+
+**Currency difference (critical):** character creation deducts **creation
+points** (`points += rating`, `deduct=True`); the trainer (`do_gain`) deducts
+**`train`** (`ch->train -= rating[class]`) and calls `gn_add(ch, gn)` with the
+component-skill adds at `deduct=FALSE`. So the runtime path must NOT touch
+`creation_points`.
+
+**Implementation plan (decomposed, do not batch):**
+
+1. **GAIN-001** (one commit) — add a runtime `_gn_add(char, group)` helper
+   (rebuild the `group_known` name tuple + set `learned[skill]=1` for each
+   component skill/sub-group, recursive, no currency deduction), then wire both
+   `do_gain` branches:
+   - **group branch** (ROM `skills.c:174-206`): `get_group` → already-known? →
+     `rating[class] > 0`? → `train >= rating`? → `_gn_add` + `train -= rating` +
+     `"$N trains you in the art of $t"`.
+   - **skill branch** (ROM `skills.c:208-244`): `skill_registry.get` →
+     `type == "spell"`? → "You must learn the full group." → already-known
+     (`learned.get(name,0) > 0`)? → `rating > 0`? → `train >= rating`? →
+     `learned[name]=1` + `train -= rating` + `"$N trains you in the art of $t"`.
+   - One integration test: gain a group (verify group_known + component skills +
+     train deducted), gain a skill, gain-spell-direct refused, insufficient-train
+     refused, already-known refused. Add a save/reload round-trip assertion
+     (learned/group_known already persist — confirm).
+2. **GAIN-003** (one commit) — `gain list`: 3-column listing of groups
+   (`rating[class] > 0`, not known) then skills (`rating[class] > 0`, not known,
+   `type != "spell"`), mirroring ROM `skills.c:74-131`.
+3. **GAIN-004** (one commit, optional) — capitalize trainer lines via the
+   HEALER-005 `act`-cap pattern + the no-arg `do_say`-to-room nuance.
+
+**Risks:** (a) the spell-vs-skill gate must use `Skill.type == "spell"` exactly,
+or players could gain spells directly (a new divergence); (b) `group_known` is an
+immutable tuple — rebuild on add; (c) confirm `learned`/`group_known` survive a
+save/reload (they are existing pcdata fields, so expected to — assert it).
+
+**Size:** medium (~1 helper + 2 branches + list + tests). No missing primitives —
+**implementable faithfully now.**
