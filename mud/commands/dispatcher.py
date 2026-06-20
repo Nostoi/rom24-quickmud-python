@@ -1275,11 +1275,15 @@ def process_command(char: Character, input_str: str) -> str:
     else:
         log_line = trimmed
     log_all_enabled = is_log_all_enabled()
-    log_allowed = True
     should_log = False
     if command:
-        if command.log_level is LogLevel.NEVER and not log_all_enabled:
-            log_allowed = False
+        if command.log_level is LogLevel.NEVER:
+            # INTERP-034: ROM src/interp.c:460 — `strcpy(logline, "")` blanks the
+            # logged line UNCONDITIONALLY for LOG_NEVER (even under fLogAll), so the
+            # `password <newpass>` text never reaches the admin log / wiznet
+            # WIZ_SECURE. The old `NEVER and not log_all_enabled` guard leaked it
+            # whenever global log-all was active.
+            log_line = ""
         if command.log_level is LogLevel.ALWAYS:
             should_log = True
     is_player = not getattr(char, "is_npc", False)
@@ -1287,7 +1291,7 @@ def process_command(char: Character, input_str: str) -> str:
         should_log = True
     if log_all_enabled:
         should_log = True
-    if should_log and log_allowed and log_line:
+    if should_log and log_line:
         try:
             log_admin_command(
                 getattr(char, "name", "?"),

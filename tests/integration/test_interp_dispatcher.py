@@ -317,6 +317,25 @@ def test_interp_033_command_log_flag_matches_rom(name, rom_log, line):
     )
 
 
+def test_interp_034_log_never_blanks_logline_even_with_log_all(dispatcher_char, monkeypatch):
+    # mirrors ROM src/interp.c:460 — `if (cmd_table[cmd].log == LOG_NEVER)
+    # strcpy(logline, "")` UNCONDITIONALLY blanks the logged line, regardless of
+    # fLogAll. Python's consumer only suppressed when log-all was OFF
+    # (`NEVER and not log_all_enabled`), so with log-all ON the `password
+    # <newpass>` line leaked into the admin log + wiznet WIZ_SECURE.
+    from mud.commands import dispatcher
+
+    calls: list[tuple[str, str]] = []
+    monkeypatch.setattr(dispatcher, "is_log_all_enabled", lambda: True)
+    monkeypatch.setattr(dispatcher, "log_admin_command", lambda name, line, **k: calls.append((name, line)))
+
+    dispatcher_char.is_npc = False
+    process_command(dispatcher_char, "password sup3rs3cret")
+
+    leaked = [line for _, line in calls if "sup3rs3cret" in (line or "")]
+    assert not leaked, f"LOG_NEVER must blank the logline even with log-all on; leaked: {leaked}"
+
+
 # INTERP-030: command-table min-position parity. Each tuple is (command-or-alias,
 # ROM POS_* name, src/interp.c line). Mirrors how INTERP-001 closed the trust-drift
 # cluster with one parametrized guard. The aliases "." / ";" must inherit their

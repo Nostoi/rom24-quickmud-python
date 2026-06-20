@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+- **INTERP-034: `LOG_NEVER` now suppresses the logged line unconditionally.**
+  The flag fix (INTERP-033) alone was insufficient: the dispatcher's consumer only
+  honored `LOG_NEVER` when global log-all was *off* (`NEVER and not
+  log_all_enabled`). With log-all enabled, the `password <newpass>` line still
+  leaked to the admin log + wiznet `WIZ_SECURE` (reproduced empirically). Now the
+  consumer blanks the log line unconditionally for `LOG_NEVER`, mirroring ROM's
+  `strcpy(logline, "")` (`src/interp.c:460`). Test:
+  `test_interp_034_log_never_blanks_logline_even_with_log_all`.
 - **INTERP-033: the `password` command is no longer written to logs.** ROM marks
   `password` (and `mob`) `LOG_NEVER` (`src/interp.c:167,255`), which blanks the
   typed line so the new plaintext password never lands in the admin log or the
