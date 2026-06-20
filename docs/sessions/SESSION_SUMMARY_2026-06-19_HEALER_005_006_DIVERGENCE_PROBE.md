@@ -116,17 +116,36 @@ ratings + `Skill.type`, `pcdata.learned`/`group_known`), all three closed:
   (`mob goto <vnum>` actually moves the controller).
 - **Note**: fourth gap from `remaining_rom.py` this session.
 
-### Deferred candidates (filed, not closed — maintainer's parity-vs-UX call)
+### `FLAG-003` — ✅ FIXED (filed as a candidate, then closed at the maintainer's call)
 
-- **FLAG-003** (`docs/parity/FLAGS_C_AUDIT.md`) — ROM `do_flag` is **silent on
-  success** (`*flag = new; return;`, `src/flags.c:248-250`); Python returns
-  `"Flag '<field>' updated on <name>."` (over-delivery, same class as
-  WIZ-054/MOBCMD-022). Strict parity ⇒ return `""`. Deferred because `flag` is
-  immortal-only debug tooling and silent success is debatable UX. No test pins the
-  message; one-line fix if approved.
-- **`do_wimpy` atoi** — ROM `wimpy = atoi(arg)` → `wimpy abc` = 0 → "Wimpy set to
-  0 hit points."; Python returns "Wimpy must be a number." May be a deliberate
-  project-wide numeric-validation convention; confirm before acting.
+- **Python**: `mud/commands/remaining_rom.py:do_flag`
+- **ROM C**: `src/flags.c:248-250`
+- **Gap**: ROM `do_flag` ends the success path `*flag = new; return;` and sends
+  the invoker no confirmation. Python returned an invented `"Flag '<field>'
+  updated on <name>."` (over-delivery, same class as WIZ-054 / MOBCMD-022).
+- **Fix**: `do_flag` now returns `""` on success (the flag is still mutated).
+  Test: `tests/integration/test_flag_command_parity.py::test_flag_success_is_silent_like_rom`.
+- **Process note**: initially filed as a ⚠️ CANDIDATE rather than closed
+  unilaterally, because `flag` is immortal-only debug tooling and a silent success
+  is debatable UX — closed once the maintainer confirmed they want strict parity.
+
+### `WIMPY-001` — ✅ FIXED (filed as a candidate, then closed at the maintainer's call)
+
+- **Python**: `mud/commands/remaining_rom.py:do_wimpy`
+- **ROM C**: `src/act_info.c:2811`
+- **Gap**: ROM `do_wimpy` uses `wimpy = atoi(arg)` — non-numeric input → 0, NOT
+  rejected. Python returned the invented "Wimpy must be a number." and left wimpy
+  unchanged.
+- **Investigation**: the strict "must be a number" pattern lives only in OLC
+  builder commands (`build.py`, a Python-specific interface); direct ROM ports
+  replicate atoi (`group_commands.py:do_split` cites "ROM uses atoi() which
+  returns 0 for non-numeric input"). So `do_wimpy` is a genuine divergence, not a
+  convention. The act_info row was "✅ 100% COMPLETE! (0 gaps)" — another false-100%.
+- **Fix**: `do_wimpy` now mirrors atoi (non-numeric → 0 → "Wimpy set to 0 hit
+  points."). The 2 existing tests that pinned the non-ROM rejection were corrected
+  (AGENTS.md: a test contradicting ROM is a test bug). Tests:
+  `tests/test_player_wimpy.py::TestWimpyEdgeCases::test_wimpy_non_numeric_sets_zero_like_rom_atoi`
+  + `::test_wimpy_invalid_input_overwrites_to_zero_not_preserved`.
 
 ### FINDING-001 correction (stale handoff claim)
 
