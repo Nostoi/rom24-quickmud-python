@@ -1,4 +1,4 @@
-# Session Summary — 2026-06-20 — social_table/INV-052 + CAST-013 (per-spell min position)
+# Session Summary — 2026-06-20 — INV-052 + CAST-013 + INTERP-028 (table/contract sweep)
 
 ## Scope
 
@@ -90,6 +90,33 @@ divergence in the act-delivery layer, closed as **INV-052**.
   the parser, so the anchors independently pin the parser's column extraction).
 - **Audit**: `docs/parity/MAGIC_C_AUDIT.md` row `CAST-013` ✅ FIXED.
 
+### `INTERP-028` — ✅ FIXED (duplicate `bs` registration)
+
+- **ROM C**: `src/interp.c:238,240` — two cmd_table rows: `{"backstab",
+  do_backstab, POS_FIGHTING, …, 1}` (shown) and `{"bs", do_backstab,
+  POS_FIGHTING, …, 0}` (hidden), BOTH → `do_backstab`.
+- **Divergence**: Python registered `bs` both as an alias of `backstab` AND as a
+  standalone `Command("bs", do_bs, …)` (the standalone overwrote the alias in
+  `COMMAND_INDEX`), routing through a needless `do_bs` wrapper.
+- **Fix (2.14.200)**: removed `bs` from `backstab`'s aliases; pointed the
+  standalone hidden `bs` row at `do_backstab` directly (`show=False`,
+  `POS_FIGHTING`), mirroring ROM's two rows; deleted the dead `do_bs` wrapper
+  (`remaining_rom.py`) + its import. No behavioral change (both already reached
+  backstab) — cleanup + ROM-faithful show flags, collision removed.
+- **Tests**: `test_interp_dispatcher.py::test_interp_028_bs_is_hidden_backstab_alias_no_collision`
+  (both → do_backstab; backstab shown / bs hidden; both POS_FIGHTING; no dual
+  registration). `test_all_commands.py` + full interp suite green.
+
+### INV-052 follow-up sweep — ✅ DONE (clean negative, no code change)
+
+- Audited all 43 direct single-recipient `push_message` / `send_to_char_buffered`
+  / `_send_to_char_sync` sites outside socials. Every one is safe: it either
+  (a) passes a **constant non-empty literal** template to `act_format`,
+  (b) already **guards `if formatted:`/`if message:`** before delivery, or
+  (c) routes through `act_to_room`/`_act_to_room` (now INV-052-guarded at the
+  boundary). The socials path was the **unique** site feeding a data-derived
+  (possibly-`""`) string into the act layer. Recorded in the INV-052 row.
+
 ## Clean negative (verified, no further gap)
 
 - **`social_table` is byte-clean.** 244 socials, all 8 fields, full faithful join:
@@ -115,36 +142,55 @@ CAST-013:
 - `tests/integration/test_spell_casting.py` — `TestCast013PerSpellMinPosition` (13 tests).
 - `docs/parity/MAGIC_C_AUDIT.md` — new `CAST-013` row (✅ FIXED).
 
+INTERP-028:
+- `mud/commands/dispatcher.py` — `bs` no longer a `backstab` alias; standalone
+  hidden `bs` row → `do_backstab`; `do_bs` import removed.
+- `mud/commands/remaining_rom.py` — deleted the dead `do_bs` wrapper.
+- `tests/integration/test_interp_dispatcher.py` — INTERP-028 test.
+- `docs/parity/INTERP_C_AUDIT.md` — row `INTERP-028` ✅ FIXED.
+
+INV-052 follow-up:
+- `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md` — INV-052 row records the
+  43-site sweep as a clean negative.
+
 Shared:
-- `CHANGELOG.md` — Fixed entries (CAST-013, INV-052).
-- `pyproject.toml` — 2.14.197 → **2.14.199** (INV-052 at .198, CAST-013 at .199).
+- `CHANGELOG.md` — Fixed entries (INTERP-028, CAST-013, INV-052).
+- `pyproject.toml` — 2.14.197 → **2.14.200** (INV-052 @.198, CAST-013 @.199,
+  INTERP-028 @.200).
 
 ## Test Status
 
-- `test_inv052_act_empty_discard.py` — 4/4; `TestCast013PerSpellMinPosition` — 13/13.
-- Full suite: **5992 passed, 4 skipped** (was 5984/4 at session start; +8 across
-  the two new test surfaces). `ruff check`/`ruff format` clean on all touched files.
-- GitNexus reindexed exit-0 (only the 2 documented harmless C-header scope
-  failures `recycle.h`/`olc.h`; zero Python failures).
+- `test_inv052_act_empty_discard.py` — 4/4; `TestCast013PerSpellMinPosition` —
+  13/13; `test_interp_028_…` — 1/1.
+- Full suite: **6002 passed, 4 skipped** (was 5984/4 at session start; +18 across
+  the new test surfaces: INV-052 +4, CAST-013 +13, INTERP-028 +1). `ruff check`/
+  `ruff format` clean on all touched files;
+  `test_all_commands.py` green (the pre-existing `tap` false-positive is a
+  `test_all_commands` probe artifact — `tap` IS registered as a `sacrifice`
+  alias — not a parity bug).
+- GitNexus reindexed clean earlier; the MCP server disconnected late in the
+  session, so the final pre-commit check used `git diff` review (changes scoped
+  to the intended symbols) — reindex on next session start.
 
 ## Next Steps / Outstanding
 
-The low-risk data/registration veins remain drained. Remaining candidates, in
-priority order:
+All three of this session's candidates are now CLOSED:
+- **INTERP-028** ✅ FIXED (2.14.200) — `bs`/`backstab` dual registration removed.
+- **CAST-013** ✅ FIXED (2.14.199) — per-spell `minimum_position`.
+- **INV-052 follow-up** ✅ DONE — 43-site direct-push sweep, clean negative.
 
-1. **INTERP-028** (🔄 OPEN, MINOR) — duplicate `bs` registration (alias on
-   `backstab` + standalone `Command("bs", …)`). Cosmetic, no observable
-   divergence.
-2. **Per-spell `min_position`** — ✅ **CLOSED this session as CAST-013 (2.14.199)**.
-   do_cast now gates on each spell's own `minimum_position` (const.c-derived);
-   the prior "HIGH-blast-radius → FILE don't fix" tag is retired (the change is a
-   strictly parity-correcting per-spell value substitution, verified by the full
-   suite). No further action.
-3. **INV-052 follow-up (low-yield)** — general sweep of direct single-recipient
-   `push_message`/`send_to_char_buffered` empty-variable sites outside socials.
-   Re-open with a per-site gap only if a scenario/golden surfaces a blank-line
-   leak; do not grind a full audit speculatively.
-4. **Risk posture (advisor)**: when a behavioral divergence needs logic changes in
+The low-risk data/registration veins are drained. Next-session candidates:
+
+1. **Next table/contract probe** — pick a candidate area not yet covered by an
+   INV row (affect ticks, position transitions, mob script triggers,
+   group/follower chain), run a 5-minute probe (ROM C contract → Python
+   equivalent → one failing test), then close as a gap or file as the next free
+   INV-NNN.
+2. **`test_all_commands.py` `tap` false-positive** — the probe reports `tap`
+   "Not registered" though it resolves to `sacrifice` in `COMMAND_INDEX`; a
+   `test_all_commands` harness artifact, not a parity bug. Low priority; fix the
+   probe (alias-aware) if revisited.
+3. **Risk posture (advisor)**: when a behavioral divergence needs logic changes in
    a HIGH-blast-radius core path (combat/movement/dispatch), file it, don't fix
    autonomously. Pure additive guards that mirror a single ROM function exactly
    (like INV-052 / INTERP-034) are the exception — they are strictly
