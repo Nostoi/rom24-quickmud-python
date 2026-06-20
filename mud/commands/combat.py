@@ -908,7 +908,12 @@ def do_cast(char: Character, args: str) -> str:
     if skill is None or spell_level <= 0 or (required_level is not None and char_level < required_level):
         return "You don't know any spells of that name."
 
-    if char.position < Position.FIGHTING:
+    # CAST-013: ROM src/magic.c:341 gates on the spell's OWN minimum_position
+    # (skill_table[sn].minimum_position), not a flat POS_FIGHTING. So a fighting
+    # caster cannot cast a POS_STANDING utility/buff spell (armor, bless,
+    # detect_*, charm, cure_disease/poison) — "You can't concentrate enough."
+    min_position = getattr(skill, "minimum_position", Position.FIGHTING)
+    if char.position < min_position:
         return "You can't concentrate enough."
 
     min_mana = int(getattr(skill, "min_mana", 0) or 0)

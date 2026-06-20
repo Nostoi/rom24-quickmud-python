@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **CAST-013: spells now respect their per-spell minimum casting position.** ROM
+  `do_cast` (`src/magic.c:341`) gates each spell on its own
+  `skill_table[sn].minimum_position`; Python used a flat `POS_FIGHTING` for every
+  spell. Because the `cast` command itself requires `POS_FIGHTING` (INTERP-031),
+  the observable effect was that a **fighting** character could cast
+  `POS_STANDING` utility/buff spells (armor, bless, every detect_*, charm person,
+  create_*, cure disease/poison, …) that ROM blocks with "You can't concentrate
+  enough." Added `Skill.minimum_position` (sourced from `const.c` skill_table via
+  the parser, mapped to the `Position` enum; default FIGHTING as a safe backstop)
+  and switched `do_cast` to gate on it. Offensive spells (`POS_FIGHTING`) are
+  unaffected — still castable in combat. A completeness anti-drift test re-parses
+  `const.c` and asserts every spell matches. Test:
+  `tests/integration/test_spell_casting.py::TestCast013PerSpellMinPosition`.
 - **INV-052: socials no longer emit a spurious blank line (`act()` discards
   empty messages).** ROM `act_new` (`src/comm.c:2240-2244`) discards NULL and
   zero-length format strings before delivery — so a social slot that is NULL in

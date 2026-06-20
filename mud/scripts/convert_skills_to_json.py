@@ -117,6 +117,11 @@ def parse_skill_table(const_c_path: Path) -> list[dict[str, Any]]:
             "type": skill_type,
             "function": function_name,
             "target": target_type,
+            # ROM skill_table minimum_position (src/merc.h:1951) — the raw POS_*
+            # token from const.c group(6); consumed by mud.skills.metadata to gate
+            # do_cast per-spell (CAST-013). Kept as the symbolic name so callers map
+            # it to the Position enum (never a hardcoded int).
+            "minimum_position": position,
             "mana_cost": mana_cost,
             "lag": lag,
             "cooldown": 0,  # Default cooldown

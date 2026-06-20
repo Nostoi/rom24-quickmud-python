@@ -399,6 +399,154 @@ class TestSaySpellIntegration:
         assert saw_spell_or_empty
 
 
+class TestCast013PerSpellMinPosition:
+    """CAST-013: do_cast must gate on the spell's OWN ``minimum_position``.
+
+    ROM ``src/magic.c:341-345``::
+
+        if (ch->position < skill_table[sn].minimum_position)
+        { send_to_char("You can't concentrate enough.\\n\\r", ch); return; }
+
+    Python ``do_cast`` used a FLAT ``char.position < Position.FIGHTING`` for every
+    spell. Given the ``cast`` command-gate is ``POS_FIGHTING`` (INTERP-031), the
+    caster is always FIGHTING(7) or STANDING(8) by the time the per-spell gate
+    runs, so the only observable effect of the per-spell value is: ``POS_STANDING``
+    spells (armor, bless, detect_*, charm, cure_disease/poison — the utility/buff
+    spells) cannot be cast WHILE FIGHTING. The flat check let them through.
+    """
+
+    def _load(self):
+        from pathlib import Path
+
+        from mud.skills.registry import load_skills, skill_registry
+
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+        load_skills(Path("data/skills.json"))
+        return skill_registry
+
+    def test_fighting_caster_blocked_on_standing_spell(self, mage_player, target_mob, monkeypatch):
+        """A FIGHTING mage casting a POS_STANDING utility spell → 'concentrate'."""
+        from mud.models.constants import Position
+        from mud.utils import rng_mm
+
+        reg = self._load()
+        # detect magic: ROM POS_STANDING, mage learns at level 2, TAR_CHAR_SELF.
+        assert reg.get("detect magic").minimum_position == Position.STANDING
+
+        mage_player.skills = {"detect magic": 100}
+        mage_player.level = 20  # >= mage detect-magic level 2
+        mage_player.position = Position.FIGHTING
+        mage_player.fighting = target_mob
+        target_mob.fighting = mage_player
+
+        fired = {}
+        monkeypatch.setitem(
+            reg.handlers, "detect_magic", lambda c, victim=None, **k: fired.setdefault("hit", True) or {}
+        )
+        monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+        result = process_command(mage_player, "cast 'detect magic'")
+        assert result == "You can't concentrate enough.", result
+        assert fired.get("hit") is None, "the spell handler must not run when position-gated"
+
+    def test_fighting_caster_allowed_on_fighting_spell(self, mage_player, target_mob, monkeypatch):
+        """Offensive control: a FIGHTING mage CAN cast a POS_FIGHTING spell."""
+        from mud.models.constants import Position
+        from mud.utils import rng_mm
+
+        reg = self._load()
+        # magic missile: ROM POS_FIGHTING, mage learns at level 1.
+        assert reg.get("magic missile").minimum_position == Position.FIGHTING
+
+        mage_player.skills = {"magic missile": 100}
+        mage_player.level = 20
+        mage_player.position = Position.FIGHTING
+        mage_player.fighting = target_mob
+        target_mob.fighting = mage_player
+
+        monkeypatch.setitem(reg.handlers, "magic_missile", lambda c, victim=None, **k: {})
+        monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+        result = process_command(mage_player, "cast 'magic missile' goblin")
+        assert result != "You can't concentrate enough.", result
+
+    def test_standing_caster_allowed_on_standing_spell(self, mage_player, monkeypatch):
+        """Regression guard: a STANDING mage CAN cast a POS_STANDING spell."""
+        from mud.models.constants import Position
+        from mud.utils import rng_mm
+
+        reg = self._load()
+        mage_player.skills = {"detect magic": 100}
+        mage_player.level = 20
+        mage_player.position = Position.STANDING
+
+        monkeypatch.setitem(reg.handlers, "detect_magic", lambda c, victim=None, **k: {})
+        monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)
+
+        result = process_command(mage_player, "cast 'detect magic'")
+        assert result != "You can't concentrate enough.", result
+
+    def test_every_spell_min_position_matches_rom_const_c(self):
+        """Completeness anti-drift guard: every spell's registry ``minimum_position``
+        must equal the ROM ``const.c`` skill_table value (parser + the two
+        parser-skipped CONST-009 spells)."""
+        from pathlib import Path
+
+        from mud.models.constants import Position
+        from mud.scripts.convert_skills_to_json import parse_skill_table
+
+        reg = self._load()
+        pos_by_name = {
+            "POS_DEAD": Position.DEAD,
+            "POS_MORTAL": Position.MORTAL,
+            "POS_INCAP": Position.INCAP,
+            "POS_STUNNED": Position.STUNNED,
+            "POS_SLEEPING": Position.SLEEPING,
+            "POS_RESTING": Position.RESTING,
+            "POS_SITTING": Position.SITTING,
+            "POS_FIGHTING": Position.FIGHTING,
+            "POS_STANDING": Position.STANDING,
+        }
+        const_path = Path(__file__).resolve().parents[2] / "src" / "const.c"
+        expected = {e["name"]: pos_by_name[e["minimum_position"]] for e in parse_skill_table(const_path)}
+        # CONST-009: parser skips cancellation/harm (multi-line noun array); both POS_FIGHTING.
+        expected.setdefault("cancellation", Position.FIGHTING)
+        expected.setdefault("harm", Position.FIGHTING)
+
+        mismatches = {
+            name: (reg.get(name).minimum_position, want)
+            for name, want in expected.items()
+            if name in reg.skills and reg.get(name).minimum_position != want
+        }
+        assert not mismatches, f"minimum_position drift vs ROM const.c: {mismatches}"
+
+    @pytest.mark.parametrize(
+        "name,rom_position",
+        [
+            # Hand-verified against src/const.c skill_table, spanning all three
+            # reachable positions and both classes — an INDEPENDENT anchor so the
+            # completeness guard above isn't circular (it derives both sides from
+            # parse_skill_table, so it proves transfer, not that the parser reads
+            # the right column). These pin the parser's group-6 extraction itself.
+            ("armor", "STANDING"),
+            ("continual light", "STANDING"),
+            ("detect invis", "STANDING"),
+            ("sanctuary", "STANDING"),
+            ("magic missile", "FIGHTING"),
+            ("lightning bolt", "FIGHTING"),
+            ("fireball", "FIGHTING"),
+            ("heal", "FIGHTING"),
+            ("word of recall", "RESTING"),
+        ],
+    )
+    def test_min_position_hardcoded_anchors(self, name, rom_position):
+        from mud.models.constants import Position
+
+        reg = self._load()
+        assert reg.get(name).minimum_position == Position[rom_position]
+
+
 class TestSpellEffects:
     """Test that cast spells produce expected effects."""
 

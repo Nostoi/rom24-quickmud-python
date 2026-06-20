@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from mud.models.constants import Position
+
 from .skill_json import SkillJson
 
 
@@ -26,6 +28,13 @@ class Skill:
     slot: int = 0
     min_mana: int = 0
     beats: int = 0
+    # ROM skill_table minimum_position (src/merc.h:1951, "Position for caster").
+    # do_cast gates on this per spell (src/magic.c:341). Default FIGHTING is the
+    # safe backstop (CAST-013): identical to the historical flat gate, so an
+    # unmapped spell can never regress an offensive cast — only a mapped
+    # POS_STANDING spell newly blocks while fighting. registry.load overwrites
+    # it from const.c via ROM_SKILL_MIN_POSITION.
+    minimum_position: Position = Position.FIGHTING
 
     @classmethod
     def from_json(cls, data: SkillJson) -> Skill:

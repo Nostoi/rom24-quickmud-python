@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from mud.models.constants import Position
 from mud.scripts.convert_skills_to_json import parse_skill_table
 
 ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
@@ -150,6 +151,44 @@ ROM_SKILL_METADATA: dict[str, dict[str, object]] = {
     "whip": {"levels": [1, 1, 1, 1], "ratings": [6, 5, 5, 4], "slot": 0, "min_mana": 0, "beats": 0},
     "word of recall": {"levels": [32, 28, 40, 30], "ratings": [1, 1, 2, 2], "slot": 42, "min_mana": 5, "beats": 12},
 }
+
+
+_POS_BY_NAME: dict[str, Position] = {
+    "POS_DEAD": Position.DEAD,
+    "POS_MORTAL": Position.MORTAL,
+    "POS_INCAP": Position.INCAP,
+    "POS_STUNNED": Position.STUNNED,
+    "POS_SLEEPING": Position.SLEEPING,
+    "POS_RESTING": Position.RESTING,
+    "POS_SITTING": Position.SITTING,
+    "POS_FIGHTING": Position.FIGHTING,
+    "POS_STANDING": Position.STANDING,
+}
+
+
+def _load_skill_min_positions() -> dict[str, Position]:
+    """Map skill name → ROM ``skill_table`` minimum_position, parsed from const.c.
+
+    CAST-013: ROM ``do_cast`` (``src/magic.c:341``) gates each spell on its own
+    ``minimum_position``; the symbolic ``POS_*`` token is parsed from const.c and
+    mapped to the ``Position`` enum (never a hardcoded int, per AGENTS.md). The
+    const.c parser skips ``cancellation``/``harm`` (multi-line noun-damage array —
+    same CONST-009 reason the levels are hand-maintained above); both are
+    ``POS_FIGHTING`` in ROM, hand-added here so they aren't left at the default.
+    """
+
+    const_path = Path(__file__).resolve().parents[2] / "src" / "const.c"
+    result: dict[str, Position] = {}
+    for entry in parse_skill_table(const_path):
+        token = str(entry.get("minimum_position", ""))
+        if token in _POS_BY_NAME:
+            result[entry["name"]] = _POS_BY_NAME[token]
+    result.setdefault("cancellation", Position.FIGHTING)
+    result.setdefault("harm", Position.FIGHTING)
+    return result
+
+
+ROM_SKILL_MIN_POSITION = _load_skill_min_positions()
 
 
 def _load_skill_names() -> tuple[str, ...]:

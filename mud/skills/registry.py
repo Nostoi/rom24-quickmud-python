@@ -12,7 +12,7 @@ from mud.math.c_compat import c_div
 from mud.models import Skill, SkillJson
 from mud.models.constants import AffectFlag
 from mud.models.json_io import dataclass_from_dict
-from mud.skills.metadata import ROM_SKILL_METADATA
+from mud.skills.metadata import _POS_BY_NAME, ROM_SKILL_METADATA, ROM_SKILL_MIN_POSITION
 from mud.utils import rng_mm
 from mud.utils.messaging import push_message
 
@@ -73,6 +73,16 @@ class SkillRegistry:
                 skill.beats = int(entry["beats"])
             else:
                 skill.beats = int(metadata.get("beats", skill.lag))
+
+            # CAST-013: per-spell ROM skill_table minimum_position (src/magic.c:341
+            # do_cast gate). Sourced from const.c via ROM_SKILL_MIN_POSITION; an
+            # entry may also override it directly (POS_* token, like the parser
+            # emits). Unmapped skills keep the FIGHTING default (safe backstop).
+            entry_pos = entry.get("minimum_position")
+            if isinstance(entry_pos, str) and entry_pos in _POS_BY_NAME:
+                skill.minimum_position = _POS_BY_NAME[entry_pos]
+            elif skill.name in ROM_SKILL_MIN_POSITION:
+                skill.minimum_position = ROM_SKILL_MIN_POSITION[skill.name]
 
             # Legacy callers still consult mana_cost/lag fields; mirror ROM values
             skill.mana_cost = skill.min_mana
