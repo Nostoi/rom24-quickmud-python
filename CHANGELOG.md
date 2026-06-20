@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INTERP-030: command-table min-position cluster corrected (10 commands).** A
+  full ROM `cmd_table` ⇄ Python position diff found a cluster of drift: the comm
+  channels `gossip`/`grats`/`auction`/`answer`/`question`/`quote`/`reply` were at
+  `POS_RESTING` but ROM has them at `POS_SLEEPING` (usable while asleep — same
+  class as the already-fixed `music`); `quit`/`gtell` were at `POS_SLEEPING` but
+  ROM allows them at `POS_DEAD` (any position); `murde` (ROM's "spell it out"
+  safety stub) was at `POS_DEAD` vs ROM `POS_FIGHTING`. Aliases `.`→gossip and
+  `;`→gtell inherit the corrected positions. Locked by a parametrized anti-drift
+  guard `test_interp_030_command_min_position_matches_rom` (16 cases, mirroring
+  INTERP-001's trust guard).
 - **INTERP-031: `cast` command-gate minimum position corrected to
   `POS_FIGHTING`.** ROM registers `cast` at `POS_FIGHTING` (`src/interp.c:79`) —
   you must be standing (or fighting) to cast. The Python port used `POS_RESTING`,

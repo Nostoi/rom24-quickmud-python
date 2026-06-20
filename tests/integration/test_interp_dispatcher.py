@@ -252,6 +252,47 @@ def test_interp_006_music_min_position_sleeping():
     assert cmd.min_position == Position.SLEEPING
 
 
+# INTERP-030: command-table min-position parity. Each tuple is (command-or-alias,
+# ROM POS_* name, src/interp.c line). Mirrors how INTERP-001 closed the trust-drift
+# cluster with one parametrized guard. The aliases "." / ";" must inherit their
+# command's position. Includes the already-closed siblings (music/backstab/recall/
+# cast) as regression anchors.
+_ROM_CMD_POSITIONS = [
+    ("gossip", "SLEEPING", 185),
+    (".", "SLEEPING", 184),  # alias of gossip
+    ("grats", "SLEEPING", 187),
+    ("auction", "SLEEPING", 80),
+    ("answer", "SLEEPING", 179),
+    ("question", "SLEEPING", 193),
+    ("quote", "SLEEPING", 194),
+    ("reply", "SLEEPING", 196),
+    ("gtell", "DEAD", 188),
+    (";", "DEAD", 189),  # alias of gtell
+    ("quit", "DEAD", 270),
+    ("murde", "FIGHTING", 246),
+    # regression anchors (already closed)
+    ("music", "SLEEPING", 93),
+    ("backstab", "FIGHTING", 238),
+    ("recall", "FIGHTING", 271),
+    ("cast", "FIGHTING", 79),
+]
+
+
+@pytest.mark.parametrize("name,rom_pos,line", _ROM_CMD_POSITIONS)
+def test_interp_030_command_min_position_matches_rom(name, rom_pos, line):
+    # mirrors ROM src/interp.c cmd_table — each command's min position must equal
+    # the POS_* in its cmd_table row. Python had a cluster of comm channels at
+    # POS_RESTING (should be POS_SLEEPING — usable while asleep), quit/gtell at
+    # POS_SLEEPING (should be POS_DEAD), and murde at POS_DEAD (should be
+    # POS_FIGHTING). Aliases inherit their command's position.
+    from mud.models.constants import Position
+
+    cmd = COMMAND_INDEX[name]
+    assert cmd.min_position == Position[rom_pos], (
+        f"{name}: src/interp.c:{line} is POS_{rom_pos}, got {Position(int(cmd.min_position)).name}"
+    )
+
+
 def test_interp_027_backstab_min_position_fighting(dispatcher_char):
     # mirrors ROM src/interp.c:238 — {"backstab", do_backstab, POS_FIGHTING, 0, ...}.
     # Python registered POS_STANDING (8) instead of POS_FIGHTING (7), so a char

@@ -275,19 +275,19 @@ COMMANDS: list[Command] = [
     # Communication
     Command("say", do_say, aliases=("'",), min_position=Position.RESTING),
     Command("tell", do_tell, min_position=Position.RESTING),
-    Command("reply", do_reply, min_position=Position.RESTING),
+    Command("reply", do_reply, min_position=Position.SLEEPING),  # INTERP-030 ROM interp.c:196 POS_SLEEPING
     # ROM src/interp.c:200 — shout requires trust 3.
     Command("shout", do_shout, min_position=Position.RESTING, min_trust=3),
     Command("yell", do_yell, min_position=Position.RESTING),
     Command("emote", do_emote, aliases=(",",), min_position=Position.RESTING),
     Command("pose", do_pose, min_position=Position.RESTING),
-    Command("auction", do_auction, min_position=Position.RESTING),
-    Command("gossip", do_gossip, aliases=(".",), min_position=Position.RESTING),
+    Command("auction", do_auction, min_position=Position.SLEEPING),  # INTERP-030 ROM interp.c:80 POS_SLEEPING
+    Command("gossip", do_gossip, aliases=(".",), min_position=Position.SLEEPING),  # INTERP-030 ROM interp.c:185
     Command("cgossip", do_cgossip, min_position=Position.RESTING),
-    Command("grats", do_grats, min_position=Position.RESTING),
-    Command("quote", do_quote, min_position=Position.RESTING),
-    Command("question", do_question, min_position=Position.RESTING),
-    Command("answer", do_answer, min_position=Position.RESTING),
+    Command("grats", do_grats, min_position=Position.SLEEPING),  # INTERP-030 ROM interp.c:187 POS_SLEEPING
+    Command("quote", do_quote, min_position=Position.SLEEPING),  # INTERP-030 ROM interp.c:194 POS_SLEEPING
+    Command("question", do_question, min_position=Position.SLEEPING),  # INTERP-030 ROM interp.c:193 POS_SLEEPING
+    Command("answer", do_answer, min_position=Position.SLEEPING),  # INTERP-030 ROM interp.c:179 POS_SLEEPING
     # ROM src/interp.c:93 — music allowed while sleeping.
     Command("music", do_music, min_position=Position.SLEEPING),
     Command("clan", do_clantalk, min_position=Position.SLEEPING),
@@ -326,7 +326,7 @@ COMMANDS: list[Command] = [
     # Group Commands
     Command("follow", do_follow, min_position=Position.RESTING),
     Command("group", do_group, min_position=Position.SLEEPING),
-    Command("gtell", do_gtell, aliases=("gt", ";"), min_position=Position.SLEEPING),
+    Command("gtell", do_gtell, aliases=("gt", ";"), min_position=Position.DEAD),  # INTERP-030 ROM interp.c:188 POS_DEAD
     Command("split", do_split, min_position=Position.RESTING),
     Command("order", do_order, min_position=Position.RESTING),
     # Item Transfer
@@ -353,7 +353,7 @@ COMMANDS: list[Command] = [
     Command("empty", do_empty, min_position=Position.RESTING),
     # Session/Character Info
     Command("save", do_save, min_position=Position.DEAD),
-    Command("quit", do_quit, min_position=Position.SLEEPING),
+    Command("quit", do_quit, min_position=Position.DEAD),  # INTERP-030 ROM interp.c:270 POS_DEAD
     Command("score", do_score, min_position=Position.DEAD),
     # INTERP-029: ROM src/interp.c:271 — {"recall", do_recall, POS_FIGHTING, ...}.
     # POS_FIGHTING (not STANDING) so a fighting char passes the gate and reaches
@@ -525,7 +525,7 @@ COMMANDS: list[Command] = [
     Command("teleport", do_teleport, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, show=False),
     # Typo Guards
     Command("qui", do_qui, min_position=Position.DEAD, show=False),
-    Command("murde", do_murde, min_position=Position.DEAD, show=False),
+    Command("murde", do_murde, min_position=Position.FIGHTING, show=False),  # INTERP-030 ROM interp.c:246 POS_FIGHTING
     Command("reboo", do_reboo, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1, show=False),
     Command("shutdow", do_shutdow, min_position=Position.DEAD, min_trust=MAX_LEVEL - 1, show=False),
     Command("alia", do_alia, min_position=Position.DEAD, show=False),
