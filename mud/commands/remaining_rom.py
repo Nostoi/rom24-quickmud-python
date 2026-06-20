@@ -683,8 +683,11 @@ def do_flag(char: Character, args: str) -> str:
         new ^= marked
 
     setattr(victim, attr_name, new)
-    victim_name = getattr(victim, "name", "someone")
-    return f"Flag '{field}' updated on {victim_name}."
+    # FLAG-003 — mirroring ROM src/flags.c:248-250: do_flag ends the success path
+    # `*flag = new; return;` with NO confirmation to the invoker. Be silent on
+    # success (the prior "Flag '<field>' updated on <name>." was an invented
+    # over-delivery, same class as WIZ-054 / MOBCMD-022).
+    return ""
 
 
 def do_mob(char: Character, args: str) -> str:

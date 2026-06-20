@@ -37,6 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FLAG-003: the `flag` command is now silent on success, like ROM.** ROM
+  `do_flag` ends its success path `*flag = new; return;` (`src/flags.c:248-250`)
+  and sends the invoker no confirmation. Python returned an invented
+  `"Flag '<field>' updated on <name>."`. The flag is still mutated; the command
+  now returns nothing on success (strict parity; same over-delivery class as
+  WIZ-054 / MOBCMD-022). Test:
+  `tests/integration/test_flag_command_parity.py::test_flag_success_is_silent_like_rom`.
 - **MOBCMD-022: the `mob` command now actually runs mob commands.** ROM `do_mob`
   (`src/mob_cmds.c:82-90`) runs a security check then `mob_interpret(ch, argument)`.
   The Python `mob` command (used by mob programs and MAX_LEVEL immortals) was a

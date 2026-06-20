@@ -65,6 +65,24 @@ def test_flag_char_plr_add_sets_player_flag_bit():
     )
 
 
+def test_flag_success_is_silent_like_rom():
+    """FLAG-003 — ROM `do_flag` ends the success path `*flag = new; return;`
+    (`src/flags.c:248-250`) and sends the invoker NO confirmation. Python returned
+    an invented "Flag '<field>' updated on <name>." line (over-delivery, same class
+    as WIZ-054 / MOBCMD-022). The success path must be silent (return "") while
+    still mutating the flag.
+    """
+    _room(3001)
+    immortal = _imm("Imp", 3001)
+    victim = _pc("Bob", 3001)
+    victim.act = 0
+
+    result = do_flag(immortal, "char Bob plr +holylight")
+
+    assert result == ""  # ROM is silent on success
+    assert victim.act & int(PlayerFlag.HOLYLIGHT)  # the flag was still mutated
+
+
 def test_flag_char_plr_remove_clears_player_flag_bit():
     # mirrors ROM src/flags.c:237-239 — `-holylight` REMOVE_BIT branch
     _room(3001)
