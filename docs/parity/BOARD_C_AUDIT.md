@@ -13,12 +13,16 @@
 The Python implementation is structurally a port of the ROM/Erwin board system
 but executes against a JSON registry instead of ROM's per-board flat files,
 and exposes a request/response command vocabulary (`note post`, `note to`,
-`note send`, …) instead of ROM's `CON_NOTE_*` interactive state machine. Most
-gaps fall into three buckets: **the five hardcoded ROM boards are not seeded
-on startup**, **post/visibility behaviors diverge from ROM** (timestamp
-collisions, unread counting that ignores the recipient list, no expire/archive
-sweep), and **the ROM `act()` TO_ROOM broadcasts for "starts/finishes a note"
-are missing**.
+`note send`, …) instead of ROM's `CON_NOTE_*` interactive state machine. The
+gaps originally fell into three buckets — **the five hardcoded ROM boards were
+not seeded on startup** (BOARD-001), **post/visibility behaviors diverged from
+ROM** (timestamp collisions BOARD-004, recipient-blind unread counting
+BOARD-005, no expire/archive sweep BOARD-008), and **the ROM `act()` TO_ROOM
+broadcasts for "starts/finishes a note" were missing** (BOARD-002/003). **All
+three buckets are now closed** (Phase 3 gap table; re-verified 2026-06-19 — board
+regression suite 36/36, default boards seed, `make_note`/`personal_message`
+present). Only the by-design divergences remain (JSON persistence,
+request/response vocabulary vs the modal `CON_NOTE_*` editor).
 
 ---
 
@@ -27,25 +31,25 @@ are missing**.
 | ROM function | ROM lines | Python counterpart | Status | Notes |
 |--------------|-----------|---------------------|--------|-------|
 | `free_note` / `new_note` | 90–131 | implicit (Python GC + `Note` dataclass) | ✅ N/A | C allocator boilerplate. |
-| `append_note` | 134–143 | `mud/notes.py:save_board` (JSON dump) | ⚠️ PARTIAL | ROM appends ROM-format text to flat file; Python writes JSON. Persistence formats diverge by design — acceptable. |
-| `finish_note` | 146–186 | `mud/models/board.py:Board.post` + `mud/notes.py:save_board` | ⚠️ PARTIAL | Missing unique `date_stamp` collision logic (BOARD-004); save behavior parity. |
+| `append_note` | 134–143 | `mud/notes.py:save_board` (JSON dump) | ✅ N/A | ROM appends ROM-format text to flat file; Python writes JSON. Persistence formats diverge **by design** (JSON registry) — not a gap. |
+| `finish_note` | 146–186 | `mud/models/board.py:Board.post` + `mud/notes.py:save_board` | ✅ AUDITED | Unique `date_stamp` collision logic implemented (**BOARD-004 ✅ FIXED**). |
 | `board_number` / `board_lookup` | 189–210 | `mud/notes.py:find_board` / iteration in `do_board` | ✅ AUDITED | Lookup is name-based via `storage_key`. |
 | `unlink_note` | 213–227 | `del board.notes[index]` in `do_note remove` | ✅ AUDITED | |
 | `find_note` | 230–244 | `mud/commands/notes.py:_find_visible_note_index` | ✅ AUDITED | Visibility-gated lookup matches ROM. |
-| `save_board` / `save_notes` / `load_board` / `load_boards` | 247–405 | `mud/notes.py:save_board` / `load_boards` | ⚠️ PARTIAL | Missing expire-archive sweep on load (BOARD-008). |
+| `save_board` / `save_notes` / `load_board` / `load_boards` | 247–405 | `mud/notes.py:save_board` / `load_boards` | ✅ AUDITED | Expire-archive sweep on load implemented (**BOARD-008 ✅ FIXED**). |
 | `is_note_to` | 408–440 | `mud/commands/notes.py:_is_note_visible_to` | ✅ AUDITED | Numeric trust check, immortal/imp tokens, sender, "all", explicit name all match ROM. |
 | `unread_notes` | 444–460 | `mud/models/board.py:Board.unread_count_for` | ✅ FIXED | **BOARD-005 closed in commit `4d636235`** (stale row corrected 2026-06-19). `unread_count_for(char, last_read)` applies the `is_note_to` recipient filter AND the `last_read < date_stamp` cursor, mirroring ROM `unread_notes`; the sole caller (`mud/commands/notes.py:214`) uses it. Recipient-blind `unread_count` retained only for snapshot callers without a character in scope. Test `tests/integration/test_boards_rom_parity.py`. (Residual: ROM's `read_level > get_trust(ch) → BOARD_NOACCESS` access-gate branch is not modeled in `unread_count_for`; `do_board` uses `can_read` instead — tracked on the `do_board` row.) |
-| `do_nwrite` | 467–559 | `mud/commands/notes.py:do_note "write"` (and `to`/`subject`/`text`/`send`) | ⚠️ PARTIAL | Vocabulary diverges (no CON state machine). Missing TO_ROOM `act("$n starts writing a note.")` (BOARD-002). |
+| `do_nwrite` | 467–559 | `mud/commands/notes.py:do_note "write"` (and `to`/`subject`/`text`/`send`) | ✅ AUDITED | TO_ROOM `act("$n starts writing a note.")` implemented (**BOARD-002 ✅ FIXED**). Vocabulary diverges by design (no CON state machine). |
 | `do_nread` | 563–612 | `mud/commands/notes.py:_read_next_unread_note` + `note read N` | ✅ AUDITED | Number / next / next-board cascade match. |
 | `do_nremove` | 615–643 | `mud/commands/notes.py:do_note "remove"` | ✅ AUDITED | Author or `MAX_LEVEL` may remove. |
 | `do_nlist` | 648–687 | `mud/commands/notes.py:do_note "list"` | ✅ AUDITED | Number-arg "last N visible" filter matches. |
 | `do_ncatchup` | 690–704 | `mud/commands/notes.py:do_note "catchup"` | ✅ AUDITED | Misspelling "All mesages skipped." preserved. |
-| `do_note` | 707–738 | `mud/commands/notes.py:do_note` | ⚠️ PARTIAL | Adds `post`/`to`/`subject`/`text`/`send`/`expire` subcommands not in ROM; missing `do_help "note"` fallback (BOARD-013). |
-| `do_board` | 743–840 | `mud/commands/notes.py:do_board` | ⚠️ PARTIAL | Listing access filter uses `can_read` instead of `unread_notes != BOARD_NOACCESS`; tied to BOARD-005. |
-| `personal_message` / `make_note` | 843–886 | ❌ NONE | ❌ MISSING | No programmatic note-injection API for systems (death notifications, mail) (BOARD-018). |
+| `do_note` | 707–738 | `mud/commands/notes.py:do_note` | ✅ AUDITED | `do_help "note"` fallback for unknown subcommands implemented (**BOARD-012 ✅ FIXED** — was mis-cited as BOARD-013). Added `post`/`to`/`subject`/`text`/`send`/`expire` verbs diverge by design (no CON state machine). |
+| `do_board` | 743–840 | `mud/commands/notes.py:do_board` | ✅ AUDITED | Listing access filter now recipient-aware (**BOARD-005/006 ✅ FIXED**). |
+| `personal_message` / `make_note` | 843–886 | `mud/notes.py:personal_message` / `make_note` | ✅ AUDITED | Programmatic note-injection API implemented (**BOARD-013 ✅ FIXED** — was mis-cited as the non-existent "BOARD-018"). |
 | `next_board` | 889–903 | `mud/commands/notes.py:_next_readable_board` | ✅ AUDITED | |
-| `handle_con_note_to/subject/expire/text/finish` | 905–1198 | replaced by `note to/subject/text/send/expire` request/response subcommands | ⚠️ PARTIAL | Missing TO_ROOM "$n finishes $s note." broadcast on post (BOARD-003). |
-| ROM hardcoded `boards[MAX_BOARD]` table | 67–76 | ❌ NONE | ❌ MISSING | Five default boards (General/Ideas/Announce/Bugs/Personal) with specific levels/force-types/purge-days never seeded (BOARD-001). |
+| `handle_con_note_to/subject/expire/text/finish` | 905–1198 | replaced by `note to/subject/text/send/expire` request/response subcommands | ✅ AUDITED | TO_ROOM "$n finishes $s note." broadcast on post implemented (**BOARD-003 ✅ FIXED**). Modal `CON_NOTE_*` editor replaced by request/response by design. |
+| ROM hardcoded `boards[MAX_BOARD]` table | 67–76 | `mud/notes.py` default-board seed | ✅ AUDITED | Five default boards (General/Ideas/Announce/Bugs/Personal) seeded with ROM levels/force-types/purge-days (**BOARD-001 ✅ FIXED**). |
 
 ---
 
