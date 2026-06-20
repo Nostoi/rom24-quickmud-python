@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GAIN-002: `gain points` at a trainer now lowers creation points (ROM), not
+  raises them.** ROM `do_gain` (`src/skills.c:149-172`) spends 2 `train` to
+  **decrement** creation `points` by 1 — which lowers `exp_per_level`, making
+  leveling easier — gated on `points > 40`, then recomputes
+  `exp = exp_per_level(ch, points) * level`. Python had it backwards on three
+  counts: it *raised* points by 1, skipped the `points <= 40` gate, and never
+  recomputed exp (and used the wrong message). Now mirrors ROM. Tests:
+  `tests/integration/test_do_gain_act_gain_bit.py::test_gain_points_spends_two_trains_to_lower_points_and_recalcs_exp`
+  + `::test_gain_points_refuses_when_points_at_or_below_40`. (Surfaced by a
+  divergence probe; `do_gain`'s missing skill/group-learning path GAIN-001 and
+  the `do_groups` crash GROUPS-001 filed in `docs/parity/SKILLS_C_DO_GAIN_AUDIT.md`.)
 - **HEALER-006: healer service match order now follows ROM's if/else, not the
   display order.** ROM `do_heal` checks `mana`/`energize` (`src/healer.c:147`)
   **before** `refresh`/`moves` (`src/healer.c:156`), even though the price list

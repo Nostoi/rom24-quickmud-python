@@ -9,6 +9,7 @@ from __future__ import annotations
 from enum import IntFlag
 from typing import TYPE_CHECKING
 
+from mud.advancement import exp_per_level
 from mud.commands.imm_commands import MAX_LEVEL, get_char_world, get_trust
 from mud.models.character import Character
 from mud.models.constants import (
@@ -243,12 +244,22 @@ def do_gain(char: Character, args: str) -> str:
             trainer_name = getattr(trainer, "short_descr", "The trainer")
             return f"{trainer_name} tells you 'You are not yet ready.'"
 
-        char.train = train - 2
         pcdata = getattr(char, "pcdata", None)
+        points = getattr(pcdata, "points", 0) if pcdata else 0
+        # mirroring ROM src/skills.c:158-163 — refuse when points <= 40.
+        if points <= 40:
+            trainer_name = getattr(trainer, "short_descr", "The trainer")
+            return f"{trainer_name} tells you 'There would be no point in that.'"
+
+        # mirroring ROM src/skills.c:165-171 (GAIN-002): spend 2 train to LOWER
+        # creation points by 1 (exp_per_level rises with points, so this makes
+        # leveling easier), then recompute exp = exp_per_level(ch, points) * level.
+        char.train = train - 2
         if pcdata:
-            pcdata.points = getattr(pcdata, "points", 0) + 1
+            pcdata.points = points - 1
+        char.exp = exp_per_level(char) * getattr(char, "level", 0)
         trainer_name = getattr(trainer, "short_descr", "The trainer")
-        return f"{trainer_name} trains you, and you gain a creation point."
+        return f"{trainer_name} trains you, and you feel more at ease with your skills."
 
     return "That is not a valid option. Try 'gain list'."
 

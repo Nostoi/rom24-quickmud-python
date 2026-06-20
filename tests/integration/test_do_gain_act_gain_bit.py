@@ -20,11 +20,20 @@ from __future__ import annotations
 
 import pytest
 
+from mud.advancement import exp_per_level
 from mud.commands.remaining_rom import do_gain
-from mud.models.character import Character
+from mud.models.character import Character, PCData
 from mud.models.constants import ActFlag
 from mud.models.room import Room
 from mud.registry import room_registry
+
+
+def _place_trainer(room: Room) -> Character:
+    trainer = Character(name="trainer", level=50, is_npc=True, room=room)
+    trainer.act = int(ActFlag.GAIN)
+    trainer.short_descr = "the master trainer"
+    room.people.append(trainer)
+    return trainer
 
 
 @pytest.fixture
@@ -72,6 +81,52 @@ def test_no_trainer_returns_cant_do_that(learner: Character, gain_room: Room) ->
     result = do_gain(learner, "")
 
     assert "can't do that here" in result.lower()
+
+
+def test_gain_points_spends_two_trains_to_lower_points_and_recalcs_exp(learner: Character, gain_room: Room) -> None:
+    """GAIN-002 — mirrors ROM `src/skills.c:149-172`.
+
+    `gain points` trades 2 `train` to **lower** creation `points` by 1 (which
+    lowers `exp_per_level`, making leveling easier) and recomputes
+    `exp = exp_per_level(ch, points) * level`. Python had it backwards: it
+    *raised* points by 1, skipped the `points <= 40` gate, and never recalculated
+    exp.
+    """
+
+    _place_trainer(gain_room)
+    learner.pcdata = PCData()
+    learner.pcdata.points = 50
+    learner.train = 5
+    learner.exp = 0
+
+    result = do_gain(learner, "points")
+
+    # ROM: points decremented, 2 trains spent.
+    assert learner.pcdata.points == 49
+    assert learner.train == 3
+    # ROM: exp = exp_per_level(ch, points) * level, computed with the NEW points.
+    assert learner.exp == exp_per_level(learner) * learner.level
+    assert "feel more at ease with your skills" in result
+    assert "gain a creation point" not in result
+
+
+def test_gain_points_refuses_when_points_at_or_below_40(learner: Character, gain_room: Room) -> None:
+    """GAIN-002 — mirrors ROM `src/skills.c:158-163`.
+
+    ROM refuses `gain points` when `points <= 40` ("There would be no point in
+    that.") with no state change. Python omitted this gate entirely.
+    """
+
+    _place_trainer(gain_room)
+    learner.pcdata = PCData()
+    learner.pcdata.points = 40
+    learner.train = 5
+
+    result = do_gain(learner, "points")
+
+    assert "no point in that" in result.lower()
+    assert learner.pcdata.points == 40  # unchanged
+    assert learner.train == 5  # unchanged
 
 
 def test_mob_with_old_wrong_bit_is_not_a_trainer(learner: Character, gain_room: Room) -> None:
