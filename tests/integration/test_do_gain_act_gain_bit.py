@@ -258,6 +258,22 @@ def test_gain_list_excludes_known_groups(learner: Character, gain_room: Room) ->
     assert "maladictions" in result
 
 
+def test_gain_trainer_lines_are_act_capitalized(learner: Character, gain_room: Room) -> None:
+    """GAIN-004 — ROM emits trainer lines via `act("$N ...", TO_CHAR)`, which
+    first-letter-capitalizes the rendered line (INV-029). A trainer with
+    short_descr "the master trainer" must render "The master trainer ...".
+    """
+    _place_trainer(gain_room)
+    _make_learner_mage(learner)
+    learner.train = 0  # beguiling costs 4 → refusal line, prefixed by trainer name
+
+    refusal = do_gain(learner, "beguiling")
+    assert refusal.startswith("The master trainer")
+
+    pardon = do_gain(learner, "")
+    assert pardon.startswith("The master trainer")
+
+
 def test_mob_with_old_wrong_bit_is_not_a_trainer(learner: Character, gain_room: Room) -> None:
     """A mob with only the pre-fix wrong bit (0x00100000, bit 20) is NOT a trainer."""
     not_trainer = Character(name="impostor", level=10, is_npc=True, room=gain_room)

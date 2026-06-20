@@ -182,6 +182,16 @@ def do_envenom(char: Character, args: str) -> str:
     return str(result.get("message", ""))
 
 
+def _gain_trainer_name(trainer) -> str:
+    """Trainer name rendered as ROM `act("$N ...", TO_CHAR)` would — first letter
+    capitalized (INV-029, the GAIN-004 act-cap class). Every `do_gain` trainer
+    line is "$N ...", so capitalizing the name's leading letter reproduces
+    `act_new`'s `buf[0]` upper-casing."""
+    from mud.utils.act import capitalize_act_line
+
+    return capitalize_act_line(str(getattr(trainer, "short_descr", None) or "The trainer"))
+
+
 def _gain_class_index(char: Character) -> int:
     try:
         return int(getattr(char, "ch_class", 0) or 0)
@@ -333,7 +343,7 @@ def do_gain(char: Character, args: str) -> str:
         return "You can't do that here."
 
     if not args or not args.strip():
-        trainer_name = getattr(trainer, "short_descr", "The trainer")
+        trainer_name = _gain_trainer_name(trainer)
         return f"{trainer_name} says 'Pardon me?'"
 
     arg = args.strip().split()[0].lower()
@@ -345,25 +355,25 @@ def do_gain(char: Character, args: str) -> str:
     if arg == "convert":
         practice = getattr(char, "practice", 0)
         if practice < 10:
-            trainer_name = getattr(trainer, "short_descr", "The trainer")
+            trainer_name = _gain_trainer_name(trainer)
             return f"{trainer_name} tells you 'You are not yet ready.'"
 
         char.practice = practice - 10
         char.train = getattr(char, "train", 0) + 1
-        trainer_name = getattr(trainer, "short_descr", "The trainer")
+        trainer_name = _gain_trainer_name(trainer)
         return f"{trainer_name} helps you apply your practice to training."
 
     if arg == "points":
         train = getattr(char, "train", 0)
         if train < 2:
-            trainer_name = getattr(trainer, "short_descr", "The trainer")
+            trainer_name = _gain_trainer_name(trainer)
             return f"{trainer_name} tells you 'You are not yet ready.'"
 
         pcdata = getattr(char, "pcdata", None)
         points = getattr(pcdata, "points", 0) if pcdata else 0
         # mirroring ROM src/skills.c:158-163 — refuse when points <= 40.
         if points <= 40:
-            trainer_name = getattr(trainer, "short_descr", "The trainer")
+            trainer_name = _gain_trainer_name(trainer)
             return f"{trainer_name} tells you 'There would be no point in that.'"
 
         # mirroring ROM src/skills.c:165-171 (GAIN-002): spend 2 train to LOWER
@@ -373,7 +383,7 @@ def do_gain(char: Character, args: str) -> str:
         if pcdata:
             pcdata.points = points - 1
         char.exp = exp_per_level(char) * getattr(char, "level", 0)
-        trainer_name = getattr(trainer, "short_descr", "The trainer")
+        trainer_name = _gain_trainer_name(trainer)
         return f"{trainer_name} trains you, and you feel more at ease with your skills."
 
     # GAIN-001: gain a group or a skill. ROM (src/skills.c:174-249) uses the FULL
@@ -381,7 +391,7 @@ def do_gain(char: Character, args: str) -> str:
     full_arg = (args or "").strip().lower()
     pcdata = getattr(char, "pcdata", None)
     class_index = _gain_class_index(char)
-    trainer_name = getattr(trainer, "short_descr", "The trainer")
+    trainer_name = _gain_trainer_name(trainer)
 
     group = _gain_group_lookup(full_arg)
     if group is not None:

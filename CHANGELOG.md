@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **GAIN-004: trainer speech lines are now ROM-capitalized.** ROM emits `do_gain`
+  trainer lines via `act("$N ...", TO_CHAR)`, which first-letter-capitalizes the
+  rendered line (INV-029). The Python port used lowercase f-strings (a trainer
+  "the master trainer" rendered "the master trainer tells you..."). All trainer
+  lines now route through `_gain_trainer_name` (`capitalize_act_line`). Test:
+  `tests/integration/test_do_gain_act_gain_bit.py::test_gain_trainer_lines_are_act_capitalized`.
+  (Residual: ROM's no-arg case says "Pardon me?" to the *room* via `do_say`;
+  Python still returns it to the caller only — a bounded delivery nuance.)
 - **GAIN-003: `gain list` shows the real trainer price list.** ROM `do_gain`
   (`src/skills.c:74-131`) lists, in two 3-column tables, every group / non-spell
   skill the player does not know whose per-class rating is > 0, with its cost. The
