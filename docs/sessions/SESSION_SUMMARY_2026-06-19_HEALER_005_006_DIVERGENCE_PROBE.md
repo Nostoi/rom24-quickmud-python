@@ -64,16 +64,25 @@ the advisor-endorsed posture, consistent with the prior loop session's stop at 2
 - **Fix**: iterate the name tuple directly. Empirically reproduced + regression in
   `tests/integration/test_do_groups_known_groups.py`.
 
-### Filed for scoping (`docs/parity/SKILLS_C_DO_GAIN_AUDIT.md`)
+### `do_gain` fully ported (GAIN-001/003/004 — all ✅ FIXED)
 
-`do_gain` is substantially un-ported; `skills.c` is tracker-✅ only for the 37
-skill **handlers**, not these trainer **commands**:
-- **GAIN-001** (CRITICAL) — `gain <skill>`/`gain <group>` not implemented; a
-  player cannot learn at a trainer. Feature work gated on a recursive `gn_add`
-  equivalent (`account_service.add_group` recursion + `learned` map unverified).
-- **GAIN-003** — `gain list` is a stub.
-- **GAIN-004** — trainer lines lack ROM `act()` capitalization (HEALER-005 class)
-  + the no-arg `do_say`-to-room nuance.
+`do_gain` was substantially un-ported; `skills.c` is tracker-✅ only for the 37
+skill **handlers**, not these trainer **commands**. After the infra-gate scope
+(every primitive verified present — `get_group` ratings/skills, `skill_registry`
+ratings + `Skill.type`, `pcdata.learned`/`group_known`), all three closed:
+- **GAIN-001** (CRITICAL) — ✅ implemented `gain <skill>`/`gain <group>`: runtime
+  recursive `_gn_add` (mark group known + grant component skills/sub-groups),
+  group + skill branches with ROM's validation gates, spell guard via
+  `Skill.type == "spell"`, deduct `train` (the trainer currency, distinct from
+  the creation-session `add_group` which deducts creation points). Tests:
+  `tests/integration/test_do_gain_act_gain_bit.py` (gain group + component
+  skills, gain skill, gain-spell refused, insufficient-train, already-known).
+- **GAIN-003** — ✅ `gain list` builds the two real 3-column price tables
+  (unknown groups, then unknown non-spell skills with `rating[class] > 0`).
+- **GAIN-004** — ✅ trainer lines ROM-capitalized via `_gain_trainer_name`
+  (`capitalize_act_line`). One **bounded residual**: the no-arg `do_say`-to-room
+  broadcast is returned to the caller only (changing it touches `do_gain`'s
+  string-return contract).
 
 ### FINDING-001 correction (stale handoff claim)
 
