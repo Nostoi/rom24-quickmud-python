@@ -129,6 +129,100 @@ def test_gain_points_refuses_when_points_at_or_below_40(learner: Character, gain
     assert learner.train == 5  # unchanged
 
 
+def _make_learner_mage(learner: Character) -> None:
+    # The skill registry loads from data/skills.json (the server does this at
+    # startup); the static group table is always available. Load skills
+    # idempotently so the skill branch / spell gate resolve in-test.
+    from pathlib import Path
+
+    from mud.skills.registry import load_skills, skill_registry
+
+    if not skill_registry.skills:
+        load_skills(Path("data/skills.json"))
+
+    learner.ch_class = 0  # mage
+    learner.pcdata = PCData()
+    learner.pcdata.group_known = ()
+    learner.pcdata.learned = {}
+
+
+def test_gain_group_learns_group_and_component_skills_and_deducts_train(learner: Character, gain_room: Room) -> None:
+    """GAIN-001 — mirrors ROM `src/skills.c:174-206` + `gn_add` (993-1004).
+
+    Gaining a group marks it known, recursively grants its component skills
+    (`gn_add` → `group_add`), and deducts `train` by the per-class rating.
+    """
+    _place_trainer(gain_room)
+    _make_learner_mage(learner)
+    learner.train = 10
+
+    # "beguiling": class-0 cost 4, component skills calm / charm person / sleep.
+    result = do_gain(learner, "beguiling")
+
+    assert "trains you in the art of beguiling" in result
+    assert "beguiling" in learner.pcdata.group_known
+    assert learner.pcdata.learned.get("calm") == 1
+    assert learner.pcdata.learned.get("charm person") == 1
+    assert learner.pcdata.learned.get("sleep") == 1
+    assert learner.train == 6  # 10 - 4
+
+
+def test_gain_skill_learns_skill_and_deducts_train(learner: Character, gain_room: Room) -> None:
+    """GAIN-001 — mirrors ROM `src/skills.c:208-244` (skill branch)."""
+    _place_trainer(gain_room)
+    _make_learner_mage(learner)
+    learner.train = 5
+
+    result = do_gain(learner, "dagger")  # class-0 rate 2, type skill (non-spell)
+
+    assert "trains you in the art of dagger" in result
+    assert learner.pcdata.learned.get("dagger") == 1
+    assert learner.train == 3
+
+
+def test_gain_spell_directly_is_refused_must_learn_full_group(learner: Character, gain_room: Room) -> None:
+    """GAIN-001 — mirrors ROM `src/skills.c:211-216`.
+
+    A skill whose `spell_fun != spell_null` (Python `Skill.type == "spell"`)
+    cannot be gained directly — only via its group.
+    """
+    _place_trainer(gain_room)
+    _make_learner_mage(learner)
+    learner.train = 50
+
+    result = do_gain(learner, "sleep")  # a spell
+
+    assert "must learn the full group" in result.lower()
+    assert learner.pcdata.learned.get("sleep", 0) == 0
+    assert learner.train == 50
+
+
+def test_gain_group_refused_when_insufficient_train(learner: Character, gain_room: Room) -> None:
+    """GAIN-001 — mirrors ROM `src/skills.c:193-198`."""
+    _place_trainer(gain_room)
+    _make_learner_mage(learner)
+    learner.train = 2  # beguiling costs 4
+
+    result = do_gain(learner, "beguiling")
+
+    assert "not yet ready for that group" in result.lower()
+    assert "beguiling" not in learner.pcdata.group_known
+    assert learner.train == 2
+
+
+def test_gain_already_known_group_refused(learner: Character, gain_room: Room) -> None:
+    """GAIN-001 — mirrors ROM `src/skills.c:179-184`."""
+    _place_trainer(gain_room)
+    _make_learner_mage(learner)
+    learner.pcdata.group_known = ("beguiling",)
+    learner.train = 10
+
+    result = do_gain(learner, "beguiling")
+
+    assert "already know that group" in result.lower()
+    assert learner.train == 10
+
+
 def test_mob_with_old_wrong_bit_is_not_a_trainer(learner: Character, gain_room: Room) -> None:
     """A mob with only the pre-fix wrong bit (0x00100000, bit 20) is NOT a trainer."""
     not_trainer = Character(name="impostor", level=10, is_npc=True, room=gain_room)

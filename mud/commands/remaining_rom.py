@@ -182,6 +182,77 @@ def do_envenom(char: Character, args: str) -> str:
     return str(result.get("message", ""))
 
 
+def _gain_class_index(char: Character) -> int:
+    try:
+        return int(getattr(char, "ch_class", 0) or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _gain_group_lookup(name: str):
+    """ROM `group_lookup` (`src/skills.c:976`) — first group the argument is a
+    case-insensitive prefix of."""
+    from mud.skills.groups import list_groups
+
+    arg = (name or "").strip().lower()
+    if not arg:
+        return None
+    for group in list_groups():
+        if (group.name or "").lower().startswith(arg):
+            return group
+    return None
+
+
+def _gain_skill_lookup(name: str):
+    """ROM `skill_lookup` (`src/magic.c:57`) — first skill the argument is a prefix of."""
+    from mud.skills.registry import skill_registry
+
+    arg = (name or "").strip().lower()
+    if not arg:
+        return None
+    for skill in skill_registry.skills.values():
+        if (getattr(skill, "name", "") or "").lower().startswith(arg):
+            return skill
+    return None
+
+
+def _gain_skill_rate(skill, class_index: int) -> int:
+    ratings = getattr(skill, "ratings", None)
+    if ratings and 0 <= class_index < len(ratings):
+        return int(ratings[class_index])
+    rating = getattr(skill, "rating", None)
+    if isinstance(rating, dict):
+        return int(rating.get(class_index, 0) or 0)
+    return 0
+
+
+def _gn_add(char: Character, group) -> None:
+    """Runtime mirror of ROM `gn_add` (`src/skills.c:993-1004`): mark the group
+    known and recursively grant its component skills / sub-groups. No currency
+    deduction — `do_gain` deducts `train` separately (ROM's `gn_add` adds the
+    component skills via `group_add` with `deduct == FALSE`)."""
+    from mud.skills.groups import get_group
+
+    pcdata = getattr(char, "pcdata", None)
+    if pcdata is None:
+        return
+    known = list(getattr(pcdata, "group_known", ()) or ())
+    if not any((n or "").lower() == (group.name or "").lower() for n in known):
+        known.append(group.name)
+        pcdata.group_known = tuple(known)
+    learned = getattr(pcdata, "learned", None)
+    if learned is None:
+        return
+    for child in getattr(group, "skills", ()) or ():
+        child_group = get_group(child)
+        if child_group is not None:
+            _gn_add(char, child_group)
+            continue
+        # component skill/spell — learn it if not already known (ROM group_add).
+        if learned.get(child, 0) == 0:
+            learned[child] = 1
+
+
 def do_gain(char: Character, args: str) -> str:
     """
     Gain new skills/groups from a trainer or convert practices.
@@ -261,7 +332,48 @@ def do_gain(char: Character, args: str) -> str:
         trainer_name = getattr(trainer, "short_descr", "The trainer")
         return f"{trainer_name} trains you, and you feel more at ease with your skills."
 
-    return "That is not a valid option. Try 'gain list'."
+    # GAIN-001: gain a group or a skill. ROM (src/skills.c:174-249) uses the FULL
+    # argument (multi-word group/skill names) with prefix matching.
+    full_arg = (args or "").strip().lower()
+    pcdata = getattr(char, "pcdata", None)
+    class_index = _gain_class_index(char)
+    trainer_name = getattr(trainer, "short_descr", "The trainer")
+
+    group = _gain_group_lookup(full_arg)
+    if group is not None:
+        # mirroring ROM src/skills.c:174-206
+        known = [(n or "").lower() for n in (getattr(pcdata, "group_known", ()) or ())]
+        if (group.name or "").lower() in known:
+            return f"{trainer_name} tells you 'You already know that group!'"
+        cost = group.cost_for_class_index(class_index)
+        if not cost or cost <= 0:
+            return f"{trainer_name} tells you 'That group is beyond your powers.'"
+        if getattr(char, "train", 0) < cost:
+            return f"{trainer_name} tells you 'You are not yet ready for that group.'"
+        _gn_add(char, group)
+        char.train = getattr(char, "train", 0) - cost
+        return f"{trainer_name} trains you in the art of {group.name}"
+
+    skill = _gain_skill_lookup(full_arg)
+    if skill is not None:
+        # mirroring ROM src/skills.c:208-244
+        if str(getattr(skill, "type", "") or "").lower() == "spell":
+            return f"{trainer_name} tells you 'You must learn the full group.'"
+        learned = getattr(pcdata, "learned", {}) if pcdata else {}
+        if learned.get(skill.name, 0) > 0:
+            return f"{trainer_name} tells you 'You already know that skill!'"
+        rate = _gain_skill_rate(skill, class_index)
+        if rate <= 0:
+            return f"{trainer_name} tells you 'That skill is beyond your powers.'"
+        if getattr(char, "train", 0) < rate:
+            return f"{trainer_name} tells you 'You are not yet ready for that skill.'"
+        if pcdata is not None:
+            pcdata.learned[skill.name] = 1
+        char.train = getattr(char, "train", 0) - rate
+        return f"{trainer_name} trains you in the art of {skill.name}"
+
+    # mirroring ROM src/skills.c:247 — act("$N tells you 'I do not understand...'")
+    return f"{trainer_name} tells you 'I do not understand...'"
 
 
 def do_groups(char: Character, args: str) -> str:

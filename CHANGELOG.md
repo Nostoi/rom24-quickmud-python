@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **GAIN-001: players can now learn skills and groups at a trainer.** ROM `do_gain`
+  (`src/skills.c:174-249`) lets a player `gain <group>` / `gain <skill>` at an
+  `ACT_GAIN` trainer — validating already-known / class-rating / sufficient
+  `train`, then learning it (groups recursively grant their component skills via
+  `gn_add`) and deducting `train` by the per-class rating. The Python port
+  returned "That is not a valid option." for any name — the core trainer function
+  was missing. Now implemented with a runtime `_gn_add`, the spell guard ("You
+  must learn the full group." via `Skill.type == "spell"`), and ROM's
+  "I do not understand..." fall-through. Tests:
+  `tests/integration/test_do_gain_act_gain_bit.py`.
+
 ### Fixed
 
 - **GROUPS-001: `groups` no longer crashes for a player who knows any groups.**
