@@ -37,6 +37,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **MOBCMD-022: the `mob` command now actually runs mob commands.** ROM `do_mob`
+  (`src/mob_cmds.c:82-90`) runs a security check then `mob_interpret(ch, argument)`.
+  The Python `mob` command (used by mob programs and MAX_LEVEL immortals) was a
+  stub that echoed `"Mob command executed: …"` and never dispatched, so `mob goto`,
+  `mob transfer`, `mob cast`, etc. did nothing. Now calls the existing
+  `mob_interpret`. Test:
+  `tests/test_mobprog_commands.py::test_do_mob_command_dispatches_to_mob_interpret`.
 - **WIZ-054: `guild` no longer notifies a player assigned to a non-independent
   (member) clan.** ROM `do_guild` (`src/act_wiz.c:238-246`) builds the victim's
   "You are now a member of clan X." buffer but never `send_to_char(buf, victim)`

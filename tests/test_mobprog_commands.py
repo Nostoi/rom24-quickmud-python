@@ -681,3 +681,24 @@ def test_mppurge_all_cleans_room(monkeypatch):
     assert extra not in room.people and extra not in character_registry
     assert not room.contents
     assert getattr(controller, "inventory", []) == [junk_inv]
+
+
+def test_do_mob_command_dispatches_to_mob_interpret():
+    """MOB-001 — ROM `do_mob` (`src/mob_cmds.c:82-90`) runs the security check
+    then `mob_interpret(ch, argument)`. Python's `do_mob` (the live `mob`
+    command) stubbed it with an echo (`"Mob command executed: ..."`), so the
+    command did nothing. It must actually dispatch to the mob interpreter.
+    """
+    from mud.commands.remaining_rom import do_mob
+
+    _, origin, target = _setup_area()
+    # NPC controller → desc is None → passes the do_mob security gate
+    # (ROM mob_cmds.c:87: only descriptor-less mobs or MAX_LEVEL imms reach it).
+    controller = Character(name="Controller", is_npc=True)
+    origin.add_character(controller)
+    character_registry.append(controller)
+
+    result = do_mob(controller, f"goto {target.vnum}")
+
+    assert controller.room is target  # the mob command actually executed
+    assert "Mob command executed" not in result  # not the old stub echo

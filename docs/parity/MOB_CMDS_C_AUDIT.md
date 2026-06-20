@@ -109,7 +109,9 @@ Stable IDs are immutable. Severity legend: **CRITICAL** = wrong observable behav
 
 | MOBCMD-021 | MINOR | `src/mob_cmds.c` `do_mpasound` — relocates the mob into each adjacent room and emits `act(argument, ch, NULL, NULL, TO_ROOM)` | `mud/mob_cmds.py:do_mpasound` (~400) | `do_mpasound` broadcast the sound to each neighbouring room via `_broadcast` (raw `_append_message`), skipping ROM `act()`'s buf[0] capitalization. A sound line beginning with a lowercase word reached listeners in adjacent rooms uncapitalized vs ROM "The cavern echoes…". Same class as MOBCMD-020; found in the same `mob_cmds.py` act()-cap sweep. (`do_mpgecho`/`do_mpzecho` are correct as-is — ROM delivers those via raw `send_to_char`, NOT `act()`, so no cap.) | ✅ FIXED (2.14.92) — caps the message once via `capitalize_act_line(...)` before the per-exit `_broadcast`. Test: `tests/integration/test_mobcmd021_asound_capitalization.py`. |
 
-**Severity totals**: 6 CRITICAL, 10 IMPORTANT, 5 MINOR.
+| MOBCMD-022 | CRITICAL | `src/mob_cmds.c:82-90` `do_mob` (security check, then `mob_interpret(ch, argument)`) | `mud/commands/remaining_rom.py:do_mob` | The live `mob` command (registered in the dispatcher) was a **stub** — after the (correct) security gate it returned the literal `"Mob command executed: <args>"` and never called `mob_interpret`, so `mob <cmd>` did nothing (and the empty-arg case returned an invented `"Mob command requires an argument."`, where ROM is silent). `mob_interpret` already existed at `mud/mob_cmds.py:1389`. Surfaced probing `remaining_rom.py` (the same under-audited file that hid GAIN-001 / GROUPS-001 / WIZ-054). | ✅ FIXED (2026-06-19) — `do_mob` now calls `mob_interpret(char, args)` after the ROM security check and returns no text (the interpreter owns output/effects and is silent on empty/unknown commands, as ROM is). Test: `tests/test_mobprog_commands.py::test_do_mob_command_dispatches_to_mob_interpret` (`mob goto <vnum>` actually moves the controller). |
+
+**Severity totals**: 7 CRITICAL, 10 IMPORTANT, 5 MINOR.
 
 ---
 

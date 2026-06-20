@@ -697,16 +697,21 @@ def do_mob(char: Character, args: str) -> str:
 
     Only usable by NPCs or max-level immortals (for mob programs).
     """
-    # Security check
+    # Security check — ROM src/mob_cmds.c:87: only descriptor-less mobs or
+    # MAX_LEVEL immortals may invoke mob commands.
     desc = getattr(char, "desc", None)
     if desc is not None and get_trust(char) < MAX_LEVEL:
         return ""
 
-    if not args or not args.strip():
-        return "Mob command requires an argument."
+    # MOB-001 — mirroring ROM src/mob_cmds.c:89: do_mob runs mob_interpret(ch,
+    # argument). mob_interpret dispatches the mob command (and handles an empty
+    # or unknown command silently, as ROM does), delivering its own output /
+    # effects, so do_mob itself returns no text. The previous stub echoed
+    # "Mob command executed: ..." and never dispatched.
+    from mud.mob_cmds import mob_interpret
 
-    # Would call mob_interpret here
-    return f"Mob command executed: {args}"
+    mob_interpret(char, args or "")
+    return ""
 
 
 # Alias commands - these just call other commands
