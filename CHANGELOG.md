@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INTERP-028: `bs` is now a clean hidden alias of `backstab` (no dual
+  registration).** `bs` was registered both as an alias of `backstab` and as a
+  standalone `Command("bs", do_bs, …)` (the latter overwriting the former in the
+  command index), routing through a needless `do_bs` wrapper. ROM has two
+  `cmd_table` rows — `backstab` (shown) and `bs` (hidden), both → `do_backstab`
+  (`src/interp.c:238,240`). Removed the alias collision, pointed the hidden `bs`
+  row at `do_backstab` directly, and deleted the dead `do_bs` wrapper. No
+  behavioral change (both already reached backstab); cleanup + ROM-faithful show
+  flags. Test: `test_interp_dispatcher.py::test_interp_028_bs_is_hidden_backstab_alias_no_collision`.
 - **CAST-013: spells now respect their per-spell minimum casting position.** ROM
   `do_cast` (`src/magic.c:341`) gates each spell on its own
   `skill_table[sn].minimum_position`; Python used a flat `POS_FIGHTING` for every

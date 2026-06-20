@@ -724,17 +724,6 @@ def do_mob(char: Character, args: str) -> str:
 # Alias commands - these just call other commands
 
 
-def do_bs(char: Character, args: str) -> str:
-    """
-    Alias for backstab.
-
-    ROM Reference: interp.c - bs maps to do_backstab
-    """
-    from mud.commands.combat import do_backstab
-
-    return do_backstab(char, args)
-
-
 def do_teleport(char: Character, args: str) -> str:
     """
     Alias for transfer.

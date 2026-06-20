@@ -164,7 +164,6 @@ from .player_config import do_delet, do_delete, do_nofollow, do_noloot, do_nosum
 from .player_info import do_info, do_play, do_scroll, do_show
 from .position import do_rest, do_sit, do_sleep, do_stand, do_wake
 from .remaining_rom import (
-    do_bs,
     do_deaf,
     do_envenom,
     do_flag,
@@ -306,10 +305,13 @@ COMMANDS: list[Command] = [
     Command("kick", do_kick, min_position=Position.FIGHTING),
     Command("rescue", do_rescue, min_position=Position.FIGHTING, show=False),  # INTERP-032 ROM interp.c:248 show=0
     Command("flee", do_flee, min_position=Position.FIGHTING),
+    # INTERP-028: ROM has two cmd_table rows — backstab (shown) + bs (hidden),
+    # BOTH → do_backstab. `bs` is the standalone hidden row below; not an alias
+    # here (the dual registration was the INTERP-028 collision).
     # INTERP-027: ROM src/interp.c:238 — {"backstab", do_backstab, POS_FIGHTING, ...}.
     # POS_FIGHTING (not STANDING) so a fighting char passes the gate and reaches
     # do_backstab's internal "You're facing the wrong end." check (src/fight.c:2910).
-    Command("backstab", do_backstab, aliases=("bs",), min_position=Position.FIGHTING),
+    Command("backstab", do_backstab, min_position=Position.FIGHTING),
     Command("bash", do_bash, min_position=Position.FIGHTING),
     Command("berserk", do_berserk, min_position=Position.FIGHTING),
     Command("dirt", do_dirt, min_position=Position.FIGHTING),
@@ -529,7 +531,10 @@ COMMANDS: list[Command] = [
     Command("flag", do_flag, min_position=Position.DEAD, min_trust=MAX_LEVEL - 4, log_level=LogLevel.ALWAYS),
     Command("mob", do_mob, min_position=Position.DEAD, show=False, log_level=LogLevel.NEVER),
     # Alias Commands
-    Command("bs", do_bs, min_position=Position.FIGHTING, show=False),
+    # INTERP-028: ROM src/interp.c:240 — {"bs", do_backstab, POS_FIGHTING, 0,
+    # LOG_NORMAL, 0}. Hidden (show=False) standalone row → do_backstab directly
+    # (the do_bs wrapper was needless indirection and caused the alias collision).
+    Command("bs", do_backstab, min_position=Position.FIGHTING, show=False),
     Command(
         "teleport", do_teleport, min_position=Position.DEAD, min_trust=MAX_LEVEL - 5, log_level=LogLevel.ALWAYS
     ),  # INTERP-032 ROM interp.c:325 show=1; INTERP-033 LOG_ALWAYS

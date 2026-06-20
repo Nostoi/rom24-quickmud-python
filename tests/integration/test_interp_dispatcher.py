@@ -244,6 +244,44 @@ def test_interp_005_murder_requires_trust_5():
     assert cmd.min_trust == 5
 
 
+def test_interp_028_bs_is_hidden_backstab_alias_no_collision():
+    """INTERP-028: ROM has TWO cmd_table rows for backstab.
+
+    ``src/interp.c:238`` ``{"backstab", do_backstab, POS_FIGHTING, 0, LOG_NORMAL, 1}``
+    (shown) and ``src/interp.c:240`` ``{"bs", do_backstab, POS_FIGHTING, 0,
+    LOG_NORMAL, 0}`` (hidden) — BOTH dispatch ``do_backstab``. Python had a
+    collision: ``bs`` was registered both as an alias of ``backstab`` AND as a
+    standalone ``Command("bs", do_bs, …)`` (the latter overwriting the former in
+    ``COMMAND_INDEX``), routing through a needless ``do_bs`` wrapper. Both rows
+    must resolve to the SAME ``do_backstab`` handler, with ``backstab`` shown and
+    ``bs`` hidden.
+    """
+    from mud.commands.combat import do_backstab
+    from mud.commands.dispatcher import COMMANDS
+    from mud.models.constants import Position
+
+    backstab = COMMAND_INDEX["backstab"]
+    bs = COMMAND_INDEX["bs"]
+
+    # Both ROM rows dispatch do_backstab.
+    assert backstab.func is do_backstab
+    assert bs.func is do_backstab
+
+    # ROM show flags: backstab shown (col 1), bs hidden (col 0).
+    assert backstab.show is True
+    assert bs.show is False
+
+    # Both POS_FIGHTING (src/interp.c:238,240).
+    assert backstab.min_position == Position.FIGHTING
+    assert bs.min_position == Position.FIGHTING
+
+    # No collision: exactly one canonical "bs" Command in COMMANDS, and "bs" must
+    # NOT also be an alias of backstab (the dual registration that caused INTERP-028).
+    assert "bs" not in backstab.aliases
+    bs_rows = [c for c in COMMANDS if c.name == "bs"]
+    assert len(bs_rows) == 1
+
+
 def test_interp_006_music_min_position_sleeping():
     # mirrors ROM src/interp.c:93 — {"music", do_music, POS_SLEEPING, 0, ...}
     from mud.models.constants import Position
