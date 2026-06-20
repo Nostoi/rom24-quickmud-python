@@ -747,6 +747,14 @@ def test_backstab_uses_position_and_weapon(monkeypatch: pytest.MonkeyPatch) -> N
     victim.room = room
     room.people.append(victim)
 
+    # The to-hit roll uses number_bits(5) (engine.py:572, ROM src/fight.c:508),
+    # which this test does NOT monkeypatch — so the attack lands or misses based on
+    # global RNG state. This module lives outside tests/integration/, so it gets no
+    # autouse seed and was latently flaky (e.g. fails under seed 12345). Seed
+    # explicitly so the to-hit is deterministic; this test's intent is the
+    # position/weapon gating, wait-state, and FIGHT-056 soft-cap, not the hit roll.
+    rng_mm.seed_mm(1)
+
     percent_iter = iter([10, 5])
 
     def fake_percent() -> int:

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Test determinism: `test_backstab_uses_position_and_weapon` is no longer
+  latently flaky.** The test monkeypatches `number_percent`/`dice` but the to-hit
+  roll uses `number_bits(5)` (`engine.py:572`, ROM `src/fight.c:508`), which it
+  left to global RNG. The module lives outside `tests/integration/` so it gets no
+  autouse `seed_mm(12345)` — under certain worker RNG states (e.g. seed 12345) the
+  backstab missed and the soft-cap assertion failed. Now seeds `rng_mm.seed_mm(1)`
+  in-test (the sanctioned pattern) so the hit is deterministic regardless of prior
+  state. Surfaced while closing INTERP-027 (xdist grouping shifted the worker's
+  RNG state onto the failing value).
 - **INTERP-027: `backstab` command-gate minimum position corrected to
   `POS_FIGHTING`.** ROM's `cmd_table` registers `backstab` at `POS_FIGHTING`
   (`src/interp.c:238`); the Python port used `POS_STANDING`, one step stricter.
