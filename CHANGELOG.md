@@ -37,6 +37,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **WIMPY-001: `wimpy <non-number>` now sets wimpy to 0 (ROM atoi), not an error.**
+  ROM `do_wimpy` uses `wimpy = atoi(arg)` (`src/act_info.c:2811`), which returns 0
+  for non-numeric input and does not reject — so `wimpy abc` sets wimpy to 0 and
+  reports "Wimpy set to 0 hit points." Python returned an invented "Wimpy must be
+  a number." and left wimpy unchanged. Now mirrors ROM's atoi (same pattern as
+  `do_split`). Tests:
+  `tests/test_player_wimpy.py::TestWimpyEdgeCases::test_wimpy_non_numeric_sets_zero_like_rom_atoi`
+  + `::test_wimpy_invalid_input_overwrites_to_zero_not_preserved`.
 - **FLAG-003: the `flag` command is now silent on success, like ROM.** ROM
   `do_flag` ends its success path `*flag = new; return;` (`src/flags.c:248-250`)
   and sends the invoker no confirmation. Python returned an invented

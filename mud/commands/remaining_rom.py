@@ -117,10 +117,14 @@ def do_wimpy(char: Character, args: str) -> str:
     if not args or not args.strip():
         wimpy = max_hit // 5
     else:
+        # WIMPY-001 — ROM do_wimpy uses `atoi(arg)` (src/act_info.c:2811), which
+        # returns 0 for non-numeric input; it does NOT reject. Mirror that (the
+        # prior "Wimpy must be a number." was a Python invention). Same atoi
+        # pattern as do_split (mud/commands/group_commands.py).
         try:
             wimpy = int(args.strip().split()[0])
         except ValueError:
-            return "Wimpy must be a number."
+            wimpy = 0
 
     if wimpy < 0:
         return "Your courage exceeds your wisdom."

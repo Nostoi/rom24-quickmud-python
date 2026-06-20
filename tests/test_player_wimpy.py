@@ -67,21 +67,28 @@ class TestWimpyEdgeCases:
         assert "courage" in output.lower() or "wisdom" in output.lower()
         assert player.wimpy != -10
 
-    def test_wimpy_invalid_input(self):
+    def test_wimpy_non_numeric_sets_zero_like_rom_atoi(self):
+        # WIMPY-001 — ROM do_wimpy uses `wimpy = atoi(arg)` (src/act_info.c:2811),
+        # which returns 0 for non-numeric input; it does NOT reject. So `wimpy abc`
+        # sets wimpy to 0 and reports "Wimpy set to 0 hit points." Python returned
+        # the invented "Wimpy must be a number." instead.
         player = create_test_character("Test", 3001)
         player.max_hit = 100
         player.wimpy = 50
 
         output = do_wimpy(player, "abc")
 
-        assert "number" in output.lower()
-        assert player.wimpy == 50
+        assert output == "Wimpy set to 0 hit points."
+        assert player.wimpy == 0
 
-    def test_wimpy_preserves_existing_value_on_invalid_input(self):
+    def test_wimpy_invalid_input_overwrites_to_zero_not_preserved(self):
+        # WIMPY-001 — ROM `atoi("invalid")` == 0, so the existing wimpy is
+        # OVERWRITTEN to 0 (not preserved). The prior Python behavior left it
+        # unchanged, which contradicts ROM.
         player = create_test_character("Test", 3001)
         player.max_hit = 100
         player.wimpy = 30
 
         do_wimpy(player, "invalid")
 
-        assert player.wimpy == 30
+        assert player.wimpy == 0
