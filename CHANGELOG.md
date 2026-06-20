@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **HEALER-006: healer service match order now follows ROM's if/else, not the
+  display order.** ROM `do_heal` checks `mana`/`energize` (`src/healer.c:147`)
+  **before** `refresh`/`moves` (`src/healer.c:156`), even though the price list
+  *prints* refresh before mana. Because matching uses prefix abbreviations, the
+  order is observable: `heal m` is a prefix of both `"mana"` and `"moves"`, so ROM
+  resolves it to **mana** (restore mana, 1000 silver), not refresh (500 silver).
+  Python conflated display order with match order via a single `_SERVICES` tuple
+  and wrongly did refresh. Fixed by adding an explicit `_MATCH_ORDER` in ROM
+  branch order. Test:
+  `tests/integration/test_healer_command_parity.py::test_heal_m_matches_mana_before_refresh`.
 - **HEALER-005: healer refusal now uses ROM's `act("$N says '...'")` wrapper.** ROM
   `do_heal` (`src/healer.c:171-176`) refuses an unaffordable service with
   `act("$N says 'You do not have enough gold for my services.'", ch, NULL, mob,

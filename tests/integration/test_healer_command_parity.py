@@ -139,3 +139,30 @@ def test_heal_insufficient_funds_uses_act_says_wrapper(test_room, test_player):
     assert test_player.gold == 0
     assert test_player.silver == 999
     assert test_player.mana == 5
+
+
+def test_heal_m_matches_mana_before_refresh(test_room, test_player):
+    """HEALER-006 — mirrors ROM `src/healer.c:147,156`.
+
+    ROM's if/else checks `mana`/`energize` (line 147) BEFORE `refresh`/`moves`
+    (line 156), even though the price list *prints* refresh before mana. The
+    token ``"m"`` is a prefix of both ``"mana"`` and ``"moves"``, so ROM resolves
+    ``heal m`` to the **mana** service (restore mana, "A warm glow passes through
+    you."), not refresh ("You feel less tired."). Python conflated display order
+    with match order and wrongly returned refresh.
+    """
+
+    _place_healer(test_room, level=30)
+    test_player.gold = 20
+    test_player.silver = 0
+    test_player.mana = 5
+    test_player.max_mana = 100
+    test_player.move = 5
+    test_player.max_move = 100
+
+    result = process_command(test_player, "heal m")
+
+    # mana branch — not the refresh branch ("You feel less tired.")
+    assert result == "A warm glow passes through you."
+    assert test_player.mana > 5
+    assert test_player.move == 5  # refresh did NOT fire

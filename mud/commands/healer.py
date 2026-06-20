@@ -168,8 +168,31 @@ def _is_prefix(argument: str, word: str) -> bool:
     return bool(argument) and word.lower().startswith(argument.lower())
 
 
+_SERVICES_BY_KEY: dict[str, _HealerService] = {service.key: service for service in _SERVICES}
+
+# ROM `do_heal` if/else branch order (src/healer.c:83-160). This differs from the
+# price-list DISPLAY order (`_SERVICES`, src/healer.c:69-78) in one place: ROM
+# checks `mana` (line 147) BEFORE `refresh` (line 156), while the display prints
+# refresh first. Since matching uses prefix abbreviations, the order is
+# observable: `heal m` is a prefix of both "mana" and "moves"; ROM resolves it to
+# mana. Match in ROM's branch order, not display order (HEALER-006).
+_MATCH_ORDER: tuple[str, ...] = (
+    "light",
+    "serious",
+    "critical",
+    "heal",
+    "blindness",
+    "disease",
+    "poison",
+    "uncurse",
+    "mana",
+    "refresh",
+)
+
+
 def _match_service(argument: str) -> _HealerService | None:
-    for service in _SERVICES:
+    for key in _MATCH_ORDER:
+        service = _SERVICES_BY_KEY[key]
         for candidate in service.match_names:
             if _is_prefix(argument, candidate):
                 return service
