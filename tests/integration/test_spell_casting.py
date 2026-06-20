@@ -81,6 +81,55 @@ def target_mob(test_room):
         test_room.people.remove(mob)
 
 
+class TestCancellationTargeting:
+    """SKILL-001: cancellation is TAR_CHAR_DEFENSIVE (src/const.c), not offensive."""
+
+    def test_skill_001_cancellation_defaults_to_self(self, mage_player, target_mob, monkeypatch):
+        # ROM src/const.c skill_table — `cancellation` is TAR_CHAR_DEFENSIVE,
+        # POS_FIGHTING. A no-arg `cast cancellation` therefore defaults to the
+        # caster (self) per src/magic.c:419, even mid-combat. Python's skills.json
+        # had target="victim" (TAR_CHAR_OFFENSIVE), so a no-arg cast while fighting
+        # targeted the *opponent* instead.
+        from pathlib import Path
+
+        from mud.models.constants import Position
+        from mud.skills.registry import load_skills, skill_registry
+        from mud.utils import rng_mm
+
+        # Self-contained skill load (parallel-safe — don't depend on another
+        # test/class having populated the global registry).
+        skill_registry.skills.clear()
+        skill_registry.handlers.clear()
+        load_skills(Path("data/skills.json"))
+
+        # Data parity: registry must expose the ROM-correct defensive target.
+        assert skill_registry.get("cancellation").target == "friendly"
+
+        mage_player.skills = {"cancellation": 100}
+        # skills.json carries no per-class spell levels, so the loaded skill
+        # defaults to levels (99,99,99,99); bump level past that so do_cast's
+        # level gate passes and we exercise the targeting branch (the point here).
+        mage_player.level = 100
+        mage_player.position = Position.FIGHTING
+        mage_player.fighting = target_mob
+        target_mob.fighting = mage_player
+
+        captured = {}
+
+        def spy(caster, victim=None, **kwargs):
+            captured["target"] = victim
+            return {"success": True, "message": ""}
+
+        monkeypatch.setitem(skill_registry.handlers, "cancellation", spy)
+        monkeypatch.setattr(rng_mm, "number_percent", lambda: 1)  # force cast success
+
+        process_command(mage_player, "cast cancellation")
+
+        assert captured.get("target") is mage_player, (
+            "no-arg cancellation must default to self (TAR_CHAR_DEFENSIVE), not the opponent"
+        )
+
+
 class TestCastCommandDispatch:
     """Test cast command basic functionality."""
 

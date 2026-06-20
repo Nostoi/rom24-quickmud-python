@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **CONST-008: `cancellation` is now a defensive-target spell, matching ROM.** ROM
+  `skill_table` (`src/const.c`) marks `cancellation` `TAR_CHAR_DEFENSIVE`, but
+  `data/skills.json` had `target: "victim"` (offensive). A no-arg `cast
+  cancellation` mid-combat therefore targeted the opponent instead of defaulting
+  to self (ROM `src/magic.c:419`). Corrected to `friendly`. Verified by a full
+  ROM `skill_table` ⇄ `skills.json` diff (mana/beats/targets otherwise clean).
+  Test: `tests/integration/test_spell_casting.py::TestCancellationTargeting`.
+
 ### Security
 
 - **INTERP-034: `LOG_NEVER` now suppresses the logged line unconditionally.**

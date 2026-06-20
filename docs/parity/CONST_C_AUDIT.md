@@ -1,6 +1,8 @@
 # `const.c` ROM Parity Audit
 
-- **Status**: ✅ AUDITED 100% — all 7 gaps closed, including canonical `weapon_table`
+- **Status**: ✅ AUDITED — 8 gaps closed (CONST-001…008). 2026-06-20 re-opened for
+  a `skill_table` data diff: CONST-008 (cancellation target) closed; one CANDIDATE
+  (per-class spell levels) filed for verification. See Phase 6.
 - **Date**: 2026-05-14
 - **Source**: `src/const.c` (ROM 2.4b6, 1936 lines, 16 top-level data tables)
 - **Python primaries**:
@@ -133,6 +135,29 @@ Recommended close order:
 2. **CONST-005** — port `con_app` table, rewrite `advance_level` to roll `number_range(class.hp_min, class.hp_max) + con_app[CON].hitp` (touches `class_table` HP fields too — verify they're ported on `mud/models/classes.py:ClassType`).
 3. **CONST-006** — port `wis_app` (1-column), apply in `advance_level`.
 4. **CONST-007** — ✅ closed 2026-05-14 by centralizing the ROM `weapon_table`.
+
+## Phase 6 — re-opened: `skill_table` data parity (2026-06-20, /loop)
+
+A systematic ROM `skill_table` (`src/const.c:942+`) ⇄ `data/skills.json` diff found
+the static-data fields **mana/beats are 100% clean** (135 skills, full name-join,
+0 mismatches) and **targets are clean except one**:
+
+| ID | Severity | ROM C | Python | Description | Status |
+|----|----------|-------|--------|-------------|--------|
+| CONST-008 | IMPORTANT | `src/const.c` skill_table — `"cancellation", … TAR_CHAR_DEFENSIVE` | `data/skills.json` cancellation `"target"` | `cancellation` was `target: "victim"` (TAR_CHAR_OFFENSIVE) but ROM is **TAR_CHAR_DEFENSIVE**. Consequence: a no-arg `cast cancellation` mid-combat targeted the *opponent* (offensive auto-target + is_safe gates) instead of defaulting to **self** (ROM `src/magic.c:419`). Exercises the already-tested `friendly` targeting path in `combat.py:989-1007`. | ✅ FIXED 2026-06-20 (2.14.195) — `target` → `"friendly"`. Test: `tests/integration/test_spell_casting.py::TestCancellationTargeting::test_skill_001_cancellation_defaults_to_self` (data guard + behavioral no-arg→self spy). |
+
+### CANDIDATE (unverified — do not treat as confirmed gap yet)
+
+- **Per-class spell levels absent from `data/skills.json`.** *Every* entry lacks a
+  levels field, so the loaded `Skill.levels` defaults to `(99,99,99,99)` — i.e.
+  no class can learn any spell by leveling per the registry. ROM `skill_table`
+  carries per-class levels (e.g. cancellation `{18,26,34,34}`). The full game's
+  mortal casting works in integration tests, so spell levels are **probably**
+  injected via another path (class spell-list) not exercised by a bare
+  `load_skills(skills.json)`. **Next agent: verify whether a fully world-initialized
+  PC sees ROM-correct per-class spell levels; if `Skill.levels` is still
+  `(99,99,99,99)` post-init, this is a real systemic gap to file. Surfaced while
+  closing CONST-008.**
 
 ## Phase 5 — Completion summary
 
