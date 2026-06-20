@@ -179,19 +179,40 @@ All three of this session's candidates are now CLOSED:
 - **CAST-013** ✅ FIXED (2.14.199) — per-spell `minimum_position`.
 - **INV-052 follow-up** ✅ DONE — 43-site direct-push sweep, clean negative.
 
-The low-risk data/registration veins are drained. Next-session candidates:
+The per-file audit is fully drained and the cross-INV / per-file passes are now
+enumeration-*dependent* (they only confirm contracts someone already named).
 
-1. **Next table/contract probe** — pick a candidate area not yet covered by an
-   INV row (affect ticks, position transitions, mob script triggers,
-   group/follower chain), run a 5-minute probe (ROM C contract → Python
-   equivalent → one failing test), then close as a gap or file as the next free
-   INV-NNN.
-2. **`test_all_commands.py` `tap` false-positive** — the probe reports `tap`
-   "Not registered" though it resolves to `sacrifice` in `COMMAND_INDEX`; a
-   `test_all_commands` harness artifact, not a parity bug. Low priority; fix the
-   probe (alias-aware) if revisited.
-3. **Risk posture (advisor)**: when a behavioral divergence needs logic changes in
-   a HIGH-blast-radius core path (combat/movement/dispatch), file it, don't fix
-   autonomously. Pure additive guards that mirror a single ROM function exactly
-   (like INV-052 / INTERP-034) are the exception — they are strictly
-   parity-correcting and safe despite wide caller counts.
+**Next session START HERE → expand the differential harness (`tools/diff_harness/`).**
+Per `DIVERGENCE_CLASS_ROSTER.md` guardrail #3, the only enumeration-INDEPENDENT
+check — the one that finds divergences nobody predicted — is differential execution
+vs the ROM C oracle.
+
+Harness maturity (verified 2026-06-20): **41 committed scenarios, all 41 converge**
+(`KNOWN_DIVERGENCES` empty; the stale "4 scenarios" comment in the smoke test
+predates this). Already covered: movement, melee + spell combat, shops
+(buy/sell/insufficient/keeper-broke), the full mob-trigger set, char_update regen
+(15 variants), affects, money, aggression, drink/eat. Leverage is in NEW scenarios
+on **genuinely un-exercised surfaces** (grep-verified, 0 scenarios touch these):
+doors (`open`/`close`/`lock`/`pick`), containers (`put`/get-from/nesting), character
+advancement (`practice`/`train`/`gain`), death→corpse→auto-loot→`sacrifice`,
+equipment cycle (`wield`/`wear all`/`remove`), group/`follow`, and a cast-position
+scenario to lock CAST-013 differentially.
+
+1. **Build the shim (one-time):** `cd src && make -f Makefile.diffshim diffshim`
+   (additive; ROM `src/*.c` unchanged), then `python3 -m tools.diff_harness.capture
+   --all`. Read `tools/diff_harness/README.md` first.
+2. **Author 2–3 new scenarios** from the un-exercised list above; capture goldens;
+   `pytest tests/test_differential_smoke.py` to replay.
+3. **A divergence is a FINDING, not a golden to overwrite** — triage, record in
+   `FINDINGS.md`, route to `/rom-gap-closer` or a new INV-NNN, fix Python/data.
+4. **Triage existing open `FINDINGS.md` items** — LOW/cosmetic output-format
+   divergences (`look`/`examine`/`wear all`) surfaced but not closed.
+
+Secondary (do NOT lead with these): GitNexus MCP reconnect/reindex at session
+start; the `test_all_commands.py` `tap` false-positive (harness artifact —
+resolves to `sacrifice`, not a parity bug); cross-INV probe / signed-math (class 7)
+only if the harness work stalls.
+
+**Risk posture (advisor)**: HIGH-blast-radius behavioral logic changes → file,
+don't fix. Exception (proven 3× — INV-052, CAST-013, INTERP-034): a change
+mirroring one ROM function/value exactly is strictly parity-correcting and safe.
