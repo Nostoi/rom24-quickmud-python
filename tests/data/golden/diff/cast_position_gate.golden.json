@@ -1,0 +1,294 @@
+{
+  "scenario": "cast_position_gate",
+  "c_commit": "10ae4b6fd354c8a5f55b408470d6a5000d63d3a0",
+  "build_flags": "-DOLD_RAND",
+  "seed": 12345,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__learn=armor",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__char_position=7",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "cast armor",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou can't concentrate enough.",
+        ""
+      ]
+    },
+    {
+      "step": 4,
+      "command": "__char_position=8",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__seed=777",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "cast armor",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 80,
+          "move": 100,
+          "level": 10,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [
+            "armor"
+          ],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            80
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou feel someone protecting you.",
+        ""
+      ]
+    }
+  ]
+}

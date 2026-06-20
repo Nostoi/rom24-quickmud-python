@@ -1,0 +1,24 @@
+{
+  "name": "container_put_get",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__oload=3032",
+    "__oload=3021",
+    "look",
+    "get bag",
+    "get sword",
+    "inventory",
+    "put sword bag",
+    "inventory",
+    "look in bag",
+    "get sword bag",
+    "inventory",
+    "put sword bag",
+    "drop bag",
+    "inventory",
+    "look"
+  ]
+}

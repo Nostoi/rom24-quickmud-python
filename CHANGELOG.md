@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Differential harness: three new ROM⇄Python scenarios on previously
+  un-exercised surfaces** (`tools/diff_harness/scenarios/`), each capturing a C
+  golden from the instrumented ROM 2.4b6 binary and converging end-to-end:
+  - `container_put_get` — `put`/get-from-container/`look in`/re-nest cycle on bag
+    3032 + sword 3021, observing LIFO carry-list order through the transitions.
+  - `cast_position_gate` — **differentially locks CAST-013**: `cast armor`
+    (`POS_STANDING`) is rejected with "You can't concentrate enough." at
+    `POS_FIGHTING` and succeeds at `POS_STANDING`. The reject leg is the exact
+    regression a flat-`POS_FIGHTING` gate could not produce.
+  - `door_lock_cycle` — full keyed-door cycle on Cityguard HQ 3110→3142 (key
+    3120): open-while-locked reject → `unlock` (*Click*) → `open` → traverse →
+    `close` → `lock`, all deterministic (no `pick` RNG).
+
+  All 44 committed differential scenarios converge; `KNOWN_DIVERGENCES` stays
+  empty. No engine divergence surfaced (three clean negatives). Refreshed the
+  stale "four scenarios" comment in `tests/test_differential_smoke.py`.
+
 ### Fixed
 
 - **INTERP-028: `bs` is now a clean hidden alias of `backstab` (no dual

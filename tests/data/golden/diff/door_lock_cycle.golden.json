@@ -1,0 +1,713 @@
+{
+  "scenario": "door_lock_cycle",
+  "c_commit": "10ae4b6fd354c8a5f55b408470d6a5000d63d3a0",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rCityguard Head Quarters",
+        "\r  You are inside a tidy office.  A big desk made from dark wood is standing",
+        "\rin the centre of the room.",
+        ""
+      ]
+    },
+    {
+      "step": 2,
+      "command": "open west",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rIt's locked.",
+        ""
+      ]
+    },
+    {
+      "step": 3,
+      "command": "__oload=3120",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3120
+          ]
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "get key",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3120
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rYou get a key.",
+        ""
+      ]
+    },
+    {
+      "step": 5,
+      "command": "unlock west",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3120
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\r*Click*",
+        ""
+      ]
+    },
+    {
+      "step": 6,
+      "command": "open west",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3120
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rOk.",
+        ""
+      ]
+    },
+    {
+      "step": 7,
+      "command": "west",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3142,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3120
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "Tester",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rCaptain's Office",
+        "\r  You are in the Office of the Captain of the Guard.  The Midgaard Coat of",
+        "\rArms is hanging on the north wall and a heavy steel door is to the south.",
+        "\r     A safe is placed in a dark corner of the room.",
+        "\r     A desk is set against the western wall.",
+        "\rA cityguard stands here, looking very upset.",
+        "\rA cityguard stands here, looking very upset.",
+        "\rA cityguard stands here, looking very upset.",
+        "\rA cityguard stands here, looking very upset.",
+        "\rThe captain of the guard is looking very upset.",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3142,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 99,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3120
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "Tester",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rCaptain's Office",
+        "\r  You are in the Office of the Captain of the Guard.  The Midgaard Coat of",
+        "\rArms is hanging on the north wall and a heavy steel door is to the south.",
+        "\r     A safe is placed in a dark corner of the room.",
+        "\r     A desk is set against the western wall.",
+        "\rA cityguard stands here, looking very upset.",
+        "\rA cityguard stands here, looking very upset.",
+        "\rA cityguard stands here, looking very upset.",
+        "\rA cityguard stands here, looking very upset.",
+        "\rThe captain of the guard is looking very upset.",
+        ""
+      ]
+    },
+    {
+      "step": 9,
+      "command": "east",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 98,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3120
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rCityguard Head Quarters",
+        "\r  You are inside a tidy office.  A big desk made from dark wood is standing",
+        "\rin the centre of the room.",
+        ""
+      ]
+    },
+    {
+      "step": 10,
+      "command": "close west",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 98,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3120
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\rOk.",
+        ""
+      ]
+    },
+    {
+      "step": 11,
+      "command": "lock west",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3110,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 98,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [
+            3120
+          ],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3110,
+          "people": [
+            "Tester"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3142,
+          "people": [
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "cityguard",
+            "captain"
+          ],
+          "contents": [
+            3131,
+            3130
+          ]
+        }
+      ],
+      "output": [
+        "",
+        "\r*Click*",
+        ""
+      ]
+    }
+  ]
+}
