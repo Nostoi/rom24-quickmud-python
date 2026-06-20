@@ -1,6 +1,7 @@
 # `flags.c` ROM Parity Audit
 
-- **Status**: ✅ AUDITED — FLAG-001 and FLAG-002 closed
+- **Status**: ✅ AUDITED — FLAG-001 and FLAG-002 closed; FLAG-003 ⚠️ CANDIDATE
+  (silent-success over-delivery — deferred parity-vs-UX call, see Phase 3)
 - **Date**: 2026-05-15
 - **Source**: `src/flags.c` (ROM 2.4b6, 251 lines, 1 public function: `do_flag`)
 - **Python primary**: `mud/commands/remaining_rom.py:do_flag`
@@ -55,6 +56,7 @@ This is one cohesive gap (the entire mutation pipeline is missing), recorded as 
 |--------|----------|-------|--------|-------------|--------|
 | `FLAG-001` | CRITICAL | `src/flags.c:44-251` | `mud/commands/remaining_rom.py:do_flag` | `do_flag` is a syntax-validator stub; no operator parsing, no flag-table lookup, no bit mutation. The command silently lies — it confirms a change that never happens. | ✅ FIXED — full operator parsing (`=`/`+`/`-`/toggle), 9-field dispatcher, IntFlag-based name lookup, and bit mutation wired through. NPC/PC field guards mirror ROM 105-187. Tests: `tests/integration/test_flag_command_parity.py` 9/9 passing. |
 | `FLAG-002` | MINOR | `src/flags.c:220-227` | `mud/commands/remaining_rom.py:do_flag` | Non-`settable` bits in ROM `flag_type` tables are preserved across the `=` operator (`act_flags` marks `npc` settable=FALSE; `plr_flags` preserves all rows except `permit`; `comm_flags` preserves `noemote`/`noshout`/`notell`/`nochannels`/`snoop_proof`). Python now mirrors that behavior with explicit per-field preservation masks. | ✅ FIXED — `_NON_SETTABLE_FLAGS_BY_FIELD` encodes the ROM `settable=FALSE` rows from `src/tables.c`, and `do_flag` now seeds `new` with `old & preserve_mask` on `=` before applying requested bits. Tests: `tests/integration/test_flag_command_parity.py` (14 passing, including `=` preservation on `plr` and `act`). |
+| `FLAG-003` | MINOR | `src/flags.c:248-250` | `mud/commands/remaining_rom.py:do_flag` | **CANDIDATE (not closed — parity-vs-UX call for the maintainer).** ROM `do_flag` ends the success path with `*flag = new; return;` and sends the invoker **no confirmation** — it is silent on success. Python returns `"Flag '<field>' updated on <name>."`, an invented confirmation (over-delivery, same class as WIZ-054 / MOBCMD-022). Strict parity ⇒ `do_flag` should return `""` on success. Deferred because `flag` is an immortal-only debug command and a silent success is debatable UX; surfaced 2026-06-19 probing `remaining_rom.py`. No test asserts the current message. | ⚠️ CANDIDATE |
 
 ## Phase 4 — Closures
 

@@ -1,9 +1,9 @@
 # QuickMUD - A Modern ROM 2.4 Python Port
 
-[![Version](https://img.shields.io/badge/version-2.14.183-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Version](https://img.shields.io/badge/version-2.14.184-blue.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-5914%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
+[![Tests](https://img.shields.io/badge/tests-5915%20passing-brightgreen.svg)](https://github.com/Nostoi/rom24-quickmud-python)
 [![ROM 2.4b Parity](https://img.shields.io/badge/ROM%202.4b%20Parity-parity%20beta-blue.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![ROM C Audit](https://img.shields.io/badge/ROM%20C%20Audit-43%2F43%20audited-success.svg)](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md)
 [![Integration Tests](https://img.shields.io/badge/integration%20tests-1000%2B-brightgreen.svg)](tests/integration/)
@@ -24,7 +24,7 @@ A "[Multi-User Dungeon](https://en.wikipedia.org/wiki/MUD)" (MUD) is a text-base
 - **⚔️ ROM Combat System**: Classic ROM combat mechanics and skill system
 - **👥 Social Features**: Say, tell, shout, and 100+ social interactions
 - **🛠️ Admin Commands**: Teleport, spawn, ban management, and OLC building
-- **📊 Comprehensive Testing**: 5,914 passing tests across unit, integration, and command-registry suites
+- **📊 Comprehensive Testing**: 5,915 passing tests across unit, integration, and command-registry suites
 - **🔧 ROM C-Compatible API**: Public API wrappers for external tools and scripts (27 functions)
 
 ## 📦 Installation
@@ -166,7 +166,7 @@ python -m mud  # Start development server
 **Stage: parity beta** — feature-complete and playable; parity fidelity is being
 systematically hardened toward ROM-exact behavioral equivalence.
 
-- **Version**: 2.14.183
+- **Version**: 2.14.184
 - **Playability**: ✅ All 255 ROM commands implemented. Combat, spells, skills,
   movement, shops, mob programs, OLC building, and admin tools work and pass their
   tests. You can run a server and play today.

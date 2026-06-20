@@ -100,6 +100,34 @@ ratings + `Skill.type`, `pcdata.learned`/`group_known`), all three closed:
 - **Note**: surfaced probing `remaining_rom.py` — the same under-audited
   catch-all file that hid GAIN-001 / GROUPS-001 (the session's richest vein).
 
+### `MOBCMD-022` — ✅ FIXED
+
+- **Python**: `mud/commands/remaining_rom.py:do_mob`
+- **ROM C**: `src/mob_cmds.c:82-90`
+- **Gap**: the live `mob` command (registered in the dispatcher; used by mob
+  programs + MAX_LEVEL immortals) was a **stub** — it returned `"Mob command
+  executed: <args>"` and never dispatched. ROM `do_mob` runs a security check
+  then `mob_interpret(ch, argument)`; Python's `mob_interpret` already existed
+  (`mud/mob_cmds.py:1389`).
+- **Fix**: `do_mob` now calls `mob_interpret(char, args)` after the security gate
+  and returns no text (the interpreter owns output/effects and is silent on
+  empty/unknown, as ROM is). Test:
+  `tests/test_mobprog_commands.py::test_do_mob_command_dispatches_to_mob_interpret`
+  (`mob goto <vnum>` actually moves the controller).
+- **Note**: fourth gap from `remaining_rom.py` this session.
+
+### Deferred candidates (filed, not closed — maintainer's parity-vs-UX call)
+
+- **FLAG-003** (`docs/parity/FLAGS_C_AUDIT.md`) — ROM `do_flag` is **silent on
+  success** (`*flag = new; return;`, `src/flags.c:248-250`); Python returns
+  `"Flag '<field>' updated on <name>."` (over-delivery, same class as
+  WIZ-054/MOBCMD-022). Strict parity ⇒ return `""`. Deferred because `flag` is
+  immortal-only debug tooling and silent success is debatable UX. No test pins the
+  message; one-line fix if approved.
+- **`do_wimpy` atoi** — ROM `wimpy = atoi(arg)` → `wimpy abc` = 0 → "Wimpy set to
+  0 hit points."; Python returns "Wimpy must be a number." May be a deliberate
+  project-wide numeric-validation convention; confirm before acting.
+
 ### FINDING-001 correction (stale handoff claim)
 
 The handoff buffer flagged "FINDING-001 — `.are`→JSON converter field-shifts mob
