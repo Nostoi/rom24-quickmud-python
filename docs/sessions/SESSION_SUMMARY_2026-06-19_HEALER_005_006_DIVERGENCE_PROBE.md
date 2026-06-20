@@ -84,6 +84,22 @@ ratings + `Skill.type`, `pcdata.learned`/`group_known`), all three closed:
   broadcast is returned to the caller only (changing it touches `do_gain`'s
   string-return contract).
 
+### `WIZ-054` — ✅ FIXED
+
+- **Python**: `mud/commands/remaining_rom.py:do_guild`
+- **ROM C**: `src/act_wiz.c:238-246`
+- **Gap**: `do_guild`'s non-independent (member) clan branch over-delivered the
+  victim message. ROM builds the victim's "You are now a member of clan X."
+  buffer but **never `send_to_char(buf, victim)`** in that branch — only the
+  *independent* branch (`:236`) notifies the victim. So a member-clan assignee is
+  silently assigned in ROM (a genuine quirk). The WIZ-023 port added the victim
+  `_send_to_char` to both branches.
+- **Fix**: dropped the victim delivery in the non-independent branch (admin/`ch`
+  return line unchanged). Test:
+  `tests/integration/test_act_wiz_command_parity.py::test_guild_member_clan_does_not_notify_victim`.
+- **Note**: surfaced probing `remaining_rom.py` — the same under-audited
+  catch-all file that hid GAIN-001 / GROUPS-001 (the session's richest vein).
+
 ### FINDING-001 correction (stale handoff claim)
 
 The handoff buffer flagged "FINDING-001 — `.are`→JSON converter field-shifts mob
