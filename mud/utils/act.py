@@ -246,6 +246,13 @@ def act_to_room(
     import mud.mobprog as mobprog
     from mud.utils.messaging import push_message
 
+    # INV-052 (ACT-EMPTY-DISCARD): ROM act_new (src/comm.c:2240-2244) discards
+    # NULL/zero-length format strings as its *first* action, before the
+    # per-recipient loop — so it suppresses both delivery and the per-NPC
+    # TRIG_ACT dispatch. ROM-NULL social fields arrive here as "" (see INV-052).
+    if not format_str:
+        return
+
     people = getattr(room, "people", None)
     if not people:
         return

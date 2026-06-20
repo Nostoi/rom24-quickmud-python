@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INV-052: socials no longer emit a spurious blank line (`act()` discards
+  empty messages).** ROM `act_new` (`src/comm.c:2240-2244`) discards NULL and
+  zero-length format strings before delivery — so a social slot that is NULL in
+  `area/social.are` (the `$` sentinel) sends nothing. The port stores those NULL
+  slots as `""` in `data/socials.json`, but the act helpers delivered `""` as a
+  blank line (and `act_to_room` additionally fired `TRIG_ACT` on it). E.g. a
+  no-arg `kiss` (whose `others_no_arg` is ROM-NULL) sent every room bystander an
+  empty line. Added an `act_new`-faithful empty-guard at the top of
+  `mud/utils/act.py:act_to_room` (closes the room side for all ~101 callers) and
+  `mud/commands/socials.py:_act_to_char`. Discovered via a full ROM↔JSON
+  `social_table` join — the entire 244-social table is otherwise byte-clean (the
+  only diffs were 384 NULL-vs-`""` slots, all neutralized by this guard). Test:
+  `tests/integration/test_inv052_act_empty_discard.py`.
 - **CONST-009: `cancellation` and `harm` are castable again.** Both spells were
   missing from `ROM_SKILL_METADATA` (the `const.c` parser drops them — multi-line
   noun arrays — and they were never hand-added), so they loaded with the default

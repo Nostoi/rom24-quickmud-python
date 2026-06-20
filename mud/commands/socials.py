@@ -22,6 +22,13 @@ def _act_to_char(recipient: Any, fmt: str, actor: Any, *, arg2: Any | None = Non
     """
     import mud.mobprog as mobprog
 
+    # INV-052 (ACT-EMPTY-DISCARD): ROM act_new (src/comm.c:2240-2244) discards
+    # NULL/zero-length format strings before delivery + TRIG_ACT dispatch.
+    # ROM-NULL social fields (the `$` sentinel) load as "" — without this guard a
+    # social with an empty char_*/vict_found delivers a spurious blank line.
+    if not fmt:
+        return
+
     message = act_format(fmt, recipient=recipient, actor=actor, arg2=arg2)
     push_message(recipient, message)
     if bool(getattr(mobprog, "MOBtrigger", True)) and getattr(recipient, "is_npc", False):
