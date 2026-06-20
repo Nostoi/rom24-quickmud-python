@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **GROUPS-001: `groups` no longer crashes for a player who knows any groups.**
+  `pcdata.group_known` is a `tuple[str, ...]` of known group names, but the
+  no-arg branch of `do_groups` treated it as a dict (`sorted(group_known.keys())`),
+  raising `AttributeError: 'tuple' object has no attribute 'keys'` for anyone with
+  groups. Now iterates the name tuple directly. Test:
+  `tests/integration/test_do_groups_known_groups.py`.
 - **GAIN-002: `gain points` at a trainer now lowers creation points (ROM), not
   raises them.** ROM `do_gain` (`src/skills.c:149-172`) spends 2 `train` to
   **decrement** creation `points` by 1 — which lowers `exp_per_level`, making

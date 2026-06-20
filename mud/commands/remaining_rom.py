@@ -284,20 +284,24 @@ def do_groups(char: Character, args: str) -> str:
         # Show known groups
         lines = ["Your known groups:"]
 
-        group_known = getattr(pcdata, "group_known", {}) if pcdata else {}
-        if not group_known:
+        # GROUPS-001: pcdata.group_known is a tuple[str, ...] of known group
+        # NAMES (mud/models/character.py:213), mirroring ROM's set of groups for
+        # which group_known[gn] is true. Iterate the names directly — the old
+        # code treated it as a dict (.keys()), crashing for any player with groups.
+        group_known = getattr(pcdata, "group_known", ()) if pcdata else ()
+        known_names = sorted(name for name in group_known if name)
+        if not known_names:
             lines.append("  (none)")
         else:
             col = 0
             row = []
-            for name in sorted(group_known.keys()):
-                if group_known[name]:
-                    row.append(f"{name:<20s}")
-                    col += 1
-                    if col >= 3:
-                        lines.append(" ".join(row))
-                        row = []
-                        col = 0
+            for name in known_names:
+                row.append(f"{name:<20s}")
+                col += 1
+                if col >= 3:
+                    lines.append(" ".join(row))
+                    row = []
+                    col = 0
             if row:
                 lines.append(" ".join(row))
 
