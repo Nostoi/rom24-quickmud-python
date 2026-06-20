@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **WIZ-053: `restore` no longer stands up resting/sitting/sleeping players.** ROM
+  `do_restore` calls `update_pos(victim)` (`src/act_wiz.c:2808/2840/2861`), which —
+  once HP is refilled — promotes to STANDING only when `position <= POS_STUNNED`
+  (`src/fight.c`). A RESTING/SITTING/SLEEPING/FIGHTING victim keeps its position.
+  Python's shared `_restore_char` used `if position < STANDING: position = STANDING`,
+  over-promoting positions 4–7, so a restored sleeping player was wrongly stood up.
+  Fixed to call `update_pos`, mirroring ROM exactly across all three restore
+  branches. Tests: `test_restore_preserves_resting_position`,
+  `test_restore_promotes_stunned_position`.
 - **ARITH-210: mob spawn `current_hp` zero floor removed.** ROM `create_mobile`
   (`src/db.c:2077`) sets `mob->hit = mob->max_hit` **raw**, so a degenerate proto
   with `hit = (0, X, 0)` (rolls `dice(0, X) + 0 == 0`) spawns with `hit == 0`. The

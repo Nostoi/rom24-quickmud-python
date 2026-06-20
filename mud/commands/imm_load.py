@@ -457,11 +457,14 @@ def _restore_char(char: Character) -> None:
     char.mana = getattr(char, "max_mana", 100)
     char.move = getattr(char, "max_move", 100)
 
-    # Update position
-    from mud.models.constants import Position
+    # WIZ-053: re-evaluate position exactly as ROM (src/act_wiz.c:2861 calls
+    # update_pos). With hit > 0, update_pos promotes to STANDING ONLY if
+    # position <= POS_STUNNED — a RESTING/SITTING/SLEEPING/FIGHTING victim keeps
+    # its position. The old `position < STANDING` guard over-promoted positions
+    # 4-7. mirroring ROM src/fight.c:update_pos.
+    from mud.combat.engine import update_pos
 
-    if getattr(char, "position", Position.STANDING) < Position.STANDING:
-        char.position = Position.STANDING
+    update_pos(char)
 
 
 # DUPL-003 — canonical at mud/game_loop.py:_extract_obj.

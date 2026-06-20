@@ -1551,6 +1551,45 @@ def test_restore_specific_char_ok() -> None:
     assert result.endswith("\n\r")
 
 
+def test_restore_preserves_resting_position() -> None:
+    # WIZ-053: ROM do_restore calls update_pos(victim) (src/act_wiz.c:2861).
+    # update_pos with hit > 0 promotes to STANDING ONLY if position <= POS_STUNNED
+    # (src/fight.c). A RESTING victim (POS_RESTING == 5 > POS_STUNNED == 3) keeps
+    # its position. Python's `position < STANDING` over-promoted it to STANDING.
+    from mud.commands.imm_load import do_restore
+    from mud.models.constants import Position
+
+    _room(11405)
+    admin = _imm("Admin", 11405)
+    victim = _imm("Rester", 11405, trust=10)
+    victim.max_hit = 100  # restore sets hit = max_hit > 0, so update_pos can promote
+    victim.hit = 1
+    victim.position = Position.RESTING
+
+    do_restore(admin, victim.name)
+
+    assert victim.position == Position.RESTING
+
+
+def test_restore_promotes_stunned_position() -> None:
+    # WIZ-053: a STUNNED victim (POS_STUNNED == 3 <= POS_STUNNED) IS promoted to
+    # STANDING by update_pos once hit > 0 (src/fight.c). Confirms the fix did not
+    # over-correct into never promoting.
+    from mud.commands.imm_load import do_restore
+    from mud.models.constants import Position
+
+    _room(11406)
+    admin = _imm("Admin", 11406)
+    victim = _imm("Stunned", 11406, trust=10)
+    victim.max_hit = 100  # restore sets hit = max_hit > 0, so update_pos promotes <= STUNNED
+    victim.hit = 1
+    victim.position = Position.STUNNED
+
+    do_restore(admin, victim.name)
+
+    assert victim.position == Position.STANDING
+
+
 # ── WIZ-032: do_clone ──────────────────────────────────────────────
 
 

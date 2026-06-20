@@ -372,6 +372,19 @@ broadcasts through the shared `_act_room_invis_gated` helper (same per-recipient
 `get_trust(person) >= char.invis_level` gate as WIZ-045); the leaky `_act_room`
 import was swapped. No outstanding gaps in this file.
 
+WIZ-053 ✅ FIXED (2026-06-19) — `do_restore` position re-evaluation diverged from
+ROM. ROM calls `update_pos(victim)` at all three branches (`src/act_wiz.c:2808`
+room, `:2840` all, `:2861` single); with `hit > 0` `update_pos` promotes to
+STANDING **only if `position <= POS_STUNNED`** (`src/fight.c`), so a
+RESTING/SITTING/SLEEPING/FIGHTING victim keeps its position. Python's shared
+`_restore_char` helper (`mud/commands/imm_load.py`) used `if position < STANDING:
+position = STANDING`, over-promoting positions 4–7 (a restored sleeping/resting
+player was wrongly stood up). Fixed by calling `update_pos(char)` — exact ROM
+mirror, covers all three branches via the shared helper. Surfaced during the
+position-transition divergence probe (`update_pos` call-site audit). Tests:
+`tests/integration/test_act_wiz_command_parity.py::test_restore_preserves_resting_position`
++ `::test_restore_promotes_stunned_position`. This file now has no outstanding gaps.
+
 Validation:
 - `pytest tests/integration/test_act_wiz_command_parity.py -q` — `108 passed` (+6 new tests)
 - `pytest tests/integration/test_act_comm_gaps.py::TestPmoteGaps -q` — `5 passed`
