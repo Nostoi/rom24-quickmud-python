@@ -252,6 +252,29 @@ def test_interp_006_music_min_position_sleeping():
     assert cmd.min_position == Position.SLEEPING
 
 
+def test_interp_027_backstab_min_position_fighting(dispatcher_char):
+    # mirrors ROM src/interp.c:238 — {"backstab", do_backstab, POS_FIGHTING, 0, ...}.
+    # Python registered POS_STANDING (8) instead of POS_FIGHTING (7), so a char
+    # whose position is exactly FIGHTING was blocked at the command gate and got
+    # the generic "No way!  You are still fighting!" message. ROM passes the gate
+    # (FIGHTING >= POS_FIGHTING) and hits do_backstab's internal `ch->fighting !=
+    # NULL` check (src/fight.c:2910-2914), yielding "You're facing the wrong end."
+    from mud.models.constants import Position
+
+    cmd = COMMAND_INDEX["backstab"]
+    assert cmd.min_position == Position.FIGHTING
+
+    # Behavioral: a fighting char issuing backstab reaches the handler's
+    # facing-the-wrong-end check, not the dispatcher position gate. The internal
+    # check (do_backstab:362) returns before victim lookup, so the target need
+    # not exist and no skill is required.
+    dispatcher_char.position = Position.FIGHTING
+    dispatcher_char.fighting = dispatcher_char  # any non-None opponent
+    result = process_command(dispatcher_char, "backstab someone")
+    assert "facing the wrong end" in result.lower()
+    assert "still fighting" not in result.lower()
+
+
 def test_interp_024_do_commands_preserves_12char_column_padding(test_room, monkeypatch):
     # mirrors ROM src/interp.c:803-825 — do_commands emits names as
     # "%-12s" (12-char left-justified), 6 per row, with no trailing

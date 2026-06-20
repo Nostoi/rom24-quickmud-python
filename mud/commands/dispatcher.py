@@ -306,7 +306,10 @@ COMMANDS: list[Command] = [
     Command("kick", do_kick, min_position=Position.FIGHTING),
     Command("rescue", do_rescue, min_position=Position.FIGHTING),
     Command("flee", do_flee, min_position=Position.FIGHTING),
-    Command("backstab", do_backstab, aliases=("bs",), min_position=Position.STANDING),
+    # INTERP-027: ROM src/interp.c:238 — {"backstab", do_backstab, POS_FIGHTING, ...}.
+    # POS_FIGHTING (not STANDING) so a fighting char passes the gate and reaches
+    # do_backstab's internal "You're facing the wrong end." check (src/fight.c:2910).
+    Command("backstab", do_backstab, aliases=("bs",), min_position=Position.FIGHTING),
     Command("bash", do_bash, min_position=Position.FIGHTING),
     Command("berserk", do_berserk, min_position=Position.FIGHTING),
     Command("dirt", do_dirt, min_position=Position.FIGHTING),

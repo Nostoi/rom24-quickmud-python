@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **INTERP-027: `backstab` command-gate minimum position corrected to
+  `POS_FIGHTING`.** ROM's `cmd_table` registers `backstab` at `POS_FIGHTING`
+  (`src/interp.c:238`); the Python port used `POS_STANDING`, one step stricter.
+  The only position where they diverge is exactly `FIGHTING`: ROM lets a fighting
+  player past the gate so they hit `do_backstab`'s internal "You're facing the
+  wrong end." guard (`src/fight.c:2910-2914`), whereas Python's stricter gate
+  emitted the generic "No way!  You are still fighting!" dispatcher message. Same
+  command-table position/trust class as INTERP-004/005/006. Test:
+  `tests/integration/test_interp_dispatcher.py::test_interp_027_backstab_min_position_fighting`.
+
 ### Added
 
 - **GAIN-004: trainer speech lines are now ROM-capitalized.** ROM emits `do_gain`
