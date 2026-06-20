@@ -95,8 +95,11 @@ divergence-sweep pass is the active mode. Probe-then-scope yielded 2 gaps in
    OLC save round-trips, shop `do_buy` haggle/credit edges, reset edge cases,
    mob-program trigger dispatch, bank/deposit, `do_practice`/`do_gain`. Use
    `/rom-divergence-sweep` for the completeness lens.
-2. **FINDING-001** (`tools/diff_harness/FINDINGS.md`) — highest-impact open bug
-   (`.are`→JSON converter field-shifts mob HP for 62/65 midgaard mobs). WIDE
-   blast radius — **scope with the user**, not an unattended loop.
+2. ~~FINDING-001 mob-HP field-shift~~ — **STALE handoff claim, corrected
+   2026-06-19.** The HP field-shift bug is **FINDING-006**, **RESOLVED 2026-05-28**
+   (DB2-007, commit `1857b5f8`; regression `tests/test_mob_dice_parity.py`).
+   Re-verified empirically this session (drunk #3064 max_hit 31, Hassan #3001
+   1000, regression 2/2). Nothing to do. The prior handoff propagated a wrong ID
+   and wrong status — a textbook AGENTS.md stale-✅ trap.
 3. **Doc-hygiene:** `docs/parity/BOARD_C_AUDIT.md` function-table rows (~30-48)
    still carry stale ❌/⚠️ for gaps the gap-table records as ✅ FIXED — reconcile.

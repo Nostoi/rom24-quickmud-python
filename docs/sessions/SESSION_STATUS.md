@@ -43,10 +43,15 @@ faithful. Three paths for the next session:
    mob-program trigger dispatch, bank/deposit, `do_practice`/`do_gain`. Use
    `/rom-divergence-sweep` for the completeness lens. Healer/weather/drink are now
    exhausted — pick a fresh surface.
-2. **FINDING-001** (`tools/diff_harness/FINDINGS.md`) — highest-impact remaining
-   bug: the `.are`→JSON converter field-shifts mob HP for 62/65 midgaard mobs.
-   WIDE blast radius (regenerate every `data/areas/*.json`) — **scope with the
-   user**, not an unattended loop.
+2. ~~FINDING-001 mob-HP field-shift~~ — **CORRECTED 2026-06-19: this was a stale
+   handoff claim, do not chase it.** The mob HP/mana/damage field-shift bug is
+   **FINDING-006** (not 001), and it was **RESOLVED 2026-05-28** via DB2-007
+   (commit `1857b5f8`): phantom `ac` token at stat-line index [2] in
+   `mud/loaders/mob_loader.py`, all area JSONs regenerated, regression
+   `tests/test_mob_dice_parity.py`. Re-verified empirically this session: drunk
+   #3064 → max_hit 31 (`2d6+22`), Hassan #3001 → 1000 (`1d1+999`), regression 2/2.
+   FINDING-001 itself is an unrelated, also-resolved `look`/long_descr bug. No
+   work remains here.
 3. **Doc-hygiene:** `docs/parity/BOARD_C_AUDIT.md` function-table rows (~30-48)
    still carry stale ❌/⚠️ for gaps the gap-table records as ✅ FIXED — reconcile.
 
