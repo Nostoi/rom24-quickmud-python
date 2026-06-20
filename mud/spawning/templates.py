@@ -446,7 +446,7 @@ class MobInstance:
         return cls(
             name=proto.short_descr or proto.player_name,
             level=level_value,
-            current_hp=max_hit if max_hit else max(proto.hit[1] + proto.hit[2], 1),
+            current_hp=max_hit,  # ROM mob->hit = mob->max_hit raw (src/db.c:2077) — no zero floor (ARITH-210)
             max_hit=max_hit,
             prototype=proto,
             long_descr=getattr(proto, "long_descr", None),  # ROM create_mobile (src/db.c:2040)

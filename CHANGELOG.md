@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ARITH-210: mob spawn `current_hp` zero floor removed.** ROM `create_mobile`
+  (`src/db.c:2077`) sets `mob->hit = mob->max_hit` **raw**, so a degenerate proto
+  with `hit = (0, X, 0)` (rolls `dice(0, X) + 0 == 0`) spawns with `hit == 0`. The
+  Python port floored the `max_hit == 0` case to `max(proto.hit[1] + proto.hit[2], 1)`
+  — the dice *size*, not even 1. Fixed to `current_hp = max_hit`; negative `max_hit`
+  already propagated and the `mana = max_mana` sibling was already raw. A 0-hp spawn
+  flows through `update_pos` exactly as ROM (NPC `hit < 1` → `POS_DEAD`) with no
+  Python-only crash. This drains the ARITHMETIC_BOUNDARY divergence class (0 open ❌).
+  Test `tests/test_arith_210_current_hp_no_floor.py`.
 - **ARITH-208: mob hp/mana spawn roll is no longer floored at 0; coupled UB-divisor
   floors narrowed to a zero-only guard.** ROM `create_mobile` (`src/db.c:2074-2077`)
   stores `max_hit = dice(number, size) + bonus` **raw** (can be negative) and sets
