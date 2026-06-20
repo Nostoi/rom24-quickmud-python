@@ -97,6 +97,40 @@ def train_test_setup():
     room_registry.pop(8010, None)
 
 
+def test_interp_029_recall_min_position_fighting(recall_test_setup):
+    """INTERP-029: `recall` command-gate min position must be POS_FIGHTING.
+
+    ROM src/interp.c:271 — {"recall", do_recall, POS_FIGHTING, 0, ...}. Python
+    registered POS_STANDING, so a fighting char was blocked at the dispatcher
+    ("No way!  You are still fighting!") and never reached do_recall's
+    combat-recall branch (src/act_move.c:1593-1615) — that whole branch
+    (`if ch.position == Position.FIGHTING:`) was dead code. With the gate at
+    POS_FIGHTING the fighting char passes through and recalls from combat.
+    """
+    from mud.commands.dispatcher import COMMAND_INDEX, process_command
+
+    char, temple, other_room, no_recall_room = recall_test_setup
+
+    # Registration mirrors ROM cmd_table.
+    assert COMMAND_INDEX["recall"].min_position == Position.FIGHTING
+
+    # Behavioral: a fighting char reaches the combat-recall branch. recall skill 0
+    # makes the 80%-skill check (`number_percent() < 80*0//100 == 0`) never fire,
+    # so the recall-from-combat path is deterministic with no RNG dependence.
+    char.pcdata.learned["recall"] = 0
+    char.position = Position.FIGHTING
+    victim = Character(name="Brawler", level=10, is_npc=True, hit=50, max_hit=50, room=other_room)
+    other_room.people.append(victim)
+    char.fighting = victim
+    victim.fighting = char
+
+    result = process_command(char, "recall")
+
+    assert "still fighting" not in result.lower(), "must not be blocked at the dispatcher position gate"
+    assert "recall from combat" in result.lower()
+    assert char.room == temple
+
+
 def test_recall_moves_to_temple(recall_test_setup):
     """Test that recall moves character to temple
 

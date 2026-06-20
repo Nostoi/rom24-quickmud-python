@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **INTERP-029: `recall` command-gate minimum position corrected to
+  `POS_FIGHTING`.** ROM registers `recall` at `POS_FIGHTING` (`src/interp.c:271`);
+  the Python port used `POS_STANDING`, so a **fighting** player was blocked at the
+  dispatcher ("No way!  You are still fighting!") and could never reach
+  `do_recall`'s combat-recall branch (`src/act_move.c:1593-1615` — the 80%-skill
+  check and recall-from-combat exp loss). That branch in `session.py` was
+  effectively dead code; recall-to-escape-combat (a core ROM mechanic) now works.
+  Test:
+  `tests/integration/test_recall_train_commands.py::test_interp_029_recall_min_position_fighting`.
+  (Surfaced a wider cmd_table position-mismatch cluster, filed as INTERP-030.)
 - **Test determinism: `test_backstab_uses_position_and_weapon` is no longer
   latently flaky.** The test monkeypatches `number_percent`/`dice` but the to-hit
   roll uses `number_bits(5)` (`engine.py:572`, ROM `src/fight.c:508`), which it

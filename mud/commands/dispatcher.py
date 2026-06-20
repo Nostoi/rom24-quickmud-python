@@ -352,7 +352,11 @@ COMMANDS: list[Command] = [
     Command("save", do_save, min_position=Position.DEAD),
     Command("quit", do_quit, min_position=Position.SLEEPING),
     Command("score", do_score, min_position=Position.DEAD),
-    Command("recall", do_recall, aliases=("/",), min_position=Position.STANDING),
+    # INTERP-029: ROM src/interp.c:271 — {"recall", do_recall, POS_FIGHTING, ...}.
+    # POS_FIGHTING (not STANDING) so a fighting char passes the gate and reaches
+    # do_recall's combat-recall branch (src/act_move.c:1593-1615 — recall-from-combat
+    # skill check + exp loss); under STANDING that whole branch was unreachable.
+    Command("recall", do_recall, aliases=("/",), min_position=Position.FIGHTING),
     Command("password", do_password, min_position=Position.DEAD),
     Command("title", do_title, min_position=Position.DEAD),
     Command("description", do_description, min_position=Position.DEAD, aliases=("desc",)),
