@@ -331,12 +331,14 @@ def _compute_object_level(obj: object, mob: object) -> int | None:
     except Exception:
         mob_level = 0
 
-    # ROM C `create_object` calls `number_fuzzy(LastMob->level)` directly
-    # (`src/db.c:reset_room` G/E branches). The mob's level was already
-    # decremented by 2 in the M-reset path (`mob.level = mob_proto.level - 2`),
-    # so we must NOT subtract another 2 here — that double-fuzzes the loot.
+    # DB-004: ROM G/E resets (`src/db.c:1818`,`1942`) call
+    #   create_object(pObjIndex, number_fuzzy(level))
+    # where `level` is the M-case LOCAL `URANGE(0, pMob->level - 2, LEVEL_HERO-1)`
+    # — the object-fuzz base, two below the mob's prototype level. The mob now
+    # keeps its full prototype level (DB-004 fix), so subtract the 2 here. This
+    # matches `last_mob_level` consumed by the O-reset branch.
     hero_cap = max(0, LEVEL_HERO - 1)
-    base_level = max(0, min(mob_level, hero_cap))
+    base_level = max(0, min(mob_level - 2, hero_cap))
 
     fuzzed = rng_mm.number_fuzzy(base_level)
     if fuzzed > hero_cap:
@@ -480,16 +482,22 @@ def apply_resets(area: Area) -> None:
             if proto is not None and hasattr(proto, "count"):
                 proto.count = mob_counts[mob_vnum]
 
-            # ROM parity: Apply level fuzzing to mob (ROM db.c:1735)
-            # ROM C: pMob->level = URANGE(0, pMob->level - 2, LEVEL_HERO);
+            # DB-004: ROM `src/db.c:1750` M-case computes
+            #   level = URANGE(0, pMob->level - 2, LEVEL_HERO - 1);
+            # into a LOCAL variable used only as the OBJECT-level fuzz base for the
+            # subsequent O/G/E resets (number_fuzzy(level)). `create_mobile`
+            # (src/db.c:2071) already set mob->level = pMobIndex->level with NO
+            # fuzz, and the M-case never writes `level` back to the mob — so the
+            # mob KEEPS its prototype level. (Previously Python assigned the fuzzed
+            # value to `mob.level`, dropping every reset-spawned mob 2 levels.)
             try:
                 mob_level = int(getattr(mob, "level", 0) or 0)
             except Exception:
                 mob_level = 0
             hero_cap = max(0, LEVEL_HERO - 1)
-            fuzzed_level = max(0, min(mob_level - 2, hero_cap))
-            mob.level = fuzzed_level
-            last_mob_level = fuzzed_level
+            # Object-level fuzz base for the following O/G/E resets (ROM's local
+            # `level`), NOT applied to the mob.
+            last_mob_level = max(0, min(mob_level - 2, hero_cap))
             last_mob = mob
             last_obj = None
             last_reset_succeeded = True

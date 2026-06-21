@@ -169,8 +169,22 @@ def test_m_reset_room_limit():
     assert count == 2  # Still 2, no new spawn
 
 
-def test_m_reset_level_calculation():
-    """Test M reset level: level = URANGE(0, pMob->level - 2, LEVEL_HERO - 1)"""
+def test_m_reset_preserves_mob_prototype_level():
+    """DB-004: a reset-spawned mob keeps its prototype level — ROM never fuzzes the mob.
+
+    ROM `src/db.c:1750` M-case computes ``level = URANGE(0, pMob->level - 2,
+    LEVEL_HERO - 1)`` into a **local** variable that feeds the subsequent O/G/E
+    ``create_object(... number_fuzzy(level))`` calls — it is the OBJECT-level fuzz
+    base, never written back to the mob. ``create_mobile`` (`src/db.c:2071`) sets
+    ``mob->level = pMobIndex->level`` with no fuzz, and the G/E sanity check
+    (`src/db.c:1850`) reads the full ``LastMob->level``, confirming the mob keeps
+    its prototype level.
+
+    This test previously (wrongly) asserted ``mob.level == 21`` for a level-23
+    weaponsmith — encoding the misread that decremented the mob itself. Per
+    AGENTS.md a test contradicting ROM is a bug in the test; corrected to assert
+    the prototype level survives the reset.
+    """
     initialize_world("area/area.lst")
 
     room = room_registry[3001]
@@ -181,6 +195,8 @@ def test_m_reset_level_calculation():
     for r in room_registry.values():
         r.people = [p for p in r.people if not (isinstance(p, MobInstance) and p.prototype.vnum == 3003)]
 
+    proto_level = mob_registry[3003].level  # weaponsmith, level 23
+
     # M reset: spawn mob 3003 (weaponsmith, level 23)
     area.resets = [ResetJson(command="M", arg1=3003, arg2=1, arg3=3001, arg4=1)]
 
@@ -189,10 +205,9 @@ def test_m_reset_level_calculation():
     mob = next((p for p in room.people if isinstance(p, MobInstance) and p.prototype.vnum == 3003), None)
     assert mob is not None
 
-    # ROM formula: level = URANGE(0, mob->level - 2, LEVEL_HERO - 1)
-    # For level 23 mob: URANGE(0, 23-2, 50) = 21
-    # Verify mob was level-fuzzed by reset handler
-    assert mob.level == 21
+    # ROM: create_mobile sets mob->level = pMobIndex->level; the M-case `level - 2`
+    # is a local for OBJECT fuzzing only, never applied to the mob.
+    assert mob.level == proto_level
 
 
 def test_m_reset_infrared_in_dark_rooms():

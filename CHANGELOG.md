@@ -60,6 +60,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **DB-004: reset-spawned mobs no longer lose 2 levels (game-wide).** ROM
+  `reset_room` M-case (`src/db.c:1750`) computes `level = URANGE(0, pMob->level - 2,
+  LEVEL_HERO-1)` into a **local** that fuzzes the levels of objects the mob is
+  given/equipped/dropped (O/G/E resets); `create_mobile` (`src/db.c:2071`) keeps
+  `mob->level = pMobIndex->level` with no fuzz. Python misread the local as the
+  mob's level and assigned it back (`reset_handler.py` `mob.level = fuzzed_level`),
+  dropping **every reset-spawned mob 2 levels** — skewing THAC0/damage/saving-throw/XP
+  scaling and corpse level. Surfaced in-game: a level-1 Mud School "wimpy monster"
+  (vnum 3703) reset to level 0, so its corpse paid `max(1, 0*3)` = **1 silver** on
+  sacrifice/AUTOSAC instead of ROM's `max(1, 1*3)` = 3. Fix keeps the mob at its
+  prototype level and routes the `mob_level - 2` object-fuzz base through
+  `last_mob_level` / `_compute_object_level` so equipment/loot levels stay
+  ROM-correct (`spawn_mob()` was already correct — only the reset path diverged).
+  Corrected the false test that encoded the bug (`assert mob.level == 21` for a
+  level-23 weaponsmith → asserts the prototype level survives).
+
 - **GAIN-005: trainer lines now render the trainer's name, not "The trainer".**
   ROM `do_gain` emits trainer lines via `act("$N ...")` → `PERS(mob)` →
   `mob->short_descr` ("the guildmaster"). Python's `_gain_trainer_name` read
