@@ -24,6 +24,12 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     char.max_move = char.move = 100
     char.ch_class = 0
     char.perm_stat = [13, 16, 13, 13, 13]
+    # Mirror the C shim's make_test_char new-player session counts
+    # (diffmain.c:500-501: ch->train = 3; ch->practice = 5). Python's
+    # create_test_character leaves both 0, which is invisible until a
+    # train/practice/gain command prints the session count.
+    char.train = 3
+    char.practice = 5
     # Mirror the C shim's make_test_char new-player exp init (diffmain.c:496:
     # ch->exp = exp_per_level(ch, ch->pcdata->points)). The real Python char
     # path sets this in nanny; create_test_character (a test helper) leaves it 0,

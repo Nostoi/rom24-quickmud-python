@@ -1,0 +1,393 @@
+{
+  "scenario": "train_stats_sessions",
+  "c_commit": "9140fd9b4998e42535eeed97422fee0206a727d7",
+  "build_flags": "-DOLD_RAND",
+  "seed": 1234,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=1234",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__mload=3007",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "train",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou have 3 training sessions.",
+        "\rYou can train: str int wis dex con hp mana.",
+        ""
+      ]
+    },
+    {
+      "step": 4,
+      "command": "train str",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 1,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYour strength increases!",
+        ""
+      ]
+    },
+    {
+      "step": 5,
+      "command": "train hp",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 30,
+          "max_hp": 30,
+          "mana": 100,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 1,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYour durability increases!",
+        ""
+      ]
+    },
+    {
+      "step": 6,
+      "command": "train mana",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 30,
+          "max_hp": 30,
+          "mana": 110,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 1,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYour power increases!",
+        ""
+      ]
+    },
+    {
+      "step": 7,
+      "command": "train str",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 30,
+          "max_hp": 30,
+          "mana": 110,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 1,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou don't have enough training sessions.",
+        ""
+      ]
+    },
+    {
+      "step": 8,
+      "command": "train",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 30,
+          "max_hp": 30,
+          "mana": 110,
+          "move": 100,
+          "level": 5,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 1,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3001,
+          "people": [
+            "sailor",
+            "Tester",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rYou have 0 training sessions.",
+        "\rYou can train: str int wis dex con hp mana.",
+        ""
+      ]
+    }
+  ]
+}
