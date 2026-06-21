@@ -193,7 +193,13 @@ def _gain_trainer_name(trainer) -> str:
     `act_new`'s `buf[0]` upper-casing."""
     from mud.utils.act import capitalize_act_line
 
-    return capitalize_act_line(str(getattr(trainer, "short_descr", None) or "The trainer"))
+    # ROM act("$N ...") → PERS(mob) → mob->short_descr ("the guildmaster").
+    # GAIN-005: spawned MobInstances leave `.short_descr` None and carry the
+    # display string in `.name` (templates.py:447 `name=proto.short_descr or …`),
+    # so the prior `short_descr or "The trainer"` fallback always printed the
+    # placeholder. Use the established `short_descr or name` idiom (cf. make_corpse).
+    display = getattr(trainer, "short_descr", None) or getattr(trainer, "name", None) or "someone"
+    return capitalize_act_line(str(display))
 
 
 def _gain_class_index(char: Character) -> int:

@@ -274,6 +274,25 @@ def test_gain_trainer_lines_are_act_capitalized(learner: Character, gain_room: R
     assert pardon.startswith("The master trainer")
 
 
+def test_gain_trainer_name_falls_back_to_name_when_short_descr_unset(learner: Character, gain_room: Room) -> None:
+    """GAIN-005 — a real spawned trainer carries its display string in `.name`,
+    not `.short_descr`.
+
+    `spawn_mob` leaves `MobInstance.short_descr` None and stores the C
+    `short_descr` in `.name` (`mud/spawning/templates.py:447`). ROM `act("$N ...")`
+    renders `mob->short_descr` ("the guildmaster"); Python must mirror that via the
+    `short_descr or name` idiom. The prior `short_descr or "The trainer"` fallback
+    printed the placeholder "The trainer" for every real trainer in the world.
+    """
+    trainer = Character(name="the guildmaster", level=50, is_npc=True, room=gain_room)
+    trainer.act = int(ActFlag.GAIN)
+    trainer.short_descr = None  # mirrors a spawned MobInstance
+    gain_room.people.append(trainer)
+
+    pardon = do_gain(learner, "")
+    assert pardon == "The guildmaster says 'Pardon me?'"
+
+
 def test_mob_with_old_wrong_bit_is_not_a_trainer(learner: Character, gain_room: Room) -> None:
     """A mob with only the pre-fix wrong bit (0x00100000, bit 20) is NOT a trainer."""
     not_trainer = Character(name="impostor", level=10, is_npc=True, room=gain_room)

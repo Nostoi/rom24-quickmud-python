@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Differential harness: `train_stats_sessions` + `gain_convert_points` scenarios
+  (advancement surface)** (`tools/diff_harness/scenarios/`). `train_stats_sessions`
+  `__mload`s the sailor (midgaard 3007, ACT_TRAIN) and exercises `train` no-arg
+  session display + `train str/hp/mana` + the out-of-sessions refusal — converges
+  clean (advancement is heavily audited). `gain_convert_points` `__mload`s a
+  newthalos guildmaster (9500, ACT_GAIN) for `gain` / `convert` / `points` /
+  `list` — **surfaced GAIN-005** (see Fixed). pyreplay now mirrors `make_test_char`'s
+  new-player session counts (`train=3`, `practice=5`; diffmain.c:500-501), required
+  for both scenarios. 48 committed scenarios, all converge; `KNOWN_DIVERGENCES`
+  stays empty.
+
 - **Differential harness: `death_corpse_loot_sacrifice` scenario (death lifecycle)**
   (`tools/diff_harness/scenarios/death_corpse_loot_sacrifice.json`) — spawns a
   level-1 janitor with explicit wealth (`__mob_silver=17 __mob_gold=0`, since
@@ -48,6 +59,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stale "four scenarios" comment in `tests/test_differential_smoke.py`.
 
 ### Fixed
+
+- **GAIN-005: trainer lines now render the trainer's name, not "The trainer".**
+  ROM `do_gain` emits trainer lines via `act("$N ...")` → `PERS(mob)` →
+  `mob->short_descr` ("the guildmaster"). Python's `_gain_trainer_name` read
+  `trainer.short_descr or "The trainer"`, but a spawned `MobInstance` leaves
+  `.short_descr` None and carries the display string in `.name`
+  (`mud/spawning/templates.py:447`), so **every** live ACT_GAIN trainer printed the
+  placeholder "The trainer says/tells you ...". Fixed to the established
+  `short_descr or name` idiom (cf. `make_corpse`). The GAIN-004 act-cap tests missed
+  it by setting `short_descr` explicitly on a `Character`. Test:
+  `tests/integration/test_do_gain_act_gain_bit.py::test_gain_trainer_name_falls_back_to_name_when_short_descr_unset`
+  + the `gain_convert_points` differential replay. Surfaced by the differential
+  harness (FINDING-039).
 
 - **FIGHT-078: NPC corpse no longer drops phantom silver when the mob carried
   silver but no gold.** ROM `make_corpse` (`src/fight.c:1473`) gates the NPC

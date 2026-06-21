@@ -8,6 +8,35 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-039 — `do_gain` trainer lines render "The trainer" instead of the trainer's name — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-20 (v2.14.204). Fixed under **GAIN-005**
+(`docs/parity/SKILLS_C_DO_GAIN_AUDIT.md`).
+
+**Scenario:** `gain_convert_points` — spawn a newthalos guildmaster (9500, ACT_GAIN)
+and run `gain` / `gain convert` / `gain points` / `gain list` against the C golden.
+
+**Divergence (step 3 `gain` · output):**
+- **C:** `["The guildmaster says 'Pardon me?'"]`
+- **Python:** `["The trainer says 'Pardon me?'"]`
+
+**Root cause:** ROM `act("$N says 'Pardon me?'", …)` renders `PERS(mob)` →
+`mob->short_descr` ("the guildmaster"). Python's `_gain_trainer_name`
+(`mud/commands/remaining_rom.py:189`) read `trainer.short_descr or "The trainer"`,
+but a spawned `MobInstance` leaves `.short_descr` None and stores the display
+string in `.name` (`mud/spawning/templates.py:447`). So every trainer line printed
+the placeholder "The trainer". (The GAIN-004 act-cap tests missed it by setting
+`short_descr` explicitly on a `Character`.)
+
+**Fix:** `_gain_trainer_name` now uses the established `short_descr or name` idiom
+(cf. `make_corpse`). Once fixed, all of `gain`/`convert`/`points`/`list` (incl. the
+full `gain list` table — GAIN-003 formatting was already correct) converge.
+Regression test:
+`tests/integration/test_do_gain_act_gain_bit.py::test_gain_trainer_name_falls_back_to_name_when_short_descr_unset`
++ the `gain_convert_points` differential replay.
+
+---
+
 ## FINDING-038 — NPC corpse drops phantom silver when the mob carried silver but no gold — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-20 (v2.14.203). Fixed under **FIGHT-078**

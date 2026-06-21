@@ -1,0 +1,15 @@
+{
+  "name": "gain_convert_points",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__seed=1234",
+    "__mload=9500",
+    "gain",
+    "gain convert",
+    "gain points",
+    "gain list"
+  ]
+}
