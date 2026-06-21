@@ -1,0 +1,23 @@
+{
+  "name": "death_corpse_loot_sacrifice",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__seed=909",
+    "__mload=3061",
+    "__mob_silver=17",
+    "__mob_gold=0",
+    "__mob_carry=3031",
+    "__seed=909",
+    "look",
+    "__instant_kill",
+    "look",
+    "look in corpse",
+    "get all corpse",
+    "inventory",
+    "sacrifice corpse",
+    "look"
+  ]
+}

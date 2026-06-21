@@ -8,6 +8,36 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-038 — NPC corpse drops phantom silver when the mob carried silver but no gold — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-20 (v2.14.203). Fixed under **FIGHT-078**
+(`docs/parity/FIGHT_C_AUDIT.md`). Sibling PC-corpse half-coin divergence filed as
+**FIGHT-079** (deferred — higher blast radius, untested, not harness-exercised).
+
+**Scenario:** `death_corpse_loot_sacrifice` — spawn a level-1 janitor (3061),
+set its wealth explicitly (`__mob_silver=17 __mob_gold=0` — boot-rolled wealth is
+not bit-matched C⇄Python, so it is overwritten on both sides), give it a lantern
+(`__mob_carry=3031`), `__instant_kill`, then `look in corpse` / `get all corpse` /
+`sacrifice corpse`.
+
+**Divergence (step 10 `look in corpse` · output):**
+- **C:** `["The corpse of the janitor holds:", "a hooded brass lantern"]`
+- **Python:** `[…, "a hooded brass lantern", "17 silver coins"]`
+
+**Root cause:** ROM `make_corpse` (`src/fight.c:1473`) gates the NPC corpse's money
+object on **`ch->gold > 0`** — when an NPC carries silver but no gold, ROM creates
+**no** money object and the silver is lost on extraction. Python's `make_corpse`
+(`mud/combat/death.py:446`) used a single unified gate `gold > 0 or silver > 0` for
+both NPC and PC, so a silver-only NPC dropped phantom silver into its corpse.
+
+**Fix:** `mud/combat/death.py:make_corpse` now gates the NPC case on `gold > 0`
+(ROM fight.c:1473); the PC case keeps its current `gold > 0 or silver > 0` gate
+pending FIGHT-079. Regression test:
+`tests/integration/test_fight078_npc_corpse_money_gate.py` (C-binary-independent) +
+the `death_corpse_loot_sacrifice` differential replay.
+
+---
+
 ## FINDING-037 — `do_group` roster lists members oldest-first; ROM walks `char_list` newest-first — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-20 (v2.14.202). Fixed under **GROUP-006**

@@ -442,8 +442,15 @@ def make_corpse(victim: Character) -> Object | None:
     gold = max(0, int(getattr(victim, "gold", 0) or 0))
     silver = max(0, int(getattr(victim, "silver", 0) or 0))
 
-    # ROM C fight.c:1473-1478 - Create money object inside corpse
-    if gold > 0 or silver > 0:
+    # ROM make_corpse money transfer is NPC/PC-split.
+    # - NPC (src/fight.c:1473): `if (ch->gold > 0)` ONLY — a mob carrying silver
+    #   but zero gold mints NO money object; the silver is lost on extraction.
+    # - PC (src/fight.c:1483-1495): half the coins on `> 1`, non-clan only —
+    #   currently still approximated by the `gold > 0 or silver > 0` full-coin
+    #   gate below; tracked as FIGHT-079.
+    # FIGHT-078: the silver-only NPC case dropped phantom silver before this gate.
+    money_gate = gold > 0 if is_npc else (gold > 0 or silver > 0)
+    if money_gate:
         from mud.handler import create_money
 
         money_obj = create_money(gold, silver)

@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Differential harness: `death_corpse_loot_sacrifice` scenario (death lifecycle)**
+  (`tools/diff_harness/scenarios/death_corpse_loot_sacrifice.json`) — spawns a
+  level-1 janitor with explicit wealth (`__mob_silver=17 __mob_gold=0`, since
+  boot-rolled wealth is not bit-matched C⇄Python) and a lantern, `__instant_kill`s
+  it, then `look in corpse` / `get all corpse` / `sacrifice corpse` against the ROM
+  2.4b6 C golden. **Surfaced FIGHT-078** (see Fixed). First scenario on the
+  corpse/loot/sacrifice surface (the existing `mob_death_trigger` only fires the
+  death trigger, not the loot mechanics). 46 committed scenarios, all converge;
+  `KNOWN_DIVERGENCES` stays empty.
+
 - **Differential harness: `group_follow_cycle` scenario (group/follow surface)**
   (`tools/diff_harness/scenarios/group_follow_cycle.json`) — exercises `follow`
   (master-field transitions), `group` rosters (single- and two-member), and
@@ -38,6 +48,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stale "four scenarios" comment in `tests/test_differential_smoke.py`.
 
 ### Fixed
+
+- **FIGHT-078: NPC corpse no longer drops phantom silver when the mob carried
+  silver but no gold.** ROM `make_corpse` (`src/fight.c:1473`) gates the NPC
+  corpse's money object on `ch->gold > 0` alone, so a mob carrying silver but zero
+  gold mints no money object (the silver is lost on extraction). Python used a
+  unified `gold > 0 or silver > 0` gate for both NPC and PC corpses, leaving a
+  lootable phantom `"N silver coins"` object in silver-only NPC corpses. The NPC
+  case now gates on `gold > 0`; the PC case keeps its current gate pending
+  FIGHT-079 (PC half-coin-on-death divergence, filed). Tests:
+  `tests/integration/test_fight078_npc_corpse_money_gate.py` + the
+  `death_corpse_loot_sacrifice` differential replay. Surfaced by the differential
+  harness (FINDING-038).
 
 - **GROUP-006: `group` roster now lists members newest-first (ROM `char_list`
   order).** ROM head-inserts every char into the global `char_list`
