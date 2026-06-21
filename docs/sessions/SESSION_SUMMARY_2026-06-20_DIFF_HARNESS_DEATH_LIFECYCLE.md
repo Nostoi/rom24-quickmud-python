@@ -105,3 +105,54 @@ Method reminders (unchanged): bracket spawns with `__seed`; set mob wealth
 explicitly post-spawn (`__mob_gold`/`__mob_silver`) — boot-rolled wealth is NOT
 bit-matched C⇄Python; capture per-scenario (`--scenario`), never `--all`; a
 divergence is a FINDING (FINDINGS.md → gap-closer/INV), never overwrite the golden.
+
+---
+
+## Addendum — advancement surface (train / gain) → GAIN-005
+
+Continued the same session into the handoff's named next target (advancement).
+Confirmed the trainers are `__mload`-able with zero plumbing and authored two
+scenarios. First fixed a harness-setup asymmetry: `pyreplay.py` now mirrors
+`make_test_char`'s new-player session counts (`train=3`, `practice=5`;
+diffmain.c:500-501) — Python `create_test_character` left both 0 (invisible until
+a train/practice/gain command prints the count). train/practice are **not**
+snapshotted, so the 46 existing goldens were unaffected (verified).
+
+### `train_stats_sessions` — ✅ clean negative (no engine change)
+
+- `__mload` sailor (midgaard 3007, ACT_TRAIN) → `train` (no-arg session display +
+  "You can train: ...") → `train str` / `train hp` / `train mana` → out-of-sessions
+  refusal → `train` again. Converges clean — advancement is heavily audited.
+
+### `GAIN-005` — ✅ FIXED — `do_gain` trainer lines render "The trainer", not the name
+
+- **Python**: `mud/commands/remaining_rom.py:_gain_trainer_name`
+- **ROM C**: `src/skills.c:70,137-143,181-244` (`act("$N ...")` → `PERS(mob)` →
+  `mob->short_descr`)
+- **Gap**: `_gain_trainer_name` read `short_descr or "The trainer"`; a spawned
+  `MobInstance` leaves `.short_descr` None and carries the display string in `.name`
+  (`templates.py:447`), so **every** live ACT_GAIN trainer printed the placeholder
+  "The trainer says/tells you ...". The GAIN-004 act-cap tests missed it by setting
+  `short_descr` explicitly on a `Character`.
+- **Fix**: established `short_descr or name` idiom (cf. `make_corpse`), then
+  `capitalize_act_line`.
+- **Surfaced by**: the `gain_convert_points` scenario (`__mload` newthalos
+  guildmaster 9500, ACT_GAIN; `gain` / `convert` / `points` / `list`). Step 3 `gain`:
+  C "The guildmaster says 'Pardon me?'" vs Python "The trainer ...". Recorded as
+  FINDING-039. The full `gain list` table (GAIN-003) was already correct.
+- **Tests**: `tests/integration/test_do_gain_act_gain_bit.py::test_gain_trainer_name_falls_back_to_name_when_short_descr_unset`
+  (red→green, verified by reverting) + the differential replay.
+- **Impact**: LOW (`_gain_trainer_name` ← `do_gain` only).
+
+### Files (addendum)
+
+- `mud/commands/remaining_rom.py` — `_gain_trainer_name` `short_descr or name` (GAIN-005).
+- `tests/integration/test_do_gain_act_gain_bit.py` — new GAIN-005 regression test.
+- `tools/diff_harness/pyreplay.py` — train/practice setup mirror.
+- `tools/diff_harness/scenarios/{train_stats_sessions,gain_convert_points}.json` + goldens.
+- `docs/parity/SKILLS_C_DO_GAIN_AUDIT.md` — GAIN-005 row (✅ FIXED).
+- `tools/diff_harness/FINDINGS.md` — FINDING-039.
+- `CHANGELOG.md`, `pyproject.toml` 2.14.203 → 2.14.204.
+
+Commits: `a5ccd377` (train scenario + setup mirror), `d78c0ff0` (GAIN-005).
+48 scenarios, all converge; `KNOWN_DIVERGENCES` empty.
