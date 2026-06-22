@@ -779,6 +779,20 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __plr_autosac=0|1: set/clear PLR_AUTOSAC on the driver PC.
+         * Harness-only setup for death auto-sacrifice scenarios; no output. */
+        if (strncmp (line, "__plr_autosac=", 14) == 0)
+        {
+            if (ch != NULL)
+            {
+                if (atoi (line + 14))
+                    SET_BIT (ch->act, PLR_AUTOSAC);
+                else
+                    REMOVE_BIT (ch->act, PLR_AUTOSAC);
+            }
+            continue;
+        }
+
         /* __cond_full=<n>: set the PC's condition[FULL] directly (no RNG). */
         if (strncmp (line, "__cond_full=", 12) == 0)
         {

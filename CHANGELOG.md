@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Differential harness death autosac coverage** — added `__plr_autosac=0|1`
+  to the C/Python replay drivers and committed the `death_auto_sac` scenario +
+  golden. The new replay confirms death `PLR_AUTOSAC` converges with ROM
+  `src/fight.c:968-979` / `src/act_obj.c:1838-1862` for an empty NPC corpse.
+
+### Fixed
+
+- **INV-054 DESCRIPTOR-WAIT-BUFFERS-INPUT** — commands typed while a connected
+  player is in ROM wait-state recovery are now buffered at the descriptor read
+  chokepoint and replayed after recovery clears, matching `src/comm.c:619-623`.
+  This removes the Python-only visible `"You are still recovering."` result for
+  live `cast magic`/combat-command input during kill/cast lag; the command now
+  waits in the session buffer instead of dispatching early into `do_cast`.
+  Enforced by
+  `tests/test_networking_telnet.py::test_wait_state_buffers_command_until_recovered_per_rom`.
+
 ## [2.14.211] - 2026-06-22
 
 ### Added

@@ -111,6 +111,14 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         else:
             char.act = int(getattr(char, "act", 0)) & ~int(PlayerFlag.AUTOGOLD)
         return ""
+    if command.startswith("__plr_autosac="):
+        from mud.models.constants import PlayerFlag
+
+        if int(command[len("__plr_autosac=") :]):
+            char.act = int(getattr(char, "act", 0)) | int(PlayerFlag.AUTOSAC)
+        else:
+            char.act = int(getattr(char, "act", 0)) & ~int(PlayerFlag.AUTOSAC)
+        return ""
     if command.startswith("__mana="):
         val = int(command[len("__mana=") :])
         char.mana = val

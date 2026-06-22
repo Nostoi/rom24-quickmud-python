@@ -1012,24 +1012,41 @@ async def _send_newbie_help(char: Character) -> None:
 
 async def _read_player_command(conn: TelnetStream, session: Session) -> str | None:
     while True:
-        line = await conn.readline()
-        if line is None:
-            return None
-
-        # INV-038: ROM src/comm.c:605 zeroes ``ch->timer`` whenever the
-        # descriptor delivers data, before ``interpret``. This is the only
-        # idle-timer reset on the normal play path; ``char_update`` no longer
-        # resets it per tick, so an active player must clear it here or they
-        # idle to the void / autoquit just like a linkdead one.
         playing_char = getattr(session, "character", None)
-        if playing_char is not None and not getattr(playing_char, "is_npc", False):
-            try:
-                playing_char.timer = 0
-            except Exception:
-                pass
+        pending = getattr(session, "pending_command", None)
+        if pending is None:
+            line = await conn.readline()
+            if line is None:
+                return None
 
-        command = line if line else " "
-        original = command
+            # INV-038: ROM src/comm.c:605 zeroes ``ch->timer`` whenever the
+            # descriptor delivers data, before ``interpret``. This is the only
+            # idle-timer reset on the normal play path; ``char_update`` no longer
+            # resets it per tick, so an active player must clear it here or they
+            # idle to the void / autoquit just like a linkdead one.
+            if playing_char is not None and not getattr(playing_char, "is_npc", False):
+                try:
+                    playing_char.timer = 0
+                except Exception:
+                    pass
+
+            command = line if line else " "
+            original = command
+        else:
+            command = pending
+            original = pending
+
+        if playing_char is not None and int(getattr(playing_char, "wait", 0) or 0) > 0:
+            # mirroring ROM src/comm.c:619-623 — wait-gated descriptor input
+            # stays buffered before read_from_buffer()/interpret(), so the player
+            # sees no "still recovering" command result and the command runs
+            # after recovery.
+            session.pending_command = original
+            while int(getattr(playing_char, "wait", 0) or 0) > 0:
+                await asyncio.sleep(0.1)
+            continue
+
+        session.pending_command = None
 
         if session.show_buffer:
             # mirrors ROM src/comm.c:632-633 + show_string at src/comm.c:2131-2141.

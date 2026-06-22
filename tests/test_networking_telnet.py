@@ -276,6 +276,46 @@ def test_show_string_pager_aborts_on_any_non_empty_input_per_rom():
     assert session2.show_buffer is None
 
 
+def test_wait_state_buffers_command_until_recovered_per_rom():
+    """ROM src/comm.c:619-623 gates input before read_from_buffer/interpret.
+
+    A typed command stays in the descriptor input buffer while ``ch->wait > 0``;
+    it is not dispatched to ``do_cast`` and does not produce Python's old
+    "You are still recovering." line.
+    """
+
+    fake_conn = FakeConn(["cast magic"])
+    char = SimpleNamespace(
+        name="Caster",
+        wait=2,
+        timer=25,
+        is_npc=False,
+        messages=[],
+    )
+    session = Session(name="Caster", character=char, reader=None, connection=fake_conn)
+    char.desc = session
+
+    async def run() -> str:
+        task = asyncio.create_task(_read_player_command(fake_conn, session))
+        await asyncio.sleep(0)
+
+        assert task.done() is False
+        assert char.timer == 0
+        assert session.pending_command == "cast magic"
+        assert session.last_command == ""
+        assert fake_conn.sent_lines == []
+        assert fake_conn.sent_prompts == []
+
+        char.wait = 0
+        return await asyncio.wait_for(task, timeout=1.0)
+
+    result = asyncio.run(run())
+
+    assert result == "cast magic"
+    assert session.pending_command is None
+    assert session.last_command == "cast magic"
+
+
 def test_send_to_char_accepts_iterables():
     fake_conn = FakeConn([])
     char = SimpleNamespace(

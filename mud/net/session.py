@@ -28,6 +28,7 @@ class Session:
     connection: TelnetStream
     account_name: str = ""
     last_command: str = field(default="")
+    pending_command: str | None = None
     repeat_count: int = field(default=0)
     editor: str | None = None
     editor_state: dict[str, object] = field(default_factory=dict)

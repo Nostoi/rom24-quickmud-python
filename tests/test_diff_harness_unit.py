@@ -412,6 +412,23 @@ def test_drive_python_replay_plr_autogold_meta_sets_flag():
     assert trace[1].output == ["Autogold removed."]
 
 
+def test_drive_python_replay_plr_autosac_meta_sets_flag():
+    sc = Scenario(
+        name="generated_plr_autosac",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__plr_autosac=1", "autosac"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert trace[1].output == ["Autosacrificing removed."]
+
+
 def test_drive_python_replay_mana_meta_sets_mana_and_max_mana():
     sc = Scenario(
         name="generated_mana",
