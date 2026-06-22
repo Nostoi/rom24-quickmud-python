@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documented
+
+- **Divergence-class roster: class 14 — Connection / session lifecycle
+  (net-death link-dead)** (`docs/parity/DIVERGENCE_CLASS_ROSTER.md`,
+  `docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`). Documented a known-open
+  sync-vs-async divergence: ROM `close_socket` keeps a playing char *link-dead*
+  in the world on a socket drop (idle void@12 min / autoquit@30 min still apply,
+  killable, reconnect re-attaches to the live instance), whereas the Python port
+  treats link loss as `do_quit` and removes the char immediately (INV-009). This
+  strands ROM's net-death population — the INV-038 link-dead idle/autoquit path
+  is production-unreachable, and reconnect reloads from the pfile instead of
+  re-attaching. No behavior change; filed for a future scoped fix (shares the
+  async-teardown root cause with GL-035).
+
 ### Fixed
 
 - **INV-053 PROMPT-AFTER-TICK-OUTPUT — tick-driven HP/mana now refreshes the
