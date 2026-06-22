@@ -8,6 +8,34 @@ goes clean). Resolving the root cause is separate from building the harness.
 
 ---
 
+## FINDING-040 — death auto-loot/autogold emits summary text instead of ROM `do_get` lines — ✅ RESOLVED
+
+**Status:** ✅ RESOLVED 2026-06-22 (v2.14.208). Fixed under **FIGHT-080**
+(`docs/parity/FIGHT_C_AUDIT.md`).
+
+**Scenario:** `death_auto_gold` / `death_auto_loot` — seed the driver PC's
+`PLR_AUTOGOLD` or `PLR_AUTOLOOT`, spawn a janitor (3061), set explicit wealth
+(`__mob_silver=17 __mob_gold=2`), give it a lantern (`__mob_carry=3031`), then
+`__instant_kill`.
+
+**Divergence (step 8 `__instant_kill` · output):**
+- **C auto-gold:** `["You get 17 silver coins and 2 gold coins from the corpse of the janitor."]`
+- **C auto-loot:** `["You get a hooded brass lantern from the corpse of the janitor.", "You get 17 silver coins and 2 gold coins from the corpse of the janitor."]`
+- **Python:** `["You quickly gather the loot from the corpse."]`
+
+**Root cause:** ROM `damage` (`src/fight.c:945-967`) calls `do_get(ch, "all corpse")`
+for `PLR_AUTOLOOT`, and `do_get(ch, "all.gcash corpse")` for `PLR_AUTOGOLD` when
+autoloot is off. Python's `_auto_collect_loot` / `_auto_collect_coins` manually
+moved objects/coins and pushed a fabricated summary line, so observable output
+lost the actual item names and coin totals.
+
+**Fix:** the Python death auto branches now route through `mud.commands.inventory.do_get`
+with the same arguments ROM passes and deliver the returned line block through
+`_push_message`. The new scenarios converge end-to-end; `KNOWN_DIVERGENCES`
+remains empty.
+
+---
+
 ## FINDING-039 — `do_gain` trainer lines render "The trainer" instead of the trainer's name — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-20 (v2.14.204). Fixed under **GAIN-005**

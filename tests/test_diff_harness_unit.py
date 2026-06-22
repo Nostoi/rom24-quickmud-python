@@ -378,6 +378,40 @@ def test_drive_python_replay_learn_pct_meta_sets_partial_skill():
     assert trace[1].output == ["armor               17%  ", "You have 5 practice sessions left.", ""]
 
 
+def test_drive_python_replay_plr_autoloot_meta_sets_flag():
+    sc = Scenario(
+        name="generated_plr_autoloot",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__plr_autoloot=1", "autoloot"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert trace[1].output == ["Autolooting removed."]
+
+
+def test_drive_python_replay_plr_autogold_meta_sets_flag():
+    sc = Scenario(
+        name="generated_plr_autogold",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__plr_autogold=1", "autogold"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert trace[1].output == ["Autogold removed."]
+
+
 def test_drive_python_replay_mana_meta_sets_mana_and_max_mana():
     sc = Scenario(
         name="generated_mana",

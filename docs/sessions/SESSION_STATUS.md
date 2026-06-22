@@ -1,48 +1,47 @@
-# Session Status — 2026-06-22 — Practice differential harness widening
+# Session Status — 2026-06-22 — Death auto-action differential harness
 
 ## Current State
 
 - **Active focus**: Differential-harness widening (the enumeration-independent
-  parity oracle).
-- **Last completed** (this session): added the **`practice_skill_listing`**
-  C-oracle scenario and the `__learn_pct=NAME=N` harness meta-command on both
-  sides. The scenario `__mload`s the Midgaard mage guildmaster (`3020`,
-  `ACT_PRACTICE`), seeds `armor` at 1%, runs `practice armor`, then runs bare
-  `practice`; ROM and Python converge with `armor` at 35% and 4 practice
-  sessions left. This covers the `do_practice` INT-learn-rate increment plus
-  known-skill listing path without using `__learn`'s 100% adept shortcut.
-- **Investigated, ROM-correct (no change)**: Mud School wimpy aggressive mob
-  non-aggression against a standing level-2 PC. ROM `src/update.c:1106` skips
-  `ACT_WIMPY` aggressive mobs when the watched PC is awake; Python mirrors it
-  in `mud/ai/aggressive.py`.
+  ROM⇄Python parity oracle).
+- **Last completed**:
+  - Closed **FIGHT-079**: PC corpse money now follows ROM `make_corpse`
+    (`src/fight.c:1483-1495`). Non-clan PCs keep all coins and get an owned
+    corpse; clan PCs get an unowned corpse and drop half their coins on the ROM
+    `> 1` gate.
+  - Added `__plr_autoloot=0|1` and `__plr_autogold=0|1` meta commands to both
+    diff harness drivers.
+  - Added **`death_auto_gold`** and **`death_auto_loot`** C-oracle scenarios.
+    They surfaced **FIGHT-080 / FINDING-040**, now fixed: death auto-gold and
+    auto-loot route through ROM-style `do_get` output instead of the old
+    fabricated `"You quickly gather..."` summary.
 - **Pointer to latest summary**:
-  [SESSION_SUMMARY_2026-06-22_PRACTICE_DIFF_HARNESS.md](SESSION_SUMMARY_2026-06-22_PRACTICE_DIFF_HARNESS.md)
+  [SESSION_SUMMARY_2026-06-22_DEATH_AUTO_ACTION_DIFF_HARNESS.md](SESSION_SUMMARY_2026-06-22_DEATH_AUTO_ACTION_DIFF_HARNESS.md)
+- **Matching handoff**:
+  [HANDOFF_2026-06-22_DEATH_AUTO_ACTION_DIFF_HARNESS.md](HANDOFF_2026-06-22_DEATH_AUTO_ACTION_DIFF_HARNESS.md)
 
 ## Project Status (snapshot)
 
 | Metric | Value |
 |--------|-------|
-| Version | 2.14.206 |
-| Tests | Focused diff-harness suite: 77 passing |
-| Differential scenarios | 49 / 49 converge (`KNOWN_DIVERGENCES` empty) |
+| Version | 2.14.208 |
+| Tests | Focused parity suite: 154 passed; `ruff check .` clean |
+| Differential scenarios | 51 / 51 converge (`KNOWN_DIVERGENCES` empty) |
 | ROM C files audited | 43 / 43 (P0/P1/P2 100%, P3 75% + 3 N/A) |
-| Active focus | Differential harness widening (`practice_skill_listing` added this session) |
+| Active focus | Differential harness widening (`death_auto_gold`, `death_auto_loot`) |
 
 ## Next Intended Task
 
-**Continue widening the death/autoloot differential surface**:
+Continue widening the death lifecycle differential surface. Good next probes:
 
-- **FIGHT-079** — PC corpse half-coin gate (`src/fight.c:1483-1495`): ROM
-  drops half the coins (non-clan only); Python drops full + zeroes. Own
-  gap-closer commit; needs a PC-victim corpse-money test.
-- **auto-loot / auto-gold death scenarios** — needs a PLR_AUTOLOOT/AUTOGOLD
-  meta; `death_corpse_loot_sacrifice` covers manual corpse→get→sacrifice only.
+- `PLR_AUTOSAC` after NPC death, especially the ROM branch that refuses autosac
+  when `AUTOLOOT` left treasure in the corpse.
+- `PLR_AUTOSPLIT` after auto-gold / sacrifice rewards, if a deterministic grouped
+  PC setup is added to the harness.
+- Driver-PC death remains integration-test-only for now; the current harness
+  does not inspect the driver's own corpse after killing the PC.
 
-Method (reinforced): bracket spawns with `__seed`; set mob wealth explicitly
-post-spawn (`__mob_gold`/`__mob_silver`) — boot-rolled wealth is NOT bit-matched
-C⇄Python; capture per-scenario (`--scenario`), never `--all`; a divergence is a
-FINDING (→ `/rom-gap-closer` or new INV-NNN; **never** overwrite the golden).
-
-The live `python -m mud websocketserver` does **not** hot-reload — restart after
-any engine change. When chasing a live-only bug, reproduce reset-population bugs
-via the reset system (`reset_area`/`apply_resets`), not `spawn_mob()` directly.
+Method reminder: bracket spawns with `__seed`; set mob wealth explicitly
+post-spawn (`__mob_gold`/`__mob_silver`) because boot-rolled wealth is not
+bit-matched C⇄Python; capture per-scenario (`python3 -m tools.diff_harness.capture
+--scenario <name>`), never overwrite a real divergence golden.

@@ -63,7 +63,7 @@ def _make_victim(name: str, room, *, level: int = 10, hit_points: int = 5, gold:
 
 
 def _add_loot(victim: Character, vnum: int, short_descr: str) -> Object:
-    proto = ObjIndex(vnum=vnum, short_descr=short_descr)
+    proto = ObjIndex(vnum=vnum, short_descr=short_descr, wear_flags=int(WearFlag.TAKE))
     loot = Object(instance_id=None, prototype=proto)
     victim.add_object(loot)
     return loot
@@ -212,7 +212,10 @@ def test_auto_flags_trigger_and_wiznet_logs(monkeypatch: pytest.MonkeyPatch) -> 
     assert corpse.contained_items == []
 
     assert any("got toasted by Attacker" in message for message in immortal.messages)
-    assert any("quickly gather" in message for message in attacker.messages)
+    assert any("You get a gleaming idol from the corpse of Victim." in message for message in attacker.messages)
+    assert any(
+        "You get 4 silver coins and 7 gold coins from the corpse of Victim." in message for message in attacker.messages
+    )
 
 
 def test_autosacrifice_removes_empty_corpse(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -1011,57 +1011,6 @@ def _object_has_wear_flag(obj, flag: WearFlag) -> bool:
     return bool(proto_flags & int(flag))
 
 
-def _transfer_corpse_coins(attacker: Character, corpse) -> bool:
-    """Extract gold/silver from money objects and add to attacker's purse.
-
-    ROM Reference: src/fight.c auto_loot handles money extraction.
-    QuickMUD uses actual money objects (ItemType.MONEY) instead of corpse attributes.
-    Money objects may already be in attacker's inventory if AUTOLOOT moved them.
-    """
-    from mud.models.constants import ItemType
-
-    contained = list(getattr(corpse, "contained_items", []) or [])
-    attacker_inv = list(getattr(attacker, "inventory", []) or [])
-
-    money_in_corpse = [obj for obj in contained if getattr(obj, "item_type", None) == int(ItemType.MONEY)]
-    money_in_inventory = [obj for obj in attacker_inv if getattr(obj, "item_type", None) == int(ItemType.MONEY)]
-
-    all_money_objects = money_in_corpse + money_in_inventory
-
-    if not all_money_objects:
-        return False
-
-    total_gold = 0
-    total_silver = 0
-
-    for money_obj in all_money_objects:
-        values = list(getattr(money_obj, "value", [0, 0]) or [0, 0])
-        while len(values) < 2:
-            values.append(0)
-
-        silver = int(values[0] or 0)
-        gold = int(values[1] or 0)
-
-        total_silver += silver
-        total_gold += gold
-
-        if money_obj in money_in_corpse:
-            try:
-                corpse.contained_items.remove(money_obj)
-            except (AttributeError, ValueError):
-                pass
-        else:
-            try:
-                attacker.remove_object(money_obj)
-            except (AttributeError, ValueError):
-                pass
-
-    attacker.gold = int(getattr(attacker, "gold", 0) or 0) + total_gold
-    attacker.silver = int(getattr(attacker, "silver", 0) or 0) + total_silver
-
-    return True
-
-
 def _auto_collect_loot(attacker: Character, corpse) -> bool:
     """Auto-loot NPC corpses when the attacker has PLR_AUTOLOOT enabled."""
 
@@ -1069,25 +1018,17 @@ def _auto_collect_loot(attacker: Character, corpse) -> bool:
         return False
     if not _corpse_is_npc(corpse):
         return False
+    if not getattr(corpse, "contained_items", []):
+        return False
 
-    moved = False
-    contained = list(getattr(corpse, "contained_items", []) or [])
-    for obj in contained:
-        try:
-            corpse.contained_items.remove(obj)
-        except (AttributeError, ValueError):  # pragma: no cover - defensive guard
-            continue
-        attacker.add_object(obj)
-        if hasattr(obj, "location"):
-            obj.location = attacker
-        moved = True
+    # ROM src/fight.c:945-957 calls do_get(ch, "all corpse") so death auto-loot
+    # emits the same object-by-object lines as a manual get.
+    from mud.commands.inventory import do_get
 
-    if _transfer_corpse_coins(attacker, corpse):
-        moved = True
-
-    if moved:
-        _push_message(attacker, "You quickly gather the loot from the corpse.")
-    return moved
+    message = do_get(attacker, "all corpse")
+    if message:
+        _push_message(attacker, message)
+    return bool(message)
 
 
 def _auto_collect_coins(attacker: Character, corpse) -> bool:
@@ -1099,11 +1040,29 @@ def _auto_collect_coins(attacker: Character, corpse) -> bool:
         return False
     if not _corpse_is_npc(corpse):
         return False
-    if not _transfer_corpse_coins(attacker, corpse):
+    contained = getattr(corpse, "contained_items", []) or []
+    if not contained:
         return False
 
-    _push_message(attacker, "You quickly gather the loot from the corpse.")
-    return True
+    coins = next(
+        (
+            obj
+            for obj in contained
+            if "gcash" in str(getattr(obj, "name", "")).split() and can_see_object(attacker, obj)
+        ),
+        None,
+    )
+    if coins is None:
+        return False
+
+    # ROM src/fight.c:959-967 gates on get_obj_list("gcash", corpse->contains)
+    # then calls do_get(ch, "all.gcash corpse").
+    from mud.commands.inventory import do_get
+
+    message = do_get(attacker, "all.gcash corpse")
+    if message:
+        _push_message(attacker, message)
+    return bool(message)
 
 
 def _auto_sacrifice(attacker: Character, corpse) -> None:

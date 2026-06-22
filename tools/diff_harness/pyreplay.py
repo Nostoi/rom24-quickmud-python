@@ -95,6 +95,22 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
     if command.startswith("__silver="):
         char.silver = int(command[len("__silver=") :])
         return ""
+    if command.startswith("__plr_autoloot="):
+        from mud.models.constants import PlayerFlag
+
+        if int(command[len("__plr_autoloot=") :]):
+            char.act = int(getattr(char, "act", 0)) | int(PlayerFlag.AUTOLOOT)
+        else:
+            char.act = int(getattr(char, "act", 0)) & ~int(PlayerFlag.AUTOLOOT)
+        return ""
+    if command.startswith("__plr_autogold="):
+        from mud.models.constants import PlayerFlag
+
+        if int(command[len("__plr_autogold=") :]):
+            char.act = int(getattr(char, "act", 0)) | int(PlayerFlag.AUTOGOLD)
+        else:
+            char.act = int(getattr(char, "act", 0)) & ~int(PlayerFlag.AUTOGOLD)
+        return ""
     if command.startswith("__mana="):
         val = int(command[len("__mana=") :])
         char.mana = val

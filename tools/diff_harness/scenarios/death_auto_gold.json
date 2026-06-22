@@ -1,0 +1,20 @@
+{
+  "name": "death_auto_gold",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__seed=910",
+    "__plr_autogold=1",
+    "__mload=3061",
+    "__mob_silver=17",
+    "__mob_gold=2",
+    "__mob_carry=3031",
+    "__seed=910",
+    "__instant_kill",
+    "look in corpse",
+    "inventory",
+    "look"
+  ]
+}

@@ -93,6 +93,8 @@ by `diffmain.c` (C side) and `pyreplay.py` (Python side):
 | `__move=N` | Set PC `move` (and `max_move` if lower) |
 | `__gold=N` | Set PC gold |
 | `__silver=N` | Set PC silver |
+| `__plr_autoloot=0\|1` | Clear/set PC `PLR_AUTOLOOT` |
+| `__plr_autogold=0\|1` | Clear/set PC `PLR_AUTOGOLD` |
 | `__goto=VNUM` | Teleport PC to room (no movement output) |
 | `__cond_hunger=N` | Set `COND_HUNGER` (0=starving, 48=full) |
 | `__cond_thirst=N` | Set `COND_THIRST` |

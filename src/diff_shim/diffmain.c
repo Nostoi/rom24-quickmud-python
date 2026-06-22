@@ -751,6 +751,34 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __plr_autoloot=0|1: set/clear PLR_AUTOLOOT on the driver PC.
+         * Harness-only setup for death auto-loot scenarios; no output. */
+        if (strncmp (line, "__plr_autoloot=", 15) == 0)
+        {
+            if (ch != NULL)
+            {
+                if (atoi (line + 15))
+                    SET_BIT (ch->act, PLR_AUTOLOOT);
+                else
+                    REMOVE_BIT (ch->act, PLR_AUTOLOOT);
+            }
+            continue;
+        }
+
+        /* __plr_autogold=0|1: set/clear PLR_AUTOGOLD on the driver PC.
+         * Harness-only setup for death auto-gold scenarios; no output. */
+        if (strncmp (line, "__plr_autogold=", 15) == 0)
+        {
+            if (ch != NULL)
+            {
+                if (atoi (line + 15))
+                    SET_BIT (ch->act, PLR_AUTOGOLD);
+                else
+                    REMOVE_BIT (ch->act, PLR_AUTOGOLD);
+            }
+            continue;
+        }
+
         /* __cond_full=<n>: set the PC's condition[FULL] directly (no RNG). */
         if (strncmp (line, "__cond_full=", 12) == 0)
         {

@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Differential harness: `death_auto_gold` + `death_auto_loot` scenarios
+  (death auto-action surface)** (`tools/diff_harness/scenarios/`) — added
+  `__plr_autogold=0|1` and `__plr_autoloot=0|1` to both the C shim and Python
+  replay driver so scenarios can seed the driver PC's auto flags without command
+  output. The new scenarios kill a controlled janitor with explicit gold/silver
+  and carried loot, then verify ROM's post-death auto-gold (`get all.gcash corpse`)
+  and auto-loot (`get all corpse`) branches. Surfaced and fixed **FIGHT-080**.
+  51 committed scenarios, all converge; `KNOWN_DIVERGENCES` stays empty.
+
 - **Differential harness: `practice_skill_listing` scenario (practice surface)**
   (`tools/diff_harness/scenarios/practice_skill_listing.json`) — added
   `__learn_pct=NAME=N` to both the C shim and Python replay driver so scenarios
@@ -69,6 +78,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   stale "four scenarios" comment in `tests/test_differential_smoke.py`.
 
 ### Fixed
+
+- **FIGHT-080: death auto-loot/autogold now emits ROM `do_get` lines instead of a
+  fabricated summary.** ROM `damage` (`src/fight.c:945-967`) calls
+  `do_get(ch, "all corpse")` for `PLR_AUTOLOOT` and `do_get(ch, "all.gcash corpse")`
+  for `PLR_AUTOGOLD` when autoloot is off, so the killer sees the same object-by-
+  object "You get ..." lines as a manual get. Python manually moved corpse
+  contents/coins and pushed `"You quickly gather the loot from the corpse."`,
+  hiding item names and coin totals. The auto branches now route through
+  `mud.commands.inventory.do_get`, preserving existing single-delivery via
+  `_push_message`. Tests: `death_auto_gold` / `death_auto_loot` differential
+  replays plus focused `tests/test_combat_death.py` coverage. Surfaced by the new
+  differential scenarios (FINDING-040).
 
 - **FIGHT-079: PC corpse money now follows ROM's clan/non-clan split.** ROM
   `make_corpse` (`src/fight.c:1483-1495`) gives non-clan PCs an owned corpse and
