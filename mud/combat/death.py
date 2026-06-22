@@ -445,15 +445,25 @@ def make_corpse(victim: Character) -> Object | None:
     # ROM make_corpse money transfer is NPC/PC-split.
     # - NPC (src/fight.c:1473): `if (ch->gold > 0)` ONLY — a mob carrying silver
     #   but zero gold mints NO money object; the silver is lost on extraction.
-    # - PC (src/fight.c:1483-1495): half the coins on `> 1`, non-clan only —
-    #   currently still approximated by the `gold > 0 or silver > 0` full-coin
-    #   gate below; tracked as FIGHT-079.
+    # - PC (src/fight.c:1483-1495): non-clan corpses are owner-locked and keep
+    #   all coins on the PC; clan corpses are unowned and drop half the coins
+    #   when either denomination is > 1. FIGHT-079 fixed the previous full-coin
+    #   drop + zeroing approximation.
     # FIGHT-078: the silver-only NPC case dropped phantom silver before this gate.
-    money_gate = gold > 0 if is_npc else (gold > 0 or silver > 0)
+    money_gold = gold
+    money_silver = silver
+    if not is_npc:
+        money_gold = 0
+        money_silver = 0
+        if is_clan_member(victim) and (gold > 1 or silver > 1):
+            money_gold = gold // 2
+            money_silver = silver // 2
+
+    money_gate = gold > 0 if is_npc else (money_gold > 0 or money_silver > 0)
     if money_gate:
         from mud.handler import create_money
 
-        money_obj = create_money(gold, silver)
+        money_obj = create_money(money_gold, money_silver)
         if money_obj:
             # INV-039 / class-13: ROM src/handler.c:1968 obj_to_obj head-inserts.
             corpse.contained_items.insert(0, money_obj)
@@ -461,13 +471,17 @@ def make_corpse(victim: Character) -> Object | None:
             # so in_obj=corpse, in_room=None, carried_by=None.
             money_obj.location = corpse
 
-    victim.gold = 0
-    victim.silver = 0
-
     if not is_npc:
         _clear_player_flag(victim, PlayerFlag.CANLOOT)
         if not is_clan_member(victim):
             corpse.owner = getattr(victim, "name", None)
+        else:
+            corpse.owner = None
+            victim.gold = gold - money_gold
+            victim.silver = silver - money_silver
+    else:
+        victim.gold = 0
+        victim.silver = 0
 
     if is_npc:
         name = getattr(victim, "short_descr", None) or getattr(victim, "name", "someone")

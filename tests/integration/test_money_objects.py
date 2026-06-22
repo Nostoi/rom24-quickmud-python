@@ -237,41 +237,61 @@ def test_npc_death_creates_money_object_in_corpse(movable_mob_factory):
     assert mob.silver == 0
 
 
-def test_pc_death_creates_money_object_in_corpse(movable_char_factory):
+def test_non_clan_pc_death_keeps_coins_and_owned_corpse_has_no_money(movable_char_factory):
     """
-    Test: PC death (non-clan) creates money object INSIDE corpse.
+    Test: Non-clan PC death keeps carried coins and creates an owned corpse.
 
-    ROM Parity: src/fight.c:1492-1498 (PC clan member loses half)
+    ROM Parity: src/fight.c:1485-1486
+        if (!is_clan(ch))
+            corpse->owner = str_dup(ch->name);
+
+    The half-money branch is in the `else` for clan PCs only.
+    """
+    player = movable_char_factory(name="TestPlayer", room_vnum=3001)
+    player.gold = 100
+    player.silver = 50
+    player.clan = 0
+
+    corpse = raw_kill(player)
+
+    assert corpse is not None, "Should create corpse"
+    assert getattr(corpse, "owner", None) == "TestPlayer"
+    assert [obj for obj in corpse.contained_items if obj.item_type == ItemType.MONEY] == []
+    assert player.gold == 100
+    assert player.silver == 50
+
+
+def test_clan_pc_death_drops_half_coins_and_keeps_remainder(movable_char_factory):
+    """
+    Test: Clan PC death creates a corpse money object with half the coins.
+
+    ROM Parity: src/fight.c:1489-1495
         if (ch->gold > 1 || ch->silver > 1) {
             obj_to_obj(create_money(ch->gold/2, ch->silver/2), corpse);
             ch->gold -= ch->gold/2;
             ch->silver -= ch->silver/2;
         }
-
-    Note: This tests PC clan death (half money in corpse).
-    Non-clan PCs should drop ALL money in corpse (similar to NPCs).
     """
-    player = movable_char_factory(name="TestPlayer", room_vnum=3001)
-    player.gold = 100
-    player.silver = 50
-    # TODO: Set clan membership flag to test half-money behavior
+    player = movable_char_factory(name="ClanVictim", room_vnum=3001)
+    player.gold = 101
+    player.silver = 51
+    player.clan = 1
 
     corpse = raw_kill(player)
 
     assert corpse is not None, "Should create corpse"
+    assert getattr(corpse, "owner", None) is None
 
-    # ROM C puts money as an OBJECT inside the corpse
     money_objects = [obj for obj in corpse.contained_items if obj.item_type == ItemType.MONEY]
     assert len(money_objects) == 1, "Should have exactly 1 money object in corpse"
 
     money = money_objects[0]
-    # Non-clan PC should drop ALL money (same as NPC)
-    assert money.value[0] == 50  # all silver
-    assert money.value[1] == 100  # all gold
+    # ROM C integer division truncates toward zero; operands are non-negative.
+    assert money.value[0] == 25
+    assert money.value[1] == 50
 
-    # Player should be zeroed
-    assert player.gold == 0
-    assert player.silver == 0
+    assert player.gold == 51
+    assert player.silver == 26
 
 
 def test_corpse_money_is_lootable_object(movable_char_factory, movable_mob_factory):

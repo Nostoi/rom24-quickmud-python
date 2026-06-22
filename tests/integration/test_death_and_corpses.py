@@ -112,36 +112,40 @@ def test_corpse_contains_player_inventory(test_character, object_factory):
     corpse = raw_kill(test_character)
 
     assert corpse is not None, "Should create corpse"
-    # ROM parity: corpse contains money object + inventory items
-    assert len(corpse.contained_items) == 3, "Corpse should contain money object + 2 inventory items"
+    # ROM src/fight.c:1485-1486 — non-clan PC corpses are owned and do not
+    # transfer coins, so only carried inventory moves into the corpse.
+    assert len(corpse.contained_items) == 2, "Corpse should contain the 2 inventory items"
     assert item1 in corpse.contained_items, "Sword should be in corpse"
     assert item2 in corpse.contained_items, "Shield should be in corpse"
 
-    # Verify money object exists
     money_objects = [obj for obj in corpse.contained_items if obj.item_type == ItemType.MONEY]
-    assert len(money_objects) == 1, "Corpse should contain 1 money object"
+    assert money_objects == []
 
     assert len(test_character.inventory) == 0, "Player inventory should be empty after death"
 
 
-def test_corpse_contains_gold_and_silver(test_character):
+def test_non_clan_player_death_keeps_gold_and_silver(test_character):
     """
-    Test: Player corpse contains character's gold and silver.
+    Test: Non-clan player death keeps character's gold and silver.
 
-    ROM Parity: Mirrors ROM src/fight.c:make_corpse() coin handling
+    ROM Parity: Mirrors ROM src/fight.c:make_corpse() coin handling.
+    Non-clan PCs take the owner branch at fight.c:1485-1486 and do not enter
+    the clan half-money branch at fight.c:1489-1495.
 
     Given: A player with gold and silver
     When: The player dies
-    Then: Gold and silver are transferred to the corpse
+    Then: Gold and silver remain on the player
     """
     test_character.gold = 100
     test_character.silver = 50
+    test_character.clan = 0
 
     corpse = raw_kill(test_character)
 
     assert corpse is not None, "Should create corpse"
-    assert test_character.gold == 0, "Player gold should be zeroed after death"
-    assert test_character.silver == 0, "Player silver should be zeroed after death"
+    assert test_character.gold == 100
+    assert test_character.silver == 50
+    assert [obj for obj in corpse.contained_items if obj.item_type == ItemType.MONEY] == []
 
 
 def test_corpse_has_decay_timer_player(test_character):
@@ -425,7 +429,7 @@ def test_corpse_cost_is_zero(test_character):
 __all__ = [
     "test_player_death_creates_corpse",
     "test_corpse_contains_player_inventory",
-    "test_corpse_contains_gold_and_silver",
+    "test_non_clan_player_death_keeps_gold_and_silver",
     "test_corpse_has_decay_timer_player",
     "test_corpse_has_decay_timer_npc",
     "test_player_respawns_with_minimal_hp_mana_move",

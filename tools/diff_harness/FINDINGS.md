@@ -40,8 +40,9 @@ Regression test:
 ## FINDING-038 — NPC corpse drops phantom silver when the mob carried silver but no gold — ✅ RESOLVED
 
 **Status:** ✅ RESOLVED 2026-06-20 (v2.14.203). Fixed under **FIGHT-078**
-(`docs/parity/FIGHT_C_AUDIT.md`). Sibling PC-corpse half-coin divergence filed as
-**FIGHT-079** (deferred — higher blast radius, untested, not harness-exercised).
+(`docs/parity/FIGHT_C_AUDIT.md`). Sibling PC-corpse coin split later closed as
+**FIGHT-079** (v2.14.207) with Python integration coverage; no differential
+scenario exercises driver-PC corpses yet.
 
 **Scenario:** `death_corpse_loot_sacrifice` — spawn a level-1 janitor (3061),
 set its wealth explicitly (`__mob_silver=17 __mob_gold=0` — boot-rolled wealth is
@@ -60,8 +61,8 @@ object on **`ch->gold > 0`** — when an NPC carries silver but no gold, ROM cre
 both NPC and PC, so a silver-only NPC dropped phantom silver into its corpse.
 
 **Fix:** `mud/combat/death.py:make_corpse` now gates the NPC case on `gold > 0`
-(ROM fight.c:1473); the PC case keeps its current `gold > 0 or silver > 0` gate
-pending FIGHT-079. Regression test:
+(ROM fight.c:1473); the sibling PC corpse branch is closed by FIGHT-079.
+Regression test:
 `tests/integration/test_fight078_npc_corpse_money_gate.py` (C-binary-independent) +
 the `death_corpse_loot_sacrifice` differential replay.
 

@@ -70,6 +70,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FIGHT-079: PC corpse money now follows ROM's clan/non-clan split.** ROM
+  `make_corpse` (`src/fight.c:1483-1495`) gives non-clan PCs an owned corpse and
+  leaves all coins on the character; clan PCs get an unowned corpse and drop half
+  their gold/silver (integer truncation) when either denomination is greater than
+  1, retaining the remainder. Python previously dropped a full money object for
+  every PC corpse on `gold > 0 or silver > 0` and zeroed both balances. Tests:
+  `tests/integration/test_money_objects.py::test_non_clan_pc_death_keeps_coins_and_owned_corpse_has_no_money`,
+  `tests/integration/test_money_objects.py::test_clan_pc_death_drops_half_coins_and_keeps_remainder`,
+  plus corrected stale `tests/integration/test_death_and_corpses.py` non-clan
+  expectations.
+
 - **DB-004: reset-spawned mobs no longer lose 2 levels (game-wide).** ROM
   `reset_room` M-case (`src/db.c:1750`) computes `level = URANGE(0, pMob->level - 2,
   LEVEL_HERO-1)` into a **local** that fuzzes the levels of objects the mob is
@@ -105,8 +116,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   gold mints no money object (the silver is lost on extraction). Python used a
   unified `gold > 0 or silver > 0` gate for both NPC and PC corpses, leaving a
   lootable phantom `"N silver coins"` object in silver-only NPC corpses. The NPC
-  case now gates on `gold > 0`; the PC case keeps its current gate pending
-  FIGHT-079 (PC half-coin-on-death divergence, filed). Tests:
+  case now gates on `gold > 0`; the sibling PC branch is closed by FIGHT-079.
+  Tests:
   `tests/integration/test_fight078_npc_corpse_money_gate.py` + the
   `death_corpse_loot_sacrifice` differential replay. Surfaced by the differential
   harness (FINDING-038).
