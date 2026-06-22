@@ -1780,6 +1780,42 @@ async def _run_character_creation_flow(
     return True
 
 
+def _find_linkdead_character(name: str) -> Character | None:
+    """Return a net-death link-dead PC with this name still in the world.
+
+    mirroring ROM src/comm.c:check_reconnect (1840-1844): scan ``char_list`` for
+    a non-NPC char whose ``desc`` is NULL and whose name matches. ROM keeps such
+    a char in the world after a net-death (``close_socket``, src/comm.c:1087), so
+    a returning player rebinds to that same in-world instance — preserving
+    combat/position/transient affects — instead of reloading from disk.
+
+    A match requires the explicit ``link_dead`` marker that the socket-drop
+    linger path (``_finalize_disconnect``) sets — NOT merely ``desc is None``.
+    The Python ``character_registry`` transiently holds ``desc=None`` characters
+    that are *not* ROM-link-dead (e.g. a just-quit char mid-teardown, the
+    ANSI-persistence round-trip in ``test_account_auth``); inferring link-dead
+    from ``desc is None`` alone would wrongly intercept their next login. The
+    flag makes the state explicit, and keeps this branch fully inert until the
+    linger path exists.
+    """
+    from mud.models.character import character_registry
+
+    target = (name or "").strip().lower()
+    if not target:
+        return None
+    for ch in character_registry:
+        if getattr(ch, "is_npc", False):
+            continue
+        if not getattr(ch, "link_dead", False):
+            continue
+        if (getattr(ch, "name", "") or "").lower() != target:
+            continue
+        # The linger path nulls the descriptor; sanity-check it's truly detached.
+        if getattr(ch, "desc", None) is None and getattr(ch, "connection", None) is None:
+            return ch
+    return None
+
+
 async def _select_character(
     conn: TelnetStream,
     account: object,
@@ -1837,6 +1873,23 @@ async def _select_character(
         if active_connection is not None:
             await _send_line(conn, "Reconnect attempt failed.")
             return None
+
+    # ROM src/comm.c:check_reconnect (1846-1872, fConn=TRUE) — a link-dead char
+    # still in the world is rebound to the new descriptor rather than reloaded
+    # from disk, preserving combat/position/transient affects. Called at
+    # src/nanny.c:281 only AFTER the password is verified (nanny.c:270-274
+    # rejects wrong passwords first), so this branch inherits the same auth the
+    # normal login already performed — no credential bypass.
+    linkdead = _find_linkdead_character(chosen_name)
+    if linkdead is not None:
+        if permit_banned and not _has_permit_flag(linkdead):
+            await _send_line(conn, "Your site has been banned from this mud.")
+            return None
+        if is_character_denied_access(linkdead):
+            log_game_event(f"Denying access to {chosen_name}@{getattr(conn, 'host', '?')}.")
+            await _send_line(conn, "You are denied access.")
+            return None
+        return linkdead, True
 
     char = load_character(chosen_name)
     if char:

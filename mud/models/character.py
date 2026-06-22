@@ -581,6 +581,12 @@ class Character:
     cooldowns: dict[str, int] = field(default_factory=dict)
     connection: object | None = None
     desc: object | None = None  # ROM: DESCRIPTOR_DATA
+    # Net-death link-dead marker (divergence class 14). Set by the socket-drop
+    # linger path (mud/net/connection.py:_finalize_disconnect) when ROM
+    # close_socket would keep a CON_PLAYING char in the world with desc==NULL
+    # (src/comm.c:1087); cleared on reconnect-rebind (check_reconnect). Transient
+    # runtime state — never persisted (a reloaded char is never link-dead).
+    link_dead: bool = False
     is_admin: bool = False
 
     # Communication and channels
