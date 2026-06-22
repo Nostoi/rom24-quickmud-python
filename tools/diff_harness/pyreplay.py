@@ -178,6 +178,18 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
             char.skills = {}
         char.skills[resolved.name] = 100
         return ""
+    if command.startswith("__learn_pct="):
+        from mud.skills import skill_registry
+
+        rest = command[len("__learn_pct=") :].strip()
+        spell_name, pct_raw = rest.rsplit("=", 1)
+        resolved = skill_registry.find_spell(char, spell_name.strip())
+        if resolved is None:
+            raise AssertionError(f"__learn_pct: unknown skill {spell_name!r}")
+        if char.skills is None:
+            char.skills = {}
+        char.skills[resolved.name] = int(pct_raw)
+        return ""
     if command.startswith("__mload="):
         mob = spawn_mob(int(command[len("__mload=") :]))
         if mob is None:

@@ -361,6 +361,23 @@ def test_drive_python_replay_level_meta_updates_character_level():
     assert trace[0].chars[0].level == 30
 
 
+def test_drive_python_replay_learn_pct_meta_sets_partial_skill():
+    sc = Scenario(
+        name="generated_learn_pct",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=7,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__learn_pct=armor=17", "practice"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert trace[1].output == ["armor               17%  ", "You have 5 practice sessions left.", ""]
+
+
 def test_drive_python_replay_mana_meta_sets_mana_and_max_mana():
     sc = Scenario(
         name="generated_mana",

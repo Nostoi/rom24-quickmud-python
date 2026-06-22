@@ -1,0 +1,14 @@
+{
+  "name": "practice_skill_listing",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 7 },
+  "watch": { "chars": ["Tester"], "rooms": [3001] },
+  "steps": [
+    "__seed=1234",
+    "__mload=3020",
+    "__learn_pct=armor=1",
+    "practice armor",
+    "practice"
+  ]
+}

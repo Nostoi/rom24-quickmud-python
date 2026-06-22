@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Differential harness: `practice_skill_listing` scenario (practice surface)**
+  (`tools/diff_harness/scenarios/practice_skill_listing.json`) — added
+  `__learn_pct=NAME=N` to both the C shim and Python replay driver so scenarios
+  can seed partial learned percentages instead of only 100% via `__learn`.
+  The new scenario `__mload`s the mage guildmaster (midgaard 3020,
+  ACT_PRACTICE), seeds `armor` at 1%, runs `practice armor`, then lists known
+  skills. It converges against the ROM 2.4b6 C golden: `armor` advances to 35%
+  for the default INT-16 mage and practice sessions drop from 5 to 4. 49
+  committed scenarios, all converge; `KNOWN_DIVERGENCES` stays empty.
+
 - **Differential harness: `train_stats_sessions` + `gain_convert_points` scenarios
   (advancement surface)** (`tools/diff_harness/scenarios/`). `train_stats_sessions`
   `__mload`s the sailor (midgaard 3007, ACT_TRAIN) and exercises `train` no-arg

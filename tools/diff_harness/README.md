@@ -99,6 +99,7 @@ by `diffmain.c` (C side) and `pyreplay.py` (Python side):
 | `__cond_full=N` | Set `COND_FULL` |
 | `__cond_drunk=N` | Set `COND_DRUNK` |
 | `__learn=NAME` | Teach the PC skill/spell `NAME` at 100% |
+| `__learn_pct=NAME=N` | Teach the PC skill/spell `NAME` at a specific learned percent |
 | `__mload=VNUM` | Spawn mob into the PC's room |
 | `__oload=VNUM` | Spawn object into the PC's room |
 | `__mob_gold=N` | Set first NPC in room's gold |

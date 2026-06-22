@@ -931,6 +931,30 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __learn_pct=<skill/spell name>=<percent>: teach the PC a specific
+         * learned percentage. This keeps practice-command scenarios below
+         * adept, unlike __learn=NAME's deterministic 100% setup. */
+        if (strncmp (line, "__learn_pct=", 12) == 0)
+        {
+            if (ch != NULL && ch->pcdata != NULL)
+            {
+                char arg[MAX_INPUT_LENGTH];
+                char *eq;
+                strncpy (arg, line + 12, sizeof (arg) - 1);
+                arg[sizeof (arg) - 1] = '\0';
+                eq = strrchr (arg, '=');
+                if (eq != NULL)
+                {
+                    int sn;
+                    *eq = '\0';
+                    sn = skill_lookup (arg);
+                    if (sn >= 0)
+                        ch->pcdata->learned[sn] = atoi (eq + 1);
+                }
+            }
+            continue;
+        }
+
         /* __tick: run one violence_update() pulse (combat round only),
          * capturing the PC's combat output. */
         if (strncmp (line, "__tick", 6) == 0)
