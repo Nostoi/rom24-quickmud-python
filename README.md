@@ -131,10 +131,13 @@ than using a browser-only shortcut login path.
 
 ### Companion Repo
 
-The web interface is intended to live in a separate repository named
-`quickmud-web-client`. Keep that project focused on browser UX, terminal
-rendering, reconnect behavior, and login flow while leaving gameplay and ROM
-parity logic in this backend repo.
+The web interface lives in a separate repository:
+**[`quickmud-web-client`](https://github.com/Nostoi/quickmud-web-client)**. Keep
+that project focused on browser UX, terminal rendering, reconnect behavior, and
+login flow while leaving gameplay and ROM parity logic in this backend repo. The
+server↔client wire contract (message schema, tick/prompt push, idle timeouts,
+link-dead reconnect) is documented for that client in
+`quickmud-web-client/docs/SERVER_CONNECTION_CONTRACT.md`.
 
 ## 🏗️ For Developers
 
@@ -166,7 +169,7 @@ python -m mud  # Start development server
 **Stage: parity beta** — feature-complete and playable; parity fidelity is being
 systematically hardened toward ROM-exact behavioral equivalence.
 
-- **Version**: 2.14.204
+- **Version**: 2.14.211
 - **Playability**: ✅ All 255 ROM commands implemented. Combat, spells, skills,
   movement, shops, mob programs, OLC building, and admin tools work and pass their
   tests. You can run a server and play today.
@@ -181,11 +184,14 @@ systematically hardened toward ROM-exact behavioral equivalence.
   Per-file audits confirm *what was reviewed*; they don't by themselves certify
   bit-for-bit behavioral parity. See
   [`docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md`](docs/parity/ROM_C_SUBSYSTEM_AUDIT_TRACKER.md).
-- **Cross-file Invariants**: ✅ **25 / 25 enforced** — contracts that span modules
-  (message delivery, prompt clamping, registry membership, same-room combat,
-  death/reconnect ordering, RNG determinism, persistence coherence, room-flag survival)
-  are each locked by a dedicated regression test. This layer catches the class of bug
-  that per-file audits structurally miss.
+- **Cross-file Invariants**: ✅ contracts that span modules — message delivery
+  (including prompt-after-tick output), prompt clamping, registry membership,
+  same-room combat, death/reconnect and net-death link-dead lifecycle, RNG
+  determinism, persistence coherence, room-flag survival — are each locked by a
+  dedicated regression test (stable `INV-NNN` IDs). This layer catches the class
+  of bug that per-file audits structurally miss. See
+  [`docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md`](docs/parity/CROSS_FILE_INVARIANTS_TRACKER.md)
+  for the current enumerated set and status.
 - **Differential harness**: ✅ live — the original ROM 2.4b6 C engine and the Python
   port are run through identical scripted scenarios and their observable state is
   diffed. Any behavioral divergence surfaces mechanically rather than requiring a
@@ -193,11 +199,13 @@ systematically hardened toward ROM-exact behavioral equivalence.
   parity-confidence gap.
 - **Test Suite**: ✅ **6,034 passed, 4 skipped** (full `pytest` run, ~5min parallel).
   Unit, integration, command-registry, and differential-harness layers.
-- **Active focus**: Class 11 dynamic differential widening — all deterministic
-  OLC-created mobprog trigger types (`entry`, `greet`, `speech`, `act`, `bribe`,
-  `give`, `fight`/`hpcnt`, `surr`, `kill`/`death`, `exit`, `exall`, `grall`) are
-  now covered end-to-end through the MEdit → `spawn_mob` → runtime dispatch path.
-  RNG-locked triggers (`random`, `delay`) are deferred pending seed-alignment work.
+- **Active focus**: Cross-file invariants and the divergence-class roster (the
+  enumeration-of-structural-divergences pass). Recently closed: **divergence-class
+  14** (net-death link-dead lifecycle — a dropped connection now lingers in the
+  world and a returning player rebinds to the same character, mirroring ROM
+  `close_socket`/`check_reconnect`) and **INV-053** (the prompt's HP/mana/move now
+  refreshes on game ticks, not only after a command). See
+  [`docs/parity/DIVERGENCE_CLASS_ROSTER.md`](docs/parity/DIVERGENCE_CLASS_ROSTER.md).
 - **Compatibility**: Python 3.10+, cross-platform
 
 ## 🏛️ Architecture

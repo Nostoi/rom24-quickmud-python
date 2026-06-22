@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.14.211] - 2026-06-22
+
 ### Added
 
 - **Net-death link-dead lifecycle (divergence-class 14)** — a genuine socket
