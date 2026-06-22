@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **INV-053 PROMPT-AFTER-TICK-OUTPUT — tick-driven HP/mana now refreshes the
+  prompt live** (`mud/game_loop.py`, `mud/utils/messaging.py`,
+  `mud/net/protocol.py`, `mud/net/connection.py`). ROM's `game_loop_unix`
+  re-emits `bust_a_prompt` on every pulse that produced output for a descriptor
+  (`src/comm.c:868-883`, `1376-1377`), so combat HP ticks down live and a
+  spell cast on an idle player by a mob/mobprog shows the new HP/mana in the
+  same pulse. The Python port pushed the tick message but never re-rendered the
+  prompt (it was sent only at the top of the blocked per-connection loop), so
+  the HP/mana line stayed frozen until the player's next command. The tick loop
+  now mirrors ROM's per-pulse output phase: `async_game_loop` wraps `game_tick()`
+  in `begin_tick_output()/end_tick_output()`, the delivery chokepoints
+  (`push_message`, `broadcast_room`, `broadcast_global`) mark PCs that receive
+  tick output, and `schedule_tick_prompts()` appends one fresh prompt per marked
+  descriptor afterwards. Silent idle regen still emits no prompt — ROM's
+  `char_update` is silent (`src/update.c:698-711`), so that case stays
+  parity-correct. Enforced by
+  `tests/integration/test_inv053_prompt_after_tick_output.py` (4).
+
 ### Added
 
 - **Differential harness: `death_auto_gold` + `death_auto_loot` scenarios

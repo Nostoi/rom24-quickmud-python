@@ -1785,9 +1785,21 @@ async def async_game_loop() -> None:
     # ROM standard: 4 pulses per second (250ms per pulse)
     tick_interval = 1.0 / PULSE_PER_SECOND
 
+    from mud.net.connection import schedule_tick_prompts
+    from mud.utils.messaging import begin_tick_output, end_tick_output
+
     while True:
         try:
-            game_tick()  # Call existing synchronous tick function
+            # INV-053: mirror ROM's per-pulse output phase (src/comm.c:868-883).
+            # Mark every PC that receives output during the synchronous tick, then
+            # append a fresh bust_a_prompt to each — so tick-driven HP/mana changes
+            # reach the prompt line within the same pulse, as in process_output.
+            begin_tick_output()
+            try:
+                game_tick()  # Call existing synchronous tick function
+            finally:
+                end_tick_output()
+            schedule_tick_prompts()
             await asyncio.sleep(tick_interval)
         except asyncio.CancelledError:
             # Server shutdown - clean exit

@@ -8,6 +8,7 @@ from mud.models.character import Character, character_registry
 from mud.net.ansi import render_ansi
 from mud.net.session import Session
 from mud.utils.act import capitalize_act_line
+from mud.utils.messaging import note_tick_delivery
 
 if TYPE_CHECKING:
     from mud.net.connection import TelnetStream
@@ -79,6 +80,7 @@ def broadcast_room(
             # replays on the next prompt (duplicate delivery). Mirrors
             # mud/utils/messaging.py:push_message — async XOR mailbox, never both.
             asyncio.create_task(send_to_char(char, message))
+            note_tick_delivery(char)  # INV-053: arm tick-prompt (no-op off-tick)
         elif hasattr(char, "messages"):
             char.messages.append(message)
 
@@ -113,5 +115,6 @@ def broadcast_global(
         if writer is not None:
             # INV-001 SINGLE-DELIVERY — async send XOR mailbox (see broadcast_room).
             asyncio.create_task(send_to_char(char, per_message))
+            note_tick_delivery(char)  # INV-053: arm tick-prompt (no-op off-tick)
         elif hasattr(char, "messages"):
             char.messages.append(per_message)

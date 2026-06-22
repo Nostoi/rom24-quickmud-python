@@ -689,6 +689,38 @@ async def _send_line(conn: TelnetStream, message: str) -> None:
     await conn.send_line(message)
 
 
+async def _send_tick_prompt(char) -> None:
+    """Render and send one fresh prompt to ``char`` (INV-053).
+
+    mirroring ROM src/comm.c:process_output (1376-1377) appending bust_a_prompt
+    to a descriptor that produced output this pulse. Scheduled (not awaited) by
+    ``schedule_tick_prompts`` so it queues AFTER the pulse's message tasks.
+    """
+    conn = getattr(char, "connection", None)
+    if conn is None or not hasattr(conn, "send_prompt"):
+        return
+    session = getattr(char, "desc", None)
+    go_ahead = getattr(session, "go_ahead_enabled", None)
+    with suppress(Exception):
+        await conn.send_prompt(bust_a_prompt(char), go_ahead=go_ahead)
+
+
+def schedule_tick_prompts() -> None:
+    """Emit a fresh prompt to every PC that received output during the tick.
+
+    Call once after ``game_tick()`` returns — the async analog of ROM's
+    per-pulse output phase (src/comm.c:868-883). Prompts are scheduled via
+    ``create_task`` so they run after the pulse's already-queued message tasks,
+    putting the prompt bytes on the transport after the message bytes (INV-053).
+    """
+    from mud.utils.messaging import drain_prompt_dirty
+
+    for char in drain_prompt_dirty():
+        if getattr(char, "connection", None) is None:
+            continue  # disconnected between mark and drain
+        asyncio.create_task(_send_tick_prompt(char))
+
+
 async def _prompt(
     conn: TelnetStream, prompt: str, *, hide_input: bool = False, go_ahead: bool | None = None
 ) -> str | None:

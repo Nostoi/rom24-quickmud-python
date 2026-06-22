@@ -46,6 +46,23 @@ def _enable_world_invariant_checks(request):
 
 
 @pytest.fixture(autouse=True)
+def _reset_tick_prompt_state():
+    """Reset INV-053 tick-output prompt tracking between tests.
+
+    ``mud.utils.messaging`` keeps a module-level ``_in_tick`` flag and
+    ``_prompt_dirty`` list to mirror ROM's per-pulse output phase. A test that
+    drives ``async_game_loop`` (or wraps ``begin_tick_output``) could leave the
+    flag set or a char queued; clear before and after so it never leaks across
+    the files sharing an xdist worker.
+    """
+    from mud.utils import messaging
+
+    messaging.reset_prompt_dirty()
+    yield
+    messaging.reset_prompt_dirty()
+
+
+@pytest.fixture(autouse=True)
 def _reset_descriptor_list():
     """Prevent `registry.descriptor_list` leaking across tests.
 
