@@ -91,6 +91,23 @@ def _send_command(websocket, command: str) -> tuple[str, dict]:
     return transcript, prompt
 
 
+def _quit(websocket) -> None:
+    """End the session ROM-cleanly via ``do_quit`` (save + extract), so the next
+    login is a fresh DISK round-trip rather than a class-14 link-dead rebind.
+
+    A bare websocket close is a net-death link drop (the char lingers link-dead),
+    which would make the reconnect rebind the in-memory instance — defeating the
+    save/load round-trip these tests exist to prove. Draining to the server-side
+    close confirms the quit's extract+save ran before we reconnect.
+    """
+    from contextlib import suppress
+
+    websocket.send_json({"type": "input", "text": "quit"})
+    with suppress(Exception):
+        for _ in range(100):
+            websocket.receive_json()
+
+
 def test_nanny_saveload_002_prompt_template_round_trips_through_reconnect() -> None:
     """NANNY-SAVELOAD-002 — custom prompt template persists across reconnect.
 
@@ -113,6 +130,7 @@ def test_nanny_saveload_002_prompt_template_round_trips_through_reconnect() -> N
             # mirroring ROM src/act_info.c:953-954 — success reply echoes
             # the stored template (PROMPT-CMD-002).
             assert f"Prompt set to {custom_prompt}" in transcript, f"do_prompt did not confirm set:\n{transcript}"
+            _quit(websocket)  # save + extract so the reconnect is a fresh disk load
 
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _reconnect(websocket, "Promter")
@@ -141,6 +159,7 @@ def test_nanny_saveload_003_alias_round_trips_through_reconnect() -> None:
             _create_elf_mage(websocket, "Aliaser")
             transcript, _ = _send_command(websocket, "alias k kill")
             assert "k is now aliased to 'kill'." in transcript, f"set-alias response not ROM-exact:\n{transcript}"
+            _quit(websocket)  # save + extract so the reconnect is a fresh disk load
 
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _reconnect(websocket, "Aliaser")
@@ -165,6 +184,7 @@ def test_nanny_saveload_001_wimpy_round_trips_through_reconnect() -> None:
             _create_elf_mage(websocket, "Wimper")
             transcript, _ = _send_command(websocket, "wimpy 30")
             assert "Wimpy set to 30 hit points." in transcript, f"set-wimpy response not ROM-exact:\n{transcript}"
+            _quit(websocket)  # save + extract so the reconnect is a fresh disk load
 
         # Reconnect and read back via score.
         with client.websocket_connect("/ws") as websocket:

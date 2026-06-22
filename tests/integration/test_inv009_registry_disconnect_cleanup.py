@@ -76,35 +76,50 @@ def _reconnect(websocket, name: str) -> None:
     assert prompt["text"] == "Password: "
     websocket.send_json({"type": "input", "text": "secret1"})
     _, prompt = _receive_until_prompt(websocket)
-    _, prompt = _continue_motd(websocket, prompt)
+    # Divergence-class 14: a link-dead reconnect rebinds straight into the game
+    # (ROM check_reconnect → CON_PLAYING) with NO MOTD continue. (Before class 14
+    # the prior char was removed on disconnect, so this was a fresh disk-load
+    # login that DID show the MOTD.)
     assert prompt["session_state"] == "game"
 
 
 def test_inv009_registry_has_single_entry_after_disconnect_and_reconnect() -> None:
-    """After a clean disconnect, the prior Character must be gone from registry."""
+    """INV-009 no-duplicate invariant holds via the class-14 mechanism.
+
+    A clean websocket close (no `quit`) is a net-death link drop: the char
+    LINGERS link-dead (ROM close_socket keeps it in char_list), and a reconnect
+    REBINDS that same instance (ROM check_reconnect) — so the registry never
+    accumulates a duplicate. (Before class 14 the disconnect removed the char
+    and reconnect loaded a fresh one; the invariant — at most one entry per
+    name — is unchanged, only the mechanism is.)
+    """
     with TestClient(app) as client:
         with client.websocket_connect("/ws") as websocket:
             _create_elf_mage(websocket, "Regista")
 
-        # Snapshot the registry state between disconnect and reconnect.
+        # Clean ws close == link drop → the char lingers link-dead.
         after_disconnect = [c for c in character_registry if getattr(c, "name", "") == "Regista"]
 
         with client.websocket_connect("/ws") as websocket:
             _reconnect(websocket, "Regista")
-            # Capture WHILE the websocket is open — once the context
-            # manager exits the INV-009 disconnect cleanup will remove
-            # the live entry too.
+            # Capture WHILE the websocket is open.
             after_reconnect = [c for c in character_registry if getattr(c, "name", "") == "Regista"]
 
-    # Diagnose: after_disconnect tells us the "remove on disconnect" question;
-    # after_reconnect tells us the duplicate question.
-    assert len(after_disconnect) == 0, (
-        f"INV-009: after clean disconnect, expected 0 'Regista' entries in "
-        f"character_registry, got {len(after_disconnect)} "
+    # Class 14: the link drop leaves exactly ONE lingering, link-dead entry.
+    assert len(after_disconnect) == 1, (
+        f"class 14: a net-death link drop must LINGER exactly one 'Regista' "
+        f"(link-dead), got {len(after_disconnect)} "
         f"(states: {[(c.hit, id(c)) for c in after_disconnect]})"
     )
+    assert after_disconnect[0].link_dead is True, "the lingering char must be flagged link-dead"
+    assert after_disconnect[0].desc is None, "the lingering char must have no descriptor"
+
+    # INV-009: reconnect must NOT duplicate — and it must be the SAME instance
+    # (a rebind, not a second disk load), which is what keeps the count at one.
     assert len(after_reconnect) == 1, (
-        f"INV-009: after reconnect, expected exactly 1 'Regista' entry in "
-        f"character_registry, got {len(after_reconnect)} "
-        f"(states: {[(c.hit, id(c)) for c in after_reconnect]})"
+        f"INV-009: after reconnect, expected exactly 1 'Regista' entry, got "
+        f"{len(after_reconnect)} (states: {[(c.hit, id(c)) for c in after_reconnect]})"
+    )
+    assert after_reconnect[0] is after_disconnect[0], (
+        "reconnect must REBIND the same in-world instance (check_reconnect), not load a 2nd from disk"
     )

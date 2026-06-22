@@ -39,6 +39,23 @@ def _continue_motd_prompt(websocket, prompt: dict) -> tuple[list[dict], dict]:
     return _receive_until_prompt(websocket, limit=200)
 
 
+def _quit(websocket) -> None:
+    """End the session ROM-cleanly via ``do_quit`` (save + extract) so the next
+    login is a fresh DISK round-trip, not a class-14 link-dead rebind.
+
+    A bare websocket close is a net-death link drop: the char lingers link-dead,
+    so the reconnect would rebind the in-memory instance and load nothing from
+    disk — defeating these tests' save/reload assertions. Draining to the
+    server-side close confirms the quit's extract+save ran before reconnect.
+    """
+    from contextlib import suppress
+
+    websocket.send_json({"type": "input", "text": "quit"})
+    with suppress(Exception):
+        for _ in range(100):
+            websocket.receive_json()
+
+
 def test_websocket_boots_loaded_world_and_uses_account_login_flow() -> None:
     """mirroring ROM nanny.c: login starts with Name:, new char gets confirm then password."""
     with TestClient(app) as client:
@@ -146,6 +163,7 @@ def test_websocket_reconnect_does_not_replay_new_character_outfit_flow() -> None
                 _, prompt = _receive_until_prompt(websocket)
 
             _, prompt = _continue_motd_prompt(websocket, prompt)
+            _quit(websocket)  # save + extract so the reconnect is a fresh disk load
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _receive_until_prompt(websocket)
             if prompt["text"] == "Do you want ANSI? (Y/n) ":
@@ -198,6 +216,7 @@ def test_websocket_reconnect_preserves_school_outfit_state() -> None:
             assert prompt["session_state"] == "game"
             score_text = "".join(payload.get("text", "") for payload in seen)
             created_carry_line = next(line for line in score_text.splitlines() if line.startswith("You are carrying "))
+            _quit(websocket)  # save + extract so the reconnect is a fresh disk load
 
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _receive_until_prompt(websocket)
@@ -246,6 +265,7 @@ def test_websocket_reconnect_score_matches_rom_act_info_lines() -> None:
                 _, prompt = _receive_until_prompt(websocket, limit=200)
             _, prompt = _continue_motd_prompt(websocket, prompt)
             assert prompt["session_state"] == "game"
+            _quit(websocket)  # save + extract so the reconnect is a fresh disk load
 
         # Reconnect, log in with password, then issue `score`.
         with client.websocket_connect("/ws") as websocket:
@@ -321,6 +341,7 @@ def test_websocket_reconnect_look_matches_room_registry_not_cached_snapshot() ->
                 _, prompt = _receive_until_prompt(websocket, limit=200)
             _, prompt = _continue_motd_prompt(websocket, prompt)
             assert prompt["session_state"] == "game"
+            _quit(websocket)  # save + extract so the reconnect is a fresh disk load
 
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _receive_until_prompt(websocket)
@@ -397,6 +418,7 @@ def test_websocket_reconnect_initial_prompt_reflects_loaded_resources() -> None:
                 _, prompt = _receive_until_prompt(websocket, limit=200)
             _, prompt = _continue_motd_prompt(websocket, prompt)
             assert prompt["session_state"] == "game"
+            _quit(websocket)  # save + extract so the reconnect is a fresh disk load
 
         with client.websocket_connect("/ws") as websocket:
             _, prompt = _receive_until_prompt(websocket)

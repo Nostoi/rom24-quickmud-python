@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Net-death link-dead lifecycle (divergence-class 14)** — a genuine socket
+  drop now keeps the character in the world *link-dead*, matching ROM
+  `close_socket` (`src/comm.c:1075-1093`) instead of the prior immediate
+  `do_quit`-style removal. On an unexpected disconnect the char lingers
+  (`mud/net/connection.py:_finalize_disconnect` → `_disconnect_linkdead`): the
+  room sees "X has lost the link.", a `WIZ_LINKS` wiznet fires, the descriptor
+  detaches, but the char stays in its room and registry. It keeps accruing the
+  idle timer (void@12 min / autoquit@30 min) and is attackable while away. A
+  returning player **reconnects to that same instance** (`_find_linkdead_character`
+  → `_select_character`, ROM `check_reconnect`, gated behind the normal password
+  auth) — preserving combat/position/transient affects — rather than reloading
+  from disk. An explicit `quit` and idle-autoquit still fully extract. New
+  `Character.link_dead` marker. Enforced by
+  `tests/integration/test_class14_linkdead_lifecycle.py` (6) and the rewritten
+  `test_inv009_registry_disconnect_cleanup.py`. Known limitation: a client that
+  reconnects within the same event-loop tick (before the async teardown flags
+  link-dead) races the rebind; production clients back off ≥1 s so this is
+  test-only — reconnect-flavor tests now `quit` explicitly between sessions.
+
 ### Documented
 
 - **Divergence-class roster: class 14 — Connection / session lifecycle

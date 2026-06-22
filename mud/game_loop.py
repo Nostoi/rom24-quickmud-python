@@ -671,6 +671,15 @@ def _auto_quit_character(character: Character) -> None:
 
     connection = getattr(character, "connection", None)
     if getattr(character, "desc", None) is not None and connection is not None:
+        # Idle autoquit is ROM do_quit (src/update.c:897-900) — a deliberate
+        # extract, NOT a net-death link drop. Flag it so the play loop's
+        # disconnect finally (mud/net/connection.py:_finalize_disconnect) takes
+        # the full-extract branch when the scheduled close wakes `readline`,
+        # instead of lingering the char link-dead (divergence-class 14).
+        try:
+            character._quit_requested = True
+        except Exception:  # pragma: no cover - defensive safeguard
+            pass
         if _schedule_connection_close(connection):
             return
 

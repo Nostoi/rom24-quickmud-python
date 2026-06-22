@@ -1138,6 +1138,108 @@ async def _disconnect_session(session: Session) -> Character | None:
     return old_char
 
 
+def _disconnect_linkdead(char: Character, session: Session | None, conn: TelnetStream, username: str) -> None:
+    """ROM net-death link-dead teardown (src/comm.c:1081-1088).
+
+    ``close_socket`` keeps a CON_PLAYING char in ``char_list`` with
+    ``ch->desc = NULL`` on an unexpected socket drop — it broadcasts
+    ``"$n has lost $s link."`` + a ``WIZ_LINKS`` wiznet, detaches the
+    descriptor, and leaves the char in the world. ``char_update`` then keeps
+    idling it (void@12 / autoquit@30) and a returning player rebinds via
+    ``_find_linkdead_character`` (``check_reconnect``). ROM does NOT save here —
+    the in-memory instance stays authoritative until void/autoquit
+    (src/update.c:748) or reconnect.
+    """
+    name = getattr(char, "name", "") or "Someone"
+    room = getattr(char, "room", None)
+    if room is not None:
+        # mirroring ROM src/comm.c:1085 — act("$n has lost $s link.", TO_ROOM)
+        with suppress(Exception):
+            room.broadcast(f"{name} has lost the link.", exclude=char)
+    # mirroring ROM src/comm.c:1086 — wiznet("Net death has claimed $N.", WIZ_LINKS)
+    with suppress(Exception):
+        wiznet("Net death has claimed $N.", char, None, WiznetFlag.WIZ_LINKS, None, 0)
+    if session is not None and getattr(session, "name", None) in SESSIONS:
+        SESSIONS.pop(session.name, None)
+    char.link_dead = True
+    char.desc = None
+    if getattr(char, "connection", None) is conn:
+        char.connection = None
+    # Release the account marker so a reconnect is a clean normal login: ROM
+    # check_playing (the "already playing" prompt) only matches a still-connected
+    # descriptor, so a link-dead char doesn't trigger it — reconnect rebinds
+    # after the normal password (check_reconnect, nanny.c:281). KEEP the char in
+    # its room and in character_registry — it lingers.
+    if username:
+        release_account(username)
+
+
+def _disconnect_extract(char: Character | None, session: Session | None, conn: TelnetStream, username: str) -> None:
+    """ROM do_quit / idle-autoquit teardown: fully remove the char from the world.
+
+    This is the pre-class-14 disconnect cleanup (the `do_quit` semantics the port
+    previously applied to EVERY disconnect): save + nuke_pets/die_follower +
+    char_from_room + registry removal + release account.
+    """
+    if char is not None:
+        with suppress(Exception):
+            announce_wiznet_logout(char)
+        with suppress(Exception):
+            save_character(char)
+        # INV-020 EXTRACT-CHAR-CLEANUP-CHAIN: nuke_pets + die_follower before unlink
+        # (mirrors ROM src/handler.c:2117-2122 extract_char).
+        with suppress(Exception):
+            _disconnect_extract_cleanup(char)
+        room = getattr(char, "room", None)
+        if room is not None:
+            with suppress(Exception):
+                room.remove_character(char)
+    if session is not None and getattr(session, "name", None) in SESSIONS:
+        SESSIONS.pop(session.name, None)
+    if char is not None:
+        char.desc = None
+        with suppress(Exception):
+            char.account_name = ""
+        if getattr(char, "connection", None) is conn:
+            char.connection = None
+        # INV-009 REGISTRY-DISCONNECT-CLEANUP: drop from character_registry so the
+        # next login by name does not see a phantom entry.
+        from mud.models.character import character_registry as _registry
+
+        with suppress(Exception):
+            while char in _registry:
+                _registry.remove(char)
+    if username:
+        release_account(username)
+
+
+def _finalize_disconnect(
+    char: Character | None,
+    session: Session | None,
+    conn: TelnetStream,
+    username: str,
+    *,
+    forced_disconnect: bool,
+) -> None:
+    """Tear down a player's connection on the way out of the play loop.
+
+    Three ROM-faithful outcomes (divergence-class 14):
+
+    * ``forced_disconnect`` — a descriptor takeover (``_disconnect_session``,
+      ROM ``check_playing``) already transferred the live char; do nothing.
+    * an explicit quit (``char._quit_requested``, ROM ``do_quit``) — or a
+      server-initiated autoquit, which sets the same flag — fully extracts.
+    * anything else (an unexpected socket drop) — ROM net-death: the char stays
+      in the world link-dead so a returning player rebinds (``check_reconnect``).
+    """
+    if forced_disconnect:
+        return
+    if char is not None and not getattr(char, "_quit_requested", False):
+        _disconnect_linkdead(char, session, conn, username)
+    else:
+        _disconnect_extract(char, session, conn, username)
+
+
 async def _prompt_new_password(conn: TelnetStream, char_name: str) -> str | None:
     prompt = f"Give me a password for {char_name}: "
     while True:
@@ -1889,6 +1991,10 @@ async def _select_character(
             log_game_event(f"Denying access to {chosen_name}@{getattr(conn, 'host', '?')}.")
             await _send_line(conn, "You are denied access.")
             return None
+        # ROM check_reconnect rebinds the descriptor (src/comm.c:1855) — the char
+        # is no longer link-dead. Clear the marker; the handler attaches the new
+        # connection/desc and resets the idle timer.
+        linkdead.link_dead = False
         return linkdead, True
 
     char = load_character(chosen_name)
@@ -2153,67 +2259,10 @@ async def handle_connection_with_stream(
         print(f"[ERROR] {connection_type} connection handler error: {exc}")
     finally:
         forced_disconnect = bool(session and getattr(session, "_forced_disconnect", False))
-        try:
-            if char and not forced_disconnect:
-                announce_wiznet_logout(char)
-        except Exception as exc:
-            print(f"[ERROR] Failed to announce wiznet logout for {session.name if session else 'unknown'}: {exc}")
-
-        try:
-            if char and not forced_disconnect:
-                save_character(char)
-        except Exception as exc:
-            print(f"[ERROR] Failed to save character: {exc}")
-
-        # INV-020 EXTRACT-CHAR-CLEANUP-CHAIN — disconnect leg.
-        # Mirrors ROM src/handler.c:2117-2122 extract_char: every
-        # PC-extract path must call nuke_pets + die_follower before
-        # unlinking the Character from the world. Skipped on forced
-        # disconnect because _disconnect_session transfers the live
-        # Character to a new descriptor (the Character is not being
-        # extracted).
-        try:
-            if char and not forced_disconnect:
-                _disconnect_extract_cleanup(char)
-        except Exception as exc:
-            print(f"[ERROR] Failed to run extract-char cleanup chain: {exc}")
-
-        try:
-            if char and char.room and not forced_disconnect:
-                char.room.remove_character(char)
-        except Exception as exc:
-            print(f"[ERROR] Failed to remove character from room: {exc}")
-
-        if session and not forced_disconnect and session.name in SESSIONS:
-            SESSIONS.pop(session.name, None)
-
-        if char:
-            if not forced_disconnect:
-                char.desc = None
-                try:
-                    char.account_name = ""
-                except Exception:
-                    pass
-                if getattr(char, "connection", None) is conn:
-                    char.connection = None
-                # INV-009 REGISTRY-DISCONNECT-CLEANUP: on clean disconnect
-                # the Python port treats the socket close as `do_quit`
-                # semantics (we already save + char_from_room + release
-                # account). Drop the Character from `character_registry`
-                # so the next login by name does not see a phantom
-                # entry. Forced disconnects are skipped because
-                # `_disconnect_session` transfers the live Character to
-                # the new descriptor.
-                try:
-                    from mud.models.character import character_registry as _registry
-
-                    while char in _registry:
-                        _registry.remove(char)
-                except Exception as _registry_exc:  # pragma: no cover — defensive
-                    print(f"[ERROR] Failed to remove character from registry: {_registry_exc}")
-
-        if username and not forced_disconnect:
-            release_account(username)
+        # Divergence-class 14: an unexpected socket drop leaves the char in the
+        # world link-dead (ROM close_socket); an explicit quit / autoquit fully
+        # extracts; a forced takeover is a no-op (the live char was transferred).
+        _finalize_disconnect(char, session, conn, username, forced_disconnect=forced_disconnect)
 
         try:
             await conn.close()
@@ -2450,67 +2499,10 @@ async def handle_connection(reader: asyncio.StreamReader, writer: asyncio.Stream
         print(f"[ERROR] Connection handler error for {addr}: {exc}")
     finally:
         forced_disconnect = bool(session and getattr(session, "_forced_disconnect", False))
-        try:
-            if char and not forced_disconnect:
-                announce_wiznet_logout(char)
-        except Exception as exc:
-            print(f"[ERROR] Failed to announce wiznet logout for {session.name if session else 'unknown'}: {exc}")
-
-        try:
-            if char and not forced_disconnect:
-                save_character(char)
-        except Exception as exc:
-            print(f"[ERROR] Failed to save character: {exc}")
-
-        # INV-020 EXTRACT-CHAR-CLEANUP-CHAIN — disconnect leg.
-        # Mirrors ROM src/handler.c:2117-2122 extract_char: every
-        # PC-extract path must call nuke_pets + die_follower before
-        # unlinking the Character from the world. Skipped on forced
-        # disconnect because _disconnect_session transfers the live
-        # Character to a new descriptor (the Character is not being
-        # extracted).
-        try:
-            if char and not forced_disconnect:
-                _disconnect_extract_cleanup(char)
-        except Exception as exc:
-            print(f"[ERROR] Failed to run extract-char cleanup chain: {exc}")
-
-        try:
-            if char and char.room and not forced_disconnect:
-                char.room.remove_character(char)
-        except Exception as exc:
-            print(f"[ERROR] Failed to remove character from room: {exc}")
-
-        if session and not forced_disconnect and session.name in SESSIONS:
-            SESSIONS.pop(session.name, None)
-
-        if char:
-            if not forced_disconnect:
-                char.desc = None
-                try:
-                    char.account_name = ""
-                except Exception:
-                    pass
-                if getattr(char, "connection", None) is conn:
-                    char.connection = None
-                # INV-009 REGISTRY-DISCONNECT-CLEANUP: on clean disconnect
-                # the Python port treats the socket close as `do_quit`
-                # semantics (we already save + char_from_room + release
-                # account). Drop the Character from `character_registry`
-                # so the next login by name does not see a phantom
-                # entry. Forced disconnects are skipped because
-                # `_disconnect_session` transfers the live Character to
-                # the new descriptor.
-                try:
-                    from mud.models.character import character_registry as _registry
-
-                    while char in _registry:
-                        _registry.remove(char)
-                except Exception as _registry_exc:  # pragma: no cover — defensive
-                    print(f"[ERROR] Failed to remove character from registry: {_registry_exc}")
-
-        if username and not forced_disconnect:
-            release_account(username)
+        # Divergence-class 14: an unexpected socket drop leaves the char in the
+        # world link-dead (ROM close_socket); an explicit quit / autoquit fully
+        # extracts; a forced takeover is a no-op (the live char was transferred).
+        _finalize_disconnect(char, session, conn, username, forced_disconnect=forced_disconnect)
 
         try:
             await conn.close()

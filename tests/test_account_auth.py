@@ -1528,6 +1528,13 @@ def test_help_greeting_respects_ansi_choice():
             assert session is not None
             assert session.character.ansi_enabled is True
 
+            # ROM-clean quit (save + extract) so the next login is a fresh
+            # login, not a class-14 link-dead rebind. Draining to server EOF
+            # confirms do_quit's extract ran before we reconnect.
+            writer.write(b"quit\r\n")
+            await writer.drain()
+            with suppress(Exception):
+                await reader.read()
             writer.close()
             with suppress(Exception):
                 await writer.wait_closed()
@@ -1597,6 +1604,14 @@ def test_ansi_preference_persists_between_sessions():
             assert session.connection.ansi_enabled is False
             assert session.character.act & int(PlayerFlag.COLOUR) == 0
 
+            # ROM-clean quit (save + extract) so the value is persisted to disk
+            # and the reconnect is a fresh disk load — under a class-14 link-dead
+            # rebind the reconnect would reuse the in-memory instance and this
+            # test's disk round-trip would prove nothing.
+            writer.write(b"quit\r\n")
+            await writer.drain()
+            with suppress(Exception):
+                await reader.read()
             writer.close()
             with suppress(Exception):
                 await writer.wait_closed()
