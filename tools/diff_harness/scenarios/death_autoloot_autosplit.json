@@ -1,0 +1,22 @@
+{
+  "name": "death_autoloot_autosplit",
+  "seed": 1234,
+  "start_room": 3001,
+  "char": { "name": "Tester", "level": 5 },
+  "watch": { "chars": ["Tester", "Ally"], "rooms": [3001] },
+  "steps": [
+    "__seed=914",
+    "__plr_autoloot=1",
+    "__plr_autosplit=1",
+    "__group_pc=Ally",
+    "__mload=3061",
+    "__mob_silver=17",
+    "__mob_gold=2",
+    "__mob_carry=3031",
+    "__seed=914",
+    "__instant_kill",
+    "look in corpse",
+    "inventory",
+    "look"
+  ]
+}

@@ -341,7 +341,12 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    added `death_autogold_autosplit.json`, pinning the plain corpse-money path:
    ROM `damage()` → `do_get all.gcash corpse` → `get_obj` autosplit (`src/act_obj.c:162-184`)
    splits 17 silver across the grouped driver and peer without the `do_sacrifice`
-   branch. Python converges against the C golden — no divergence.
+   branch. Python converges against the C golden — no divergence. **Death
+   autoloot/autosplit widening (2.14.215):** added
+   `death_autoloot_autosplit.json`, pinning mixed corpse contents through
+   `do_get all corpse`. The C oracle caught a Python divergence where `_get_obj`
+   updated autosplit balances but dropped `do_split`'s actor output; fixed in
+   `mud.commands.inventory._get_obj` / `do_get`, and the replay now converges.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,

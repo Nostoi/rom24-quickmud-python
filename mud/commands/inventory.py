@@ -199,7 +199,7 @@ def give_school_outfit(char: Character, *, include_map: bool = True) -> bool:
     return equipped
 
 
-def _get_obj(char: Character, obj: object, container: object | None) -> str | None:
+def _get_obj(char: Character, obj: object, container: object | None) -> tuple[str | None, str]:
     """
     Helper function to get an object (ROM C get_obj helper).
 
@@ -211,7 +211,9 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
         container: Container object came from (None if from room)
 
     Returns:
-        Error message if failed, None if successful
+        ``(error, extra_output)``. ``error`` is set when the get failed.
+        ``extra_output`` carries ROM side effects such as AUTOSPLIT's TO_CHAR
+        lines, which occur inside get_obj after the "You get ..." line.
     """
     # ROM C line 99-103: Check ITEM_TAKE flag.
     # Corpses (PC and NPC) always have ITEM_TAKE set by `make_corpse`
@@ -228,15 +230,21 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
         item_type_int = None
     is_corpse = item_type_int in (int(ItemType.CORPSE_PC), int(ItemType.CORPSE_NPC))
     if not is_corpse and not ((wear_flags | inst_wear_flags) & int(WearFlag.TAKE)):
-        return "You can't take that."
+        return ("You can't take that.", "")
 
     # ROM C lines 105-110: Encumbrance check (carry_number)
     obj_number = _get_obj_number(obj)
     if char.carry_number + obj_number > can_carry_n(char):
         # GET-014: ROM act("$d: you can't carry that many items.", ch, NULL, obj->name,
         # TO_CHAR) — $d renders the FIRST keyword of obj->name and act() caps buf[0].
-        return act_format(
-            "$d: you can't carry that many items.", recipient=char, actor=char, arg2=getattr(obj, "name", "object")
+        return (
+            act_format(
+                "$d: you can't carry that many items.",
+                recipient=char,
+                actor=char,
+                arg2=getattr(obj, "name", "object"),
+            ),
+            "",
         )
 
     # ROM C lines 112-118: Weight check (carry_weight)
@@ -248,13 +256,19 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
 
     if not skip_weight_check and (get_carry_weight(char) + obj_weight > can_carry_w(char)):
         # GET-014: ROM act("$d: you can't carry that much weight.", ch, NULL, obj->name, TO_CHAR).
-        return act_format(
-            "$d: you can't carry that much weight.", recipient=char, actor=char, arg2=getattr(obj, "name", "object")
+        return (
+            act_format(
+                "$d: you can't carry that much weight.",
+                recipient=char,
+                actor=char,
+                arg2=getattr(obj, "name", "object"),
+            ),
+            "",
         )
 
     # ROM C lines 120-124: can_loot() check
     if not _can_loot(char, obj):
-        return "Corpse looting is not permitted."
+        return ("Corpse looting is not permitted.", "")
 
     # ROM C lines 126-134: Furniture occupancy check
     obj_location = getattr(obj, "location", None)
@@ -266,7 +280,7 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
                 if gch_on == obj:
                     gch_name = getattr(gch, "name", "Someone")
                     obj_short = getattr(obj, "short_descr", "it")
-                    return f"{gch_name} appears to be using {obj_short}."
+                    return (f"{gch_name} appears to be using {obj_short}.", "")
 
     # ROM C lines 137-154: Container extraction logic
     if container:
@@ -278,7 +292,7 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
             char_trust = int(getattr(char, "trust", 0) or getattr(char, "level", 0) or 0)
             obj_level = int(getattr(obj, "level", 0) or 0)
             if char_trust < obj_level:
-                return "You are not powerful enough to use it."
+                return ("You are not powerful enough to use it.", "")
 
         # ROM C lines 146-149, 152: Pit timer handling (ITEM_HAD_TIMER flag)
         container_proto = getattr(container, "prototype", None) or container
@@ -373,14 +387,21 @@ def _get_obj(char: Character, obj: object, container: object | None) -> str | No
             # Auto-split if >1 member and money > 1 (ROM C lines 176-180).
             # ROM passes ``"silver gold"`` as a single sprintf-formatted string.
             if members > 1 and (silver > 1 or gold):
-                do_split(char, f"{silver} {gold}")
+                # ROM src/act_obj.c:176-180 calls do_split from inside get_obj;
+                # surface the actor's TO_CHAR lines after do_get's "You get ..."
+                # line instead of dropping them.
+                split_output = do_split(char, f"{silver} {gold}")
+            else:
+                split_output = ""
+        else:
+            split_output = ""
 
         # Extract money object (ROM C line 183) - don't add to inventory
-        return None  # Success; do_get emits the "You get ..." line (return value)
+        return (None, split_output)  # Success; do_get emits the "You get ..." line (return value)
     else:
         # ROM C lines 185-188: obj_to_char() for normal objects
         char.add_object(obj)
-        return None  # Success; do_get emits the "You get ..." line (return value)
+        return (None, "")  # Success; do_get emits the "You get ..." line (return value)
 
 
 def do_get(char: Character, args: str) -> str:
@@ -442,13 +463,16 @@ def do_get(char: Character, args: str) -> str:
                 return f"I see no {arg1} here."
 
             # Use helper function to get the object
-            error = _get_obj(char, obj, None)
+            error, extra_output = _get_obj(char, obj, None)
             if error:
                 return error
 
             # Return success message (set by _get_obj)
             obj_short = getattr(obj, "short_descr", "something")
-            return f"You get {obj_short}."
+            message = f"You get {obj_short}."
+            if extra_output:
+                message = f"{message}\n{extra_output}"
+            return message
         else:
             # ROM C lines 231-253: Get all or all.type from room
             found = False
@@ -467,12 +491,14 @@ def do_get(char: Character, args: str) -> str:
 
                 if matches and can_see_object(char, obj):
                     found = True
-                    error = _get_obj(char, obj, None)
+                    error, extra_output = _get_obj(char, obj, None)
                     if error:
                         messages.append(error)
                     else:
                         obj_short = getattr(obj, "short_descr", "something")
                         messages.append(f"You get {obj_short}.")
+                        if extra_output:
+                            messages.append(extra_output)
 
             if not found:
                 if arg1.lower() == "all":
@@ -537,13 +563,16 @@ def do_get(char: Character, args: str) -> str:
             if not can_see_object(char, obj):
                 return f"I see nothing like that in the {arg2}."
 
-            error = _get_obj(char, obj, container)
+            error, extra_output = _get_obj(char, obj, container)
             if error:
                 return error
 
             obj_short = getattr(obj, "short_descr", "something")
             container_short = getattr(container, "short_descr", "something")
-            return f"You get {obj_short} from {container_short}."
+            message = f"You get {obj_short} from {container_short}."
+            if extra_output:
+                message = f"{message}\n{extra_output}"
+            return message
         else:
             # ROM C lines 309-338: Get all or all.type from container
             found = False
@@ -573,13 +602,15 @@ def do_get(char: Character, args: str) -> str:
                         if not char_is_immortal:
                             return "Don't be so greedy!"
 
-                    error = _get_obj(char, obj, container)
+                    error, extra_output = _get_obj(char, obj, container)
                     if error:
                         messages.append(error)
                     else:
                         obj_short = getattr(obj, "short_descr", "something")
                         container_short = getattr(container, "short_descr", "something")
                         messages.append(f"You get {obj_short} from {container_short}.")
+                        if extra_output:
+                            messages.append(extra_output)
 
             if not found:
                 if arg1.lower() == "all":

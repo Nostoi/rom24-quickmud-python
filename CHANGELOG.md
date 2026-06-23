@@ -24,9 +24,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   behavior when `PLR_AUTOGOLD` collects NPC corpse coins for a grouped PC. The
   replay confirms the driver keeps the remainder share and the grouped peer
   receives its split silver without the autosac branch.
+- **Differential harness death autoloot/autosplit coverage** — committed the
+  `death_autoloot_autosplit` scenario + golden, pinning ROM `do_get all corpse`
+  behavior when `PLR_AUTOLOOT` collects mixed NPC corpse contents for a grouped
+  PC with `PLR_AUTOSPLIT`.
 
 ### Fixed
 
+- **FIGHT-080 follow-up: AUTOSPLIT output from `get_obj` is now preserved in
+  `do_get` output.** ROM `get_obj` (`src/act_obj.c:162-184`) calls `do_split`
+  after the "You get ..." money line, so `PLR_AUTOLOOT` over a mixed corpse must
+  show both split lines for the actor. Python updated the balances but dropped
+  `do_split`'s returned actor lines. The new `death_autoloot_autosplit` C-oracle
+  replay caught and locks the fix.
 - **INV-054 DESCRIPTOR-WAIT-BUFFERS-INPUT** — commands typed while a connected
   player is in ROM wait-state recovery are now buffered at the descriptor read
   chokepoint and replayed after recovery clears, matching `src/comm.c:619-623`.
