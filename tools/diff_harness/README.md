@@ -96,6 +96,8 @@ by `diffmain.c` (C side) and `pyreplay.py` (Python side):
 | `__plr_autoloot=0\|1` | Clear/set PC `PLR_AUTOLOOT` |
 | `__plr_autogold=0\|1` | Clear/set PC `PLR_AUTOGOLD` |
 | `__plr_autosac=0\|1` | Clear/set PC `PLR_AUTOSAC` |
+| `__plr_autosplit=0\|1` | Clear/set PC `PLR_AUTOSPLIT` |
+| `__group_pc=NAME` | Create a descriptorless grouped PC in the driver PC's room |
 | `__goto=VNUM` | Teleport PC to room (no movement output) |
 | `__cond_hunger=N` | Set `COND_HUNGER` (0=starving, 48=full) |
 | `__cond_thirst=N` | Set `COND_THIRST` |

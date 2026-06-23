@@ -429,6 +429,48 @@ def test_drive_python_replay_plr_autosac_meta_sets_flag():
     assert trace[1].output == ["Autosacrificing removed."]
 
 
+def test_drive_python_replay_plr_autosplit_meta_sets_flag():
+    sc = Scenario(
+        name="generated_plr_autosplit",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester"],
+        watch_rooms=[3001],
+        steps=["__plr_autosplit=1", "autosplit"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    assert trace[1].output == ["Autosplitting removed."]
+
+
+def test_drive_python_replay_group_pc_meta_adds_grouped_watched_pc():
+    sc = Scenario(
+        name="generated_group_pc",
+        seed=777,
+        start_room=3001,
+        char_name="Tester",
+        char_level=5,
+        watch_chars=["Tester", "Ally"],
+        watch_rooms=[3001],
+        steps=["__group_pc=Ally", "group"],
+    )
+
+    trace = drive_python_replay(sc)
+
+    first_chars = {char.key: char for char in trace[0].chars}
+    assert first_chars["Ally"].room == 3001
+    assert first_chars["Ally"].level == 5
+    assert {"Ally", "Tester"}.issubset(set(trace[0].rooms[0].people))
+    assert trace[1].output == [
+        "Tester's group:",
+        "[ 5 Mag] Ally               20/  20 hp  100/ 100 mana  100/ 100 mv  1000 xp",
+        "[ 5 Mag] Tester             20/  20 hp  100/ 100 mana  100/ 100 mv  1000 xp",
+    ]
+
+
 def test_drive_python_replay_mana_meta_sets_mana_and_max_mana():
     sc = Scenario(
         name="generated_mana",

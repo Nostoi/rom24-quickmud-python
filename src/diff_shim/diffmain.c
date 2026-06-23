@@ -445,7 +445,7 @@ static void handle_snapshot (char *args)
  * finalization from nanny.c CON_READ_MOTD (reset_char → level/hp/mana → room),
  * but places the char in the scenario's start room instead of the school.
  */
-static CHAR_DATA *make_test_char (const char *name, int start_room, int level)
+static CHAR_DATA *make_test_char_with_desc (const char *name, int start_room, int level, int attach_desc)
 {
     CHAR_DATA *ch = new_char ();
     ROOM_INDEX_DATA *room;
@@ -475,16 +475,19 @@ static CHAR_DATA *make_test_char (const char *name, int start_room, int level)
     ch->pcdata->condition[COND_FULL]   = 48;
     ch->pcdata->condition[COND_HUNGER] = 48;
 
-    /* Attach the synthetic descriptor so ROM output funcs capture into us. */
-    memset (&shim_desc, 0, sizeof (shim_desc));
-    shim_desc.connected = CON_PLAYING;
-    shim_desc.outbuf    = shim_outbuf;
-    shim_desc.outsize   = SHIM_OUTBUF_SIZE;
-    shim_desc.outtop    = 0;
-    shim_desc.ansi      = FALSE;
-    shim_desc.character = ch;
-    shim_desc.host      = str_dup ("diffshim");
-    ch->desc = &shim_desc;
+    if (attach_desc)
+    {
+        /* Attach the synthetic descriptor so ROM output funcs capture into us. */
+        memset (&shim_desc, 0, sizeof (shim_desc));
+        shim_desc.connected = CON_PLAYING;
+        shim_desc.outbuf    = shim_outbuf;
+        shim_desc.outsize   = SHIM_OUTBUF_SIZE;
+        shim_desc.outtop    = 0;
+        shim_desc.ansi      = FALSE;
+        shim_desc.character = ch;
+        shim_desc.host      = str_dup ("diffshim");
+        ch->desc = &shim_desc;
+    }
 
     ch->next = char_list;
     char_list = ch;
@@ -509,6 +512,25 @@ static CHAR_DATA *make_test_char (const char *name, int start_room, int level)
     char_to_room (ch, room);
 
     return ch;
+}
+
+static CHAR_DATA *make_test_char (const char *name, int start_room, int level)
+{
+    return make_test_char_with_desc (name, start_room, level, TRUE);
+}
+
+static CHAR_DATA *make_group_test_char (const char *name, CHAR_DATA *leader)
+{
+    CHAR_DATA *ally;
+    int room_vnum;
+
+    if (leader == NULL || leader->in_room == NULL)
+        return NULL;
+
+    room_vnum = leader->in_room->vnum;
+    ally = make_test_char_with_desc (name, room_vnum, leader->level, FALSE);
+    ally->leader = leader; /* ROM is_same_group resolves leader ? leader : self. */
+    return ally;
 }
 
 /* ---- main ----------------------------------------------------------------- */
@@ -790,6 +812,31 @@ int main (int argc, char **argv)
                 else
                     REMOVE_BIT (ch->act, PLR_AUTOSAC);
             }
+            continue;
+        }
+
+        /* __plr_autosplit=0|1: set/clear PLR_AUTOSPLIT on the driver PC.
+         * Harness-only setup for death auto-split scenarios; no output. */
+        if (strncmp (line, "__plr_autosplit=", 16) == 0)
+        {
+            if (ch != NULL)
+            {
+                if (atoi (line + 16))
+                    SET_BIT (ch->act, PLR_AUTOSPLIT);
+                else
+                    REMOVE_BIT (ch->act, PLR_AUTOSPLIT);
+            }
+            continue;
+        }
+
+        /* __group_pc=<name>: create a descriptorless grouped PC in the driver
+         * PC's room. The peer can receive state changes (silver split, XP), but
+         * its send_to_char output is intentionally not captured by the single
+         * synthetic descriptor. */
+        if (strncmp (line, "__group_pc=", 11) == 0)
+        {
+            if (ch != NULL)
+                make_group_test_char (line + 11, ch);
             continue;
         }
 

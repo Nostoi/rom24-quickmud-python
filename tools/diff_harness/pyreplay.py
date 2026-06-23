@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from mud.commands.dispatcher import process_command
+from mud.models.character import Character
 from mud.registry import room_registry
 from mud.spawning.mob_spawner import spawn_mob
 from mud.utils import rng_mm
@@ -17,8 +18,37 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     rng_mm.seed_mm(sc.seed)
     initialize_world()
     char = create_test_character(sc.char_name, sc.start_room)
-    char.level = sc.char_level
-    # Mirror the C shim's make_test_char defaults.
+    _configure_test_character(char, sc.char_level)
+
+    chars_by_name = {sc.char_name: char}
+    rooms_by_vnum = {v: room_registry[v] for v in sc.watch_rooms}
+    if char.messages:
+        raise AssertionError(f"unexpected pre-command messages: {char.messages}")
+
+    py_trace: list[StepSnap] = []
+    for i, command in enumerate(sc.steps, start=1):
+        response = _run_python_command(command, char, chars_by_name, sc.watch_chars)
+        drained = list(char.messages)
+        char.messages.clear()
+        lines: list[str] = []
+        for chunk in (response, *drained):
+            lines.extend(chunk.split("\n"))
+        py_trace.append(
+            snapshot_python(
+                step=i,
+                command=command,
+                chars_by_name=chars_by_name,
+                rooms_by_vnum=rooms_by_vnum,
+                output=lines,
+            )
+        )
+    return py_trace
+
+
+def _configure_test_character(char: Character, level: int) -> None:
+    """Mirror the C shim's ``make_test_char`` runtime defaults."""
+
+    char.level = level
     char.max_hit = char.hit = 20
     char.max_mana = char.mana = 100
     char.max_move = char.move = 100
@@ -54,30 +84,6 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     from mud.models.constants import CommFlag
 
     char.comm = int(CommFlag.COMBINE) | int(CommFlag.PROMPT)
-
-    chars_by_name = {sc.char_name: char}
-    rooms_by_vnum = {v: room_registry[v] for v in sc.watch_rooms}
-    if char.messages:
-        raise AssertionError(f"unexpected pre-command messages: {char.messages}")
-
-    py_trace: list[StepSnap] = []
-    for i, command in enumerate(sc.steps, start=1):
-        response = _run_python_command(command, char, chars_by_name, sc.watch_chars)
-        drained = list(char.messages)
-        char.messages.clear()
-        lines: list[str] = []
-        for chunk in (response, *drained):
-            lines.extend(chunk.split("\n"))
-        py_trace.append(
-            snapshot_python(
-                step=i,
-                command=command,
-                chars_by_name=chars_by_name,
-                rooms_by_vnum=rooms_by_vnum,
-                output=lines,
-            )
-        )
-    return py_trace
 
 
 def _run_python_command(command: str, char, chars_by_name: dict[str, object], watch_chars: list[str]) -> str:
@@ -118,6 +124,27 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
             char.act = int(getattr(char, "act", 0)) | int(PlayerFlag.AUTOSAC)
         else:
             char.act = int(getattr(char, "act", 0)) & ~int(PlayerFlag.AUTOSAC)
+        return ""
+    if command.startswith("__plr_autosplit="):
+        from mud.models.constants import PlayerFlag
+
+        if int(command[len("__plr_autosplit=") :]):
+            char.act = int(getattr(char, "act", 0)) | int(PlayerFlag.AUTOSPLIT)
+        else:
+            char.act = int(getattr(char, "act", 0)) & ~int(PlayerFlag.AUTOSPLIT)
+        return ""
+    if command.startswith("__group_pc="):
+        name = command[len("__group_pc=") :].strip()
+        if not name:
+            raise AssertionError("__group_pc requires a character name")
+        room = getattr(char, "room", None)
+        if room is None:
+            raise AssertionError("__group_pc requires the driver PC to be in a room")
+        ally = create_test_character(name, room.vnum)
+        _configure_test_character(ally, int(getattr(char, "level", 1) or 1))
+        ally.leader = char  # ROM is_same_group resolves `leader ? leader : self`.
+        if name in watch_chars:
+            chars_by_name[name] = ally
         return ""
     if command.startswith("__mana="):
         val = int(command[len("__mana=") :])

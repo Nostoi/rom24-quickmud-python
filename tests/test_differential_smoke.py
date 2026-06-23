@@ -22,7 +22,7 @@ GOLDEN_DIR = REPO / "tests" / "data" / "golden" / "diff"
 # fires, the test passes, and the entry should be removed (self-cleaning).
 # See tools/diff_harness/FINDINGS.md.
 KNOWN_DIVERGENCES: dict[str, str] = {
-    # Empty — every committed scenario (52 as of 2026-06-22: movement/get-drop,
+    # Empty — every committed scenario (54 as of 2026-06-23: movement/get-drop,
     # containers, doors, melee + spell combat, the full mob-trigger set, char_update
     # regen variants, affects, shops, cast-position gate, group/follow cycle, …)
     # converges end-to-end.

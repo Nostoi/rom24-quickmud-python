@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to the C/Python replay drivers and committed the `death_auto_sac` scenario +
   golden. The new replay confirms death `PLR_AUTOSAC` converges with ROM
   `src/fight.c:968-979` / `src/act_obj.c:1838-1862` for an empty NPC corpse.
+- **Differential harness grouped autosplit coverage** — added `__plr_autosplit=0|1`
+  and descriptorless `__group_pc=<name>` setup to the C/Python replay drivers,
+  then committed the `death_autosac_autosplit` scenario + golden. The replay
+  confirms grouped death `PLR_AUTOSAC` + `PLR_AUTOSPLIT` converges with ROM:
+  the driver sees the sacrifice/split lines and the grouped peer receives its
+  silver share.
+- **Differential harness death autogold/autosplit coverage** — committed the
+  `death_autogold_autosplit` scenario + golden, pinning ROM `get_obj` autosplit
+  behavior when `PLR_AUTOGOLD` collects NPC corpse coins for a grouped PC. The
+  replay confirms the driver keeps the remainder share and the grouped peer
+  receives its split silver without the autosac branch.
 
 ### Fixed
 

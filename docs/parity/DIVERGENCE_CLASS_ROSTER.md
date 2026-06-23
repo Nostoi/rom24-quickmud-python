@@ -331,7 +331,17 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
    exercising the singular `one silver coin` message branch) → `look`
    confirming the `extract_obj` removal → post-extraction not-found. C oracle
    confirmed each branch + the extraction; Python converges on the first pass —
-   no divergence.
+   no divergence. **Death auto-action widening (2.14.213):** added
+   `death_autosac_autosplit.json` plus `__plr_autosplit=0|1` and descriptorless
+   `__group_pc=<name>` harness setup. The scenario pins grouped death
+   `PLR_AUTOSAC` + `PLR_AUTOSPLIT`: ROM `damage()` → `do_sacrifice` grants
+   3 silver for the janitor corpse, `do_split` leaves the driver with 2 silver
+   and the grouped peer with 1, and Python converges against the C golden on the
+   first pass — no divergence. **Death autogold/autosplit widening (2.14.214):**
+   added `death_autogold_autosplit.json`, pinning the plain corpse-money path:
+   ROM `damage()` → `do_get all.gcash corpse` → `get_obj` autosplit (`src/act_obj.c:162-184`)
+   splits 17 silver across the grouped driver and peer without the `do_sacrifice`
+   branch. Python converges against the C golden — no divergence.
 7. ~~**Class 13 bypass-site sweep (`/rom-divergence-sweep`).**~~ **DONE (2.13.3).**
     15 runtime-placement bypass sites fixed to route through the INV-039 chokepoints
     or use `insert(0)`. 4 order-preserving sites left as `append` (DB reload, clone,
