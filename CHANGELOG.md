@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A mob killed in combat left dangling `reply`/`mprog_target` pointers at its
+  corpse.** ROM `raw_kill` calls `extract_char(victim, IS_NPC)`, and
+  `extract_char`'s `char_list` sweep (`src/handler.c:2151-2157`) nulls every
+  `wch->reply == victim` plus the 2.4b6 `mprog_target` quirk. That sweep runs
+  for NPC/pull extraction (the sweep sits after the `if (!fPull) return`
+  early-out). The Python port split `extract_char` across call sites and wired
+  `clear_extract_target_refs` into the mob-purge, link-dead-quit, and socket
+  legs — but **not** into `raw_kill`, the primary combat-death funnel. So a mob
+  slain in combat while a character held a `reply` at it (a mob's `mob tell`
+  sets the player's `reply`) — or while the mob held an `mprog_target` — left a
+  dangling reference at the extracted corpse. `raw_kill`'s NPC leg now runs
+  `clear_extract_target_refs`, gated on `is_npc` to match ROM's fPull semantics
+  (a PC death correctly skips it — the PC stays live). Cross-file contract
+  INV-047 (raw_kill leg). Regression test:
+  `tests/integration/test_inv047_raw_kill_clears_refs.py`.
+
 - **A charmed pet dismissed on its owner's death left dangling references at
   the extracted pet.** ROM `nuke_pets` (`src/act_comm.c:1649`) dismisses the
   pet via `extract_char(pet, TRUE)`, which runs the *full* pull-extract cleanup
