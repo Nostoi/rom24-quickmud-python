@@ -748,11 +748,11 @@ def do_flee(char: Character, args: str) -> str:
             char.position = Position.STANDING
         return "You aren't fighting anyone."
 
-    # Check wait state (Python architecture: commands are wait-gated)
-    if int(getattr(char, "wait", 0) or 0) > 0:
-        return "You are still recovering."
-
-    skill_registry._apply_wait_state(char, get_pulse_violence())
+    # FIGHT-101: ROM do_flee (src/fight.c:2970-3030) has NO wait check and
+    # applies NO WAIT_STATE. Player wait is enforced one layer up, in the
+    # descriptor input loop (src/comm.c:619-623, mirrored by
+    # mud/net/connection.py); direct dispatch (do_function — mobprogs,
+    # damage()'s FIGHT-100 auto-flee) bypasses it, exactly as in ROM.
 
     was_in = getattr(char, "room", None)
     if not was_in:

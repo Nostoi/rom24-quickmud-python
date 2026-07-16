@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FIGHT-101 — `do_flee` no longer wait-gates or applies a non-ROM lag.**
+  ROM `do_flee` (`src/fight.c:2970-3030`) neither checks `ch->wait` nor
+  applies WAIT_STATE — player wait is enforced at the descriptor input loop
+  (`src/comm.c:619-623`, already mirrored by `mud/net/connection.py`), and
+  direct dispatch (mobprogs, damage()'s FIGHT-100 auto-flee) bypasses wait
+  exactly as ROM's `do_function` does. Python's in-function "You are still
+  recovering." gate wrongly blocked the wimpy auto-flee at wait 1..5, and the
+  invented `PULSE_VIOLENCE` lag penalized every flee. FIGHT-102 filed OPEN:
+  six sibling combat commands carry the same gate class (per-site ROM read
+  needed). Test: `tests/integration/test_fight101_flee_no_wait_gate.py`.
+
 - **FIGHT-100 — wimpy auto-flee legs of `damage()`'s epilogue
   (`src/fight.c:993-1012`).** After damage lands, ROM auto-flees (a) an
   ACT_WIMPY NPC below `max_hit/5` on a 25% roll, (b) a charmed NPC whose

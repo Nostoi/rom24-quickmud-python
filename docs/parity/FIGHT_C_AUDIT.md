@@ -560,8 +560,35 @@ affects every swing) and FIGHT-082 (HIGH).
   diffmain.c:448-531 descriptor wiring (driver `attach_desc=TRUE`, `__group_pc`
   ally FALSE) — Python's driver previously read as link-dead.
 
-- **`FIGHT-101` — `do_flee` carries a non-ROM wait-gate and wait-state, ⚠️
-  OPEN.** ROM `do_flee` (`src/fight.c:2970-3030`) has NO wait check and
+- **`FIGHT-101` — `do_flee` carries a non-ROM wait-gate and wait-state, ✅
+  FIXED (2026-07-16, v2.14.327).** Probe confirmed the gate was
+  double-counting: `mud/net/connection.py:1039-1047` already mirrors ROM's
+  interpreter-level wait buffering (`src/comm.c:619-623`) for ALL player
+  input paths (telnet/SSH/websocket all route through it), and ROM's direct
+  dispatch (`do_function` — mobprogs, damage()'s auto-flee) bypasses wait
+  entirely. Both the "You are still recovering." gate and the
+  `_apply_wait_state(ch, PULSE_VIOLENCE)` lag were removed from `do_flee`
+  (ROM applies neither, `src/fight.c:2970-3030`). Tests:
+  `tests/integration/test_fight101_flee_no_wait_gate.py` (2, failing-first:
+  wimpy auto-flee at wait 3; no lag on successful flee). NOTE: six sibling
+  combat commands (`do_kick`/`do_rescue`/`do_backstab`/`do_bash`/
+  `do_berserk`/`do_cast`) still carry the same non-ROM wait-gate class —
+  those apply ROM WAIT_STATEs on use (unlike flee) and their gates are only
+  reachable via direct dispatch; sweep them as a class when closing (each
+  needs its own ROM read: some ROM skills DO check wait via
+  skill-specific logic). Filed as **FIGHT-102** below.
+
+- **`FIGHT-102` — sibling non-ROM wait-gates in six combat commands, ⚠️
+  OPEN.** Same class as FIGHT-101: `do_kick`, `do_rescue`, `do_backstab`,
+  `do_bash`, `do_berserk`, `do_cast` in `mud/commands/combat.py` each open
+  with `if wait > 0: return "You are still recovering."` — ROM has no such
+  in-function gate (interpreter-level buffering only, `src/comm.c:619-623`).
+  Reachable only via direct dispatch (mobprogs, mob_hit's off-skill
+  dispatch, internal calls) — where ROM would execute the command. Per-site
+  ROM read required before removal (mob_hit's own `ch->wait > 0` guard at
+  `src/fight.c:305` covers the NPC skill-dispatch path; verify each caller).
+  Surfaced 2026-07-16 while closing FIGHT-101. Route: `/rom-gap-closer
+  FIGHT-102`. ROM `do_flee` (`src/fight.c:2970-3030`) has NO wait check and
   applies NO WAIT_STATE. Python `mud/commands/combat.py:do_flee` both refuses
   when `wait > 0` ("You are still recovering.") and applies
   `_apply_wait_state(char, get_pulse_violence())` before the door loop.
