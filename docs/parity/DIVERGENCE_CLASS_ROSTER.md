@@ -149,6 +149,21 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
   harness-extension task, deliberately not started on a replay turn to avoid a
   rushed RNG-sensitive fix. Full spec in `FIGHT_C_AUDIT.md` FIGHT-095 + INV-045
   tracker row.
+  **FIGHT-095 CLOSED 2026-07-16 (2.14.322)** via exactly that spec: six new
+  harness directives, the `check_assist_cross_room` C-oracle scenario, the
+  reversed-slice port, an 8-seed `__rng_probe` alignment sweep, and three
+  C-independent domain tests. The closure's draw-count forensics also surfaced
+  **DB-005 (OPEN, HIGH)** — Python applies area resets in FILE order vs ROM
+  `reset_area`'s ascending room-vnum order, diverging boot population (mob 7803:
+  4 vs 3) and boot creation order (a WORLD-level INV-045 exposure: cross-engine
+  char_list pairings differ for multi-instance protos even though each engine's
+  own walks stay newest-first). Layer-C scenarios that walk the global list must
+  neutralize affected populations until DB-005 closes (the check_assist scenario
+  silences the can_see sneak-roll population via observer DETECT_HIDDEN).
+  Collateral gaps fixed en route: FIGHT-096 (assist emote act-render),
+  FIGHT-097 (one_hit self/dead/cross-room zero-RNG guards). Filed: FIGHT-098
+  (mob_hit area-attack sibling walk), GL-050 (aggr victim-selection probe),
+  HANDLER-009 (test-only move_to_room tail-append).
 
 ## To-do list (falls directly out of the roster)
 

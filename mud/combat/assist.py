@@ -161,7 +161,23 @@ def check_assist(ch: Character, victim: Character) -> None:
                 # it only increments when a new target is chosen, not on every
                 # visible group member. This matches ROM's biased selection distribution
                 # and, critically, keeps the shared MM RNG stream in sync.
-                for vch in list(people_in_room):
+                #
+                # FIGHT-095 / INV-045 — the iteration DOMAIN: ROM's loop is
+                # `for (vch = ch->in_room->people; vch; vch = vch->next)`
+                # (src/fight.c:161) — it SEEDS at the room people-list head
+                # (newest arrival; char_to_room head-inserts) but follows the
+                # GLOBAL char_list link (`->next`, NOT `->next_in_room`), a
+                # 2.4b6 quirk. char_list is head-inserted at creation
+                # (src/db.c:2256-2257, newest-first), so the visited set is the
+                # room head plus every char CREATED BEFORE it — including chars
+                # in OTHER rooms (a cross-room reservoir pick then whiffs in
+                # one_hit's room guard, FIGHT-097) and EXCLUDING same-room
+                # chars newer than the head. character_registry is append-order
+                # (oldest-first), the reverse of char_list, so the walk is the
+                # reversed registry slice up to the room head's index (the
+                # GROUP-006 / INV-045 fix pattern). C-oracle ground truth:
+                # tools/diff_harness/scenarios/check_assist_cross_room.json.
+                for vch in _char_list_walk_from_room_head(ch):
                     if can_see_character(rch, vch) and is_same_group(vch, victim):
                         if rng_mm.number_range(0, number) == 0:
                             target = vch
@@ -171,6 +187,38 @@ def check_assist(ch: Character, victim: Character) -> None:
                 if target is not None:
                     _emote(rch, "screams and attacks!")
                     multi_hit(rch, target, None)
+
+
+def _char_list_walk_from_room_head(ch: Character) -> list[Character]:
+    """ROM ``for (vch = ch->in_room->people; vch; vch = vch->next)`` (FIGHT-095).
+
+    Seeds at the room people-list head, then follows the global ``char_list``
+    (`src/fight.c:161`, ``->next`` — not ``->next_in_room``). ROM's char_list is
+    head-inserted at creation (newest-first, ``src/db.c:2256-2257``); Python's
+    ``character_registry`` is append-order (oldest-first) — the exact reverse
+    (INV-045 CHAR-LIST-WALK-ORDER) — so the equivalent walk is the REVERSED
+    registry slice from index 0 up to the room head, yielding the head first
+    and then successively older characters to the oldest.
+
+    Fallback: a room head that is not in ``character_registry`` only occurs in
+    synthetic test fixtures (the live engine registers every spawn/login); in
+    that case fall back to the legacy room-people domain rather than silently
+    visiting nothing.
+    """
+    from mud.models.character import character_registry
+
+    people = list(getattr(getattr(ch, "room", None), "people", []) or [])
+    if not people:
+        return []
+    head = people[0]  # newest arrival — ROM char_to_room head-inserts
+    head_idx = None
+    for i, reg_ch in enumerate(character_registry):
+        if reg_ch is head:  # identity, ROM pointer semantics (INV-034)
+            head_idx = i
+            break
+    if head_idx is None:
+        return people
+    return list(reversed(character_registry[: head_idx + 1]))
 
 
 def _is_npc(char: Character) -> bool:

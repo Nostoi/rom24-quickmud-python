@@ -121,6 +121,13 @@ by `diffmain.c` (C side) and `pyreplay.py` (Python side):
 | `__char_update` | Run one `char_update` pulse (regen, condition decay, affect expiry) |
 | `__mobile_update` | Run one `mobile_update` pulse (TRIG_RANDOM, TRIG_DELAY) |
 | `__instant_kill` | Deal a killing blow to the first NPC in the room |
+| `__aggr_update` | Run one `aggr_update` pulse (aggressive-mob onset) |
+| `__char_goto=NAME,VNUM` | Teleport the named character (exact name match) to room VNUM |
+| `__mob_off_flags=N` | OR N into first NPC's `off_flags` (stage ASSIST_* etc.; apply right after its `__mload`) |
+| `__mob_add_affect=N` | OR N into first NPC's `affected_by` (raw bits, no AFFECT_DATA/stat mods) |
+| `__rng_probe` | Draw ONE `number_percent()` and echo it — stream-alignment discriminator (consumes a draw) |
+| `__sneak_census` | List every char (char_list order) that would take a can_see sneak roll — draw-count forensics, no RNG |
+| `__mob_census=VNUM` | List room vnums of every live instance of a mob prototype — boot-population forensics, no RNG |
 
 ## Normalization rules (both sides, identical)
 

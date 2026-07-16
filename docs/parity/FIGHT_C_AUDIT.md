@@ -376,7 +376,30 @@ affects every swing) and FIGHT-082 (HIGH).
 
 - **`FIGHT-095` — `check_assist` inner target-selection loop iterates room-people
   in Python but the global `char_list` in ROM (`vch->next`, a 2.4b6 quirk),
-  ⚠️ OPEN — needs C-oracle validation before fixing.** Surfaced 2026-07-16 during
+  ✅ FIXED (2.14.322).** `mud/combat/assist.py` now walks
+  `_char_list_walk_from_room_head(ch)` — the reversed `character_registry` slice
+  from the room head's index (room head first, then successively older chars to
+  the oldest; the GROUP-006/INV-045 fix pattern), with a room-people fallback for
+  unregistered synthetic-fixture heads. **C-oracle validated:** the new
+  differential scenario `check_assist_cross_room.json` (assisting drunk +
+  aggressor + PC victim in room 3008; the victim's grouped ally teleported to
+  3001 via the new `__char_goto` directive; drunk given ASSIST_ALL via
+  `__mob_off_flags` and DETECT_HIDDEN via `__mob_add_affect` to silence the
+  world-wide can_see sneak-roll population, which is contaminated by the
+  separately-filed DB-005 boot-population divergence) — ROM reservoir-picks the
+  CROSS-ROOM ally, screams, and the follow-up `multi_hit` whiffs in `one_hit`'s
+  room guard (FIGHT-097) with zero RNG consumed; the replay converges, and an
+  8-seed alignment sweep (gate-skip, miss, dodge, parry, cross-room-pick
+  variants) is byte-identical via `__rng_probe`. Tests:
+  `tests/integration/test_fight095_check_assist_char_list_domain.py` (3 —
+  cross-room member IS in the reservoir; same-room member created AFTER the room
+  head is UNREACHABLE (the quirk's wild half); unregistered-head fallback) +
+  `tests/test_differential_smoke.py[check_assist_cross_room]`. Red before, green
+  after. Closure also surfaced and filed: FIGHT-096 (✅ emote act-render),
+  FIGHT-097 (✅ one_hit guards), FIGHT-098 (OPEN, mob_hit area-attack sibling),
+  DB-005 (OPEN, reset-order world-population divergence — found by the draw-count
+  accounting), GL-050 (OPEN, aggr victim-selection probe), HANDLER-009 (OPEN,
+  test-only `move_to_room` tail-append). Originally surfaced 2026-07-16 during
   a divergence-class sweep of the violence tick. ROM `check_assist`'s NPC-assist
   target-selection loop (`src/fight.c:161`) is
   `for (vch = ch->in_room->people; vch; vch = vch->next)` — it seeds from the

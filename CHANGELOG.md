@@ -42,6 +42,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `FIGHT-095` — `check_assist`'s NPC-assist target-selection reservoir now walks
+  ROM's iteration domain: the loop seeds at the room people-list head but follows
+  the **global char_list** (`src/fight.c:161`, `vch->next` — a 2.4b6 quirk), i.e.
+  the room head plus every character created before it, world-wide. Python
+  previously iterated room occupants only, diverging on the shared-RNG draw
+  count and the reachable target set (an assisting mob can now reservoir-pick a
+  same-group character in ANOTHER room — and whiff, per FIGHT-097 — and can
+  MISS a same-room group member created after the room head, both faithfully).
+  Implemented as the INV-045/GROUP-006 reversed-registry positional slice.
+  C-oracle validated end-to-end: new differential scenario
+  `check_assist_cross_room` converges byte-identically across an 8-seed
+  alignment sweep. Tests:
+  `tests/integration/test_fight095_check_assist_char_list_domain.py` + the
+  differential replay.
+
+- **Differential harness: six new scenario/debugging directives** (C shim +
+  Python replay, identical semantics): `__char_goto` (teleport a named char),
+  `__mob_off_flags` / `__mob_add_affect` (stage ASSIST_*/affect bits on the
+  first NPC), `__rng_probe` (draw-and-echo one `number_percent` — stream-
+  alignment discriminator), `__sneak_census` / `__mob_census` (world-population
+  accounting). The probe/census tooling turned a one-line output diff into
+  exact draw-count forensics — which is how DB-005 was found.
+
+- **Filed (OPEN) `DB-005` — reset processing order diverges from ROM.** ROM
+  `reset_area` iterates rooms in ascending vnum order (each room owns its reset
+  list); Python applies the area's resets in `.are` file order, so global
+  M-reset limits bind in a different sequence. Shipped-data impact: `valley.are`
+  mob 7803 spawns 4× in Python vs 3× in ROM (ROM skips the limit-1 reset in
+  room 7853), and boot creation order diverges for multi-instance prototypes
+  (affects cross-engine char_list ordering). Found via the FIGHT-095 draw-count
+  accounting; verified against the live C oracle with `__mob_census`. Also
+  filed: `GL-050` (aggr_update victim selection with 2 PCs in room — needs
+  probe) and `HANDLER-009` (test-only `MobInstance.move_to_room` tail-append).
+
 - `FIGHT-097` — `attack_round` (the ROM `one_hit` twin) now carries ROM's
   opening guards (`src/fight.c:426-437`): a swing at yourself, a dead victim,
   or a victim in ANOTHER room silently whiffs — before any RNG draw, consuming

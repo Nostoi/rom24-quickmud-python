@@ -146,6 +146,65 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         if name in watch_chars:
             chars_by_name[name] = ally
         return ""
+    if command.startswith("__char_goto="):
+        # Teleport a named character (exact registry name match) to room
+        # <vnum> — mirrors the C-shim __char_goto (char_from_room/char_to_room,
+        # no RNG). Used to stage cross-room actors (FIGHT-095 check_assist).
+        from mud.models.character import character_registry
+
+        rest = command[len("__char_goto=") :].strip()
+        name, vnum_raw = rest.split(",", 1)
+        name = name.strip()
+        destination = room_registry[int(vnum_raw)]
+        wch = next(
+            (p for p in character_registry if str(getattr(p, "name", "") or "").lower() == name.lower()),
+            None,
+        )
+        if wch is not None and getattr(wch, "room", None) is not None:
+            wch.room.remove_character(wch)
+            destination.add_character(wch)
+        return ""
+    if command.startswith("__sneak_census"):
+        # Mirror of the C-shim __sneak_census (see diffmain.c): every char in
+        # ROM char_list order (reversed registry) that would take a can_see()
+        # sneak roll. No RNG consumed.
+        from mud.models.character import character_registry
+        from mud.models.constants import AffectFlag
+
+        rows = []
+        for wch in reversed(character_registry):
+            if wch.has_affect(AffectFlag.SNEAK) and getattr(wch, "fighting", None) is None:
+                room_ = getattr(wch, "room", None)
+                nm = getattr(wch, "name", None) or "?"
+                rows.append(f"{nm}|{room_.vnum if room_ is not None else -1}")
+        return "\n".join(rows)
+    if command.startswith("__rng_probe"):
+        # Stream-alignment debugging aid — draw ONE number_percent() and echo
+        # it; run at the same step in both engines to prove/refute shared-MM
+        # stream alignment. Mirrors the C-shim __rng_probe.
+        return f"RNG_PROBE={rng_mm.number_percent()}"
+    if command.startswith("__mob_add_affect="):
+        # OR raw affect bits into the first NPC in the PC's room (no
+        # AFFECT_DATA node, no stat mods) — scenario staging, mirrors the
+        # C-shim __mob_add_affect.
+        from mud.spawning.templates import MobInstance
+
+        flags = int(command[len("__mob_add_affect=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is not None:
+            mob.affected_by = int(getattr(mob, "affected_by", 0) or 0) | flags
+        return ""
+    if command.startswith("__mob_off_flags="):
+        # OR flags into the first NPC in the PC's room (same first-NPC
+        # convention as __mob_hp / __mob_position — apply immediately after
+        # the target's __mload). Mirrors the C-shim __mob_off_flags.
+        from mud.spawning.templates import MobInstance
+
+        flags = int(command[len("__mob_off_flags=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is not None:
+            mob.off_flags = int(getattr(mob, "off_flags", 0) or 0) | flags
+        return ""
     if command.startswith("__mana="):
         val = int(command[len("__mana=") :])
         char.mana = val

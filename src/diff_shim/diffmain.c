@@ -840,6 +840,163 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __char_goto=<name>,<vnum>: teleport the named character (exact
+         * char_list name match) to room <vnum> via char_from_room/char_to_room.
+         * Used to stage cross-room actors (e.g. a grouped ally outside the
+         * combat room for check_assist's global char_list walk, FIGHT-095)
+         * without consuming RNG. Mirrors the Python-side __char_goto handler
+         * in pyreplay.py. */
+        if (strncmp (line, "__char_goto=", 12) == 0)
+        {
+            char namebuf[MAX_INPUT_LENGTH];
+            char *comma;
+            int vnum;
+            CHAR_DATA *wch;
+            ROOM_INDEX_DATA *room;
+
+            strncpy (namebuf, line + 12, sizeof (namebuf) - 1);
+            namebuf[sizeof (namebuf) - 1] = '\0';
+            comma = strchr (namebuf, ',');
+            if (comma != NULL)
+            {
+                *comma = '\0';
+                vnum = atoi (comma + 1);
+                room = get_room_index (vnum);
+                for (wch = char_list; wch != NULL; wch = wch->next)
+                {
+                    if (wch->name != NULL && !str_cmp (wch->name, namebuf))
+                        break;
+                }
+                if (wch != NULL && room != NULL && wch->in_room != NULL)
+                {
+                    char_from_room (wch);
+                    char_to_room (wch, room);
+                }
+            }
+            continue;
+        }
+
+        /* __rng_probe: draw ONE number_percent() and echo it. A stream-
+         * alignment debugging aid: run it at the same step in both engines —
+         * matching values prove the shared MM stream is at the same position;
+         * differing values localize a draw-count desync to the steps before.
+         * Consumes exactly one draw (account for it in later steps). Mirrors
+         * the Python-side __rng_probe handler in pyreplay.py. */
+        if (strncmp (line, "__rng_probe", 11) == 0)
+        {
+            printf ("{\"type\":\"output\",\"lines\":[\"RNG_PROBE=%d\"]}\n",
+                    number_percent ());
+            fflush (stdout);
+            continue;
+        }
+
+        /* __sneak_census: emit every char on char_list that would take a
+         * can_see() sneak roll from a non-DETECT_HIDDEN observer
+         * (AFF_SNEAK set && fighting == NULL), in char_list order. Diff-
+         * debugging aid for shared-RNG draw-count accounting (the sneak roll
+         * in src/handler.c can_see consumes one number_percent per such char
+         * visited). No RNG consumed. Mirrors pyreplay.py __sneak_census. */
+        if (strncmp (line, "__sneak_census", 14) == 0)
+        {
+            CHAR_DATA *wch;
+            printf ("{\"type\":\"output\",\"lines\":[");
+            {
+                int first = 1;
+                for (wch = char_list; wch != NULL; wch = wch->next)
+                {
+                    if (IS_AFFECTED (wch, AFF_SNEAK) && wch->fighting == NULL)
+                    {
+                        if (!first)
+                            printf (",");
+                        printf ("\"%s|%d\"",
+                                wch->name != NULL ? wch->name : "?",
+                                wch->in_room != NULL ? wch->in_room->vnum : -1);
+                        first = 0;
+                    }
+                }
+            }
+            printf ("]}\n");
+            fflush (stdout);
+            continue;
+        }
+
+        /* __mob_census=<vnum>: list the room vnum of every char_list mob with
+         * that prototype, in char_list order. World-population debugging aid
+         * (boot-reset parity). No RNG consumed. Mirrors pyreplay.py. */
+        if (strncmp (line, "__mob_census=", 13) == 0)
+        {
+            int vnum = atoi (line + 13);
+            CHAR_DATA *wch;
+            int first = 1;
+            printf ("{\"type\":\"output\",\"lines\":[");
+            for (wch = char_list; wch != NULL; wch = wch->next)
+            {
+                if (IS_NPC (wch) && wch->pIndexData != NULL
+                    && wch->pIndexData->vnum == vnum)
+                {
+                    if (!first)
+                        printf (",");
+                    printf ("\"%d\"",
+                            wch->in_room != NULL ? wch->in_room->vnum : -1);
+                    first = 0;
+                }
+            }
+            printf ("]}\n");
+            fflush (stdout);
+            continue;
+        }
+
+        /* __mob_add_affect=<n>: OR <n> into the affected_by of the first NPC
+         * in the PC's room (same first-NPC convention as __mob_off_flags —
+         * apply immediately after the target's __mload). Raw bitfield only —
+         * no AFFECT_DATA node, no stat mods (scenario staging, e.g.
+         * DETECT_HIDDEN on a check_assist observer to silence the world-wide
+         * can_see sneak-roll population). Mirrors pyreplay.py. */
+        if (strncmp (line, "__mob_add_affect=", 17) == 0)
+        {
+            long flags = atol (line + 17);
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        mob->affected_by |= flags;
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
+        /* __mob_off_flags=<n>: OR <n> into the off_flags of the first NPC in
+         * the PC's room (same first-NPC convention as __mob_hp /
+         * __mob_position — apply immediately after the target's __mload).
+         * OR (not assign) so prototype behavior flags (OFF_DODGE etc.) keep
+         * affecting combat rolls. Used to stage ASSIST_* mobs for
+         * check_assist scenarios (FIGHT-095). Mirrors the Python-side
+         * __mob_off_flags handler in pyreplay.py. */
+        if (strncmp (line, "__mob_off_flags=", 16) == 0)
+        {
+            long flags = atol (line + 16);
+            if (ch != NULL && ch->in_room != NULL)
+            {
+                CHAR_DATA *mob;
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        mob->off_flags |= flags;
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
         /* __cond_full=<n>: set the PC's condition[FULL] directly (no RNG). */
         if (strncmp (line, "__cond_full=", 12) == 0)
         {
