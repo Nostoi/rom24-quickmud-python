@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FIGHT-098 — `mob_hit`'s OFF_AREA_ATTACK sweep walks ROM's global
+  `char_list` domain (`src/fight.c:264-269`).** The area-attack loop seeds at
+  the room people-list head but follows `vch->next` (the global char_list
+  link, not `next_in_room`) — the same 2.4b6 quirk as check_assist's reservoir
+  (FIGHT-095). Python swept `room.people`, wrongly swinging at same-room
+  fighters newer than the room head (unreachable in ROM) and never visiting
+  cross-room fled-but-still-fighting chars (visited in ROM; the swing whiffs
+  in one_hit's cross-room guard, FIGHT-097). The FIGHT-095 helper was promoted
+  to a shared `char_list_walk_from_room_head` in `mud/combat/engine.py`
+  (assist.py deduped to import it). Test:
+  `tests/integration/test_fight098_area_attack_char_list_domain.py`.
+
 - **DB-005 — reset processing order: per-room ascending room-vnum, not .are file
   order (`src/db.c:2003-2015 reset_area` + `db.c:980-1108 load_resets`).**
   `apply_resets` now groups `area.resets` by owning room (M/O own their `arg3`

@@ -397,6 +397,40 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
     return results
 
 
+def char_list_walk_from_room_head(ch: Character) -> list[Character]:
+    """ROM ``for (vch = ch->in_room->people; vch; vch = vch->next)`` (INV-045).
+
+    Seeds at the room people-list head, then follows the global ``char_list``
+    (``->next`` — not ``->next_in_room``): the 2.4b6 quirk shared by
+    check_assist's reservoir (``src/fight.c:161``, FIGHT-095) and mob_hit's
+    OFF_AREA_ATTACK sweep (``src/fight.c:264-269``, FIGHT-098). ROM's char_list
+    is head-inserted at creation (newest-first, ``src/db.c:2256-2257``);
+    Python's ``character_registry`` is append-order (oldest-first) — the exact
+    reverse (INV-045 CHAR-LIST-WALK-ORDER) — so the equivalent walk is the
+    REVERSED registry slice from index 0 up to the room head, yielding the
+    head first and then successively older characters to the oldest.
+
+    Fallback: a room head that is not in ``character_registry`` only occurs in
+    synthetic test fixtures (the live engine registers every spawn/login); in
+    that case fall back to the legacy room-people domain rather than silently
+    visiting nothing.
+    """
+    from mud.models.character import character_registry
+
+    people = list(getattr(getattr(ch, "room", None), "people", []) or [])
+    if not people:
+        return []
+    head = people[0]  # newest arrival — ROM char_to_room head-inserts
+    head_idx = None
+    for i, reg_ch in enumerate(character_registry):
+        if reg_ch is head:  # identity, ROM pointer semantics (INV-034)
+            head_idx = i
+            break
+    if head_idx is None:
+        return people
+    return list(reversed(character_registry[: head_idx + 1]))
+
+
 def mob_hit(attacker: Character, victim: Character, dt: str | int | None = None) -> list[str]:
     """ROM src/fight.c ``mob_hit`` — the NPC combat round (FIGHT-022).
 
@@ -424,8 +458,16 @@ def mob_hit(attacker: Character, victim: Character, dt: str | int | None = None)
     is_slow = bool(has_affect and attacker.has_affect(AffectFlag.SLOW))
 
     # Area attack — ROM: one extra swing at every OTHER char fighting this mob.
+    # FIGHT-098 / INV-045 — the iteration DOMAIN: ROM's sweep is
+    # `for (vch = ch->in_room->people; vch != NULL; vch = vch_next)
+    #  { vch_next = vch->next; ... }` (src/fight.c:264-269) — it SEEDS at the
+    # room people-list head but follows the GLOBAL char_list link (`->next`,
+    # NOT `->next_in_room`), the same 2.4b6 quirk as check_assist's reservoir
+    # (FIGHT-095). Cross-room fled-but-still-fighting chars ARE visited (the
+    # swing whiffs in one_hit's room guard, FIGHT-097); same-room chars NEWER
+    # than the room head are unreachable.
     if off_flags & OffFlag.AREA_ATTACK and getattr(attacker, "room", None) is not None:
-        for vch in list(getattr(attacker.room, "people", []) or []):
+        for vch in char_list_walk_from_room_head(attacker):
             if vch is not victim and getattr(vch, "fighting", None) is attacker:
                 results.append(attack_round(attacker, vch, dt=dt))
 

@@ -520,7 +520,16 @@ affects every swing) and FIGHT-082 (HIGH).
   stays non-fighting). Surfaced 2026-07-16 during FIGHT-095 closure.
 
 - **`FIGHT-098` — `mob_hit`'s OFF_AREA_ATTACK sweep iterates room-people in
-  Python but the global `char_list` in ROM, ⚠️ OPEN.** ROM `mob_hit`
+  Python but the global `char_list` in ROM, ✅ FIXED (2026-07-16, v2.14.324).**
+  FIGHT-095's `_char_list_walk_from_room_head` was promoted to a shared
+  `mud/combat/engine.py:char_list_walk_from_room_head` (assist.py now imports
+  it) and the area sweep walks that domain. C-independent domain lock:
+  `tests/integration/test_fight098_area_attack_char_list_domain.py` (3 —
+  newer-than-head same-room fighter unreachable; cross-room
+  fled-but-still-fighting char visited (whiffs via FIGHT-097 guards);
+  unregistered-head fallback). A dedicated C-oracle scenario remains desirable
+  (needs the instrumented C binary + an OFF_AREA_ATTACK mob directive) —
+  deferred with DB-005's `__mob_census` scenario to a C-capture session. ROM `mob_hit`
   (`src/fight.c:196-203`): `for (vch = ch->in_room->people; vch; vch = vch_next)
   { vch_next = vch->next; ... }` — the SAME room-head-seeded global-`char_list`
   walk quirk as FIGHT-095's inner loop (`->next`, not `->next_in_room`), gated by

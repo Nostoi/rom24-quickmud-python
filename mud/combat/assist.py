@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.characters import is_same_group
-from mud.combat.engine import is_evil, is_good, is_neutral, multi_hit
+from mud.combat.engine import char_list_walk_from_room_head, is_evil, is_good, is_neutral, multi_hit
 from mud.models.constants import AffectFlag, OffFlag, PlayerFlag
 from mud.utils import rng_mm
 from mud.world.vision import can_see_character
@@ -177,7 +177,7 @@ def check_assist(ch: Character, victim: Character) -> None:
                 # reversed registry slice up to the room head's index (the
                 # GROUP-006 / INV-045 fix pattern). C-oracle ground truth:
                 # tools/diff_harness/scenarios/check_assist_cross_room.json.
-                for vch in _char_list_walk_from_room_head(ch):
+                for vch in char_list_walk_from_room_head(ch):
                     if can_see_character(rch, vch) and is_same_group(vch, victim):
                         if rng_mm.number_range(0, number) == 0:
                             target = vch
@@ -187,38 +187,6 @@ def check_assist(ch: Character, victim: Character) -> None:
                 if target is not None:
                     _emote(rch, "screams and attacks!")
                     multi_hit(rch, target, None)
-
-
-def _char_list_walk_from_room_head(ch: Character) -> list[Character]:
-    """ROM ``for (vch = ch->in_room->people; vch; vch = vch->next)`` (FIGHT-095).
-
-    Seeds at the room people-list head, then follows the global ``char_list``
-    (`src/fight.c:161`, ``->next`` — not ``->next_in_room``). ROM's char_list is
-    head-inserted at creation (newest-first, ``src/db.c:2256-2257``); Python's
-    ``character_registry`` is append-order (oldest-first) — the exact reverse
-    (INV-045 CHAR-LIST-WALK-ORDER) — so the equivalent walk is the REVERSED
-    registry slice from index 0 up to the room head, yielding the head first
-    and then successively older characters to the oldest.
-
-    Fallback: a room head that is not in ``character_registry`` only occurs in
-    synthetic test fixtures (the live engine registers every spawn/login); in
-    that case fall back to the legacy room-people domain rather than silently
-    visiting nothing.
-    """
-    from mud.models.character import character_registry
-
-    people = list(getattr(getattr(ch, "room", None), "people", []) or [])
-    if not people:
-        return []
-    head = people[0]  # newest arrival — ROM char_to_room head-inserts
-    head_idx = None
-    for i, reg_ch in enumerate(character_registry):
-        if reg_ch is head:  # identity, ROM pointer semantics (INV-034)
-            head_idx = i
-            break
-    if head_idx is None:
-        return people
-    return list(reversed(character_registry[: head_idx + 1]))
 
 
 def _is_npc(char: Character) -> bool:
