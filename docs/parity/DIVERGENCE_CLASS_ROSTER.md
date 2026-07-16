@@ -97,6 +97,17 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
   scenario or behavioral test. Mostly enforced via the INV tests; the open
   lever is **Hypothesis state-machine coverage** feeding `diff_harness` to
   widen the scenario space (the current dynamic-coverage limit).
+  **Re-verified 2026-07-16:** the instrumented C binary builds cleanly on this
+  host (`make -C src -f Makefile.diffshim diffshim`, gcc), and the full
+  Python-vs-committed-C-golden replay (`tests/test_differential_smoke.py` +
+  `tests/test_diff_harness_unit.py`, 97 tests across 64 scenarios) **converges
+  with zero divergence** — the enumeration-independent parity check is clean on
+  the covered surface. Caveat (not a parity finding): `capture --check`
+  (C-oracle re-capture vs golden) reports CHANGED on ~20 RNG-adjacent scenarios
+  (mob-trigger/shop/combat) while deterministic ones stay `ok`; this is a
+  build/provenance discrepancy of a freshly-rebuilt C binary vs the committed
+  goldens, NOT a Python↔ROM divergence (Python matches the committed C ground
+  truth). Goldens must not be overwritten to silence it (harness rule).
 
 ## To-do list (falls directly out of the roster)
 
