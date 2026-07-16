@@ -42,6 +42,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `FIGHT-096` — the auto-assist emote ("screams and attacks!") now renders
+  through ROM `act()` semantics: NPC `short_descr` with line-start
+  capitalization ("The drunk screams and attacks!", not "the drunk …") and the
+  `do_emote` TO_CHAR self-line (ROM `src/fight.c:121/173` →
+  `src/act_comm.c:do_emote`). Surfaced by the first `check_assist_cross_room`
+  differential C-oracle capture. Test:
+  `tests/integration/test_fight096_assist_emote_render.py`.
+
 - **A mob killed in combat left dangling `reply`/`mprog_target` pointers at its
   corpse.** ROM `raw_kill` calls `extract_char(victim, IS_NPC)`, and
   `extract_char`'s `char_list` sweep (`src/handler.c:2151-2157`) nulls every

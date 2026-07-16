@@ -463,6 +463,49 @@ affects every swing) and FIGHT-082 (HIGH).
   GROUP-006 (fix-pattern precedent), GL-040/045 (violence-tick reversal + RNG
   desync).
 
+- **`FIGHT-096` — `check_assist`'s assist emote drops ROM `act()` line-start
+  capitalization, ✅ FIXED (2.14.320).** `_emote` now renders per-recipient via
+  `act_format("$n <msg>")` (PERS short_descr + line-start cap) and delivers the
+  ROM `do_emote` TO_CHAR self-line too. Tests:
+  `tests/integration/test_fight096_assist_emote_render.py` (2 — observer cap
+  render + actor self-line), red before, green after. Surfaced 2026-07-16 by the
+  first `check_assist_cross_room` C-oracle capture: C renders `The drunk screams and attacks!` (ROM
+  `do_function (rch, &do_emote, ...)` → `do_emote` → `act("$n $T", ...)`, and
+  `act_new` upper-cases the first letter of each rendered line); Python
+  `mud/combat/assist.py:_emote` hand-rolls `f"{char_name} {message}"` from the raw
+  lowercase `short_descr` → `the drunk screams and attacks!`. Same act()-render
+  class as FIGHT-073/075. Fix: render the emote through the faithful
+  `act_format` capitalization path. ROM ref `src/fight.c:121/173` +
+  `src/act_comm.c:do_emote`.
+
+- **`FIGHT-097` — `attack_round` (the `one_hit` twin) is missing ROM's opening
+  guard.** ROM `one_hit` (`src/fight.c:426-437`) starts with two early-outs:
+  `if (victim == ch || ch == NULL || victim == NULL) return;` and
+  `if (victim->position == POS_DEAD || ch->in_room != victim->in_room) return;`
+  ("Can't beat a dead char! Guard against weird room-leavings."). Python
+  `mud/combat/engine.py:attack_round` has neither — it resolves a full swing
+  (consuming shared-RNG draws) against a dead, self, or CROSS-ROOM victim. The
+  cross-room leg is load-bearing for FIGHT-095: ROM `check_assist` can reservoir-
+  pick a same-group char in another room, emote, then `multi_hit` → `one_hit`
+  silently whiffs with ZERO RNG consumed and no `set_fighting` (the C-oracle
+  `check_assist_cross_room` golden captures exactly this: scream, no damage, drunk
+  stays non-fighting). Surfaced 2026-07-16 during FIGHT-095 closure.
+
+- **`FIGHT-098` — `mob_hit`'s OFF_AREA_ATTACK sweep iterates room-people in
+  Python but the global `char_list` in ROM, ⚠️ OPEN.** ROM `mob_hit`
+  (`src/fight.c:196-203`): `for (vch = ch->in_room->people; vch; vch = vch_next)
+  { vch_next = vch->next; ... }` — the SAME room-head-seeded global-`char_list`
+  walk quirk as FIGHT-095's inner loop (`->next`, not `->next_in_room`), gated by
+  `vch != victim && vch->fighting == ch`. Python `mud/combat/engine.py:428`
+  iterates `attacker.room.people`. Bite is narrower than FIGHT-095 (requires a
+  char OUTSIDE the mob's room whose `fighting` still points at the mob — a
+  mid-fight room-leaving, e.g. flee-recall edge), but it is the identical INV-045
+  nested-walk class and the identical fix pattern. Needs its own C-oracle scenario
+  (an OFF_AREA_ATTACK mob + a fled-but-still-fighting char) before fixing — the
+  domain change alters `attack_round` draw counts. Route: `/rom-gap-closer
+  FIGHT-098` after FIGHT-095's fix pattern lands. Surfaced 2026-07-16 during
+  FIGHT-095 closure.
+
 ### Follow-ups (FIGHT-022 / FIGHT-023 / FIGHT-025 / FIGHT-026 — filed, not yet closed)
 
 - **`FIGHT-068` — `do_bash` checked `victim == ch` before `position < POS_FIGHTING` (order swap vs ROM), ✅ FIXED (2.14.105).** Surfaced 2026-06-14 while closing FIGHT-067 (full `do_bash` read, `src/fight.c:2392-2403`). ROM checks `position < POS_FIGHTING` ("You'll have to let $M get back up first.", `:2392-2397`) **before** `victim == ch` ("You try to bash your brains out, but fail.", `:2399-2403`). Python `mud/commands/combat.py:do_bash` checked `victim is char` **before** the position check. Observable only in the edge case of bashing *yourself* while you are sitting/sleeping (`position < FIGHTING`): ROM emits the position line, Python emitted "You try to bash your brains out, but fail." **Fix (2.14.105):** swapped the two early-return blocks so the position check precedes the self-target check. Test: `tests/integration/test_fight068_bash_position_before_self.py` (self-bash while POS_SITTING → position gate wins). Verified red before fix, green after. Residual: the position message is the literal `"You'll have to let them get back up first."`, where ROM renders `act("...$M...")` (victim objective pronoun) — filed as **FIGHT-075** below (act()-render class, sibling of FIGHT-073).

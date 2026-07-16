@@ -188,23 +188,22 @@ def _emote(char: Character, message: str) -> None:
     """
     Make character perform an emote.
 
-    ROM C uses: do_function(rch, &do_emote, "screams and attacks!");
-    Python equivalent: Send message to room.
+    ROM C: do_function(rch, &do_emote, "screams and attacks!") — do_emote
+    (src/act_comm.c) renders act("$n $T", ch, NULL, argument, TO_ROOM) plus the
+    same line TO_CHAR. act_new resolves $n via PERS (NPC short_descr, can-see
+    gated) and upper-cases the line start, so observers see "The drunk screams
+    and attacks!" and the emoting char receives its own line (FIGHT-096).
     """
+    from mud.utils.act import act_format
 
     room = getattr(char, "room", None)
     if not room:
         return
 
-    # Format: "Name screams and attacks!"
-    char_name = getattr(char, "name", "Someone")
-    full_message = f"{char_name} {message}"
-
-    # Send to everyone in the room
-    people = getattr(room, "people", [])
-    for person in people:
-        if person != char:
-            _send_to_char(person, full_message + "\n")
+    # TO_ROOM (everyone but char) + TO_CHAR (char) == every room occupant.
+    # mirroring ROM src/act_comm.c:do_emote
+    for person in getattr(room, "people", []):
+        _send_to_char(person, act_format(f"$n {message}", recipient=person, actor=char) + "\n")
 
 
 # DUPL-001b — canonical at mud/utils/messaging.py:send_to_char_buffered.
