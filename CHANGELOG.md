@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **HANDLER-009 — `MobInstance.move_to_room` head-inserts like ROM
+  `char_to_room` (`src/handler.c:1557-1559`).** The method appended to
+  `room.people`, inverting newest-arrival-first order for any caller
+  (currently test-only reach; production paths already used `Room.add_mob`).
+  Now routed through `Room.add_mob`. One fixture updated: the shop
+  act-trigger witness was a second shopkeeper that, under ROM ordering, wins
+  `find_keeper`'s room scan. Test:
+  `tests/integration/test_handler009_move_to_room_head_insert.py`.
+
 - **FIGHT-094 — `damage()` now calls `check_killer` (ROM `src/fight.c:733`).**
   The call sits after the is_safe re-check and BEFORE set_fighting — the
   order ROM relies on: check_killer's `ch->fighting == victim` early-out
