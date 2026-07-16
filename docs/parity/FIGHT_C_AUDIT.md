@@ -543,6 +543,36 @@ affects every swing) and FIGHT-082 (HIGH).
   FIGHT-098` after FIGHT-095's fix pattern lands. Surfaced 2026-07-16 during
   FIGHT-095 closure.
 
+- **`FIGHT-099` — `damage()` epilogue: link-dead PC auto-recall missing, ✅
+  FIXED (2026-07-16, v2.14.325).** ROM `src/fight.c:978-991`: after damage
+  lands (victim alive), `if (victim == ch) return TRUE;` then "Take care of
+  link dead people" — a PC victim with `desc == NULL` rolls
+  `number_range(0, victim->wait)`; on 0 it `do_recall`s out of the fight and
+  `damage()` returns. Python's `apply_damage` ended at the death branch with
+  no epilogue at all: a descriptorless PC just kept taking rounds. Surfaced
+  2026-07-16 by the GL-050 probe (C oracle's `__group_pc` Ally recalled after
+  the first aggression hit; Python mauled it to INCAP). Fix: epilogue added to
+  `mud/combat/engine.py:apply_damage` (self-damage guard + link-dead recall,
+  function-local `do_recall` import). Tests:
+  `tests/integration/test_fight099_linkdead_recall_on_damage.py` (4) +
+  C-oracle scenario `aggr_two_pc_victim_selection` (99/99 differential).
+  Harness fix ridealong: `pyreplay._configure_test_character` now mirrors
+  diffmain.c:448-531 descriptor wiring (driver `attach_desc=TRUE`, `__group_pc`
+  ally FALSE) — Python's driver previously read as link-dead.
+
+- **`FIGHT-100` — `damage()` epilogue: wimpy auto-flee legs missing, ⚠️
+  OPEN.** ROM `src/fight.c:993-1012`, immediately after the FIGHT-099 block:
+  (a) NPC wimpy/charm flee — `IS_NPC(victim) && dam > 0 && victim->wait <
+  PULSE_VIOLENCE / 2` and (`ACT_WIMPY && number_bits(2) == 0 && hit <
+  max_hit/5`, or `AFF_CHARM && master && master->in_room != victim->in_room`)
+  → `do_flee`; (b) PC wimpy flee — `!IS_NPC && hit > 0 && hit <= victim->wimpy
+  && wait < PULSE_VIOLENCE / 2` → `do_flee`. Python has NEITHER leg — wimpy'd
+  players and wimpy/charmed mobs never auto-flee on damage. RNG-bearing
+  (`number_bits(2)` + do_flee's exit scan draws) — close with a C-oracle
+  scenario if feasible. Surfaced 2026-07-16 while closing FIGHT-099 (same
+  contiguous ROM block, distinct observable behaviors). Route:
+  `/rom-gap-closer FIGHT-100`.
+
 ### Follow-ups (FIGHT-022 / FIGHT-023 / FIGHT-025 / FIGHT-026 — filed, not yet closed)
 
 - **`FIGHT-068` — `do_bash` checked `victim == ch` before `position < POS_FIGHTING` (order swap vs ROM), ✅ FIXED (2.14.105).** Surfaced 2026-06-14 while closing FIGHT-067 (full `do_bash` read, `src/fight.c:2392-2403`). ROM checks `position < POS_FIGHTING` ("You'll have to let $M get back up first.", `:2392-2397`) **before** `victim == ch` ("You try to bash your brains out, but fail.", `:2399-2403`). Python `mud/commands/combat.py:do_bash` checked `victim is char` **before** the position check. Observable only in the edge case of bashing *yourself* while you are sitting/sleeping (`position < FIGHTING`): ROM emits the position line, Python emitted "You try to bash your brains out, but fail." **Fix (2.14.105):** swapped the two early-return blocks so the position check precedes the self-target check. Test: `tests/integration/test_fight068_bash_position_before_self.py` (self-bash while POS_SITTING → position gate wins). Verified red before fix, green after. Residual: the position message is the literal `"You'll have to let them get back up first."`, where ROM renders `act("...$M...")` (victim objective pronoun) — filed as **FIGHT-075** below (act()-render class, sibling of FIGHT-073).

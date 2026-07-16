@@ -42,6 +42,7 @@ def attacker(movable_char_factory, _arena) -> Character:
 def victim(movable_char_factory, _arena) -> Character:
     """Create a test victim with no resistances."""
     char = movable_char_factory("Victim", 3001, points=100)
+    char.desc = object()  # connected PC — a link-dead victim would auto-recall on damage (FIGHT-099)
     char.level = 10
     char.hit = 100
     char.max_hit = 100

@@ -364,6 +364,10 @@ class TestAssistIntegration:
         attacker = create_char("Player", is_npc=False, level=10, group="party")
         helper = create_char("Ally", is_npc=False, level=10, group="party", act=PlayerFlag.AUTOASSIST)
         victim = create_char("Orc", is_npc=True, level=10)
+        # Connected PCs — a link-dead PC taking counter-damage would auto-recall
+        # out of the fight mid-tick (FIGHT-099, ROM src/fight.c:984-991).
+        attacker.desc = object()
+        helper.desc = object()
 
         attacker.hit = 100
         attacker.max_hit = 100

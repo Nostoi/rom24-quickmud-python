@@ -102,6 +102,7 @@ def test_hpcnt_fires_exactly_once_per_violence_tick(monkeypatch) -> None:
     attacker.second_attack_skill = 100
     attacker.third_attack_skill = 100
     victim = Character(name="VictimPC", is_npc=False, position=Position.STANDING)
+    victim.desc = object()  # connected PC — a link-dead victim would auto-recall out of the fight (FIGHT-099)
     victim.level = 30
     victim.hit = 100
     victim.max_hit = 100

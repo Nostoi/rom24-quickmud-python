@@ -891,11 +891,29 @@ def apply_damage(
         message = _handle_death(attacker, victim)
         return message
 
+    final_message = ""
     if message_bundle and message_bundle.attacker:
         from mud.combat.messages import render_for as _render
 
-        return _render(message_bundle.attacker, attacker, victim, attacker) or ""
-    return ""
+        final_message = _render(message_bundle.attacker, attacker, victim, attacker) or ""
+
+    # mirroring ROM src/fight.c:978-991 — damage() epilogue. Self-damage skips
+    # the tail (`if (victim == ch) return TRUE;`), then "Take care of link dead
+    # people": a PC victim with no descriptor rolls number_range(0, wait); on 0
+    # it auto-recalls out of the fight and damage() returns. FIGHT-099 (found
+    # by the GL-050 probe: the C oracle's descriptorless Ally recalled after
+    # the first area-aggression hit; Python kept mauling it). The wimpy
+    # auto-flee legs of the same epilogue (src/fight.c:993-1012) are tracked
+    # separately as FIGHT-100.
+    if victim is not attacker:
+        if not getattr(victim, "is_npc", False) and getattr(victim, "desc", None) is None:
+            if rng_mm.number_range(0, int(getattr(victim, "wait", 0) or 0)) == 0:
+                from mud.commands.session import do_recall
+
+                do_recall(victim, "")
+                return final_message
+
+    return final_message
 
 
 def set_fighting(ch: Character, victim: Character) -> None:

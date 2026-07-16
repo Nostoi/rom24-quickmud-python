@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FIGHT-099 — link-dead PC auto-recall in `damage()`'s epilogue
+  (`src/fight.c:978-991`).** After damage lands, ROM guards `victim == ch`,
+  then a PLAYER victim with no descriptor rolls `number_range(0, wait)` and on
+  0 auto-recalls out of the fight ("$n prays for transportation!"). Python's
+  `apply_damage` had no epilogue — descriptorless PCs just kept taking rounds.
+  Found by the GL-050 probe against the live C oracle. The wimpy auto-flee
+  legs of the same epilogue (`fight.c:993-1012`) are filed as FIGHT-100
+  (OPEN). Tests: `tests/integration/test_fight099_linkdead_recall_on_damage.py`
+  + new differential scenario `aggr_two_pc_victim_selection` (99/99).
+- **GL-050 closed — `aggr_update` victim selection was never divergent.** The
+  observed two-PC victim flip was DB-005 boot-order RNG-stream contamination
+  (fixed in 2.14.323); the residual state divergence was FIGHT-099.
+  `mud/ai/aggressive.py` verified faithful against `src/update.c:1077-1141` by
+  code-read; the new C-oracle scenario locks the contract.
+- **diff-harness: Python replay driver now mirrors the C shim's descriptor
+  wiring** (`diffmain.c:448-531` — driver `desc` attached, `__group_pc` allies
+  link-dead). Python's driver previously read as link-dead, which would have
+  desynced every desc-gated ROM path (recall exp loss, FIGHT-099 recall).
+
 - **FIGHT-098 — `mob_hit`'s OFF_AREA_ATTACK sweep walks ROM's global
   `char_list` domain (`src/fight.c:264-269`).** The area-attack loop seeds at
   the room people-list head but follows `vch->next` (the global char_list

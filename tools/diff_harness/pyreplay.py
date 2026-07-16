@@ -45,10 +45,19 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     return py_trace
 
 
-def _configure_test_character(char: Character, level: int) -> None:
-    """Mirror the C shim's ``make_test_char`` runtime defaults."""
+def _configure_test_character(char: Character, level: int, *, attach_desc: bool = True) -> None:
+    """Mirror the C shim's ``make_test_char_with_desc`` runtime defaults."""
 
     char.level = level
+    # Mirror the C shim's descriptor wiring (diffmain.c:448-531: the DRIVER gets
+    # ch->desc = &shim_desc (attach_desc=TRUE); __group_pc allies are created
+    # with attach_desc=FALSE and stay desc==NULL). ROM link-dead semantics key
+    # on desc (fight.c:984 damage() auto-recall, act_move.c:1608 recall exp
+    # loss), so the driver must read as CONNECTED while allies read as
+    # link-dead. Python message delivery routes on `.connection`, which stays
+    # None — this sentinel only feeds desc checks.
+    if attach_desc:
+        char.desc = object()
     char.max_hit = char.hit = 20
     char.max_mana = char.mana = 100
     char.max_move = char.move = 100
@@ -141,7 +150,8 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         if room is None:
             raise AssertionError("__group_pc requires the driver PC to be in a room")
         ally = create_test_character(name, room.vnum)
-        _configure_test_character(ally, int(getattr(char, "level", 1) or 1))
+        # attach_desc=False — diffmain.c:531 creates the ally desc==NULL (link-dead).
+        _configure_test_character(ally, int(getattr(char, "level", 1) or 1), attach_desc=False)
         ally.leader = char  # ROM is_same_group resolves `leader ? leader : self`.
         if name in watch_chars:
             chars_by_name[name] = ally
