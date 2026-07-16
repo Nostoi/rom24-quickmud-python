@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **A charmed pet dismissed on its owner's death left dangling references at
+  the extracted pet.** ROM `nuke_pets` (`src/act_comm.c:1649`) dismisses the
+  pet via `extract_char(pet, TRUE)`, which runs the *full* pull-extract cleanup
+  chain — including `die_follower(pet)` (detaching anyone following the pet)
+  and the `reply`/`mprog_target` dangling-pointer sweep. The Python port split
+  `extract_char` across call sites and `mud/combat/death.py:_nuke_pets` inlined
+  only a *partial* pet-extraction (stop_follower + fade + object-drain +
+  stop_fighting + registry removal), omitting both. A third character following
+  the pet (`master == pet`) — or holding a `reply` at it — was left with a
+  reference at the now-extracted pet corpse. `_nuke_pets` now also runs
+  `die_follower(pet)` and `clear_extract_target_refs(pet)`, mirroring ROM's
+  `extract_char(pet, TRUE)`. Cross-file contract INV-020 (pet leg) / INV-047.
+  Regression test: `tests/integration/test_inv020_nuke_pets_full_pet_extraction.py`.
+
 - **Characters created via the nanny menu vanished after a server restart.**
   `mud/config.py` and `mud/db/session.py` both defaulted `DATABASE_URL` to the
   relative SQLite path `sqlite:///mud.db`. A relative SQLite URL resolves
