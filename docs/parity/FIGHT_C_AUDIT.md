@@ -560,8 +560,30 @@ affects every swing) and FIGHT-082 (HIGH).
   diffmain.c:448-531 descriptor wiring (driver `attach_desc=TRUE`, `__group_pc`
   ally FALSE) — Python's driver previously read as link-dead.
 
-- **`FIGHT-100` — `damage()` epilogue: wimpy auto-flee legs missing, ⚠️
-  OPEN.** ROM `src/fight.c:993-1012`, immediately after the FIGHT-099 block:
+- **`FIGHT-101` — `do_flee` carries a non-ROM wait-gate and wait-state, ⚠️
+  OPEN.** ROM `do_flee` (`src/fight.c:2970-3030`) has NO wait check and
+  applies NO WAIT_STATE. Python `mud/commands/combat.py:do_flee` both refuses
+  when `wait > 0` ("You are still recovering.") and applies
+  `_apply_wait_state(char, get_pulse_violence())` before the door loop.
+  Reachable divergence: ROM `damage()`'s wimpy auto-flee (FIGHT-100) gates
+  only on `wait < PULSE_VIOLENCE / 2`, so a victim with wait 1..5 flees in
+  ROM but is blocked by Python's internal gate; and ROM never lags a fleer.
+  Surfaced 2026-07-16 while closing FIGHT-100. Before removing, check
+  whether the gate/lag is a deliberate Python command-dispatch compensation
+  (the comment claims "commands are wait-gated" — but ROM's interpreter wait
+  applies to typed commands, and `do_function` bypasses it). Route:
+  `/rom-gap-closer FIGHT-101`.
+
+- **`FIGHT-100` — `damage()` epilogue: wimpy auto-flee legs missing, ✅ FIXED
+  (2026-07-16, v2.14.326).** Epilogue extended in
+  `mud/combat/engine.py:apply_damage` (both legs, ROM gate order; the NPC OR
+  chain short-circuits so `number_bits(2)` draws only when ACT_WIMPY is set;
+  `c_div` for `max_hit/5`; charm-master compare by identity). Tests:
+  `tests/integration/test_fight100_wimpy_autoflee_on_damage.py` (5,
+  failing-first: NPC wimpy flee, above-threshold stay, charm-absent-master
+  flee, PC wimpy flee, wait-gate suppression). do_flee's own non-ROM
+  wait-gate/lag filed as FIGHT-101 (blocks the wait-1..5 edge only). Original
+  row: ROM `src/fight.c:993-1012`, immediately after the FIGHT-099 block:
   (a) NPC wimpy/charm flee — `IS_NPC(victim) && dam > 0 && victim->wait <
   PULSE_VIOLENCE / 2` and (`ACT_WIMPY && number_bits(2) == 0 && hit <
   max_hit/5`, or `AFF_CHARM && master && master->in_room != victim->in_room`)

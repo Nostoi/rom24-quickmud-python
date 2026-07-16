@@ -913,6 +913,44 @@ def apply_damage(
                 do_recall(victim, "")
                 return final_message
 
+        # mirroring ROM src/fight.c:993-1012 — "Wimp out?" (FIGHT-100). Both
+        # legs gate on victim->wait < PULSE_VIOLENCE / 2. NPC: ACT_WIMPY at
+        # hit < max_hit/5 on a 25% roll (number_bits(2) == 0), OR a charmed
+        # mob whose master is in another room (pointer compare). PC:
+        # 0 < hit <= wimpy. `dam > 0` is guaranteed here (the damage <= 0
+        # path returned above). do_flee's own wait-gate divergence for
+        # wait 1..5 is FIGHT-101.
+        from mud.config import get_pulse_violence
+
+        victim_wait = int(getattr(victim, "wait", 0) or 0)
+        if victim_wait < get_pulse_violence() // 2:
+            should_flee = False
+            if getattr(victim, "is_npc", False):
+                act_flags = int(getattr(victim, "act", 0) or 0)
+                if (
+                    act_flags & int(ActFlag.WIMPY)
+                    and rng_mm.number_bits(2) == 0
+                    and victim.hit < c_div(int(getattr(victim, "max_hit", 0) or 0), 5)
+                ):
+                    should_flee = True
+                else:
+                    master = getattr(victim, "master", None)
+                    has_charm = getattr(victim, "has_affect", None)
+                    if (
+                        has_charm is not None
+                        and victim.has_affect(AffectFlag.CHARM)
+                        and master is not None
+                        and getattr(master, "room", None) is not getattr(victim, "room", None)
+                    ):
+                        should_flee = True
+            elif victim.hit > 0 and victim.hit <= int(getattr(victim, "wimpy", 0) or 0):
+                should_flee = True
+
+            if should_flee:
+                from mud.commands.combat import do_flee
+
+                do_flee(victim, "")
+
     return final_message
 
 

@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FIGHT-100 — wimpy auto-flee legs of `damage()`'s epilogue
+  (`src/fight.c:993-1012`).** After damage lands, ROM auto-flees (a) an
+  ACT_WIMPY NPC below `max_hit/5` on a 25% roll, (b) a charmed NPC whose
+  master is in another room, and (c) a PC with `0 < hit <= wimpy` — all gated
+  on `wait < PULSE_VIOLENCE / 2`. Python had none of these; wimpy'd mobs and
+  players never auto-fled on damage. Filed and closed as the sibling of
+  FIGHT-099 (same contiguous ROM epilogue). FIGHT-101 filed OPEN: Python
+  `do_flee` carries a non-ROM wait-gate + WAIT_STATE that blocks the
+  wait-1..5 edge. Test:
+  `tests/integration/test_fight100_wimpy_autoflee_on_damage.py` (5).
+
 - **FIGHT-099 — link-dead PC auto-recall in `damage()`'s epilogue
   (`src/fight.c:978-991`).** After damage lands, ROM guards `victim == ch`,
   then a PLAYER victim with no descriptor rolls `number_range(0, wait)` and on
