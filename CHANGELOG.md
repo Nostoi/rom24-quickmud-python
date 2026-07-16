@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **DB-005 — reset processing order: per-room ascending room-vnum, not .are file
+  order (`src/db.c:2003-2015 reset_area` + `db.c:980-1108 load_resets`).**
+  `apply_resets` now groups `area.resets` by owning room (M/O own their `arg3`
+  room; P/G/E inherit the previous reset's room; D/R use `arg1` — mirroring
+  `load_resets`' `rVnum` tracking) and processes rooms in ascending vnum order,
+  resetting `LastMob`/`LastObj`/`level`/`last` state at each room boundary (ROM
+  `reset_room` locals, `db.c:1647-1657`). Fixes both facets found via the C
+  oracle (`__mob_census`, valley.are mob 7803): (a) world population — global
+  M-limits (`count >= arg2`) now bind in room-vnum order (7853's sentry no
+  longer over-spawns: 3 sentries, not 4); (b) boot creation order —
+  `char_list`/`character_registry` order for multi-instance protos now matches
+  ROM, keeping INV-045 newest-first walks aligned cross-engine. Test:
+  `tests/test_db_resets_rom_parity.py::test_reset_processing_order_room_vnum_ascending`.
+
 ### Added
 
 - **Behavioral guard: `nofollow` detaches existing followers.** ROM `do_nofollow`
