@@ -578,8 +578,20 @@ affects every swing) and FIGHT-082 (HIGH).
   needs its own ROM read: some ROM skills DO check wait via
   skill-specific logic). Filed as **FIGHT-102** below.
 
-- **`FIGHT-102` — sibling non-ROM wait-gates in six combat commands, ⚠️
-  OPEN.** Same class as FIGHT-101: `do_kick`, `do_rescue`, `do_backstab`,
+- **`FIGHT-102` — sibling non-ROM wait-gates in six combat commands, ✅ FIXED
+  (2026-07-16, v2.14.328).** Per-site ROM verification: the ONLY `->wait`
+  READS in `src/fight.c` are multi_hit:193 (decrement), mob_hit:305
+  (dispatch guard), damage:986/996/1009 (epilogue), disarm-pickup:2263; none
+  in `src/magic.c` or `src/interp.c` — so all six gates were non-ROM. All
+  removed; each command's ROM WAIT_STATE-on-use is unchanged, and mob_hit's
+  own wait guard still covers the NPC off-skill dispatch. Locks:
+  `tests/integration/test_fight102_no_command_wait_gates.py` (grep-guard on
+  the recovery line in combat.py + behavioral kick-at-wait-5) and the
+  connection-level enforcement test
+  `tests/test_networking_telnet.py::test_wait_state_buffers_command_until_recovered_per_rom`.
+  Four stale tests asserting the non-ROM blocking were rewritten to the ROM
+  contract (skills_integration wait-reuse, still-recovering kick delivery,
+  skill_combat_rom_parity bash/kick recovering). Original row: Same class as FIGHT-101: `do_kick`, `do_rescue`, `do_backstab`,
   `do_bash`, `do_berserk`, `do_cast` in `mud/commands/combat.py` each open
   with `if wait > 0: return "You are still recovering."` — ROM has no such
   in-function gate (interpreter-level buffering only, `src/comm.c:619-623`).

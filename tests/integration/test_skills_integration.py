@@ -349,15 +349,18 @@ class TestSkillImprovementIntegration:
 class TestSkillWaitStateIntegration:
     """Test wait states work correctly with skills."""
 
-    def test_wait_state_blocks_skill_reuse(self, skilled_character, movable_mob_factory):
+    def test_wait_state_set_by_skill_but_not_rechecked_in_command(self, skilled_character, movable_mob_factory):
         """
-        Test: Can't use skill again while in wait state.
+        Test: skills apply ROM WAIT_STATE, and direct dispatch is NOT
+        wait-gated in the command body.
 
-        ROM Parity: Mirrors ROM wait state mechanics
-
-        Given: A character who just used a skill
-        When: Character tries to use skill again immediately
-        Then: Skill is blocked by wait state
+        ROM Parity: WAIT_STATE(ch, skill_table[gsn_bash].beats) fires on use
+        (src/fight.c:2417-2432), but ROM enforces player wait only at the
+        descriptor input loop (src/comm.c:619-623 — locked by
+        tests/test_networking_telnet.py::
+        test_wait_state_buffers_command_until_recovered_per_rom). Direct
+        dispatch (interpret/do_function — mobprogs, mob_hit) executes the
+        command body even at wait > 0 (FIGHT-101/FIGHT-102).
         """
         char = skilled_character
         mob = movable_mob_factory(3000, 3001)
@@ -373,8 +376,8 @@ class TestSkillWaitStateIntegration:
 
         result2 = process_command(char, "bash")
 
-        assert "wait" in result2.lower() or "recovering" in result2.lower(), (
-            f"Second bash should be blocked by wait state, got: {result2}"
+        assert "recovering" not in result2.lower(), (
+            f"ROM has no in-command wait gate — direct dispatch must execute (FIGHT-102), got: {result2}"
         )
 
     def test_wait_state_decrements_on_violence_pulses(self, skilled_character, movable_mob_factory):

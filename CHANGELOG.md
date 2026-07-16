@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FIGHT-102 — removed the non-ROM in-function wait-gates from six combat
+  commands (`do_kick`, `do_rescue`, `do_backstab`, `do_bash`, `do_berserk`,
+  `do_cast`).** ROM reads `ch->wait` nowhere in these functions (verified
+  across `src/fight.c`/`src/magic.c`/`src/interp.c`); player wait is enforced
+  solely by the descriptor input loop (`src/comm.c:619-623`, mirrored by
+  `mud/net/connection.py` and locked by
+  `test_wait_state_buffers_command_until_recovered_per_rom`). Direct dispatch
+  (mobprogs, `mob_hit`'s off-skill switch) now executes at `wait > 0` exactly
+  as ROM's `do_function` does; each command's ROM WAIT_STATE-on-use is
+  unchanged. Completes the FIGHT-101 class. Tests:
+  `tests/integration/test_fight102_no_command_wait_gates.py` (grep-guard +
+  behavioral); four stale non-ROM assertions rewritten.
+
 - **FIGHT-101 — `do_flee` no longer wait-gates or applies a non-ROM lag.**
   ROM `do_flee` (`src/fight.c:2970-3030`) neither checks `ch->wait` nor
   applies WAIT_STATE — player wait is enforced at the descriptor input loop
