@@ -775,6 +775,13 @@ def apply_damage(
         if is_safe(attacker, victim):
             return ""
 
+        # FIGHT-094: mirroring ROM src/fight.c:733 — damage() itself calls
+        # check_killer, BEFORE set_fighting below. The `ch->fighting == victim`
+        # early-out (fight.c:1278) means THIS call is the one that PK-flags on
+        # the first hit of a PvP engagement; the command-layer calls
+        # (do_kill/bash/trip/… tails) coexist exactly as in ROM.
+        check_killer(attacker, victim)
+
     # mirroring ROM src/fight.c:775-785 — damage modifiers applied inside damage() for all callers
     # (drunk, sanctuary, protection) — must come after is_safe and before parry/dodge.
     damage = apply_damage_reduction(attacker, victim, damage)

@@ -367,12 +367,20 @@ affects every swing) and FIGHT-082 (HIGH).
   `extract_obj` mirror). Test: `tests/integration/test_fight093_damage_1200_loophole.py`
   (2 — non-immortal physical >1200 → cap + weapon extract + cheat message; spell dt
   below TYPE_HIT → no penalty). Verified red before fix, green after. **Remaining →
-  FIGHT-094 (OPEN):** the `check_killer(ch, victim)` call at `fight.c:733` is still
-  absent from `apply_damage` — Python calls `check_killer` from the command layer
-  (do_kill/murder/backstab/…) instead of inside `damage()`, so any damage path not
-  routed through one of those verbs (mob one_hit, some spells) misses PK-flagging.
-  This is a broader PK-subsystem placement question (risk of double-flagging on the
-  command paths that already call it); filed for separate assessment.
+  FIGHT-094 ✅ FIXED (2026-07-16, v2.14.330):** `check_killer(attacker, victim)`
+  added to `apply_damage` at ROM's exact position (`fight.c:733` — after the
+  is_safe re-check, BEFORE set_fighting). Assessment resolved the
+  double-flagging concern: ROM itself calls check_killer BOTH at the command
+  layer (do_kill/bash/trip/… tails) AND inside damage(); the
+  `ch->fighting == victim` early-out (fight.c:1278) makes the damage()-layer
+  call the one that actually flags on the FIRST hit of a PvP engagement, and
+  the guards make repeat calls no-ops. Notable ROM consequence now mirrored: a
+  CHARMED clan-PC attacker who `kill`s a PC gets detached (command-layer charm
+  branch → stop_follower strips AFF_CHARM) and then FLAGGED by the first hit's
+  damage()-layer call — the old Python test asserting "no flag" encoded the
+  gap and was rewritten. Tests:
+  `tests/integration/test_fight094_damage_check_killer.py` (3, failing-first:
+  first-hit flags; established fight doesn't re-flag; NPC victim never flags).
 
 - **`FIGHT-095` — `check_assist` inner target-selection loop iterates room-people
   in Python but the global `char_list` in ROM (`vch->next`, a 2.4b6 quirk),

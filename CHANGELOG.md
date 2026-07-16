@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **FIGHT-094 — `damage()` now calls `check_killer` (ROM `src/fight.c:733`).**
+  The call sits after the is_safe re-check and BEFORE set_fighting — the
+  order ROM relies on: check_killer's `ch->fighting == victim` early-out
+  means this call PK-flags the attacker on the FIRST hit of a PvP engagement,
+  regardless of which damage path delivered it. ROM double-calls (command
+  layer + damage()); the guards make that idempotent. Mirrored consequence: a
+  charmed clan-PC who `kill`s a PC is detached (charm branch), un-charmed
+  (stop_follower), and then flagged by the first hit. Test:
+  `tests/integration/test_fight094_damage_check_killer.py` (3).
+
 ### Added
 
 - **Three C-oracle differential scenarios locking this loop's parity fixes**
