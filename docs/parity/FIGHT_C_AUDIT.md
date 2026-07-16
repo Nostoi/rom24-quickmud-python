@@ -410,7 +410,15 @@ affects every swing) and FIGHT-082 (HIGH).
   outside the assisting mob's room, or a room co-member precedes the room head in
   `char_list`), but the RNG-desync facet makes it worth locking with a diff-harness
   scenario when closed. Route: `/rom-gap-closer FIGHT-095` after authoring the
-  C-oracle scenario. ROM ref `src/fight.c:161`; Python `mud/combat/assist.py:164`.
+  C-oracle scenario. **Corroboration (2026-07-16):** the full Python-vs-C-golden
+  differential replay (97/97, 64 scenarios) is green — no existing scenario
+  constructs a room where `room.people` differs from the global-`char_list`
+  tail-from-head, which is exactly *why* the divergence is rare (LOW severity) and
+  precisely what the closing scenario must build: a room with multiple grouped
+  NPCs where the reservoir's filtered `number_range(0, number)` draw-count
+  genuinely differs between the room-scoped and global-list domains (else the C
+  oracle won't reproduce the divergence). ROM ref `src/fight.c:161`; Python
+  `mud/combat/assist.py:164`.
 
 ### Follow-ups (FIGHT-022 / FIGHT-023 / FIGHT-025 / FIGHT-026 — filed, not yet closed)
 
