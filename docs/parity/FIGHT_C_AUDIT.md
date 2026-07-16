@@ -374,6 +374,44 @@ affects every swing) and FIGHT-082 (HIGH).
   This is a broader PK-subsystem placement question (risk of double-flagging on the
   command paths that already call it); filed for separate assessment.
 
+- **`FIGHT-095` — `check_assist` inner target-selection loop iterates room-people
+  in Python but the global `char_list` in ROM (`vch->next`, a 2.4b6 quirk),
+  ⚠️ OPEN — needs C-oracle validation before fixing.** Surfaced 2026-07-16 during
+  a divergence-class sweep of the violence tick. ROM `check_assist`'s NPC-assist
+  target-selection loop (`src/fight.c:161`) is
+  `for (vch = ch->in_room->people; vch; vch = vch->next)` — it seeds from the
+  room's people-list *head* but then follows the **global** `char_list` link
+  (`->next`), **not** `->next_in_room`. Contrast the *outer* loop
+  (`src/fight.c:111`, `rch->next_in_room`) and `group_gain`
+  (`src/fight.c:1746/1764`, `->next_in_room`), both of which stay room-scoped.
+  Because the global `char_list` is creation-ordered (boot/area load order, then
+  login order), `room_head->next` almost never points at the next occupant of the
+  *same* room — so ROM's inner loop effectively walks the global character list
+  from an arbitrary midpoint, gated per element by
+  `can_see(rch, vch) && is_same_group(vch, victim)`. Python
+  `mud/combat/assist.py:check_assist` (`for vch in list(people_in_room)`) instead
+  iterates only `room.people`. Two divergence facets: **(1) target selection** —
+  ROM can pick (via the reservoir sampler) a visible same-group-as-victim
+  character who is *not* in the assisting mob's room, and can *miss* a room
+  co-member who sits earlier in the global list than the room head; Python's pool
+  is exactly the room occupants. **(2) shared MM RNG draw count** — the number of
+  `number_range(0, number)` reservoir draws equals the count of
+  (visible ∧ same-group-as-victim) chars in the iterated domain; a different
+  domain → a different draw count → the global combat RNG stream desyncs for all
+  subsequent events (the same class FIGHT-053/060 closed for other facets of this
+  very loop, but the *domain* itself was never addressed — FIGHT-053 fixed
+  `number++`'s position while leaving the loop room-scoped). **Why OPEN, not
+  fixed here:** switching Python to iterate the global registry from the room-head
+  position changes RNG draw counts, so a faithful fix must be validated against
+  the live C oracle (a diff-harness `check_assist` scenario with a cross-room
+  group member), not asserted from a Python-authored expectation — per AGENTS.md,
+  a subtle RNG-affecting quirk is filed and probed, not fixed blind. Severity
+  likely LOW (manifests only when a visible same-group-as-victim char exists
+  outside the assisting mob's room, or a room co-member precedes the room head in
+  `char_list`), but the RNG-desync facet makes it worth locking with a diff-harness
+  scenario when closed. Route: `/rom-gap-closer FIGHT-095` after authoring the
+  C-oracle scenario. ROM ref `src/fight.c:161`; Python `mud/combat/assist.py:164`.
+
 ### Follow-ups (FIGHT-022 / FIGHT-023 / FIGHT-025 / FIGHT-026 — filed, not yet closed)
 
 - **`FIGHT-068` — `do_bash` checked `victim == ch` before `position < POS_FIGHTING` (order swap vs ROM), ✅ FIXED (2.14.105).** Surfaced 2026-06-14 while closing FIGHT-067 (full `do_bash` read, `src/fight.c:2392-2403`). ROM checks `position < POS_FIGHTING` ("You'll have to let $M get back up first.", `:2392-2397`) **before** `victim == ch` ("You try to bash your brains out, but fail.", `:2399-2403`). Python `mud/commands/combat.py:do_bash` checked `victim is char` **before** the position check. Observable only in the edge case of bashing *yourself* while you are sitting/sleeping (`position < FIGHTING`): ROM emits the position line, Python emitted "You try to bash your brains out, but fail." **Fix (2.14.105):** swapped the two early-return blocks so the position check precedes the self-target check. Test: `tests/integration/test_fight068_bash_position_before_self.py` (self-bash while POS_SITTING → position gate wins). Verified red before fix, green after. Residual: the position message is the literal `"You'll have to let them get back up first."`, where ROM renders `act("...$M...")` (victim objective pronoun) — filed as **FIGHT-075** below (act()-render class, sibling of FIGHT-073).
