@@ -127,6 +127,28 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
   (mutation-tested: fails when the `_die_follower` call is removed). `die_follower`
   itself remains INV-020's shared cleanup routine; this guard covers a standalone
   command-path caller of it, not an extract path.
+  **FIGHT-095 de-risked + re-characterized 2026-07-16 (list-order class / INV-045):**
+  drove into the one open actionable gap. (1) *Oracle-trust blocker RETIRED* — the
+  recorded fear that the C oracle is nondeterministic on RNG scenarios is false:
+  capturing every RNG-adjacent scenario twice with the current `src/diffshim`
+  binary yields byte-identical traces (the `capture --check` CHANGED is cross-build
+  provenance drift vs OLD goldens, not within-build nondeterminism), so a fresh
+  `check_assist` golden is trustworthy. (2) *Real nature identified* — FIGHT-095 is
+  an unconformed NESTED site of **INV-045 (CHAR-LIST-WALK-ORDER)**: ROM
+  head-inserts `char_list` (`src/db.c:2256`, newest-first) vs Python
+  `character_registry.append` (oldest-first, the reverse). INV-045 already
+  conformed the tick walks + `get_char_world` via `reversed(<registry>)`; the
+  character-side fix pattern is proven by GROUP-006 (✅ 2.14.202, same bug in
+  `do_group`). `check_assist`'s inner reservoir loop is order-SENSITIVE on both
+  facets (draw-count → domain parity; target-selection → reservoir order parity),
+  whereas `die_follower`'s same `char_list` walk is order-INSENSITIVE (set-reset)
+  and stays faithful — that is the discriminator for which list walks INV-045
+  bites. (3) *Remaining blocker* — NOT a fix-design gap; two additive diff-harness
+  primitives are needed to build the locking scenario (mob off_flags directive +
+  cross-room grouped-member placement). Closure is a multi-commit
+  harness-extension task, deliberately not started on a replay turn to avoid a
+  rushed RNG-sensitive fix. Full spec in `FIGHT_C_AUDIT.md` FIGHT-095 + INV-045
+  tracker row.
 
 ## To-do list (falls directly out of the roster)
 

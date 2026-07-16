@@ -400,25 +400,68 @@ affects every swing) and FIGHT-082 (HIGH).
   domain → a different draw count → the global combat RNG stream desyncs for all
   subsequent events (the same class FIGHT-053/060 closed for other facets of this
   very loop, but the *domain* itself was never addressed — FIGHT-053 fixed
-  `number++`'s position while leaving the loop room-scoped). **Why OPEN, not
-  fixed here:** switching Python to iterate the global registry from the room-head
-  position changes RNG draw counts, so a faithful fix must be validated against
-  the live C oracle (a diff-harness `check_assist` scenario with a cross-room
-  group member), not asserted from a Python-authored expectation — per AGENTS.md,
-  a subtle RNG-affecting quirk is filed and probed, not fixed blind. Severity
-  likely LOW (manifests only when a visible same-group-as-victim char exists
-  outside the assisting mob's room, or a room co-member precedes the room head in
-  `char_list`), but the RNG-desync facet makes it worth locking with a diff-harness
-  scenario when closed. Route: `/rom-gap-closer FIGHT-095` after authoring the
-  C-oracle scenario. **Corroboration (2026-07-16):** the full Python-vs-C-golden
-  differential replay (97/97, 64 scenarios) is green — no existing scenario
-  constructs a room where `room.people` differs from the global-`char_list`
-  tail-from-head, which is exactly *why* the divergence is rare (LOW severity) and
-  precisely what the closing scenario must build: a room with multiple grouped
-  NPCs where the reservoir's filtered `number_range(0, number)` draw-count
-  genuinely differs between the room-scoped and global-list domains (else the C
-  oracle won't reproduce the divergence). ROM ref `src/fight.c:161`; Python
-  `mud/combat/assist.py:164`.
+  `number++`'s position while leaving the loop room-scoped).
+
+  **This is an unconformed *nested* site of INV-045 (CHAR-LIST-WALK-ORDER)**, not
+  a standalone quirk. ROM head-inserts every char (`src/db.c:2256-2257`
+  `mob->next = char_list; char_list = mob`), so `char_list` is newest-first;
+  Python `character_registry` is `append` = oldest-first (the REVERSE — confirmed
+  by reading both). INV-045's site inventory already conformed every *tick* walk
+  (violence/char/mob/aggr/obj `_update`) and `get_char_world` by iterating
+  `reversed(<registry>)`; the character-side fix pattern is proven by **GROUP-006
+  (✅ 2.14.202)** — the `do_group` roster had the identical bug (a charmed mob
+  created after the PC listed below it) and was fixed with `reversed(character_registry)`.
+  The `check_assist` *inner* reservoir loop (`vch->next`) is a walk NESTED inside
+  the already-conforming outer violence tick, so it was missed by the 2026-06-12
+  site sweep — the outer `check_assist` loop uses `->next_in_room` (room-scoped,
+  fine); only the inner target-selection loop follows the global list.
+
+  **Negative control — why `die_follower` (same `char_list` walk) is NOT a bug:**
+  `die_follower` (`src/act_comm.c:1671`) also walks the global `char_list`, and its
+  Python twin iterates `character_registry` forward — yet it is faithful, because
+  it is **order-insensitive**: it resets pointers for *every* match (a set
+  operation), so visitation sequence is irrelevant. The discriminator for which
+  `char_list`/`character_registry` loops INV-045 bites: **order-sensitive** walks
+  (reservoir picks, first-match, positional, RNG-per-element) diverge;
+  **order-insensitive** ones ("for all matching", set resets) do not. `check_assist`'s
+  reservoir sampler is order-sensitive on both facets.
+
+  **The two facets need DIFFERENT parity to fix (name them so closure is exact):**
+  (1) *draw count* needs **domain** parity — the COUNT of (visible ∧
+  same-group-as-victim) chars in the visited set; order-independent. (2) *target
+  selection* needs **order** parity — the reservoir `number_range(0, number)==0`
+  sequence, which is order-sensitive. Both require reproducing ROM's `char_list`
+  domain (the positional suffix "room-head → oldest", i.e. a reversed slice of
+  `character_registry` up to the room-head's index), so neither is independently
+  closeable.
+
+  **Why still OPEN (blocker re-characterized 2026-07-16 — the stated blocker is
+  RETIRED):** the prior "needs C-oracle validation, the harness may be
+  nondeterministic on RNG scenarios" concern is FALSE. Verified empirically:
+  capturing every RNG-adjacent scenario (`combat_melee_rounds`, `mob_fight_trigger`,
+  `spell_combat`, `aggression_onset`) **twice with the current `src/diffshim`
+  binary** yields byte-identical traces — the oracle is deterministic within-build.
+  The recorded `capture --check` CHANGED on ~20 scenarios is cross-build provenance
+  drift (fresh binary vs committed OLD goldens), NOT nondeterminism, so a FRESH
+  `check_assist` golden authored with the current binary is trustworthy. The REAL
+  blocker is now a **harness-primitive gap**: constructing the divergence requires
+  (a) a mob with an ASSIST off_flag (no `__off_flags`/`__mset` shim directive
+  exists, and no `__mload`-able midgaard prototype was confirmed to carry one) and
+  (b) a same-group-as-victim char placed in a DIFFERENT room from the assisting mob
+  (`__group_pc` only creates a grouped ally in the driver PC's OWN room). Both are
+  additive `src/diff_shim/diffmain.c` + `pyreplay.py` extensions (the sanctioned
+  growth path, same as the `__plr_autosplit`/`__group_pc` additions), not ROM `*.c`
+  changes. **Closure spec:** extend the shim with a set-off_flags directive + a
+  cross-room grouped-member placement directive (C + Python replay, identical
+  semantics) → author a `check_assist_cross_room_assist.json` scenario (assisting
+  NPC + victim in room A, victim's group ally in room B ordered before the room
+  head in `char_list`) → capture the C golden → port `assist.py` to walk the
+  reversed positional slice per the GROUP-006/GL-040 pattern → lock via the replay
+  test. Route: `/rom-gap-closer FIGHT-095`. Severity remains LOW (needs a
+  cross-room grouped member visible to the assist mob). ROM ref `src/fight.c:161`;
+  Python `mud/combat/assist.py:164`. Cross-ref: **INV-045** (this is a nested site),
+  GROUP-006 (fix-pattern precedent), GL-040/045 (violence-tick reversal + RNG
+  desync).
 
 ### Follow-ups (FIGHT-022 / FIGHT-023 / FIGHT-025 / FIGHT-026 — filed, not yet closed)
 

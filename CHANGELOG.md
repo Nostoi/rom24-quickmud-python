@@ -22,6 +22,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   divergence sweep — the chain (`add_follower`/`stop_follower`/`die_follower`)
   was re-verified faithful against `src/act_comm.c:1591-1680` with no divergence.
 
+### Changed
+
+- **FIGHT-095 de-risked and re-characterized (no behavior change yet).** Drove
+  into the one open actionable parity gap (`check_assist`'s NPC-assist inner
+  target-selection loop). Retired its stated blocker: the recorded concern that
+  the differential C oracle is nondeterministic on RNG scenarios is false —
+  capturing every RNG-adjacent scenario twice with the current `src/diffshim`
+  binary yields byte-identical traces (the `capture --check` CHANGED is
+  cross-build provenance drift vs old goldens, not within-build nondeterminism).
+  Identified the gap's real nature: it is an unconformed *nested* site of
+  **INV-045 (CHAR-LIST-WALK-ORDER)** — ROM head-inserts `char_list` (newest-first)
+  vs Python `character_registry.append` (oldest-first), the same divergence
+  GROUP-006 fixed for `do_group` via `reversed(character_registry)`. Closure now
+  has an exact spec but is blocked on two additive diff-harness primitives (mob
+  off_flags + cross-room grouped-member placement); deliberately not started this
+  turn to avoid a rushed RNG-sensitive fix. Details in `FIGHT_C_AUDIT.md`
+  FIGHT-095, the INV-045 tracker row, and the divergence-class roster.
+
 ### Fixed
 
 - **A mob killed in combat left dangling `reply`/`mprog_target` pointers at its
