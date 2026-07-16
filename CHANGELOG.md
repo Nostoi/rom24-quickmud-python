@@ -7,7 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Three C-oracle differential scenarios locking this loop's parity fixes**
+  (differential suite now 102/102 across 69 scenarios):
+  `db005_reset_order_mob_census` (valley.are mob 7803/7804 census — per-room
+  ascending reset order vs the live C engine), `fight098_area_attack_domain`
+  (OFF_AREA_ATTACK sweep domain — mutation-tested: fails if the sweep
+  regresses to room.people), `fight100_pc_wimpy_autoflee` (PC `hit <= wimpy`
+  auto-flee end-to-end). New harness directives, mirrored C+Python:
+  `__mob_census` (pyreplay side), `__mob_fight`, `__char_fight`
+  (fled-but-still-fighting staging; shim rebuilt).
+
 ### Fixed
+
+- **FIGHT-103 — fleer's own output channel now matches ROM.** `do_flee`
+  renders the destination room look BEFORE the "You flee from combat!" / exp
+  lines (ROM `move_char` at `src/fight.c:3002` precedes `:3010-3019`), and
+  the FIGHT-100 auto-flee epilogue delivers `do_flee`'s output to the victim
+  via the messaging chokepoint instead of discarding it (ROM writes to the
+  victim's descriptor). Found by the `fight100_pc_wimpy_autoflee` C-oracle
+  capture, which locks it.
 
 - **FIGHT-102 — removed the non-ROM in-function wait-gates from six combat
   commands (`do_kick`, `do_rescue`, `do_backstab`, `do_bash`, `do_berserk`,

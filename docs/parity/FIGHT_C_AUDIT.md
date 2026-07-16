@@ -578,6 +578,20 @@ affects every swing) and FIGHT-082 (HIGH).
   needs its own ROM read: some ROM skills DO check wait via
   skill-specific logic). Filed as **FIGHT-102** below.
 
+- **`FIGHT-103` — the fleer's own output channel diverged from ROM, ✅ FIXED
+  (2026-07-16, v2.14.329).** Two facets, one contract (the fleer sees ROM's
+  exact lines in ROM's order): (a) `do_flee` composed "You flee from
+  combat!"/exp lines BEFORE the destination room look — ROM renders the look
+  first (`move_char` at `src/fight.c:3002` runs before the flee lines at
+  `:3010-3019`); (b) the FIGHT-100 auto-flee epilogue discarded `do_flee`'s
+  return — ROM's `do_flee` writes to the VICTIM's descriptor via
+  `send_to_char`, so the return now routes through `_push_message`.
+  (`do_recall`'s return in the FIGHT-099 branch stays discarded on purpose:
+  that branch only fires for `desc==NULL` victims, where ROM's send_to_char
+  is a no-op.) Surfaced authoring the `fight100_pc_wimpy_autoflee` C-oracle
+  scenario, which is the lock (red before, green after; C golden shows look
+  → flee → exp).
+
 - **`FIGHT-102` — sibling non-ROM wait-gates in six combat commands, ✅ FIXED
   (2026-07-16, v2.14.328).** Per-site ROM verification: the ONLY `->wait`
   READS in `src/fight.c` are multi_hit:193 (decrement), mob_hit:305

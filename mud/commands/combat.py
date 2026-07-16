@@ -832,6 +832,17 @@ def do_flee(char: Character, args: str) -> str:
     act_to_room(was_in, "$n has fled!", char)
 
     messages: list[str] = []
+
+    # FIGHT-103: ROM renders the destination room FIRST — move_char at
+    # src/fight.c:3002 runs do_look during the move, BEFORE the
+    # "You flee from combat!" / exp lines at :3010-3019. Python previously
+    # appended the look last, inverting the fleer's output order.
+    from mud.commands.inspection import do_look
+
+    room_desc = do_look(char, "")
+    if room_desc:
+        messages.append(room_desc)
+
     if not getattr(char, "is_npc", False):
         # mirrors ROM src/fight.c:3010-3019
         messages.append("You flee from combat!")
@@ -853,13 +864,6 @@ def do_flee(char: Character, args: str) -> str:
     # mirroring ROM src/act_move.c:193: ch->move -= move (PC-only, sector-based cost)
     if flee_move_cost > 0:
         char.move -= flee_move_cost
-
-    # Show new room
-    from mud.commands.inspection import do_look
-
-    room_desc = do_look(char, "")
-    if room_desc:
-        messages.append(room_desc)
 
     return "\n".join(messages)
 

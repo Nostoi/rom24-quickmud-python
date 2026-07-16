@@ -949,7 +949,15 @@ def apply_damage(
             if should_flee:
                 from mud.commands.combat import do_flee
 
-                do_flee(victim, "")
+                # ROM do_flee delivers its own lines via send_to_char to the
+                # VICTIM's descriptor (src/fight.c:3010-3026); Python do_flee
+                # returns them, so route the return through the delivery
+                # chokepoint. (do_recall's return above is intentionally
+                # discarded: that branch only fires for desc==NULL victims,
+                # where ROM's send_to_char is a no-op.)
+                flee_output = do_flee(victim, "")
+                if flee_output:
+                    _push_message(victim, flee_output)
 
     return final_message
 
