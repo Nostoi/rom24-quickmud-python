@@ -108,6 +108,25 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
   build/provenance discrepancy of a freshly-rebuilt C binary vs the committed
   goldens, NOT a Python↔ROM divergence (Python matches the committed C ground
   truth). Goldens must not be overwritten to silence it (harness rule).
+  **Follower-disband edges re-verified 2026-07-16 (clean probe + new guard):**
+  swept the group/follower disband chain (`add_follower`/`stop_follower`/
+  `die_follower` in `mud/characters/follow.py` vs `src/act_comm.c:1591-1680`) and
+  its full ROM call-site set — `extract_char`(handler.c:2122), `do_nofollow`
+  (act_info.c:1003), the two `fight.c` charm-break sites (`:757` charmed-victim-
+  attacks-master, `:1266`), and the `magic.c:1377` charm recast. All Python
+  equivalents present and faithful: `die_follower`'s global `char_list` walk is
+  correctly mirrored by `character_registry` (here global iteration IS ROM-
+  faithful — contrast FIGHT-095's `check_assist`, where global was the bug), and
+  `stop_follower`'s `if/elif` charm-strip is behaviorally equivalent to ROM's
+  single `REMOVE_BIT + affect_strip` branch (`remove_spell_effect` clears the bit
+  via `remove_affect` AND strips all matching affects; bitfields aren't
+  refcounted, so no double-charm divergence). **No divergence.** The one
+  previously-untested leg — `do_nofollow` enabling NOFOLLOW must run
+  `die_follower` and detach existing followers (`act_info.c:1003`) — is now locked
+  by `tests/integration/test_player_config.py::test_nofollow_detaches_existing_followers`
+  (mutation-tested: fails when the `_die_follower` call is removed). `die_follower`
+  itself remains INV-020's shared cleanup routine; this guard covers a standalone
+  command-path caller of it, not an extract path.
 
 ## To-do list (falls directly out of the roster)
 

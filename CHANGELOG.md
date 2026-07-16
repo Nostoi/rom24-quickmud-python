@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Behavioral guard: `nofollow` detaches existing followers.** ROM `do_nofollow`
+  (`src/act_info.c:1003`) calls `die_follower(ch)` when enabling NOFOLLOW, which
+  detaches every character currently following you. The existing `nofollow`
+  toggle tests asserted only the `PLR_NOFOLLOW` flag and the message — never the
+  `die_follower` side effect — so a refactor treating `nofollow` as "just set a
+  flag" could silently re-open it. Added
+  `tests/integration/test_player_config.py::test_nofollow_detaches_existing_followers`,
+  which attaches a follower, enables NOFOLLOW, and asserts the follower is
+  detached (`master is None`). Mutation-tested to confirm it fails when the
+  `_die_follower` call is removed. Part of the group/follower disband-edge
+  divergence sweep — the chain (`add_follower`/`stop_follower`/`die_follower`)
+  was re-verified faithful against `src/act_comm.c:1591-1680` with no divergence.
+
 ### Fixed
 
 - **A mob killed in combat left dangling `reply`/`mprog_target` pointers at its
