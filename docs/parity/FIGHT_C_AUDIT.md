@@ -478,8 +478,13 @@ affects every swing) and FIGHT-082 (HIGH).
   `act_format` capitalization path. ROM ref `src/fight.c:121/173` +
   `src/act_comm.c:do_emote`.
 
-- **`FIGHT-097` — `attack_round` (the `one_hit` twin) is missing ROM's opening
-  guard.** ROM `one_hit` (`src/fight.c:426-437`) starts with two early-outs:
+- **`FIGHT-097` — `attack_round` (the `one_hit` twin) was missing ROM's opening
+  guard, ✅ FIXED (2.14.321).** `attack_round` now early-returns on
+  self/None/dead/cross-room BEFORE any RNG draw, mirroring the two ROM
+  early-outs. Tests: `tests/integration/test_fight097_one_hit_guards.py` (3 —
+  cross-room zero-RNG whiff, self no-op, dead-victim no-op), red before, green
+  after; combat/fight area suites 334/334 green. ROM `one_hit`
+  (`src/fight.c:426-437`) starts with two early-outs:
   `if (victim == ch || ch == NULL || victim == NULL) return;` and
   `if (victim->position == POS_DEAD || ch->in_room != victim->in_room) return;`
   ("Can't beat a dead char! Guard against weird room-leavings."). Python

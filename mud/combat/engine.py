@@ -559,6 +559,18 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
     to ``DEAD``.
     """
 
+    # FIGHT-097 — mirroring ROM src/fight.c:426-437 one_hit's opening guards:
+    # `if (victim == ch || ch == NULL || victim == NULL) return;` ("just in
+    # case") and `if (victim->position == POS_DEAD || ch->in_room !=
+    # victim->in_room) return;` ("Can't beat a dead char! Guard against weird
+    # room-leavings."). Both fire BEFORE any RNG draw, so a whiffed swing
+    # consumes zero shared-MM values and never set_fightings — load-bearing for
+    # check_assist's cross-room reservoir pick (FIGHT-095).
+    if attacker is None or victim is None or victim is attacker:
+        return ""
+    if victim.position == Position.DEAD or getattr(attacker, "room", None) is not getattr(victim, "room", None):
+        return ""
+
     # Capture victim's pre-attack position for ROM-like modifiers
     _victim_pos_before = victim.position
 

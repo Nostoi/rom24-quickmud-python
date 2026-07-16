@@ -42,6 +42,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `FIGHT-097` — `attack_round` (the ROM `one_hit` twin) now carries ROM's
+  opening guards (`src/fight.c:426-437`): a swing at yourself, a dead victim,
+  or a victim in ANOTHER room silently whiffs — before any RNG draw, consuming
+  zero shared Mitchell-Moore values and never calling `set_fighting`. The
+  cross-room leg is load-bearing for `check_assist`'s global-list reservoir
+  pick (FIGHT-095): ROM screams, whiffs, and stays out of combat. Test:
+  `tests/integration/test_fight097_one_hit_guards.py`.
+
 - `FIGHT-096` — the auto-assist emote ("screams and attacks!") now renders
   through ROM `act()` semantics: NPC `short_descr` with line-start
   capitalization ("The drunk screams and attacks!", not "the drunk …") and the
