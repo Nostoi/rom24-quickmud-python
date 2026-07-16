@@ -876,6 +876,62 @@ int main (int argc, char **argv)
             continue;
         }
 
+        /* __mob_fight=<name>: set the first NPC in the PC's room fighting the
+         * named character (ROM set_fighting, src/fight.c — one-way; sets the
+         * mob's fighting pointer + POS_FIGHTING). Scenario staging for
+         * mob_hit paths (FIGHT-098). Mirrors pyreplay.py. */
+        if (strncmp (line, "__mob_fight=", 12) == 0)
+        {
+            CHAR_DATA *wch;
+            CHAR_DATA *mob;
+            for (wch = char_list; wch != NULL; wch = wch->next)
+            {
+                if (wch->name != NULL && !str_cmp (wch->name, line + 12))
+                    break;
+            }
+            if (wch != NULL && ch != NULL && ch->in_room != NULL)
+            {
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        set_fighting (mob, wch);
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
+        /* __char_fight=<name>: set the named character fighting the first NPC
+         * in the PC's room (one-way set_fighting) — stages the
+         * fled-but-still-fighting edge (FIGHT-098 area-attack domain).
+         * Mirrors pyreplay.py. */
+        if (strncmp (line, "__char_fight=", 13) == 0)
+        {
+            CHAR_DATA *wch;
+            CHAR_DATA *mob;
+            for (wch = char_list; wch != NULL; wch = wch->next)
+            {
+                if (wch->name != NULL && !str_cmp (wch->name, line + 13))
+                    break;
+            }
+            if (wch != NULL && ch != NULL && ch->in_room != NULL)
+            {
+                for (mob = ch->in_room->people; mob != NULL;
+                     mob = mob->next_in_room)
+                {
+                    if (IS_NPC (mob))
+                    {
+                        set_fighting (wch, mob);
+                        break;
+                    }
+                }
+            }
+            continue;
+        }
+
         /* __rng_probe: draw ONE number_percent() and echo it. A stream-
          * alignment debugging aid: run it at the same step in both engines —
          * matching values prove the shared MM stream is at the same position;

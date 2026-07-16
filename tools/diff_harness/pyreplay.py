@@ -188,6 +188,53 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
                 nm = getattr(wch, "name", None) or "?"
                 rows.append(f"{nm}|{room_.vnum if room_ is not None else -1}")
         return "\n".join(rows)
+    if command.startswith("__mob_fight="):
+        # First NPC in the driver's room starts fighting the named char
+        # (one-way ROM set_fighting). Mirrors the C-shim __mob_fight.
+        from mud.combat.engine import set_fighting
+        from mud.models.character import character_registry
+        from mud.spawning.templates import MobInstance
+
+        name = command[len("__mob_fight=") :].strip()
+        wch = next(
+            (p for p in character_registry if str(getattr(p, "name", "") or "").lower() == name.lower()),
+            None,
+        )
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if wch is not None and mob is not None:
+            set_fighting(mob, wch)
+        return ""
+    if command.startswith("__char_fight="):
+        # Named char starts fighting the first NPC in the driver's room
+        # (one-way set_fighting) — stages fled-but-still-fighting
+        # (FIGHT-098). Mirrors the C-shim __char_fight.
+        from mud.combat.engine import set_fighting
+        from mud.models.character import character_registry
+        from mud.spawning.templates import MobInstance
+
+        name = command[len("__char_fight=") :].strip()
+        wch = next(
+            (p for p in character_registry if str(getattr(p, "name", "") or "").lower() == name.lower()),
+            None,
+        )
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if wch is not None and mob is not None:
+            set_fighting(wch, mob)
+        return ""
+    if command.startswith("__mob_census="):
+        # Room vnum of every live instance of the proto, in ROM char_list
+        # order (newest-first → reversed registry). Mirrors the C-shim
+        # __mob_census (diffmain.c:926-947). DB-005 forensics directive.
+        from mud.models.character import character_registry
+        from mud.spawning.templates import MobInstance
+
+        vnum = int(command[len("__mob_census=") :])
+        rows: list[str] = []
+        for wch in reversed(character_registry):
+            if isinstance(wch, MobInstance) and getattr(getattr(wch, "prototype", None), "vnum", None) == vnum:
+                room_ = getattr(wch, "room", None)
+                rows.append(str(room_.vnum if room_ is not None else -1))
+        return "\n".join(rows)
     if command.startswith("__rng_probe"):
         # Stream-alignment debugging aid — draw ONE number_percent() and echo
         # it; run at the same step in both engines to prove/refute shared-MM
