@@ -10,7 +10,16 @@ probes, and recall-oracle re-verifications — never a synthesized change to hit
 count (the AURA-001 trap). Read ROM C in `src/` FIRST every iteration. Did **not**
 push (operator review still pending on the prior ~19 local commits).
 
-## What landed (9 iterations: 5 closures + 1 fixup + 4 clean probes)
+## What landed (15 iterations: 7 closures + 1 fixup + 7 probes)
+
+**Iterations 1-9** ran first; **10-15** on the user's "Resume". Totals:
+7 parity closures (OLC_ACT-015/016/017/018/019, FIGHT-104, ENV-005), 1 test
+fixup, 7 recall-oracle probes (6 clean/faithful + 1 deep-probe filing), and
+4 new OPEN gaps filed durably (OLC_ACT-020/021, ENV-003 re-opened, ENV-006).
+Version 2.14.331 → **2.14.338**. Full suite: **6265 passed, 4 skipped, 0
+failed**. **Local-only — not pushed** (operator review pending).
+
+### Iterations 1-9 (initial run: 5 closures + 1 fixup + 4 clean probes)
 
 | # | Iteration | Outcome | Commit |
 |---|-----------|---------|--------|
@@ -28,6 +37,23 @@ Iterations 4/6/8/9 form a recall-oracle sweep of the combat `damage()` pipeline
 after FIGHT-104: four consecutive clean probes confirm the epilogue, PK-safety,
 position, and fighting-state machinery are ROM-faithful. Diminishing returns on
 further combat probing — future iterations should target other subsystems.
+
+### Continuation — iterations 10-15 (user "Resume"): 2 closures + 3 clean probes + 1 deep-probe filing
+
+| # | Iteration | Outcome | Commit |
+|---|-----------|---------|--------|
+| 10 | **OLC_ACT-019** — `aedit security` gates on the **builder's own clearance** (`value > ch->pcdata->security`), not a hardcoded 0-9 | closure — **behavioral permission fix** | `ec025285` |
+| 11 | char affect-expiry tick (`tick_spell_effects`) vs `src/update.c:762-785` | **clean probe** (INV-040 order + GL-026 RNG + INV-018 suppression) — surfaced ENV-005 | — |
+| 12 | **ENV-005** — `envenom` head-inserts the poison affect (ROM `affect_to_obj`) instead of appending | closure — INV-040/045 object-affect order | `21abbe42` |
+| 13 | object affect-decay tick (`_tick_object_affects`) vs `src/update.c:928-961` | **clean probe** (GL-045 RNG + `msg_obj` carrier/room dispatch + suppression) | — |
+| 14 | `gain_condition` vs `src/update.c:367` | **clean probe** — faithful (URANGE clamp, `-1` permanent, DRUNK old-value guard) | — |
+| 15 | `aedit_builder` toggle grammar / proper-case / IS_BUILDER | **deep probe → enriched OLC_ACT-020 filing** (fix deferred, not rushed) | `<docs>` |
+
+**Continuation highlights:**
+- **OLC_ACT-019** is a real OLC **permission** divergence (not cosmetic): Python let any builder set security up to 9 regardless of their own clearance; ROM caps it at the builder's `pcdata.security`. Locked by a security-5-can't-set-6 mutation test.
+- **ENV-005** found by an affect-tick recall-oracle probe (iter 11): `do_envenom` appended the poison affect where ROM `affect_to_obj` head-inserts, desyncing the object-affect decay tick's per-affect RNG. Also **re-opened ENV-003** (its "never-walked obj.affected" premise is stale) and filed **ENV-006** (envenom skips `affect_to_obj`'s `value[4]` bit — verify poison-on-hit fires).
+- **New OPEN gaps filed durably** this continuation: OLC_ACT-020 (aedit_builder), OLC_ACT-021 (aedit_vnum range-setter semantics), ENV-003 (re-opened), ENV-006. All with concrete fix specs.
+- The affect-tick + condition machinery (char & object) is now **verified faithful** — a second swept-clean subsystem after the combat pipeline.
 
 ### Highest-value find: FIGHT-104
 
