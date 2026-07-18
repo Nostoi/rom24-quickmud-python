@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **OLC_ACT-016 — `redit room`/`redit sector` match ROM's exact messages
+  (`src/olc_act.c:4972-4988`, `:4990-5007`).** Replaced Python's English
+  placeholder text with ROM's verbatim (Spanish, as-shipped) syntax string
+  `"Sintaxis: room [flags]"` / `"Sintaxis: sector [tipo]"` for both empty and
+  unknown-flag failures, and fixed the `sector` success value-leak (now bare
+  `"Sector type set."`). Room multi-flag toggle semantics were already
+  ROM-faithful (verified, unchanged). Consistent with the `imm_olc.py` mpedit
+  precedent. Flips both function rows from 🔄 NEEDS DEEP AUDIT. Test:
+  `tests/integration/test_olc_act_016_room_sector_messages.py` (6).
+
 - **OLC_ACT-015 — `redit heal`/`redit mana` emit ROM's bare success
   message (`src/olc_act.c:1807-1822`, `:1824-1839`).** ROM's `redit_heal` /
   `redit_mana` send `"Heal rate set."` / `"Mana rate set."` on success — the

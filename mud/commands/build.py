@@ -1197,24 +1197,19 @@ def _handle_extra_command(room: Room, args_parts: list[str]) -> str:
 
 
 def _handle_room_flags_command(room: Room, args_parts: list[str]) -> str:
-    if not args_parts:
-        return "Usage: room <flag list>"
-
+    # mirroring ROM src/olc_act.c:4972-4988 redit_room. ROM's flag_value
+    # (non-stat table) ORs all space-separated tokens and returns NO_FLAG if
+    # ANY token is unknown (or the argument is empty). On NO_FLAG ROM emits the
+    # single verbatim syntax string; otherwise it TOGGLE_BITs all bits at once.
     bits = 0
-    unknown: defaultdict[str, int] = defaultdict(int)
     for token in args_parts:
         flag = _ROOM_FLAG_ALIASES.get(token.lower())
         if flag is None:
-            unknown[token.lower()] += 1
-        else:
-            bits |= flag
-
-    if unknown:
-        bad = ", ".join(sorted(unknown))
-        return f"Unknown room flags: {bad}."
+            return "Sintaxis: room [flags]"
+        bits |= flag
 
     if not bits:
-        return "No room flags provided."
+        return "Sintaxis: room [flags]"
 
     room.room_flags = int(getattr(room, "room_flags", 0)) ^ bits
     _mark_area_changed(room)
@@ -1222,17 +1217,19 @@ def _handle_room_flags_command(room: Room, args_parts: list[str]) -> str:
 
 
 def _handle_sector_command(room: Room, args_parts: list[str]) -> str:
+    # mirroring ROM src/olc_act.c:4990-5007 redit_sector — verbatim (Spanish)
+    # syntax string on empty/unknown, bare success with no value echoed.
     if not args_parts:
-        return "Usage: sector <type>"
+        return "Sintaxis: sector [tipo]"
 
     token = args_parts[0].lower()
     sector = _SECTOR_ALIASES.get(token)
     if sector is None:
-        return f"Unknown sector type: {token}."
+        return "Sintaxis: sector [tipo]"
 
     room.sector_type = sector
     _mark_area_changed(room)
-    return f"Sector type set to {token}."
+    return "Sector type set."
 
 
 def _handle_owner_command(room: Room, args_parts: list[str]) -> str:
