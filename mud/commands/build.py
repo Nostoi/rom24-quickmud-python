@@ -3351,41 +3351,39 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
         return f"Description set to: {new_desc}"
 
     if cmd == "level":
-        if not args_parts:
-            return "Usage: level <number>"
+        # mirroring ROM src/olc_act.c:medit_level — is_number(full arg), bare
+        # success, no minimum (ROM accepts any integer level).
+        raw = " ".join(args_parts)
         try:
-            level = int(args_parts[0])
+            level = int(raw)
         except ValueError:
-            return "Level must be a number."
-        if level < 1:
-            return "Level must be at least 1."
+            return "Syntax:  level [number]"
         mob_proto.level = level
         _mark_mob_changed(mob_proto)
-        return f"Mobile level set to {level}."
+        return "Level set."
 
     if cmd in {"align", "alignment"}:
-        if not args_parts:
-            return "Usage: align <number>"
+        # mirroring ROM src/olc_act.c:medit_align — no -1000..1000 clamp (ROM
+        # stores atoi(argument) unmodified). Error string uses ROM's "alignment".
+        raw = " ".join(args_parts)
         try:
-            alignment = int(args_parts[0])
+            alignment = int(raw)
         except ValueError:
-            return "Alignment must be a number."
-        if alignment < -1000 or alignment > 1000:
-            return "Alignment must be between -1000 and 1000."
+            return "Syntax:  alignment [number]"
         mob_proto.alignment = alignment
         _mark_mob_changed(mob_proto)
-        return f"Alignment set to {alignment}."
+        return "Alignment set."
 
     if cmd == "hitroll":
-        if not args_parts:
-            return "Usage: hitroll <number>"
+        # mirroring ROM src/olc_act.c:medit_hitroll.
+        raw = " ".join(args_parts)
         try:
-            hitroll = int(args_parts[0])
+            hitroll = int(raw)
         except ValueError:
-            return "Hitroll must be a number."
+            return "Syntax:  hitroll [number]"
         mob_proto.hitroll = hitroll
         _mark_mob_changed(mob_proto)
-        return f"Hitroll set to {hitroll}."
+        return "Hitroll set."
 
     if cmd == "damroll":
         if not args_parts:
@@ -3484,12 +3482,13 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
         return f"AC dice set to: {ac_dice}"
 
     if cmd == "material":
+        # mirroring ROM src/olc_act.c:4366 medit_material — rejects only empty.
         if not args_parts:
-            return "Usage: material <name>"
+            return "Syntax:  material [string]"
         material = " ".join(args_parts)
         mob_proto.material = material
         _mark_mob_changed(mob_proto)
-        return f"Material set to: {material}"
+        return "Material set."
 
     if cmd == "act":
         # mirroring ROM src/olc_act.c:4142-4165 medit_act

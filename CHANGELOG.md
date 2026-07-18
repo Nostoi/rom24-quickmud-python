@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **OLC_ACT-018 — medit `level`/`align`/`hitroll`/`material` match ROM and drop
+  non-ROM guards (`src/olc_act.c:3810-4726`).** ROM `medit_level` has no minimum
+  and `medit_align` no -1000..1000 clamp — Python rejected valid ROM input
+  (`"Level must be at least 1"`, `"Alignment must be between -1000 and 1000"`), a
+  behavioral divergence. Removed both guards; all four setters now emit ROM's
+  verbatim `"Syntax:  X [number]"` errors and bare success strings. Stale
+  `test_olc_medit.py` assertions rewritten to the ROM contract (with new
+  `level 0` / `align ±1001` accept tests). Sibling of OLC_ACT-017.
+
 - **OLC_ACT-017 — oedit `level`/`weight`/`cost`/`material` match ROM's exact
   messages (`src/olc_act.c:3140-3489`).** Replaced English placeholder text and
   value-leaking success strings with ROM's verbatim `"Syntax:  X [number]"` /
