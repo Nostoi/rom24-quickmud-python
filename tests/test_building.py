@@ -166,7 +166,8 @@ def test_redit_room_flags_toggle():
     assert builder.room.area.changed is True
 
     invalid = process_command(builder, "@redit room sparkle")
-    assert "unknown room flags" in invalid.lower()
+    # OLC_ACT-016: ROM redit_room emits verbatim "Sintaxis: room [flags]".
+    assert invalid == "Sintaxis: room [flags]"
 
     process_command(builder, "@redit done")
     assert session.editor is None
@@ -192,7 +193,8 @@ def test_redit_sector_updates_type():
 
     builder.room.area.changed = False
     error = process_command(builder, "@redit sector spaceport")
-    assert "unknown sector type" in error.lower()
+    # OLC_ACT-016: ROM redit_sector emits verbatim "Sintaxis: sector [tipo]".
+    assert error == "Sintaxis: sector [tipo]"
     assert builder.room.area.changed is False
 
     process_command(builder, "@redit done")
