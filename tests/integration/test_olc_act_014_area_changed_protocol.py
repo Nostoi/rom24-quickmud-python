@@ -100,5 +100,6 @@ def test_aedit_failed_mutation_does_not_mark_changed() -> None:
     area.changed = False
     session = _StubSession("area", area)
     result = _interpret_aedit(session, _StubChar(), "security")
-    assert "Usage" in result or "must be" in result
+    # OLC_ACT-019: ROM aedit_security no-arg → verbatim syntax string, no mutation.
+    assert result == "Syntax:  security [#xlevel]"
     assert area.changed is False
