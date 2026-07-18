@@ -2000,19 +2000,22 @@ def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
         return f"Area credits set to: {new_credits}"
 
     if cmd == "security":
-        if not args_parts:
-            return "Usage: security <0-9>"
-        try:
-            security_level = int(args_parts[0])
-        except ValueError:
-            return "Security level must be a number."
-
-        if security_level < 0 or security_level > 9:
-            return "Security level must be between 0 and 9."
-
+        # mirroring ROM src/olc_act.c:825-863 aedit_security. The max settable
+        # value is the BUILDER's OWN security (`value > ch->pcdata->security`),
+        # not a hardcoded 0-9 — a security-5 builder cannot raise an area above
+        # 5. On rejection ROM reports the builder's ceiling.
+        sec_str = args_parts[0] if args_parts else ""
+        if not sec_str or not sec_str.lstrip("-").isdigit():
+            return "Syntax:  security [#xlevel]"
+        security_level = int(sec_str)
+        char_security = int(getattr(getattr(char, "pcdata", None), "security", 0) or 0)
+        if security_level > char_security or security_level < 0:
+            if char_security != 0:
+                return f"Security is 0-{char_security}."
+            return "Security is 0 only."
         area.security = security_level
         area.changed = True
-        return f"Security level set to {security_level}."
+        return "Security set."
 
     if cmd == "builder":
         return _handle_builder_command(area, args_parts)

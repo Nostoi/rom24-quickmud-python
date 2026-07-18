@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **OLC_ACT-019 — `aedit security` enforces the builder's own clearance
+  (`src/olc_act.c:825-863`).** ROM caps the settable value at the builder's own
+  `pcdata.security` (a security-5 builder cannot raise an area above 5); Python
+  used a hardcoded `0-9` clamp ignoring the builder's clearance — a real OLC
+  permission gap. Now mirrors ROM (`"Security is 0-<sec>."` / `"Security is 0
+  only."` / `"Syntax:  security [#xlevel]"` / bare `"Security set."`). Stale
+  `test_olc_aedit.py` asserts rewritten. Test:
+  `tests/integration/test_olc_act_019_aedit_security.py` (6). Filed two OPEN
+  siblings found while reading: OLC_ACT-020 (`aedit_builder` toggle grammar),
+  OLC_ACT-021 (`aedit_vnum` range-setter semantics).
+
 - **OLC_ACT-018 — medit `level`/`align`/`hitroll`/`material` match ROM and drop
   non-ROM guards (`src/olc_act.c:3810-4726`).** ROM `medit_level` has no minimum
   and `medit_align` no -1000..1000 clamp — Python rejected valid ROM input

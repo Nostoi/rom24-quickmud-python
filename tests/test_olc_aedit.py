@@ -130,7 +130,9 @@ def test_aedit_security_command(builder_char, test_area):
     cmd_aedit(builder_char, "1")
     result = cmd_aedit(builder_char, "security 7")
 
-    assert "Security level set to 7" in result
+    # OLC_ACT-019: ROM aedit_security emits bare "Security set." (builder_char
+    # has pcdata.security == 9, so 7 is within clearance).
+    assert result == "Security set."
     assert test_area.security == 7
     assert test_area.changed is True
 
@@ -138,17 +140,19 @@ def test_aedit_security_command(builder_char, test_area):
 def test_aedit_security_requires_number(builder_char, test_area):
     cmd_aedit(builder_char, "1")
     result = cmd_aedit(builder_char, "security abc")
-    assert "Security level must be a number" in result
+    assert result == "Syntax:  security [#xlevel]"
 
 
 def test_aedit_security_range_validation(builder_char, test_area):
+    # OLC_ACT-019: ROM gates on the builder's own clearance (security 9 here),
+    # reporting "Security is 0-<sec>." — not a hardcoded 0-9 message.
     cmd_aedit(builder_char, "1")
 
     result = cmd_aedit(builder_char, "security -1")
-    assert "Security level must be between 0 and 9" in result
+    assert result == "Security is 0-9."
 
     result = cmd_aedit(builder_char, "security 10")
-    assert "Security level must be between 0 and 9" in result
+    assert result == "Security is 0-9."
 
 
 def test_aedit_builder_add(builder_char, test_area):
