@@ -86,8 +86,8 @@
 | `redit_create` | 1716–1766 | `cmd_redit` + `_redit_create` (build.py) | A | ✅ FIXED (OLC_ACT-002) |
 | `redit_name` | 1770–1787 | inline in `_interpret_redit` | C | ⚠️ PARTIAL |
 | `redit_desc` | 1791–1805 | inline in `_interpret_redit` | C | 🔄 NEEDS DEEP AUDIT — needs `string_append` |
-| `redit_heal` | 1807–1822 | inline in `_interpret_redit` | C | ⚠️ PARTIAL |
-| `redit_mana` | 1824–1839 | inline in `_interpret_redit` | C | ⚠️ PARTIAL |
+| `redit_heal` | 1807–1822 | inline in `_interpret_redit` | C | ✅ FIXED (OLC_ACT-015) |
+| `redit_mana` | 1824–1839 | inline in `_interpret_redit` | C | ✅ FIXED (OLC_ACT-015) |
 | `redit_clan` | 1841–1852 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `redit_format` | 1853–1863 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `redit_mreset` | 1867–1925 | — | C | 🔄 NEEDS DEEP AUDIT |
@@ -391,6 +391,7 @@ These all follow the same ROM pattern: check empty arg → return syntax; `free_
 | OLC_ACT-012 | IMPORTANT | src/olc_act.c:653-663 `aedit_reset` | `_interpret_aedit` (build.py) — `reset` subcommand wired | `aedit reset` calls `apply_resets(area)` via existing `_apply_resets_for_redit` wrapper, sets `area.changed=True`, returns ROM-exact "Area reset." (was "Unknown area editor command: reset"). 1 integration test. | ✅ FIXED |
 | OLC_ACT-013 | MINOR | src/olc_act.c:588–599 `get_vnum_area` | `_get_area_for_vnum` (build.py:1352) | ROM iterates `area_first` linked list; Python iterates `area_registry.values()`. CPython dicts preserve insertion order (3.7+), so load-order traversal is equivalent to ROM's linked-list walk. Locked by tests/integration/test_olc_act_013_get_area_for_vnum_order.py (3 cases: lookup, first-match-on-overlap, insertion-order). ROM-cite comment added to `_get_area_for_vnum`. | ✅ FIXED |
 | OLC_ACT-014 | MINOR | src/olc_act.c:1716 `redit_create` return TRUE (and src/olc.c:452-463/:510-521 dispatcher pattern) | `_mark_area_changed` (build.py:220) + per-handler `area.changed = True` calls | ROM builder functions return `TRUE`/`FALSE` and the dispatcher `SET_BIT(pArea->area_flags, AREA_CHANGED)`; Python uses an imperative pattern — each `_interpret_*edit` branch sets `area.changed = True` directly after a successful mutation. Structural divergence with equivalent behavior. ROM-cite comment added to `_mark_area_changed`. Locked by tests/integration/test_olc_act_014_area_changed_protocol.py (6 cases: name on all four editors, aedit security, plus a failed-mutation no-op case mirroring ROM's "handler returned FALSE → no SET_BIT"). | ✅ FIXED |
+| OLC_ACT-015 | MINOR | src/olc_act.c:1807-1822 `redit_heal` + :1824-1839 `redit_mana` | `_interpret_redit` (build.py:1480-1500) | ROM's `redit_heal`/`redit_mana` send a **bare** `"Heal rate set.\n\r"` / `"Mana rate set.\n\r"` on success — the builder is not told the value. Python leaked the value (`"Heal rate set to {n}."` / `"Mana rate set to {n}."`). Collapsed to the ROM-exact strings; the rate is still applied (asserted in test). Locked by tests/integration/test_olc_act_015_heal_mana_messages.py (2 cases). Flips the `redit_heal`/`redit_mana` function rows from ⚠️ PARTIAL. | ✅ FIXED |
 
 ---
 

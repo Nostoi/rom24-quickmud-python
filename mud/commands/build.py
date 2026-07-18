@@ -1486,7 +1486,8 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
             return "Usage: heal <#xnumber>"
         room.heal_rate = heal_rate
         _mark_area_changed(room)
-        return f"Heal rate set to {heal_rate}."
+        # mirroring ROM src/olc_act.c:1807-1822 redit_heal — bare message, no value echoed.
+        return "Heal rate set."
 
     if cmd == "mana":
         if not value:
@@ -1497,7 +1498,8 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
             return "Usage: mana <#xnumber>"
         room.mana_rate = mana_rate
         _mark_area_changed(room)
-        return f"Mana rate set to {mana_rate}."
+        # mirroring ROM src/olc_act.c:1824-1839 redit_mana — bare message, no value echoed.
+        return "Mana rate set."
 
     if cmd == "clan":
         if not value:

@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **OLC_ACT-015 — `redit heal`/`redit mana` emit ROM's bare success
+  message (`src/olc_act.c:1807-1822`, `:1824-1839`).** ROM's `redit_heal` /
+  `redit_mana` send `"Heal rate set."` / `"Mana rate set."` on success — the
+  builder is not told the value. Python leaked it (`"...set to {n}."`).
+  Collapsed to the ROM-exact strings (rate still applied). Flips the
+  `redit_heal`/`redit_mana` OLC_ACT audit rows from ⚠️ PARTIAL. Test:
+  `tests/integration/test_olc_act_015_heal_mana_messages.py` (2).
+
 - **HANDLER-009 — `MobInstance.move_to_room` head-inserts like ROM
   `char_to_room` (`src/handler.c:1557-1559`).** The method appended to
   `room.people`, inverting newest-arrival-first order for any caller
