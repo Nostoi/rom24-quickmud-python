@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **ENV-005 — `envenom` head-inserts the poison affect on the object
+  (`src/act_obj.c:944` → `affect_to_obj`, `src/handler.c:1292`).** Python
+  appended (tail), inverting the object-affect list order versus ROM's
+  head-insert. For a poisoned weapon that also carries prototype affects, that
+  desyncs the `obj_update` decay tick's per-affect `number_range(0,4)`
+  level-fade order (INV-040/045 head-insert class). Found by an affect-tick
+  recall-oracle probe (which also verified the char-affect tick is faithful).
+  Re-opened ENV-003 (stale "never-walked" premise) and filed ENV-006
+  (`affect_to_obj` routing / `value[4]` bit) — see ACT_OBJ_C_AUDIT.md.
+
 - **OLC_ACT-019 — `aedit security` enforces the builder's own clearance
   (`src/olc_act.c:825-863`).** ROM caps the settable value at the builder's own
   `pcdata.security` (a security-5 builder cannot raise an area above 5); Python
