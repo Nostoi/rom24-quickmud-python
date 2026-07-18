@@ -586,6 +586,30 @@ affects every swing) and FIGHT-082 (HIGH).
   needs its own ROM read: some ROM skills DO check wait via
   skill-specific logic). Filed as **FIGHT-102** below.
 
+- **`FIGHT-104` — invisible attacker's inviso-strip ran AFTER parry/dodge, ✅
+  FIXED (2026-07-18, v2.14.334).** ROM `damage()` strips the attacker's
+  invisibility (`src/fight.c:763-769`, `"$n fades into existence."` +
+  `affect_strip`/`REMOVE_BIT AFF_INVISIBLE`) at `:763` — BEFORE the
+  parry/dodge/shield_block early-returns at `:790-800`. So an invisible
+  attacker whose blow is parried/dodged/blocked STILL fades into existence.
+  Python's `apply_damage` placed the inviso-strip block AFTER the parry/dodge
+  early-returns, so a defended attacker stayed invisible — a live divergence
+  hidden behind the original FIGHT-092 comment claiming "parry/dodge resolve in
+  one_hit before damage() is entered." That justification is wrong for BOTH
+  engines: `attack_round` (like ROM `one_hit`) defers all defenses to
+  `apply_damage`/`damage()` (engine.py:700-702 "defenses + RIV checked inside
+  apply_damage"), so the checks resolve inside the function, not before it.
+  **Fix:** moved the inviso-strip block to before the parry/dodge/shield_block
+  checks (mirroring ROM's set_fighting → inviso → modifiers → parry sequence).
+  The residual reorder (Python applies drunk/sanctuary/protect modifiers before
+  set_fighting, ROM after inviso) is behaviorally inert — those steps mutate
+  only `damage`, disjoint from the fighting/inviso state, and stay in the same
+  relative order (modifiers → parry → RIV) that consumes `damage`. Surfaced by
+  a recall-oracle re-verification of the load-bearing FIGHT-092 ✅ claim against
+  `src/fight.c`. Test: `tests/integration/test_fight104_inviso_strip_before_parry.py`
+  (2 — fades when parried, fades when dodged; both red before, green after).
+  175 inviso/defense-order tests + 397 combat tests green.
+
 - **`FIGHT-103` — the fleer's own output channel diverged from ROM, ✅ FIXED
   (2026-07-16, v2.14.329).** Two facets, one contract (the fleer sees ROM's
   exact lines in ROM's order): (a) `do_flee` composed "You flee from

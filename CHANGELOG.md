@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **FIGHT-104 — invisible attacker fades into existence even when parried
+  (`src/fight.c:763-769` before `:790-800`).** ROM `damage()` strips the
+  attacker's invisibility BEFORE the parry/dodge/shield_block checks, so a
+  defended blow still reveals an invisible attacker. Python's `apply_damage`
+  placed the inviso-strip AFTER the parry/dodge early-returns (a defended
+  attacker stayed invisible), hidden behind an incorrect FIGHT-092 comment.
+  Moved the inviso-strip before the defense checks. Found by recall-oracle
+  re-verification of the FIGHT-092 ✅ claim against ROM C. Test:
+  `tests/integration/test_fight104_inviso_strip_before_parry.py` (2).
+
 - **OLC_ACT-016 — `redit room`/`redit sector` match ROM's exact messages
   (`src/olc_act.c:4972-4988`, `:4990-5007`).** Replaced Python's English
   placeholder text with ROM's verbatim (Spanish, as-shipped) syntax string
