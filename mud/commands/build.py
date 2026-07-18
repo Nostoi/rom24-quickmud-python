@@ -2465,47 +2465,50 @@ def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
         return f"Item type set to: {item_type}"
 
     if cmd == "level":
-        if not args_parts:
-            return "Usage: level <number>"
+        # mirroring ROM src/olc_act.c:3470-3488 oedit_level — ROM rejects empty
+        # OR non-number (is_number) with the single verbatim syntax string, and
+        # is_number/atoi accept a leading '-', so a negative level is valid.
+        raw = " ".join(args_parts)
         try:
-            level = int(args_parts[0])
+            level = int(raw)
         except ValueError:
-            return "Level must be a number."
-        if level < 0:
-            return "Level must be non-negative."
+            return "Syntax:  level [number]"
         obj_proto.level = level
         _mark_obj_changed(obj_proto)
-        return f"Object level set to {level}."
+        return "Level set."
 
     if cmd == "weight":
-        if not args_parts:
-            return "Usage: weight <number>"
+        # mirroring ROM src/olc_act.c:3140-3157 oedit_weight — bare success,
+        # single verbatim syntax string on empty/non-number.
+        raw = " ".join(args_parts)
         try:
-            weight = int(args_parts[0])
+            weight = int(raw)
         except ValueError:
-            return "Weight must be a number."
+            return "Syntax:  weight [number]"
         obj_proto.weight = weight
         _mark_obj_changed(obj_proto)
-        return f"Weight set to {weight}."
+        return "Weight set."
 
     if cmd == "cost":
-        if not args_parts:
-            return "Usage: cost <number>"
+        # mirroring ROM src/olc_act.c:3158-3177 oedit_cost.
+        raw = " ".join(args_parts)
         try:
-            cost = int(args_parts[0])
+            cost = int(raw)
         except ValueError:
-            return "Cost must be a number."
+            return "Syntax:  cost [number]"
         obj_proto.cost = cost
         _mark_obj_changed(obj_proto)
-        return f"Cost set to {cost}."
+        return "Cost set."
 
     if cmd == "material":
+        # mirroring ROM src/olc_act.c:3451-3469 oedit_material — rejects only
+        # empty; any non-empty string is valid; bare success message.
         if not args_parts:
-            return "Usage: material <name>"
+            return "Syntax:  material [string]"
         material = " ".join(args_parts)
         obj_proto.material = material
         _mark_obj_changed(obj_proto)
-        return f"Material set to: {material}"
+        return "Material set."
 
     if cmd in {"v0", "v1", "v2", "v3", "v4"}:
         index = int(cmd[1])

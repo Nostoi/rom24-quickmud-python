@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **OLC_ACT-017 — oedit `level`/`weight`/`cost`/`material` match ROM's exact
+  messages (`src/olc_act.c:3140-3489`).** Replaced English placeholder text and
+  value-leaking success strings with ROM's verbatim `"Syntax:  X [number]"` /
+  `"Syntax:  material [string]"` (double space) errors and bare `"Level set."`
+  etc. successes. Removed Python's non-ROM `level >= 0` guard (ROM accepts a
+  negative object level) and now validate the full argument (multi-token input
+  errors as in ROM). Stale `test_olc_oedit.py` assertions rewritten to the ROM
+  contract. Flips four function rows from ⚠️ PARTIAL / 🔄 NEEDS DEEP AUDIT.
+  Test: `tests/integration/test_olc_act_017_oedit_setter_messages.py` (4).
+
 - **FIGHT-104 — invisible attacker fades into existence even when parried
   (`src/fight.c:763-769` before `:790-800`).** ROM `damage()` strips the
   attacker's invisibility BEFORE the parry/dodge/shield_block checks, so a
