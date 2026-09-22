@@ -639,6 +639,35 @@ Before pushing changes:
 
 ---
 
+## Repository Safety
+
+These rules apply in every mode, including Autonomous Mode.
+
+- **ALWAYS check branch, worktree, and local changes at the start of repository
+  work, and preserve work you did not make.** Stage only the files your task
+  touched. Wrong: `git add -A` sweeping in someone's unrelated edits. Right:
+  `git add <paths you changed>`.
+- **NEVER run `git checkout`, `git restore`, `git reset`, `git clean`, or
+  `git stash drop` on a path with uncommitted changes unless the user explicitly
+  authorized discarding those exact changes.** Wrong: `git restore mud/handler.py`
+  to "get back to clean" before a fix. Right: ask first, or leave the changes and
+  work around them.
+- **ALWAYS ask before destructive or hard-to-reverse operations** — deleting
+  files or directories you did not create, dropping or rewriting database/save
+  data, force-pushing, rewriting published history, or bypassing hooks
+  (`--no-verify`). Wrong: `git push --force` to fix a rejected push. Right:
+  report the rejection and ask.
+- **ALWAYS ask before externally visible actions** — pushing, opening, merging
+  or commenting on PRs/issues, publishing releases or packages. Approval for one
+  such action does not extend to the next. Wrong: pushing because an earlier
+  push was approved. Right: confirm each push.
+- **NEVER report a check as passing unless it ran and passed.** If a test,
+  lint, or gate was skipped or unavailable, say so. Wrong: "tests pass" after
+  running one file. Right: "`tests/integration/test_x.py` passes; full suite not
+  run."
+
+---
+
 ## Autonomous Mode
 
 When the user explicitly says "auto mode" or "complete all tasks":

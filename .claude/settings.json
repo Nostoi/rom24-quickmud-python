@@ -1,0 +1,39 @@
+{
+  "claudeMdExcludes": [
+    "**/.claude/CLAUDE.md"
+  ],
+  "enabledPlugins": {
+    "remember@claude-plugins-official": false,
+    "hookify@claude-plugins-official": false,
+    "airtable@claude-plugins-official": false,
+    "frontend-design@claude-plugins-official": false,
+    "codex@openai-codex": false
+  },
+  "skillOverrides": {
+    "handoff": "off",
+    "recap": "off",
+    "recall": "off",
+    "remember": "off",
+    "lesson": "off",
+    "forget": "off",
+    "memory-discipline": "off",
+    "session-history": "off",
+    "commit-context": "off",
+    "commit-history": "off",
+    "write-agentmemory-skill": "off",
+    "agentmemory-agents": "off",
+    "agentmemory-architecture": "off",
+    "agentmemory-config": "off",
+    "agentmemory-hooks": "off",
+    "agentmemory-mcp-tools": "off",
+    "agentmemory-rest-api": "off",
+    "synced": "off",
+    "personal-pr-readiness": "user-invocable-only",
+    "gitnexus-lfg": "user-invocable-only",
+    "gitnexus-plan": "user-invocable-only",
+    "gitnexus-work": "user-invocable-only",
+    "gitnexus-review": "user-invocable-only",
+    "gitnexus-pdg-query": "user-invocable-only",
+    "gitnexus-taint-analysis": "user-invocable-only"
+  }
+}
