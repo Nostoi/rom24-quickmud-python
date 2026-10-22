@@ -86,17 +86,16 @@ include = ["mud*"]
 # fixtures and per-file global state behave as in serial runs. Disable for
 # single-test debugging with `-n0` (e.g. `pytest -n0 tests/foo.py::bar`).
 #
-# `--timeout=120 --timeout-method=thread`: a per-test hang-guard. No legitimate
-# test runs anywhere near 120s (the whole suite is ~171s), so this only fires on
-# a genuine hang in a single test — surfacing it as a failure with a stack dump
-# instead of stalling the run forever. The `thread` method works under xdist
-# workers (the default `signal` method is unreliable off the main thread).
-# NOTE: this guards *per-test* hangs; it does NOT fix the separate, intermittent
-# xdist *sessionfinish* teardown flake (a worker IPC "cannot send"/hang at the
-# very end of a full run) — that is environmental and harmless (all tests have
-# already run and reported). Override per-test with `@pytest.mark.timeout(n)`;
-# disable entirely with `--timeout=0`.
-addopts = "-n auto --dist loadscope --timeout=120 --timeout-method=thread"
+# `--timeout=120 --timeout-method=signal`: a per-test hang-guard. No legitimate
+# test runs anywhere near 120s, so this only fires on a genuine hang in a single
+# test, which then fails with a traceback showing where it blocked. xdist runs
+# tests on each worker's main thread, so `signal` works there. Do not switch to
+# `thread`: it ends a hung test with os._exit, which kills the xdist worker, and
+# under `--dist loadscope` the session then hung until CI's 40-minute job limit.
+# `--max-worker-restart=0` makes any other worker crash (e.g. a segfault) end
+# the run at once, naming the test: "worker 'gwN' crashed while running '<id>'".
+# Override per-test with `@pytest.mark.timeout(n)`; disable with `--timeout=0`.
+addopts = "-n auto --dist loadscope --timeout=120 --timeout-method=signal --max-worker-restart=0"
 markers = [
   "integration: Integration tests spanning multiple gameplay systems",
   "p0: Highest-priority parity and regression tests",
