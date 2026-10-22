@@ -40,7 +40,7 @@ from any harness:
 - `.claude/skills/rom-parity-audit/SKILL.md` — file-level audit (5 phases).
 - `.claude/skills/rom-gap-closer/SKILL.md` — single-gap TDD close (one test, one commit).
 - `.claude/skills/rom-session-handoff/SKILL.md` — end-of-session SUMMARY + STATUS writer.
-- `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` — wraps `npx gitnexus …` with canonical flags.
+- `gitnexus-cli` (installed globally, in `~/.claude/skills/` and `~/.agents/skills/`) — wraps `npx gitnexus …` with canonical flags.
 
 GitNexus MCP must be configured per-harness for `gitnexus_impact` /
 `gitnexus_detect_changes` calls to work. Without it, fall back to `grep` and
@@ -696,16 +696,18 @@ block) are applied.
 | `gitnexus://repo/rom24-quickmud-python/processes` | Execution flows |
 | `gitnexus://repo/rom24-quickmud-python/process/{name}` | Step-by-step trace |
 
-### Skill files
+### Skills
 
-| Task | Skill file |
-|------|-----------|
-| "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
-| Blast radius | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
-| Refactor / rename | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
-| Tools / schema | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
-| CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
+Installed globally (`~/.claude/skills/`, `~/.agents/skills/`), not in this repo.
+
+| Task | Skill |
+|------|-------|
+| "How does X work?" | `gitnexus-exploring` |
+| Blast radius | `gitnexus-impact-analysis` |
+| Trace bugs | `gitnexus-debugging` |
+| Refactor / rename | `gitnexus-refactoring` |
+| Tools / schema | `gitnexus-guide` |
+| CLI commands | `gitnexus-cli` |
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
@@ -737,16 +739,5 @@ This project is indexed by GitNexus as **rom24-quickmud-python** (39196 symbols,
 | `gitnexus://repo/rom24-quickmud-python/clusters` | All functional areas |
 | `gitnexus://repo/rom24-quickmud-python/processes` | All execution flows |
 | `gitnexus://repo/rom24-quickmud-python/process/{name}` | Step-by-step execution trace |
-
-## CLI
-
-| Task | Read this skill file |
-|------|---------------------|
-| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
-| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
-| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
-| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
-| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
-| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
