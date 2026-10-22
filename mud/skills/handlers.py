@@ -4258,7 +4258,16 @@ def envenom(
 
             if not hasattr(obj, "affected") or obj.affected is None:
                 obj.affected = []
-            obj.affected.append(poison_affect)
+            # ROM src/act_obj.c:944 do_envenom → affect_to_obj (src/handler.c:1292)
+            # HEAD-inserts (`paf_new->next = obj->affected; obj->affected = paf_new`).
+            # Python appended (tail), inverting the object-affect list order so the
+            # obj_update decay tick (src/update.c:928-961) draws its per-affect
+            # `number_range(0,4)` level-fade in a different order for a poisoned
+            # weapon that also carries prototype affects (INV-040/045 head-insert
+            # class). (Deeper envenom gaps — routing through the full affect_to_obj
+            # helper to set value[4], and the type=-1 vs combat "poison" lookup —
+            # are filed separately; this fix is the ordering leg only.)
+            obj.affected.insert(0, poison_affect)
 
             # ROM L946-948: messages
             short_descr = getattr(obj, "short_descr", None) or getattr(proto, "short_descr", "it")

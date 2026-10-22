@@ -45,10 +45,19 @@ def drive_python_replay(sc: Scenario) -> list[StepSnap]:
     return py_trace
 
 
-def _configure_test_character(char: Character, level: int) -> None:
-    """Mirror the C shim's ``make_test_char`` runtime defaults."""
+def _configure_test_character(char: Character, level: int, *, attach_desc: bool = True) -> None:
+    """Mirror the C shim's ``make_test_char_with_desc`` runtime defaults."""
 
     char.level = level
+    # Mirror the C shim's descriptor wiring (diffmain.c:448-531: the DRIVER gets
+    # ch->desc = &shim_desc (attach_desc=TRUE); __group_pc allies are created
+    # with attach_desc=FALSE and stay desc==NULL). ROM link-dead semantics key
+    # on desc (fight.c:984 damage() auto-recall, act_move.c:1608 recall exp
+    # loss), so the driver must read as CONNECTED while allies read as
+    # link-dead. Python message delivery routes on `.connection`, which stays
+    # None — this sentinel only feeds desc checks.
+    if attach_desc:
+        char.desc = object()
     char.max_hit = char.hit = 20
     char.max_mana = char.mana = 100
     char.max_move = char.move = 100
@@ -141,10 +150,117 @@ def _run_python_command(command: str, char, chars_by_name: dict[str, object], wa
         if room is None:
             raise AssertionError("__group_pc requires the driver PC to be in a room")
         ally = create_test_character(name, room.vnum)
-        _configure_test_character(ally, int(getattr(char, "level", 1) or 1))
+        # attach_desc=False — diffmain.c:531 creates the ally desc==NULL (link-dead).
+        _configure_test_character(ally, int(getattr(char, "level", 1) or 1), attach_desc=False)
         ally.leader = char  # ROM is_same_group resolves `leader ? leader : self`.
         if name in watch_chars:
             chars_by_name[name] = ally
+        return ""
+    if command.startswith("__char_goto="):
+        # Teleport a named character (exact registry name match) to room
+        # <vnum> — mirrors the C-shim __char_goto (char_from_room/char_to_room,
+        # no RNG). Used to stage cross-room actors (FIGHT-095 check_assist).
+        from mud.models.character import character_registry
+
+        rest = command[len("__char_goto=") :].strip()
+        name, vnum_raw = rest.split(",", 1)
+        name = name.strip()
+        destination = room_registry[int(vnum_raw)]
+        wch = next(
+            (p for p in character_registry if str(getattr(p, "name", "") or "").lower() == name.lower()),
+            None,
+        )
+        if wch is not None and getattr(wch, "room", None) is not None:
+            wch.room.remove_character(wch)
+            destination.add_character(wch)
+        return ""
+    if command.startswith("__sneak_census"):
+        # Mirror of the C-shim __sneak_census (see diffmain.c): every char in
+        # ROM char_list order (reversed registry) that would take a can_see()
+        # sneak roll. No RNG consumed.
+        from mud.models.character import character_registry
+        from mud.models.constants import AffectFlag
+
+        rows = []
+        for wch in reversed(character_registry):
+            if wch.has_affect(AffectFlag.SNEAK) and getattr(wch, "fighting", None) is None:
+                room_ = getattr(wch, "room", None)
+                nm = getattr(wch, "name", None) or "?"
+                rows.append(f"{nm}|{room_.vnum if room_ is not None else -1}")
+        return "\n".join(rows)
+    if command.startswith("__mob_fight="):
+        # First NPC in the driver's room starts fighting the named char
+        # (one-way ROM set_fighting). Mirrors the C-shim __mob_fight.
+        from mud.combat.engine import set_fighting
+        from mud.models.character import character_registry
+        from mud.spawning.templates import MobInstance
+
+        name = command[len("__mob_fight=") :].strip()
+        wch = next(
+            (p for p in character_registry if str(getattr(p, "name", "") or "").lower() == name.lower()),
+            None,
+        )
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if wch is not None and mob is not None:
+            set_fighting(mob, wch)
+        return ""
+    if command.startswith("__char_fight="):
+        # Named char starts fighting the first NPC in the driver's room
+        # (one-way set_fighting) — stages fled-but-still-fighting
+        # (FIGHT-098). Mirrors the C-shim __char_fight.
+        from mud.combat.engine import set_fighting
+        from mud.models.character import character_registry
+        from mud.spawning.templates import MobInstance
+
+        name = command[len("__char_fight=") :].strip()
+        wch = next(
+            (p for p in character_registry if str(getattr(p, "name", "") or "").lower() == name.lower()),
+            None,
+        )
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if wch is not None and mob is not None:
+            set_fighting(wch, mob)
+        return ""
+    if command.startswith("__mob_census="):
+        # Room vnum of every live instance of the proto, in ROM char_list
+        # order (newest-first → reversed registry). Mirrors the C-shim
+        # __mob_census (diffmain.c:926-947). DB-005 forensics directive.
+        from mud.models.character import character_registry
+        from mud.spawning.templates import MobInstance
+
+        vnum = int(command[len("__mob_census=") :])
+        rows: list[str] = []
+        for wch in reversed(character_registry):
+            if isinstance(wch, MobInstance) and getattr(getattr(wch, "prototype", None), "vnum", None) == vnum:
+                room_ = getattr(wch, "room", None)
+                rows.append(str(room_.vnum if room_ is not None else -1))
+        return "\n".join(rows)
+    if command.startswith("__rng_probe"):
+        # Stream-alignment debugging aid — draw ONE number_percent() and echo
+        # it; run at the same step in both engines to prove/refute shared-MM
+        # stream alignment. Mirrors the C-shim __rng_probe.
+        return f"RNG_PROBE={rng_mm.number_percent()}"
+    if command.startswith("__mob_add_affect="):
+        # OR raw affect bits into the first NPC in the PC's room (no
+        # AFFECT_DATA node, no stat mods) — scenario staging, mirrors the
+        # C-shim __mob_add_affect.
+        from mud.spawning.templates import MobInstance
+
+        flags = int(command[len("__mob_add_affect=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is not None:
+            mob.affected_by = int(getattr(mob, "affected_by", 0) or 0) | flags
+        return ""
+    if command.startswith("__mob_off_flags="):
+        # OR flags into the first NPC in the PC's room (same first-NPC
+        # convention as __mob_hp / __mob_position — apply immediately after
+        # the target's __mload). Mirrors the C-shim __mob_off_flags.
+        from mud.spawning.templates import MobInstance
+
+        flags = int(command[len("__mob_off_flags=") :])
+        mob = next((p for p in char.room.people if isinstance(p, MobInstance)), None)
+        if mob is not None:
+            mob.off_flags = int(getattr(mob, "off_flags", 0) or 0) | flags
         return ""
     if command.startswith("__mana="):
         val = int(command[len("__mana=") :])

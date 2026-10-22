@@ -215,11 +215,6 @@ def do_kick(char: Character, args: str) -> str:
         return "You aren't fighting anyone."
 
     if skill is not None:
-        if int(getattr(char, "wait", 0) or 0) > 0:
-            # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
-            # double-deliver (the connection loop sends the return AND drains char.messages).
-            return "You are still recovering."
-
         lag = skill_registry._compute_skill_lag(char, skill)
         skill_registry._apply_wait_state(char, lag)
 
@@ -273,11 +268,6 @@ def do_rescue(char: Character, args: str) -> str:
 
     if getattr(opponent, "is_npc", False) and not is_same_group(char, victim):
         return "Kill stealing is not permitted."
-
-    if int(getattr(char, "wait", 0) or 0) > 0:
-        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
-        # double-deliver (the connection loop sends the return AND drains char.messages).
-        return "You are still recovering."
 
     try:
         skill = skill_registry.get("rescue")
@@ -403,11 +393,6 @@ def do_backstab(char: Character, args: str) -> str:
     if get_wielded_weapon(char) is None:
         return "You need to wield a weapon to backstab."
 
-    if int(getattr(char, "wait", 0) or 0) > 0:
-        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
-        # double-deliver (the connection loop sends the return AND drains char.messages).
-        return "You are still recovering."
-
     check_killer(char, victim)  # mirroring ROM src/fight.c:2951 — before WAIT_STATE/roll
 
     roll = rng_mm.number_percent()
@@ -490,11 +475,6 @@ def do_bash(char: Character, args: str) -> str:
     if char.has_affect(AffectFlag.CHARM) and getattr(char, "master", None) is victim:
         # mirroring ROM src/fight.c:2415-2419
         return act_format("But $N is your friend!", recipient=char, actor=char, arg2=victim)
-
-    if int(getattr(char, "wait", 0) or 0) > 0:
-        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
-        # double-deliver (the connection loop sends the return AND drains char.messages).
-        return "You are still recovering."
 
     chance = learned
     if getattr(char, "is_npc", False) and chance <= 0:
@@ -628,11 +608,6 @@ def do_berserk(char: Character, args: str) -> str:
     if getattr(char, "mana", 0) < 50:
         return "You can't get up enough energy."
 
-    if int(getattr(char, "wait", 0) or 0) > 0:
-        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
-        # double-deliver (the connection loop sends the return AND drains char.messages).
-        return "You are still recovering."
-
     roll = rng_mm.number_percent()
     # ARITH-011 / ARITH-208: ROM src/fight.c:2310 divides `100 * ch->hit /
     # ch->max_hit` raw (SIGFPE if max_hit == 0). Python applies a zero-ONLY guard
@@ -748,11 +723,11 @@ def do_flee(char: Character, args: str) -> str:
             char.position = Position.STANDING
         return "You aren't fighting anyone."
 
-    # Check wait state (Python architecture: commands are wait-gated)
-    if int(getattr(char, "wait", 0) or 0) > 0:
-        return "You are still recovering."
-
-    skill_registry._apply_wait_state(char, get_pulse_violence())
+    # FIGHT-101: ROM do_flee (src/fight.c:2970-3030) has NO wait check and
+    # applies NO WAIT_STATE. Player wait is enforced one layer up, in the
+    # descriptor input loop (src/comm.c:619-623, mirrored by
+    # mud/net/connection.py); direct dispatch (do_function — mobprogs,
+    # damage()'s FIGHT-100 auto-flee) bypasses it, exactly as in ROM.
 
     was_in = getattr(char, "room", None)
     if not was_in:
@@ -857,6 +832,17 @@ def do_flee(char: Character, args: str) -> str:
     act_to_room(was_in, "$n has fled!", char)
 
     messages: list[str] = []
+
+    # FIGHT-103: ROM renders the destination room FIRST — move_char at
+    # src/fight.c:3002 runs do_look during the move, BEFORE the
+    # "You flee from combat!" / exp lines at :3010-3019. Python previously
+    # appended the look last, inverting the fleer's output order.
+    from mud.commands.inspection import do_look
+
+    room_desc = do_look(char, "")
+    if room_desc:
+        messages.append(room_desc)
+
     if not getattr(char, "is_npc", False):
         # mirrors ROM src/fight.c:3010-3019
         messages.append("You flee from combat!")
@@ -878,13 +864,6 @@ def do_flee(char: Character, args: str) -> str:
     # mirroring ROM src/act_move.c:193: ch->move -= move (PC-only, sector-based cost)
     if flee_move_cost > 0:
         char.move -= flee_move_cost
-
-    # Show new room
-    from mud.commands.inspection import do_look
-
-    room_desc = do_look(char, "")
-    if room_desc:
-        messages.append(room_desc)
 
     return "\n".join(messages)
 
@@ -951,11 +930,6 @@ def do_cast(char: Character, args: str) -> str:
 
     if getattr(char, "mana", 0) < mana_cost:
         return "You don't have enough mana."
-
-    if int(getattr(char, "wait", 0) or 0) > 0:
-        # INV-001 SINGLE-DELIVERY: return-channel only; a mailbox append would
-        # double-deliver (the connection loop sends the return AND drains char.messages).
-        return "You are still recovering."
 
     # ROM src/magic.c:362-536 target dispatch on skill_table[sn].target.
     # JSON skill `target` strings map to ROM TAR_* constants:

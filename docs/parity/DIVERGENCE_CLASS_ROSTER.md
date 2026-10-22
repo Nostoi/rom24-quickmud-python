@@ -70,7 +70,7 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
 |---|------------------|---------------------|--------|--------|----------|
 | 8 | **Membership coherence** | C linked-list `char_from/to_room` vs Python `room.people` + `character_registry` | mutators keep both sides coherent — behavioral, not bypass | enforced | INV-009/010/023 tests |
 | 9 | **Ordering / temporal** | C single-threaded tick vs Python async (e.g. prompt rendering `<-15hp>` between `update_pos` and `raw_kill` clamp) | no single chokepoint — sequencing | enforced (point) | INV-002 (PROMPT-CLAMP); `tools/diff_harness` |
-| 10 | **Object / affect lifecycle** | C `extract_obj`/affect expiry vs Python registry add/remove | behavioral lifecycle on `object_registry` / expiry loop | enforced | INV-014/015 tests |
+| 10 | **Object / affect lifecycle** | C `extract_obj`/affect expiry vs Python registry add/remove | behavioral lifecycle on `object_registry` / expiry loop | enforced | INV-014/015 tests. **`obj_update` decay path re-verified convergent 2026-07-16** (source-read vs `src/update.c:913-1056`): shopkeeper `cost/5` recovery, pit-gate message suppression (GL-018), WEAR_FLOAT `TO_ROOM` echo, all 5 spill branches, and the RNG-order-preserving unconditional `number_range(0,4)` affect-fade draw with reversed `object_registry` iteration (GL-040/045) all present + cited; 183 decay/corpse tests green — clean probe, no divergence. |
 | 11 | **Data-load round-trip** | C `fread_flag` letter-decode vs Python `.are`→JSON→runtime | boot world, assert flags survive end-to-end | enforced | INV-032/033; `test_inv032_room_flags_survive_load.py` |
 | 12 | **Pointer identity** (reclassified from Layer A 2026-06-02) | C pointer `==` vs Python value-eq dataclass `__eq__` | behavioral — entity identity; root-fixed by making every entity runtime type an identity-eq dataclass, so `==`/`in`/`remove`/`index` now mean pointer-identity | **enforced (2.12.78–80)** | **INV-034 ✅** (`tests/test_inv034_pointer_identity_divergence.py`, now plain asserts passing under identity equality). Root cause (value-eq dataclasses + `instance_id`/`id` unset on spawn) **fixed** via `@dataclass(eq=False)` on all five runtime types (`Character`, `MobInstance`, `Object`, `Room`, legacy `ObjectInstance`), after the value-eq test-reliance sweep came up empty; suite green 5361. `MobInstance`/`ObjectInstance` caught by adversarial review after the first commit; `Room` flipped 2.12.80. INV-031(c) had fixed one site (`is_same_group`). Class 6 fully closed. |
 | 4 | **Async message delivery / act-cap** | C synchronous `write_to_buffer` in tick vs Python async dispatch (double-deliver, miss, mis-cap) | behavioral — single-delivery (XOR), per-recipient masking, first-letter cap, verified by integration tests, not a lexical bypass | enforced | INV-001 (×5 `test_inv001_*.py`) / 027 / 029; ACT-CAP-001..004. **Reclassified A→C 2026-06-02, Layer-A allowlist-guard reclaimed 2.14.116:** a *blanket* static bypass-guard is infeasible — `.messages.append` has many legitimate sites (`Character.send_to_char`, broadcast primitives, actor-self lines) so an unconditional grep false-positives. But an *allowlist* grep-guard (`tests/test_message_delivery_convention.py`, 2.14.116) forbids `.messages.append` / the two-step `getattr` bypass except for explicit chokepoints, with residual bypasses frozen as `_INV001_DEBT` (burned to empty 2.14.128). The `do_yell` hand-rolled `create_task(send_to_char)` XOR — formerly cited here as the legitimate-site that defeats a guard — was collapsed onto `push_message` (2.14.131). Contract remains Layer C for double-delivery/late ordering, now WITH a Layer-A allowlist bypass-guard + a Layer-B "review new delivery sites" element. |
@@ -97,6 +97,73 @@ Legend — **Guard**: ✅ committed CI scan · ⚠️ verified by hand, not comm
   scenario or behavioral test. Mostly enforced via the INV tests; the open
   lever is **Hypothesis state-machine coverage** feeding `diff_harness` to
   widen the scenario space (the current dynamic-coverage limit).
+  **Re-verified 2026-07-16:** the instrumented C binary builds cleanly on this
+  host (`make -C src -f Makefile.diffshim diffshim`, gcc), and the full
+  Python-vs-committed-C-golden replay (`tests/test_differential_smoke.py` +
+  `tests/test_diff_harness_unit.py`, 97 tests across 64 scenarios) **converges
+  with zero divergence** — the enumeration-independent parity check is clean on
+  the covered surface. Caveat (not a parity finding): `capture --check`
+  (C-oracle re-capture vs golden) reports CHANGED on ~20 RNG-adjacent scenarios
+  (mob-trigger/shop/combat) while deterministic ones stay `ok`; this is a
+  build/provenance discrepancy of a freshly-rebuilt C binary vs the committed
+  goldens, NOT a Python↔ROM divergence (Python matches the committed C ground
+  truth). Goldens must not be overwritten to silence it (harness rule).
+  **Follower-disband edges re-verified 2026-07-16 (clean probe + new guard):**
+  swept the group/follower disband chain (`add_follower`/`stop_follower`/
+  `die_follower` in `mud/characters/follow.py` vs `src/act_comm.c:1591-1680`) and
+  its full ROM call-site set — `extract_char`(handler.c:2122), `do_nofollow`
+  (act_info.c:1003), the two `fight.c` charm-break sites (`:757` charmed-victim-
+  attacks-master, `:1266`), and the `magic.c:1377` charm recast. All Python
+  equivalents present and faithful: `die_follower`'s global `char_list` walk is
+  correctly mirrored by `character_registry` (here global iteration IS ROM-
+  faithful — contrast FIGHT-095's `check_assist`, where global was the bug), and
+  `stop_follower`'s `if/elif` charm-strip is behaviorally equivalent to ROM's
+  single `REMOVE_BIT + affect_strip` branch (`remove_spell_effect` clears the bit
+  via `remove_affect` AND strips all matching affects; bitfields aren't
+  refcounted, so no double-charm divergence). **No divergence.** The one
+  previously-untested leg — `do_nofollow` enabling NOFOLLOW must run
+  `die_follower` and detach existing followers (`act_info.c:1003`) — is now locked
+  by `tests/integration/test_player_config.py::test_nofollow_detaches_existing_followers`
+  (mutation-tested: fails when the `_die_follower` call is removed). `die_follower`
+  itself remains INV-020's shared cleanup routine; this guard covers a standalone
+  command-path caller of it, not an extract path.
+  **FIGHT-095 de-risked + re-characterized 2026-07-16 (list-order class / INV-045):**
+  drove into the one open actionable gap. (1) *Oracle-trust blocker RETIRED* — the
+  recorded fear that the C oracle is nondeterministic on RNG scenarios is false:
+  capturing every RNG-adjacent scenario twice with the current `src/diffshim`
+  binary yields byte-identical traces (the `capture --check` CHANGED is cross-build
+  provenance drift vs OLD goldens, not within-build nondeterminism), so a fresh
+  `check_assist` golden is trustworthy. (2) *Real nature identified* — FIGHT-095 is
+  an unconformed NESTED site of **INV-045 (CHAR-LIST-WALK-ORDER)**: ROM
+  head-inserts `char_list` (`src/db.c:2256`, newest-first) vs Python
+  `character_registry.append` (oldest-first, the reverse). INV-045 already
+  conformed the tick walks + `get_char_world` via `reversed(<registry>)`; the
+  character-side fix pattern is proven by GROUP-006 (✅ 2.14.202, same bug in
+  `do_group`). `check_assist`'s inner reservoir loop is order-SENSITIVE on both
+  facets (draw-count → domain parity; target-selection → reservoir order parity),
+  whereas `die_follower`'s same `char_list` walk is order-INSENSITIVE (set-reset)
+  and stays faithful — that is the discriminator for which list walks INV-045
+  bites. (3) *Remaining blocker* — NOT a fix-design gap; two additive diff-harness
+  primitives are needed to build the locking scenario (mob off_flags directive +
+  cross-room grouped-member placement). Closure is a multi-commit
+  harness-extension task, deliberately not started on a replay turn to avoid a
+  rushed RNG-sensitive fix. Full spec in `FIGHT_C_AUDIT.md` FIGHT-095 + INV-045
+  tracker row.
+  **FIGHT-095 CLOSED 2026-07-16 (2.14.322)** via exactly that spec: six new
+  harness directives, the `check_assist_cross_room` C-oracle scenario, the
+  reversed-slice port, an 8-seed `__rng_probe` alignment sweep, and three
+  C-independent domain tests. The closure's draw-count forensics also surfaced
+  **DB-005 (OPEN, HIGH)** — Python applies area resets in FILE order vs ROM
+  `reset_area`'s ascending room-vnum order, diverging boot population (mob 7803:
+  4 vs 3) and boot creation order (a WORLD-level INV-045 exposure: cross-engine
+  char_list pairings differ for multi-instance protos even though each engine's
+  own walks stay newest-first). Layer-C scenarios that walk the global list must
+  neutralize affected populations until DB-005 closes (the check_assist scenario
+  silences the can_see sneak-roll population via observer DETECT_HIDDEN).
+  Collateral gaps fixed en route: FIGHT-096 (assist emote act-render),
+  FIGHT-097 (one_hit self/dead/cross-room zero-RNG guards). Filed: FIGHT-098
+  (mob_hit area-attack sibling walk), GL-050 (aggr victim-selection probe),
+  HANDLER-009 (test-only move_to_room tail-append).
 
 ## To-do list (falls directly out of the roster)
 

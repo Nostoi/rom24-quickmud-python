@@ -572,6 +572,19 @@ def _nuke_pets(victim: Character, room) -> None:
         if hasattr(equipped, "location") and getattr(equipped, "location", None) is pet:
             equipped.location = None
 
+    # mirroring ROM src/act_comm.c:1649 nuke_pets → extract_char(pet, TRUE): the
+    # pet leg must run the FULL pull-extract cleanup, not just a room/registry
+    # unlink. With fPull=TRUE, extract_char(pet) runs die_follower(pet)
+    # (src/handler.c:2120-2122) and the reply/mprog_target dangling-pointer sweep
+    # (src/handler.c:2151-2157). The Python port split extract_char across call
+    # sites, so both must be re-invoked here or a character following the pet
+    # (master == pet) — or holding a reply/mprog_target at it — is left with a
+    # dangling reference at the extracted pet. INV-020 (pet leg) / INV-047.
+    from mud.characters.follow import die_follower
+
+    die_follower(pet)
+    clear_extract_target_refs(pet)
+
     # mirroring ROM src/handler.c:2121 — extract_char calls stop_fighting(pet, TRUE)
     # before removing the pet from char_list, clearing fighting pointers on all
     # characters that were fighting the pet (and the pet's own pointer).
@@ -694,6 +707,16 @@ def raw_kill(victim: Character) -> Object | None:
     if getattr(victim, "is_npc", False):
         _increment_kill_counters(victim)
         victim.fighting = None
+        # mirroring ROM src/handler.c:2151-2157 — extract_char's char_list sweep
+        # clears every `wch->reply == ch` and the 2.4b6 `mprog_target` quirk. That
+        # sweep sits AFTER the `if (!fPull) return` early-out (handler.c:2136), so
+        # it runs for NPC/pull extraction only; raw_kill calls
+        # extract_char(victim, IS_NPC), so a combat NPC death must run it (a PC
+        # death, fPull=FALSE, correctly skips it — the PC stays live). The Python
+        # port split extract_char across call sites and this leg omitted the
+        # sweep, leaving a dangling reply/mprog_target at the slain mob corpse.
+        # INV-047 (raw_kill leg).
+        clear_extract_target_refs(victim)
         try:
             character_registry.remove(victim)
         except ValueError:  # pragma: no cover - defensive guard

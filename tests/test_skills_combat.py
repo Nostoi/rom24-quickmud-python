@@ -220,6 +220,7 @@ def test_trip_knocks_target_wait_daze_and_improve(monkeypatch: pytest.MonkeyPatc
     tripper.skills["trip"] = 75
 
     victim = _make_combatant("Victim", level=25)
+    victim.desc = object()  # connected PC — a link-dead victim would auto-recall on damage (FIGHT-099)
     victim.size = 2
     victim.perm_stat = [14, 14, 14, 14, 14]
     victim.mod_stat = [0] * len(victim.perm_stat)

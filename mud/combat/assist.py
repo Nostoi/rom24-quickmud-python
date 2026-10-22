@@ -9,7 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from mud.characters import is_same_group
-from mud.combat.engine import is_evil, is_good, is_neutral, multi_hit
+from mud.combat.engine import char_list_walk_from_room_head, is_evil, is_good, is_neutral, multi_hit
 from mud.models.constants import AffectFlag, OffFlag, PlayerFlag
 from mud.utils import rng_mm
 from mud.world.vision import can_see_character
@@ -161,7 +161,23 @@ def check_assist(ch: Character, victim: Character) -> None:
                 # it only increments when a new target is chosen, not on every
                 # visible group member. This matches ROM's biased selection distribution
                 # and, critically, keeps the shared MM RNG stream in sync.
-                for vch in list(people_in_room):
+                #
+                # FIGHT-095 / INV-045 — the iteration DOMAIN: ROM's loop is
+                # `for (vch = ch->in_room->people; vch; vch = vch->next)`
+                # (src/fight.c:161) — it SEEDS at the room people-list head
+                # (newest arrival; char_to_room head-inserts) but follows the
+                # GLOBAL char_list link (`->next`, NOT `->next_in_room`), a
+                # 2.4b6 quirk. char_list is head-inserted at creation
+                # (src/db.c:2256-2257, newest-first), so the visited set is the
+                # room head plus every char CREATED BEFORE it — including chars
+                # in OTHER rooms (a cross-room reservoir pick then whiffs in
+                # one_hit's room guard, FIGHT-097) and EXCLUDING same-room
+                # chars newer than the head. character_registry is append-order
+                # (oldest-first), the reverse of char_list, so the walk is the
+                # reversed registry slice up to the room head's index (the
+                # GROUP-006 / INV-045 fix pattern). C-oracle ground truth:
+                # tools/diff_harness/scenarios/check_assist_cross_room.json.
+                for vch in char_list_walk_from_room_head(ch):
                     if can_see_character(rch, vch) and is_same_group(vch, victim):
                         if rng_mm.number_range(0, number) == 0:
                             target = vch
@@ -188,23 +204,22 @@ def _emote(char: Character, message: str) -> None:
     """
     Make character perform an emote.
 
-    ROM C uses: do_function(rch, &do_emote, "screams and attacks!");
-    Python equivalent: Send message to room.
+    ROM C: do_function(rch, &do_emote, "screams and attacks!") — do_emote
+    (src/act_comm.c) renders act("$n $T", ch, NULL, argument, TO_ROOM) plus the
+    same line TO_CHAR. act_new resolves $n via PERS (NPC short_descr, can-see
+    gated) and upper-cases the line start, so observers see "The drunk screams
+    and attacks!" and the emoting char receives its own line (FIGHT-096).
     """
+    from mud.utils.act import act_format
 
     room = getattr(char, "room", None)
     if not room:
         return
 
-    # Format: "Name screams and attacks!"
-    char_name = getattr(char, "name", "Someone")
-    full_message = f"{char_name} {message}"
-
-    # Send to everyone in the room
-    people = getattr(room, "people", [])
-    for person in people:
-        if person != char:
-            _send_to_char(person, full_message + "\n")
+    # TO_ROOM (everyone but char) + TO_CHAR (char) == every room occupant.
+    # mirroring ROM src/act_comm.c:do_emote
+    for person in getattr(room, "people", []):
+        _send_to_char(person, act_format(f"$n {message}", recipient=person, actor=char) + "\n")
 
 
 # DUPL-001b — canonical at mud/utils/messaging.py:send_to_char_buffered.

@@ -200,7 +200,8 @@ def test_oedit_level_command(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "level 20")
 
-    assert "Object level set to 20" in result
+    # OLC_ACT-017: ROM oedit_level emits bare "Level set." (src/olc_act.c:3484).
+    assert result == "Level set."
     assert test_object.level == 20
     assert test_object.area.changed is True
 
@@ -208,20 +209,24 @@ def test_oedit_level_command(builder_char, test_object):
 def test_oedit_level_requires_number(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "level abc")
-    assert "Level must be a number" in result
+    # OLC_ACT-017: ROM's verbatim syntax string (double space after colon).
+    assert result == "Syntax:  level [number]"
 
 
-def test_oedit_level_must_be_nonnegative(builder_char, test_object):
+def test_oedit_level_allows_negative(builder_char, test_object):
+    # OLC_ACT-017: ROM is_number/atoi accept a leading '-', so a negative
+    # object level is valid (src/olc_act.c:3476-3482) — no non-negative guard.
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "level -5")
-    assert "Level must be non-negative" in result
+    assert result == "Level set."
+    assert test_object.level == -5
 
 
 def test_oedit_weight_command(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "weight 15")
 
-    assert "Weight set to 15" in result
+    assert result == "Weight set."
     assert test_object.weight == 15
     assert test_object.area.changed is True
 
@@ -229,14 +234,14 @@ def test_oedit_weight_command(builder_char, test_object):
 def test_oedit_weight_requires_number(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "weight abc")
-    assert "Weight must be a number" in result
+    assert result == "Syntax:  weight [number]"
 
 
 def test_oedit_cost_command(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "cost 500")
 
-    assert "Cost set to 500" in result
+    assert result == "Cost set."
     assert test_object.cost == 500
     assert test_object.area.changed is True
 
@@ -244,14 +249,14 @@ def test_oedit_cost_command(builder_char, test_object):
 def test_oedit_cost_requires_number(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "cost abc")
-    assert "Cost must be a number" in result
+    assert result == "Syntax:  cost [number]"
 
 
 def test_oedit_material_command(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "material steel")
 
-    assert "Material set to: steel" in result
+    assert result == "Material set."
     assert test_object.material == "steel"
     assert test_object.area.changed is True
 
@@ -259,7 +264,7 @@ def test_oedit_material_command(builder_char, test_object):
 def test_oedit_material_requires_value(builder_char, test_object):
     cmd_oedit(builder_char, "1001")
     result = cmd_oedit(builder_char, "material")
-    assert "Usage: material" in result
+    assert result == "Syntax:  material [string]"
 
 
 def test_oedit_value_commands(builder_char, test_object):

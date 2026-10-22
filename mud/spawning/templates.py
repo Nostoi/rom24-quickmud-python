@@ -491,8 +491,11 @@ class MobInstance:
     def move_to_room(self, room: Room) -> None:
         if self.room and self in self.room.people:
             self.room.people.remove(self)
-        room.people.append(self)
-        self.room = room
+        # HANDLER-009: route through Room.add_mob — ROM char_to_room
+        # head-inserts (src/handler.c:1557-1559), so room.people is
+        # newest-arrival-first. A tail-append corrupts every room-people walk
+        # (look listings, check_assist's outer loop, the INV-045 room-head seed).
+        room.add_mob(self)
 
     def add_to_inventory(self, obj: Object) -> None:
         # INV-039 / class-13: ROM src/handler.c:1626 obj_to_char head-inserts.

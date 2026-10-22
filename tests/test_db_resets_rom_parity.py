@@ -18,6 +18,7 @@ from unittest.mock import patch
 import pytest
 
 from mud.models.area import Area
+from mud.models.character import character_registry
 from mud.models.constants import (
     EX_CLOSED,
     EX_ISDOOR,
@@ -208,6 +209,76 @@ def test_m_reset_preserves_mob_prototype_level():
     # ROM: create_mobile sets mob->level = pMobIndex->level; the M-case `level - 2`
     # is a local for OBJECT fuzzing only, never applied to the mob.
     assert mob.level == proto_level
+
+
+def test_reset_processing_order_room_vnum_ascending():
+    """DB-005: resets process per room in ASCENDING room-vnum order, not .are file order.
+
+    Mirrors ROM src/db.c:2003-2015 `reset_area` — `for (vnum = min_vnum; vnum <=
+    max_vnum; vnum++) reset_room(pRoom)`. Each room owns its reset list
+    (`load_resets`/`new_reset`, src/db.c:980-1108: M/O attach to their arg3 room;
+    P/G/E inherit the previous reset's room), so global M-limits (`count >= arg2`,
+    src/db.c:1703) bind in room-vnum order and mob creation order is room-vnum
+    ascending. Shape mirrors valley.are mob 7803: a file-FIRST reset with global
+    limit 1 into a MIDDLE-vnum room (7853), followed by limit-4 resets into rooms
+    around it (7848/7860/7866). ROM: 7848 spawns first (count=1), 7853's limit-1
+    check sees 1 >= 1 → SKIP, 7860/7866 spawn → 3 mobs, none in 7853. File order
+    wrongly spawns 7853 first → 4 mobs. Verified live vs the C oracle
+    (`__mob_census=7803`): C=[7848,7860,7866] ascending, PY(file order) included
+    7853.
+    """
+    initialize_world("area/area.lst")
+
+    rooms = {vnum: room_registry[vnum] for vnum in (3001, 3005, 3010, 3020)}
+    area = rooms[3001].area
+    assert area is not None
+    assert all(r.area is area for r in rooms.values())
+
+    # Clean slate for mob 3003 world-wide (global limit counts all instances).
+    for r in room_registry.values():
+        r.people = [p for p in r.people if not (isinstance(p, MobInstance) and p.prototype.vnum == 3003)]
+    mob_registry[3003].count = 0
+
+    # valley.are 7803 shape: file-FIRST M with global limit 1 into the
+    # MIDDLE-vnum room (3005); then limit-4 Ms into 3001/3010/3020. The G rides
+    # the file-LAST M (P/G/E inherit the previous M/O's room per load_resets).
+    area.resets = [
+        ResetJson(command="M", arg1=3003, arg2=1, arg3=3005, arg4=1),
+        ResetJson(command="M", arg1=3003, arg2=4, arg3=3001, arg4=1),
+        ResetJson(command="M", arg1=3003, arg2=4, arg3=3010, arg4=1),
+        ResetJson(command="M", arg1=3003, arg2=4, arg3=3020, arg4=1),
+        ResetJson(command="G", arg1=3010, arg2=5, arg3=0, arg4=0),
+    ]
+
+    registry_len_before = len(character_registry)
+    apply_resets(area)
+
+    def census(vnum: int) -> int:
+        return sum(1 for p in rooms[vnum].people if isinstance(p, MobInstance) and p.prototype.vnum == 3003)
+
+    # ROM room-vnum order: 3001 spawns (count=1) → 3005's limit-1 check sees
+    # 1 >= 1 → SKIP → 3010, 3020 spawn. File order would spawn 3005 first (4 mobs).
+    assert census(3005) == 0, "middle-vnum room must be skipped: lower-vnum spawn binds its global limit first"
+    assert census(3001) == 1 and census(3010) == 1 and census(3020) == 1
+
+    # Creation order (char_list / character_registry order) must be room-vnum
+    # ascending — INV-045 newest-first walks depend on this cross-engine.
+    new_mobs = [
+        m
+        for m in character_registry[registry_len_before:]
+        if isinstance(m, MobInstance) and getattr(m.prototype, "vnum", None) == 3003
+    ]
+    spawn_rooms = [getattr(m.room, "vnum", None) for m in new_mobs]
+    assert spawn_rooms == [3001, 3010, 3020], f"creation order must be room-vnum ascending; got {spawn_rooms}"
+
+    # The G reset inherited room 3020's bucket (file-last M): that mob — and
+    # only that mob — carries obj 3010.
+    carried = {
+        getattr(m.room, "vnum", None): [getattr(o.prototype, "vnum", None) for o in getattr(m, "inventory", [])]
+        for m in new_mobs
+    }
+    assert carried[3020] == [3010], f"G must ride its file-preceding M into room 3020's bucket; got {carried}"
+    assert carried[3001] == [] and carried[3010] == []
 
 
 def test_m_reset_infrared_in_dark_rooms():

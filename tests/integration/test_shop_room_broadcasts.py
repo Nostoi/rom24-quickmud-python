@@ -132,7 +132,10 @@ def test_do_buy_dispatches_act_trigger_to_npc_witness():
     if keeper not in char.room.people:
         keeper.move_to_room(char.room)
 
-    listener = spawn_mob(3002)
+    # HANDLER-009: move_to_room now head-inserts (ROM char_to_room), so a
+    # SHOPKEEPER listener would become the room head and win find_keeper's
+    # scan — exactly as in ROM. Use a shop-less witness (3064, the drunk).
+    listener = spawn_mob(3064)
     assert listener is not None
     proto = listener.prototype
     proto.mprogs = [

@@ -159,6 +159,10 @@ def test_locate_object_hides_invisible_carriers(monkeypatch: pytest.MonkeyPatch)
 
 
 def test_lore_appraises_known_objects(monkeypatch: pytest.MonkeyPatch) -> None:
+    # Seed the shared Mitchell-Moore stream — check_improve draws from the
+    # ambient stream, so an unseeded run is order-sensitive under xdist (same
+    # class as the 2026-07-10 test_skills_combat trip flake).
+    rng_mm.seed_mm(12345)
     caster = Character(name="Sage", level=40, is_npc=False, skills={"lore": 80})
     wand_proto = ObjIndex(
         vnum=2200,

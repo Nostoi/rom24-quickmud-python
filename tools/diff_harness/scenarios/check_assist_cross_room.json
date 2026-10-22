@@ -1,0 +1,22 @@
+{
+    "name": "check_assist_cross_room",
+    "seed": 12345,
+    "start_room": 3008,
+    "char": { "name": "Tester", "level": 1 },
+    "watch": { "chars": ["Tester", "Ally", "oldstyle", "drunk"], "rooms": [3008, 3001] },
+    "steps": [
+        "__seed=777",
+        "__hp=5000",
+        "__group_pc=Ally",
+        "__char_goto=Ally,3001",
+        "__mload=2302",
+        "__mload=3064",
+        "__mob_off_flags=32768",
+        "__mob_add_affect=32",
+        "__seed=777",
+        "__aggr_update",
+        "__seed=778",
+        "__tick",
+        "look"
+    ]
+}

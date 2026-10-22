@@ -1,0 +1,11 @@
+{
+    "name": "db005_reset_order_mob_census",
+    "seed": 12345,
+    "start_room": 3001,
+    "char": { "name": "Tester", "level": 1 },
+    "watch": { "chars": ["Tester"], "rooms": [3001] },
+    "steps": [
+        "__mob_census=7803",
+        "__mob_census=7804"
+    ]
+}

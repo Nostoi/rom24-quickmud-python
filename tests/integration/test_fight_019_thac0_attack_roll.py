@@ -26,6 +26,10 @@ def _scenario_char():
     class 0 (mage), perm_stat all 13 with INT +3, no gear, level 5, ROM
     new_char() pool defaults."""
     char = create_test_character("Tester", 3008)
+    # Connected driver, like the C shim's make_test_char (diffmain.c:489) —
+    # without a desc the FIGHT-099 link-dead epilogue recalls the victim after
+    # the first hit and the second attack whiffs cross-room.
+    char.desc = object()
     char.level = 5
     char.max_hit = char.hit = 20
     char.max_mana = char.mana = 100
