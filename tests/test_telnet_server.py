@@ -223,10 +223,6 @@ def test_telnet_pagination_normalizes_crlf():
 
 @pytest.mark.telnet
 @pytest.mark.timeout(30)
-@pytest.mark.skipif(
-    __import__("sys").platform == "darwin",
-    reason="macOS asyncio/kqueue timeout handling is unreliable under pytest-timeout",
-)
 def test_telnet_server_handles_look_command():
     from mud.account.account_service import clear_active_accounts
 
@@ -242,6 +238,7 @@ def test_telnet_server_handles_look_command():
         server = await create_server(host="127.0.0.1", port=0)
         host, port = server.sockets[0].getsockname()
         server_task = asyncio.create_task(server.serve_forever())
+        writer = None
         try:
             reader, writer = await asyncio.open_connection(host, port)
             await negotiate_ansi_prompt(reader, writer)
@@ -250,18 +247,21 @@ def test_telnet_server_handles_look_command():
             await asyncio.wait_for(reader.readuntil(b"Password: "), timeout=5)
             writer.write(b"pass\n")
             await writer.drain()
-            await asyncio.wait_for(reader.readuntil(b"Character: "), timeout=5)
-            writer.write(b"Looker\n")
+            await asyncio.wait_for(reader.readuntil(b"[Hit Return to continue] "), timeout=5)
+            writer.write(b"\n")
             await writer.drain()
             await asyncio.wait_for(reader.readuntil(b"> "), timeout=5)
             writer.write(b"look\n")
             await writer.drain()
             output = await asyncio.wait_for(reader.readuntil(b"> "), timeout=5)
-            text = output.decode()
-            assert len(text) > 10
-            writer.close()
-            await writer.wait_closed()
+            assert b"Entrance to Mud School" in output
         finally:
+            # Close the client first: Server.wait_closed() waits for every
+            # connection, so a still-open client would hang the test.
+            if writer is not None:
+                writer.close()
+                with suppress(ConnectionError):
+                    await writer.wait_closed()
             server.close()
             await server.wait_closed()
             server_task.cancel()

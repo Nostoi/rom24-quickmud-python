@@ -356,16 +356,17 @@ requirements-dev.txt` yields a runnable suite. Keep `requirements-dev.in`,
 
 ### Hang-guard: `--timeout` in the default addopts
 
-`pyproject`'s `addopts` includes `--timeout=120 --timeout-method=thread`
-(pytest-timeout). No legitimate test runs near 120s (full suite ~171s), so it
-only fires on a genuine **per-test** hang — turning an indefinite stall into a
-failure-with-stack-dump. It does **not** fix the separate, intermittent xdist
-**sessionfinish** teardown flake (a worker IPC "cannot send" / hang at the very
-end of a full parallel run); that is environmental and harmless — all tests have
-already run and reported by then. If a full-suite summary line fails to flush,
-it's that teardown flake, not a test failure: re-run, or trust the `0 failed`
-from the progress stream. Disable the guard with `--timeout=0`; override per test
-with `@pytest.mark.timeout(n)`.
+`pyproject`'s `addopts` includes `--timeout=120 --timeout-method=signal
+--max-worker-restart=0` (pytest-timeout, pytest-xdist). No legitimate test runs
+near 120s, so the timeout only fires on a genuine **per-test** hang, which fails
+with a traceback at the blocking line. Keep the `signal` method: the `thread`
+method kills the xdist worker, and under `--dist loadscope` a killed worker left
+the whole run hanging until CI cancelled it at 40 minutes. Treat a full run that
+stops making progress as a bug to find, not a flake to re-run. Look for
+`node down: Not properly terminated` and `worker 'gwN' crashed while running
+'<test id>'`; under xdist that is the only trace of a worker crash, since the
+worker's own stderr is not shown. Disable the timeout with `--timeout=0`;
+override per test with `@pytest.mark.timeout(n)`.
 
 ### Differential testing harness (`tools/diff_harness/`)
 
