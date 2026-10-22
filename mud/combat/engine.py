@@ -397,6 +397,40 @@ def multi_hit(attacker: Character, victim: Character, dt: str | int | None = Non
     return results
 
 
+def char_list_walk_from_room_head(ch: Character) -> list[Character]:
+    """ROM ``for (vch = ch->in_room->people; vch; vch = vch->next)`` (INV-045).
+
+    Seeds at the room people-list head, then follows the global ``char_list``
+    (``->next`` — not ``->next_in_room``): the 2.4b6 quirk shared by
+    check_assist's reservoir (``src/fight.c:161``, FIGHT-095) and mob_hit's
+    OFF_AREA_ATTACK sweep (``src/fight.c:264-269``, FIGHT-098). ROM's char_list
+    is head-inserted at creation (newest-first, ``src/db.c:2256-2257``);
+    Python's ``character_registry`` is append-order (oldest-first) — the exact
+    reverse (INV-045 CHAR-LIST-WALK-ORDER) — so the equivalent walk is the
+    REVERSED registry slice from index 0 up to the room head, yielding the
+    head first and then successively older characters to the oldest.
+
+    Fallback: a room head that is not in ``character_registry`` only occurs in
+    synthetic test fixtures (the live engine registers every spawn/login); in
+    that case fall back to the legacy room-people domain rather than silently
+    visiting nothing.
+    """
+    from mud.models.character import character_registry
+
+    people = list(getattr(getattr(ch, "room", None), "people", []) or [])
+    if not people:
+        return []
+    head = people[0]  # newest arrival — ROM char_to_room head-inserts
+    head_idx = None
+    for i, reg_ch in enumerate(character_registry):
+        if reg_ch is head:  # identity, ROM pointer semantics (INV-034)
+            head_idx = i
+            break
+    if head_idx is None:
+        return people
+    return list(reversed(character_registry[: head_idx + 1]))
+
+
 def mob_hit(attacker: Character, victim: Character, dt: str | int | None = None) -> list[str]:
     """ROM src/fight.c ``mob_hit`` — the NPC combat round (FIGHT-022).
 
@@ -424,8 +458,16 @@ def mob_hit(attacker: Character, victim: Character, dt: str | int | None = None)
     is_slow = bool(has_affect and attacker.has_affect(AffectFlag.SLOW))
 
     # Area attack — ROM: one extra swing at every OTHER char fighting this mob.
+    # FIGHT-098 / INV-045 — the iteration DOMAIN: ROM's sweep is
+    # `for (vch = ch->in_room->people; vch != NULL; vch = vch_next)
+    #  { vch_next = vch->next; ... }` (src/fight.c:264-269) — it SEEDS at the
+    # room people-list head but follows the GLOBAL char_list link (`->next`,
+    # NOT `->next_in_room`), the same 2.4b6 quirk as check_assist's reservoir
+    # (FIGHT-095). Cross-room fled-but-still-fighting chars ARE visited (the
+    # swing whiffs in one_hit's room guard, FIGHT-097); same-room chars NEWER
+    # than the room head are unreachable.
     if off_flags & OffFlag.AREA_ATTACK and getattr(attacker, "room", None) is not None:
-        for vch in list(getattr(attacker.room, "people", []) or []):
+        for vch in char_list_walk_from_room_head(attacker):
             if vch is not victim and getattr(vch, "fighting", None) is attacker:
                 results.append(attack_round(attacker, vch, dt=dt))
 
@@ -558,6 +600,18 @@ def attack_round(attacker: Character, victim: Character, dt: str | int | None = 
     If the victim dies, they are removed from the room and their position set
     to ``DEAD``.
     """
+
+    # FIGHT-097 — mirroring ROM src/fight.c:426-437 one_hit's opening guards:
+    # `if (victim == ch || ch == NULL || victim == NULL) return;` ("just in
+    # case") and `if (victim->position == POS_DEAD || ch->in_room !=
+    # victim->in_room) return;` ("Can't beat a dead char! Guard against weird
+    # room-leavings."). Both fire BEFORE any RNG draw, so a whiffed swing
+    # consumes zero shared-MM values and never set_fightings — load-bearing for
+    # check_assist's cross-room reservoir pick (FIGHT-095).
+    if attacker is None or victim is None or victim is attacker:
+        return ""
+    if victim.position == Position.DEAD or getattr(attacker, "room", None) is not getattr(victim, "room", None):
+        return ""
 
     # Capture victim's pre-attack position for ROM-like modifiers
     _victim_pos_before = victim.position
@@ -721,6 +775,13 @@ def apply_damage(
         if is_safe(attacker, victim):
             return ""
 
+        # FIGHT-094: mirroring ROM src/fight.c:733 — damage() itself calls
+        # check_killer, BEFORE set_fighting below. The `ch->fighting == victim`
+        # early-out (fight.c:1278) means THIS call is the one that PK-flags on
+        # the first hit of a PvP engagement; the command-layer calls
+        # (do_kill/bash/trip/… tails) coexist exactly as in ROM.
+        check_killer(attacker, victim)
+
     # mirroring ROM src/fight.c:775-785 — damage modifiers applied inside damage() for all callers
     # (drunk, sanctuary, protection) — must come after is_safe and before parry/dodge.
     damage = apply_damage_reduction(attacker, victim, damage)
@@ -744,6 +805,22 @@ def apply_damage(
         if getattr(victim, "master", None) is attacker:
             stop_follower(victim)
 
+    # FIGHT-092 / FIGHT-104 — "Inviso attacks ... not." ROM src/fight.c:763-769:
+    # a connecting hit reveals an invisible attacker. Strip the invis/mass_invis
+    # spell affects and the AFF_INVISIBLE bit, then broadcast "$n fades into
+    # existence." to the room. ROM does this at :763 — BEFORE the parry/dodge/
+    # shield_block checks at :790 — so an invisible attacker fades even when the
+    # blow is parried/dodged/blocked. (The earlier FIGHT-092 placement past the
+    # defense early-returns was wrong: parry/dodge resolve INSIDE damage() in both
+    # engines, not in one_hit before it — see attack_round, which defers defenses
+    # to apply_damage.) It still fires on a 0-damage (immune) hit.
+    if attacker.has_affect(AffectFlag.INVISIBLE):
+        if hasattr(attacker, "remove_spell_effect"):
+            attacker.remove_spell_effect("invis")
+            attacker.remove_spell_effect("mass invis")
+        attacker.affected_by = int(getattr(attacker, "affected_by", 0) or 0) & ~int(AffectFlag.INVISIBLE)
+        _broadcast_pos_change(attacker, "{name} fades into existence.")
+
     # Check for parry, dodge, and shield block following C src/fight.c:790-800.
     # These are checked AFTER hit determination but BEFORE damage application.
     # Order is critical: parry → dodge → shield_block.
@@ -758,19 +835,6 @@ def apply_damage(
             return capitalize_act_line(f"{pers(victim, attacker)} dodges your attack.")
         if check_shield_block(attacker, victim):
             return capitalize_act_line(f"{pers(victim, attacker)} blocks your attack with a shield.")
-
-    # FIGHT-092 — "Inviso attacks ... not." ROM src/fight.c:763-769: a connecting
-    # hit reveals an invisible attacker. Strip the invis/mass_invis spell affects
-    # and the AFF_INVISIBLE bit, then broadcast "$n fades into existence." to the
-    # room. Placed past the parry/dodge/shield-block early-returns (mirroring ROM,
-    # where parry/dodge resolve in one_hit before damage() is entered) and before
-    # the RIV/immune modifiers, so it fires even on a 0-damage (immune) hit.
-    if attacker.has_affect(AffectFlag.INVISIBLE):
-        if hasattr(attacker, "remove_spell_effect"):
-            attacker.remove_spell_effect("invis")
-            attacker.remove_spell_effect("mass invis")
-        attacker.affected_by = int(getattr(attacker, "affected_by", 0) or 0) & ~int(AffectFlag.INVISIBLE)
-        _broadcast_pos_change(attacker, "{name} fades into existence.")
 
     # Apply damage type resistance/vulnerability modifiers (ROM fight.c:804-816)
     # This must happen AFTER defense checks but BEFORE damage application
@@ -837,11 +901,75 @@ def apply_damage(
         message = _handle_death(attacker, victim)
         return message
 
+    final_message = ""
     if message_bundle and message_bundle.attacker:
         from mud.combat.messages import render_for as _render
 
-        return _render(message_bundle.attacker, attacker, victim, attacker) or ""
-    return ""
+        final_message = _render(message_bundle.attacker, attacker, victim, attacker) or ""
+
+    # mirroring ROM src/fight.c:978-991 — damage() epilogue. Self-damage skips
+    # the tail (`if (victim == ch) return TRUE;`), then "Take care of link dead
+    # people": a PC victim with no descriptor rolls number_range(0, wait); on 0
+    # it auto-recalls out of the fight and damage() returns. FIGHT-099 (found
+    # by the GL-050 probe: the C oracle's descriptorless Ally recalled after
+    # the first area-aggression hit; Python kept mauling it). The wimpy
+    # auto-flee legs of the same epilogue (src/fight.c:993-1012) are tracked
+    # separately as FIGHT-100.
+    if victim is not attacker:
+        if not getattr(victim, "is_npc", False) and getattr(victim, "desc", None) is None:
+            if rng_mm.number_range(0, int(getattr(victim, "wait", 0) or 0)) == 0:
+                from mud.commands.session import do_recall
+
+                do_recall(victim, "")
+                return final_message
+
+        # mirroring ROM src/fight.c:993-1012 — "Wimp out?" (FIGHT-100). Both
+        # legs gate on victim->wait < PULSE_VIOLENCE / 2. NPC: ACT_WIMPY at
+        # hit < max_hit/5 on a 25% roll (number_bits(2) == 0), OR a charmed
+        # mob whose master is in another room (pointer compare). PC:
+        # 0 < hit <= wimpy. `dam > 0` is guaranteed here (the damage <= 0
+        # path returned above). do_flee's own wait-gate divergence for
+        # wait 1..5 is FIGHT-101.
+        from mud.config import get_pulse_violence
+
+        victim_wait = int(getattr(victim, "wait", 0) or 0)
+        if victim_wait < get_pulse_violence() // 2:
+            should_flee = False
+            if getattr(victim, "is_npc", False):
+                act_flags = int(getattr(victim, "act", 0) or 0)
+                if (
+                    act_flags & int(ActFlag.WIMPY)
+                    and rng_mm.number_bits(2) == 0
+                    and victim.hit < c_div(int(getattr(victim, "max_hit", 0) or 0), 5)
+                ):
+                    should_flee = True
+                else:
+                    master = getattr(victim, "master", None)
+                    has_charm = getattr(victim, "has_affect", None)
+                    if (
+                        has_charm is not None
+                        and victim.has_affect(AffectFlag.CHARM)
+                        and master is not None
+                        and getattr(master, "room", None) is not getattr(victim, "room", None)
+                    ):
+                        should_flee = True
+            elif victim.hit > 0 and victim.hit <= int(getattr(victim, "wimpy", 0) or 0):
+                should_flee = True
+
+            if should_flee:
+                from mud.commands.combat import do_flee
+
+                # ROM do_flee delivers its own lines via send_to_char to the
+                # VICTIM's descriptor (src/fight.c:3010-3026); Python do_flee
+                # returns them, so route the return through the delivery
+                # chokepoint. (do_recall's return above is intentionally
+                # discarded: that branch only fires for desc==NULL victims,
+                # where ROM's send_to_char is a no-op.)
+                flee_output = do_flee(victim, "")
+                if flee_output:
+                    _push_message(victim, flee_output)
+
+    return final_message
 
 
 def set_fighting(ch: Character, victim: Character) -> None:

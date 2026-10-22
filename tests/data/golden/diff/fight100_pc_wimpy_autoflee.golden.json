@@ -1,0 +1,1034 @@
+{
+  "scenario": "fight100_pc_wimpy_autoflee",
+  "c_commit": "97c487016af8a567469810bbf8c66696d1e4e617",
+  "build_flags": "-DOLD_RAND",
+  "seed": 12345,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=777",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__hp=200",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 200,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "wimpy 50",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 200,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rWimpy set to 50 hit points.",
+        ""
+      ]
+    },
+    {
+      "step": 4,
+      "command": "__hp=52",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 52,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__move=100",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 52,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "__mload=2302",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 52,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 7,
+      "command": "__seed=777",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 52,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 8,
+      "command": "__aggr_update",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3006,
+          "position": "STANDING",
+          "hp": 41,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "oldstyle"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "Tester",
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Cave Dweller's pierce scratches you.",
+        "\rYou sure are BLEEDING!",
+        "\rEntrance to the Grunting Boar Inn",
+        "\r  You are standing in the entrance hall of the Grunting Boar Inn.  The hall",
+        "\rhas been wisely decorated with simple but functional furniture.  A small",
+        "\rstaircase leads up to the defunct reception room and the bar is to the east.",
+        "\rA janitor is walking around, cleaning up.",
+        "\rYou flee from combat!",
+        "\rYou lost 10 exp.",
+        ""
+      ]
+    },
+    {
+      "step": 9,
+      "command": "__tick",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3006,
+          "position": "STANDING",
+          "hp": 41,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "oldstyle"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "Tester",
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 10,
+      "command": "__tick",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3006,
+          "position": "STANDING",
+          "hp": 41,
+          "max_hp": 200,
+          "mana": 100,
+          "move": 99,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "oldstyle"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3006,
+          "people": [
+            "Tester",
+            "janitor"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3007,
+          "people": [
+            "drunk",
+            "bartender"
+          ],
+          "contents": [
+            3200
+          ]
+        },
+        {
+          "vnum": 3021,
+          "people": [
+            "cityguard",
+            "knight"
+          ],
+          "contents": []
+        },
+        {
+          "vnum": 3009,
+          "people": [
+            "baker"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    }
+  ]
+}

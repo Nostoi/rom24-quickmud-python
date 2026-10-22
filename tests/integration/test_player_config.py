@@ -182,6 +182,47 @@ def test_nofollow_toggle_off(test_char):
     assert not (test_char.act & PlayerFlag.NOFOLLOW), "PLR_NOFOLLOW flag should be cleared"
 
 
+def test_nofollow_detaches_existing_followers(test_char, test_room):
+    """Enabling nofollow runs die_follower, detaching all current followers.
+
+    ROM C Reference: src/act_info.c:1003 — do_nofollow's enable branch calls
+    die_follower(ch), which walks char_list and stop_follower()s every char whose
+    master is ch (src/act_comm.c:1671-1674). The existing toggle tests only assert
+    the PLR_NOFOLLOW flag + message; they never exercise the die_follower side
+    effect. This guard locks that behavioral contract — a refactor that treats
+    nofollow as "just set a flag" (dropping the _die_follower call) re-opens it.
+
+    die_follower iterates character_registry (the Python char_list twin), so the
+    follower must be registered; the registry is snapshotted/restored for xdist
+    parallel-safety (AGENTS.md).
+    """
+    from mud.characters.follow import add_follower
+    from mud.models.character import character_registry
+
+    follower = Character(name="Follower", level=3, room=test_room, is_npc=True)
+    follower.act = PlayerFlag.IS_NPC
+    follower.master = None
+    follower.leader = None
+    test_room.people.append(follower)
+
+    saved = list(character_registry)
+    character_registry.clear()
+    character_registry.extend([test_char, follower])
+    try:
+        add_follower(follower, test_char)
+        assert follower.master is test_char, "precondition: follower attached to master"
+
+        do_nofollow(test_char, "")
+
+        # ROM stop_follower sets ch->master = NULL (src/act_comm.c:1634).
+        assert follower.master is None, "die_follower must detach the follower on nofollow"
+    finally:
+        character_registry.clear()
+        character_registry.extend(saved)
+        if follower in test_room.people:
+            test_room.people.remove(follower)
+
+
 # ============================================================================
 # do_nosummon() TESTS (ROM C lines 1007-1035)
 # ============================================================================

@@ -1,0 +1,15 @@
+{
+    "name": "aggr_two_pc_victim_selection",
+    "seed": 12345,
+    "start_room": 3008,
+    "char": { "name": "Tester", "level": 1 },
+    "watch": { "chars": ["Tester", "Ally", "oldstyle"], "rooms": [3008, 3001] },
+    "steps": [
+        "__seed=777",
+        "__hp=5000",
+        "__group_pc=Ally",
+        "__mload=2302",
+        "__seed=777",
+        "__aggr_update"
+    ]
+}

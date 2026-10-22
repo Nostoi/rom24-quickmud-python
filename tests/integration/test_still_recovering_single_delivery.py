@@ -92,11 +92,16 @@ def test_no_still_recovering_mailbox_append_in_combat_commands() -> None:
     )
 
 
-def test_kick_while_recovering_delivers_recovery_line_once() -> None:
-    """Behavioral: a connected PC sees "You are still recovering." exactly once."""
+def test_kick_while_recovering_delivers_no_recovery_line() -> None:
+    """FIGHT-101/FIGHT-102 update: the in-function wait-gates were removed
+    entirely (ROM gates wait ONLY at the descriptor input loop,
+    src/comm.c:619-623), so a directly-dispatched kick at wait > 0 executes
+    its ROM body and the recovery line never appears — single-delivery of a
+    nonexistent line is trivially satisfied. The interpreter-level buffering
+    is locked by tests/test_networking_telnet.py::
+    test_wait_state_buffers_command_until_recovered_per_rom; this test locks
+    the delivery channel against the line's re-introduction."""
 
-    # The kick skill must be registered or do_kick's wait-guard (under
-    # `if skill is not None`) is never reached.
     load_skills(Path("data/skills.json"))
 
     async def scenario():
@@ -108,8 +113,9 @@ def test_kick_while_recovering_delivers_recovery_line_once() -> None:
         pc.fighting = mob
         pc.position = int(Position.FIGHTING)
         mob.fighting = pc
+        pc.ch_class = 3  # warrior — passes do_kick's KICK-001 class-level gate
         pc.skills["kick"] = 100
-        pc.wait = 10  # already recovering → the wait-state guard fires
+        pc.wait = 10  # recovering — ROM direct dispatch still executes (FIGHT-102)
 
         # Mirror mud/net/connection.py's per-command delivery: send the return
         # value, let any fire-and-forget push tasks fire, then drain the mailbox.
@@ -124,7 +130,8 @@ def test_kick_while_recovering_delivers_recovery_line_once() -> None:
     sent = asyncio.run(scenario())
 
     recovering = [s for s in sent if "still recovering" in s]
-    assert len(recovering) == 1, (
-        f"recovery line delivered {len(recovering)}x to connected PC (expected 1 "
-        f"— SINGLE-DELIVERY/INV-001 (d)). Sent: {sent}"
+    assert len(recovering) == 0, (
+        f"recovery line delivered {len(recovering)}x — the non-ROM in-function "
+        f"wait-gate was removed (FIGHT-102); ROM executes direct dispatch at "
+        f"wait > 0. Sent: {sent}"
     )

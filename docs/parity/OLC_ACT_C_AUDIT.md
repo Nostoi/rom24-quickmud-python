@@ -59,9 +59,9 @@
 | `aedit_file` | 722–766 | `_interpret_aedit` (build.py) — no `filename` subcommand found | C | 🔄 NEEDS DEEP AUDIT |
 | `aedit_age` | 770–792 | `_interpret_aedit` (build.py) — no `age` subcommand found | C | 🔄 NEEDS DEEP AUDIT |
 | `aedit_recall` | 793–824 | — | C | 🔄 NEEDS DEEP AUDIT |
-| `aedit_security` | 825–863 | inline in `_interpret_aedit` (build.py:1315) | C | ⚠️ PARTIAL |
-| `aedit_builder` | 864–923 | inline in `_interpret_aedit` (build.py:1330) | C | ⚠️ PARTIAL |
-| `aedit_vnum` | 924–978 | inline in `_interpret_aedit` (build.py:1333) | C | ⚠️ PARTIAL |
+| `aedit_security` | 825–863 | inline in `_interpret_aedit` (build.py:1315) | C | ✅ FIXED (OLC_ACT-019) |
+| `aedit_builder` | 864–923 | inline in `_interpret_aedit` (build.py:1330) | C | ⚠️ PARTIAL — see OLC_ACT-020 |
+| `aedit_vnum` | 924–978 | inline in `_interpret_aedit` (build.py:1333) | C | ⚠️ PARTIAL — see OLC_ACT-021 |
 | `aedit_lvnum` | 979–1021 | inline in `_interpret_aedit` (build.py:1344) | C | ⚠️ PARTIAL |
 | `aedit_uvnum` | 1022–1067 | inline in `_interpret_aedit` (build.py) | C | 🔄 NEEDS DEEP AUDIT |
 
@@ -86,15 +86,15 @@
 | `redit_create` | 1716–1766 | `cmd_redit` + `_redit_create` (build.py) | A | ✅ FIXED (OLC_ACT-002) |
 | `redit_name` | 1770–1787 | inline in `_interpret_redit` | C | ⚠️ PARTIAL |
 | `redit_desc` | 1791–1805 | inline in `_interpret_redit` | C | 🔄 NEEDS DEEP AUDIT — needs `string_append` |
-| `redit_heal` | 1807–1822 | inline in `_interpret_redit` | C | ⚠️ PARTIAL |
-| `redit_mana` | 1824–1839 | inline in `_interpret_redit` | C | ⚠️ PARTIAL |
+| `redit_heal` | 1807–1822 | inline in `_interpret_redit` | C | ✅ FIXED (OLC_ACT-015) |
+| `redit_mana` | 1824–1839 | inline in `_interpret_redit` | C | ✅ FIXED (OLC_ACT-015) |
 | `redit_clan` | 1841–1852 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `redit_format` | 1853–1863 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `redit_mreset` | 1867–1925 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `redit_oreset` | 2002–2209 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `redit_owner` | 4841–4863 | — | C | 🔄 NEEDS DEEP AUDIT |
-| `redit_room` | 4972–4988 | inline in `_interpret_redit` — `room` flag toggle | C | 🔄 NEEDS DEEP AUDIT |
-| `redit_sector` | 4990–5007 | inline in `_interpret_redit` — `sector` set | C | 🔄 NEEDS DEEP AUDIT |
+| `redit_room` | 4972–4988 | inline in `_interpret_redit` — `room` flag toggle | C | ✅ FIXED (OLC_ACT-016) |
+| `redit_sector` | 4990–5007 | inline in `_interpret_redit` — `sector` set | C | ✅ FIXED (OLC_ACT-016) |
 
 **Note on `redit_reset`**: There is no `redit_reset` function in `src/olc_act.c`. The `reset` subcommand of `do_redit` (ROM `src/olc.c:766-781`) calls `reset_area(pRoom->area)` directly in the dispatcher, not via a builder function. The OLC-017 "reset half" gap refers to this dispatcher path — it is a gap in `OLC_C_AUDIT.md` (OLC-017), not a gap in `olc_act.c`. Filed here as `OLC_ACT-003` for clarity since the task description explicitly calls it out.
 
@@ -115,15 +115,15 @@
 | `oedit_value2` | 3110–3119 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_value3` | 3120–3129 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_value4` | 3130–3139 | — | C | 🔄 NEEDS DEEP AUDIT |
-| `oedit_weight` | 3140–3157 | inline in `_interpret_oedit` (build.py) | C | 🔄 NEEDS DEEP AUDIT |
-| `oedit_cost` | 3158–3177 | inline in `_interpret_oedit` (build.py) | C | 🔄 NEEDS DEEP AUDIT |
+| `oedit_weight` | 3140–3157 | inline in `_interpret_oedit` (build.py) | C | ✅ FIXED (OLC_ACT-017) |
+| `oedit_cost` | 3158–3177 | inline in `_interpret_oedit` (build.py) | C | ✅ FIXED (OLC_ACT-017) |
 | `oedit_create` | 3178–3225 | `cmd_oedit` + `_oedit_create` (build.py) | A | ✅ FIXED (OLC_ACT-005) |
 | `oedit_ed` | 3229–3369 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_extra` | 3370–3393 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_wear` | 3394–3417 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `oedit_type` | 3418–3450 | inline in `_interpret_oedit` (build.py:1541) — partial | C | 🔄 NEEDS DEEP AUDIT |
-| `oedit_material` | 3451–3469 | — | C | 🔄 NEEDS DEEP AUDIT |
-| `oedit_level` | 3470–3489 | inline in `_interpret_oedit` (build.py:1549) | C | ⚠️ PARTIAL |
+| `oedit_material` | 3451–3469 | — | C | ✅ FIXED (OLC_ACT-017) |
+| `oedit_level` | 3470–3489 | inline in `_interpret_oedit` (build.py:1549) | C | ✅ FIXED (OLC_ACT-017) |
 | `oedit_condition` | 3490–3518 | — | C | 🔄 NEEDS DEEP AUDIT |
 
 ### MEdit Functions (`medit_*`)
@@ -134,8 +134,8 @@
 | `medit_create` | 3704–3753 | `cmd_medit` + `_medit_create` (build.py) | A | ✅ FIXED (OLC_ACT-006) |
 | `medit_spec` | 3757–3787 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_damtype` | 3789–3809 | — | C | 🔄 NEEDS DEEP AUDIT |
-| `medit_align` | 3810–3829 | inline in `_interpret_medit` (build.py) | C | ⚠️ PARTIAL |
-| `medit_level` | 3830–3849 | inline in `_interpret_medit` (build.py) | C | ⚠️ PARTIAL |
+| `medit_align` | 3810–3829 | inline in `_interpret_medit` (build.py) | C | ✅ FIXED (OLC_ACT-018) |
+| `medit_level` | 3830–3849 | inline in `_interpret_medit` (build.py) | C | ✅ FIXED (OLC_ACT-018) |
 | `medit_desc` | 3850–3868 | — | C | 🔄 NEEDS DEEP AUDIT — needs `string_append` |
 | `medit_long` | 3869–3891 | inline in `_interpret_medit` (build.py) | C | ⚠️ PARTIAL |
 | `medit_short` | 3892–3912 | inline in `_interpret_medit` (build.py) | C | ⚠️ PARTIAL |
@@ -150,7 +150,7 @@
 | `medit_imm` | 4300–4321 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_res` | 4322–4343 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_vuln` | 4344–4365 | — | C | 🔄 NEEDS DEEP AUDIT |
-| `medit_material` | 4366–4384 | — | C | 🔄 NEEDS DEEP AUDIT |
+| `medit_material` | 4366–4384 | — | C | ✅ FIXED (OLC_ACT-018) |
 | `medit_off` | 4385–4406 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_size` | 4407–4428 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_hitdice` | 4429–4479 | — | C | 🔄 NEEDS DEEP AUDIT |
@@ -159,7 +159,7 @@
 | `medit_race` | 4596–4642 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_position` | 4643–4690 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_gold` | 4691–4708 | — | C | 🔄 NEEDS DEEP AUDIT |
-| `medit_hitroll` | 4709–4726 | — | C | 🔄 NEEDS DEEP AUDIT |
+| `medit_hitroll` | 4709–4726 | — | C | ✅ FIXED (OLC_ACT-018) |
 | `medit_group` | 4779–4840 | — | C | 🔄 NEEDS DEEP AUDIT |
 | `medit_addmprog` | 4864–4910 | `_medit_addmprog` / `_MPROG_TRIG_TABLE` (build.py) | C | 🔄 NEEDS DEEP AUDIT — trigger value parity fixed by TABLES-004 (2.13.42); broader Tier C function audit still deferred |
 | `medit_delmprog` | 4911–4971 | — | C | 🔄 NEEDS DEEP AUDIT |
@@ -391,6 +391,13 @@ These all follow the same ROM pattern: check empty arg → return syntax; `free_
 | OLC_ACT-012 | IMPORTANT | src/olc_act.c:653-663 `aedit_reset` | `_interpret_aedit` (build.py) — `reset` subcommand wired | `aedit reset` calls `apply_resets(area)` via existing `_apply_resets_for_redit` wrapper, sets `area.changed=True`, returns ROM-exact "Area reset." (was "Unknown area editor command: reset"). 1 integration test. | ✅ FIXED |
 | OLC_ACT-013 | MINOR | src/olc_act.c:588–599 `get_vnum_area` | `_get_area_for_vnum` (build.py:1352) | ROM iterates `area_first` linked list; Python iterates `area_registry.values()`. CPython dicts preserve insertion order (3.7+), so load-order traversal is equivalent to ROM's linked-list walk. Locked by tests/integration/test_olc_act_013_get_area_for_vnum_order.py (3 cases: lookup, first-match-on-overlap, insertion-order). ROM-cite comment added to `_get_area_for_vnum`. | ✅ FIXED |
 | OLC_ACT-014 | MINOR | src/olc_act.c:1716 `redit_create` return TRUE (and src/olc.c:452-463/:510-521 dispatcher pattern) | `_mark_area_changed` (build.py:220) + per-handler `area.changed = True` calls | ROM builder functions return `TRUE`/`FALSE` and the dispatcher `SET_BIT(pArea->area_flags, AREA_CHANGED)`; Python uses an imperative pattern — each `_interpret_*edit` branch sets `area.changed = True` directly after a successful mutation. Structural divergence with equivalent behavior. ROM-cite comment added to `_mark_area_changed`. Locked by tests/integration/test_olc_act_014_area_changed_protocol.py (6 cases: name on all four editors, aedit security, plus a failed-mutation no-op case mirroring ROM's "handler returned FALSE → no SET_BIT"). | ✅ FIXED |
+| OLC_ACT-015 | MINOR | src/olc_act.c:1807-1822 `redit_heal` + :1824-1839 `redit_mana` | `_interpret_redit` (build.py:1480-1500) | ROM's `redit_heal`/`redit_mana` send a **bare** `"Heal rate set.\n\r"` / `"Mana rate set.\n\r"` on success — the builder is not told the value. Python leaked the value (`"Heal rate set to {n}."` / `"Mana rate set to {n}."`). Collapsed to the ROM-exact strings; the rate is still applied (asserted in test). Locked by tests/integration/test_olc_act_015_heal_mana_messages.py (2 cases). Flips the `redit_heal`/`redit_mana` function rows from ⚠️ PARTIAL. | ✅ FIXED |
+| OLC_ACT-019 | IMPORTANT | src/olc_act.c:825-863 `aedit_security` | `_interpret_aedit` (build.py) — `security` branch | **Behavioral permission divergence** (not just message): ROM gates the max settable value on the BUILDER's OWN security (`value > ch->pcdata->security`), so a security-5 builder cannot raise an area above 5. Python used a **hardcoded `0-9` clamp ignoring the builder's clearance** — a real OLC-permission gap. Now mirrors ROM: reject when `value > char.pcdata.security or value < 0` with `"Security is 0-<sec>."` (or `"Security is 0 only."` when the builder's security is 0), `"Syntax:  security [#xlevel]"` on non-number, bare `"Security set."` on success. Stale `test_olc_aedit.py` asserts (hardcoded-9 strings + value-leak) rewritten. Locked by tests/integration/test_olc_act_019_aedit_security.py (6, incl. the security-5-can't-set-6 mutation test). | ✅ FIXED |
+| OLC_ACT-020 | MINOR | src/olc_act.c:864-923 `aedit_builder` | `_handle_builder_command` (build.py:2082) | **OPEN — filed by OLC_ACT-019's aedit read; spec deepened 2026-07-18 (iteration 15 probe).** Three divergences: **(a) grammar** — ROM is a single-arg TOGGLE (`builder <name>` removes if the (first-char-uppercased) name is already a substring of `pArea->builders`, else adds it); Python uses explicit `add`/`remove` subcommands (`"builder <add|remove> <name>"`). **(b) case** — ROM stores names proper-case: `name[0] = UPPER(name[0])` on input, then `string_proper()` on the whole list after an add (so `"bob"` → `"Bob"`, list `"Tester Bob"`); Python **lowercases** every name (`builder_name = args_parts[1].lower()`), storing `"tester bob"`. Observable in `aedit show` (`Builders:` row) and, depending on the `IS_BUILDER` match, potentially in build permissions — **verify the `is_builder` name-match is case-insensitive before fixing** (the `test_aedit_builder_by_name` fixture pairs a mixed-case char name `"TestBuilder"` with a lowercase `builders="testbuilder admin"` and currently resolves, implying case-insensitive today; a proper-case store must not break that). **(c) messages** — ROM: empty arg → two-line `"Syntax:  builder [$name]  -toggles builder\n\r"` + `"Syntax:  builder All      -allows everyone\n\r"`; toggle results `"Builder removed."` / `"Builder added."` (the add ALSO echoes the new `pArea->builders`); on full removal the list becomes `"None"`. Python: `"Usage: builder <add|remove> <name>"` / `"Builder 'x' added."` / `"...already in the list."` etc. **Blast radius:** 5 tests in `tests/test_olc_aedit.py` (builder_add/add_duplicate/remove/remove_nonexistent/requires_action) encode the add/remove grammar and must be rewritten to the toggle contract; no frontend (`quickmud-web-client`) dependency. `test_aedit_builder_by_name` is an IS_BUILDER-permission test (not the command) and is unaffected. Deferred from iteration 15 to avoid a rushed fiddly `string_proper`/toggle rewrite as a session-closing act. | ⚠️ OPEN |
+| OLC_ACT-021 | MINOR | src/olc_act.c:924-978 `aedit_vnum` | `_interpret_aedit` (build.py) — `vnum` branch | **OPEN — filed by OLC_ACT-019's aedit read.** ROM `aedit_vnum` takes **two** args (`vnum [lower] [upper]`) and sets BOTH `min_vnum`/`max_vnum` with validation: lower≤upper (`"AEdit:  Upper must be larger then lower."`), `check_range` single-area (`"...Range must include only this area."`), and per-bound `get_vnum_area` overlap (`"...Lower/Upper vnum already assigned."`); success `"Lower vnum set."` then `"Upper vnum set."`. Python's `vnum <n>` instead sets the **area identity `area.vnum`** (a wholly different field) with no range logic — a semantic divergence. (Python's separate `lvnum`/`uvnum` cover the individual bounds but also lack ROM's overlap/range checks — `aedit_lvnum`/`aedit_uvnum`.) Needs the range-setter port. | ⚠️ OPEN |
+| OLC_ACT-018 | MINOR | src/olc_act.c:3810-3829 `medit_align` + :3830-3849 `medit_level` + :4366-4384 `medit_material` + :4709-4726 `medit_hitroll` | `_interpret_medit` (build.py:3353-3492) | Four medit setters carried **non-ROM validation guards** plus the value-leak/placeholder-message class. ROM `medit_level` has **no minimum** (accepts any integer incl. 0/negative), `medit_align` has **no -1000..1000 clamp** (stores `atoi` unmodified) — Python rejected valid ROM input (`"Level must be at least 1"`, `"Alignment must be between -1000 and 1000"`), a behavioral divergence, not just cosmetic. All four now: validate the full joined arg via `is_number` semantics → single verbatim `"Syntax:  X [number]"` / `"Syntax:  alignment [number]"` / `"Syntax:  material [string]"` on failure, bare success (`"Level set."`/`"Alignment set."`/`"Hitroll set."`/`"Material set."`). Stale `test_olc_medit.py` assertions rewritten to the ROM contract (incl. new mutation-sensitive `level 0` / `align ±1001` accept tests). Sibling of OLC_ACT-017 (oedit). Flips four function rows from ⚠️ PARTIAL / 🔄 NEEDS DEEP AUDIT. Locked by tests/test_olc_medit.py (53). | ✅ FIXED |
+| OLC_ACT-017 | MINOR | src/olc_act.c:3140-3157 `oedit_weight` + :3158-3177 `oedit_cost` + :3451-3469 `oedit_material` + :3470-3489 `oedit_level` | `_interpret_oedit` (build.py:2468-2508) | Four oedit setters used English placeholder messages and leaked the value. ROM: numeric setters (level/weight/cost) reject empty OR non-number with the single verbatim `"Syntax:  X [number]\n\r"` (DOUBLE space after colon); material rejects only empty with `"Syntax:  material [string]\n\r"`; all emit a bare success (`"Level set."`/`"Weight set."`/`"Cost set."`/`"Material set."`, no value). Also removed Python's **non-ROM `level >= 0` guard** — ROM `is_number`/`atoi` accept a leading `-`, so a negative object level is valid. Numeric validation now checks the FULL joined argument (ROM `is_number(argument)`), so multi-token input like `weight 5 6` correctly errors as in ROM. Stale `test_olc_oedit.py` assertions (which pinned the non-ROM strings + non-negative guard) rewritten to the ROM contract per AGENTS.md. Mirrors the OLC_ACT-011 four-`*_name` precedent. Locked by tests/integration/test_olc_act_017_oedit_setter_messages.py (4) + updated tests/test_olc_oedit.py. Flips four function rows from ⚠️ PARTIAL / 🔄 NEEDS DEEP AUDIT. Sibling `medit_level`/`medit_material` deferred (separate functions, different range semantics). | ✅ FIXED |
+| OLC_ACT-016 | MINOR | src/olc_act.c:4972-4988 `redit_room` + :4990-5007 `redit_sector` | `_handle_room_flags_command` / `_handle_sector_command` (build.py) | Both used English placeholder messages instead of ROM's verbatim strings. ROM emits the single (Spanish, as-shipped) syntax string `"Sintaxis: room [flags]\n\r"` / `"Sintaxis: sector [tipo]\n\r"` for BOTH the empty-arg and unknown-flag failure cases (`flag_value` → NO_FLAG for either), and a bare success (`"Room flags toggled.\n\r"` — already matched; `"Sector type set.\n\r"` — Python leaked the value). Collapsed Python's three custom error branches (`"Usage: room …"`, `"Unknown room flags: X"`, `"No room flags provided."`) to ROM's single `Sintaxis` string; fixed the sector value-leak. Room toggle semantics (multi-flag OR, any-unknown-fails, TOGGLE_BIT) were already ROM-faithful — verified, not changed. Consistent with the established `imm_olc.py` mpedit precedent that already reproduces ROM's `"Sintaxis :"` strings verbatim. Theoretical residual (not fixed, builder never hits it): ROM `flag_value` would OR multiple sector tokens; Python reads only the first — pathological since sector values are sequential ints, not bits. Locked by tests/integration/test_olc_act_016_room_sector_messages.py (6 cases). Flips both function rows from 🔄 NEEDS DEEP AUDIT. | ✅ FIXED |
 
 ---
 

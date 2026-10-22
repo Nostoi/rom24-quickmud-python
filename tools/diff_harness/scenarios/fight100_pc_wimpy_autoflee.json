@@ -1,0 +1,19 @@
+{
+    "name": "fight100_pc_wimpy_autoflee",
+    "seed": 12345,
+    "start_room": 3008,
+    "char": { "name": "Tester", "level": 1 },
+    "watch": { "chars": ["Tester", "oldstyle"], "rooms": [3008, 3001, 3006, 3007, 3021, 3009] },
+    "steps": [
+        "__seed=777",
+        "__hp=200",
+        "wimpy 50",
+        "__hp=52",
+        "__move=100",
+        "__mload=2302",
+        "__seed=777",
+        "__aggr_update",
+        "__tick",
+        "__tick"
+    ]
+}

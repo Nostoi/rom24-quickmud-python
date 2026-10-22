@@ -158,9 +158,16 @@ def test_kill_does_not_flag_attacker_when_target_already_killer(monkeypatch: pyt
     assert "*** You are now a KILLER!! ***" not in attacker.messages
 
 
-def test_kill_with_charmed_attacker_stops_following_without_killer_flag(
+def test_kill_with_charmed_attacker_stops_following_then_damage_layer_flags(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """FIGHT-094 update: ROM's command-layer check_killer charm branch
+    (src/fight.c:1248-1268) detaches the follower WITHOUT flagging — but
+    stop_follower strips AFF_CHARM (src/act_comm.c:1620-1624), so the
+    subsequent multi_hit's damage() re-runs check_killer (fight.c:733) on a
+    now-uncharmed, not-yet-fighting attacker and DOES set KILLER. The old
+    assertion (no flag after `kill`) encoded the pre-FIGHT-094 Python that
+    lacked the damage()-layer call."""
     initialize_world("area/area.lst")
     master = create_test_character("Master", 3001)
     attacker = create_test_character("Thrall", 3001)
@@ -180,8 +187,10 @@ def test_kill_with_charmed_attacker_stops_following_without_killer_flag(
     process_command(attacker, "kill victim")
 
     assert attacker.master is None
-    assert not (int(attacker.act) & int(PlayerFlag.KILLER))
-    assert "*** You are now a KILLER!! ***" not in attacker.messages
+    # damage()'s check_killer (fight.c:733) flags the ex-charmed attacker on
+    # the first hit — charm was stripped by stop_follower, fighting not yet set.
+    assert int(attacker.act) & int(PlayerFlag.KILLER)
+    assert "*** You are now a KILLER!! ***" in attacker.messages
 
 
 def test_kill_blocks_stealing_existing_fight() -> None:

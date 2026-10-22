@@ -160,6 +160,27 @@ def test_envenom_weapon_success():
     assert weapon.affected[0].bitvector == int(WeaponFlag.POISON)
 
 
+def test_envenom_weapon_head_inserts_affect():
+    """ENV-005: ROM do_envenom → affect_to_obj (src/handler.c:1292) HEAD-inserts
+    the poison affect. On a weapon that already carries another affect, the new
+    poison must land at index 0 (mutation lock — the old `.append` put it last).
+    Uses a benign marker affect (bitvector 0, not a forbidden weapon flag) so
+    envenom still succeeds."""
+    thief = make_character(level=30, skills={"envenom": 95})
+    weapon = make_weapon("dagger", edged=True)
+    marker = Affect(where=1, type=777, level=20, duration=10, location=0, modifier=0, bitvector=0)
+    weapon.affected.insert(0, marker)
+    thief.inventory = [weapon]
+
+    rng_mm.seed_mm(0x5678)
+    result = envenom(thief, item_name="dagger")
+
+    assert result["success"] is True
+    # ROM head-insert: poison at the front, the pre-existing marker pushed to [1].
+    assert weapon.affected[0].bitvector == int(WeaponFlag.POISON)
+    assert weapon.affected[1].type == 777
+
+
 def test_envenom_weapon_already_poisoned():
     """ROM L927-931: Can't envenom already poisoned weapon."""
     thief = make_character(level=30, skills={"envenom": 95})

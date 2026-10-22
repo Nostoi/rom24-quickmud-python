@@ -462,8 +462,10 @@ class TestBashRomParity:
 
         assert "bashing" in result.lower() and "what" in result.lower()
 
-    def test_bash_returns_recovering_when_waiting(self, movable_char_factory, movable_mob_factory):
-        """ROM L2469-2470: WAIT_STATE; Python blocks if already waiting."""
+    def test_bash_executes_when_waiting(self, movable_char_factory, movable_mob_factory):
+        """FIGHT-102: ROM do_bash never reads ch->wait (src/fight.c:2374-2470)
+        — wait is enforced only at the descriptor input loop
+        (src/comm.c:619-623), so direct dispatch executes even at wait > 0."""
         char = movable_char_factory("warrior", 3001)
         char.skills["bash"] = 75
         char.wait = 1
@@ -473,7 +475,8 @@ class TestBashRomParity:
 
         result = do_bash(char, "mob")
 
-        assert "still recovering" in result.lower()
+        assert "still recovering" not in result.lower()
+        assert char.wait > 1, "ROM WAIT_STATE(gsn_bash beats) must still apply"
 
     def test_bash_success_applies_wait_state_before_skill_handler(self, movable_char_factory, movable_mob_factory):
         """ROM L2469: WAIT_STATE(ch, skill_table[gsn_bash].beats) before effects."""
@@ -960,8 +963,10 @@ class TestKickRomParity:
 
         assert do_kick(attacker, "") == ""
 
-    def test_kick_returns_recovering_when_waiting(self, movable_char_factory, movable_mob_factory):
-        """ROM L3126: WAIT_STATE always applied; Python blocks usage when already waiting."""
+    def test_kick_executes_when_waiting(self, movable_char_factory, movable_mob_factory):
+        """FIGHT-102: ROM do_kick never reads ch->wait (src/fight.c:3109-3137)
+        — wait is enforced only at the descriptor input loop, so direct
+        dispatch executes even at wait > 0 (WAIT_STATE still applies)."""
         char = movable_char_factory("warrior", 3001)
         char.skills["kick"] = 75
         skill = skill_registry.get("kick")
@@ -980,7 +985,8 @@ class TestKickRomParity:
 
         result = do_kick(char, "")
 
-        assert "still recovering" in result.lower()
+        assert "still recovering" not in result.lower()
+        assert char.wait > 1, "ROM WAIT_STATE(gsn_kick beats) must still apply"
 
     def test_kick_applies_wait_state_before_skill_handler(self, movable_char_factory, movable_mob_factory):
         """ROM L3126-3128: WAIT_STATE occurs before percent roll and damage call."""

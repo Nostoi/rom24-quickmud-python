@@ -1,0 +1,20 @@
+{
+    "name": "fight098_area_attack_domain",
+    "seed": 12345,
+    "start_room": 3008,
+    "char": { "name": "Tester", "level": 1 },
+    "watch": { "chars": ["Tester", "Ally", "oldstyle"], "rooms": [3008, 3001] },
+    "steps": [
+        "__seed=777",
+        "__hp=5000",
+        "__group_pc=Ally",
+        "__mload=2302",
+        "__mob_off_flags=1",
+        "__mob_fight=Tester",
+        "__char_fight=Ally",
+        "__char_goto=Tester,3001",
+        "__char_goto=Tester,3008",
+        "__seed=777",
+        "__tick"
+    ]
+}

@@ -1,0 +1,1551 @@
+{
+  "scenario": "check_assist_cross_room",
+  "c_commit": "733a460b4f737a24823e0c1eefaa866d9524feb4",
+  "build_flags": "-DOLD_RAND",
+  "seed": 12345,
+  "trace": [
+    {
+      "step": 1,
+      "command": "__seed=777",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 2,
+      "command": "__hp=5000",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 5000,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 3,
+      "command": "__group_pc=Ally",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 5000,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Ally",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 4,
+      "command": "__char_goto=Ally,3001",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 5000,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 5,
+      "command": "__mload=2302",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 5000,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 6,
+      "command": "__mload=3064",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 5000,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 28,
+          "max_hp": 28,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 97,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 7,
+      "command": "__mob_off_flags=32768",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 5000,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 28,
+          "max_hp": 28,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 97,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 8,
+      "command": "__mob_add_affect=32",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 5000,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 28,
+          "max_hp": 28,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 97,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_hidden"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 9,
+      "command": "__seed=777",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 5000,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 28,
+          "max_hp": 28,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 97,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_hidden"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 10,
+      "command": "__aggr_update",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 4987,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": "oldstyle",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 28,
+          "max_hp": 28,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 97,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_hidden"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Cave Dweller's pierce scratches you.",
+        "\rThe Cave Dweller trips you and you go down!",
+        "\rThe Cave Dweller's trip scratches you.",
+        ""
+      ]
+    },
+    {
+      "step": 11,
+      "command": "__seed=778",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 4987,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": "oldstyle",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 28,
+          "max_hp": 28,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 97,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_hidden"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": []
+    },
+    {
+      "step": 12,
+      "command": "__tick",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 4980,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": "oldstyle",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 28,
+          "max_hp": 28,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 97,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_hidden"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Cave Dweller's pierce scratches you.",
+        "\rThe drunk screams and attacks!",
+        "\rThe Cave Dweller parries your attack.",
+        ""
+      ]
+    },
+    {
+      "step": 13,
+      "command": "look",
+      "chars": [
+        {
+          "key": "Tester",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 4980,
+          "max_hp": 5000,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": "oldstyle",
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "Ally",
+          "room": 3001,
+          "position": "STANDING",
+          "hp": 20,
+          "max_hp": 20,
+          "mana": 100,
+          "move": 100,
+          "level": 1,
+          "align": 0,
+          "gold": 0,
+          "silver": 0,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 0,
+          "eff_ac": [
+            100,
+            100,
+            100,
+            100
+          ],
+          "master": null
+        },
+        {
+          "key": "oldstyle",
+          "room": 3008,
+          "position": "FIGHTING",
+          "hp": 224,
+          "max_hp": 224,
+          "mana": 137,
+          "move": 100,
+          "level": 15,
+          "align": 0,
+          "gold": 0,
+          "silver": 99,
+          "fighting": "Tester",
+          "affects": [],
+          "affect_flags": [
+            "detect_evil",
+            "detect_magic",
+            "sneak"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": 0,
+          "eff_damroll": 4,
+          "eff_ac": [
+            -20,
+            -20,
+            -20,
+            70
+          ],
+          "master": null
+        },
+        {
+          "key": "drunk",
+          "room": 3008,
+          "position": "STANDING",
+          "hp": 28,
+          "max_hp": 28,
+          "mana": 100,
+          "move": 100,
+          "level": 2,
+          "align": 400,
+          "gold": 0,
+          "silver": 97,
+          "fighting": null,
+          "affects": [],
+          "affect_flags": [
+            "detect_hidden"
+          ],
+          "inventory": [],
+          "equipment": {},
+          "eff_hitroll": -1,
+          "eff_damroll": 0,
+          "eff_ac": [
+            80,
+            80,
+            80,
+            100
+          ],
+          "master": null
+        }
+      ],
+      "rooms": [
+        {
+          "vnum": 3008,
+          "people": [
+            "drunk",
+            "oldstyle",
+            "Tester"
+          ],
+          "contents": [
+            3140,
+            3139
+          ]
+        },
+        {
+          "vnum": 3001,
+          "people": [
+            "Ally",
+            "Hassan"
+          ],
+          "contents": []
+        }
+      ],
+      "output": [
+        "",
+        "\rThe Defunct Reception",
+        "\r  You are standing in a dusty, defunct reception.  The staircase leads",
+        "\rdown to the entrance hall.",
+        "\r     The bank's notice of liquidation is taped to the wall.",
+        "\r     The receptionist's letter of resignation is taped to the wall.",
+        "\rA singing, happy drunk wanders around, singing about Moria.",
+        "\rThe Cave Dweller is here, fighting YOU!",
+        ""
+      ]
+    }
+  ]
+}

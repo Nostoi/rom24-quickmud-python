@@ -203,7 +203,8 @@ def test_medit_level_command(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "level 20")
 
-    assert "Mobile level set to 20" in result
+    # OLC_ACT-018: ROM medit_level emits bare "Level set." (no value echoed).
+    assert result == "Level set."
     assert test_mobile.level == 20
     assert test_mobile.area.changed is True
 
@@ -211,20 +212,23 @@ def test_medit_level_command(builder_char, test_mobile):
 def test_medit_level_requires_number(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "level abc")
-    assert "Level must be a number" in result
+    assert result == "Syntax:  level [number]"
 
 
-def test_medit_level_must_be_positive(builder_char, test_mobile):
+def test_medit_level_allows_zero(builder_char, test_mobile):
+    # OLC_ACT-018: ROM medit_level has NO minimum — atoi accepts any integer,
+    # so `level 0` is valid (Python's non-ROM "at least 1" guard is removed).
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "level 0")
-    assert "Level must be at least 1" in result
+    assert result == "Level set."
+    assert test_mobile.level == 0
 
 
 def test_medit_alignment_command(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "align -500")
 
-    assert "Alignment set to -500" in result
+    assert result == "Alignment set."
     assert test_mobile.alignment == -500
     assert test_mobile.area.changed is True
 
@@ -232,24 +236,25 @@ def test_medit_alignment_command(builder_char, test_mobile):
 def test_medit_alignment_requires_number(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "align abc")
-    assert "Alignment must be a number" in result
+    assert result == "Syntax:  alignment [number]"
 
 
-def test_medit_alignment_range_validation(builder_char, test_mobile):
+def test_medit_alignment_allows_out_of_range(builder_char, test_mobile):
+    # OLC_ACT-018: ROM medit_align stores atoi(argument) unmodified — no
+    # -1000..1000 clamp. Python's range guard was non-ROM.
     cmd_medit(builder_char, "1001")
 
-    result = cmd_medit(builder_char, "align -1001")
-    assert "Alignment must be between -1000 and 1000" in result
-
-    result = cmd_medit(builder_char, "align 1001")
-    assert "Alignment must be between -1000 and 1000" in result
+    assert cmd_medit(builder_char, "align -1001") == "Alignment set."
+    assert test_mobile.alignment == -1001
+    assert cmd_medit(builder_char, "align 1001") == "Alignment set."
+    assert test_mobile.alignment == 1001
 
 
 def test_medit_hitroll_command(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "hitroll 10")
 
-    assert "Hitroll set to 10" in result
+    assert result == "Hitroll set."
     assert test_mobile.hitroll == 10
     assert test_mobile.area.changed is True
 
@@ -257,7 +262,7 @@ def test_medit_hitroll_command(builder_char, test_mobile):
 def test_medit_hitroll_requires_number(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "hitroll abc")
-    assert "Hitroll must be a number" in result
+    assert result == "Syntax:  hitroll [number]"
 
 
 def test_medit_damroll_command(builder_char, test_mobile):
@@ -433,7 +438,8 @@ def test_medit_material_command(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "material flesh")
 
-    assert "Material set to: flesh" in result
+    # OLC_ACT-018: ROM medit_material (src/olc_act.c:4366) — bare "Material set."
+    assert result == "Material set."
     assert test_mobile.material == "flesh"
     assert test_mobile.area.changed is True
 
@@ -441,7 +447,7 @@ def test_medit_material_command(builder_char, test_mobile):
 def test_medit_material_requires_value(builder_char, test_mobile):
     cmd_medit(builder_char, "1001")
     result = cmd_medit(builder_char, "material")
-    assert "Usage: material" in result
+    assert result == "Syntax:  material [string]"
 
 
 def test_medit_done_exits_editor(builder_char, test_mobile):

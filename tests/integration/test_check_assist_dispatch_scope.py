@@ -63,6 +63,7 @@ def test_multi_hit_does_not_call_check_assist_directly(monkeypatch) -> None:
     attacker.max_hit = 100
     attacker.hitroll = 100
     victim = Character(name="Victim", is_npc=False, position=Position.STANDING)
+    victim.desc = object()  # connected PC — a link-dead victim would auto-recall out of the fight (FIGHT-099)
     victim.level = 20
     victim.hit = 100
     victim.max_hit = 100
@@ -103,6 +104,7 @@ def test_violence_tick_calls_check_assist_after_multi_hit(monkeypatch) -> None:
     attacker.max_hit = 100
     attacker.hitroll = 100
     victim = Character(name="Hero", is_npc=False, position=Position.STANDING)
+    victim.desc = object()  # connected PC — a link-dead victim would auto-recall out of the fight (FIGHT-099)
     victim.level = 20
     victim.hit = 100
     victim.max_hit = 100
@@ -142,6 +144,7 @@ def test_violence_tick_skips_check_assist_when_victim_died(monkeypatch) -> None:
     attacker.hit = 100
     attacker.max_hit = 100
     victim = Character(name="Doomed", is_npc=False, position=Position.STANDING)
+    victim.desc = object()  # connected PC — a link-dead victim would auto-recall out of the fight (FIGHT-099)
     victim.level = 1
     victim.hit = 1
     victim.max_hit = 1

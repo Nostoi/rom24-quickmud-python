@@ -367,12 +367,318 @@ affects every swing) and FIGHT-082 (HIGH).
   `extract_obj` mirror). Test: `tests/integration/test_fight093_damage_1200_loophole.py`
   (2 — non-immortal physical >1200 → cap + weapon extract + cheat message; spell dt
   below TYPE_HIT → no penalty). Verified red before fix, green after. **Remaining →
-  FIGHT-094 (OPEN):** the `check_killer(ch, victim)` call at `fight.c:733` is still
-  absent from `apply_damage` — Python calls `check_killer` from the command layer
-  (do_kill/murder/backstab/…) instead of inside `damage()`, so any damage path not
-  routed through one of those verbs (mob one_hit, some spells) misses PK-flagging.
-  This is a broader PK-subsystem placement question (risk of double-flagging on the
-  command paths that already call it); filed for separate assessment.
+  FIGHT-094 ✅ FIXED (2026-07-16, v2.14.330):** `check_killer(attacker, victim)`
+  added to `apply_damage` at ROM's exact position (`fight.c:733` — after the
+  is_safe re-check, BEFORE set_fighting). Assessment resolved the
+  double-flagging concern: ROM itself calls check_killer BOTH at the command
+  layer (do_kill/bash/trip/… tails) AND inside damage(); the
+  `ch->fighting == victim` early-out (fight.c:1278) makes the damage()-layer
+  call the one that actually flags on the FIRST hit of a PvP engagement, and
+  the guards make repeat calls no-ops. Notable ROM consequence now mirrored: a
+  CHARMED clan-PC attacker who `kill`s a PC gets detached (command-layer charm
+  branch → stop_follower strips AFF_CHARM) and then FLAGGED by the first hit's
+  damage()-layer call — the old Python test asserting "no flag" encoded the
+  gap and was rewritten. Tests:
+  `tests/integration/test_fight094_damage_check_killer.py` (3, failing-first:
+  first-hit flags; established fight doesn't re-flag; NPC victim never flags).
+
+- **`FIGHT-095` — `check_assist` inner target-selection loop iterates room-people
+  in Python but the global `char_list` in ROM (`vch->next`, a 2.4b6 quirk),
+  ✅ FIXED (2.14.322).** `mud/combat/assist.py` now walks
+  `_char_list_walk_from_room_head(ch)` — the reversed `character_registry` slice
+  from the room head's index (room head first, then successively older chars to
+  the oldest; the GROUP-006/INV-045 fix pattern), with a room-people fallback for
+  unregistered synthetic-fixture heads. **C-oracle validated:** the new
+  differential scenario `check_assist_cross_room.json` (assisting drunk +
+  aggressor + PC victim in room 3008; the victim's grouped ally teleported to
+  3001 via the new `__char_goto` directive; drunk given ASSIST_ALL via
+  `__mob_off_flags` and DETECT_HIDDEN via `__mob_add_affect` to silence the
+  world-wide can_see sneak-roll population, which is contaminated by the
+  separately-filed DB-005 boot-population divergence) — ROM reservoir-picks the
+  CROSS-ROOM ally, screams, and the follow-up `multi_hit` whiffs in `one_hit`'s
+  room guard (FIGHT-097) with zero RNG consumed; the replay converges, and an
+  8-seed alignment sweep (gate-skip, miss, dodge, parry, cross-room-pick
+  variants) is byte-identical via `__rng_probe`. Tests:
+  `tests/integration/test_fight095_check_assist_char_list_domain.py` (3 —
+  cross-room member IS in the reservoir; same-room member created AFTER the room
+  head is UNREACHABLE (the quirk's wild half); unregistered-head fallback) +
+  `tests/test_differential_smoke.py[check_assist_cross_room]`. Red before, green
+  after. Closure also surfaced and filed: FIGHT-096 (✅ emote act-render),
+  FIGHT-097 (✅ one_hit guards), FIGHT-098 (OPEN, mob_hit area-attack sibling),
+  DB-005 (OPEN, reset-order world-population divergence — found by the draw-count
+  accounting), GL-050 (OPEN, aggr victim-selection probe), HANDLER-009 (OPEN,
+  test-only `move_to_room` tail-append). Originally surfaced 2026-07-16 during
+  a divergence-class sweep of the violence tick. ROM `check_assist`'s NPC-assist
+  target-selection loop (`src/fight.c:161`) is
+  `for (vch = ch->in_room->people; vch; vch = vch->next)` — it seeds from the
+  room's people-list *head* but then follows the **global** `char_list` link
+  (`->next`), **not** `->next_in_room`. Contrast the *outer* loop
+  (`src/fight.c:111`, `rch->next_in_room`) and `group_gain`
+  (`src/fight.c:1746/1764`, `->next_in_room`), both of which stay room-scoped.
+  Because the global `char_list` is creation-ordered (boot/area load order, then
+  login order), `room_head->next` almost never points at the next occupant of the
+  *same* room — so ROM's inner loop effectively walks the global character list
+  from an arbitrary midpoint, gated per element by
+  `can_see(rch, vch) && is_same_group(vch, victim)`. Python
+  `mud/combat/assist.py:check_assist` (`for vch in list(people_in_room)`) instead
+  iterates only `room.people`. Two divergence facets: **(1) target selection** —
+  ROM can pick (via the reservoir sampler) a visible same-group-as-victim
+  character who is *not* in the assisting mob's room, and can *miss* a room
+  co-member who sits earlier in the global list than the room head; Python's pool
+  is exactly the room occupants. **(2) shared MM RNG draw count** — the number of
+  `number_range(0, number)` reservoir draws equals the count of
+  (visible ∧ same-group-as-victim) chars in the iterated domain; a different
+  domain → a different draw count → the global combat RNG stream desyncs for all
+  subsequent events (the same class FIGHT-053/060 closed for other facets of this
+  very loop, but the *domain* itself was never addressed — FIGHT-053 fixed
+  `number++`'s position while leaving the loop room-scoped).
+
+  **This is an unconformed *nested* site of INV-045 (CHAR-LIST-WALK-ORDER)**, not
+  a standalone quirk. ROM head-inserts every char (`src/db.c:2256-2257`
+  `mob->next = char_list; char_list = mob`), so `char_list` is newest-first;
+  Python `character_registry` is `append` = oldest-first (the REVERSE — confirmed
+  by reading both). INV-045's site inventory already conformed every *tick* walk
+  (violence/char/mob/aggr/obj `_update`) and `get_char_world` by iterating
+  `reversed(<registry>)`; the character-side fix pattern is proven by **GROUP-006
+  (✅ 2.14.202)** — the `do_group` roster had the identical bug (a charmed mob
+  created after the PC listed below it) and was fixed with `reversed(character_registry)`.
+  The `check_assist` *inner* reservoir loop (`vch->next`) is a walk NESTED inside
+  the already-conforming outer violence tick, so it was missed by the 2026-06-12
+  site sweep — the outer `check_assist` loop uses `->next_in_room` (room-scoped,
+  fine); only the inner target-selection loop follows the global list.
+
+  **Negative control — why `die_follower` (same `char_list` walk) is NOT a bug:**
+  `die_follower` (`src/act_comm.c:1671`) also walks the global `char_list`, and its
+  Python twin iterates `character_registry` forward — yet it is faithful, because
+  it is **order-insensitive**: it resets pointers for *every* match (a set
+  operation), so visitation sequence is irrelevant. The discriminator for which
+  `char_list`/`character_registry` loops INV-045 bites: **order-sensitive** walks
+  (reservoir picks, first-match, positional, RNG-per-element) diverge;
+  **order-insensitive** ones ("for all matching", set resets) do not. `check_assist`'s
+  reservoir sampler is order-sensitive on both facets.
+
+  **The two facets need DIFFERENT parity to fix (name them so closure is exact):**
+  (1) *draw count* needs **domain** parity — the COUNT of (visible ∧
+  same-group-as-victim) chars in the visited set; order-independent. (2) *target
+  selection* needs **order** parity — the reservoir `number_range(0, number)==0`
+  sequence, which is order-sensitive. Both require reproducing ROM's `char_list`
+  domain (the positional suffix "room-head → oldest", i.e. a reversed slice of
+  `character_registry` up to the room-head's index), so neither is independently
+  closeable.
+
+  **Why still OPEN (blocker re-characterized 2026-07-16 — the stated blocker is
+  RETIRED):** the prior "needs C-oracle validation, the harness may be
+  nondeterministic on RNG scenarios" concern is FALSE. Verified empirically:
+  capturing every RNG-adjacent scenario (`combat_melee_rounds`, `mob_fight_trigger`,
+  `spell_combat`, `aggression_onset`) **twice with the current `src/diffshim`
+  binary** yields byte-identical traces — the oracle is deterministic within-build.
+  The recorded `capture --check` CHANGED on ~20 scenarios is cross-build provenance
+  drift (fresh binary vs committed OLD goldens), NOT nondeterminism, so a FRESH
+  `check_assist` golden authored with the current binary is trustworthy. The REAL
+  blocker is now a **harness-primitive gap**: constructing the divergence requires
+  (a) a mob with an ASSIST off_flag (no `__off_flags`/`__mset` shim directive
+  exists, and no `__mload`-able midgaard prototype was confirmed to carry one) and
+  (b) a same-group-as-victim char placed in a DIFFERENT room from the assisting mob
+  (`__group_pc` only creates a grouped ally in the driver PC's OWN room). Both are
+  additive `src/diff_shim/diffmain.c` + `pyreplay.py` extensions (the sanctioned
+  growth path, same as the `__plr_autosplit`/`__group_pc` additions), not ROM `*.c`
+  changes. **Closure spec:** extend the shim with a set-off_flags directive + a
+  cross-room grouped-member placement directive (C + Python replay, identical
+  semantics) → author a `check_assist_cross_room_assist.json` scenario (assisting
+  NPC + victim in room A, victim's group ally in room B ordered before the room
+  head in `char_list`) → capture the C golden → port `assist.py` to walk the
+  reversed positional slice per the GROUP-006/GL-040 pattern → lock via the replay
+  test. Route: `/rom-gap-closer FIGHT-095`. Severity remains LOW (needs a
+  cross-room grouped member visible to the assist mob). ROM ref `src/fight.c:161`;
+  Python `mud/combat/assist.py:164`. Cross-ref: **INV-045** (this is a nested site),
+  GROUP-006 (fix-pattern precedent), GL-040/045 (violence-tick reversal + RNG
+  desync).
+
+- **`FIGHT-096` — `check_assist`'s assist emote drops ROM `act()` line-start
+  capitalization, ✅ FIXED (2.14.320).** `_emote` now renders per-recipient via
+  `act_format("$n <msg>")` (PERS short_descr + line-start cap) and delivers the
+  ROM `do_emote` TO_CHAR self-line too. Tests:
+  `tests/integration/test_fight096_assist_emote_render.py` (2 — observer cap
+  render + actor self-line), red before, green after. Surfaced 2026-07-16 by the
+  first `check_assist_cross_room` C-oracle capture: C renders `The drunk screams and attacks!` (ROM
+  `do_function (rch, &do_emote, ...)` → `do_emote` → `act("$n $T", ...)`, and
+  `act_new` upper-cases the first letter of each rendered line); Python
+  `mud/combat/assist.py:_emote` hand-rolls `f"{char_name} {message}"` from the raw
+  lowercase `short_descr` → `the drunk screams and attacks!`. Same act()-render
+  class as FIGHT-073/075. Fix: render the emote through the faithful
+  `act_format` capitalization path. ROM ref `src/fight.c:121/173` +
+  `src/act_comm.c:do_emote`.
+
+- **`FIGHT-097` — `attack_round` (the `one_hit` twin) was missing ROM's opening
+  guard, ✅ FIXED (2.14.321).** `attack_round` now early-returns on
+  self/None/dead/cross-room BEFORE any RNG draw, mirroring the two ROM
+  early-outs. Tests: `tests/integration/test_fight097_one_hit_guards.py` (3 —
+  cross-room zero-RNG whiff, self no-op, dead-victim no-op), red before, green
+  after; combat/fight area suites 334/334 green. ROM `one_hit`
+  (`src/fight.c:426-437`) starts with two early-outs:
+  `if (victim == ch || ch == NULL || victim == NULL) return;` and
+  `if (victim->position == POS_DEAD || ch->in_room != victim->in_room) return;`
+  ("Can't beat a dead char! Guard against weird room-leavings."). Python
+  `mud/combat/engine.py:attack_round` has neither — it resolves a full swing
+  (consuming shared-RNG draws) against a dead, self, or CROSS-ROOM victim. The
+  cross-room leg is load-bearing for FIGHT-095: ROM `check_assist` can reservoir-
+  pick a same-group char in another room, emote, then `multi_hit` → `one_hit`
+  silently whiffs with ZERO RNG consumed and no `set_fighting` (the C-oracle
+  `check_assist_cross_room` golden captures exactly this: scream, no damage, drunk
+  stays non-fighting). Surfaced 2026-07-16 during FIGHT-095 closure.
+
+- **`FIGHT-098` — `mob_hit`'s OFF_AREA_ATTACK sweep iterates room-people in
+  Python but the global `char_list` in ROM, ✅ FIXED (2026-07-16, v2.14.324).**
+  FIGHT-095's `_char_list_walk_from_room_head` was promoted to a shared
+  `mud/combat/engine.py:char_list_walk_from_room_head` (assist.py now imports
+  it) and the area sweep walks that domain. C-independent domain lock:
+  `tests/integration/test_fight098_area_attack_char_list_domain.py` (3 —
+  newer-than-head same-room fighter unreachable; cross-room
+  fled-but-still-fighting char visited (whiffs via FIGHT-097 guards);
+  unregistered-head fallback). A dedicated C-oracle scenario remains desirable
+  (needs the instrumented C binary + an OFF_AREA_ATTACK mob directive) —
+  deferred with DB-005's `__mob_census` scenario to a C-capture session. ROM `mob_hit`
+  (`src/fight.c:196-203`): `for (vch = ch->in_room->people; vch; vch = vch_next)
+  { vch_next = vch->next; ... }` — the SAME room-head-seeded global-`char_list`
+  walk quirk as FIGHT-095's inner loop (`->next`, not `->next_in_room`), gated by
+  `vch != victim && vch->fighting == ch`. Python `mud/combat/engine.py:428`
+  iterates `attacker.room.people`. Bite is narrower than FIGHT-095 (requires a
+  char OUTSIDE the mob's room whose `fighting` still points at the mob — a
+  mid-fight room-leaving, e.g. flee-recall edge), but it is the identical INV-045
+  nested-walk class and the identical fix pattern. Needs its own C-oracle scenario
+  (an OFF_AREA_ATTACK mob + a fled-but-still-fighting char) before fixing — the
+  domain change alters `attack_round` draw counts. Route: `/rom-gap-closer
+  FIGHT-098` after FIGHT-095's fix pattern lands. Surfaced 2026-07-16 during
+  FIGHT-095 closure.
+
+- **`FIGHT-099` — `damage()` epilogue: link-dead PC auto-recall missing, ✅
+  FIXED (2026-07-16, v2.14.325).** ROM `src/fight.c:978-991`: after damage
+  lands (victim alive), `if (victim == ch) return TRUE;` then "Take care of
+  link dead people" — a PC victim with `desc == NULL` rolls
+  `number_range(0, victim->wait)`; on 0 it `do_recall`s out of the fight and
+  `damage()` returns. Python's `apply_damage` ended at the death branch with
+  no epilogue at all: a descriptorless PC just kept taking rounds. Surfaced
+  2026-07-16 by the GL-050 probe (C oracle's `__group_pc` Ally recalled after
+  the first aggression hit; Python mauled it to INCAP). Fix: epilogue added to
+  `mud/combat/engine.py:apply_damage` (self-damage guard + link-dead recall,
+  function-local `do_recall` import). Tests:
+  `tests/integration/test_fight099_linkdead_recall_on_damage.py` (4) +
+  C-oracle scenario `aggr_two_pc_victim_selection` (99/99 differential).
+  Harness fix ridealong: `pyreplay._configure_test_character` now mirrors
+  diffmain.c:448-531 descriptor wiring (driver `attach_desc=TRUE`, `__group_pc`
+  ally FALSE) — Python's driver previously read as link-dead.
+
+- **`FIGHT-101` — `do_flee` carries a non-ROM wait-gate and wait-state, ✅
+  FIXED (2026-07-16, v2.14.327).** Probe confirmed the gate was
+  double-counting: `mud/net/connection.py:1039-1047` already mirrors ROM's
+  interpreter-level wait buffering (`src/comm.c:619-623`) for ALL player
+  input paths (telnet/SSH/websocket all route through it), and ROM's direct
+  dispatch (`do_function` — mobprogs, damage()'s auto-flee) bypasses wait
+  entirely. Both the "You are still recovering." gate and the
+  `_apply_wait_state(ch, PULSE_VIOLENCE)` lag were removed from `do_flee`
+  (ROM applies neither, `src/fight.c:2970-3030`). Tests:
+  `tests/integration/test_fight101_flee_no_wait_gate.py` (2, failing-first:
+  wimpy auto-flee at wait 3; no lag on successful flee). NOTE: six sibling
+  combat commands (`do_kick`/`do_rescue`/`do_backstab`/`do_bash`/
+  `do_berserk`/`do_cast`) still carry the same non-ROM wait-gate class —
+  those apply ROM WAIT_STATEs on use (unlike flee) and their gates are only
+  reachable via direct dispatch; sweep them as a class when closing (each
+  needs its own ROM read: some ROM skills DO check wait via
+  skill-specific logic). Filed as **FIGHT-102** below.
+
+- **`FIGHT-104` — invisible attacker's inviso-strip ran AFTER parry/dodge, ✅
+  FIXED (2026-07-18, v2.14.334).** ROM `damage()` strips the attacker's
+  invisibility (`src/fight.c:763-769`, `"$n fades into existence."` +
+  `affect_strip`/`REMOVE_BIT AFF_INVISIBLE`) at `:763` — BEFORE the
+  parry/dodge/shield_block early-returns at `:790-800`. So an invisible
+  attacker whose blow is parried/dodged/blocked STILL fades into existence.
+  Python's `apply_damage` placed the inviso-strip block AFTER the parry/dodge
+  early-returns, so a defended attacker stayed invisible — a live divergence
+  hidden behind the original FIGHT-092 comment claiming "parry/dodge resolve in
+  one_hit before damage() is entered." That justification is wrong for BOTH
+  engines: `attack_round` (like ROM `one_hit`) defers all defenses to
+  `apply_damage`/`damage()` (engine.py:700-702 "defenses + RIV checked inside
+  apply_damage"), so the checks resolve inside the function, not before it.
+  **Fix:** moved the inviso-strip block to before the parry/dodge/shield_block
+  checks (mirroring ROM's set_fighting → inviso → modifiers → parry sequence).
+  The residual reorder (Python applies drunk/sanctuary/protect modifiers before
+  set_fighting, ROM after inviso) is behaviorally inert — those steps mutate
+  only `damage`, disjoint from the fighting/inviso state, and stay in the same
+  relative order (modifiers → parry → RIV) that consumes `damage`. Surfaced by
+  a recall-oracle re-verification of the load-bearing FIGHT-092 ✅ claim against
+  `src/fight.c`. Test: `tests/integration/test_fight104_inviso_strip_before_parry.py`
+  (2 — fades when parried, fades when dodged; both red before, green after).
+  175 inviso/defense-order tests + 397 combat tests green.
+
+- **`FIGHT-103` — the fleer's own output channel diverged from ROM, ✅ FIXED
+  (2026-07-16, v2.14.329).** Two facets, one contract (the fleer sees ROM's
+  exact lines in ROM's order): (a) `do_flee` composed "You flee from
+  combat!"/exp lines BEFORE the destination room look — ROM renders the look
+  first (`move_char` at `src/fight.c:3002` runs before the flee lines at
+  `:3010-3019`); (b) the FIGHT-100 auto-flee epilogue discarded `do_flee`'s
+  return — ROM's `do_flee` writes to the VICTIM's descriptor via
+  `send_to_char`, so the return now routes through `_push_message`.
+  (`do_recall`'s return in the FIGHT-099 branch stays discarded on purpose:
+  that branch only fires for `desc==NULL` victims, where ROM's send_to_char
+  is a no-op.) Surfaced authoring the `fight100_pc_wimpy_autoflee` C-oracle
+  scenario, which is the lock (red before, green after; C golden shows look
+  → flee → exp).
+
+- **`FIGHT-102` — sibling non-ROM wait-gates in six combat commands, ✅ FIXED
+  (2026-07-16, v2.14.328).** Per-site ROM verification: the ONLY `->wait`
+  READS in `src/fight.c` are multi_hit:193 (decrement), mob_hit:305
+  (dispatch guard), damage:986/996/1009 (epilogue), disarm-pickup:2263; none
+  in `src/magic.c` or `src/interp.c` — so all six gates were non-ROM. All
+  removed; each command's ROM WAIT_STATE-on-use is unchanged, and mob_hit's
+  own wait guard still covers the NPC off-skill dispatch. Locks:
+  `tests/integration/test_fight102_no_command_wait_gates.py` (grep-guard on
+  the recovery line in combat.py + behavioral kick-at-wait-5) and the
+  connection-level enforcement test
+  `tests/test_networking_telnet.py::test_wait_state_buffers_command_until_recovered_per_rom`.
+  Four stale tests asserting the non-ROM blocking were rewritten to the ROM
+  contract (skills_integration wait-reuse, still-recovering kick delivery,
+  skill_combat_rom_parity bash/kick recovering). Original row: Same class as FIGHT-101: `do_kick`, `do_rescue`, `do_backstab`,
+  `do_bash`, `do_berserk`, `do_cast` in `mud/commands/combat.py` each open
+  with `if wait > 0: return "You are still recovering."` — ROM has no such
+  in-function gate (interpreter-level buffering only, `src/comm.c:619-623`).
+  Reachable only via direct dispatch (mobprogs, mob_hit's off-skill
+  dispatch, internal calls) — where ROM would execute the command. Per-site
+  ROM read required before removal (mob_hit's own `ch->wait > 0` guard at
+  `src/fight.c:305` covers the NPC skill-dispatch path; verify each caller).
+  Surfaced 2026-07-16 while closing FIGHT-101. Route: `/rom-gap-closer
+  FIGHT-102`. ROM `do_flee` (`src/fight.c:2970-3030`) has NO wait check and
+  applies NO WAIT_STATE. Python `mud/commands/combat.py:do_flee` both refuses
+  when `wait > 0` ("You are still recovering.") and applies
+  `_apply_wait_state(char, get_pulse_violence())` before the door loop.
+  Reachable divergence: ROM `damage()`'s wimpy auto-flee (FIGHT-100) gates
+  only on `wait < PULSE_VIOLENCE / 2`, so a victim with wait 1..5 flees in
+  ROM but is blocked by Python's internal gate; and ROM never lags a fleer.
+  Surfaced 2026-07-16 while closing FIGHT-100. Before removing, check
+  whether the gate/lag is a deliberate Python command-dispatch compensation
+  (the comment claims "commands are wait-gated" — but ROM's interpreter wait
+  applies to typed commands, and `do_function` bypasses it). Route:
+  `/rom-gap-closer FIGHT-101`.
+
+- **`FIGHT-100` — `damage()` epilogue: wimpy auto-flee legs missing, ✅ FIXED
+  (2026-07-16, v2.14.326).** Epilogue extended in
+  `mud/combat/engine.py:apply_damage` (both legs, ROM gate order; the NPC OR
+  chain short-circuits so `number_bits(2)` draws only when ACT_WIMPY is set;
+  `c_div` for `max_hit/5`; charm-master compare by identity). Tests:
+  `tests/integration/test_fight100_wimpy_autoflee_on_damage.py` (5,
+  failing-first: NPC wimpy flee, above-threshold stay, charm-absent-master
+  flee, PC wimpy flee, wait-gate suppression). do_flee's own non-ROM
+  wait-gate/lag filed as FIGHT-101 (blocks the wait-1..5 edge only). Original
+  row: ROM `src/fight.c:993-1012`, immediately after the FIGHT-099 block:
+  (a) NPC wimpy/charm flee — `IS_NPC(victim) && dam > 0 && victim->wait <
+  PULSE_VIOLENCE / 2` and (`ACT_WIMPY && number_bits(2) == 0 && hit <
+  max_hit/5`, or `AFF_CHARM && master && master->in_room != victim->in_room`)
+  → `do_flee`; (b) PC wimpy flee — `!IS_NPC && hit > 0 && hit <= victim->wimpy
+  && wait < PULSE_VIOLENCE / 2` → `do_flee`. Python has NEITHER leg — wimpy'd
+  players and wimpy/charmed mobs never auto-flee on damage. RNG-bearing
+  (`number_bits(2)` + do_flee's exit scan draws) — close with a C-oracle
+  scenario if feasible. Surfaced 2026-07-16 while closing FIGHT-099 (same
+  contiguous ROM block, distinct observable behaviors). Route:
+  `/rom-gap-closer FIGHT-100`.
 
 ### Follow-ups (FIGHT-022 / FIGHT-023 / FIGHT-025 / FIGHT-026 — filed, not yet closed)
 

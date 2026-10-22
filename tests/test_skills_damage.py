@@ -525,6 +525,7 @@ def test_earthquake_sends_area_messages(monkeypatch: pytest.MonkeyPatch) -> None
 def test_fireball_uses_rom_damage_table(monkeypatch: pytest.MonkeyPatch) -> None:
     caster = Character(name="Archmage", level=60, is_npc=False)
     victim = Character(name="Brigand", level=45, is_npc=False, hit=400, max_hit=400)
+    victim.desc = object()  # connected PC — skip the FIGHT-099 link-dead recall roll
     room = Room(vnum=4100)
     room.add_character(caster)
     room.add_character(victim)
@@ -563,6 +564,7 @@ def test_fireball_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_magic_missile_rolls_rom_damage_table(monkeypatch: pytest.MonkeyPatch) -> None:
     caster = Character(name="Wizard", level=25, is_npc=False)
     victim = Character(name="Bandit", level=20, is_npc=False, hit=200, max_hit=200)
+    victim.desc = object()  # connected PC — skip the FIGHT-099 link-dead recall roll
     room = Room(vnum=4102)
     room.add_character(caster)
     room.add_character(victim)
@@ -611,6 +613,7 @@ def test_magic_missile_save_halves_damage(monkeypatch: pytest.MonkeyPatch) -> No
 def test_lightning_bolt_rolls_rom_damage_table(monkeypatch: pytest.MonkeyPatch) -> None:
     caster = Character(name="Stormcaller", level=35, is_npc=False)
     victim = Character(name="Marauder", level=28, is_npc=False, hit=260, max_hit=260)
+    victim.desc = object()  # connected PC — skip the FIGHT-099 link-dead recall roll
     room = Room(vnum=4104)
     room.add_character(caster)
     room.add_character(victim)

@@ -18,6 +18,7 @@ from mud.models.constants import (
     Position,
     RoomFlag,
 )
+from mud.models.room_json import ResetJson
 from mud.registry import area_registry, mob_registry, obj_registry, room_registry, shop_registry
 from mud.skills.metadata import ROM_SKILL_METADATA
 from mud.utils import rng_mm
@@ -368,6 +369,51 @@ def _mark_shopkeeper_inventory(mob: MobInstance, obj: object) -> None:
     obj.extra_flags = obj_flags | int(ITEM_INVENTORY)
 
 
+def _reset_owner_room_vnum(reset: ResetJson, prev_vnum: int) -> int:
+    """Room vnum a reset attaches to, mirroring ROM src/db.c:1009-1102 load_resets.
+
+    ROM attaches every reset to a room at load time (`new_reset`, db.c:980):
+    M/O own their target room, P/G/E inherit the previous reset's room
+    (`rVnum` carries across the switch at db.c:1046-1093), D/R use arg1.
+    """
+
+    cmd = (getattr(reset, "command", "") or "").upper()
+    if cmd == "M":
+        # Mirror the M-branch's own arg layout resolution (JSON fallback puts
+        # the room in arg4).
+        _, used_fallback = _resolve_vnum(reset.arg1 or 0, reset.arg2 or 0, mob_registry)
+        return (reset.arg4 or 0) if used_fallback else (reset.arg3 or 0)
+    if cmd == "O":
+        return reset.arg3 or 0
+    if cmd == "D":
+        return reset.arg1 or 0
+    if cmd == "R":
+        room_vnum = reset.arg1 or 0
+        if (room_vnum <= 0 or room_vnum not in room_registry) and (reset.arg2 or 0) in room_registry:
+            room_vnum = reset.arg2 or 0
+        return room_vnum
+    # P/G/E: rVnum unchanged — inherit the previous M/O's room.
+    return prev_vnum
+
+
+def _room_ordered_resets(area: Area) -> list[tuple[int, ResetJson]]:
+    """Area resets grouped per room, rooms ascending by vnum — ROM reset_area order.
+
+    DB-005: ROM `reset_area` (src/db.c:2003-2015) iterates `min_vnum..max_vnum`
+    calling `reset_room` per room, so resets execute grouped by owning room in
+    ascending room-vnum order (intra-room file order preserved), NOT flat .are
+    file order. Global M-limits (db.c:1703) therefore bind in room-vnum order,
+    and mob creation order — hence char_list order — is room-vnum ascending.
+    """
+
+    buckets: dict[int, list[ResetJson]] = {}
+    owner = -1
+    for reset in area.resets:
+        owner = _reset_owner_room_vnum(reset, owner)
+        buckets.setdefault(owner, []).append(reset)
+    return [(vnum, reset) for vnum in sorted(buckets) for reset in buckets[vnum]]
+
+
 def apply_resets(area: Area) -> None:
     """Populate rooms based on ROM reset data semantics."""
 
@@ -384,7 +430,16 @@ def apply_resets(area: Area) -> None:
 
     _restore_exit_states(area)
 
-    for reset in area.resets:
+    current_owner: int | None = None
+    for owner_vnum, reset in _room_ordered_resets(area):
+        if owner_vnum != current_owner:
+            # ROM reset_room locals (src/db.c:1647-1657): LastMob/LastObj/level
+            # reset per room — reset state never leaks across rooms.
+            current_owner = owner_vnum
+            last_mob = None
+            last_obj = None
+            last_mob_level = 0
+            last_reset_succeeded = False
         cmd = (reset.command or "").upper()
         if cmd == "M":
             last_reset_succeeded = False

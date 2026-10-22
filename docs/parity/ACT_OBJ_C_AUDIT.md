@@ -148,7 +148,39 @@ act_obj.c contains all ROM 2.4b6 object manipulation commands. This is a **P1 PR
 | ROM C Function | Lines | QuickMUD | Status | Priority | Notes |
 |----------------|-------|----------|--------|----------|-------|
 | `do_sacrifice()` | 1765-1863 | ✅ `obj_manipulation.py::do_sacrifice()` (line 257) | ✅ **AUDITED** | P1 | SAC-001..005 fixed: TO_ROOM broadcasts, WearFlag.NO_SAC (1<<15), PlayerFlag.AUTOSPLIT (1<<7), UMIN unconditional; 6/6 tests passing. **SAC-006 ✅ FIXED (2.14.55):** the rejection line `f"{obj.short_descr} is not an acceptable sacrifice."` and the furniture line `f"{person.name} appears to be using {obj.short_descr}."` baked the names without ROM's act() buf[0] capitalization — ROM `act("$p is not an acceptable sacrifice.", ch, obj, 0, TO_CHAR)` / `act("$N appears to be using $p.", ch, obj, gch, TO_CHAR)` cap the first letter, so a lowercase short_descr ("a blessed relic") renders "A blessed relic …". Rendered both via `act_format` ($p/$N + cap; $N also adds PERS masking). Surfaced 2026-06-13 applying the CONSIDER-001 ACT-CAP / `$N` lens to act_obj. Test: `tests/integration/test_sacrifice_command.py::test_sacrifice006_rejection_capitalizes_object_name`. |
-| `do_envenom()` | 849-963 | ✅ `skills/handlers.py::envenom()` (line 3625) + `remaining_rom.py::do_envenom()` shim | ✅ **AUDITED** | P1 | ENV-001 (WAIT_STATE on all 4 exit points) and ENV-002 (raw `attack_table[idx].damage == DAM_BASH` check; was misusing mapped enum which folds DAM_NONE→BASH and over-rejected) fixed; ENV-003 deferred (gsn_poison sn vs -1 affects only never-walked obj.affected); ENV-004: dispatcher shim cleaned up. 18/18 tests passing |
+| `do_envenom()` | 849-963 | ✅ `skills/handlers.py::envenom()` (line 3625) + `remaining_rom.py::do_envenom()` shim | ✅ **AUDITED** | P1 | ENV-001 (WAIT_STATE on all 4 exit points) and ENV-002 (raw `attack_table[idx].damage == DAM_BASH` check; was misusing mapped enum which folds DAM_NONE→BASH and over-rejected) fixed; ENV-003 **RE-OPENED** (its "never-walked obj.affected" premise is stale — `obj_update` DOES walk `obj->affected`, `src/update.c:928-961`); ENV-004: dispatcher shim cleaned up; **ENV-005 ✅ FIXED** (head-insert order). 18/18 tests passing. See "Envenom follow-ups" below. |
+
+### Envenom follow-ups (ENV-005 fixed; ENV-003 re-opened, ENV-006 filed) — 2026-07-18
+
+Surfaced by an affect-tick recall-oracle probe (iteration 11/12 of the
+2026-07-18 loop) reading `src/update.c:762-961` against `mud/affects/engine.py`
++ the object-affect paths.
+
+- **ENV-005 — ✅ FIXED (v2.14.338).** `mud/skills/handlers.py::envenom` appended
+  the runtime poison affect to `obj.affected` (tail); ROM `do_envenom`
+  (`src/act_obj.c:944`) routes through `affect_to_obj` (`src/handler.c:1292`)
+  which **head-inserts**. For a poisoned weapon that also carries prototype
+  affects, tail-insert inverts the object-affect list order, so the
+  `obj_update` decay tick (`src/update.c:928-961`) draws its per-affect
+  `number_range(0,4)` level-fade in a different order (INV-040/045 head-insert
+  class — the object-affect sibling of INV-039). Fixed to `insert(0, ...)`.
+  The char-affect side of the same tick (`tick_spell_effects`) was probed and is
+  **faithful** (head-insert via INV-040 `add_affect`, unconditional per-affect
+  RNG draw with GL-026 short-circuit order, INV-018 stacked-same-type `msg_off`
+  suppression) — clean, no change.
+- **ENV-003 — ⚠️ RE-OPENED.** The envenom affect stores `type=-1`, but combat's
+  poison-level lookup (`mud/combat/engine.py:1959`) searches `wield.affected`
+  for `name == "poison"` — so a `-1`-typed envenom affect is not found there and
+  the level falls back to `wield->level` instead of the envenom `poison->level`
+  (ROM `src/fight.c:605-608`). The prior "never-walked" justification is wrong
+  (`obj_update` walks it). Needs the affect keyed so both the decay tick and the
+  combat level-lookup resolve it as ROM's `gsn_poison`.
+- **ENV-006 — ⚠️ OPEN (filed).** `envenom` does not route through the canonical
+  `mud/handler.py::affect_to_obj`, so it skips that helper's `value[4] |=
+  WEAPON_POISON` bit application (ROM `src/handler.c:1295-1306`). Combat triggers
+  the poison branch off `weapon_flags & WEAPON_POISON` (`engine.py:1949`); verify
+  whether envenom's poison-on-hit actually fires end-to-end, and if the fix is to
+  route the whole path through `affect_to_obj` (which would also subsume ENV-005).
 | `do_brandish()` | 1978-2066 | ✅ `magic_items.py::do_brandish()` | ✅ **AUDITED** | P2 | BRANDISH-001..006 fixed: was unrunnable (referenced `ItemType.ITEM_STAFF`, undefined `SkillTarget`/`SKILL_TARGET_MAP`, `equipment.get("held")` string-key lookup). BRANDISH-001: HOLD-slot lookup now uses `equipment[WearLocation.HOLD]` IntEnum key (POUR-004 pattern). BRANDISH-002: `ItemType.STAFF` (no `ITEM_` prefix) per `mud/models/constants.py:291`. BRANDISH-003: ROM 2004 `WAIT_STATE(ch, 2*PULSE_VIOLENCE)` applied unconditionally before charge gate (was inside fail path only). BRANDISH-004: TO_ROOM `$n brandishes $p.`/`...and nothing happens.`/`$n's $p blazes bright and is gone.` via `act_format`+`broadcast_room`. BRANDISH-005: target dispatch via skill `target` string ("ignore"/"victim"/"friendly"/"self") mapped to ROM TAR_IGNORE/TAR_CHAR_OFFENSIVE/TAR_CHAR_DEFENSIVE/TAR_CHAR_SELF (lines 2023-2048). BRANDISH-006: charge decrement is unconditional after if-block (ROM 2056 `--staff->value[2]`); destruction extract_obj fires when `<=0`. 4 integration tests passing. **INV-025 PERS reconciliation (2.12.52):** BRANDISH-004's `act_format(recipient=None)`+`broadcast_room` baked the actor name; the `_broadcast` helper now delegates to `act_to_room` for per-recipient PERS masking — see CROSS_FILE_INVARIANTS_TRACKER INV-025 (`tests/integration/test_inv025_obj_command_pers_sweep.py`). **BRANDISH-007 ✅ FIXED (2.14.36):** `check_improve(ch, "staves", True, 2)` was hoisted to run once *after* the per-target loop; ROM (`src/act_obj.c:2050-2052`) calls it *inside* the loop, once per cast. For AoE staves (TAR_CHAR_OFFENSIVE/DEFENSIVE hitting N targets) the Python under-counted skill-learn rolls and under-drew the shared MM RNG (`check_improve` rolls `number_range(1,1000)` for PCs) by N−1. Moved inside the loop. Regression: `tests/integration/test_consumables.py::test_brandish_check_improve_fires_once_per_affected_target`. |
 | `do_zap()` | 2068-2159 | ✅ `magic_items.py::do_zap()` | ✅ **AUDITED** | P2 | ZAP-001..006 fixed: same family of bugs as brandish (unrunnable success path, wrong HOLD lookup, `ItemType.ITEM_WAND`, undefined SkillTarget). ZAP-001: HOLD lookup now `equipment[WearLocation.HOLD]`. ZAP-002: `ItemType.WAND` per `mud/models/constants.py:290`. ZAP-003: `WAIT_STATE` applied after target resolution, before charge gate (ROM 2117). ZAP-004: act-trio messages — TO_NOTVICT (excludes ch+victim), TO_CHAR, TO_VICT — now use `act_format` with proper `$n`/`$N`/`$p` substitution; helper `_broadcast` extended to accept iterable exclusion since `broadcast_room` only takes a single character. ZAP-005: object-target branch broadcasts `$n zaps $P with $p.` TO_ROOM (ROM 2129). ZAP-006: charge decrement unconditional; on `<=0` broadcasts `$n's $p explodes into fragments.` and extracts the wand. 6 integration tests passing. **INV-025 PERS reconciliation (2.12.52):** ZAP-004's `act_format(recipient=None)`+`broadcast_room` baked the actor/victim names; the `_broadcast` helper now delegates to `act_to_room` (TO_NOTVICT = exclude actor + victim via `exclude=victim`) for per-recipient PERS masking — see CROSS_FILE_INVARIANTS_TRACKER INV-025 (`tests/integration/test_inv025_obj_command_pers_sweep.py`). |
 

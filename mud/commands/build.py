@@ -1197,24 +1197,19 @@ def _handle_extra_command(room: Room, args_parts: list[str]) -> str:
 
 
 def _handle_room_flags_command(room: Room, args_parts: list[str]) -> str:
-    if not args_parts:
-        return "Usage: room <flag list>"
-
+    # mirroring ROM src/olc_act.c:4972-4988 redit_room. ROM's flag_value
+    # (non-stat table) ORs all space-separated tokens and returns NO_FLAG if
+    # ANY token is unknown (or the argument is empty). On NO_FLAG ROM emits the
+    # single verbatim syntax string; otherwise it TOGGLE_BITs all bits at once.
     bits = 0
-    unknown: defaultdict[str, int] = defaultdict(int)
     for token in args_parts:
         flag = _ROOM_FLAG_ALIASES.get(token.lower())
         if flag is None:
-            unknown[token.lower()] += 1
-        else:
-            bits |= flag
-
-    if unknown:
-        bad = ", ".join(sorted(unknown))
-        return f"Unknown room flags: {bad}."
+            return "Sintaxis: room [flags]"
+        bits |= flag
 
     if not bits:
-        return "No room flags provided."
+        return "Sintaxis: room [flags]"
 
     room.room_flags = int(getattr(room, "room_flags", 0)) ^ bits
     _mark_area_changed(room)
@@ -1222,17 +1217,19 @@ def _handle_room_flags_command(room: Room, args_parts: list[str]) -> str:
 
 
 def _handle_sector_command(room: Room, args_parts: list[str]) -> str:
+    # mirroring ROM src/olc_act.c:4990-5007 redit_sector — verbatim (Spanish)
+    # syntax string on empty/unknown, bare success with no value echoed.
     if not args_parts:
-        return "Usage: sector <type>"
+        return "Sintaxis: sector [tipo]"
 
     token = args_parts[0].lower()
     sector = _SECTOR_ALIASES.get(token)
     if sector is None:
-        return f"Unknown sector type: {token}."
+        return "Sintaxis: sector [tipo]"
 
     room.sector_type = sector
     _mark_area_changed(room)
-    return f"Sector type set to {token}."
+    return "Sector type set."
 
 
 def _handle_owner_command(room: Room, args_parts: list[str]) -> str:
@@ -1486,7 +1483,8 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
             return "Usage: heal <#xnumber>"
         room.heal_rate = heal_rate
         _mark_area_changed(room)
-        return f"Heal rate set to {heal_rate}."
+        # mirroring ROM src/olc_act.c:1807-1822 redit_heal — bare message, no value echoed.
+        return "Heal rate set."
 
     if cmd == "mana":
         if not value:
@@ -1497,7 +1495,8 @@ def _interpret_redit(session: Session, char: Character, raw_input: str) -> str:
             return "Usage: mana <#xnumber>"
         room.mana_rate = mana_rate
         _mark_area_changed(room)
-        return f"Mana rate set to {mana_rate}."
+        # mirroring ROM src/olc_act.c:1824-1839 redit_mana — bare message, no value echoed.
+        return "Mana rate set."
 
     if cmd == "clan":
         if not value:
@@ -2001,19 +2000,22 @@ def _interpret_aedit(session: Session, char: Character, raw_input: str) -> str:
         return f"Area credits set to: {new_credits}"
 
     if cmd == "security":
-        if not args_parts:
-            return "Usage: security <0-9>"
-        try:
-            security_level = int(args_parts[0])
-        except ValueError:
-            return "Security level must be a number."
-
-        if security_level < 0 or security_level > 9:
-            return "Security level must be between 0 and 9."
-
+        # mirroring ROM src/olc_act.c:825-863 aedit_security. The max settable
+        # value is the BUILDER's OWN security (`value > ch->pcdata->security`),
+        # not a hardcoded 0-9 — a security-5 builder cannot raise an area above
+        # 5. On rejection ROM reports the builder's ceiling.
+        sec_str = args_parts[0] if args_parts else ""
+        if not sec_str or not sec_str.lstrip("-").isdigit():
+            return "Syntax:  security [#xlevel]"
+        security_level = int(sec_str)
+        char_security = int(getattr(getattr(char, "pcdata", None), "security", 0) or 0)
+        if security_level > char_security or security_level < 0:
+            if char_security != 0:
+                return f"Security is 0-{char_security}."
+            return "Security is 0 only."
         area.security = security_level
         area.changed = True
-        return f"Security level set to {security_level}."
+        return "Security set."
 
     if cmd == "builder":
         return _handle_builder_command(area, args_parts)
@@ -2466,47 +2468,50 @@ def _interpret_oedit(session: Session, char: Character, raw_input: str) -> str:
         return f"Item type set to: {item_type}"
 
     if cmd == "level":
-        if not args_parts:
-            return "Usage: level <number>"
+        # mirroring ROM src/olc_act.c:3470-3488 oedit_level — ROM rejects empty
+        # OR non-number (is_number) with the single verbatim syntax string, and
+        # is_number/atoi accept a leading '-', so a negative level is valid.
+        raw = " ".join(args_parts)
         try:
-            level = int(args_parts[0])
+            level = int(raw)
         except ValueError:
-            return "Level must be a number."
-        if level < 0:
-            return "Level must be non-negative."
+            return "Syntax:  level [number]"
         obj_proto.level = level
         _mark_obj_changed(obj_proto)
-        return f"Object level set to {level}."
+        return "Level set."
 
     if cmd == "weight":
-        if not args_parts:
-            return "Usage: weight <number>"
+        # mirroring ROM src/olc_act.c:3140-3157 oedit_weight — bare success,
+        # single verbatim syntax string on empty/non-number.
+        raw = " ".join(args_parts)
         try:
-            weight = int(args_parts[0])
+            weight = int(raw)
         except ValueError:
-            return "Weight must be a number."
+            return "Syntax:  weight [number]"
         obj_proto.weight = weight
         _mark_obj_changed(obj_proto)
-        return f"Weight set to {weight}."
+        return "Weight set."
 
     if cmd == "cost":
-        if not args_parts:
-            return "Usage: cost <number>"
+        # mirroring ROM src/olc_act.c:3158-3177 oedit_cost.
+        raw = " ".join(args_parts)
         try:
-            cost = int(args_parts[0])
+            cost = int(raw)
         except ValueError:
-            return "Cost must be a number."
+            return "Syntax:  cost [number]"
         obj_proto.cost = cost
         _mark_obj_changed(obj_proto)
-        return f"Cost set to {cost}."
+        return "Cost set."
 
     if cmd == "material":
+        # mirroring ROM src/olc_act.c:3451-3469 oedit_material — rejects only
+        # empty; any non-empty string is valid; bare success message.
         if not args_parts:
-            return "Usage: material <name>"
+            return "Syntax:  material [string]"
         material = " ".join(args_parts)
         obj_proto.material = material
         _mark_obj_changed(obj_proto)
-        return f"Material set to: {material}"
+        return "Material set."
 
     if cmd in {"v0", "v1", "v2", "v3", "v4"}:
         index = int(cmd[1])
@@ -3349,41 +3354,39 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
         return f"Description set to: {new_desc}"
 
     if cmd == "level":
-        if not args_parts:
-            return "Usage: level <number>"
+        # mirroring ROM src/olc_act.c:medit_level — is_number(full arg), bare
+        # success, no minimum (ROM accepts any integer level).
+        raw = " ".join(args_parts)
         try:
-            level = int(args_parts[0])
+            level = int(raw)
         except ValueError:
-            return "Level must be a number."
-        if level < 1:
-            return "Level must be at least 1."
+            return "Syntax:  level [number]"
         mob_proto.level = level
         _mark_mob_changed(mob_proto)
-        return f"Mobile level set to {level}."
+        return "Level set."
 
     if cmd in {"align", "alignment"}:
-        if not args_parts:
-            return "Usage: align <number>"
+        # mirroring ROM src/olc_act.c:medit_align — no -1000..1000 clamp (ROM
+        # stores atoi(argument) unmodified). Error string uses ROM's "alignment".
+        raw = " ".join(args_parts)
         try:
-            alignment = int(args_parts[0])
+            alignment = int(raw)
         except ValueError:
-            return "Alignment must be a number."
-        if alignment < -1000 or alignment > 1000:
-            return "Alignment must be between -1000 and 1000."
+            return "Syntax:  alignment [number]"
         mob_proto.alignment = alignment
         _mark_mob_changed(mob_proto)
-        return f"Alignment set to {alignment}."
+        return "Alignment set."
 
     if cmd == "hitroll":
-        if not args_parts:
-            return "Usage: hitroll <number>"
+        # mirroring ROM src/olc_act.c:medit_hitroll.
+        raw = " ".join(args_parts)
         try:
-            hitroll = int(args_parts[0])
+            hitroll = int(raw)
         except ValueError:
-            return "Hitroll must be a number."
+            return "Syntax:  hitroll [number]"
         mob_proto.hitroll = hitroll
         _mark_mob_changed(mob_proto)
-        return f"Hitroll set to {hitroll}."
+        return "Hitroll set."
 
     if cmd == "damroll":
         if not args_parts:
@@ -3482,12 +3485,13 @@ def _interpret_medit(session: Session, char: Character, raw_input: str) -> str:
         return f"AC dice set to: {ac_dice}"
 
     if cmd == "material":
+        # mirroring ROM src/olc_act.c:4366 medit_material — rejects only empty.
         if not args_parts:
-            return "Usage: material <name>"
+            return "Syntax:  material [string]"
         material = " ".join(args_parts)
         mob_proto.material = material
         _mark_mob_changed(mob_proto)
-        return f"Material set to: {material}"
+        return "Material set."
 
     if cmd == "act":
         # mirroring ROM src/olc_act.c:4142-4165 medit_act
