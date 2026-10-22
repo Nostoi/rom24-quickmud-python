@@ -24,7 +24,7 @@
 | Tests | **6265 passed, 4 skipped, 0 failed** (~148s parallel; the one OLC_ACT-014 assert that lagged OLC_ACT-019's message change was fixed) |
 | ROM C files audited | 43 / 43 |
 | Differential harness | 102/102 across 69 scenarios; diffshim C binary builds clean (2026-07-18) |
-| Push status | **Local only — operator review still pending**: prior ~19 commits + this session's ~13 (`3eb836fc`…HEAD). Do NOT push without operator sign-off. |
+| Push status | On master since 2026-10-22 (PR #129, merge `c19888df`). Local commit `101d1e27` (Claude config isolation) was left out by the owner and is kept on branch `backup/local-master-2026-10-22`. |
 | Active focus | Cross-file invariants / divergence-class + OLC setter sweep |
 
 ## Next Intended Task — durably-filed OPEN gaps (for the next session)
@@ -42,7 +42,14 @@
    routing the whole path through `affect_to_obj` is the fix (subsumes ENV-005).
 4. **ENV-003 (re-opened)** — envenom affect `type=-1` vs combat's `"poison"`
    level-lookup (`engine.py:1959`); the "never-walked" premise was stale.
-5. Continue recall-oracle probes on un-swept high-traffic surfaces (regen
+5. **HANDLER-009 follow-up — tail inserts into `room.people`**:
+   `char_list_walk_from_room_head` treats `room.people[0]` as the newest
+   arrival (ROM `char_to_room` head-inserts), but `mload`
+   (`mud/commands/imm_load.py`), `clone` (`mud/commands/imm_search.py`) and
+   spec_mayor (`mud/spec_funs.py`) still `people.append`, so a mob added that
+   way is skipped by check_assist and area-attack sweeps. Route them through
+   `Room.add_mob`; check the other `people.append` sites too.
+6. Continue recall-oracle probes on un-swept high-traffic surfaces (regen
    `hit_gain`/`mana_gain`/`move_gain`, `check_improve`, mob `mobile_update`).
 
 ## Outstanding — deferred by design (unchanged)
