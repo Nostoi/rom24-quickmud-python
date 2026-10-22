@@ -37,6 +37,7 @@ jobs:
         run: ruff check .
         continue-on-error: true
       - name: Test with pytest
+        timeout-minutes: 20
         # Inherits addopts (-n auto --dist loadscope --timeout=120) from pyproject.
         run: pytest --tb=short
 
